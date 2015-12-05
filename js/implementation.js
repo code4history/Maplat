@@ -32,11 +32,22 @@ var xyLayer = L.TileLayer.extend({
         updateWhenIdle: L.Browser.mobile
     },
 
-    _tileOnLoad: function (done, tile) {
-        console.log(done);
-        console.log(tile);
+    _createTile: function () {
+        var tile = L.DomUtil.create('img', 'leaflet-tile');
+        //tile.style.width = tile.style.height = this._getTileSize() + 'px';
+        tile.galleryimg = 'no';
 
-        L.TileLayer.prototype._tileOnLoad.apply(this, done, tile);
+        tile.onselectstart = tile.onmousemove = L.Util.falseFn;
+
+        if (L.Browser.ielt9 && this.options.opacity !== undefined) {
+            L.DomUtil.setOpacity(tile, this.options.opacity);
+        }
+        // without this hack, tiles disappear after zoom on Chrome for Android
+        // https://github.com/Leaflet/Leaflet/issues/2078
+        if (L.Browser.mobileWebkit3d) {
+            tile.style.WebkitBackfaceVisibility = 'hidden';
+        }
+        return tile;
     },
 
     // just not to set image styles
