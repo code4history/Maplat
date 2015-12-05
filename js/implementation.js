@@ -170,7 +170,6 @@ $(function(){
         crs:myCrs,
         minZoom:0,
         maxZoom:map2MaxZoom,
-        zoom:Math.int(map2MaxZoom / 2),
         maxPixelSize: 256 * (1 << map2MaxZoom)
     }
     );
