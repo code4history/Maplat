@@ -33,7 +33,7 @@ var xyLayer = L.TileLayer.extend({
     },
 
     _tileOnLoad: function (done, tile) {
-        console.log("Tile loaded");
+        console.log(tile);
 
         L.TileLayer.prototype._tileOnLoad.apply(this, done, tile);
     },
