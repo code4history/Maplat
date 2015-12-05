@@ -35,7 +35,7 @@ var xyLayer = L.TileLayer.extend({
     _tileOnLoad: function (done, tile) {
         console.log("Tile loaded");
 
-        L.TileLayer._tileOnLoad.apply(this, done, tile);
+        L.TileLayer.prototype._tileOnLoad.apply(this, done, tile);
     },
 
     // just not to set image styles
