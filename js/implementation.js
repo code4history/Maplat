@@ -11,7 +11,7 @@ var tps = new ThinPlateSpline({
     }
 });
 
-tps.load_points('json/NaraOldMap1_points.json');
+tps.load_points('../json/NaraOldMap1_points.json');
 //tps.load_serial('kishiwada_resolved.bin');
 
 var map    = [];
