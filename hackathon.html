@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head> 
+<meta content="yes" name="apple-mobile-web-app-capable" /> 
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" /> 
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+<title>岸和田城古地図3題</title> 
+<style type="text/css" media="screen">
+    body{
+        padding: 0;
+        margin: 0;
+    }
+    
+    ul.mapContainer{
+        list-style-type: none;
+        width:100%;
+        height:100%;
+        padding:0 0 0 0;
+        margin:0 0 0 0;
+    }
+    li.mapContainer{
+        float: left;
+        display: inline;
+        width:50%;
+        height:100%;
+    }
+    
+    div.mapContainer{
+        position:absolute;
+        border: 1px;
+        border-style:solid;             
+    }
+
+    li.mapContainer div.mapContainer{
+        width:50%;
+        height:100%;
+    }   
+    
+</style>
+<link rel="stylesheet" href="//cdn.leafletjs.com/leaflet-0.5.1/leaflet.css" />
+<!--[if lte IE 8]><link rel="stylesheet" href="//cdn.leafletjs.com/leaflet-0.5.1/leaflet.ie.css" /><![endif]-->
+<script src="//cdn.leafletjs.com/leaflet-0.5.1/leaflet.js" type="text/javascript" charset="utf-8"></script>
+<script src="//code.jquery.com/jquery-1.11.2.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="./js/Bing.js" type="text/javascript" charset="utf-8"></script>
+<script src="./js/thinplatespline.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="./js/implementation.js" type="text/javascript" charset="utf-8"></script>
+
+
+
+<script type="text/javascript"> 
+var map1SW = [34.4509, 135.3613];//[34.62798, 135.78415]; //lat,lng
+var map1NE = [34.4705, 135.3815]; //lat,lng
+
+var map2SW = [500, 1131];//[304, 2688]; // x,y
+var map2NE = [1014, 500];//[4016, 160]; // x,y
+var map2MaxZoom = 3;
+
+
+</script> 
+</head> 
+<body style="margin:0px; padding:0px;">
+
+    <div id="main" style="position:absolute;margin:0">
+        <ul class="mapContainer">
+            <li class="mapContainer">
+                <div class="mapContainer" id="map1" ></div>
+            </li>
+            <li class="mapContainer">
+                <div class="mapContainer" id="map2" ></div>
+            </li>
+        </ul>
+        
+    </div>
+
+</body> 
+</html> 
