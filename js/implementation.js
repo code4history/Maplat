@@ -29,12 +29,13 @@ var xyLayer = L.TileLayer.extend({
         opacity: 1,
         continuousWorld: true,
         unloadInvisibleTiles: L.Browser.mobile,
-        updateWhenIdle: L.Browser.mobile,
-        _tileOnLoad: function (done, tile) {
-            console.log("Tile loaded");
+        updateWhenIdle: L.Browser.mobile
+    },
 
-            L.bind(L.TileLayer._tileOnLoad, this, done, tile);
-        }
+    _tileOnLoad: function (done, tile) {
+        console.log("Tile loaded");
+
+        L.bind(L.TileLayer._tileOnLoad, this, done, tile);
     },
 
     // just not to set image styles
