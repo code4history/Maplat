@@ -152,24 +152,25 @@ $(function(){
     });
 
     var baseLayer = new L.BingLayer("AgodEAYOPBDvCgvgOTnoo47nj-TQ1_vkjH6761FXyBGBYTiNf8gfluRvNEHoysig",{ type: 'Road' });
-    var tpsLayer  = new L.TileLayer('http://t.tilemap.jp/kishiwada/tps/{z}/{x}/{y}.png',{ tms: true, attribution: '和泉国岸和田城図 国立公文書館蔵' });;
-    var hlmLayer  = new L.TileLayer('http://t.tilemap.jp/kishiwada/hlm/{z}/{x}/{y}.png',{ tms: true, attribution: '和泉国岸和田城図 国立公文書館蔵' });;
+    //var tpsLayer  = new L.TileLayer('http://t.tilemap.jp/kishiwada/tps/{z}/{x}/{y}.png',{ tms: true, attribution: '和泉国岸和田城図 国立公文書館蔵' });;
+    //var hlmLayer  = new L.TileLayer('http://t.tilemap.jp/kishiwada/hlm/{z}/{x}/{y}.png',{ tms: true, attribution: '和泉国岸和田城図 国立公文書館蔵' });;
     map[0] = new merMap('map1',
     {
         minZoom:13,
         maxZoom:17
     }).fitBounds([map1SW, map1NE]).addLayer(baseLayer);
     map[0].on('click', function(e) { onMapClick(0,e); });
-    L.control.layers().addOverlay(tpsLayer, "歪み地図(ThinPlateSpline)").addOverlay(hlmLayer, "歪みなし(Helmart)").addTo(map[0]);
+    //L.control.layers().addOverlay(tpsLayer, "歪み地図(ThinPlateSpline)").addOverlay(hlmLayer, "歪みなし(Helmart)").addTo(map[0]);
 
     var xyMapUrl = "tiles/NaraOldMap1-{z}_{x}_{y}.jpg",
-    xyMapAttr = '和泉国岸和田城図 国立公文書館蔵';
+    xyMapAttr = '奈良市鳥瞰図 (1868年以降) Cartography Associates CC-BY-NC-SA 3.0';
     var xyMapLayer = new xyLayer(xyMapUrl,{minZoom: 0, maxZoom: map2MaxZoom, attribution: xyMapAttr});
     map[1] = new myMap('map2',
     {
         crs:myCrs,
         minZoom:0,
         maxZoom:map2MaxZoom,
+        zoom:Math.int(map2MaxZoom / 2),
         maxPixelSize: 256 * (1 << map2MaxZoom)
     }
     );
