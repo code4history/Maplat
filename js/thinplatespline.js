@@ -183,7 +183,7 @@ ThinPlateSpline.prototype.__solve = function(self) {
 };
 
 ThinPlateSpline.prototype.transform = function(P, isRev, options) {
-  if (this.block && options && options.recurse != 1) {
+  if (this.block && (!options || options.recurse != 1)) {
     this.que.push({"P":P,"isRev":isRev,"options":options});
     return;
   } else {
