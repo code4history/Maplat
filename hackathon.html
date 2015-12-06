@@ -51,7 +51,12 @@
     }
 
     #slider {
-        width: 100%;
+        width: calc(100% - 100px);
+        height: 50px;
+    }
+
+    #disp {
+        width: 100px;
         height: 50px;
     }
 
@@ -64,24 +69,6 @@
     
 </style>
 <link rel="stylesheet" href="//cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
-<script src="//cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
-<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
-<script src="./js/Bing.js"></script>
-<script src="./js/thinplatespline.min.js"></script>
-<script src="./js/implementation.js"></script>
-
-
-
-<script type="text/javascript"> 
-var map1SW = [34.6747, 135.8216]; //lat,lng
-var map1NE = [34.6943, 135.8418]; //lat,lng
-
-var map2SW = [500, 6286]; // x,y
-var map2NE = [9118, 500]; // x,y
-var map2MaxZoom = 6;
-
-
-</script> 
 </head> 
 <body>
 
@@ -98,7 +85,20 @@ var map2MaxZoom = 6;
         </li>
     </div>
     <div id="control">
-        <input type="range" name="slider" id="slider" value="0">
+        <input type="range" name="slider" id="slider" value="0" min="710" max="2015"><span id="disp"><span id="year"></span>年</span>
     </div>
 </body> 
+<script src="//cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="./js/Bing.js"></script>
+<script src="./js/thinplatespline.min.js"></script>
+<script type="text/javascript"> 
+var map1SW = [34.6747, 135.8216]; //lat,lng
+var map1NE = [34.6943, 135.8418]; //lat,lng
+
+var map2SW = [500, 6286]; // x,y
+var map2NE = [9118, 500]; // x,y
+var map2MaxZoom = 6;
+</script> 
+<script src="./js/implementation.js"></script>
 </html> 
