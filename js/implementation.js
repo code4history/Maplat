@@ -25,6 +25,8 @@ var tps = new ThinPlateSpline({
             } else {
                 hereMarker[1] = L.marker(tgtll,{icon:hereIcon}).addTo(map[1]);
             }
+        } else if (options.target == "drag") {
+            map[isRev].setCenter(tgtll);
         }
     }
 });
@@ -171,7 +173,7 @@ $(window).load(function(){
         maxZoom:17
     }).fitBounds([map1SW, map1NE]).addLayer(baseLayer);
     map[0].on('click', function(e) { onMapClick(0,e); });
-    //L.control.layers().addOverlay(tpsLayer, "歪み地図(ThinPlateSpline)").addOverlay(hlmLayer, "歪みなし(Helmart)").addTo(map[0]);
+    map[0],on('dragend', function(e) { onMapDrag(0,e); });
 
     var xyMapUrl = "tiles/NaraOldMap1-{z}_{x}_{y}.jpg",
     xyMapAttr = '奈良市鳥瞰図 (1868年以降) Cartography Associates CC-BY-NC-SA 3.0';
@@ -187,6 +189,7 @@ $(window).load(function(){
     map[1].addLayer(xyMapLayer);
     map[1].fitBounds([map[1].xy2ll(map2SW),map[1].xy2ll(map2NE)]);
     map[1].on('click', function(e) { onMapClick(1,e); });
+    map[1],on('dragend', function(e) { onMapDrag(1,e); });
 
     function onMapClick(clicked,e) {
         var target = 1 - clicked;
@@ -198,6 +201,13 @@ $(window).load(function(){
         var srcxy = map[clicked].ll2xy(e.latlng);
         var tgtxy = tps.transform([srcxy.x,srcxy.y],target);
     }
+
+    function onMapDrag(dragged,e) {
+        var target = 1 - dragged;
+        var srcxy = map[dragged].ll2xy(map[dragged].getCenter());
+        var tgtxy = tps.transform([srcxy.x,srcxy.y],target,{"target":"drag"});
+    }
+
 
     $("#slider").on( 'input', function () {
         changeYear();
