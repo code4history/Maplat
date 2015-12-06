@@ -183,8 +183,15 @@ ThinPlateSpline.prototype.__solve = function(self) {
 };
 
 ThinPlateSpline.prototype.transform = function(P, isRev, options) {
-  if (this.block && (!options || options.recurse != 1)) {
-    this.que.push({"P":P,"isRev":isRev,"options":options});
+  if ((this.block && (!options || options.recurse != 1)) || !this.solved) {
+    if (!this.solved) {
+      if (!options || !options.retry ) {
+        this.que.push({"P":P,"isRev":isRev,"options":options});
+      }
+      this.transform(null,null,{"retry":1});
+    } else {
+      this.que.push({"P":P,"isRev":isRev,"options":options});
+    }
     return;
   } else {
     this.block = true;
