@@ -245,13 +245,13 @@ $(window).load(function(){
         poi_data = data;
         for (var i=0; i < data.length; i++) {
             var latlng = new L.LatLng(data[i].lat,data[i].lng);
-            marker[0][i] = L.marker(latlng).addTo(map[0]);
             var idx = i;
+            marker[0][idx] = L.marker(latlng).addTo(map[0]);
             marker[0][idx].on("click",function(){
                 showInfo(idx);
             });
             var merc = map[0].ll2xy(latlng);
-            var tgtxy = tps.transform([merc.x,merc.y],1,{"target":"marker","index":i});              
+            var tgtxy = tps.transform([merc.x,merc.y],1,{"target":"marker","index":idx});              
         }
     }, "json");
 
