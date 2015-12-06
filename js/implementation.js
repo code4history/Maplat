@@ -1,6 +1,7 @@
 var map    = [];
 var marker = [[],[]];
 var hereMarker = [];
+var poi_data;
 
 var hereIcon = L.icon({
     iconUrl: 'img/bluedot.png',
@@ -30,6 +31,9 @@ var tps = new ThinPlateSpline({
             map[isRev].panTo(tgtll);
         } else if (options.target == "marker") {
             marker[1][options.index] = L.marker(tgtll).addTo(map[1]);
+            marker[1][options.index].on("click",function(){
+                showInfo(options.index);
+            });
         }
     }
 });
@@ -167,6 +171,9 @@ var merMap = L.Map.extend({
 });
 
 $(window).load(function(){
+    $("#all").show();
+    $("#info").hide();
+
     var baseLayer = new L.BingLayer("AgodEAYOPBDvCgvgOTnoo47nj-TQ1_vkjH6761FXyBGBYTiNf8gfluRvNEHoysig",{ type: 'Road' });
     //var tpsLayer  = new L.TileLayer('http://t.tilemap.jp/kishiwada/tps/{z}/{x}/{y}.png',{ tms: true, attribution: '和泉国岸和田城図 国立公文書館蔵' });;
     //var hlmLayer  = new L.TileLayer('http://t.tilemap.jp/kishiwada/hlm/{z}/{x}/{y}.png',{ tms: true, attribution: '和泉国岸和田城図 国立公文書館蔵' });;
@@ -234,13 +241,32 @@ $(window).load(function(){
     var tgtxy = tps.transform([srcxy.x,srcxy.y],1,{"target":"drag"});
 
     $.get("json/poi.json", function(data) {
+        poi_data = data;
         for (var i=0; i < data.length; i++) {
             var latlng = new L.LatLng(data[i].lat,data[i].lng);
             marker[0][i] = L.marker(latlng).addTo(map[0]);
+            marker[0][i].on("click",function(){
+                showInfo(i);
+            });
             var merc = map[0].ll2xy(latlng);
             var tgtxy = tps.transform([merc.x,merc.y],1,{"target":"marker","index":i});              
         }
     }, "json");
+
+    function showInfo(index) {
+        var data = poi_data[index];
+        $("#poi_name").text(data.name);
+        $("#poi_img").src = data.image;
+        $("#poi_address").text(data.address);
+        $("#poi_desc").text(data.desc);
+        $("#info").show();
+        $("#all").show();
+    }
+
+    $("#poi_back").on("click",function(){
+        $("#all").show();
+        $("#info").hide();
+    });
 });
 
 function isArray(o){ 
