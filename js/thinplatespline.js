@@ -188,7 +188,10 @@ ThinPlateSpline.prototype.transform = function(P, isRev, options) {
       if (!options || !options.retry ) {
         this.que.push({"P":P,"isRev":isRev,"options":options});
       }
-      this.transform(null,null,{"retry":1});
+      var me = this;
+      setTimeout(function(){
+        me.transform(null,null,{"retry":1});
+      },100);  
     } else {
       this.que.push({"P":P,"isRev":isRev,"options":options});
     }
