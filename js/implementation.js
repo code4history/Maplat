@@ -173,7 +173,7 @@ $(window).load(function(){
         maxZoom:17
     }).fitBounds([map1SW, map1NE]).addLayer(baseLayer);
     map[0].on('click', function(e) { onMapClick(0,e); });
-    map[0],on('dragend', function(e) { onMapDrag(0,e); });
+    map[0].on('dragend', function(e) { onMapDrag(0,e); });
 
     var xyMapUrl = "tiles/NaraOldMap1-{z}_{x}_{y}.jpg",
     xyMapAttr = '奈良市鳥瞰図 (1868年以降) Cartography Associates CC-BY-NC-SA 3.0';
@@ -189,7 +189,7 @@ $(window).load(function(){
     map[1].addLayer(xyMapLayer);
     map[1].fitBounds([map[1].xy2ll(map2SW),map[1].xy2ll(map2NE)]);
     map[1].on('click', function(e) { onMapClick(1,e); });
-    map[1],on('dragend', function(e) { onMapDrag(1,e); });
+    map[1].on('dragend', function(e) { onMapDrag(1,e); });
 
     function onMapClick(clicked,e) {
         var target = 1 - clicked;
