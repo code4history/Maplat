@@ -231,7 +231,7 @@ $(window).load(function(){
     var srcxy = map[0].ll2xy(map[0].getCenter());
     var tgtxy = tps.transform([srcxy.x,srcxy.y],1,{"target":"drag"});
 
-    $.get("../json/poi.json", function(data) {
+    $.get("json/poi.json", function(data) {
         console.log(data);
     }, "json");
 });
