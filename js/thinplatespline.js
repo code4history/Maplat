@@ -2,8 +2,8 @@ var ThinPlateSpline = (function(){
 
 function ThinPlateSpline(options) {
 
-  var block = false;
-  var que   = [];
+  this.block = false;
+  this.que   = [];
 
   if (!options) { options = {}; }
 
@@ -183,13 +183,13 @@ ThinPlateSpline.prototype.__solve = function(self) {
 };
 
 ThinPlateSpline.prototype.transform = function(P, isRev, options) {
-  if (block && options && options.recurse != 1) {
-    que.push({"P":P,"isRev":isRev,"options":options});
+  if (this.block && options && options.recurse != 1) {
+    this.que.push({"P":P,"isRev":isRev,"options":options});
     return;
   } else {
-    block = true;
+    this.block = true;
     if (options && options.recurse == 1) {
-      var next = que.pop();
+      var next = this.que.pop();
       P       = next.P;
       isRev   = next.isRev;
       options = next.options;
@@ -227,7 +227,7 @@ ThinPlateSpline.prototype.transform = function(P, isRev, options) {
   if (que.length > 0) {
     this.transform(null,null,{"recurse":1});
   } else {
-    block = false;
+    this.block = false;
   }
 };
 
