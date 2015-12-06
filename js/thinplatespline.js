@@ -1061,9 +1061,13 @@ function enlargeMemory() {
   abort('Cannot enlarge memory arrays. Either (1) compile with -s TOTAL_MEMORY=X with X higher than the current value, (2) compile with ALLOW_MEMORY_GROWTH which adjusts the size at runtime but prevents some optimizations, or (3) set Module.TOTAL_MEMORY before the program runs.');
 }
 
-var TOTAL_STACK = Module['TOTAL_STACK'] || 5242880;
-var TOTAL_MEMORY = Module['TOTAL_MEMORY'] || 16777216;
-var FAST_MEMORY = Module['FAST_MEMORY'] || 2097152;
+//var TOTAL_STACK = Module['TOTAL_STACK'] || 5242880;
+//var TOTAL_MEMORY = Module['TOTAL_MEMORY'] || 16777216;
+//var FAST_MEMORY = Module['FAST_MEMORY'] || 2097152;
+
+var TOTAL_STACK = Module['TOTAL_STACK'] || 5242880 * 4;
+var TOTAL_MEMORY = Module['TOTAL_MEMORY'] || 16777216 * 4;
+var FAST_MEMORY = Module['FAST_MEMORY'] || 2097152 * 4;
 
 // Initialize the runtime's memory
 // check for full engine support (use string 'subarray' to avoid closure compiler confusion)
