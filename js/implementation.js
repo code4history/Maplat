@@ -26,7 +26,7 @@ var tps = new ThinPlateSpline({
                 hereMarker[1] = L.marker(tgtll,{icon:hereIcon}).addTo(map[1]);
             }
         } else if (options.target == "drag") {
-            map[isRev].setCenter(tgtll);
+            map[isRev].panTo(tgtll);
         }
     }
 });
