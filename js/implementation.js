@@ -30,9 +30,10 @@ var tps = new ThinPlateSpline({
         } else if (options.target == "drag") {
             map[isRev].panTo(tgtll);
         } else if (options.target == "marker") {
-            marker[1][options.index] = L.marker(tgtll).addTo(map[1]);
-            marker[1][options.index].on("click",function(){
-                showInfo(options.index);
+            var i = options.index;
+            marker[1][i] = L.marker(tgtll).addTo(map[1]);
+            marker[1][i].on("click",function(){
+                showInfo(i);
             });
         }
     }
@@ -245,8 +246,9 @@ $(window).load(function(){
         for (var i=0; i < data.length; i++) {
             var latlng = new L.LatLng(data[i].lat,data[i].lng);
             marker[0][i] = L.marker(latlng).addTo(map[0]);
-            marker[0][i].on("click",function(){
-                showInfo(i);
+            var idx = i;
+            marker[0][idx].on("click",function(){
+                showInfo(idx);
             });
             var merc = map[0].ll2xy(latlng);
             var tgtxy = tps.transform([merc.x,merc.y],1,{"target":"marker","index":i});              
