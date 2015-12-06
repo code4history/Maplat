@@ -262,7 +262,7 @@ $(window).load(function(){
         $("#poi_address").text(data.address);
         $("#poi_desc").text(data.desc);
         $("#info").show();
-        $("#all").show();
+        $("#all").hide();
     }
 
     $("#poi_back").on("click",function(){
