@@ -3,7 +3,7 @@ var marker = [];
 var hereMarker = [];
 
 var hereIcon = L.icon({
-    iconUrl: '../img/bluedot.png',
+    iconUrl: 'img/bluedot.png',
     iconSize: [34, 34],
     iconAnchor: [17, 17]
 });
