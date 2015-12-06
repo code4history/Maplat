@@ -170,8 +170,10 @@ $(window).load(function(){
     map[0] = new merMap('map1',
     {
         minZoom:13,
-        maxZoom:17
-    }).fitBounds([map1SW, map1NE]).addLayer(baseLayer);
+        maxZoom:18,
+        zoom:17
+    });//.fitBounds([map1SW, map1NE]).addLayer(baseLayer);
+    map[0].panTo(new L.LatLng((map1SW[0] + map1NE[0]) / 2,(map1SW[1] + map1NE[1]) / 2));
     map[0].on('click', function(e) { onMapClick(0,e); });
     map[0].on('dragend', function(e) { onMapDrag(0,e); });
 
@@ -183,11 +185,12 @@ $(window).load(function(){
         crs:myCrs,
         minZoom:0,
         maxZoom:map2MaxZoom,
-        maxPixelSize: 256 * (1 << map2MaxZoom)
+        maxPixelSize: 256 * (1 << map2MaxZoom),
+        zoom:5
     }
     );
     map[1].addLayer(xyMapLayer);
-    map[1].fitBounds([map[1].xy2ll(map2SW),map[1].xy2ll(map2NE)]);
+    //map[1].fitBounds([map[1].xy2ll(map2SW),map[1].xy2ll(map2NE)]);
     map[1].on('click', function(e) { onMapClick(1,e); });
     map[1].on('dragend', function(e) { onMapDrag(1,e); });
 
@@ -224,6 +227,9 @@ $(window).load(function(){
         var merc = map[0].ll2xy(new L.LatLng(position.coords.latitude,position.coords.longitude));
         var tgtxy = tps.transform([merc.x,merc.y],1,{"target":"here"});            
     });
+
+    var srcxy = map[0].ll2xy(map[0].getCenter());
+    var tgtxy = tps.transform([srcxy.x,srcxy.y],1,{"target":"drag"}); 
 });
 
 function isArray(o){ 
