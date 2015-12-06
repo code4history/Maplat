@@ -224,7 +224,7 @@ ThinPlateSpline.prototype.transform = function(P, isRev, options) {
     return ret;
   }
 
-  if (que.length > 0) {
+  if (this.que.length > 0) {
     this.transform(null,null,{"recurse":1});
   } else {
     this.block = false;
