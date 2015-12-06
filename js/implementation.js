@@ -184,9 +184,13 @@ $(function(){
     }
 });
 
-function isArray(o){
+function isArray(o){ 
     return Object.prototype.toString.call(o) === '[object Array]';
 }
+
+$("#slider").on( 'input', function () {
+    $("#year").text($(this).val());
+} );
 
 
 
