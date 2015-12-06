@@ -235,7 +235,7 @@ $(window).load(function(){
 
     $.get("json/poi.json", function(data) {
         for (var i=0; i < data.length; i++) {
-            var latlng = new L.LatLng(data.lat,data.lng);
+            var latlng = new L.LatLng(data[i].lat,data.lng);
             marker[0][i] = L.marker(latlng).addTo(map[0]);
             var merc = map[0].ll2xy(latlng);
             var tgtxy = tps.transform([merc.x,merc.y],1,{"target":"marker"});              
