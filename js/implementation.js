@@ -214,6 +214,7 @@ $(window).load(function(){
     $("#slider").on( 'input', function () {
         changeYear();
     } );
+    $("#slider").val(2015);
     changeYear();
 
     navigator.geolocation.watchPosition(function(position){
