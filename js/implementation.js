@@ -1,5 +1,5 @@
 var map    = [];
-var marker = [];
+var marker = [[],[]];
 var hereMarker = [];
 
 var hereIcon = L.icon({
@@ -14,11 +14,11 @@ var tps = new ThinPlateSpline({
         //var tgtxy = tps.transform([srcxy.x,srcxy.y],target);
         var tgtll = map[isRev].xy2ll(new L.Point(coord[0],coord[1]));
         if (!options) {
-            if (marker[isRev]) {
+            /*if (marker[isRev]) {
                 marker[isRev].setLatLng(tgtll);
             } else {
                 marker[isRev] = L.marker(tgtll).addTo(map[isRev]);
-            }
+            }*/
         } else if (options.target == "here") {
             if (hereMarker[1]) {
                 hereMarker[1].setLatLng(tgtll);
@@ -173,8 +173,7 @@ $(window).load(function(){
         minZoom:13,
         maxZoom:17
     }).fitBounds([map1SW, map1NE]).addLayer(baseLayer);
-    //map[0].panTo(new L.LatLng((map1SW[0] + map1NE[0]) / 2,(map1SW[1] + map1NE[1]) / 2));
-    map[0].on('click', function(e) { onMapClick(0,e); });
+    //map[0].on('click', function(e) { onMapClick(0,e); });
     map[0].on('dragend', function(e) { onMapDrag(0,e); });
 
     var xyMapUrl = "tiles/NaraOldMap1-{z}_{x}_{y}.jpg",
@@ -190,10 +189,10 @@ $(window).load(function(){
     );
     map[1].addLayer(xyMapLayer);
     map[1].fitBounds([map[1].xy2ll(map2SW),map[1].xy2ll(map2NE)]);
-    map[1].on('click', function(e) { onMapClick(1,e); });
+    //map[1].on('click', function(e) { onMapClick(1,e); });
     map[1].on('dragend', function(e) { onMapDrag(1,e); });
 
-    function onMapClick(clicked,e) {
+    /*function onMapClick(clicked,e) {
         var target = 1 - clicked;
         if (marker[clicked]) {
             marker[clicked].setLatLng(e.latlng);
@@ -202,7 +201,7 @@ $(window).load(function(){
         }
         var srcxy = map[clicked].ll2xy(e.latlng);
         var tgtxy = tps.transform([srcxy.x,srcxy.y],target);
-    }
+    }*/
 
     function onMapDrag(dragged,e) {
         var target = 1 - dragged;
@@ -230,7 +229,11 @@ $(window).load(function(){
     });
 
     var srcxy = map[0].ll2xy(map[0].getCenter());
-    var tgtxy = tps.transform([srcxy.x,srcxy.y],1,{"target":"drag"}); 
+    var tgtxy = tps.transform([srcxy.x,srcxy.y],1,{"target":"drag"});
+
+    $.get("../json/poi.json", function(data) {
+        console.log(data);
+    }, "json");
 });
 
 function isArray(o){ 
