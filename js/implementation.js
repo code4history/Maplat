@@ -282,7 +282,7 @@ function changeYear() {
 function showInfo(index) {
     var data = poi_data[index];
     $("#poi_name").text(data.name);
-    $("#poi_img").src = data.image;
+    $("#poi_img").src = "img/" + data.image;
     $("#poi_address").text(data.address);
     $("#poi_desc").text(data.desc);
     $("#info").show();
