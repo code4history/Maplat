@@ -170,8 +170,7 @@ $(window).load(function(){
     map[0] = new merMap('map1',
     {
         minZoom:13,
-        maxZoom:18,
-        zoom:17
+        maxZoom:18
     });//.fitBounds([map1SW, map1NE]).addLayer(baseLayer);
     map[0].panTo(new L.LatLng((map1SW[0] + map1NE[0]) / 2,(map1SW[1] + map1NE[1]) / 2));
     map[0].on('click', function(e) { onMapClick(0,e); });
@@ -185,8 +184,7 @@ $(window).load(function(){
         crs:myCrs,
         minZoom:0,
         maxZoom:map2MaxZoom,
-        maxPixelSize: 256 * (1 << map2MaxZoom),
-        zoom:5
+        maxPixelSize: 256 * (1 << map2MaxZoom)
     }
     );
     map[1].addLayer(xyMapLayer);
