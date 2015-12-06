@@ -178,7 +178,7 @@ ThinPlateSpline.prototype.__solve = function(self) {
   return Module['ccall']('_ZN17VizGeorefSpline2D5solveEv', 'number', ['number'], [self.pointer]);
 };
 
-ThinPlateSpline.prototype.transform = function(P, isRev) {
+ThinPlateSpline.prototype.transform = function(P, isRev, options) {
   var self = isRev ? this.__rev : this.__ord;
   var ret  = this.__get_point(self, P);
   var me   = this;
@@ -192,7 +192,7 @@ ThinPlateSpline.prototype.transform = function(P, isRev) {
         xhr.onload = function(e) {
           if (this.status == 200) {
             var data = JSON.parse(this.response);
-            me.transform_callback([data.data.x,data.data.y], isRev);
+            me.transform_callback([data.data.x,data.data.y], isRev, options);
           } else if (me.error_callback) {
             me.error_callback(P, isRev);
           }
@@ -202,7 +202,7 @@ ThinPlateSpline.prototype.transform = function(P, isRev) {
         me.error_callback(P, isRev);
       }
     } else {
-      me.transform_callback(ret, isRev);
+      me.transform_callback(ret, isRev, options);
     }
   } else {
     return ret;

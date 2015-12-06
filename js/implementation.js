@@ -1,12 +1,30 @@
+var map    = [];
+var marker = [];
+var hereMarker = [];
+
+var hereIcon = L.icon({
+    iconUrl: '../img/bluedot.png',
+    iconSize: [34, 34],
+    iconAnchor: [17, 17]
+});
+
 var tps = new ThinPlateSpline({
     'use_worker'         : true,
-    'transform_callback' : function(coord, isRev) {
+    'transform_callback' : function(coord, isRev, options) {
         //var tgtxy = tps.transform([srcxy.x,srcxy.y],target);
         var tgtll = map[isRev].xy2ll(new L.Point(coord[0],coord[1]));
-        if (marker[isRev]) {
-            marker[isRev].setLatLng(tgtll);
-        } else {
-            marker[isRev] = L.marker(tgtll).addTo(map[isRev]);
+        if (!options) {
+            if (marker[isRev]) {
+                marker[isRev].setLatLng(tgtll);
+            } else {
+                marker[isRev] = L.marker(tgtll).addTo(map[isRev]);
+            }
+        } else if (options.target == "here") {
+            if (hereMarker[1]) {
+                hereMarker[1].setLatLng(tgtll);
+            } else {
+                hereMarker[1] = L.marker(tgtll,{icon:hereIcon}).addTo(map[1]);
+            }
         }
     }
 });
@@ -14,8 +32,6 @@ var tps = new ThinPlateSpline({
 tps.load_points('../json/NaraOldMap1_points.json');
 //tps.load_serial('kishiwada_resolved.bin');
 
-var map    = [];
-var marker = [];
 var xyLayer = L.TileLayer.extend({
     // continuousWorld を trueにしたいだけ
     options: {
@@ -187,6 +203,17 @@ $(window).load(function(){
         changeYear();
     } );
     changeYear();
+
+    navigator.geolocation.watchPosition(function(position){
+        var latlng = new L.LatLng(position.coords.latitude,position.coords.longitude);
+        if (hereMarker[0]) {
+            hereMarker[0].setLatLng(latlng);
+        } else {
+            hereMarker[0] = L.marker(latlng,{icon:hereIcon}).addTo(map[0]);
+        }
+        var merc = map[0].ll2xy(new L.LatLng(position.coords.latitude,position.coords.longitude));
+        var tgtxy = tps.transform([merc.x,merc.y],1,{"target":"here"});            
+    });
 });
 
 function isArray(o){ 
