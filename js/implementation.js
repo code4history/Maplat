@@ -24,8 +24,7 @@ var tps = new ThinPlateSpline({
                 hereMarker[1].setLatLng(tgtll);
             } else {
                 hereMarker[1] = L.marker(tgtll,{icon:hereIcon}).addTo(map[1]);
-                map[1].setZoom(5);
-                map[1].panTo(tgtll);
+                map[1].setView(tgtll,5);
             }
         } else if (options.target == "drag") {
             map[isRev].panTo(tgtll);
@@ -223,8 +222,7 @@ $(window).load(function(){
             hereMarker[0].setLatLng(latlng);
         } else {
             hereMarker[0] = L.marker(latlng,{icon:hereIcon}).addTo(map[0]);
-            map[0].setZoom(17);
-            map[0].panTo(latlng);
+            map[0].setView(latlng,17);
         }
         var merc = map[0].ll2xy(new L.LatLng(position.coords.latitude,position.coords.longitude));
         var tgtxy = tps.transform([merc.x,merc.y],1,{"target":"here"});            
