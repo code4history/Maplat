@@ -146,11 +146,6 @@ var merMap = L.Map.extend({
 });
 
 $(function(){
-    set100Pct();
-    $(window).resize(function(){
-        set100Pct();
-    });
-
     var baseLayer = new L.BingLayer("AgodEAYOPBDvCgvgOTnoo47nj-TQ1_vkjH6761FXyBGBYTiNf8gfluRvNEHoysig",{ type: 'Road' });
     //var tpsLayer  = new L.TileLayer('http://t.tilemap.jp/kishiwada/tps/{z}/{x}/{y}.png',{ tms: true, attribution: '和泉国岸和田城図 国立公文書館蔵' });;
     //var hlmLayer  = new L.TileLayer('http://t.tilemap.jp/kishiwada/hlm/{z}/{x}/{y}.png',{ tms: true, attribution: '和泉国岸和田城図 国立公文書館蔵' });;
@@ -191,18 +186,6 @@ $(function(){
 
 function isArray(o){
     return Object.prototype.toString.call(o) === '[object Array]';
-}
-
-function set100Pct(){
-    var dw = $(window).width() - 2;
-    var dh = $(window).height() - 2;
-    $("#main").css({width:dw + "px",height:dh + "px"});
-    if (map[0]){
-        map[0].invalidateSize();
-    }
-    if (map[1]){
-        map[1].invalidateSize();
-    }
 }
 
 
