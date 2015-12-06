@@ -6,29 +6,46 @@
 <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
 <title>奈良市ハッカソン</title> 
 <style type="text/css" media="screen">
+    html{
+        height:100%;        
+    }
     body{
         padding: 0;
         margin: 0;
+        height:100%;
     }
     
+    #main {
+        position: absolute;
+        margin: 0;
+        height: 100%;
+    }
+
     ul.mapContainer{
         list-style-type: none;
         width:100%;
-        height:100%;
+        height:calc(100% - 50px);
         padding:0 0 0 0;
         margin:0 0 0 0;
     }
-    li.mapContainer{
+    /*li.mapContainer{
         float: left;
         display: inline;
         width:50%;
         height:100%;
-    }
+    }*/
     
     div.mapContainer{
         position:absolute;
         border: 1px;
         border-style:solid;             
+    }
+
+    #control {
+        position: absolute;
+        margin: 0;
+        height: 50px;
+        bottom: 0;    
     }
 
     li.mapContainer div.mapContainer{
@@ -61,7 +78,7 @@ var map2MaxZoom = 6;
 </head> 
 <body style="margin:0px; padding:0px;">
 
-    <div id="main" style="position:absolute;margin:0">
+    <div id="main">
         <ul class="mapContainer">
             <li class="mapContainer">
                 <div class="mapContainer" id="map1" ></div>
@@ -70,8 +87,11 @@ var map2MaxZoom = 6;
                 <div class="mapContainer" id="map2" ></div>
             </li>
         </ul>
-        
+        <li>
+        </li>
     </div>
-
+    <div id="control" style="position:absolute;bottom:0;">
+        <input type="text" name="slider" id="slider1o" value="0">
+    </div>
 </body> 
 </html> 
