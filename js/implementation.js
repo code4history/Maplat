@@ -182,14 +182,28 @@ $(function(){
         var srcxy = map[clicked].ll2xy(e.latlng);
         var tgtxy = tps.transform([srcxy.x,srcxy.y],target);
     }
+
+    changeYear();
 });
 
 function isArray(o){ 
     return Object.prototype.toString.call(o) === '[object Array]';
 }
 
+function changeYear() {
+    var year = $("#slider").val();
+    $("#year").text(year);
+    if (year >= 1868) {
+        $("#map1").show();
+        $("#map2").hide();
+    } else {
+        $("#map2").show();
+        $("#map1").hide();
+    }
+}
+
 $("#slider").on( 'input', function () {
-    $("#year").text($(this).val());
+    changeYear();
 } );
 
 
