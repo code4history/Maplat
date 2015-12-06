@@ -46,7 +46,13 @@
         position: absolute;
         margin: 0;
         height: 50px;
+        width:100%;
         bottom: 0;    
+    }
+
+    #slider {
+        width: 100%;
+        height: 50px;
     }
 
     li.mapContainer div.mapContainer{
@@ -91,8 +97,8 @@ var map2MaxZoom = 6;
         <li>
         </li>
     </div>
-    <div id="control" style="position:absolute;bottom:0;">
-        <input type="text" name="slider" id="slider1o" value="0">
+    <div id="control">
+        <input type="range" name="slider" id="slider" value="0">
     </div>
 </body> 
 </html> 
