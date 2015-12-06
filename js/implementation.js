@@ -171,8 +171,8 @@ $(window).load(function(){
     {
         minZoom:13,
         maxZoom:18
-    });//.fitBounds([map1SW, map1NE]).addLayer(baseLayer);
-    map[0].panTo(new L.LatLng((map1SW[0] + map1NE[0]) / 2,(map1SW[1] + map1NE[1]) / 2));
+    }).fitBounds([map1SW, map1NE]).addLayer(baseLayer);
+    //map[0].panTo(new L.LatLng((map1SW[0] + map1NE[0]) / 2,(map1SW[1] + map1NE[1]) / 2));
     map[0].on('click', function(e) { onMapClick(0,e); });
     map[0].on('dragend', function(e) { onMapDrag(0,e); });
 
@@ -188,7 +188,7 @@ $(window).load(function(){
     }
     );
     map[1].addLayer(xyMapLayer);
-    //map[1].fitBounds([map[1].xy2ll(map2SW),map[1].xy2ll(map2NE)]);
+    map[1].fitBounds([map[1].xy2ll(map2SW),map[1].xy2ll(map2NE)]);
     map[1].on('click', function(e) { onMapClick(1,e); });
     map[1].on('dragend', function(e) { onMapDrag(1,e); });
 
