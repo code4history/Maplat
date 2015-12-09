@@ -2,6 +2,8 @@ var map    = [];
 var marker = [[],[]];
 var hereMarker = [];
 var poi_data;
+var loadFlag = false;
+var pointFlag = false;
 
 var hereIcon = L.icon({
     iconUrl: 'img/bluedot.png',
@@ -39,8 +41,14 @@ var tps = new ThinPlateSpline({
     }
 });
 
-tps.load_points('../json/NaraOldMap1_points.json');
-//tps.load_serial('kishiwada_resolved.bin');
+//tps.load_points('../json/NaraOldMap1_points.json');
+tps.on_serialized = function() {
+    pointFlag = true;
+    if (loadFlag) {
+        startApp();
+    }
+};
+tps.load_serial('../bin/NaraOldMap1.bin');
 
 var xyLayer = L.TileLayer.extend({
     // continuousWorld を trueにしたいだけ
@@ -174,7 +182,13 @@ var merMap = L.Map.extend({
 $(window).load(function(){
     $("#all").show();
     $("#info").hide();
+    loadFlag = true;
+    if (pointFlag) {
+        startApp();
+    }
+});
 
+function startApp() {
     var baseLayer = new L.BingLayer("AgodEAYOPBDvCgvgOTnoo47nj-TQ1_vkjH6761FXyBGBYTiNf8gfluRvNEHoysig",{ type: 'Road' });
     //var tpsLayer  = new L.TileLayer('http://t.tilemap.jp/kishiwada/tps/{z}/{x}/{y}.png',{ tms: true, attribution: '和泉国岸和田城図 国立公文書館蔵' });;
     //var hlmLayer  = new L.TileLayer('http://t.tilemap.jp/kishiwada/hlm/{z}/{x}/{y}.png',{ tms: true, attribution: '和泉国岸和田城図 国立公文書館蔵' });;
@@ -245,11 +259,13 @@ $(window).load(function(){
         poi_data = data;
         for (var i=0; i < data.length; i++) {
             var latlng = new L.LatLng(data[i].lat,data[i].lng);
-            var poi = data[i];
-            marker[0][i] = L.marker(latlng).addTo(map[0]);
-            marker[0][i].on("click",function(){
-                showInfo(poi);
-            });
+            (function(ll,index){
+                var poi = poi_data[index];
+                marker[0][i] = L.marker(ll).addTo(map[0]);
+                marker[0][i].on("click",function(){
+                    showInfo(poi);
+                });
+            })(latlng,i);
             var merc = map[0].ll2xy(latlng);
             var tgtxy = tps.transform([merc.x,merc.y],1,{"target":"marker","index":i});              
         }
@@ -261,7 +277,7 @@ $(window).load(function(){
         $("#all").show();
         $("#info").hide();
     });
-});
+}
 
 function isArray(o){ 
     return Object.prototype.toString.call(o) === '[object Array]';
@@ -272,16 +288,18 @@ function changeYear() {
     $("#year").text(year);
     if (year >= 1868) {
         $("#map1").show();
+        map[0].invalidateSize();
         $("#map2").hide();
     } else {
         $("#map2").show();
+        map[1].invalidateSize();
         $("#map1").hide();
     }
 }
 
 function showInfo(data) {
     $("#poi_name").text(data.name);
-    $("#poi_img").src = "img/" + data.image;
+    $("#poi_img").attr("src","img/" + data.image);
     $("#poi_address").text(data.address);
     $("#poi_desc").text(data.desc);
     $("#info").show();

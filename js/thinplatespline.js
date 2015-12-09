@@ -44,6 +44,9 @@ function ThinPlateSpline(options) {
       switch (e_type){
         case 'solved':
           console.log("Solved");
+          if (me.on_solved) {
+            me.on_solved();
+          }
           worker.postMessage({'method':'serialize'});
           break;
         case 'serialized':
@@ -53,7 +56,9 @@ function ThinPlateSpline(options) {
           worker.terminate();
           me.deserialize(serial);
           console.log("Serialized");
-
+          if (me.on_serialized) {
+            me.on_serialized();
+          }
           //var blob = new Blob([me.serialize()]);
           //location.href = window.URL.createObjectURL(blob);
 
@@ -72,8 +77,16 @@ function ThinPlateSpline(options) {
     this.error_callback = options.error_callback;
   }
 
-  if (options.web_falback && options.transform_callback) {
-    this.web_fallback = options.web_falback;
+  if (options.web_fallback && options.transform_callback) {
+    this.web_fallback = options.web_fallback;
+  }
+
+  if (options.on_solved) {
+    this.on_solved = options.on_solved;
+  }
+
+  if (options.on_serialized) {
+    this.on_serialized = options.on_serialized;
   }
 }
 
@@ -171,6 +184,10 @@ ThinPlateSpline.prototype.__add_point = function(self, P, D) {
   return ret;
 };
 
+ThinPlateSpline.prototype.solved = function() {
+  return this.__ord.solved && this.__rev.solved;
+}
+
 ThinPlateSpline.prototype.solve = function() {
   this.__solve(this.__ord);
   this.__solve(this.__rev);
@@ -183,18 +200,9 @@ ThinPlateSpline.prototype.__solve = function(self) {
 };
 
 ThinPlateSpline.prototype.transform = function(P, isRev, options) {
-  if ((this.block && (!options || options.recurse != 1)) || !this.solved) {
-    if (!this.solved) {
-      if (!options || !options.retry ) {
-        this.que.push({"P":P,"isRev":isRev,"options":options});
-      }
-      var me = this;
-      setTimeout(function(){
-        me.transform.apply(me,null,null,{"retry":1});
-      },100);  
-    } else {
-      this.que.push({"P":P,"isRev":isRev,"options":options});
-    }
+  console.log(P);
+  if (this.block && (!options || options.recurse != 1)) {
+    this.que.push({"P":P,"isRev":isRev,"options":options});
     return;
   } else {
     this.block = true;
