@@ -21,11 +21,11 @@ require(["jquery", "ol3", "tps", "histmap", "bootstrap"], function($, ol, tps) {
             histMapLayer
         ],
         target: 'histmap',
-        controls: ol.control.defaults({
-            attributionOptions: /** @type {olx.control.AttributionOptions} */ ({
-                collapsible: false
-            })
-        }),
+        //controls: ol.control.defaults({
+        //    attributionOptions: /** @type {olx.control.AttributionOptions} */ ({
+        //        collapsible: false
+        //    })
+        //}),
         view: new ol.View({
             //center: [-25860000, 4130000],
             center: [-20037508, 20037508],
