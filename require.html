@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Rotation example</title>
+<meta content="yes" name="apple-mobile-web-app-capable"> 
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<div class="container-fluid h100p">
+
+<div class="row-fluid mainview">
+  <div id="histmapcontainer" class="col-xs-12 h100p">
+    <div id="histmap" class="map h100p"></div>
+  </div>
+  <div id="nowmapcontainer" class="col-xs-12 h100p">
+    <div id="nowmap" class="map h100p"></div>
+  </div>  
+</div>
+
+<div class="row-fluid controlview">
+  <div class="col-xs-6 btn-container">
+    <input type="button" class="btn btn-block year_change" data-year="1868" value="1868年">
+  </div>
+  <div class="col-xs-6 btn-container">
+    <input type="button" class="btn btn-block year_change" data-year="2015" value="現代">
+  </div>
+</div>
+
+</div>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.20/require.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/app.js"></script>
+</html>

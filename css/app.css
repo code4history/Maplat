@@ -1,0 +1,22 @@
+@import url('//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css');
+@import url('ol.css');
+
+html,body {
+    height:100%;
+}
+
+.h100p {
+    height:100%;
+}
+
+.mainview {
+    height:calc(100% - 50px);
+}
+
+.controlview {
+    height:50px;
+}
+
+.btn-container {
+    padding:10px; 
+}

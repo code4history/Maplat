@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Rotation example</title>
+<script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="css/ol.css" type="text/css">
+<script src="js/ol-debug.js"></script>
+
+</head>
+<body>
+<div class="container-fluid">
+
+<div class="row-fluid">
+  <div class="span12">
+    <div id="map" class="map"></div>
+  </div>
+</div>
+
+</div>
+<script>
+
+ol.source.illustMap = function(opt_options) {
+  var options = opt_options || {};
+  options.wrapX = false;
+  if (options.mapID) {
+    this.mapID = options.mapID
+    options.url = 'tiles/' + options.mapID + '-{z}_{x}_{y}.jpg';
+  }
+
+  goog.base(this, options);
+}
+goog.inherits(ol.source.illustMap, ol.source.OSM);
+ol.source.illustMap.prototype.getMapID = function() {
+  return this.mapID;
+};
+
+var illustMapSource = new ol.source.illustMap({
+  attributions: [
+    new ol.Attribution({
+      html: '奈良市鳥瞰図 (1868年以降) Cartography Associates CC-BY-NC-SA 3.0'
+    })
+  ],
+  mapID: 'NaraOldMap1'
+});
+
+console.log(illustMapSource.getMapID());
+
+var illustMapLayer = new ol.layer.Tile({
+  source: illustMapSource
+});
+
+var map = new ol.Map({
+  layers: [
+    illustMapLayer
+  ],
+  target: 'map',
+  controls: ol.control.defaults({
+    attributionOptions: /** @type {olx.control.AttributionOptions} */ ({
+      collapsible: false
+    })
+  }),
+  view: new ol.View({
+    center: [-25860000, 4130000],
+    rotation: Math.PI / 6,
+    zoom: 2
+  })
+});
+
+</script>
+</body>
+</html>
