@@ -7,7 +7,7 @@ require.config({
     //},
     paths: {
         "jquery" : "//code.jquery.com/jquery-1.11.2.min",
-        "ol3" : "ol",
+        "ol3" : "ol-debug",
         //"ol3css" : "../css/ol",
         "bootstrap" : "//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min",
         //"bootstrapcss" : "//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min",
