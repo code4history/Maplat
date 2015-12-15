@@ -20,12 +20,43 @@ define(["ol-custom", "tps"], function(ol, tps) {
             options.url = 'tiles/' + options.mapID + '-{z}_{x}_{y}.jpg';
         }
 
-        ol.source.OSM.call(this, options) ;
+        if (options.urls) {
+            this._tileUrlFunction =
+                ol.TileUrlFunction.createFromTemplates(
+                    options.urls);
+        } else if (options.url) {
+            this._tileUrlFunction =
+                ol.TileUrlFunction.createFromTemplates(
+                    ol.TileUrlFunction.expandUrl(options.url));
+        }
+
+        this.width   = options.width;
+        this.height  = options.height;
+        var zW       = Math.log2(this.width/tileSize);
+        var zH       = Math.log2(this.height/tileSize);
+        this.maxZoom = options.maxZoom = Math.ceil(Math.max(zW,zH));
+        options.tileUrlFunction = function(coord) {
+            var z = coord[0];
+            var x = coord[1];
+            var y = -1 * coord[2] - 1;
+            console.log("x: " + x + " y: " + y + " z: "+ z + " Xstart: " + (x * tileSize * Math.pow(2,this.maxZoom - z)) + " Ystart: " + (y * tileSize * Math.pow(2,this.maxZoom - z)));
+            if (x * tileSize * Math.pow(2,this.maxZoom - z) > this.width || 
+                y * tileSize * Math.pow(2,this.maxZoom - z) > this.height ||
+                x < 0 || y < 0 ) {
+                return transPng;
+            }
+            return this._tileUrlFunction(coord);
+        };
+
+        ol.source.XYZ.call(this, options) ;
 
         this.setTileLoadFunction((function() { 
             var numLoadingTiles = 0; 
             var tileLoadFn = self.getTileLoadFunction(); 
-            return function(tile, src) { 
+            return function(tile, src) {
+                console.log(tile);
+                console.log(src);
+
                 if (numLoadingTiles === 0) { 
                     console.log('loading'); 
                 } 
@@ -62,7 +93,7 @@ define(["ol-custom", "tps"], function(ol, tps) {
         })());
     }
 
-    ol.inherits(ol.source.histMap, ol.source.OSM);
+    ol.inherits(ol.source.histMap, ol.source.XYZ);
     ol.source.histMap.prototype.getMapID = function() {
         return this.mapID;
     };
