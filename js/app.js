@@ -1,6 +1,4 @@
 require(["jquery", "ol-custom", "tps", "histmap", "bootstrap"], function($, ol, tps) {//"css!bootstrapcss", "css!ol3css"], function($, ol, tps) {
-    console.log("app");
-
     var histMapSource = new ol.source.histMap({
         attributions: [
             new ol.Attribution({
