@@ -38,17 +38,19 @@ define(["ol-custom", "tps"], function(ol, tps) {
                     tile.tImage = tImage;
                 }
                 tImage.onload = tImage.onerror = function() {
-                    if (tImage.width != tileSize || tImage.height != tileSize) {
-                        var tCanv = $(canvBase).get(0);
-                        var ctx = tCanv.getContext('2d');
-                        ctx.drawImage(tImage, 0, 0);
-                        var dataUrl = tCanv.toDataURL();
-                        image.crossOrigin=null;
-                        tileLoadFn(tile, dataUrl);          
-                        tCanv = tImage = ctx = null;
-                    } else {
-                        image.crossOrigin="Anonymous";
-                        tileLoadFn(tile, src); 
+                    if (tImage.width && tImage.height) {
+                        if (tImage.width != tileSize || tImage.height != tileSize) {
+                            var tCanv = $(canvBase).get(0);
+                            var ctx = tCanv.getContext('2d');
+                            ctx.drawImage(tImage, 0, 0);
+                            var dataUrl = tCanv.toDataURL();
+                            image.crossOrigin=null;
+                            tileLoadFn(tile, dataUrl);          
+                            tCanv = tImage = ctx = null;
+                        } else {
+                            image.crossOrigin="Anonymous";
+                            tileLoadFn(tile, src); 
+                        }
                     }
                     --numLoadingTiles; 
                     if (numLoadingTiles === 0) { 
