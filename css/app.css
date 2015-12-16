@@ -20,3 +20,16 @@ html,body {
 .btn-container {
     padding:10px; 
 }
+
+#info {
+    text-align:center;
+}
+
+.gps {
+    top: 65px;
+    left: .5em;
+}
+
+.ol-touch .gps {
+    top: 80px;
+}

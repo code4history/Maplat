@@ -26,6 +26,44 @@ define(["ol3"], function(ol) {
         return offset !== undefined ? this.minZoom_ + offset : offset;
     };
 
+    ol.control.GPSControl = function(opt_options) {
+
+        var options = opt_options || {};
+
+        var button = document.createElement('button');
+        button.innerHTML = '⬇︎';
+
+        var this_ = this;
+        var handleGPS = function(e) {
+            var geolocation = new ol.Geolocation({tracking:true});
+            // listen to changes in position
+            geolocation.once('change', function(evt) {
+                var lnglat = geolocation.getPosition();
+                geolocation.setTracking(false);
+                var source = this_.getMap().getLayers().item(0).getSource();
+                var view = this_.getMap().getView();
+                var merc = ol.proj.transform(lnglat, "EPSG:4326", "EPSG:3857");
+                source.merc2XyAsync(merc).then(function(xy){
+                    view.setCenter(xy);
+                });
+            });
+        };
+
+        button.addEventListener('click', handleGPS, false);
+        button.addEventListener('touchstart', handleGPS, false);
+
+        var element = document.createElement('div');
+        element.className = 'gps ol-unselectable ol-control';
+        element.appendChild(button);
+
+        ol.control.Control.call(this, {
+            element: element,
+            target: options.target
+        });
+
+    };
+    ol.inherits(ol.control.GPSControl, ol.control.Control);
+
     ol.const = ol.const ? ol.const : {};
     ol.const.MERC_MAX = 20037508.342789244;
 
@@ -36,6 +74,9 @@ define(["ol3"], function(ol) {
             }
 
             this._map = new ol.Map({
+                controls: ol.control.defaults().extend([
+                    new ol.control.GPSControl()
+                ]),
                 layers: [
                     new ol.layer.Tile({
                         source: this
@@ -49,7 +90,7 @@ define(["ol3"], function(ol) {
                 })
             });
 
-            var self = this;
+            /*var self = this;
             this._map.on('click', function(evt) {
                 var stringifyFunc = ol.coordinate.createStringXY(8);
                 var coordinate = evt.coordinate;
@@ -78,7 +119,7 @@ define(["ol3"], function(ol) {
                 var stringifyFunc = ol.coordinate.createStringXY(8);//initPrecision);
                 var outstr = stringifyFunc(coordinate);//ol.proj.transform(coordinate, "EPSG:3857", "EPSG:4326"));
                 console.log(outstr);
-            });
+            });*/
 
             return this._map;
         };
@@ -204,7 +245,7 @@ define(["ol3"], function(ol) {
             resolve(merc);            
         });
         return promise;
-    };    
+    };
 
     return ol;
 });

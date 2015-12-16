@@ -1,47 +1,12 @@
 require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss", "css!ol3css"], function($, ol, tps) {
-    /*var tps;
-    var tpsPromise = new Promise(function(resolve, reject) {
-        tps = new ThinPlateSpline({
-            'use_worker'         : true,
-            'transform_callback' : function(coord, isRev, options) {
-                //var tgtxy = tps.transform([srcxy.x,srcxy.y],target);
-                var tgtll = map[isRev].xy2ll(new L.Point(coord[0],coord[1]));
-                if (!options) {
-                    /*if (marker[isRev]) {
-                        marker[isRev].setLatLng(tgtll);
-                    } else {
-                        marker[isRev] = L.marker(tgtll).addTo(map[isRev]);
-                    }* /
-                } else if (options.target == "here") {
-                    if (hereMarker[1]) {
-                        hereMarker[1].setLatLng(tgtll);
-                    } else {
-                        hereMarker[1] = L.marker(tgtll,{icon:hereIcon}).addTo(map[1]);
-                        map[1].setView(tgtll,5);
-                    }
-                } else if (options.target == "drag") {
-                    map[isRev].panTo(tgtll);
-                } else if (options.target == "marker") {
-                    var data = poi_data[options.index];
-                    marker[1][options.index] = L.marker(tgtll).addTo(map[1]);
-                    marker[1][options.index].on("click",function(){
-                        showInfo(data);
-                    });
-                }
-            }
-        });
-        tps.on_serialized = function() {
-            resolve();
-        };
-        tps.load_serial('../bin/NaraOldMap1.bin');
-    });*/
+    $("#all").show();
+    $("#info").hide();
 
     var nowSourcePromise = ol.source.nowMap.createAsync({
         map_option: {
             div: "nowmap",
             default_center: [0,0],
-            default_zoom: 2,
-            default_rotation: 1
+            default_zoom: 2
         }
     });
     var histSourcePromise = ol.source.histMap.createAsync({
@@ -56,8 +21,8 @@ require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss
         tps_serial: '../bin/NaraOldMap1.bin',
         map_option: {
             div: "histmap",
-            default_center: [-20037508, 20037508],
-            default_zoom: 2
+            default_center: [-9365402.485897185, 9276725.549371911],
+            default_zoom: 6
         }        
     });
 
@@ -112,27 +77,47 @@ require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss
             });
         }
 
-    //年スライダー関連
-    /*$("#slider").on( 'input', function () {
-        changeYear();
-    } );
-    $("#slider").val(2015);
-    changeYear();
-    function changeYear() {
-        console.log();
-        var year = $("#slider").val();
-        $("#year").text(year);
-        if (year >= 1868) {
-            $("#nowmapcontainer").show();
-            $("#histmapcontainer").hide();
-            nowmap.updateSize();
-            nowmap.renderSync();
-        } else {
-            $("#histmapcontainer").show();
-            $("#nowmapcontainer").hide();
-            histmap.updateSize();
-            histmap.renderSync();
+        function showInfo(data) {
+            $("#poi_name").text(data.name);
+            $("#poi_img").attr("src","img/" + data.image);
+            $("#poi_address").text(data.address);
+            $("#poi_desc").text(data.desc);
+            $("#info").show();
+            $("#all").hide();
         }
-    }*/
+
+        $("#poi_back").on("click", function(){
+            $("#all").show();
+            $("#info").hide();
+        });
+
+        $.get("json/poi.json", function(data) {
+            for (var i=0; i < data.length; i++) {
+                (function(datum){
+                    var lnglat = [datum.lng,datum.lat];
+                    var merc = ol.proj.transform(lnglat, "EPSG:4326", "EPSG:3857");
+                    var nowXyAsync = nowMapSource.merc2XyAsync(merc);
+                    var histXyAsync = histMapSource.merc2XyAsync(merc);
+                    Promise.all([nowXyAsync, histXyAsync]).then(function(xys){
+                        nowmap.addOverlay(new ol.Overlay({
+                            position: xys[0],
+                            element: $('<img src="img/marker-blue.png">')
+                                .css({marginTop: '-200%', marginLeft: '-50%', cursor: 'pointer'})
+                                .on("click", function(){
+                                    showInfo(datum);
+                                })
+                        }));
+                        histmap.addOverlay(new ol.Overlay({
+                            position: xys[1],
+                            element: $('<img src="img/marker-blue.png">')
+                                .css({marginTop: '-200%', marginLeft: '-50%', cursor: 'pointer'})
+                                .on("click", function(){
+                                    showInfo(datum);
+                                })
+                        }));                    
+                    });
+                })(data[i]);          
+            }
+        }, "json");
     });
 });
