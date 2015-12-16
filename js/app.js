@@ -1,5 +1,5 @@
-require(["jquery", "ol-custom", "tps", "histmap", "bootstrap"], function($, ol, tps) {//"css!bootstrapcss", "css!ol3css"], function($, ol, tps) {
-    var tps;
+require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss", "css!ol3css"], function($, ol, tps) {
+    /*var tps;
     var tpsPromise = new Promise(function(resolve, reject) {
         tps = new ThinPlateSpline({
             'use_worker'         : true,
@@ -11,7 +11,7 @@ require(["jquery", "ol-custom", "tps", "histmap", "bootstrap"], function($, ol, 
                         marker[isRev].setLatLng(tgtll);
                     } else {
                         marker[isRev] = L.marker(tgtll).addTo(map[isRev]);
-                    }*/
+                    }* /
                 } else if (options.target == "here") {
                     if (hereMarker[1]) {
                         hereMarker[1].setLatLng(tgtll);
@@ -34,78 +34,82 @@ require(["jquery", "ol-custom", "tps", "histmap", "bootstrap"], function($, ol, 
             resolve();
         };
         tps.load_serial('../bin/NaraOldMap1.bin');
+    });*/
+
+    var nowSourcePromise = ol.source.nowMap.createAsync({
+        map_option: {
+            div: "nowmap",
+            default_center: [0,0],
+            default_zoom: 2,
+            default_rotation: 1
+        }
+    });
+    var histSourcePromise = ol.source.histMap.createAsync({
+        attributions: [
+            new ol.Attribution({
+                html: '奈良市鳥瞰図 (1868年以降) Cartography Associates CC-BY-NC-SA 3.0'
+            })
+        ],
+        mapID: 'NaraOldMap1',
+        width: 9618,
+        height: 6786,
+        tps_serial: '../bin/NaraOldMap1.bin',
+        map_option: {
+            div: "histmap",
+            default_center: [-20037508, 20037508],
+            default_zoom: 2
+        }        
     });
 
-    tpsPromise.then(function(result) {
+    Promise.all([nowSourcePromise, histSourcePromise]).then(function(sources) {
+        var nowMapSource = sources[0];
+        var histMapSource = sources[1];
 
-        var histMapSource = new ol.source.histMap({
-            attributions: [
-                new ol.Attribution({
-                    html: '奈良市鳥瞰図 (1868年以降) Cartography Associates CC-BY-NC-SA 3.0'
-                })
-            ],
-            mapID: 'NaraOldMap1',
-            width: 9618,
-            height: 6786
-        });
-
-        console.log(histMapSource.getMapID());
-
-        var histMapLayer = new ol.layer.Tile({
-            source: histMapSource
-        });
-
-        var histmap = new ol.Map({
-            layers: [
-                histMapLayer
-            ],
-            target: 'histmap',
-            //controls: ol.control.defaults({
-            //    attributionOptions: /** @type {olx.control.AttributionOptions} */ ({
-            //        collapsible: false
-            //    })
-            //}),
-            view: new ol.View({
-                //center: [-25860000, 4130000],
-                center: [-20037508, 20037508],
-                //center: [0,0],
-                //rotation: Math.PI / 6,
-                zoom: 2
-            })
-        });
-
-        var nowmap = new ol.Map({
-            layers: [
-                new ol.layer.Tile({
-                    source: new ol.source.OSM()
-                })
-            ],
-            target: 'nowmap',
-            view: new ol.View({
-                center: [0, 0],
-                zoom: 2,
-                rotation: 1
-            })
-        });
+        var nowmap = nowMapSource.getMap();
+        var histmap = histMapSource.getMap();
 
         $(".year_change").on( 'click', function () {
             var year = $(this).data('year');
-            console.log(year);
             changeYear(year);
         } );
         changeYear(2015);
         function changeYear(year) {
+            var fromSource;
+            var toSource;
+            var fromMap;
+            var toMap;
+            var fromDiv;
+            var toDiv;
             if (year == 2015) {
-                $("#nowmapcontainer").show();
-                $("#histmapcontainer").hide();
-                nowmap.updateSize();
-                nowmap.renderSync();
+                fromDiv    = "#histmapcontainer";
+                toDiv      = "#nowmapcontainer";
+                fromSource = histMapSource;
+                toSource   = nowMapSource;
+                fromMap    = histmap;
+                toMap      = nowmap;
             } else {
-                $("#histmapcontainer").show();
-                $("#nowmapcontainer").hide();
-                histmap.updateSize();
-                histmap.renderSync();
+                fromDiv    = "#nowmapcontainer";
+                toDiv      = "#histmapcontainer";
+                fromSource = nowMapSource;
+                toSource   = histMapSource;
+                fromMap    = nowmap;
+                toMap      = histmap;
             }
+            if ($(toDiv).is(':visible') && $(fromDiv).is(':hidden')) {
+                return;
+            }
+            fromSource.size2MercsAsync().then(function(mercs){
+                toSource.mercs2SizeAsync(mercs).then(function(size){
+                    var view = toMap.getView();
+                    view.setCenter(size[0]);
+                    view.setZoom(size[1]);
+                    view.setRotation(size[2]);
+                    $(toDiv).show();
+                    $(fromDiv).hide();
+                    toMap.updateSize();
+                    toMap.renderSync();
+                });
+            });
         }
 
     //年スライダー関連
