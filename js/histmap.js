@@ -51,7 +51,7 @@ define(["ol-custom", "tps"], function(ol, ThinPlateSpline) {
         ol.source.XYZ.call(this, options) ;
         ol.source.setCustomInitialize(this, options);
 
-        if (options.tps_serial) {
+        if (options.tps_points || options.tps_serial) {
             var tps_option = {
                 'use_worker' : true,
                 'transform_callback' : options.transform_callback,
@@ -62,7 +62,11 @@ define(["ol-custom", "tps"], function(ol, ThinPlateSpline) {
             };
 
             this.tps = new ThinPlateSpline(tps_option);
-            this.tps.load_serial(options.tps_serial);
+            if (options.tps_points) {
+                this.tps.load_points(options.tps_points);
+            } else {
+                this.tps.load_serial(options.tps_serial);
+            }
         }
 
         this.setTileLoadFunction((function() { 
@@ -111,6 +115,17 @@ define(["ol-custom", "tps"], function(ol, ThinPlateSpline) {
         var promise = new Promise(function(resolve, reject) {
             var obj;
             options.on_serialized = function() {
+                if (options.tps_points) {
+                    var a = document.createElement("a");
+                    document.body.appendChild(a);
+                    a.style = "display: none";
+                    var blob = new Blob([ obj.tps.serialize() ]),
+                        url = window.URL.createObjectURL(blob);
+                    a.href = url;
+                    a.download = options.tps_serial;
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                }
                 resolve(obj);
             };
             options.transform_callback = function(coord, isRev, tf_options) {
