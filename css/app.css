@@ -33,3 +33,12 @@ html,body {
 .ol-touch .gps {
     top: 80px;
 }
+
+.home {
+    top: 95px;
+    left: .5em;
+}
+
+.ol-touch .home {
+    top: 110px;
+}

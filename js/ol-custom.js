@@ -26,34 +26,18 @@ define(["ol3"], function(ol) {
         return offset !== undefined ? this.minZoom_ + offset : offset;
     };
 
-    ol.control.GPSControl = function(opt_options) {
+    ol.control.CustomControl = function(opt_options) {
 
         var options = opt_options || {};
 
         var button = document.createElement('button');
-        button.innerHTML = '⬇︎';
+        button.innerHTML = options.character;
 
-        var this_ = this;
-        var handleGPS = function(e) {
-            var geolocation = new ol.Geolocation({tracking:true});
-            // listen to changes in position
-            geolocation.once('change', function(evt) {
-                var lnglat = geolocation.getPosition();
-                geolocation.setTracking(false);
-                var source = this_.getMap().getLayers().item(0).getSource();
-                var view = this_.getMap().getView();
-                var merc = ol.proj.transform(lnglat, "EPSG:4326", "EPSG:3857");
-                source.merc2XyAsync(merc).then(function(xy){
-                    view.setCenter(xy);
-                });
-            });
-        };
-
-        button.addEventListener('click', handleGPS, false);
-        button.addEventListener('touchstart', handleGPS, false);
+        button.addEventListener('click', options.callback, false);
+        button.addEventListener('touchstart', options.callback, false);
 
         var element = document.createElement('div');
-        element.className = 'gps ol-unselectable ol-control';
+        element.className = options.cls + ' ol-unselectable ol-control';
         element.appendChild(button);
 
         ol.control.Control.call(this, {
@@ -62,10 +46,19 @@ define(["ol3"], function(ol) {
         });
 
     };
-    ol.inherits(ol.control.GPSControl, ol.control.Control);
+    ol.inherits(ol.control.CustomControl, ol.control.Control);
 
     ol.const = ol.const ? ol.const : {};
     ol.const.MERC_MAX = 20037508.342789244;
+
+    var gpsStyle = new ol.style.Style({
+        image: new ol.style.Icon(({
+            anchor: [0.5, 0.5],
+            anchorXUnits: 'fraction',
+            anchorYUnits: 'fraction',
+            src: 'img/bluedot.png'
+        }))
+    });
 
     ol.source.setCustomFunction = function(target) {
         target.prototype.getMap = function() {
@@ -73,14 +66,29 @@ define(["ol3"], function(ol) {
                 return this._map;
             }
 
+            this._gps_source = new ol.source.Vector({});
+            var vectorLayer = new ol.layer.Vector({
+                source: this._gps_source
+            });
+
             this._map = new ol.Map({
                 controls: ol.control.defaults().extend([
-                    new ol.control.GPSControl()
+                    new ol.control.CustomControl({
+                        character: '<i class="fa fa-crosshairs fa-lg"></i>',
+                        cls: "gps",
+                        callback: this._gps_callback
+                    }),
+                    new ol.control.CustomControl({
+                        character: '<i class="fa fa-home fa-lg"></i>',
+                        cls: "home",
+                        callback: this._home_callback
+                    })
                 ]),
                 layers: [
                     new ol.layer.Tile({
                         source: this
-                    })
+                    }),
+                    vectorLayer
                 ],
                 target: this.map_option.div,
                 view: new ol.View({
@@ -122,6 +130,16 @@ define(["ol3"], function(ol) {
             });*/
 
             return this._map;
+        };
+
+        target.prototype.setGPSPosition = function(xy) {
+            var src = this._gps_source;
+            src.clear();
+            var iconFeature = new ol.Feature({
+                geometry: new ol.geom.Point(xy)
+            });
+            iconFeature.setStyle(gpsStyle);
+            src.addFeature(iconFeature);
         };
 
         target.prototype.getRadius = function() {
@@ -215,9 +233,15 @@ define(["ol3"], function(ol) {
 
             return [center,zoom,omega];
         }
+
+        target.prototype.setGPSCallback = function(func) {
+            this._gps_callback = func;
+        }
     };
     ol.source.setCustomInitialize = function(self, options) {
         self.map_option = options.map_option || {};
+        self._gps_callback = options.gps_callback || function () {};
+        self._home_callback = options.home_callback || function () {};
     }
 
     ol.source.nowMap = function(opt_options) {

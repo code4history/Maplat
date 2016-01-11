@@ -2,17 +2,30 @@ require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss
     $("#all").show();
     $("#info").hide();
 
+    var from;
+    var gps_process;
+    var gps_callback = function(e) {
+        gps_process(e);
+    };
+    var home_process;
+    var home_callback = function(e) {
+        home_process(e);
+    };
+    var home_pos = [141.149989,39.699952];
+
     var nowSourcePromise = ol.source.nowMap.createAsync({
         map_option: {
             div: "nowmap",
             default_center: [0,0],
             default_zoom: 2
-        }
+        },
+        gps_callback: gps_callback,
+        home_callback: home_callback
     });
     var hist1SourcePromise = ol.source.histMap.createAsync({
         attributions: [
             new ol.Attribution({
-                html: '南部領盛岡平城絵図 (1644年) 国立公文書館'
+                html: '正保城絵図 南部領盛岡平城絵図 (正保元年) 国立公文書館'
             })
         ],
         mapID: 'morioka_ndl',
@@ -23,57 +36,120 @@ require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss
         map_option: {
             div: "hist1map",
             default_center: [-9365402.485897185, 9276725.549371911],
-            default_zoom: 5
-        }        
+            default_zoom: 5,
+        },
+        gps_callback: gps_callback,
+        home_callback: home_callback      
     });
 
-    Promise.all([nowSourcePromise, hist1SourcePromise]).then(function(sources) {
+    var hist2SourcePromise = ol.source.histMap.createAsync({
+        attributions: [
+            new ol.Attribution({
+                html: '日本古城絵図 東山道之部 奥州盛岡城図 (江戸中期－末期) 国立国会図書館'
+            })
+        ],
+        mapID: 'morioka',
+        width: 6144,
+        height: 4096,
+        tps_serial: '../bin/morioka.bin',
+        //tps_points: '../json/morioka_points.json',
+        map_option: {
+            div: "hist2map",
+            default_center: [-9365402.485897185, 9276725.549371911],
+            default_zoom: 5
+        },
+        gps_callback: gps_callback,
+        home_callback: home_callback        
+    });
+
+    Promise.all([nowSourcePromise, hist1SourcePromise, hist2SourcePromise]).then(function(sources) {
         var nowMapSource = sources[0];
         var hist1MapSource = sources[1];
+        var hist2MapSource = sources[2];
 
         var nowmap = nowMapSource.getMap();
         var hist1map = hist1MapSource.getMap();
+        var hist2map = hist2MapSource.getMap();
+        var nowgps = new ol.source.Vector({});
+        var hist1gps = new ol.source.Vector({});
+        var hist2gps = new ol.source.Vector({});
+        var cache = [
+            [nowMapSource,   nowmap,   "#nowmapcontainer"],
+            [hist1MapSource, hist1map, "#hist1mapcontainer"],
+            [hist2MapSource, hist2map, "#hist2mapcontainer"]
+        ];
+
+        gps_process = function(e) {
+            var geolocation = new ol.Geolocation({tracking:true});
+            // listen to changes in position
+            $('#gpsWait').modal();
+            geolocation.once('change', function(evt) {
+                var lnglat = geolocation.getPosition();
+                lnglat = [home_pos[0] + (Math.random() - 0.5) / 1000,home_pos[1] + (Math.random() - 0.5) / 1000];
+                geolocation.setTracking(false);
+                var merc = ol.proj.transform(lnglat, "EPSG:4326", "EPSG:3857");
+                for (var i=0;i<cache.length;i++) {
+                    (function(){
+                        var target = cache[i];
+                        var source = target[0];
+                        var view   = target[1].getView();
+                        source.merc2XyAsync(merc).then(function(xy){
+                            if (target == from) view.setCenter(xy);
+                            source.setGPSPosition(xy);
+                        });
+                    })();
+                }
+                $('#gpsWait').modal('hide');
+            });
+        };
+
+        home_process = function(e) {
+            var merc = ol.proj.transform(home_pos, "EPSG:4326", "EPSG:3857");
+            var source = from[0];
+            var view   = from[1].getView();
+            source.merc2XyAsync(merc).then(function(xy){
+                view.setCenter(xy);
+                view.setRotation(0);
+            });
+        }
 
         $(".year_change").on( 'click', function () {
             var year = $(this).data('year');
             changeYear(year);
         } );
+
+        from = cache[1];
+
+        var init = false;        
         changeYear(2016);
+
         function changeYear(year) {
-            var fromSource;
-            var toSource;
-            var fromMap;
-            var toMap;
-            var fromDiv;
-            var toDiv;
-            if (year == 2016) {
-                fromDiv    = "#hist1mapcontainer";
-                toDiv      = "#nowmapcontainer";
-                fromSource = hist1MapSource;
-                toSource   = nowMapSource;
-                fromMap    = hist1map;
-                toMap      = nowmap;
-            } else {
-                fromDiv    = "#nowmapcontainer";
-                toDiv      = "#hist1mapcontainer";
-                fromSource = nowMapSource;
-                toSource   = hist1MapSource;
-                fromMap    = nowmap;
-                toMap      = hist1map;
-            }
-            if ($(toDiv).is(':visible') && $(fromDiv).is(':hidden')) {
+            var to = cache[year == 2016 ? 0 : year == 1735 ? 2 : 1];
+            if (to == from) return;
+            if ($(to[2]).is(':visible') && $(from[2]).is(':hidden')) {
                 return;
             }
-            fromSource.size2MercsAsync().then(function(mercs){
-                toSource.mercs2SizeAsync(mercs).then(function(size){
-                    var view = toMap.getView();
+            from[0].size2MercsAsync().then(function(mercs){
+                console.log("CheckCheck;;;;;; " + mercs);
+                to[0].mercs2SizeAsync(mercs).then(function(size){
+                    var view = to[1].getView();
                     view.setCenter(size[0]);
                     view.setZoom(size[1]);
                     view.setRotation(size[2]);
-                    $(toDiv).show();
-                    $(fromDiv).hide();
-                    toMap.updateSize();
-                    toMap.renderSync();
+                    $(to[2]).show();
+                    for (var i=0;i<cache.length;i++) {
+                        var div = cache[i];
+                        if (div != to) {
+                            $(div[2]).hide();
+                        }
+                    }
+                    to[1].updateSize();
+                    to[1].renderSync();
+                    from = to;
+                    if (init == false) {
+                        init = true;
+                        home_process();
+                    }
                 });
             });
         }
@@ -99,7 +175,8 @@ require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss
                     var merc = ol.proj.transform(lnglat, "EPSG:4326", "EPSG:3857");
                     var nowXyAsync = nowMapSource.merc2XyAsync(merc);
                     var hist1XyAsync = hist1MapSource.merc2XyAsync(merc);
-                    Promise.all([nowXyAsync, hist1XyAsync]).then(function(xys){
+                    var hist2XyAsync = hist2MapSource.merc2XyAsync(merc);
+                    Promise.all([nowXyAsync, hist1XyAsync, hist2XyAsync]).then(function(xys){
                         nowmap.addOverlay(new ol.Overlay({
                             position: xys[0],
                             element: $('<img src="img/marker-blue.png">')
@@ -115,7 +192,15 @@ require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss
                                 .on("click", function(){
                                     showInfo(datum);
                                 })
-                        }));                    
+                        }));
+                        hist2map.addOverlay(new ol.Overlay({
+                            position: xys[2],
+                            element: $('<img src="img/marker-blue.png">')
+                                .css({marginTop: '-200%', marginLeft: '-50%', cursor: 'pointer'})
+                                .on("click", function(){
+                                    showInfo(datum);
+                                })
+                        }));                                          
                     });
                 })(data[i]);          
             }
