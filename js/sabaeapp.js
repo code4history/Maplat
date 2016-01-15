@@ -25,14 +25,14 @@ require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss
     var hist1SourcePromise = ol.source.histMap.createAsync({
         attributions: [
             new ol.Attribution({
-                html: '平成14年現在の町名 越前鯖江５万石 ふるさと史跡紹介 (2002年 鯖江地区まちづくり推進協議会 発行)'
+                html: '住居表示実施前の町名 越前鯖江５万石 ふるさと史跡紹介 (2002年 鯖江地区まちづくり推進協議会 発行)'
             })
         ],
-        mapID: 'sabae003',
-        width: 1655,
-        height: 2440,
-        tps_serial: '../bin/sabae003.bin',
-        //tps_points: '../json/sabae003_points.json',
+        mapID: 'sabae001',
+        width: 1573,
+        height: 2387,
+        tps_serial: '../bin/sabae001.bin',
+        //tps_points: '../json/sabae001_points.json',
         map_option: {
             div: "hist1map",
             default_center: [-9365402.485897185, 9276725.549371911],
@@ -45,14 +45,14 @@ require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss
     var hist2SourcePromise = ol.source.histMap.createAsync({
         attributions: [
             new ol.Attribution({
-                html: '住居表示実施前の町名 越前鯖江５万石 ふるさと史跡紹介 (2002年 鯖江地区まちづくり推進協議会 発行)'
+                html: '平成14年現在の町名 越前鯖江５万石 ふるさと史跡紹介 (2002年 鯖江地区まちづくり推進協議会 発行)'
             })
         ],
-        mapID: 'sabae001',
-        width: 1573,
-        height: 2387,
-        tps_serial: '../bin/sabae001.bin',
-        //tps_points: '../json/sabae001_points.json',
+        mapID: 'sabae003',
+        width: 1655,
+        height: 2440,
+        tps_serial: '../bin/sabae003.bin',
+        //tps_points: '../json/sabae003_points.json',
         map_option: {
             div: "hist2map",
             default_center: [-9365402.485897185, 9276725.549371911],
@@ -61,22 +61,117 @@ require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss
         gps_callback: gps_callback,
         home_callback: home_callback        
     });
+    var hist3SourcePromise = ol.source.histMap.createAsync({
+        attributions: [
+            new ol.Attribution({
+                html: '間部家入封以前の鯖江圖 越前鯖江５万石 ふるさと史跡紹介 (2002年 鯖江地区まちづくり推進協議会 発行)'
+            })
+        ],
+        mapID: 'sabae004',
+        width: 1649,
+        height: 2450,
+        tps_serial: '../bin/sabae004.bin',
+        //tps_points: '../json/sabae004_points.json',
+        map_option: {
+            div: "hist3map",
+            default_center: [-9365402.485897185, 9276725.549371911],
+            default_zoom: 4,
+        },
+        gps_callback: gps_callback,
+        home_callback: home_callback      
+    });
 
-    Promise.all([nowSourcePromise, hist1SourcePromise, hist2SourcePromise]).then(function(sources) {
+    var hist4SourcePromise = ol.source.histMap.createAsync({
+        attributions: [
+            new ol.Attribution({
+                html: '間部家入封經營落成後の鯖江圖 越前鯖江５万石 ふるさと史跡紹介 (2002年 鯖江地区まちづくり推進協議会 発行)'
+            })
+        ],
+        mapID: 'sabae005',
+        width: 1679,
+        height: 2414,
+        tps_serial: '../bin/sabae005.bin',
+        //tps_points: '../json/sabae005_points.json',
+        map_option: {
+            div: "hist4map",
+            default_center: [-9365402.485897185, 9276725.549371911],
+            default_zoom: 4
+        },
+        gps_callback: gps_callback,
+        home_callback: home_callback        
+    });
+    var hist5SourcePromise = ol.source.histMap.createAsync({
+        attributions: [
+            new ol.Attribution({
+                html: '明治維新前の鯖江圖 越前鯖江５万石 ふるさと史跡紹介 (2002年 鯖江地区まちづくり推進協議会 発行)'
+            })
+        ],
+        mapID: 'sabae006',
+        width: 1649,
+        height: 2491,
+        tps_serial: '../bin/sabae006.bin',
+        //tps_points: '../json/sabae006_points.json',
+        map_option: {
+            div: "hist5map",
+            default_center: [-9365402.485897185, 9276725.549371911],
+            default_zoom: 4,
+        },
+        gps_callback: gps_callback,
+        home_callback: home_callback      
+    });
+
+    var hist6SourcePromise = ol.source.histMap.createAsync({
+        attributions: [
+            new ol.Attribution({
+                html: '大正三年頃の鯖江圖 越前鯖江５万石 ふるさと史跡紹介 (2002年 鯖江地区まちづくり推進協議会 発行)'
+            })
+        ],
+        mapID: 'sabae007',
+        width: 1640,
+        height: 2475,
+        tps_serial: '../bin/sabae007.bin',
+        //tps_points: '../json/sabae007_points.json',
+        map_option: {
+            div: "hist6map",
+            default_center: [-9365402.485897185, 9276725.549371911],
+            default_zoom: 4
+        },
+        gps_callback: gps_callback,
+        home_callback: home_callback        
+    });
+
+    Promise.all([nowSourcePromise, hist1SourcePromise, hist2SourcePromise,
+        hist3SourcePromise, hist4SourcePromise, hist5SourcePromise, hist6SourcePromise]).then(function(sources) {
         var nowMapSource = sources[0];
         var hist1MapSource = sources[1];
         var hist2MapSource = sources[2];
+        var hist3MapSource = sources[3];
+        var hist4MapSource = sources[4];
+        var hist5MapSource = sources[5];
+        var hist6MapSource = sources[6];
 
         var nowmap = nowMapSource.getMap();
         var hist1map = hist1MapSource.getMap();
         var hist2map = hist2MapSource.getMap();
+        var hist3map = hist3MapSource.getMap();
+        var hist4map = hist4MapSource.getMap();
+        var hist5map = hist5MapSource.getMap();
+        var hist6map = hist6MapSource.getMap();
         var nowgps = new ol.source.Vector({});
         var hist1gps = new ol.source.Vector({});
         var hist2gps = new ol.source.Vector({});
+        var hist3gps = new ol.source.Vector({});
+        var hist4gps = new ol.source.Vector({});
+        var hist5gps = new ol.source.Vector({});
+        var hist6gps = new ol.source.Vector({});
         var cache = [
             [nowMapSource,   nowmap,   "#nowmapcontainer"],
             [hist1MapSource, hist1map, "#hist1mapcontainer"],
-            [hist2MapSource, hist2map, "#hist2mapcontainer"]
+            [hist2MapSource, hist2map, "#hist2mapcontainer"],
+            [hist3MapSource, hist3map, "#hist3mapcontainer"],
+            [hist4MapSource, hist4map, "#hist4mapcontainer"],
+            [hist5MapSource, hist5map, "#hist5mapcontainer"],
+            [hist6MapSource, hist6map, "#hist6mapcontainer"]
         ];
 
         gps_process = function(e) {
@@ -124,13 +219,18 @@ require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss
         changeYear(2016);
 
         function changeYear(year) {
-            var to = cache[year == 2016 ? 0 : year == 1735 ? 2 : 1];
+            var to = cache[year == 2016 ? 0 :
+                           year == 1720 ? 3 :
+                           year == 1735 ? 4 :
+                           year == 1867 ? 5 :
+                           year == 1914 ? 6 :
+                           year == 1963 ? 1 :
+                           2];
             if (to == from) return;
             if ($(to[2]).is(':visible') && $(from[2]).is(':hidden')) {
                 return;
             }
             from[0].size2MercsAsync().then(function(mercs){
-                console.log("CheckCheck;;;;;; " + mercs);
                 to[0].mercs2SizeAsync(mercs).then(function(size){
                     var view = to[1].getView();
                     view.setCenter(size[0]);
@@ -168,7 +268,7 @@ require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss
             $("#info").hide();
         });
 
-        $.get("json/iwatepoi.json", function(data) {
+        $.get("json/sabaepoi.json", function(data) {
             for (var i=0; i < data.length; i++) {
                 (function(datum){
                     var lnglat = [datum.lng,datum.lat];
@@ -176,7 +276,12 @@ require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss
                     var nowXyAsync = nowMapSource.merc2XyAsync(merc);
                     var hist1XyAsync = hist1MapSource.merc2XyAsync(merc);
                     var hist2XyAsync = hist2MapSource.merc2XyAsync(merc);
-                    Promise.all([nowXyAsync, hist1XyAsync, hist2XyAsync]).then(function(xys){
+                    var hist3XyAsync = hist3MapSource.merc2XyAsync(merc);
+                    var hist4XyAsync = hist4MapSource.merc2XyAsync(merc);
+                    var hist5XyAsync = hist5MapSource.merc2XyAsync(merc);
+                    var hist6XyAsync = hist6MapSource.merc2XyAsync(merc);
+                    Promise.all([nowXyAsync, hist1XyAsync, hist2XyAsync,
+                        hist3XyAsync, hist4XyAsync, hist5XyAsync, hist6XyAsync]).then(function(xys){
                         nowmap.addOverlay(new ol.Overlay({
                             position: xys[0],
                             element: $('<img src="img/marker-blue.png">')
@@ -200,7 +305,39 @@ require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss
                                 .on("click", function(){
                                     showInfo(datum);
                                 })
-                        }));                                          
+                        }));
+                        hist3map.addOverlay(new ol.Overlay({
+                            position: xys[3],
+                            element: $('<img src="img/marker-blue.png">')
+                                .css({marginTop: '-200%', marginLeft: '-50%', cursor: 'pointer'})
+                                .on("click", function(){
+                                    showInfo(datum);
+                                })
+                        }));
+                        hist4map.addOverlay(new ol.Overlay({
+                            position: xys[4],
+                            element: $('<img src="img/marker-blue.png">')
+                                .css({marginTop: '-200%', marginLeft: '-50%', cursor: 'pointer'})
+                                .on("click", function(){
+                                    showInfo(datum);
+                                })
+                        }));
+                        hist5map.addOverlay(new ol.Overlay({
+                            position: xys[5],
+                            element: $('<img src="img/marker-blue.png">')
+                                .css({marginTop: '-200%', marginLeft: '-50%', cursor: 'pointer'})
+                                .on("click", function(){
+                                    showInfo(datum);
+                                })
+                        }));
+                        hist6map.addOverlay(new ol.Overlay({
+                            position: xys[6],
+                            element: $('<img src="img/marker-blue.png">')
+                                .css({marginTop: '-200%', marginLeft: '-50%', cursor: 'pointer'})
+                                .on("click", function(){
+                                    showInfo(datum);
+                                })
+                        }));
                     });
                 })(data[i]);          
             }
