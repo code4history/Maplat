@@ -11,7 +11,7 @@
 <body>
 <div class="container-fluid h100p">
   <div id="all" class="row-fluid h100p">
-    <div class="row-fluid mainview_2">
+    <div class="row-fluid mainview">
       <div id="hist1mapcontainer" class="col-xs-12 h100p">
         <div id="hist1map" class="map h100p"></div>
       </div>
@@ -35,31 +35,12 @@
       </div>  
     </div>
 
-    <div class="row-fluid controlview_2">
-      <div class="row-fluid">
-        <div class="col-xs-3 btn-container">
-          <input type="button" class="btn btn-block btn-info year_change" data-year="1720" value="〜享保5年">
-        </div>
-        <div class="col-xs-3 btn-container">
-          <input type="button" class="btn btn-block btn-info year_change" data-year="1735" value="江戸中期">
-        </div>
-        <div class="col-xs-3 btn-container">
-          <input type="button" class="btn btn-block btn-info year_change" data-year="1867" value="明治維新前">
-        </div>
-        <div class="col-xs-3 btn-container">
-          <input type="button" class="btn btn-block btn-info year_change" data-year="1914" value="大正3年">
-        </div>
+    <div class="row-fluid controlview">
+      <div class="col-xs-10 btn-container">
+        <input id="era_select" type="range" name="era_select" min="0" max="6" list="era_list" value="6" step="1">
       </div>
-      <div class="row-fluid">
-        <div class="col-xs-4 btn-container">
-          <input type="button" class="btn btn-block btn-info year_change" data-year="1963" value="〜昭和38年">
-        </div>
-        <div class="col-xs-4 btn-container">
-          <input type="button" class="btn btn-block btn-info year_change" data-year="2002" value="平成14年">
-        </div>
-        <div class="col-xs-4 btn-container">
-          <input type="button" class="btn btn-block btn-info year_change" data-year="2016" value="現代">
-        </div>
+      <div class="col-xs-2 btn-container">
+        <input id="era_show" type="text" name="era_show" readonly="readonly">
       </div>
     </div>
   </div>

@@ -206,19 +206,26 @@ require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss
                 view.setCenter(xy);
                 view.setRotation(0);
             });
-        }
+        };
 
-        $(".year_change").on( 'click', function () {
-            var year = $(this).data('year');
+        $("#era_select").change( function () {
+            var idx = $(this).val();
+            var year = idx == 0 ? 1720 :
+                       idx == 1 ? 1735 :
+                       idx == 2 ? 1867 :
+                       idx == 3 ? 1914 :
+                       idx == 4 ? 1963 :
+                       idx == 5 ? 2002 :
+                                  2016;
             changeYear(year);
         } );
-
         from = cache[1];
 
-        var init = false;        
+        var init = false;
         changeYear(2016);
 
         function changeYear(year) {
+            $("#era_show").val(year + "年");
             var to = cache[year == 2016 ? 0 :
                            year == 1720 ? 3 :
                            year == 1735 ? 4 :
