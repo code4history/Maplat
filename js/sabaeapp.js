@@ -1,4 +1,4 @@
-require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss", "css!ol3css"], function($, ol, tps) {
+require(["jquery", "histmap", "jui", "bootstrap"], function($, ol) {//"css!bootstrapcss", "css!ol3css"], function($, ol, tps) {
     $("#all").show();
     $("#info").hide();
 
@@ -208,23 +208,30 @@ require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss
             });
         };
 
-        $("#era_select").change( function () {
-            var idx = $(this).val();
-            var year = idx == 0 ? 1720 :
-                       idx == 1 ? 1735 :
-                       idx == 2 ? 1867 :
-                       idx == 3 ? 1914 :
-                       idx == 4 ? 1963 :
-                       idx == 5 ? 2002 :
-                                  2016;
-            changeYear(year);
-        } );
-        from = cache[1];
+        $('#era_select').slider({
+            min: 0,
+            max: 6,
+            step: 1,
+            value: 6,
+            change: function(e, ui) {
+                var idx = ui.value;
+                var year = idx == 0 ? 1720 :
+                           idx == 1 ? 1735 :
+                           idx == 2 ? 1867 :
+                           idx == 3 ? 1914 :
+                           idx == 4 ? 1963 :
+                           idx == 5 ? 2002 :
+                                      2016;
+                changeYear(year);
+            },
+            // 4スライダーの初期化時に、その値をテキストボックスにも反映
+            create: function(e, ui) {
+                from = cache[1];
+                changeYear(2016, true);
+            }
+        });
 
-        var init = false;
-        changeYear(2016);
-
-        function changeYear(year) {
+        function changeYear(year, init) {
             $("#era_show").val(year + "年");
             var to = cache[year == 2016 ? 0 :
                            year == 1720 ? 3 :
@@ -253,8 +260,7 @@ require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss
                     to[1].updateSize();
                     to[1].renderSync();
                     from = to;
-                    if (init == false) {
-                        init = true;
+                    if (init == true) {
                         home_process();
                     }
                 });

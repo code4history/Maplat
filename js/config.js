@@ -7,6 +7,7 @@ require.config({
     //},
     paths: {
         "jquery" : "//code.jquery.com/jquery-1.11.2.min",
+        "jui" : "//code.jquery.com/ui/1.10.3/jquery-ui.min",
         "ol3" : "ol-debug",
         "ol-custom" : "ol-custom",
         //"ol3css" : "../css/ol",
