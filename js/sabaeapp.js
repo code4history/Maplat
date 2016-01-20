@@ -1,6 +1,7 @@
 require(["jquery", "histmap", "jui", "bootstrap"], function($, ol) {//"css!bootstrapcss", "css!ol3css"], function($, ol, tps) {
     $("#all").show();
     $("#info").hide();
+    $('#loadWait').modal();
 
     var from;
     var gps_process;
@@ -142,6 +143,9 @@ require(["jquery", "histmap", "jui", "bootstrap"], function($, ol) {//"css!boots
 
     Promise.all([nowSourcePromise, hist1SourcePromise, hist2SourcePromise,
         hist3SourcePromise, hist4SourcePromise, hist5SourcePromise, hist6SourcePromise]).then(function(sources) {
+
+        $('#loadWait').modal('hide');
+
         var nowMapSource = sources[0];
         var hist1MapSource = sources[1];
         var hist2MapSource = sources[2];
