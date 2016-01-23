@@ -19,6 +19,9 @@ require.config({
         'jquery' : {
             exports: '$'
         },
+        'jui' : { 
+            deps: ['jquery'] 
+        },
         'ol' : {
             exports: 'ol'
         },
