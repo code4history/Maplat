@@ -74,7 +74,7 @@ define(["ol-custom", "tps"], function(ol, ThinPlateSpline) {
             var tileLoadFn = self.getTileLoadFunction(); 
             return function(tile, src) {
                 if (numLoadingTiles === 0) { 
-                    console.log('loading'); 
+                    //console.log('loading'); 
                 } 
                 ++numLoadingTiles; 
                 var image = tile.getImage();
@@ -101,7 +101,7 @@ define(["ol-custom", "tps"], function(ol, ThinPlateSpline) {
                     }
                     --numLoadingTiles; 
                     if (numLoadingTiles === 0) { 
-                        console.log('idle'); 
+                        //console.log('idle'); 
                     } 
                 };
                 tImage.src = src;

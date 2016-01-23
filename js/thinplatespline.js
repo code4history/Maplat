@@ -51,11 +51,11 @@ function ThinPlateSpline(options) {
           break;
         case 'serialized':
           var serial = data.serial;
-          console.log(serial);
+          //console.log(serial);
           delete(me.worker);
           worker.terminate();
           me.deserialize(serial);
-          console.log("Serialized");
+          //console.log("Serialized");
           if (me.on_serialized) {
             me.on_serialized();
           }
@@ -64,7 +64,7 @@ function ThinPlateSpline(options) {
 
           break;
         case 'echo':
-          console.log(data.data);
+          //console.log(data.data);
       }
     };
   }
@@ -200,7 +200,6 @@ ThinPlateSpline.prototype.__solve = function(self) {
 };
 
 ThinPlateSpline.prototype.transform = function(P, isRev, options) {
-  console.log(P);
   if (this.block && (!options || options.recurse != 1)) {
     this.que.push({"P":P,"isRev":isRev,"options":options});
     return;

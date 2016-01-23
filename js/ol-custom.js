@@ -144,11 +144,9 @@ define(["ol3"], function(ol) {
 
         target.prototype.getRadius = function() {
             var size = this._map.getSize();
-            console.log(size);
             var radius = Math.floor(Math.min(size[0],size[1]) / 4);
             var zoom = this._map.getView().getDecimalZoom();
             var ratio = radius * ol.const.MERC_MAX / 128 / Math.pow(2,zoom);
-            console.log(zoom, ratio);
             return ratio;
         };
 

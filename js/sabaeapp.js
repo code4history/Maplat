@@ -188,13 +188,10 @@ require(["jquery", "histmap", "jui", "bootstrap"], function($, ol) {//"css!boots
             var now = cache_hash[2016];
             var to = type == "plat" ? cache_hash[year] : now;
             if (((to == from) || ($(to[2]).is(':visible') && $(from[2]).is(':hidden'))) && (to != now)) return;
-            console.log(from[1].getLayers());
-            console.log(to[1].getLayers());
             if (from == now) {
                 var layers = from[1].getLayers();
                 while (layers.getLength() > 2) {
                     layers.removeAt(1);
-                    console.log("Remove!");
                 }
             }
             if (to != from) {
