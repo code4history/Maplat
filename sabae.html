@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>鯖江アプリ</title>
+<title>ここ掘れワイワイ</title>
 <meta content="yes" name="apple-mobile-web-app-capable"> 
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
 <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
@@ -26,9 +26,6 @@
         <select name="era_select" id="era_select" style="width: 100%">
         </select>
       </div>
-      <!--div class="col-xs-2 btn-container">
-        <input id="era_show" type="text" name="era_show" readonly="readonly" style="width: 100%">
-      </div-->
     </div>
   </div>
   <div id="info" class="row-fluid h100p">
@@ -58,7 +55,7 @@
           <h4 class="modal-title">GPS取得中</h4>
         </div>
         <div class="modal-body">
-          <p class="recipient">※鯖江市中心より10km以上離れている場合は、鯖江市中心周辺の疑似経緯度を発行します</p>
+          <p id="gps_etc" class="recipient"></p>
         </div>
       </div>
     </div>
@@ -66,5 +63,8 @@
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.20/require.min.js"></script>
 <script src="js/config.js"></script>
+<script>
+  var appid = "sabaeapp";
+</script>
 <script src="js/sabaeapp.js"></script>
 </html>

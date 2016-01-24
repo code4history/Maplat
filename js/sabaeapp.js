@@ -1,261 +1,216 @@
 require(["jquery", "histmap", "jui", "bootstrap"], function($, ol) {//"css!bootstrapcss", "css!ol3css"], function($, ol, tps) {
-    $("#all").show();
-    $("#info").hide();
-    $('#loadWait').modal();
+    var app_json = "json/" + appid + ".json";
+    $.get(app_json, function(app_data) {
+        $("#all").show();
+        $("#info").hide();
+        $('#loadWait').modal();
 
-    var from;
-    var gps_process;
-    var gps_callback = function(e) {
-        gps_process(e);
-    };
-    var home_process;
-    var home_callback = function(e) {
-        home_process(e);
-    };
-    var home_pos = [136.188948,35.943469];
-    var now_year = 2016;
-    var now_era = "現代"; 
-
-    function getDistance(lnglat1, lnglat2) {
-        function radians(deg){
-            return deg * Math.PI / 180;
-        }
-
-        return 6378.14 * Math.acos(Math.cos(radians(lnglat1[1]))* 
-            Math.cos(radians(lnglat2[1]))*
-            Math.cos(radians(lnglat2[0])-radians(lnglat1[0]))+
-            Math.sin(radians(lnglat1[1]))*
-            Math.sin(radians(lnglat2[1])));
-    }
-
-    var dataSource = [
-        {
-            "era" : "間部家入封以前の鯖江圖",
-            "attr" : "間部家入封以前の鯖江圖 越前鯖江５万石 ふるさと史跡紹介 (2002年 鯖江地区まちづくり推進協議会 発行)",
-            "mapID" : "sabae004",
-            "width" : 1649,
-            "height" : 2450,
-            "year" : 1720
-        },{
-            "era" : "間部家入封經營落成後の鯖江圖",
-            "attr" : "間部家入封經營落成後の鯖江圖 越前鯖江５万石 ふるさと史跡紹介 (2002年 鯖江地区まちづくり推進協議会 発行)",
-            "mapID" : "sabae005",
-            "width" : 1679,
-            "height" : 2414,
-            "year" : 1735
-        },{
-            "era" : "明治維新前の鯖江圖",
-            "attr" : "明治維新前の鯖江圖 越前鯖江５万石 ふるさと史跡紹介 (2002年 鯖江地区まちづくり推進協議会 発行)",
-            "mapID" : "sabae006",
-            "width" : 1649,
-            "height" : 2491,
-            "year" : 1867
-        },{
-            "era" : "大正三年頃の鯖江圖",
-            "attr" : "大正三年頃の鯖江圖 越前鯖江５万石 ふるさと史跡紹介 (2002年 鯖江地区まちづくり推進協議会 発行)",
-            "mapID" : "sabae007",
-            "width" : 1640,
-            "height" : 2475,
-            "year" : 1914
-        },{
-            "era" : "住居表示実施前の町名",            
-            "attr" : "住居表示実施前の町名 越前鯖江５万石 ふるさと史跡紹介 (2002年 鯖江地区まちづくり推進協議会 発行)",
-            "mapID" : "sabae001",
-            "width" : 1573,
-            "height" : 2387,
-            "year" : 1963
-        },{
-            "era" : "平成14年現在の町名",
-            "attr" : "平成14年現在の町名 越前鯖江５万石 ふるさと史跡紹介 (2002年 鯖江地区まちづくり推進協議会 発行)",
-            "mapID" : "sabae003",
-            "width" : 1655,
-            "height" : 2440,
-            "year" : 2002
-        }
-    ];
-    var dataHash = {};
-
-    var sourcePromise = [];
-    for (var i = 0; i <= dataSource.length; i++) {
-        var div = "map" + i;
-        if (i == dataSource.length) {
-            sourcePromise.push(ol.source.nowMap.createAsync({
-                map_option: {
-                    div: div,
-                    default_zoom: 2
-                },
-                gps_callback: gps_callback,
-                home_callback: home_callback
-            }));
-            $("#era_select").append('<option value="' + now_year + '" selected>' + now_era + '</option>');
+        var from;
+        var gps_process;
+        var gps_callback = function(e) {
+            gps_process(e);
+        };
+        var home_process;
+        var home_callback = function(e) {
+            home_process(e);
+        };
+        var home_pos = app_data.home_position;
+        var def_zoom = app_data.default_zoom;
+        var now_year = app_data.now_year;
+        var now_era = app_data.now_era;
+        var app_name = app_data.app_name;
+        var fake_gps = app_data.fake_gps;
+        var fake_center = app_data.fake_center;
+        var fake_radius = app_data.fake_radius;
+        if (fake_gps) {
+            $("#gps_etc").append("※" + fake_center + "中心より" + fake_radius + "km以上離れている場合は、" + fake_center + "中心周辺の疑似経緯度を発行します");
         } else {
-            var data = dataSource[i];
-            dataHash[data.year] = data;
-            sourcePromise.push(ol.source.histMap.createAsync({
-                attributions: [
-                    new ol.Attribution({
-                        html: data.attr
-                    })
-                ],
-                mapID: data.mapID,
-                width: data.width,
-                height: data.height,
-                tps_serial: '../bin/' + data.mapID + '.bin',
-                //tps_points: '../json/' + data.mapID + '_points.json',
-                map_option: {
-                    div: div,
-                    default_zoom: 3
-                },
-                gps_callback: gps_callback,
-                home_callback: home_callback      
-            }));
-            $("#era_select").append('<option value="' + data.year + '">' + data.era + '</option>');
+            $("#gps_etc").append("GPSデータ取得中です");
         }
-        $(".mainview").append('<div id="' + div + 'container" class="col-xs-12 h100p mapcontainer"><div id="' + div + '" class="map h100p"></div></div>');
-    }
+        var pois = app_data.pois;
 
-    Promise.all(sourcePromise).then(function(sources) {
-        $('#loadWait').modal('hide');
+        $("title").append(app_name);
 
-        var cache = [];
-        var cache_hash = {};
-        for (var i=0; i<sources.length; i++) {
-            var source = sources[i];
-            var map = source.getMap();
-            var cont = "#map" + i + "container";
-            var item = [source, map, cont];
-            cache.push(item);
-            var year = i == sources.length - 1 ? now_year : dataSource[i].year;
-            cache_hash[year] = item;
+        function getDistance(lnglat1, lnglat2) {
+            function radians(deg){
+                return deg * Math.PI / 180;
+            }
+
+            return 6378.14 * Math.acos(Math.cos(radians(lnglat1[1]))* 
+                Math.cos(radians(lnglat2[1]))*
+                Math.cos(radians(lnglat2[0])-radians(lnglat1[0]))+
+                Math.sin(radians(lnglat1[1]))*
+                Math.sin(radians(lnglat2[1])));
         }
 
-        gps_process = function(e) {
-            var geolocation = new ol.Geolocation({tracking:true});
-            // listen to changes in position
-            $('#gpsWait').modal();
-            geolocation.once('change', function(evt) {
-                var lnglat = geolocation.getPosition();
-                if (getDistance(home_pos,lnglat) > 10) {
-                    lnglat = [home_pos[0] + (Math.random() - 0.5) / 1000,home_pos[1] + (Math.random() - 0.5) / 1000];
-                }
-                geolocation.setTracking(false);
-                var merc = ol.proj.transform(lnglat, "EPSG:4326", "EPSG:3857");
-                for (var i=0;i<cache.length;i++) {
-                    (function(){
-                        var target = cache[i];
-                        var source = target[0];
-                        var view   = target[1].getView();
-                        source.merc2XyAsync(merc).then(function(xy){
-                            if (target == from) view.setCenter(xy);
-                            source.setGPSPosition(xy);
-                        });
-                    })();
-                }
-                $('#gpsWait').modal('hide');
-            });
-        };
+        var dataSource = app_data.sources;
+        var dataHash = {};
 
-        home_process = function(e) {
-            var merc = ol.proj.transform(home_pos, "EPSG:4326", "EPSG:3857");
-            var source = from[0];
-            var view   = from[1].getView();
-            source.merc2XyAsync(merc).then(function(xy){
-                view.setCenter(xy);
-                view.setRotation(0);
-            });
-        };
+        var sourcePromise = [];
+        for (var i = 0; i <= dataSource.length; i++) {
+            var div = "map" + i;
+            if (i == dataSource.length) {
+                sourcePromise.push(ol.source.nowMap.createAsync({
+                    map_option: {
+                        div: div
+                    },
+                    gps_callback: gps_callback,
+                    home_callback: home_callback
+                }));
+                $("#era_select").append('<option value="' + now_year + '" selected>' + now_era + '</option>');
+            } else {
+                var data = dataSource[i];
+                dataHash[data.year] = data;
+                sourcePromise.push(ol.source.histMap.createAsync({
+                    attributions: [
+                        new ol.Attribution({
+                            html: data.attr
+                        })
+                    ],
+                    mapID: data.mapID,
+                    width: data.width,
+                    height: data.height,
+                    tps_serial: '../bin/' + data.mapID + '.bin',
+                    //tps_points: '../json/' + data.mapID + '_points.json',
+                    map_option: {
+                        div: div
+                    },
+                    gps_callback: gps_callback,
+                    home_callback: home_callback      
+                }));
+                $("#era_select").append('<option value="' + data.year + '">' + data.era + '</option>');
+            }
+            $(".mainview").append('<div id="' + div + 'container" class="col-xs-12 h100p mapcontainer"><div id="' + div + '" class="map h100p"></div></div>');
+        }
 
-        /*$('#era_select').slider({
-            min: 0,
-            max: 6,
-            step: 1,
-            value: 6,
-            change: function(e, ui) {
+        Promise.all(sourcePromise).then(function(sources) {
+            $('#loadWait').modal('hide');
+
+            var cache = [];
+            var cache_hash = {};
+            for (var i=0; i<sources.length; i++) {
+                var source = sources[i];
+                var map = source.getMap();
+                var cont = "#map" + i + "container";
+                var item = [source, map, cont];
+                cache.push(item);
+                var year = i == sources.length - 1 ? now_year : dataSource[i].year;
+                cache_hash[year] = item;
+            }
+
+            gps_process = function(e) {
+                var geolocation = new ol.Geolocation({tracking:true});
+                // listen to changes in position
+                $('#gpsWait').modal();
+                geolocation.once('change', function(evt) {
+                    var lnglat = geolocation.getPosition();
+                    if (fake_gps && getDistance(home_pos,lnglat) > fake_radius) {
+                        lnglat = [home_pos[0] + (Math.random() - 0.5) / 1000,home_pos[1] + (Math.random() - 0.5) / 1000];
+                    }
+                    geolocation.setTracking(false);
+                    var merc = ol.proj.transform(lnglat, "EPSG:4326", "EPSG:3857");
+                    for (var i=0;i<cache.length;i++) {
+                        (function(){
+                            var target = cache[i];
+                            var source = target[0];
+                            var view   = target[1].getView();
+                            source.merc2XyAsync(merc).then(function(xy){
+                                if (target == from) view.setCenter(xy);
+                                source.setGPSPosition(xy);
+                            });
+                        })();
+                    }
+                    $('#gpsWait').modal('hide');
+                });
+            };
+
+            home_process = function(e) {
+                var merc = ol.proj.transform(home_pos, "EPSG:4326", "EPSG:3857");
+                var source = from[0];
+                var view   = from[1].getView();
+                source.merc2XyAsync(merc).then(function(xy){
+                    view.setCenter(xy);
+                    view.setRotation(0);
+                    view.setZoom(def_zoom);
+                });
+            };
+
+            $("#era_select").change(function(){
                 changeMap();
-            },
-            // 4スライダーの初期化時に、その値をテキストボックスにも反映
-            create: function(e, ui) {
-                from = cache[1];
-                changeMap(true);
-            }
-        });*/
-        $("#era_select").change(function(){
-            changeMap();
-        });
+            });
 
-        $("#map_type").change(function(){
-            changeMap();
-        });
+            $("#map_type").change(function(){
+                changeMap();
+            });
 
-        from = cache[1];
-        changeMap(true);
+            from = cache[1];
+            changeMap(true);
 
-        function changeMap(init) {
-            var year = $("#era_select").val();
-            var type = $("#map_type").val();
-            var now = cache_hash[now_year];
-            var to = type == "plat" ? cache_hash[year] : now;
-            //if (((to == from) || ($(to[2]).is(':visible') && $(from[2]).is(':hidden'))) && (to != now)) return;
-            if ((to == from) && (to != now)) return;
-            if (from == now) {
-                var layers = from[1].getLayers();
-                while (layers.getLength() > 2) {
-                    layers.removeAt(1);
+            function changeMap(init) {
+                var year = $("#era_select").val();
+                var type = $("#map_type").val();
+                var now = cache_hash[now_year];
+                var to = type == "plat" ? cache_hash[year] : now;
+                //if (((to == from) || ($(to[2]).is(':visible') && $(from[2]).is(':hidden'))) && (to != now)) return;
+                if ((to == from) && (to != now)) return;
+                if (from == now) {
+                    var layers = from[1].getLayers();
+                    while (layers.getLength() > 2) {
+                        layers.removeAt(1);
+                    }
+                }
+                if (to != from) {
+                    from[0].size2MercsAsync().then(function(mercs){
+                        to[0].mercs2SizeAsync(mercs).then(function(size){
+                            var view = to[1].getView();
+                            view.setCenter(size[0]);
+                            view.setZoom(size[1]);
+                            view.setRotation(size[2]);
+                            $(to[2]).show();
+                            //$(to[2]).css("z-index", 100);
+                            for (var i=0;i<cache.length;i++) {
+                                var div = cache[i];
+                                if (div != to) {
+                                    $(div[2]).hide();
+                                    //$(div[2]).css("z-index", 0);
+                                }
+                            }
+                            to[1].updateSize();
+                            to[1].renderSync();
+                            from = to;
+                            if (init == true) {
+                                home_process();
+                            }
+                        });
+                    });
+                }
+                if (to == now && year != now_year) {
+                    var data = dataHash[year];
+                    var layers = to[1].getLayers();
+                    var layer = new ol.layer.Tile({
+                        source: new ol.source.XYZ({
+                            url: 'tiles/' + data.mapID + '_' + type + '/{z}/{x}/{-y}.png'
+                        })
+                    });
+                    layers.insertAt(1, layer);
                 }
             }
-            if (to != from) {
-                from[0].size2MercsAsync().then(function(mercs){
-                    to[0].mercs2SizeAsync(mercs).then(function(size){
-                        var view = to[1].getView();
-                        view.setCenter(size[0]);
-                        view.setZoom(size[1]);
-                        view.setRotation(size[2]);
-                        $(to[2]).show();
-                        //$(to[2]).css("z-index", 100);
-                        for (var i=0;i<cache.length;i++) {
-                            var div = cache[i];
-                            if (div != to) {
-                                $(div[2]).hide();
-                                //$(div[2]).css("z-index", 0);
-                            }
-                        }
-                        to[1].updateSize();
-                        to[1].renderSync();
-                        from = to;
-                        if (init == true) {
-                            home_process();
-                        }
-                    });
-                });
+
+            function showInfo(data) {
+                $("#poi_name").text(data.name);
+                $("#poi_img").attr("src","img/" + data.image);
+                $("#poi_address").text(data.address);
+                $("#poi_desc").text(data.desc);
+                $("#info").show();
+                $("#all").hide();
             }
-            if (to == now && year != now_year) {
-                var data = dataHash[year];
-                var layers = to[1].getLayers();
-                var layer = new ol.layer.Tile({
-                    source: new ol.source.XYZ({
-                        url: 'tiles/' + data.mapID + '_' + type + '/{z}/{x}/{-y}.png'
-                    })
-                });
-                layers.insertAt(1, layer);
-            }
-        }
 
-        function showInfo(data) {
-            $("#poi_name").text(data.name);
-            $("#poi_img").attr("src","img/" + data.image);
-            $("#poi_address").text(data.address);
-            $("#poi_desc").text(data.desc);
-            $("#info").show();
-            $("#all").hide();
-        }
+            $("#poi_back").on("click", function(){
+                $("#all").show();
+                $("#info").hide();
+            });
 
-        $("#poi_back").on("click", function(){
-            $("#all").show();
-            $("#info").hide();
-        });
-
-        $.get("json/sabaepoi.json", function(data) {
-            for (var i=0; i < data.length; i++) {
+            for (var i=0; i < pois.length; i++) {
                 (function(datum){
                     var lnglat = [datum.lng,datum.lat];
                     var merc = ol.proj.transform(lnglat, "EPSG:4326", "EPSG:3857");
@@ -278,8 +233,9 @@ require(["jquery", "histmap", "jui", "bootstrap"], function($, ol) {//"css!boots
                             }));
                         }
                     });
-                })(data[i]);          
+                })(pois[i]);          
             }
-        }, "json");
-    });
+        });
+
+    }, "json");
 });
