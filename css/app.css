@@ -6,12 +6,20 @@ html,body {
     height:100%;
 }
 
+.mapcontainer {
+    top: 0px; 
+    left: 0px;
+    position: absolute;
+    z-index: 0;
+}
+
 .h100p {
     height:100%;
 }
 
 .mainview {
     height:calc(100% - 50px);
+    position: relative;
 }
 
 .controlview {

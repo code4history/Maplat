@@ -13,6 +13,8 @@ require(["jquery", "histmap", "jui", "bootstrap"], function($, ol) {//"css!boots
         home_process(e);
     };
     var home_pos = [136.188948,35.943469];
+    var now_year = 2016;
+    var now_era = "現代"; 
 
     function getDistance(lnglat1, lnglat2) {
         function radians(deg){
@@ -28,61 +30,68 @@ require(["jquery", "histmap", "jui", "bootstrap"], function($, ol) {//"css!boots
 
     var dataSource = [
         {
-            "attr" : "住居表示実施前の町名 越前鯖江５万石 ふるさと史跡紹介 (2002年 鯖江地区まちづくり推進協議会 発行)",
-            "mapID" : "sabae001",
-            "width" : 1573,
-            "height" : 2387,
-            "era" : 1963
-        },{
-            "attr" : "平成14年現在の町名 越前鯖江５万石 ふるさと史跡紹介 (2002年 鯖江地区まちづくり推進協議会 発行)",
-            "mapID" : "sabae003",
-            "width" : 1655,
-            "height" : 2440,
-            "era" : 2002
-        },{
+            "era" : "間部家入封以前の鯖江圖",
             "attr" : "間部家入封以前の鯖江圖 越前鯖江５万石 ふるさと史跡紹介 (2002年 鯖江地区まちづくり推進協議会 発行)",
             "mapID" : "sabae004",
             "width" : 1649,
             "height" : 2450,
-            "era" : 1720
+            "year" : 1720
         },{
+            "era" : "間部家入封經營落成後の鯖江圖",
             "attr" : "間部家入封經營落成後の鯖江圖 越前鯖江５万石 ふるさと史跡紹介 (2002年 鯖江地区まちづくり推進協議会 発行)",
             "mapID" : "sabae005",
             "width" : 1679,
             "height" : 2414,
-            "era" : 1735
+            "year" : 1735
         },{
+            "era" : "明治維新前の鯖江圖",
             "attr" : "明治維新前の鯖江圖 越前鯖江５万石 ふるさと史跡紹介 (2002年 鯖江地区まちづくり推進協議会 発行)",
             "mapID" : "sabae006",
             "width" : 1649,
             "height" : 2491,
-            "era" : 1867
+            "year" : 1867
         },{
+            "era" : "大正三年頃の鯖江圖",
             "attr" : "大正三年頃の鯖江圖 越前鯖江５万石 ふるさと史跡紹介 (2002年 鯖江地区まちづくり推進協議会 発行)",
             "mapID" : "sabae007",
             "width" : 1640,
             "height" : 2475,
-            "era" : 1914
+            "year" : 1914
+        },{
+            "era" : "住居表示実施前の町名",            
+            "attr" : "住居表示実施前の町名 越前鯖江５万石 ふるさと史跡紹介 (2002年 鯖江地区まちづくり推進協議会 発行)",
+            "mapID" : "sabae001",
+            "width" : 1573,
+            "height" : 2387,
+            "year" : 1963
+        },{
+            "era" : "平成14年現在の町名",
+            "attr" : "平成14年現在の町名 越前鯖江５万石 ふるさと史跡紹介 (2002年 鯖江地区まちづくり推進協議会 発行)",
+            "mapID" : "sabae003",
+            "width" : 1655,
+            "height" : 2440,
+            "year" : 2002
         }
     ];
     var dataHash = {};
 
-    var sourcePromise = [
-        ol.source.nowMap.createAsync({
-            map_option: {
-                div: "nowmap",
-                default_center: [0,0],
-                default_zoom: 2
-            },
-            gps_callback: gps_callback,
-            home_callback: home_callback
-        })
-    ];
-    for (var i = 1; i <= dataSource.length; i++) {
-        var data = dataSource[i-1];
-        dataHash[data.era] = data;
-        sourcePromise.push(
-            ol.source.histMap.createAsync({
+    var sourcePromise = [];
+    for (var i = 0; i <= dataSource.length; i++) {
+        var div = "map" + i;
+        if (i == dataSource.length) {
+            sourcePromise.push(ol.source.nowMap.createAsync({
+                map_option: {
+                    div: div,
+                    default_zoom: 2
+                },
+                gps_callback: gps_callback,
+                home_callback: home_callback
+            }));
+            $("#era_select").append('<option value="' + now_year + '" selected>' + now_era + '</option>');
+        } else {
+            var data = dataSource[i];
+            dataHash[data.year] = data;
+            sourcePromise.push(ol.source.histMap.createAsync({
                 attributions: [
                     new ol.Attribution({
                         html: data.attr
@@ -94,14 +103,15 @@ require(["jquery", "histmap", "jui", "bootstrap"], function($, ol) {//"css!boots
                 tps_serial: '../bin/' + data.mapID + '.bin',
                 //tps_points: '../json/' + data.mapID + '_points.json',
                 map_option: {
-                    div: "hist" + i + "map",
-                    default_center: [-9365402.485897185, 9276725.549371911],
-                    default_zoom: 4,
+                    div: div,
+                    default_zoom: 3
                 },
                 gps_callback: gps_callback,
                 home_callback: home_callback      
-            })
-        );
+            }));
+            $("#era_select").append('<option value="' + data.year + '">' + data.era + '</option>');
+        }
+        $(".mainview").append('<div id="' + div + 'container" class="col-xs-12 h100p mapcontainer"><div id="' + div + '" class="map h100p"></div></div>');
     }
 
     Promise.all(sourcePromise).then(function(sources) {
@@ -112,11 +122,11 @@ require(["jquery", "histmap", "jui", "bootstrap"], function($, ol) {//"css!boots
         for (var i=0; i<sources.length; i++) {
             var source = sources[i];
             var map = source.getMap();
-            var cont = "#" + ( i == 0 ? "now" : "hist" + i ) + "mapcontainer";
+            var cont = "#map" + i + "container";
             var item = [source, map, cont];
             cache.push(item);
-            var data = i == 0 ? {"era" : 2016} : dataSource[i-1];
-            cache_hash[data.era] = item;
+            var year = i == sources.length - 1 ? now_year : dataSource[i].year;
+            cache_hash[year] = item;
         }
 
         gps_process = function(e) {
@@ -155,7 +165,7 @@ require(["jquery", "histmap", "jui", "bootstrap"], function($, ol) {//"css!boots
             });
         };
 
-        $('#era_select').slider({
+        /*$('#era_select').slider({
             min: 0,
             max: 6,
             step: 1,
@@ -168,26 +178,25 @@ require(["jquery", "histmap", "jui", "bootstrap"], function($, ol) {//"css!boots
                 from = cache[1];
                 changeMap(true);
             }
+        });*/
+        $("#era_select").change(function(){
+            changeMap();
         });
 
         $("#map_type").change(function(){
             changeMap();
         });
 
+        from = cache[1];
+        changeMap(true);
+
         function changeMap(init) {
-            var y_idx = $('#era_select').slider( "value" );
-            var year = y_idx == 0 ? 1720 :
-                       y_idx == 1 ? 1735 :
-                       y_idx == 2 ? 1867 :
-                       y_idx == 3 ? 1914 :
-                       y_idx == 4 ? 1963 :
-                       y_idx == 5 ? 2002 :
-                                    2016;
+            var year = $("#era_select").val();
             var type = $("#map_type").val();
-            $("#era_show").val(year + "年");
-            var now = cache_hash[2016];
+            var now = cache_hash[now_year];
             var to = type == "plat" ? cache_hash[year] : now;
-            if (((to == from) || ($(to[2]).is(':visible') && $(from[2]).is(':hidden'))) && (to != now)) return;
+            //if (((to == from) || ($(to[2]).is(':visible') && $(from[2]).is(':hidden'))) && (to != now)) return;
+            if ((to == from) && (to != now)) return;
             if (from == now) {
                 var layers = from[1].getLayers();
                 while (layers.getLength() > 2) {
@@ -202,10 +211,12 @@ require(["jquery", "histmap", "jui", "bootstrap"], function($, ol) {//"css!boots
                         view.setZoom(size[1]);
                         view.setRotation(size[2]);
                         $(to[2]).show();
+                        //$(to[2]).css("z-index", 100);
                         for (var i=0;i<cache.length;i++) {
                             var div = cache[i];
                             if (div != to) {
                                 $(div[2]).hide();
+                                //$(div[2]).css("z-index", 0);
                             }
                         }
                         to[1].updateSize();
@@ -217,7 +228,7 @@ require(["jquery", "histmap", "jui", "bootstrap"], function($, ol) {//"css!boots
                     });
                 });
             }
-            if (to == now && year != 2016) {
+            if (to == now && year != now_year) {
                 var data = dataHash[year];
                 var layers = to[1].getLayers();
                 var layer = new ol.layer.Tile({
