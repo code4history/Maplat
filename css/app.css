@@ -59,3 +59,17 @@ html,body {
 .ol-touch .home {
     top: 110px;
 }
+
+.poi_img {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.poi_img img {
+    width:auto;
+    height:auto;
+    max-width:300px;
+    max-height:300px;
+    vertical-align: middle;/*IE7*/
+}
