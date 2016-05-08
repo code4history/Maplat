@@ -205,7 +205,7 @@ require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss
                 $("#poi_name").text(data.name);
                 $("#poi_img").attr("src","img/" + data.image);
                 $("#poi_address").text(data.address);
-                $("#poi_desc").text(data.desc);
+                $("#poi_desc").html(data.desc.replace(/\n/g,"<br>"));
                 $('#poi_info').modal();
             }
 
