@@ -163,6 +163,9 @@ require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss
                     while (layers.getLength() > 2) {
                         layers.removeAt(1);
                     }
+                    if (init == true) {
+                        home_process();
+                    }
                 }
                 if (to != from) {
                     from[0].size2MercsAsync().then(function(mercs){
