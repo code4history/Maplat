@@ -9,20 +9,17 @@
 <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
-<div class="container-fluid h100p w100p">
-  <div id="all" class="row-fluid h100p">
-    <div class="row-fluid mainview"> 
-    </div>
-
-    <div class="row-fluid controlview" style="width: 100%">
-      <input type="hidden" name="map_type" id="map_type" value="plat">
-      <div class="col-xs-12 btn-container">
-        <select name="era_select" id="era_select" style="width: 100%">
-        </select>
+  <div class="container-fluid h100p w100p">
+    <div id="all" class="row-fluid h100p">
+      <div class="row-fluid mainview"> </div>
+      <div class="row-fluid controlview" style="width: 100%">
+        <input type="hidden" name="map_type" id="map_type" value="plat">
+        <div class="col-xs-12 btn-container">
+          <select name="era_select" id="era_select" style="width: 100%"></select>
+        </div>
       </div>
-    </div>
-  </div> 
-</div>
+    </div> 
+  </div>
   <div class="modal" id="poi_info" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel" aria-hidden="true" data-show="true" data-keyboard="false" data-backdrop="static">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -69,6 +66,11 @@
 <script src="js/config.js"></script>
 <script>
   var appid = "sample";
+  var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+  for(var i = 0; i < hashes.length; i++) {
+    hash = hashes[i].split('=');
+    if (hash[0] == "appid") appid = hash[1];
+  }
 </script>
 <script src="js/app.js"></script>
 </html>
