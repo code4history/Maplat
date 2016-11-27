@@ -3,11 +3,9 @@
 
 # 成果物
 現状の最新版はこちらで動いています。
-* https://code4nara.github.io/Maplat/sanada.html (上田市版)
+* https://code4nara.github.io/Maplat/?appid=ueda (上田市版)
+* https://code4nara.github.io/Maplat/?appid=iwate (盛岡市版)
+* https://code4nara.github.io/Maplat/?appid=sabae (鯖江市版)
+* https://code4nara.github.io/Maplat/?appid=nara (奈良市版)
 
-バージョンは古いですが、岩手、鯖江、奈良版も以下の場所で。
-* https://code4nara.github.io/Maplat/iwate.html
-* https://code4nara.github.io/Maplat/sabae.html
-* https://code4nara.github.io/Maplat/hackathon.html
-
-成果物を他人がコンテンツ作れる形でまとめられていないので、github pagesのみのおかしなレポジトリになっていますが、おいおい整理します。
+成果物を他人がコンテンツ作れる形でまとめられていないですが、おいおい整理します。
