@@ -1,123 +1,248 @@
 require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss", "css!ol3css"], function($, ol, tps) {
-    $("#all").show();
-    $("#info").hide();
+    var app_json = "json/" + appid + ".json";
+    $.get(app_json, function(app_data) {
+        $("#all").show();
+        $('#loadWait').modal();
 
-    var nowSourcePromise = ol.source.nowMap.createAsync({
-        map_option: {
-            div: "nowmap",
-            default_center: [0,0],
-            default_zoom: 2
+        var from;
+        var gps_process;
+        var gps_callback = function(e) {
+            gps_process(e);
+        };
+        var home_process;
+        var home_callback = function(e) {
+            home_process(e);
+        };
+        var home_pos = app_data.home_position;
+        var def_zoom = app_data.default_zoom;
+        var now_year = app_data.now_year;
+        var now_era = app_data.now_era;
+        var app_name = app_data.app_name;
+        var fake_gps = app_data.fake_gps;
+        var fake_center = app_data.fake_center;
+        var fake_radius = app_data.fake_radius;
+        var make_binary = app_data.make_binary;
+        if (fake_gps) {
+            $("#gps_etc").append("※" + fake_center + "中心より" + fake_radius + "km以上離れている場合は、" + fake_center + "中心周辺の疑似経緯度を発行します");
+        } else {
+            $("#gps_etc").append("GPSデータ取得中です");
         }
-    });
-    var histSourcePromise = ol.source.histMap.createAsync({
-        attributions: [
-            new ol.Attribution({
-                html: '奈良市鳥瞰図 (1868年以降) Cartography Associates CC-BY-NC-SA 3.0'
-            })
-        ],
-        mapID: 'NaraOldMap1',
-        width: 9618,
-        height: 6786,
-        tps_serial: '../bin/NaraOldMap1.bin',
-        map_option: {
-            div: "histmap",
-            default_center: [-9365402.485897185, 9276725.549371911],
-            default_zoom: 6
-        }        
-    });
+        var pois = app_data.pois;
 
-    Promise.all([nowSourcePromise, histSourcePromise]).then(function(sources) {
-        var nowMapSource = sources[0];
-        var histMapSource = sources[1];
+        $("title").html(app_name);
 
-        var nowmap = nowMapSource.getMap();
-        var histmap = histMapSource.getMap();
+        function getDistance(lnglat1, lnglat2) {
+            function radians(deg){
+                return deg * Math.PI / 180;
+            }
 
-        $(".year_change").on( 'click', function () {
-            var year = $(this).data('year');
-            changeYear(year);
-        } );
-        changeYear(2015);
-        function changeYear(year) {
-            var fromSource;
-            var toSource;
-            var fromMap;
-            var toMap;
-            var fromDiv;
-            var toDiv;
-            if (year == 2015) {
-                fromDiv    = "#histmapcontainer";
-                toDiv      = "#nowmapcontainer";
-                fromSource = histMapSource;
-                toSource   = nowMapSource;
-                fromMap    = histmap;
-                toMap      = nowmap;
+            return 6378.14 * Math.acos(Math.cos(radians(lnglat1[1]))* 
+                Math.cos(radians(lnglat2[1]))*
+                Math.cos(radians(lnglat2[0])-radians(lnglat1[0]))+
+                Math.sin(radians(lnglat1[1]))*
+                Math.sin(radians(lnglat2[1])));
+        }
+
+        var dataSource = app_data.sources;
+        var dataHash = {};
+
+        var sourcePromise = [];
+        for (var i = 0; i <= dataSource.length; i++) {
+            var div = "map" + i;
+            if (i == dataSource.length) {
+                sourcePromise.push(ol.source.nowMap.createAsync({
+                    map_option: {
+                        div: div
+                    },
+                    gps_callback: gps_callback,
+                    home_callback: home_callback
+                }));
+                $("#era_select").append('<option value="' + now_year + '" selected>' + now_era + '</option>');
             } else {
-                fromDiv    = "#nowmapcontainer";
-                toDiv      = "#histmapcontainer";
-                fromSource = nowMapSource;
-                toSource   = histMapSource;
-                fromMap    = nowmap;
-                toMap      = histmap;
+                var data = dataSource[i];
+                dataHash[data.year] = data;
+                var option = {
+                    attributions: [
+                        new ol.Attribution({
+                            html: data.attr
+                        })
+                    ],
+                    mapID: data.mapID,
+                    width: data.width,
+                    height: data.height,
+                    map_option: {
+                        div: div
+                    },
+                    gps_callback: gps_callback,
+                    home_callback: home_callback      
+                };
+                if (make_binary) {
+                    option.tps_serial = data.mapID + ".bin";
+                    option.tps_points = '../json/' + data.mapID + '_points.json';
+                } else {
+                    option.tps_serial = '../bin/' + data.mapID + '.bin';
+                }
+                sourcePromise.push(ol.source.histMap.createAsync(option));
+                $("#era_select").append('<option value="' + data.year + '">' + data.era + '</option>');
             }
-            if ($(toDiv).is(':visible') && $(fromDiv).is(':hidden')) {
-                return;
+            $(".mainview").append('<div id="' + div + 'container" class="col-xs-12 h100p mapcontainer w100p"><div id="' + div + '" class="map h100p"></div></div>');
+        }
+
+        Promise.all(sourcePromise).then(function(sources) {
+            $('#loadWait').modal('hide');
+
+            var cache = [];
+            var cache_hash = {};
+            for (var i=0; i<sources.length; i++) {
+                var source = sources[i];
+                var map = source.getMap();
+                var cont = "#map" + i + "container";
+                var item = [source, map, cont];
+                cache.push(item);
+                var year = i == sources.length - 1 ? now_year : dataSource[i].year;
+                cache_hash[year] = item;
             }
-            fromSource.size2MercsAsync().then(function(mercs){
-                toSource.mercs2SizeAsync(mercs).then(function(size){
-                    var view = toMap.getView();
-                    view.setCenter(size[0]);
-                    view.setZoom(size[1]);
-                    view.setRotation(size[2]);
-                    $(toDiv).show();
-                    $(fromDiv).hide();
-                    toMap.updateSize();
-                    toMap.renderSync();
+
+            gps_process = function(e) {
+                var geolocation = new ol.Geolocation({tracking:true});
+                // listen to changes in position
+                $('#gpsWait').modal();
+                geolocation.once('change', function(evt) {
+                    var lnglat = geolocation.getPosition();
+                    if (fake_gps && getDistance(home_pos,lnglat) > fake_radius) {
+                        lnglat = [home_pos[0] + (Math.random() - 0.5) / 1000,home_pos[1] + (Math.random() - 0.5) / 1000];
+                    }
+                    geolocation.setTracking(false);
+                    var merc = ol.proj.transform(lnglat, "EPSG:4326", "EPSG:3857");
+                    for (var i=0;i<cache.length;i++) {
+                        (function(){
+                            var target = cache[i];
+                            var source = target[0];
+                            var view   = target[1].getView();
+                            source.merc2XyAsync(merc).then(function(xy){
+                                if (target == from) view.setCenter(xy);
+                                source.setGPSPosition(xy);
+                            });
+                        })();
+                    }
+                    $('#gpsWait').modal('hide');
                 });
+            };
+
+            home_process = function(e) {
+                var merc = ol.proj.transform(home_pos, "EPSG:4326", "EPSG:3857");
+                var source = from[0];
+                var view   = from[1].getView();
+                source.merc2XyAsync(merc).then(function(xy){
+                    view.setCenter(xy);
+                    view.setRotation(0);
+                    view.setZoom(def_zoom);
+                });
+            };
+
+            $("#era_select").change(function(){
+                changeMap();
             });
-        }
 
-        function showInfo(data) {
-            $("#poi_name").text(data.name);
-            $("#poi_img").attr("src","img/" + data.image);
-            $("#poi_address").text(data.address);
-            $("#poi_desc").text(data.desc);
-            $("#info").show();
-            $("#all").hide();
-        }
+            $("#map_type").change(function(){
+                changeMap();
+            });
 
-        $("#poi_back").on("click", function(){
-            $("#all").show();
-            $("#info").hide();
-        });
+            from = cache[1];
+            changeMap(true);
 
-        $.get("json/poi.json", function(data) {
-            for (var i=0; i < data.length; i++) {
+            function changeMap(init) {
+                var year = $("#era_select").val();
+                var type = $("#map_type").val();
+                var now = cache_hash[now_year];
+                var to = type == "plat" ? cache_hash[year] : now;
+                //if (((to == from) || ($(to[2]).is(':visible') && $(from[2]).is(':hidden'))) && (to != now)) return;
+                if ((to == from) && (to != now)) return;
+                if (from == now) {
+                    var layers = from[1].getLayers();
+                    while (layers.getLength() > 2) {
+                        layers.removeAt(1);
+                    }
+                    if (init == true) {
+                        home_process();
+                    }
+                }
+                if (to != from) {
+                    from[0].size2MercsAsync().then(function(mercs){
+                        to[0].mercs2SizeAsync(mercs).then(function(size){
+                            var view = to[1].getView();
+                            view.setCenter(size[0]);
+                            view.setZoom(size[1]);
+                            view.setRotation(size[2]);
+                            $(to[2]).show();
+                            //$(to[2]).css("z-index", 100);
+                            for (var i=0;i<cache.length;i++) {
+                                var div = cache[i];
+                                if (div != to) {
+                                    $(div[2]).hide();
+                                    //$(div[2]).css("z-index", 0);
+                                }
+                            }
+                            to[1].updateSize();
+                            to[1].renderSync();
+                            from = to;
+                            if (init == true) {
+                                home_process();
+                            }
+                        });
+                    });
+                }
+                if (to == now && year != now_year) {
+                    var data = dataHash[year];
+                    var layers = to[1].getLayers();
+                    var layer = new ol.layer.Tile({
+                        source: new ol.source.XYZ({
+                            url: 'tiles/' + data.mapID + '_' + type + '/{z}/{x}/{-y}.png'
+                        })
+                    });
+                    layers.insertAt(1, layer);
+                }
+            }
+
+            function showInfo(data) {
+                $("#poi_name").text(data.name);
+                $("#poi_img").attr("src","img/" + data.image);
+                $("#poi_address").text(data.address);
+                $("#poi_desc").html(data.desc.replace(/\n/g,"<br>"));
+                $('#poi_info').modal();
+            }
+
+            $("#poi_back").on("click", function(){
+                $("#all").show();
+                $("#info").hide();
+            });
+
+            for (var i=0; i < pois.length; i++) {
                 (function(datum){
                     var lnglat = [datum.lng,datum.lat];
                     var merc = ol.proj.transform(lnglat, "EPSG:4326", "EPSG:3857");
-                    var nowXyAsync = nowMapSource.merc2XyAsync(merc);
-                    var histXyAsync = histMapSource.merc2XyAsync(merc);
-                    Promise.all([nowXyAsync, histXyAsync]).then(function(xys){
-                        nowmap.addOverlay(new ol.Overlay({
-                            position: xys[0],
-                            element: $('<img src="img/marker-blue.png">')
-                                .css({marginTop: '-200%', marginLeft: '-50%', cursor: 'pointer'})
-                                .on("click", function(){
-                                    showInfo(datum);
-                                })
-                        }));
-                        histmap.addOverlay(new ol.Overlay({
-                            position: xys[1],
-                            element: $('<img src="img/marker-blue.png">')
-                                .css({marginTop: '-200%', marginLeft: '-50%', cursor: 'pointer'})
-                                .on("click", function(){
-                                    showInfo(datum);
-                                })
-                        }));                    
+                    var promise = [];
+                    for (var i=0; i < cache.length; i++) {
+                        promise.push(
+                            cache[i][0].merc2XyAsync(merc)
+                        );
+                    }
+                    Promise.all(promise).then(function(xys){
+                        for (var i = 0; i < cache.length; i++) {
+                            var map = cache[i][1];
+                            map.addOverlay(new ol.Overlay({
+                                position: xys[i],
+                                element: $('<img src="img/marker-blue.png">')
+                                    .css({marginTop: '-200%', marginLeft: '-50%', cursor: 'pointer'})
+                                    .on("click", function(){
+                                        showInfo(datum);
+                                    })
+                            }));
+                        }
                     });
-                })(data[i]);          
+                })(pois[i]);          
             }
-        }, "json");
-    });
+        });
+
+    }, "json");
 });
