@@ -85,7 +85,7 @@ require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss
                 sourcePromise.push(ol.source.histMap.createAsync(option));
                 $("#era_select").append('<option value="' + data.year + '">' + data.era + '</option>');
             }
-            $(".mainview").append('<div id="' + div + 'container" class="col-xs-12 h100p mapcontainer w100p"><div id="' + div + '" class="map h100p"></div></div>');
+            $('<div id="' + div + 'container" class="col-xs-12 h100p mapcontainer w100p"><div id="' + div + '" class="map h100p"></div></div>').insertBefore('#center_circle');
         }
 
         Promise.all(sourcePromise).then(function(sources) {
