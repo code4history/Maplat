@@ -66,7 +66,9 @@ define(["ol3"], function(ol) {
                 return this._map;
             }
 
-            this._gps_source = new ol.source.Vector({});
+            this._gps_source = new ol.source.Vector({
+                "wrapX" : false
+            });
             var vectorLayer = new ol.layer.Vector({
                 source: this._gps_source
             });
