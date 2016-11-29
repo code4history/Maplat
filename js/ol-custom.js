@@ -59,6 +59,14 @@ define(["ol3"], function(ol) {
             src: 'img/bluedot.png'
         }))
     });
+    var markerDefaultStyle = new ol.style.Style({
+        image: new ol.style.Icon(({
+            anchor: [0.5, 1.0],
+            anchorXUnits: 'fraction',
+            anchorYUnits: 'fraction',
+            src: 'img/marker-blue.png'
+        }))
+    });
 
     ol.source.setCustomFunction = function(target) {
         target.prototype.getMap = function() {
@@ -72,6 +80,13 @@ define(["ol3"], function(ol) {
             var vectorLayer = new ol.layer.Vector({
                 source: this._gps_source
             });
+
+            this._marker_source = new ol.source.Vector({
+                "wrapX" : false
+            });
+            var markerLayer = new ol.layer.Vector({
+                source: this._marker_source
+            });            
 
             this._map = new ol.Map({
                 controls: ol.control.defaults().extend([
@@ -141,6 +156,15 @@ define(["ol3"], function(ol) {
                 geometry: new ol.geom.Point(xy)
             });
             iconFeature.setStyle(gpsStyle);
+            src.addFeature(iconFeature);
+        };
+
+        target.prototype.setMarker = function(xy, data, markerStyle) {
+            var src = this._marker_source;
+            data['geometry'] = new ol.geom.Point(xy);
+            var iconFeature = new ol.Feature(data);
+            if (!markerStyle) markerStyle = markerDefaultStyle;
+            iconFeature.setStyle(markerStyle);
             src.addFeature(iconFeature);
         };
 
