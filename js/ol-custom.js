@@ -105,6 +105,7 @@ define(["ol3"], function(ol) {
                     new ol.layer.Tile({
                         source: this
                     }),
+                    markerLayer,
                     vectorLayer
                 ],
                 target: this.map_option.div,

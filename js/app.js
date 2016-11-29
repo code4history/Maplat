@@ -236,19 +236,32 @@ require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss
                     }
                     Promise.all(promise).then(function(xys){
                         for (var i = 0; i < cache.length; i++) {
-                            var map = cache[i][1];
-                            map.addOverlay(new ol.Overlay({
-                                position: xys[i],
-                                element: $('<img src="img/marker-blue.png">')
-                                    .css({marginTop: '-200%', marginLeft: '-50%', cursor: 'pointer'})
-                                    .on("click", function(){
-                                        showInfo(datum);
-                                    })
-                            }));
+                            var map = cache[i][0];
+                            map.setMarker(xys[i],{"datum":datum});
                         }
                     });
                 })(pois[i]);          
             }
+
+            for (var i = 0; i < cache.length; i++) {
+                var map = cache[i][1];
+                map.on('click', function(evt) {
+                    var feature = map.forEachFeatureAtPixel(evt.pixel,
+                        function(feature) {
+                            if (feature.get('datum')) return feature;
+                        });
+                    if (feature) {
+                        showInfo(feature.get('datum'));
+                    }
+                });
+
+                // change mouse cursor when over marker
+                map.on('pointermove', function(e) {
+                    var pixel = map.getEventPixel(e.originalEvent);
+                    var hit = map.hasFeatureAtPixel(pixel);
+                    map.getTarget().style.cursor = hit ? 'pointer' : '';
+                });
+            }            
         });
 
     }, "json");
