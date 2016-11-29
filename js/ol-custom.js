@@ -150,6 +150,24 @@ define(["ol3"], function(ol) {
             return ratio;
         };
 
+        target.prototype.mercsFromGivenZoom = function(center, zoom) {
+            var size  = this._map.getSize();
+            var pixel = Math.floor(Math.min(size[0],size[1]) / 4);
+
+            var delta = pixel * ol.const.MERC_MAX / 128 / Math.pow(2,zoom);
+            var crossMatrix = [
+                [0.0,0.0],
+                [0.0,delta],
+                [delta,0.0],
+                [0.0,-1.0 * delta],
+                [-1.0 * delta,0.0]
+            ];
+            var cross = crossMatrix.map(function(xy){
+                return [xy[0]+center[0],xy[1]+center[1]];
+            });
+            return cross;
+        }
+
         target.prototype.rotateMatrix = function(xys) {
             var theta = 1.0 * this._map.getView().getRotation();
             var result = [];

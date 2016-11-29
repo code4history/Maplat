@@ -133,11 +133,18 @@ require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss
                 var merc = ol.proj.transform(home_pos, "EPSG:4326", "EPSG:3857");
                 var source = from[0];
                 var view   = from[1].getView();
-                source.merc2XyAsync(merc).then(function(xy){
-                    view.setCenter(xy);
+                var mercs  = source.mercsFromGivenZoom(merc, def_zoom);
+                source.mercs2SizeAsync(mercs).then(function(size){
+                    view.setCenter(size[0]);
+                    view.setZoom(size[1]);
                     view.setRotation(0);
-                    view.setZoom(def_zoom);
                 });
+
+                //source.merc2XyAsync(merc).then(function(xy){
+                //    view.setCenter(xy);
+                //    view.setRotation(0);
+                //    view.setZoom(def_zoom);
+                //});
             };
 
             $("#era_select").change(function(){
