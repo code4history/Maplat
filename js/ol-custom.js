@@ -4,7 +4,7 @@ define(["ol3"], function(ol) {
         if (this.targetPointers.length < 2) {
             var map = mapBrowserEvent.map;
             var view = map.getView();
-            view.setHint(ol.ViewHint.INTERACTING, -1);
+            view.setHint(ol.View.Hint.INTERACTING, -1);
             //var resolution = view.getResolution();
             // Zoom to final resolution, with an animation, and provide a
             // direction not to zoom out/in if user was pinching in/out.
