@@ -167,9 +167,10 @@ require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss
                 if ((to == from) && (to != now)) return;
                 if (from == now) {
                     var layers = from[1].getLayers();
-                    while (layers.getLength() > 2) {
-                        layers.removeAt(1);
-                    }
+                    //ここで以前はタイルマップを削除していた、POIレイヤを削除してしまうため一時保留、後日直す
+                    //while (layers.getLength() > 2) {
+                    //    layers.removeAt(1);
+                    //}
                     if (init == true) {
                         home_process();
                     }
@@ -236,19 +237,39 @@ require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss
                     }
                     Promise.all(promise).then(function(xys){
                         for (var i = 0; i < cache.length; i++) {
-                            var map = cache[i][1];
-                            map.addOverlay(new ol.Overlay({
-                                position: xys[i],
-                                element: $('<img src="img/marker-blue.png">')
-                                    .css({marginTop: '-200%', marginLeft: '-50%', cursor: 'pointer'})
-                                    .on("click", function(){
-                                        showInfo(datum);
-                                    })
-                            }));
+                            var map = cache[i][0];
+                            map.setMarker(xys[i],{"datum":datum});
                         }
                     });
                 })(pois[i]);          
             }
+
+            for (var i = 0; i < cache.length; i++) {
+                var map = cache[i][1];
+                var click_handler = (function(map){
+                    return function(evt) {
+                        var feature = map.forEachFeatureAtPixel(evt.pixel,
+                            function (feature) {
+                                if (feature.get('datum')) return feature;
+                            });
+                        if (feature) {
+                            showInfo(feature.get('datum'));
+                        }
+                    };
+                })(map);
+                map.on('click', click_handler);
+
+                // change mouse cursor when over marker
+                var move_handler = (function(map){
+                    return function(e) {
+                        var pixel = map.getEventPixel(e.originalEvent);
+                        var hit = map.hasFeatureAtPixel(pixel);
+                        var target = map.getTarget();
+                        $("#"+target).css("cursor", hit ? 'pointer' : '');
+                    };
+                })(map);
+                map.on('pointermove', move_handler);
+            }            
         });
 
     }, "json");
