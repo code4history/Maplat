@@ -245,22 +245,28 @@ require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss
 
             for (var i = 0; i < cache.length; i++) {
                 var map = cache[i][1];
-                map.on('click', function(evt) {
-                    var feature = map.forEachFeatureAtPixel(evt.pixel,
-                        function(feature) {
-                            if (feature.get('datum')) return feature;
-                        });
-                    if (feature) {
-                        showInfo(feature.get('datum'));
-                    }
-                });
+                var click_handler = (function(map){
+                    return function(evt) {
+                        var feature = map.forEachFeatureAtPixel(evt.pixel,
+                            function (feature) {
+                                if (feature.get('datum')) return feature;
+                            });
+                        if (feature) {
+                            showInfo(feature.get('datum'));
+                        }
+                    };
+                })(map);
+                map.on('click', click_handler);
 
                 // change mouse cursor when over marker
-                map.on('pointermove', function(e) {
-                    var pixel = map.getEventPixel(e.originalEvent);
-                    var hit = map.hasFeatureAtPixel(pixel);
-                    map.getTarget().style.cursor = hit ? 'pointer' : '';
-                });
+                var move_handler = (function(map){
+                    return function(e) {
+                        var pixel = map.getEventPixel(e.originalEvent);
+                        var hit = map.hasFeatureAtPixel(pixel);
+                        map.getTarget().style.cursor = hit ? 'pointer' : '';
+                    };
+                })(map);
+                map.on('pointermove', move_handler);
             }            
         });
 
