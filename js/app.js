@@ -167,9 +167,10 @@ require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss
                 if ((to == from) && (to != now)) return;
                 if (from == now) {
                     var layers = from[1].getLayers();
-                    while (layers.getLength() > 2) {
-                        layers.removeAt(1);
-                    }
+                    //ここで以前はタイルマップを削除していた、POIレイヤを削除してしまうため一時保留、後日直す
+                    //while (layers.getLength() > 2) {
+                    //    layers.removeAt(1);
+                    //}
                     if (init == true) {
                         home_process();
                     }
@@ -263,7 +264,8 @@ require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss
                     return function(e) {
                         var pixel = map.getEventPixel(e.originalEvent);
                         var hit = map.hasFeatureAtPixel(pixel);
-                        map.getTarget().style.cursor = hit ? 'pointer' : '';
+                        var target = map.getTarget();
+                        $("#"+target).css("cursor", hit ? 'pointer' : '');
                     };
                 })(map);
                 map.on('pointermove', move_handler);
