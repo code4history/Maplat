@@ -2,33 +2,41 @@
 
 var async = require('async'),
     im    = require('imagemagick'),
-    opts  = require('opts'),
+    argv     = require('argv'),
     path  = require('path'),
-    fs    = require('fs');
+    fs    = require('fs-extra');
 
-opts.parse([
-  {
-    'short': 'f',
-    'long': 'file',
-    'description': 'Source image file to be tiles',
-    'value': true,
-    'required': true
-  }, {
-    'short': 'e',
-    'long': 'extension',
-    'description': 'Specify tile image\'s extension',
-    'value': true,
-    'required': false
-  },
-]);
+var args = argv.option( [{
+    name: 'source',
+    short: 's',
+    type: 'path',
+    description: 'Source image file to be tiles',
+    example: "'imagecutter.js --source=path' or 'imagecutter.js -s path'"
+},{
+    name: 'extension',
+    short: 'e',
+    type: 'string',
+    description: 'Specify tile image\'s extension',
+    example: "'imagecutter.js --extension=jpg' or 'imagecutter.js -e jpg'"
+},{
+    name: 'output',
+    short: 'o',
+    type: 'path',
+    description: 'Defines output folder',
+    example: "'imagecutter.js --output=path' or 'imagecutter.js -o path'"
+}] ).run();
 
-var srcFile = opts.get('file');
-var extKey  = opts.get('extension');
-
+var srcFile = args.options.source;
+var extKey  = args.options.extension;
+var outFolder = args.options.output;
+if (!srcFile) stop('Source option is mandatory.');
+if (!outFolder) {
+    outFolder = "./tiles";
+}
 doCrop(srcFile);
 
 function doCrop(srcFile) {
-  var regex   =  new RegExp('^(.+)\\.([^\\.]+)$');
+  var regex   =  new RegExp('([^\\/]+)\\.([^\\.]+)$');
   var fileKey;
   if (srcFile.match(regex)) {
     fileKey = RegExp.$1;
@@ -38,9 +46,9 @@ function doCrop(srcFile) {
   }
 
   try {
-    fs.statSync(fileKey);
+    fs.statSync(outFolder + "/" + fileKey);
   } catch (e) {
-    fs.mkdirSync(fileKey, 0777);
+    fs.mkdirSync(outFolder + "/" + fileKey, 0777);
   }
 
   im.identify(srcFile, function(err, features){
@@ -54,12 +62,10 @@ function doCrop(srcFile) {
     var yZoom  = Math.ceil(Math.log(height / 256) / Math.log(2));
     var zoom   = xZoom > yZoom ? xZoom : yZoom;
     if (zoom < 0) zoom = 0;
-    console.log(width + ' ' + height + ' ' + xZoom + ' ' + yZoom + ' ' + zoom);
 
     var parallel = [];
 
     for (var z=zoom;z>=0;z--) {
-      console.log(z);
       var args = [srcFile];
       var zw,zh;
       if (z != zoom) {
@@ -73,8 +79,7 @@ function doCrop(srcFile) {
       }
       args.push('-crop');
       args.push('256x256');
-      args.push(fileKey + '/' + fileKey + '-' + z + '.' + extKey);
-      //console.log(args);
+      args.push(outFolder + "/" + fileKey + '/' + fileKey + '-' + z + '.' + extKey);
       
       (function(){
         var _args = args;
@@ -82,7 +87,6 @@ function doCrop(srcFile) {
         var _zw   = zw;
         var _zh   = zh;
         var func = function(callback) {
-          //console.log("Inside: " + _args);
           console.log('Zoom ' + _z + ' tiling is start.');
           im.convert(_args,function(err, stdout, stderr) {
             console.log('Zoom ' + _z + ' tiling is end.');
@@ -92,11 +96,12 @@ function doCrop(srcFile) {
               for (var zx = 0; zx*256 < _zw; zx++) {
                 var origName;
                 if (_z == 0) {
-                  origName   = fileKey + '/' + fileKey + '-0.' + extKey;
+                  origName   = outFolder + "/" + fileKey + '/' + fileKey + '-0.' + extKey;
                 } else {
-                  origName   = fileKey + '/' + fileKey + '-' + _z + '-' + zi +'.' + extKey;
+                  origName   = outFolder + "/" + fileKey + '/' + fileKey + '-' + _z + '-' + zi +'.' + extKey;
                 }
-                var changeName = fileKey + '/' + fileKey + '-' + _z + '_' + zx + '_' + zy +'.' + extKey;
+                fs.mkdirsSync(outFolder + "/" + fileKey +'/' + _z + '/' + zx);
+                var changeName = outFolder + "/" + fileKey + '/' + _z + '/' + zx + '/' + zy +'.' + extKey;
 
                 fs.renameSync(origName,changeName);
 
