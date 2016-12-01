@@ -176,8 +176,12 @@ require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss
                     }
                 }
                 if (to != from) {
+                    var view = from[1].getView();
+                    console.log("From: Center: " + view.getCenter() + " Zoom: " + view.getZoom() + " Rotation: " + view.getRotation());
                     from[0].size2MercsAsync().then(function(mercs){
+                        console.log("Mercs: " + mercs);
                         to[0].mercs2SizeAsync(mercs).then(function(size){
+                            console.log("To: Center: " + size[0] + " Zoom: " + size[1] + " Rotation: " + size[2]);
                             var view = to[1].getView();
                             view.setCenter(size[0]);
                             view.setZoom(size[1]);
