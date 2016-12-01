@@ -2,7 +2,7 @@ var fs       = require('fs'),
     path     = require('path'),
     argv     = require('argv'),
     readline = require('readline');
-var ThinPlateSpline = require("./js/thinplatespline");
+var ThinPlateSpline = require("../js/thinplatespline");
 
 var args = argv.option( [{
     name: 'source',
