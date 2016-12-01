@@ -169,8 +169,7 @@ define(["ol3"], function(ol) {
             src.addFeature(iconFeature);
         };
 
-        target.prototype.getRadius = function() {
-            var size = this._map.getSize();
+        target.prototype.getRadius = function(size) {
             var radius = Math.floor(Math.min(size[0],size[1]) / 4);
             var zoom = this._map.getView().getDecimalZoom();
             var ratio = radius * ol.const.MERC_MAX / 128 / Math.pow(2,zoom);
@@ -211,7 +210,8 @@ define(["ol3"], function(ol) {
             if (!center) {
                 center = this._map.getView().getCenter();
             }
-            var radius = this.getRadius();
+            var size   = this._map.getSize();
+            var radius = this.getRadius(size);
             var crossMatrix = [
                 [0.0,0.0],
                 [0.0,radius],
@@ -223,13 +223,15 @@ define(["ol3"], function(ol) {
             var cross = crossDelta.map(function(xy){
                 return [xy[0]+center[0],xy[1]+center[1]];
             });
+            cross.push(size);
             return cross;
         };
 
         target.prototype.size2MercsAsync = function(center) {
             var cross = this.size2Xys(center);
             var self = this;
-            var promises = cross.map(function(val) {
+            var promises = cross.map(function(val, index) {
+                if (index == 5) return val;
                 return self.xy2MercAsync(val);
             });
             return Promise.all(promises);
@@ -237,7 +239,8 @@ define(["ol3"], function(ol) {
 
         target.prototype.mercs2SizeAsync = function(mercs) {
             var self = this;
-            var promises = mercs.map(function(merc) {
+            var promises = mercs.map(function(merc,index) {
+                if (index == 5) return merc;
                 return self.merc2XyAsync(merc);
             });
             return Promise.all(promises).then(function(xys){
@@ -248,7 +251,8 @@ define(["ol3"], function(ol) {
 
         target.prototype.xys2Size = function(xys) {
             var center = xys[0];
-            var nesw = xys.slice(1);
+            var size   = xys[5];
+            var nesw   = xys.slice(1,5);
             var neswDelta = nesw.map(function(val){
                 return [val[0] - center[0],val[1] - center[1]];
             });
@@ -270,7 +274,7 @@ define(["ol3"], function(ol) {
             var scale = abss / 4.0;
             var omega = Math.atan2(sinx, cosx);
 
-            var size = this._map.getSize();
+            if (!size) size = this._map.getSize();
             var radius = Math.floor(Math.min(size[0],size[1]) / 4);
             var zoom = Math.log(radius * ol.const.MERC_MAX / 128 / scale) / Math.log(2);
 
