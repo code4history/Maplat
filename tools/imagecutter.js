@@ -31,13 +31,12 @@ var extKey  = args.options.extension;
 var outFolder = args.options.output;
 if (!srcFile) stop('Source option is mandatory.');
 if (!outFolder) {
-    outFolder = ".";
+    outFolder = "./tiles";
 }
-
 doCrop(srcFile);
 
 function doCrop(srcFile) {
-  var regex   =  new RegExp('^(.+)\\.([^\\.]+)$');
+  var regex   =  new RegExp('([^\\/]+)\\.([^\\.]+)$');
   var fileKey;
   if (srcFile.match(regex)) {
     fileKey = RegExp.$1;
