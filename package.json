@@ -1,5 +1,7 @@
 {
   "dependencies": {
-    "argv": "0.0.2"
+    "argv": "0.0.2",
+    "fs-extra": "^1.0.0",
+    "imagemagick": "^0.1.3"
   }
 }
