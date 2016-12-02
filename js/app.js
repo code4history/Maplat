@@ -5,6 +5,7 @@ require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss
         $('#loadWait').modal();
 
         var from;
+        var merc_buffer = null;
         var gps_process;
         var gps_callback = function(e) {
             gps_process(e);
@@ -96,6 +97,10 @@ require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss
             for (var i=0; i<sources.length; i++) {
                 var source = sources[i];
                 var map = source.getMap();
+                map.on("movestart",function(){
+                   console.log("Clear buffer");
+                   merc_buffer = null;
+                });
                 var cont = "#map" + i + "container";
                 var item = [source, map, cont];
                 cache.push(item);
@@ -178,9 +183,36 @@ require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss
                 if (to != from) {
                     var view = from[1].getView();
                     console.log("From: Center: " + view.getCenter() + " Zoom: " + view.getZoom() + " Rotation: " + view.getRotation());
-                    from[0].size2MercsAsync().then(function(mercs){
+                    var fromPromise = from[0].size2MercsAsync();
+                    if (merc_buffer && merc_buffer.mercs) {
+                        console.log("From: Use buffer");
+                        fromPromise = new Promise(function(res, rej){
+                            res(merc_buffer.mercs);
+                        });
+                    } else {
+                        merc_buffer = {
+                            buffer:{}
+                        };
+                    }
+
+                    fromPromise.then(function(mercs){
+                        merc_buffer.mercs = mercs;
+                        var view = from[1].getView();
+                        merc_buffer.buffer[from[0].mapID ? from[0].mapID : 'nowMap'] = [
+                            view.getCenter(), view.getZoom(), view.getRotation()
+                        ];
                         console.log("Mercs: " + mercs);
-                        to[0].mercs2SizeAsync(mercs).then(function(size){
+                        var toPromise = to[0].mercs2SizeAsync(mercs);
+                        var key = to[0].mapID ? to[0].mapID : 'nowMap';
+                        if (merc_buffer.buffer[key]) {
+                            console.log("To: Use buffer");
+                            toPromise = new Promise(function(res, rej){
+                                res(merc_buffer.buffer[key]);
+                            });
+                        } else {
+                            to[1].AvoidFirstMoveStart = true;
+                        }
+                        toPromise.then(function(size){
                             console.log("To: Center: " + size[0] + " Zoom: " + size[1] + " Rotation: " + size[2]);
                             var view = to[1].getView();
                             view.setCenter(size[0]);
