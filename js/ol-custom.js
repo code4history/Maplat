@@ -88,7 +88,7 @@ define(["ol3"], function(ol) {
                 source: this._marker_source
             });            
 
-            this._map = new ol.Map({
+            var map = this._map = new ol.Map({
                 controls: ol.control.defaults().extend([
                     new ol.control.CustomControl({
                         character: '<i class="fa fa-crosshairs fa-lg"></i>',
@@ -114,6 +114,18 @@ define(["ol3"], function(ol) {
                     zoom: this.map_option.default_zoom || 2,
                     rotation: this.map_option.default_rotation || 0
                 })
+            });
+
+            var view = map.getView();
+            map.AvoidFirstMoveStart = true;
+            var movestart = function(){
+                if (!map.AvoidFirstMoveStart) map.dispatchEvent('movestart');
+                map.AvoidFirstMoveStart = false;
+                view.un('propertychange', movestart);
+            };
+            view.on('propertychange', movestart);
+            map.on('moveend', function() {
+                view.on('propertychange', movestart);
             });
 
             /*var self = this;
