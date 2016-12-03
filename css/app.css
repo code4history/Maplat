@@ -23,7 +23,8 @@ html,body {
 }
 
 .mainview {
-    height:calc(100% - 50px);
+    height: 100%;
+    /*height:calc(100% - 50px);*/
     position: relative;
 }
 
@@ -81,7 +82,15 @@ html,body {
 
 .slick-box {
     position: absolute;
-    bottom: 5px;
+    bottom: .5em;
     left: calc(50% - 100px);
     width: 200px;
+}
+
+.slick-item {
+    text-align: center;
+}
+
+.ol-attribution {
+    bottom: calc(70px + .5em);
 }

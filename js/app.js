@@ -3,6 +3,12 @@ require(["jquery", "histmap", "bootstrap", "slick"], function($, ol) {//"css!boo
     $.get(app_json, function(app_data) {
         $("#all").show();
         $('#loadWait').modal();
+        $('.slick-class').slick({
+            prevArrow: '',
+            nextArrow: '',
+            centerMode: true,
+            focusOnSelect: true
+        });
 
         var from;
         var merc_buffer = null;
@@ -16,7 +22,7 @@ require(["jquery", "histmap", "bootstrap", "slick"], function($, ol) {//"css!boo
         };
         var home_pos = app_data.home_position;
         var def_zoom = app_data.default_zoom;
-        var now_year = app_data.now_year;
+        var now_year = "osm";
         var now_era = app_data.now_era;
         var app_name = app_data.app_name;
         var fake_gps = app_data.fake_gps;
@@ -58,7 +64,9 @@ require(["jquery", "histmap", "bootstrap", "slick"], function($, ol) {//"css!boo
                     gps_callback: gps_callback,
                     home_callback: home_callback
                 }));
-                $("#era_select").append('<option value="' + now_year + '" selected>' + now_era + '</option>');
+                $("#era_select").append('<option value="osm" selected>' + now_era + '</option>');
+                $('.slick-class').slick('slickAdd','<div class="slick-item" data="osm"><h3>OSM</h3></div>');
+                $('.slick-class').slick('slickGoTo',dataSource.length);
             } else {
                 var data = dataSource[i];
                 dataHash[data.year] = data;
@@ -85,22 +93,17 @@ require(["jquery", "histmap", "bootstrap", "slick"], function($, ol) {//"css!boo
                 }
                 sourcePromise.push(ol.source.histMap.createAsync(option));
                 $("#era_select").append('<option value="' + data.year + '">' + data.era + '</option>');
+                $('.slick-class').slick('slickAdd','<div class="slick-item" data="' + data.year +  '"><h3>' + data.year + '</h3></div>');
             }
             $('<div id="' + div + 'container" class="col-xs-12 h100p mapcontainer w100p"><div id="' + div + '" class="map h100p"></div></div>').insertBefore('#center_circle');
         }
 
         Promise.all(sourcePromise).then(function(sources) {
-            $('.slick-class').slick({
-                prevArrow: '',
-                nextArrow: '',
-                centerMode: true,
-                focusOnSelect: true
-            });
-
             $('#loadWait').modal('hide');
 
             var cache = [];
             var cache_hash = {};
+            var clickavoid = false;
             for (var i=0; i<sources.length; i++) {
                 var source = sources[i];
                 var map = source.getMap();
@@ -111,7 +114,7 @@ require(["jquery", "histmap", "bootstrap", "slick"], function($, ol) {//"css!boo
                 var cont = "#map" + i + "container";
                 var item = [source, map, cont];
                 cache.push(item);
-                var year = i == sources.length - 1 ? now_year : dataSource[i].year;
+                var year = i == sources.length - 1 ? 'osm' : dataSource[i].year;
                 cache_hash[year] = item;
             }
 
@@ -173,13 +176,26 @@ require(["jquery", "histmap", "bootstrap", "slick"], function($, ol) {//"css!boo
                 changeMap();
             });
 
-            from = cache[1];
-            changeMap(true);
+            $(".slick-item").on("click",function(){
+                if (!clickavoid) {
+                    console.log($(this).attr("data") + " clicked!");
+                    changeMap(false, $(this).attr("data"));
+                }
+            });
+            $(".slick-class").on("beforeChange",function(ev, slick, currentSlide, nextSlide){
+                clickavoid = currentSlide != nextSlide;
+            });
+            $(".slick-class").on("afterChange",function(ev, slick, currentSlide){
+                clickavoid = false;
+            });
 
-            function changeMap(init) {
-                var year = $("#era_select").val();
+            from = cache[1];
+            changeMap(true, "osm");
+
+            function changeMap(init,year) {
+                //var year = $("#era_select").val();
                 var type = $("#map_type").val();
-                var now = cache_hash[now_year];
+                var now = cache_hash['osm'];
                 var to = type == "plat" ? cache_hash[year] : now;
                 //if (((to == from) || ($(to[2]).is(':visible') && $(from[2]).is(':hidden'))) && (to != now)) return;
                 if ((to == from) && (to != now)) return;
