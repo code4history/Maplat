@@ -1,4 +1,4 @@
-require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss", "css!ol3css"], function($, ol, tps) {
+require(["jquery", "histmap", "bootstrap", "slick"], function($, ol) {//"css!bootstrapcss", "css!ol3css"], function($, ol, tps) {
     var app_json = "json/" + appid + ".json";
     $.get(app_json, function(app_data) {
         $("#all").show();
@@ -90,6 +90,13 @@ require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss
         }
 
         Promise.all(sourcePromise).then(function(sources) {
+            $('.slick-class').slick({
+                prevArrow: '',
+                nextArrow: '',
+                centerMode: true,
+                focusOnSelect: true
+            });
+
             $('#loadWait').modal('hide');
 
             var cache = [];

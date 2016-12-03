@@ -1,18 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Maplat</title>
-<meta content="yes" name="apple-mobile-web-app-capable"> 
-<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
-<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-<link rel="stylesheet" href="css/app.css">
+  <meta charset="UTF-8">
+  <title>Maplat</title>
+  <meta content="yes" name="apple-mobile-web-app-capable">
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.css">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
   <div class="container-fluid h100p w100p">
     <div id="all" class="row-fluid h100p">
       <div class="row-fluid mainview">
         <img id="center_circle" style="position:absolute;top:50%;left:50%;margin-top:-10px;margin-left:-10px;" src="./img/redcircle.png">
+        <div class="slick-box">
+          <div class="slick-class">
+            <div>your content1</div>
+            <div>your content2</div>
+            <div>your content3</div>
+          </div>
+        </div>
       </div>
       <div class="row-fluid controlview" style="width: 100%">
         <input type="hidden" name="map_type" id="map_type" value="plat">

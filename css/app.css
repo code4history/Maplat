@@ -78,3 +78,10 @@ html,body {
     max-height:300px;
     vertical-align: middle;/*IE7*/
 }
+
+.slick-box {
+    position: absolute;
+    bottom: 5px;
+    left: calc(50% - 100px);
+    width: 200px;
+}
