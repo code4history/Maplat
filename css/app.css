@@ -67,16 +67,22 @@ html,body {
 }
 
 .poi_img {
+    position: relative;
     display: table-cell;
     text-align: center;
     vertical-align: middle;
 }
 
 .poi_img img {
-    width:auto;
+    width:100%;
     height:auto;
     max-width:300px;
     max-height:300px;
+    top: 0px;
+    bottom: 0px;
+    left:0px;
+    right:0px;
+    margin: auto;
     vertical-align: middle;/*IE7*/
 }
 
