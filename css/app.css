@@ -88,7 +88,31 @@ html,body {
 }
 
 .slick-item {
+    position: relative;
     text-align: center;
+    width: 60px;
+    height: 60px;
+}
+
+.slick-item img {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    z-index: 0;
+}
+
+.slick-item div {
+    position: absolute;
+    right: .5em;
+    bottom: .5em;
+    left: .5em;
+    margin: auto;
+    z-index: 1;
+    color: white;
+    background-color: rgba(32,32,32,0.5);
 }
 
 .ol-attribution {

@@ -7,7 +7,9 @@ require(["jquery", "histmap", "bootstrap", "slick"], function($, ol) {//"css!boo
             prevArrow: '',
             nextArrow: '',
             centerMode: true,
-            focusOnSelect: true
+            focusOnSelect: true,
+            slidesToScroll: 3,
+            centerPadding: '40px'
         });
 
         var from;
@@ -65,7 +67,7 @@ require(["jquery", "histmap", "bootstrap", "slick"], function($, ol) {//"css!boo
                     home_callback: home_callback
                 }));
                 $("#era_select").append('<option value="osm" selected>' + now_era + '</option>');
-                $('.slick-class').slick('slickAdd','<div class="slick-item" data="osm"><h3>OSM</h3></div>');
+                $('.slick-class').slick('slickAdd','<div class="slick-item" data="osm"><img src="./tmbs/osm_menu.png"><div>OSM</div></div>');
                 $('.slick-class').slick('slickGoTo',dataSource.length);
             } else {
                 var data = dataSource[i];
@@ -93,7 +95,7 @@ require(["jquery", "histmap", "bootstrap", "slick"], function($, ol) {//"css!boo
                 }
                 sourcePromise.push(ol.source.histMap.createAsync(option));
                 $("#era_select").append('<option value="' + data.year + '">' + data.era + '</option>');
-                $('.slick-class').slick('slickAdd','<div class="slick-item" data="' + data.year +  '"><h3>' + data.year + '</h3></div>');
+                $('.slick-class').slick('slickAdd','<div class="slick-item" data="' + data.year +  '"><img src="./tmbs/' + data.mapID + '_menu.jpg"><div>' + data.year + '</div></div>');
             }
             $('<div id="' + div + 'container" class="col-xs-12 h100p mapcontainer w100p"><div id="' + div + '" class="map h100p"></div></div>').insertBefore('#center_circle');
         }
