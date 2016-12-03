@@ -63,7 +63,7 @@ define(["ol3"], function(ol) {
             anchor: [0.5, 0.5],
             anchorXUnits: 'fraction',
             anchorYUnits: 'fraction',
-            src: 'img/bluedot.png'
+            src: 'parts/bluedot.png'
         }))
     });
     var markerDefaultStyle = new ol.style.Style({
@@ -71,7 +71,7 @@ define(["ol3"], function(ol) {
             anchor: [0.5, 1.0],
             anchorXUnits: 'fraction',
             anchorYUnits: 'fraction',
-            src: 'img/marker-blue.png'
+            src: 'parts/defaultpin.png'
         }))
     });
 
