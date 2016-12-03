@@ -114,19 +114,25 @@ require(["jquery", "histmap", "bootstrap"], function($, ol) {//"css!bootstrapcss
                 $('#gpsWait').modal();
                 geolocation.once('change', function(evt) {
                     var lnglat = geolocation.getPosition();
+                    var acc    = geolocation.getAccuracy();
                     if (fake_gps && getDistance(home_pos,lnglat) > fake_radius) {
                         lnglat = [home_pos[0] + (Math.random() - 0.5) / 1000,home_pos[1] + (Math.random() - 0.5) / 1000];
+                        acc    = 15.0 + (Math.random() -0.5) * 10;
                     }
                     geolocation.setTracking(false);
-                    var merc = ol.proj.transform(lnglat, "EPSG:4326", "EPSG:3857");
+                    var mercs = null;
                     for (var i=0;i<cache.length;i++) {
                         (function(){
                             var target = cache[i];
                             var source = target[0];
                             var view   = target[1].getView();
-                            source.merc2XyAsync(merc).then(function(xy){
-                                if (target == from) view.setCenter(xy);
-                                source.setGPSPosition(xy);
+                            if (!mercs) {
+                                mercs = source.mercsFromGPSValue(lnglat,acc);
+                            }
+                            source.mercs2SizeAsync(mercs).then(function(size){
+                                if (target == from) view.setCenter(size[0]);
+                                source.setGPSPosition(size[0]);
+                                view.setZoom(size[1]);
                             });
                         })();
                     }

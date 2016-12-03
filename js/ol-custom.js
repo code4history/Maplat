@@ -50,6 +50,13 @@ define(["ol3"], function(ol) {
 
     ol.const = ol.const ? ol.const : {};
     ol.const.MERC_MAX = 20037508.342789244;
+    ol.const.MERC_CROSSMATRIX = [
+        [ 0.0, 0.0],
+        [ 0.0, 1.0],
+        [ 1.0, 0.0],
+        [ 0.0,-1.0],
+        [-1.0, 0.0]
+    ];
 
     var gpsStyle = new ol.style.Style({
         image: new ol.style.Icon(({
@@ -193,18 +200,21 @@ define(["ol3"], function(ol) {
             var pixel = Math.floor(Math.min(size[0],size[1]) / 4);
 
             var delta = pixel * ol.const.MERC_MAX / 128 / Math.pow(2,zoom);
-            var crossMatrix = [
-                [0.0,0.0],
-                [0.0,delta],
-                [delta,0.0],
-                [0.0,-1.0 * delta],
-                [-1.0 * delta,0.0]
-            ];
-            var cross = crossMatrix.map(function(xy){
-                return [xy[0]+center[0],xy[1]+center[1]];
+            var cross = ol.const.MERC_CROSSMATRIX.map(function(xy){
+                return [xy[0]*delta+center[0],xy[1]*delta+center[1]];
             });
             return cross;
-        }
+        };
+
+        target.prototype.mercsFromGPSValue = function(lnglat, acc) {
+            var merc = ol.proj.transform(lnglat, "EPSG:4326", "EPSG:3857");
+            var latrad = lnglat[1] * Math.PI / 180;
+            var delta = acc / Math.cos(latrad);
+            var cross = ol.const.MERC_CROSSMATRIX.map(function(xy){
+                return [xy[0]*delta+merc[0],xy[1]*delta+merc[1]];
+            });
+            return cross;
+        };
 
         target.prototype.rotateMatrix = function(xys) {
             var theta = 1.0 * this._map.getView().getRotation();
@@ -224,16 +234,9 @@ define(["ol3"], function(ol) {
             }
             var size   = this._map.getSize();
             var radius = this.getRadius(size);
-            var crossMatrix = [
-                [0.0,0.0],
-                [0.0,radius],
-                [radius,0.0],
-                [0.0,-1.0 * radius],
-                [-1.0 * radius,0.0]
-            ];
-            var crossDelta = this.rotateMatrix(crossMatrix);
+            var crossDelta = this.rotateMatrix(ol.const.MERC_CROSSMATRIX);
             var cross = crossDelta.map(function(xy){
-                return [xy[0]+center[0],xy[1]+center[1]];
+                return [xy[0]*radius+center[0],xy[1]*radius+center[1]];
             });
             cross.push(size);
             return cross;
