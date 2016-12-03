@@ -8,6 +8,7 @@ require.config({
     paths: {
         "jquery" : "//code.jquery.com/jquery-1.11.2.min",
         "jui" : "//code.jquery.com/ui/1.10.3/jquery-ui.min",
+        "slick" : "//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.min",
         "ol3" : "ol-debug",
         "ol-custom" : "ol-custom",
         //"ol3css" : "../css/ol",
@@ -21,6 +22,9 @@ require.config({
         },
         'jui' : { 
             deps: ['jquery'] 
+        },
+        'slick' : {
+            deps: ['jquery']
         },
         'ol' : {
             exports: 'ol'
