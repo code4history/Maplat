@@ -48,6 +48,48 @@ define(["ol3"], function(ol) {
     };
     ol.inherits(ol.control.CustomControl, ol.control.Control);
 
+    ol.control.CompassRotate = function(opt_options) {
+        var options = opt_options || {};
+        options.autoHide = false;
+        var span = document.createElement('span');
+        span.innerHTML = '<i class="fa fa-compass fa-lg ol-compass-fa"></i>';
+        options.label = span;
+        options.render = function(mapEvent) {
+            var frameState = mapEvent.frameState;
+            if (!frameState) {
+                return;
+            }
+            var view = this.getMap().getView();
+            var rotation = frameState.viewState.rotation;
+            var center   = view.getCenter();
+            var zoom     = view.getDecimalZoom();
+            if (rotation != this.rotation_ || center[0] != this.center_[0] || center[1] != this.center_[1] || zoom != this.zoom_) {
+                var contains = this.element.classList.contains("no_rotation");
+                if (!contains && rotation === 0) {
+                    this.element.classList.add("no_rotation");
+                } else if (contains && rotation !== 0) {
+                    this.element.classList.remove("no_rotation");
+                }
+                var self = this;
+                var source = this.getMap().getLayers().item(0).getSource();
+                source.size2MercsAsync().then(function(mercs){
+                    var rot = source.mercs2MercRotation(mercs);
+                    var transform = 'rotate(' + rot + 'rad)';
+                    self.label_.style.msTransform = transform;
+                    self.label_.style.webkitTransform = transform;
+                    self.label_.style.transform = transform;
+                });
+            }
+            this.rotation_ = rotation;
+            this.center_   = center;
+            this.zoom_     = zoom;
+        };
+        ol.control.Rotate.call(this, options);
+        this.center_ = [];
+        this.zoom_ = undefined;
+    };
+    ol.inherits(ol.control.CompassRotate, ol.control.Rotate);
+
     ol.const = ol.const ? ol.const : {};
     ol.const.MERC_MAX = 20037508.342789244;
     ol.const.MERC_CROSSMATRIX = [
@@ -96,7 +138,10 @@ define(["ol3"], function(ol) {
             });            
 
             var map = this._map = new ol.Map({
-                controls: ol.control.defaults().extend([
+                controls: [
+                    new ol.control.Attribution(),
+                    new ol.control.CompassRotate(),
+                    new ol.control.Zoom(),
                     new ol.control.CustomControl({
                         character: '<i class="fa fa-crosshairs fa-lg"></i>',
                         cls: "gps",
@@ -107,7 +152,7 @@ define(["ol3"], function(ol) {
                         cls: "home",
                         callback: this._home_callback
                     })
-                ]),
+                ],
                 layers: [
                     new ol.layer.Tile({
                         source: this
@@ -295,6 +340,35 @@ define(["ol3"], function(ol) {
 
             return [center,zoom,omega];
         }
+
+        target.prototype.mercs2MercRotation = function(xys) {
+            var center = xys[0];
+            var size   = xys[5];
+            var nesw   = xys.slice(1,5);
+            var neswDelta = nesw.map(function(val){
+                return [val[0] - center[0],val[1] - center[1]];
+            });
+            var normal = [[0.0,1.0],[1.0,0.0],[0.0,-1.0],[-1.0,0.0]];
+            var abss = 0;
+            var cosx = 0;
+            var sinx = 0;
+            for (var i = 0; i < 4; i++) {
+                var delta = neswDelta[i];
+                var norm  = normal[i];
+                var abs   = Math.sqrt(Math.pow(delta[0], 2) + Math.pow(delta[1], 2));
+                abss     += abs;
+                var outer = delta[0] * norm[1] - delta[1] * norm[0];
+                var inner = Math.acos((delta[0] * norm[0] + delta[1] * norm[1]) / abs);
+                var theta = outer > 0.0 ? -1.0 * inner : inner;
+                cosx     += Math.cos(theta);
+                sinx     += Math.sin(theta);
+            }
+            var scale = abss / 4.0;
+            var omega = Math.atan2(sinx, cosx);
+
+            return omega;
+        }
+
 
         target.prototype.setGPSCallback = function(func) {
             this._gps_callback = func;

@@ -124,3 +124,20 @@ html,body {
 .ol-attribution {
     bottom: calc(70px + .5em);
 }
+
+.ol-compass-fa {
+    -webkit-transform: rotate(-33deg);
+    -o-transform: rotate(-33deg);
+    transform: rotate(-33deg);
+}
+
+.ol-control.no_rotation button {
+    color: rgba(255,255,255,.7);
+    background-color: rgba(0,60,136,.2);
+}
+
+.ol-control.no_rotation button:focus,.ol-control.no_rotation button:hover {
+    color: rgba(255,255,255,.7);
+    background-color: rgba(0,60,136,.2)
+}
+
