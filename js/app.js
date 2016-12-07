@@ -85,17 +85,22 @@ require(requires, function($, ol) {//"css!bootstrapcss", "css!ol3css"], function
                     mapID: data.mapID,
                     width: data.width,
                     height: data.height,
+                    logic: data.logic || "tps",
                     map_option: {
                         div: div
                     },
                     gps_callback: gps_callback,
                     home_callback: home_callback      
                 };
-                if (make_binary) {
-                    option.tps_serial = data.mapID + ".bin";
-                    option.tps_points = '../json/' + data.mapID + '_points.json';
+                if (data.logic =="tin") {
+                    option.tin_points_url = '../json/' + data.mapID + '_points.json';
                 } else {
-                    option.tps_serial = '../bin/' + data.mapID + '.bin';
+                    if (make_binary) {
+                        option.tps_serial = data.mapID + ".bin";
+                        option.tps_points = '../json/' + data.mapID + '_points.json';
+                    } else {
+                        option.tps_serial = '../bin/' + data.mapID + '.bin';
+                    }
                 }
                 sourcePromise.push(ol.source.histMap.createAsync(option));
                 $("#era_select").append('<option value="' + data.year + '">' + data.era + '</option>');

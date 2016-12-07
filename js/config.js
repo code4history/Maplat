@@ -8,6 +8,7 @@ require.config({
     paths: {
         "jquery" : "//code.jquery.com/jquery-1.11.2.min",
         "jui" : "//code.jquery.com/ui/1.10.3/jquery-ui.min",
+        "turf" : "//npmcdn.com/@turf/turf@3.7.0/turf.min",
         "slick" : "//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.min",
         "ol3" : "ol-debug",
         "ol-custom" : "ol-custom",
@@ -22,6 +23,9 @@ require.config({
         },
         'jui' : { 
             deps: ['jquery'] 
+        },
+        'turf' : {
+            exports: 'turf'
         },
         'slick' : {
             deps: ['jquery']
