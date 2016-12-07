@@ -16,7 +16,7 @@ define(["histmap", "turf"], function(ol, turf) {
 
             xhr.onload = function(e) {
                 if (this.status == 200) {
-                    var points = JSON.parse(this.response);
+                    var points = this.response;
                     obj.setTinPoints(points);
                     resolve(obj);
                 } else {
@@ -34,7 +34,7 @@ define(["histmap", "turf"], function(ol, turf) {
         var promise = new Promise(function(resolve, reject) {
             var x = (xy[0]  + ol.const.MERC_MAX) * self._maxxy / (2*ol.const.MERC_MAX);
             var y = (-xy[1] + ol.const.MERC_MAX) * self._maxxy / (2*ol.const.MERC_MAX);
-            var merc = transform_arr(turf.point([x,y]), this.for_tins, this.for_points);
+            var merc = transform_arr(turf.point([x,y]), self.for_tins, self.for_points);
             resolve(merc);
         });
         return promise;
@@ -42,7 +42,7 @@ define(["histmap", "turf"], function(ol, turf) {
     ol.source.histMap_tin.prototype.merc2XyAsync_ = function(merc) {
         var self = this;
         var promise = new Promise(function(resolve, reject) {
-            var xy = transform_arr(turf.point(merc), this.bak_tins, this.bak_points);
+            var xy = transform_arr(turf.point(merc), self.bak_tins, self.bak_points);
             var x =       xy[0] * (2*ol.const.MERC_MAX) / self._maxxy - ol.const.MERC_MAX;
             var y = -1 * (xy[1] * (2*ol.const.MERC_MAX) / self._maxxy - ol.const.MERC_MAX);
             resolve([x,y]);
