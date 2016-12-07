@@ -1,4 +1,8 @@
-require(["jquery", "histmap", "bootstrap", "slick"], function($, ol) {//"css!bootstrapcss", "css!ol3css"], function($, ol, tps) {
+if (!histmap_required) histmap_required = ["tps"];
+var requires = ["jquery", "ol-custom", "bootstrap", "slick"].concat(histmap_required.map(function(logic){
+    return "histmap_" + logic;
+}));
+require(requires, function($, ol) {//"css!bootstrapcss", "css!ol3css"], function($, ol, tps) {
     var app_json = "json/" + appid + ".json";
     $.get(app_json, function(app_data) {
         $("#all").show();
