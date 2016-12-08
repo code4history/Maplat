@@ -96,7 +96,7 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                                 home_callback: home_callback
                             };
                             if (data.algorythm == "tin") {
-                                option.tin_points_url = '../json/' + data.mapID + '_points.json';
+                                option.tin_points_url = 'json/' + data.mapID + '_points.json';
                             } else {
                                 if (make_binary) {
                                     option.tps_serial = data.mapID + ".bin";
