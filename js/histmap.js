@@ -1,4 +1,4 @@
-define(["ol-custom", "tps"], function(ol, ThinPlateSpline) {
+define(["ol-custom"], function(ol) {
     //透明PNG定義
     var transPng = 'data:image/png;base64,'+
         'iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAMAAABrrFhUAAAAB3RJTUUH3QgIBToaSbAjlwAAABd0'+
@@ -51,24 +51,6 @@ define(["ol-custom", "tps"], function(ol, ThinPlateSpline) {
         ol.source.XYZ.call(this, options) ;
         ol.source.setCustomInitialize(this, options);
 
-        if (options.tps_points || options.tps_serial) {
-            var tps_option = {
-                'use_worker' : true,
-                'transform_callback' : options.transform_callback,
-                'error_callback' : options.error_callback,
-                'web_fallback' : options.web_fallback,
-                'on_solved' : options.on_solved,
-                'on_serialized' : options.on_serialized
-            };
-
-            this.tps = new ThinPlateSpline(tps_option);
-            if (options.tps_points) {
-                this.tps.load_points(options.tps_points);
-            } else {
-                this.tps.load_serial(options.tps_serial);
-            }
-        }
-
         this.setTileLoadFunction((function() { 
             var numLoadingTiles = 0; 
             var tileLoadFn = self.getTileLoadFunction(); 
@@ -112,59 +94,16 @@ define(["ol-custom", "tps"], function(ol, ThinPlateSpline) {
     ol.inherits(ol.source.histMap, ol.source.XYZ);
 
     ol.source.histMap.createAsync = function(options) {
-        var promise = new Promise(function(resolve, reject) {
-            var obj;
-            options.on_serialized = function() {
-                if (options.tps_points) {
-                    var a = document.createElement("a");
-                    document.body.appendChild(a);
-                    a.style = "display: none";
-                    var blob = new Blob([ obj.tps.serialize() ]),
-                        url = window.URL.createObjectURL(blob);
-                    a.href = url;
-                    a.download = options.tps_serial;
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                }
-                resolve(obj);
-            };
-            options.transform_callback = function(coord, isRev, tf_options) {
-                if (tf_options.callback) {
-                    tf_options.callback(coord);
-                }
-            };
-            obj = new ol.source.histMap(options);
-        });
-        return promise;
+        var algorythm = options.algorythm || "tin";
+        return ol.source["histMap_" + algorythm].createAsync(options);
     };
     ol.source.setCustomFunction(ol.source.histMap);
     ol.source.histMap.prototype.xy2MercAsync = function(xy) {
-        var self = this;
-        var promise = new Promise(function(resolve, reject) {
-            var x = (xy[0]  + ol.const.MERC_MAX) * self._maxxy / (2*ol.const.MERC_MAX);
-            var y = (-xy[1] + ol.const.MERC_MAX) * self._maxxy / (2*ol.const.MERC_MAX);
-            self.tps.transform([x,y], false, {
-                callback: function(merc) {
-                    resolve(merc);
-                }
-            });
-        });
-        return promise;        
+        return this.xy2MercAsync_(xy);
     };
     ol.source.histMap.prototype.merc2XyAsync = function(merc) {
-        var self = this;
-        var promise = new Promise(function(resolve, reject) {
-            self.tps.transform(merc, true, {
-                callback: function(xy) {
-                    var x =       xy[0] * (2*ol.const.MERC_MAX) / self._maxxy - ol.const.MERC_MAX;
-                    var y = -1 * (xy[1] * (2*ol.const.MERC_MAX) / self._maxxy - ol.const.MERC_MAX);
-                    resolve([x,y]);
-                }
-            });
-        });
-        return promise;
+        return this.merc2XyAsync_(merc);
     }; 
-
 
     return ol;
 });
