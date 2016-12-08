@@ -28,8 +28,7 @@ require(requires, function($, ol) {//"css!bootstrapcss", "css!ol3css"], function
         };
         var home_pos = app_data.home_position;
         var def_zoom = app_data.default_zoom;
-        var now_year = "osm";
-        var now_era = app_data.now_era;
+        var now_sourceID = "osm";
         var app_name = app_data.app_name;
         var fake_gps = app_data.fake_gps;
         var fake_center = app_data.fake_center;
@@ -67,15 +66,18 @@ require(requires, function($, ol) {//"css!bootstrapcss", "css!ol3css"], function
                     map_option: {
                         div: div
                     },
+                    sourceID: "osm",
                     gps_callback: gps_callback,
                     home_callback: home_callback
                 }));
-                $("#era_select").append('<option value="osm" selected>' + now_era + '</option>');
-                $('.slick-class').slick('slickAdd','<div class="slick-item" data="osm"><img src="./tmbs/osm_menu.png"><div>OSM</div></div>');
+                $('.slick-class').slick('slickAdd','<div class="slick-item" data="osm"><img src="./tmbs/osm_menu.png"><div>OSM(現在)</div></div>');
                 $('.slick-class').slick('slickGoTo',dataSource.length);
             } else {
                 var data = dataSource[i];
-                dataHash[data.year] = data;
+                if (!data.maptype) data.maptype = "maplat";
+                if (!data.algorythm) data.algorythm = "tin";
+                data.sourceID = data.mapID + ":" + data.maptype + ":" + data.algorythm;
+                dataHash[data.sourceID] = data;
                 var option = {
                     attributions: [
                         new ol.Attribution({
@@ -85,14 +87,16 @@ require(requires, function($, ol) {//"css!bootstrapcss", "css!ol3css"], function
                     mapID: data.mapID,
                     width: data.width,
                     height: data.height,
-                    logic: data.logic || "tps",
+                    maptype: data.maptype,
+                    algorythm: data.algorythm,
+                    sourceID: data.sourceID,
                     map_option: {
                         div: div
                     },
                     gps_callback: gps_callback,
                     home_callback: home_callback      
                 };
-                if (data.logic =="tin") {
+                if (data.algorythm =="tin") {
                     option.tin_points_url = '../json/' + data.mapID + '_points.json';
                 } else {
                     if (make_binary) {
@@ -103,8 +107,7 @@ require(requires, function($, ol) {//"css!bootstrapcss", "css!ol3css"], function
                     }
                 }
                 sourcePromise.push(ol.source.histMap.createAsync(option));
-                $("#era_select").append('<option value="' + data.year + '">' + data.era + '</option>');
-                $('.slick-class').slick('slickAdd','<div class="slick-item" data="' + data.year +  '"><img src="./tmbs/' + data.mapID + '_menu.jpg"><div>' + data.year + '</div></div>');
+                $('.slick-class').slick('slickAdd','<div class="slick-item" data="' + data.sourceID + '"><img src="./tmbs/' + data.mapID + '_menu.jpg"><div>' + (data.label || data.year) + '</div></div>');
             }
             $('<div id="' + div + 'container" class="col-xs-12 h100p mapcontainer w100p"><div id="' + div + '" class="map h100p"></div></div>').insertBefore('#center_circle');
         }
@@ -125,8 +128,7 @@ require(requires, function($, ol) {//"css!bootstrapcss", "css!ol3css"], function
                 var cont = "#map" + i + "container";
                 var item = [source, map, cont];
                 cache.push(item);
-                var year = i == sources.length - 1 ? 'osm' : dataSource[i].year;
-                cache_hash[year] = item;
+                cache_hash[source.sourceID] = item;
             }
 
             gps_process = function(e) {
@@ -171,25 +173,10 @@ require(requires, function($, ol) {//"css!bootstrapcss", "css!ol3css"], function
                     view.setZoom(size[1]);
                     view.setRotation(0);
                 });
-
-                //source.merc2XyAsync(merc).then(function(xy){
-                //    view.setCenter(xy);
-                //    view.setRotation(0);
-                //    view.setZoom(def_zoom);
-                //});
             };
-
-            $("#era_select").change(function(){
-                changeMap();
-            });
-
-            $("#map_type").change(function(){
-                changeMap();
-            });
 
             $(".slick-item").on("click",function(){
                 if (!clickavoid) {
-                    console.log($(this).attr("data") + " clicked!");
                     changeMap(false, $(this).attr("data"));
                 }
             });
@@ -203,11 +190,10 @@ require(requires, function($, ol) {//"css!bootstrapcss", "css!ol3css"], function
             from = cache[1];
             changeMap(true, "osm");
 
-            function changeMap(init,year) {
-                //var year = $("#era_select").val();
+            function changeMap(init,sourceID) {
                 var type = $("#map_type").val();
                 var now = cache_hash['osm'];
-                var to = type == "plat" ? cache_hash[year] : now;
+                var to = type == "plat" ? cache_hash[sourceID] : now;
                 //if (((to == from) || ($(to[2]).is(':visible') && $(from[2]).is(':hidden'))) && (to != now)) return;
                 if ((to == from) && (to != now)) return;
                 if (from == now) {
@@ -238,12 +224,12 @@ require(requires, function($, ol) {//"css!bootstrapcss", "css!ol3css"], function
                     fromPromise.then(function(mercs){
                         merc_buffer.mercs = mercs;
                         var view = from[1].getView();
-                        merc_buffer.buffer[from[0].mapID ? from[0].mapID : 'nowMap'] = [
+                        merc_buffer.buffer[from[0].sourceID] = [
                             view.getCenter(), view.getZoom(), view.getRotation()
                         ];
                         console.log("Mercs: " + mercs);
                         var toPromise = to[0].mercs2SizeAsync(mercs);
-                        var key = to[0].mapID ? to[0].mapID : 'nowMap';
+                        var key = to[0].sourceID;
                         if (merc_buffer.buffer[key]) {
                             console.log("To: Use buffer");
                             toPromise = new Promise(function(res, rej){
@@ -276,8 +262,8 @@ require(requires, function($, ol) {//"css!bootstrapcss", "css!ol3css"], function
                         });
                     });
                 }
-                if (to == now && year != now_year) {
-                    var data = dataHash[year];
+                if (to == now && sourceID != now_sourceID) {
+                    var data = dataHash[sourceID];
                     var layers = to[1].getLayers();
                     var layer = new ol.layer.Tile({
                         source: new ol.source.XYZ({

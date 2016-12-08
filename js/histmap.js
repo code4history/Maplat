@@ -94,8 +94,8 @@ define(["ol-custom"], function(ol) {
     ol.inherits(ol.source.histMap, ol.source.XYZ);
 
     ol.source.histMap.createAsync = function(options) {
-        var logic = options.logic || "tps";
-        return ol.source["histMap_" + logic].createAsync(options);
+        var algorythm = options.algorythm || "tin";
+        return ol.source["histMap_" + algorythm].createAsync(options);
     };
     ol.source.setCustomFunction(ol.source.histMap);
     ol.source.histMap.prototype.xy2MercAsync = function(xy) {

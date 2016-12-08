@@ -375,6 +375,7 @@ define(["ol3"], function(ol) {
         }
     };
     ol.source.setCustomInitialize = function(self, options) {
+        self.sourceID = options.sourceID;
         self.map_option = options.map_option || {};
         self._gps_callback = options.gps_callback || function () {};
         self._home_callback = options.home_callback || function () {};
