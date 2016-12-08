@@ -51,11 +51,9 @@ define(["histmap", "turf"], function(ol, turf) {
     };
     ol.source.histMap_tin.prototype.setTinPoints = function(points_set) {
         var bbox = [
-            [0,0], [this.width * 0.2,0], [this.width * 0.4,0], [this.width * 0.6,0], [this.width * 0.8,0], [this.width,0],
-            [0,this.height*0.2], [0,this.height*0.4], [0,this.height*0.6], [0,this.height*0.8],
-            [this.width,this.height*0.2], [this.width,this.height*0.4], [this.width,this.height*0.6], [this.width,this.height*0.8],
-            [0,this.height], [this.width * 0.2,this.height], [this.width * 0.4,this.height],
-            [this.width * 0.6,this.height], [this.width * 0.8,this.height], [this.width,this.height]
+            [0,0], [this.width * 0.5,0], [this.width,0],
+            [0,this.height*0.5], [this.width,this.height*0.25],
+            [0,this.height], [this.width * 0.5,this.height], [this.width,this.height]
         ];
         var for_arr = [];
         var bak_arr = [];
@@ -70,7 +68,7 @@ define(["histmap", "turf"], function(ol, turf) {
 
         bbox.map(function(vertex){
             var vertex_ft = turf.point(vertex);
-            var vertex_mc = nearest7_arr(vertex_ft,for_points,19);
+            var vertex_mc = nearest7_arr(vertex_ft,for_points,11);
             return [createPoint(vertex,vertex_mc),createPoint(vertex_mc,vertex)];
         }).map(function(vertex){
             for_points.features.push(vertex[0]);
@@ -98,6 +96,13 @@ define(["histmap", "turf"], function(ol, turf) {
         var ad = tri.properties.a;
         var bd = tri.properties.b;
         var cd = tri.properties.c;
+        /*console.log(a);
+        console.log(b);
+        console.log(c);
+        console.log(o);
+        console.log(ad);
+        console.log(bd);
+        console.log(cd);*/
 
         var ab  = [ b[0] -a[0], b[1] -a[1]];
         var ac  = [ c[0] -a[0], c[1] -a[1]];
@@ -107,6 +112,9 @@ define(["histmap", "turf"], function(ol, turf) {
 
         var abv = (ac[1]*ao[0]-ac[0]*ao[1])/(ab[0]*ac[1]-ab[1]*ac[0]);
         var acv = (ab[0]*ao[1]-ab[1]*ao[0])/(ab[0]*ac[1]-ab[1]*ac[0]);
+        //console.log(abv);
+        //console.log(acv);
+
         var od  = [abv*abd[0]+acv*acd[0]+ad[0],abv*abd[1]+acv*acd[1]+ad[1]];
         return od;
     }
@@ -153,6 +161,6 @@ define(["histmap", "turf"], function(ol, turf) {
     }
     function transform_arr(point, tins, forfallback) {
         var tin = hit(point, tins);
-        return tin ? transform_tin_arr(point,tin) : nearest7_arr(point,forfallback,19);
+        return tin ? transform_tin_arr(point,tin) : nearest7_arr(point,forfallback,11);
     }
 });
