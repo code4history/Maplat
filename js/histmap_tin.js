@@ -51,10 +51,11 @@ define(["histmap", "turf"], function(ol, turf) {
     };
     ol.source.histMap_tin.prototype.setTinPoints = function(points_set) {
         var bbox = [
-            [0,0],
-            [this.width,0],
-            [this.width,this.height],
-            [0,this.height]
+            [0,0], [this.width * 0.2,0], [this.width * 0.4,0], [this.width * 0.6,0], [this.width * 0.8,0], [this.width,0],
+            [0,this.height*0.2], [0,this.height*0.4], [0,this.height*0.6], [0,this.height*0.8],
+            [this.width,this.height*0.2], [this.width,this.height*0.4], [this.width,this.height*0.6], [this.width,this.height*0.8],
+            [0,this.height], [this.width * 0.2,this.height], [this.width * 0.4,this.height],
+            [this.width * 0.6,this.height], [this.width * 0.8,this.height], [this.width,this.height]
         ];
         var for_arr = [];
         var bak_arr = [];
@@ -69,7 +70,7 @@ define(["histmap", "turf"], function(ol, turf) {
 
         bbox.map(function(vertex){
             var vertex_ft = turf.point(vertex);
-            var vertex_mc = nearest7_arr(vertex_ft,for_points);
+            var vertex_mc = nearest7_arr(vertex_ft,for_points,19);
             return [createPoint(vertex,vertex_mc),createPoint(vertex_mc,vertex)];
         }).map(function(vertex){
             for_points.features.push(vertex[0]);
@@ -121,6 +122,7 @@ define(["histmap", "turf"], function(ol, turf) {
             var nearest = turf.nearest(o, work);
             nearests.push(nearest);
             work = turf.featureCollection(work.features.filter(function(val){return val!=nearest}));
+            if (work.length == 0) break;
         }
         var nearests_fc = turf.featureCollection(nearests);
 
@@ -151,6 +153,6 @@ define(["histmap", "turf"], function(ol, turf) {
     }
     function transform_arr(point, tins, forfallback) {
         var tin = hit(point, tins);
-        return tin ? transform_tin_arr(point,tin) : nearest7_arr(point,forfallback);
+        return tin ? transform_tin_arr(point,tin) : nearest7_arr(point,forfallback,19);
     }
 });
