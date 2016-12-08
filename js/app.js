@@ -1,8 +1,4 @@
-if (!histmap_required) histmap_required = ["tps"];
-var requires = ["jquery", "ol-custom", "bootstrap", "slick"].concat(histmap_required.map(function(logic){
-    return "histmap_" + logic;
-}));
-require(requires, function($, ol) {//"css!bootstrapcss", "css!ol3css"], function($, ol, tps) {
+require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!bootstrapcss", "css!ol3css"], function($, ol, tps) {
     var app_json = "json/" + appid + ".json";
     $.get(app_json, function(app_data) {
         $("#all").show();
@@ -73,41 +69,49 @@ require(requires, function($, ol) {//"css!bootstrapcss", "css!ol3css"], function
                 $('.slick-class').slick('slickAdd','<div class="slick-item" data="osm"><img src="./tmbs/osm_menu.png"><div>OSM(現在)</div></div>');
                 $('.slick-class').slick('slickGoTo',dataSource.length);
             } else {
-                var data = dataSource[i];
-                if (!data.maptype) data.maptype = "maplat";
-                if (!data.algorythm) data.algorythm = "tin";
-                data.sourceID = data.mapID + ":" + data.maptype + ":" + data.algorythm;
-                dataHash[data.sourceID] = data;
-                var option = {
-                    attributions: [
-                        new ol.Attribution({
-                            html: data.attr
-                        })
-                    ],
-                    mapID: data.mapID,
-                    width: data.width,
-                    height: data.height,
-                    maptype: data.maptype,
-                    algorythm: data.algorythm,
-                    sourceID: data.sourceID,
-                    map_option: {
-                        div: div
-                    },
-                    gps_callback: gps_callback,
-                    home_callback: home_callback      
-                };
-                if (data.algorythm =="tin") {
-                    option.tin_points_url = '../json/' + data.mapID + '_points.json';
-                } else {
-                    if (make_binary) {
-                        option.tps_serial = data.mapID + ".bin";
-                        option.tps_points = '../json/' + data.mapID + '_points.json';
-                    } else {
-                        option.tps_serial = '../bin/' + data.mapID + '.bin';
-                    }
-                }
-                sourcePromise.push(ol.source.histMap.createAsync(option));
-                $('.slick-class').slick('slickAdd','<div class="slick-item" data="' + data.sourceID + '"><img src="./tmbs/' + data.mapID + '_menu.jpg"><div>' + (data.label || data.year) + '</div></div>');
+                (function(i,div){
+                    var data = dataSource[i];
+                    if (!data.maptype) data.maptype = "maplat";
+                    if (!data.algorythm) data.algorythm = "tin";
+                    data.sourceID = data.mapID + ":" + data.maptype + ":" + data.algorythm;
+                    sourcePromise.push(new Promise(function(res,rej){
+                        var later_logic = function() {
+                            dataHash[data.sourceID] = data;
+                            var option = {
+                                attributions: [
+                                    new ol.Attribution({
+                                        html: data.attr
+                                    })
+                                ],
+                                mapID: data.mapID,
+                                width: data.width,
+                                height: data.height,
+                                maptype: data.maptype,
+                                algorythm: data.algorythm,
+                                sourceID: data.sourceID,
+                                map_option: {
+                                    div: div
+                                },
+                                gps_callback: gps_callback,
+                                home_callback: home_callback
+                            };
+                            if (data.algorythm == "tin") {
+                                option.tin_points_url = '../json/' + data.mapID + '_points.json';
+                            } else {
+                                if (make_binary) {
+                                    option.tps_serial = data.mapID + ".bin";
+                                    option.tps_points = '../json/' + data.mapID + '_points.json';
+                                } else {
+                                    option.tps_serial = '../bin/' + data.mapID + '.bin';
+                                }
+                            }
+                            res(ol.source.histMap.createAsync(option));
+                        };
+                        if (data.maptype == "maplat") require(["histmap_" + data.algorythm],later_logic)
+                        else later_logic();
+                    }));
+                    $('.slick-class').slick('slickAdd','<div class="slick-item" data="' + data.sourceID + '"><img src="./tmbs/' + data.mapID + '_menu.jpg"><div>' + (data.label || data.year) + '</div></div>');
+                })(i,div);
             }
             $('<div id="' + div + 'container" class="col-xs-12 h100p mapcontainer w100p"><div id="' + div + '" class="map h100p"></div></div>').insertBefore('#center_circle');
         }
