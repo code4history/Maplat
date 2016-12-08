@@ -72,7 +72,7 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                 (function(i,div){
                     var data = dataSource[i];
                     if (!data.maptype) data.maptype = "maplat";
-                    if (!data.algorythm) data.algorythm = "tin";
+                    if (!data.algorythm) data.algorythm = app_argo || "tin";
                     data.sourceID = data.mapID + ":" + data.maptype + ":" + data.algorythm;
                     sourcePromise.push(new Promise(function(res,rej){
                         var later_logic = function() {
