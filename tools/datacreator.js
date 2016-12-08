@@ -18,16 +18,23 @@ var args = argv.option( [{
     description: 'Defines output Maplat format points file.',
     example: "'datacreator.js --output=path' or 'datacreator.js -o path'"
 },{
+    name: 'backward',
+    short: 'b',
+    type: 'path',
+    description: 'Defines whether backward QGIS format points file is need or not. output file name can be set.',
+    example: "'datacreator.js --backward[=path]' or 'datacreator.js -b [path]'"
+},{
     name: 'tps',
     short: 't',
     type: 'path',
-    description: 'Defines whether Thinplate Spline binary need or not. output file name can be set.',
+    description: 'Defines whether Thinplate Spline binary is need or not. output file name can be set.',
     example: "'datacreator.js --tps[=path]' or 'datacreator.js -t [path]'"
 }] ).run();
 
 var source   = args.options.source;
 var output   = args.options.output;
 var tps_opt  = args.options.tps;
+var backward = args.options.backward;
 var basename = path.basename(source).split(".")[0].replace(/_points$/,"");
 if (!source) stop('Source option is mandatory.');
 if (!output)
@@ -36,6 +43,10 @@ var tps_out = !tps_opt ? null :
     tps_opt.split("/").slice(-1)[0] == 'true' ?
         path.resolve(basename + ".bin") :
         tps_opt;
+var bak_out = !backward ? null :
+    backward.split("/").slice(-1)[0] == 'true' ?
+        path.resolve(basename + ".jpg.points") :
+        backward;
 
 var tps;
 if (tps_out) {
@@ -50,9 +61,12 @@ var points = [];
 rl.on('line', function (line) {
     if (!filebuf) {
         if (line.indexOf("mapX,mapY,") == 0) {
+            if (bak_out) {
+                stop('Source file is already QGIS format.');
+            }
             filebuf = "qgis";
         } else if (line.indexOf("[") == 0) {
-            if (!tps_out) {
+            if (!tps_out && !bak_out) {
                 stop('Source file is already Maplat format.');
             }
             filebuf = line;
@@ -71,11 +85,18 @@ rl.on('close', function (line) {
         points = JSON.parse(filebuf);
         if (tps_out) tps.push_points(points);
     }
-    for (var i=0;i<points.length;i++) {
-        if (i==0) fs.writeFileSync(output,"[\n");
-        fs.appendFileSync(output, "    " + JSON.stringify(points[i]));
-        if (i==points.length-1) fs.appendFileSync(output, "\n]\n");
-        else fs.appendFileSync(output, ",\n");
+    if (!bak_out) {
+        for (var i = 0; i < points.length; i++) {
+            if (i == 0) fs.writeFileSync(output, "[\n");
+            fs.appendFileSync(output, "    " + JSON.stringify(points[i]));
+            if (i == points.length - 1) fs.appendFileSync(output, "\n]\n");
+            else fs.appendFileSync(output, ",\n");
+        }
+    } else {
+        for (var i=0;i<points.length;i++) {
+            if (i==0) fs.writeFileSync(bak_out,"mapX,mapY,pixelX,pixelY,enable\n");
+            fs.appendFileSync(bak_out, points[i][1][0] + "," + points[i][1][1] + "," + points[i][0][0] + "," + (-1.0*points[i][0][1]) + ",1\n" );
+        }
     }
     if (tps_out) {
         tps.solve();
