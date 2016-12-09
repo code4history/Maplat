@@ -91,8 +91,9 @@ html,body {
 .slick-box {
     position: absolute;
     bottom: .5em;
-    left: calc(50% - 100px);
-    width: 200px;
+    left: calc(50% - 90px);
+    width: 180px;
+    background-color: rgba(32,32,32,0.5);
 }
 
 .slick-item {
