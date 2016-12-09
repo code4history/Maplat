@@ -156,10 +156,19 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                             if (!mercs) {
                                 mercs = source.mercsFromGPSValue(lnglat,acc);
                             }
-                            source.mercs2SizeAsync(mercs).then(function(size){
-                                if (target == from) view.setCenter(size[0]);
-                                source.setGPSPosition(size[0]);
-                                view.setZoom(size[1]);
+                            Promise.all(mercs.map(function(merc,index) {
+                                if (index == 5) return merc;
+                                return source.merc2XyAsync(merc);
+                            })).then(function(xys){
+                                var center = xys[0];
+                                var news = xys.slice(1);
+
+                                var ave = news.reduce(function(prev,curr,index){
+                                    var ret = prev + Math.sqrt(Math.pow(curr[0]-center[0],2)+Math.pow(curr[1]-center[1],2));
+                                    return index==3 ? ret / 4.0 : ret;
+                                },0);
+                                if (target == from) view.setCenter(center);
+                                source.setGPSPosition(center,ave);
                             });
                         })();
                     }
@@ -331,7 +340,15 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                         var pixel = map.getEventPixel(e.originalEvent);
                         var hit = map.hasFeatureAtPixel(pixel);
                         var target = map.getTarget();
-                        $("#"+target).css("cursor", hit ? 'pointer' : '');
+                        if (hit) {
+                            var feature = map.forEachFeatureAtPixel(e.pixel,
+                                function (feature) {
+                                    if (feature.get('datum')) return feature;
+                                });
+                            $("#"+target).css("cursor", feature ? 'pointer' : '');
+                            return;
+                        }
+                        $("#"+target).css("cursor", '');
                     };
                 })(map);
                 map.on('pointermove', move_handler);
