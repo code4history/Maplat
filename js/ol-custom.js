@@ -108,6 +108,15 @@ define(["ol3"], function(ol) {
             src: 'parts/bluedot.png'
         }))
     });
+    var accCircleStyle = new ol.style.Style({
+        fill: new ol.style.Fill({
+            color: [128,128,256,0.2]
+        }),
+        stroke: new ol.style.Stroke({
+            color: [128,128,256,1.0],
+            width: 3
+        })
+    });
     var markerDefaultStyle = new ol.style.Style({
         image: new ol.style.Icon(({
             anchor: [0.5, 1.0],
@@ -157,8 +166,8 @@ define(["ol3"], function(ol) {
                     new ol.layer.Tile({
                         source: this
                     }),
-                    markerLayer,
-                    vectorLayer
+                    vectorLayer,
+                    markerLayer
                 ],
                 target: this.map_option.div,
                 view: new ol.View({
@@ -214,14 +223,19 @@ define(["ol3"], function(ol) {
             return this._map;
         };
 
-        target.prototype.setGPSPosition = function(xy) {
+        target.prototype.setGPSPosition = function(xy, rad) {
             var src = this._gps_source;
             src.clear();
             var iconFeature = new ol.Feature({
                 geometry: new ol.geom.Point(xy)
             });
             iconFeature.setStyle(gpsStyle);
+            var circle = new ol.Feature({
+                geometry: new ol.geom.Circle(xy, rad)
+            });
+            circle.setStyle(accCircleStyle);
             src.addFeature(iconFeature);
+            src.addFeature(circle);
         };
 
         target.prototype.setMarker = function(xy, data, markerStyle) {
