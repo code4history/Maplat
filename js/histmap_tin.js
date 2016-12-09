@@ -130,7 +130,7 @@ define(["histmap", "turf"], function(ol, turf) {
             var nearest = turf.nearest(o, work);
             nearests.push(nearest);
             work = turf.featureCollection(work.features.filter(function(val){return val!=nearest}));
-            if (work.length == 0) break;
+            if (work.features.length == 0) break;
         }
         var nearests_fc = turf.featureCollection(nearests);
 
