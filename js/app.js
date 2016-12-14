@@ -139,14 +139,7 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                 var geolocation = new ol.Geolocation({tracking:true});
                 // listen to changes in position
                 $('#gpsWait').modal();
-                geolocation.once('change', function(evt) {
-                    var lnglat = geolocation.getPosition();
-                    var acc    = geolocation.getAccuracy();
-                    if (fake_gps && getDistance(home_pos,lnglat) > fake_radius) {
-                        lnglat = [home_pos[0] + (Math.random() - 0.5) / 1000,home_pos[1] + (Math.random() - 0.5) / 1000];
-                        acc    = 15.0 + (Math.random() -0.5) * 10;
-                    }
-                    geolocation.setTracking(false);
+                var handle_gps = function(lnglat, acc) {
                     var mercs = null;
                     for (var i=0;i<cache.length;i++) {
                         (function(){
@@ -172,8 +165,27 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                             });
                         })();
                     }
+                };
+                geolocation.once('change', function(evt) {
+                    var lnglat = geolocation.getPosition();
+                    var acc    = geolocation.getAccuracy();
+                    if (fake_gps && getDistance(home_pos,lnglat) > fake_radius) {
+                        lnglat = [home_pos[0] + (Math.random() - 0.5) / 1000,home_pos[1] + (Math.random() - 0.5) / 1000];
+                        acc    = 15.0 + (Math.random() -0.5) * 10;
+                    }
+                    geolocation.setTracking(false);
+                    handle_gps(lnglat, acc);
                     $('#gpsWait').modal('hide');
                 });
+                geolocation.once('error', function(evt){
+                    geolocation.setTracking(false);
+                    if (fake_gps) {
+                        var lnglat = [home_pos[0] + (Math.random() - 0.5) / 1000,home_pos[1] + (Math.random() - 0.5) / 1000];
+                        var acc    = 15.0 + (Math.random() -0.5) * 10;
+                        handle_gps(lnglat, acc);
+                    }
+                    $('#gpsWait').modal('hide');
+                })
             };
 
             home_process = function(e) {
