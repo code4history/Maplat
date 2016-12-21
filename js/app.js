@@ -67,7 +67,7 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                     gps_callback: gps_callback,
                     home_callback: home_callback
                 }));
-                $('.slick-class').slick('slickAdd','<div class="slick-item" data="osm"><img src="./tmbs/osm_menu.png"><div>OSM(現在)</div></div>');
+                $('.slick-class').slick('slickAdd','<div class="slick-item" data="osm"><img src="./tmbs/osm_menu.jpg"><div>OSM(現在)</div></div>');
                 $('.slick-class').slick('slickGoTo',dataSource.length);
             } else {
                 var data = dataSource[i];
@@ -150,13 +150,13 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                 if (source instanceof ol.source.nowMap) {
                     if (!nowMap) {
                         nowMap = source.getMap();
-                        nowMap.on("movestart",clear_buffer);
+                        //nowMap.on("movestart",clear_buffer);
                     }
                     item = [source, nowMap, "#mapNowcontainer"];
                     nowMap.exchangeSource(source);
                 } else {
                     var map = source.getMap();
-                    map.on("movestart",clear_buffer);
+                    //map.on("movestart",clear_buffer);
                     item = [source, map, "#map" + i + "container"];
                 }
                 cache.push(item);
@@ -249,7 +249,6 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
             function changeMap(init,sourceID) {
                 var now = cache_hash['osm'];
                 var to  = cache_hash[sourceID];
-                //if (((to == from) || ($(to[2]).is(':visible') && $(from[2]).is(':hidden'))) && (to != now)) return;
                 if ((to == from) && (to != now)) return;
                 if (from == now) {
                     var layers = from[1].getLayers();
@@ -265,11 +264,22 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                     var view = from[1].getView();
                     console.log("From: Center: " + view.getCenter() + " Zoom: " + view.getZoom() + " Rotation: " + view.getRotation());
                     var fromPromise = from[0].size2MercsAsync();
-                    if (merc_buffer && merc_buffer.mercs) {
-                        console.log("From: Use buffer");
-                        fromPromise = new Promise(function(res, rej){
-                            res(merc_buffer.mercs);
-                        });
+                    if (merc_buffer && merc_buffer.mercs && merc_buffer.buffer[from[0].sourceID]) {
+                        var buffer  = merc_buffer.buffer[from[0].sourceID];
+                        var center  = view.getCenter();
+                        var current = [
+                            center[0], center[1], view.getZoom(), view.getRotation()
+                        ].map(function(val){return Math.round(val * 10000000000) / 10000000000; });
+                        if (buffer[0] == current[0] && buffer[1] == current[1] && buffer[2] == current[2] && buffer[3] == current[3]) {
+                            console.log("From: Use buffer");
+                            fromPromise = new Promise(function(res, rej){
+                                res(merc_buffer.mercs);
+                            });
+                        } else {
+                            merc_buffer = {
+                                buffer:{}
+                            };
+                        }
                     } else {
                         merc_buffer = {
                             buffer:{}
@@ -279,22 +289,27 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                     fromPromise.then(function(mercs){
                         merc_buffer.mercs = mercs;
                         var view = from[1].getView();
+                        var center = view.getCenter();
                         merc_buffer.buffer[from[0].sourceID] = [
-                            view.getCenter(), view.getZoom(), view.getRotation()
-                        ];
+                            center[0], center[1], view.getZoom(), view.getRotation()
+                        ].map(function(val){return Math.round(val * 10000000000) / 10000000000; });
                         console.log("Mercs: " + mercs);
                         var toPromise = to[0].mercs2SizeAsync(mercs);
                         var key = to[0].sourceID;
                         if (merc_buffer.buffer[key]) {
                             console.log("To: Use buffer");
                             toPromise = new Promise(function(res, rej){
-                                res(merc_buffer.buffer[key]);
+                                var buffer = merc_buffer.buffer[key];
+                                res([[buffer[0],buffer[1]],buffer[2],buffer[3]]);
                             });
                         } else {
                             to[1].AvoidFirstMoveStart = true;
                         }
                         toPromise.then(function(size){
-                            console.log("To: Center: " + size[0] + " Zoom: " + size[1] + " Rotation: " + size[2]);
+                            console.log("To: Center: " + [size[0][0],size[0][1]] + " Zoom: " + size[1] + " Rotation: " + size[2]);
+                            merc_buffer.buffer[to[0].sourceID] = [
+                                size[0][0],size[0][1],size[1],size[2]
+                            ].map(function(val){return Math.round(val * 10000000000) / 10000000000; });
                             if (to[0] instanceof ol.source.nowMap) {
                                 to[1].exchangeSource(to[0]);
                             }
@@ -303,12 +318,10 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                             view.setZoom(size[1]);
                             view.setRotation(size[2]);
                             $(to[2]).show();
-                            //$(to[2]).css("z-index", 100);
                             for (var i=0;i<cache.length;i++) {
                                 var div = cache[i];
                                 if (div[2] != to[2]) {
                                     $(div[2]).hide();
-                                    //$(div[2]).css("z-index", 0);
                                 }
                             }
                             to[1].updateSize();
