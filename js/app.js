@@ -76,12 +76,12 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                 if (data.maptype == "base") div = null;
                 (function(data,div){
                     if (data.maptype == "base") {
-
                         data.sourceID = data.mapID;
                         sourcePromise.push(ol.source.nowMap.createAsync({
                             map_option: {
-                                url: data.url
+                                div: "mapNow"
                             },
+                            url: data.url,
                             sourceID: data.sourceID,
                             gps_callback: gps_callback,
                             home_callback: home_callback
@@ -139,15 +139,26 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
             var cache = [];
             var cache_hash = {};
             var clickavoid = false;
+            var nowMap = null;
+            var clear_buffer = function(){
+                console.log("Clear buffer");
+                merc_buffer = null;
+            };
             for (var i=0; i<sources.length; i++) {
                 var source = sources[i];
-                var map = source.getMap();
-                map.on("movestart",function(){
-                   console.log("Clear buffer");
-                   merc_buffer = null;
-                });
-                var cont = source instanceof ol.source.nowMap ? "#mapNowcontainer" : "#map" + i + "container";
-                var item = [source, map, cont];
+                var item;
+                if (source instanceof ol.source.nowMap) {
+                    if (!nowMap) {
+                        nowMap = source.getMap();
+                        nowMap.on("movestart",clear_buffer);
+                    }
+                    item = [source, nowMap, "#mapNowcontainer"];
+                    nowMap.exchangeSource(source);
+                } else {
+                    var map = source.getMap();
+                    map.on("movestart",clear_buffer);
+                    item = [source, map, "#map" + i + "container"];
+                }
                 cache.push(item);
                 cache_hash[source.sourceID] = item;
             }
@@ -158,7 +169,10 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                 $('#gpsWait').modal();
                 var handle_gps = function(lnglat, acc) {
                     var mercs = null;
+                    var filter_buffer = [];
                     for (var i=0;i<cache.length;i++) {
+                        if (filter_buffer.indexOf(cache[i][1]) >= 0) continue;
+                        filter_buffer.push(cache[i][1]);
                         (function(){
                             var target = cache[i];
                             var source = target[0];
@@ -233,9 +247,8 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
             changeMap(true, "osm");
 
             function changeMap(init,sourceID) {
-                var type = $("#map_type").val();
                 var now = cache_hash['osm'];
-                var to = type == "plat" ? cache_hash[sourceID] : now;
+                var to  = cache_hash[sourceID];
                 //if (((to == from) || ($(to[2]).is(':visible') && $(from[2]).is(':hidden'))) && (to != now)) return;
                 if ((to == from) && (to != now)) return;
                 if (from == now) {
@@ -282,6 +295,9 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                         }
                         toPromise.then(function(size){
                             console.log("To: Center: " + size[0] + " Zoom: " + size[1] + " Rotation: " + size[2]);
+                            if (to[0] instanceof ol.source.nowMap) {
+                                to[1].exchangeSource(to[0]);
+                            }
                             var view = to[1].getView();
                             view.setCenter(size[0]);
                             view.setZoom(size[1]);
@@ -304,7 +320,7 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                         });
                     });
                 }
-                if (to == now && sourceID != now_sourceID) {
+                /*if (to == now && sourceID != now_sourceID) {
                     var data = dataHash[sourceID];
                     var layers = to[1].getLayers();
                     var layer = new ol.layer.Tile({
@@ -313,7 +329,7 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                         })
                     });
                     layers.insertAt(1, layer);
-                }
+                }*/
             }
 
             function showInfo(data) {
@@ -333,17 +349,19 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                 (function(datum){
                     var lnglat = [datum.lng,datum.lat];
                     var merc = ol.proj.transform(lnglat, "EPSG:4326", "EPSG:3857");
-                    var promise = [];
-                    for (var i=0; i < cache.length; i++) {
-                        promise.push(
-                            cache[i][0].merc2XyAsync(merc)
-                        );
-                    }
+                    var filter_buffer = [];
+                    var filtered = cache.filter(function(item){
+                        if (filter_buffer.indexOf(item[1]) >= 0) return false;
+                        filter_buffer.push(item[1]);
+                        return true;
+                    });
+                    var promise = filtered.map(function(item){
+                        return item[0].merc2XyAsync(merc);
+                    });
                     Promise.all(promise).then(function(xys){
-                        for (var i = 0; i < cache.length; i++) {
-                            var map = cache[i][0];
-                            map.setMarker(xys[i],{"datum":datum});
-                        }
+                        filtered.map(function(item,index){
+                            item[0].setMarker(xys[index],{"datum":datum});
+                        });
                     });
                 })(pois[i]);          
             }
