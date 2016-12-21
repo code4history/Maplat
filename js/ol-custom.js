@@ -126,6 +126,13 @@ define(["ol3"], function(ol) {
         }))
     });
 
+    ol.Map.prototype.exchangeSource = function (source) {
+        var layers = this.getLayers();
+        var layer  = layers.item(0);
+        layer.setSource(source);
+        source._map = this;
+    };
+
     ol.source.setCustomFunction = function(target) {
         target.prototype.getMap = function() {
             if (this._map) {

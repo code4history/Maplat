@@ -9,6 +9,13 @@
     "now_era" : "現在",
     "sources" : [
         {
+            "attr" : "国土地理院",
+            "label" : "地理院",
+            "mapID" : "gsi",
+            "maptype" : "base",
+            "url" : "https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png"
+        },
+        {
             "era"       : "正保城絵図 南部領盛岡平城絵図 (正保元年)",
             "attr"      : "正保城絵図 南部領盛岡平城絵図 (正保元年) 国立公文書館",
             "mapID"     : "morioka_ndl",
