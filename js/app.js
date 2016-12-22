@@ -39,18 +39,6 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
 
         $("title").html(app_name);
 
-        function getDistance(lnglat1, lnglat2) {
-            function radians(deg){
-                return deg * Math.PI / 180;
-            }
-
-            return 6378.14 * Math.acos(Math.cos(radians(lnglat1[1]))* 
-                Math.cos(radians(lnglat2[1]))*
-                Math.cos(radians(lnglat2[0])-radians(lnglat1[0]))+
-                Math.sin(radians(lnglat1[1]))*
-                Math.sin(radians(lnglat2[1])));
-        }
-
         var dataSource = app_data.sources;
         var dataHash = {};
 
@@ -200,9 +188,9 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                 geolocation.once('change', function(evt) {
                     var lnglat = geolocation.getPosition();
                     var acc    = geolocation.getAccuracy();
-                    if (fake_gps && getDistance(home_pos,lnglat) > fake_radius) {
-                        lnglat = [home_pos[0] + (Math.random() - 0.5) / 1000,home_pos[1] + (Math.random() - 0.5) / 1000];
-                        acc    = 15.0 + (Math.random() -0.5) * 10;
+                    if (fake_gps && ol.MathEx.getDistance(home_pos,lnglat) > fake_radius) {
+                        lnglat = [ol.MathEx.randomFromCenter(home_pos[0], 0.001),ol.MathEx.randomFromCenter(home_pos[1], 0.001)];
+                        acc    = ol.MathEx.randomFromCenter(15.0, 10);
                     }
                     geolocation.setTracking(false);
                     handle_gps(lnglat, acc);
@@ -211,8 +199,8 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                 geolocation.once('error', function(evt){
                     geolocation.setTracking(false);
                     if (fake_gps) {
-                        var lnglat = [home_pos[0] + (Math.random() - 0.5) / 1000,home_pos[1] + (Math.random() - 0.5) / 1000];
-                        var acc    = 15.0 + (Math.random() -0.5) * 10;
+                        var lnglat = [ol.MathEx.randomFromCenter(home_pos[0], 0.001),ol.MathEx.randomFromCenter(home_pos[1], 0.001)];
+                        var acc    = ol.MathEx.randomFromCenter(15.0, 10);
                         handle_gps(lnglat, acc);
                     }
                     $('#gpsWait').modal('hide');
@@ -266,11 +254,10 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                     var fromPromise = from[0].size2MercsAsync();
                     if (merc_buffer && merc_buffer.mercs && merc_buffer.buffer[from[0].sourceID]) {
                         var buffer  = merc_buffer.buffer[from[0].sourceID];
-                        var center  = view.getCenter();
-                        var current = [
-                            center[0], center[1], view.getZoom(), view.getRotation()
-                        ].map(function(val){return Math.round(val * 10000000000) / 10000000000; });
-                        if (buffer[0] == current[0] && buffer[1] == current[1] && buffer[2] == current[2] && buffer[3] == current[3]) {
+                        var current = ol.MathEx.recursiveRound([
+                            view.getCenter(), view.getZoom(), view.getRotation()
+                        ],10);
+                        if (buffer[0][0] == current[0][0] && buffer[0][1] == current[0][1] && buffer[1] == current[1] && buffer[2] == current[2]) {
                             console.log("From: Use buffer");
                             fromPromise = new Promise(function(res, rej){
                                 res(merc_buffer.mercs);
@@ -290,26 +277,23 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                         merc_buffer.mercs = mercs;
                         var view = from[1].getView();
                         var center = view.getCenter();
-                        merc_buffer.buffer[from[0].sourceID] = [
-                            center[0], center[1], view.getZoom(), view.getRotation()
-                        ].map(function(val){return Math.round(val * 10000000000) / 10000000000; });
+                        merc_buffer.buffer[from[0].sourceID] = ol.MathEx.recursiveRound([
+                            view.getCenter(), view.getZoom(), view.getRotation()
+                        ],10);
                         console.log("Mercs: " + mercs);
                         var toPromise = to[0].mercs2SizeAsync(mercs);
                         var key = to[0].sourceID;
                         if (merc_buffer.buffer[key]) {
                             console.log("To: Use buffer");
                             toPromise = new Promise(function(res, rej){
-                                var buffer = merc_buffer.buffer[key];
-                                res([[buffer[0],buffer[1]],buffer[2],buffer[3]]);
+                                res(merc_buffer.buffer[key]);
                             });
                         } else {
                             to[1].AvoidFirstMoveStart = true;
                         }
                         toPromise.then(function(size){
                             console.log("To: Center: " + [size[0][0],size[0][1]] + " Zoom: " + size[1] + " Rotation: " + size[2]);
-                            merc_buffer.buffer[to[0].sourceID] = [
-                                size[0][0],size[0][1],size[1],size[2]
-                            ].map(function(val){return Math.round(val * 10000000000) / 10000000000; });
+                            merc_buffer.buffer[to[0].sourceID] = ol.MathEx.recursiveRound(size, 10);
                             if (to[0] instanceof ol.source.nowMap) {
                                 to[1].exchangeSource(to[0]);
                             }
