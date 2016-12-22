@@ -429,5 +429,29 @@ define(["ol3"], function(ol) {
         return promise;
     };
 
+    ol.MathEx = {};
+
+    ol.MathEx.randomFromCenter = function(center, pow) {
+        return center + (Math.random() - 0.5) * pow;
+    };
+
+    ol.MathEx.recursiveRound = function(val, decimal) {
+        if (val instanceof Array) return val.map(function(item){return ol.MathEx.recursiveRound(item,decimal);});
+        var dec_val = Math.pow(10,decimal);
+        return Math.round(val * dec_val) / dec_val;
+    };
+
+    ol.MathEx.getDistance = function(lnglat1, lnglat2) {
+        function radians(deg){
+            return deg * Math.PI / 180;
+        }
+
+        return 6378.14 * Math.acos(Math.cos(radians(lnglat1[1]))*
+                Math.cos(radians(lnglat2[1]))*
+                Math.cos(radians(lnglat2[0])-radians(lnglat1[0]))+
+                Math.sin(radians(lnglat1[1]))*
+                Math.sin(radians(lnglat2[1])));
+    };
+
     return ol;
 });
