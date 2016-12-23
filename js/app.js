@@ -69,6 +69,11 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                             map_option: {
                                 div: "mapNow"
                             },
+                            attributions: [
+                                new ol.Attribution({
+                                    html: data.attr
+                                })
+                            ],
                             url: data.url,
                             sourceID: data.sourceID,
                             gps_callback: gps_callback,
