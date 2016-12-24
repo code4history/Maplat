@@ -243,7 +243,7 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                 var now = cache_hash['osm'];
                 var to  = cache_hash[sourceID];
                 if ((to == from) && (to != now)) return;
-                if (from == now) {
+                /*if (from == now) {
                     var layers = from[1].getLayers();
                     //ここで以前はタイルマップを削除していた、POIレイヤを削除してしまうため一時保留、後日直す
                     //while (layers.getLength() > 2) {
@@ -252,7 +252,7 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                     if (init == true) {
                         home_process();
                     }
-                }
+                }*/
                 if (to != from) {
                     var view = from[1].getView();
                     console.log("From: Center: " + view.getCenter() + " Zoom: " + view.getZoom() + " Rotation: " + view.getRotation());
@@ -301,6 +301,7 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                             merc_buffer.buffer[to_src.sourceID] = ol.MathEx.recursiveRound(size, 10);
                             if (to_src instanceof ol.source.nowMap) {
                                 to_map.exchangeSource(to_src);
+                                nowSource = to_src;
                             }
                             var view = to_map.getView();
                             view.setCenter(size[0]);
