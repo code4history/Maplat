@@ -79,6 +79,22 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                             gps_callback: gps_callback,
                             home_callback: home_callback
                         }));
+                    } else if (data.maptype == "overlay") {
+                        data.sourceID = data.mapID;
+                        sourcePromise.push(ol.source.tmsMap.createAsync({
+                            map_option: {
+                                div: "mapNow"
+                            },
+                            attributions: [
+                                new ol.Attribution({
+                                    html: data.attr
+                                })
+                            ],
+                            url: data.url,
+                            sourceID: data.sourceID,
+                            gps_callback: gps_callback,
+                            home_callback: home_callback
+                        }));
                     } else {
                         data.sourceID = data.mapID + ":" + data.maptype + ":" + data.algorythm;
                         sourcePromise.push(new Promise(function (res, rej) {
@@ -142,12 +158,14 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                 var source = sources[i];
                 var item;
                 if (source instanceof ol.source.nowMap) {
-                    if (!nowMap) {
+                    if (!nowMap && !(source instanceof ol.source.tmsMap)) {
                         nowMap = source.getMap();
                     }
                     item = [source, nowMap, "#mapNowcontainer"];
-                    nowMap.exchangeSource(source);
-                    nowSource = source;
+                    if (!(source instanceof ol.source.tmsMap)) {
+                        nowMap.exchangeSource(source);
+                        nowSource = source;
+                    }
                 } else {
                     var map = source.getMap();
                     item = [source, map, "#map" + i + "container"];
@@ -236,7 +254,11 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                 clickavoid = false;
             });
 
-            from = cache[1];
+            from = cache.reduce(function(prev,curr){
+                if (prev) return prev;
+                if (curr[0] instanceof ol.source.histMap) return curr;
+                return prev;
+            },null);
             changeMap(true, "osm");
 
             function changeMap(init,sourceID) {
@@ -323,16 +345,6 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                         });
                     });
                 }
-                /*if (to == now && sourceID != now_sourceID) {
-                    var data = dataHash[sourceID];
-                    var layers = to[1].getLayers();
-                    var layer = new ol.layer.Tile({
-                        source: new ol.source.XYZ({
-                            url: 'tiles/' + data.mapID + '_' + type + '/{z}/{x}/{-y}.png'
-                        })
-                    });
-                    layers.insertAt(1, layer);
-                }*/
             }
 
             function showInfo(data) {

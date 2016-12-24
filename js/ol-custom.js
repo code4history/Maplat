@@ -126,13 +126,6 @@ define(["ol3"], function(ol) {
         }))
     });
 
-    ol.Map.prototype.exchangeSource = function (source) {
-        var layers = this.getLayers();
-        var layer  = layers.item(0);
-        layer.setSource(source);
-        source._map = this;
-    };
-
     ol.source.setCustomFunction = function(target) {
         target.prototype.getMap = function() {
             if (this._map) {
@@ -356,6 +349,18 @@ define(["ol3"], function(ol) {
         });
         return promise;
     };
+    ol.source.tmsMap = function(opt_options) {
+        var options = opt_options || {};
+        ol.source.nowMap.call(this, options);
+    };
+    ol.inherits(ol.source.tmsMap, ol.source.nowMap);
+    ol.source.tmsMap.createAsync = function(options) {
+        var promise = new Promise(function(resolve, reject) {
+            var obj = new ol.source.tmsMap(options);
+            resolve(obj);
+        });
+        return promise;
+    };
 
     ol.MaplatMap = function(opt_options) {
         opt_options = opt_options || {};
@@ -372,6 +377,8 @@ define(["ol3"], function(ol) {
         var markerLayer = new ol.layer.Vector({
             source: this._marker_source
         });
+
+        var overlayLayer = this._overlay_group = new ol.layer.Group();
 
         var options =  {
             controls: [
@@ -393,6 +400,7 @@ define(["ol3"], function(ol) {
                 new ol.layer.Tile({
                     source: opt_options.source
                 }),
+                overlayLayer,
                 vectorLayer,
                 markerLayer
             ],
@@ -432,7 +440,23 @@ define(["ol3"], function(ol) {
         src.addFeature(iconFeature);
     };
 
+    ol.MaplatMap.prototype.exchangeSource = function (source) {
+        var layers = this.getLayers();
+        var layer  = layers.item(0);
+        layer.setSource(source);
+        source._map = this;
+    };
 
+    ol.MaplatMap.prototype.setLayer = function (source) {
+        var layers = this._overlay_group;
+        layers.clear();
+        if (source) {
+            var layer = new ol.layer.Tile({
+                source: source
+            });
+            layers.push(layer);
+        }
+    };
 
     ol.MathEx = {};
 

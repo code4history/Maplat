@@ -16,6 +16,13 @@
             "url" : "https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png"
         },
         {
+            "attr" : "正保城絵図 南部領盛岡平城絵図 (正保元年) 国立公文書館",
+            "label" : "1644 (TMS)",
+            "mapID" : "morioka_ndl_affine",
+            "maptype" : "overlay",
+            "url" : "./tiles/morioka_ndl_affine/{z}/{x}/{-y}.png"
+        },
+        {
             "era"       : "正保城絵図 南部領盛岡平城絵図 (正保元年)",
             "attr"      : "正保城絵図 南部領盛岡平城絵図 (正保元年) 国立公文書館",
             "mapID"     : "morioka_ndl",
