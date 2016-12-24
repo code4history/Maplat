@@ -79,6 +79,22 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                             gps_callback: gps_callback,
                             home_callback: home_callback
                         }));
+                    } else if (data.maptype == "overlay") {
+                        data.sourceID = data.mapID;
+                        sourcePromise.push(ol.source.tmsMap.createAsync({
+                            map_option: {
+                                div: "mapNow"
+                            },
+                            attributions: [
+                                new ol.Attribution({
+                                    html: data.attr
+                                })
+                            ],
+                            url: data.url,
+                            sourceID: data.sourceID,
+                            gps_callback: gps_callback,
+                            home_callback: home_callback
+                        }));
                     } else {
                         data.sourceID = data.mapID + ":" + data.maptype + ":" + data.algorythm;
                         sourcePromise.push(new Promise(function (res, rej) {
@@ -133,6 +149,7 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
             var cache_hash = {};
             var clickavoid = false;
             var nowMap = null;
+            var nowSource = null;
             var clear_buffer = function(){
                 console.log("Clear buffer");
                 merc_buffer = null;
@@ -141,15 +158,17 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                 var source = sources[i];
                 var item;
                 if (source instanceof ol.source.nowMap) {
-                    if (!nowMap) {
+                    if (!nowMap && !(source instanceof ol.source.tmsMap)) {
                         nowMap = source.getMap();
-                        //nowMap.on("movestart",clear_buffer);
                     }
+                    source._map = nowMap;
                     item = [source, nowMap, "#mapNowcontainer"];
-                    nowMap.exchangeSource(source);
+                    if (!(source instanceof ol.source.tmsMap)) {
+                        nowMap.exchangeSource(source);
+                        nowSource = source;
+                    }
                 } else {
                     var map = source.getMap();
-                    //map.on("movestart",clear_buffer);
                     item = [source, map, "#map" + i + "container"];
                 }
                 cache.push(item);
@@ -169,7 +188,8 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                         (function(){
                             var target = cache[i];
                             var source = target[0];
-                            var view   = target[1].getView();
+                            var map    = target[1];
+                            var view   = map.getView();
                             if (!mercs) {
                                 mercs = source.mercsFromGPSValue(lnglat,acc);
                             }
@@ -184,8 +204,8 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                                     var ret = prev + Math.sqrt(Math.pow(curr[0]-center[0],2)+Math.pow(curr[1]-center[1],2));
                                     return index==3 ? ret / 4.0 : ret;
                                 },0);
-                                if (target == from) view.setCenter(center);
-                                source.setGPSPosition(center,ave);
+                                if (target[1] == from[1]) view.setCenter(center);
+                                map.setGPSPosition(center,ave);
                             });
                         })();
                     }
@@ -236,14 +256,18 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                 clickavoid = false;
             });
 
-            from = cache[1];
+            from = cache.reduce(function(prev,curr){
+                if (prev) return prev;
+                if (curr[0] instanceof ol.source.histMap) return curr;
+                return prev;
+            },null);
             changeMap(true, "osm");
 
             function changeMap(init,sourceID) {
                 var now = cache_hash['osm'];
                 var to  = cache_hash[sourceID];
                 if ((to == from) && (to != now)) return;
-                if (from == now) {
+                /*if (from == now) {
                     var layers = from[1].getLayers();
                     //ここで以前はタイルマップを削除していた、POIレイヤを削除してしまうため一時保留、後日直す
                     //while (layers.getLength() > 2) {
@@ -252,7 +276,7 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                     if (init == true) {
                         home_process();
                     }
-                }
+                }*/
                 if (to != from) {
                     var view = from[1].getView();
                     console.log("From: Center: " + view.getCenter() + " Zoom: " + view.getZoom() + " Rotation: " + view.getRotation());
@@ -281,7 +305,6 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                     fromPromise.then(function(mercs){
                         merc_buffer.mercs = mercs;
                         var view = from[1].getView();
-                        var center = view.getCenter();
                         merc_buffer.buffer[from[0].sourceID] = ol.MathEx.recursiveRound([
                             view.getCenter(), view.getZoom(), view.getRotation()
                         ],10);
@@ -293,28 +316,36 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                             toPromise = new Promise(function(res, rej){
                                 res(merc_buffer.buffer[key]);
                             });
-                        } else {
-                            to[1].AvoidFirstMoveStart = true;
                         }
                         toPromise.then(function(size){
                             console.log("To: Center: " + [size[0][0],size[0][1]] + " Zoom: " + size[1] + " Rotation: " + size[2]);
-                            merc_buffer.buffer[to[0].sourceID] = ol.MathEx.recursiveRound(size, 10);
-                            if (to[0] instanceof ol.source.nowMap) {
-                                to[1].exchangeSource(to[0]);
+                            var to_src = to[0];
+                            var to_tms = null;
+                            var to_map = to[1];
+                            var to_div = to[2];
+                            merc_buffer.buffer[to_src.sourceID] = ol.MathEx.recursiveRound(size, 10);
+                            if (to_src instanceof ol.source.nowMap) {
+                                if (to_src instanceof ol.source.tmsMap) {
+                                    to_map.setLayer(to_src);
+                                } else {
+                                    to_map.setLayer();
+                                    to_map.exchangeSource(to_src);
+                                    nowSource = to_src;
+                                }
                             }
-                            var view = to[1].getView();
+                            var view = to_map.getView();
                             view.setCenter(size[0]);
                             view.setZoom(size[1]);
                             view.setRotation(size[2]);
-                            $(to[2]).show();
+                            $(to_div).show();
                             for (var i=0;i<cache.length;i++) {
                                 var div = cache[i];
-                                if (div[2] != to[2]) {
+                                if (div[2] != to_div) {
                                     $(div[2]).hide();
                                 }
                             }
-                            to[1].updateSize();
-                            to[1].renderSync();
+                            to_map.updateSize();
+                            to_map.renderSync();
                             from = to;
                             if (init == true) {
                                 home_process();
@@ -322,16 +353,6 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                         });
                     });
                 }
-                /*if (to == now && sourceID != now_sourceID) {
-                    var data = dataHash[sourceID];
-                    var layers = to[1].getLayers();
-                    var layer = new ol.layer.Tile({
-                        source: new ol.source.XYZ({
-                            url: 'tiles/' + data.mapID + '_' + type + '/{z}/{x}/{-y}.png'
-                        })
-                    });
-                    layers.insertAt(1, layer);
-                }*/
             }
 
             function showInfo(data) {
@@ -362,7 +383,7 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                     });
                     Promise.all(promise).then(function(xys){
                         filtered.map(function(item,index){
-                            item[0].setMarker(xys[index],{"datum":datum});
+                            item[1].setMarker(xys[index],{"datum":datum});
                         });
                     });
                 })(pois[i]);          

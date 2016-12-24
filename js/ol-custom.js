@@ -126,74 +126,20 @@ define(["ol3"], function(ol) {
         }))
     });
 
-    ol.Map.prototype.exchangeSource = function (source) {
-        var layers = this.getLayers();
-        var layer  = layers.item(0);
-        layer.setSource(source);
-        source._map = this;
-    };
-
     ol.source.setCustomFunction = function(target) {
         target.prototype.getMap = function() {
             if (this._map) {
                 return this._map;
             }
 
-            this._gps_source = new ol.source.Vector({
-                "wrapX" : false
-            });
-            var vectorLayer = new ol.layer.Vector({
-                source: this._gps_source
-            });
-
-            this._marker_source = new ol.source.Vector({
-                "wrapX" : false
-            });
-            var markerLayer = new ol.layer.Vector({
-                source: this._marker_source
-            });            
-
-            var map = this._map = new ol.Map({
-                controls: [
-                    new ol.control.Attribution(),
-                    new ol.control.CompassRotate(),
-                    new ol.control.Zoom(),
-                    new ol.control.CustomControl({
-                        character: '<i class="fa fa-crosshairs fa-lg"></i>',
-                        cls: "gps",
-                        callback: this._gps_callback
-                    }),
-                    new ol.control.CustomControl({
-                        character: '<i class="fa fa-home fa-lg"></i>',
-                        cls: "home",
-                        callback: this._home_callback
-                    })
-                ],
-                layers: [
-                    new ol.layer.Tile({
-                        source: this
-                    }),
-                    vectorLayer,
-                    markerLayer
-                ],
-                target: this.map_option.div,
-                view: new ol.View({
-                    center: this.map_option.default_center || [0,0],
-                    zoom: this.map_option.default_zoom || 2,
-                    rotation: this.map_option.default_rotation || 0
-                })
-            });
-
-            var view = map.getView();
-            map.AvoidFirstMoveStart = true;
-            var movestart = function(){
-                if (!map.AvoidFirstMoveStart) map.dispatchEvent('movestart');
-                map.AvoidFirstMoveStart = false;
-                view.un('propertychange', movestart);
-            };
-            view.on('propertychange', movestart);
-            map.on('moveend', function() {
-                view.on('propertychange', movestart);
+            var map = this._map = new ol.MaplatMap({
+                gps_callback : this._gps_callback,
+                home_callback : this._home_callback,
+                source : this,
+                div : this.map_option.div,
+                center : this.map_option.default_center,
+                zoom : this.map_option.default_zoom,
+                rotation : this.map_option.default_rotation
             });
 
             /*var self = this;
@@ -228,30 +174,6 @@ define(["ol3"], function(ol) {
             });*/
 
             return this._map;
-        };
-
-        target.prototype.setGPSPosition = function(xy, rad) {
-            var src = this._gps_source;
-            src.clear();
-            var iconFeature = new ol.Feature({
-                geometry: new ol.geom.Point(xy)
-            });
-            iconFeature.setStyle(gpsStyle);
-            var circle = new ol.Feature({
-                geometry: new ol.geom.Circle(xy, rad)
-            });
-            circle.setStyle(accCircleStyle);
-            src.addFeature(iconFeature);
-            src.addFeature(circle);
-        };
-
-        target.prototype.setMarker = function(xy, data, markerStyle) {
-            var src = this._marker_source;
-            data['geometry'] = new ol.geom.Point(xy);
-            var iconFeature = new ol.Feature(data);
-            if (!markerStyle) markerStyle = markerDefaultStyle;
-            iconFeature.setStyle(markerStyle);
-            src.addFeature(iconFeature);
         };
 
         target.prototype.getRadius = function(size) {
@@ -390,7 +312,6 @@ define(["ol3"], function(ol) {
             return omega;
         }
 
-
         target.prototype.setGPSCallback = function(func) {
             this._gps_callback = func;
         }
@@ -427,6 +348,114 @@ define(["ol3"], function(ol) {
             resolve(merc);            
         });
         return promise;
+    };
+    ol.source.tmsMap = function(opt_options) {
+        var options = opt_options || {};
+        ol.source.nowMap.call(this, options);
+    };
+    ol.inherits(ol.source.tmsMap, ol.source.nowMap);
+    ol.source.tmsMap.createAsync = function(options) {
+        var promise = new Promise(function(resolve, reject) {
+            var obj = new ol.source.tmsMap(options);
+            resolve(obj);
+        });
+        return promise;
+    };
+
+    ol.MaplatMap = function(opt_options) {
+        opt_options = opt_options || {};
+        this._gps_source = new ol.source.Vector({
+            "wrapX" : false
+        });
+        var vectorLayer = new ol.layer.Vector({
+            source: this._gps_source
+        });
+
+        this._marker_source = new ol.source.Vector({
+            "wrapX" : false
+        });
+        var markerLayer = new ol.layer.Vector({
+            source: this._marker_source
+        });
+
+        var overlayLayer = this._overlay_group = new ol.layer.Group();
+
+        var options =  {
+            controls: [
+                new ol.control.Attribution(),
+                new ol.control.CompassRotate(),
+                new ol.control.Zoom(),
+                new ol.control.CustomControl({
+                    character: '<i class="fa fa-crosshairs fa-lg"></i>',
+                    cls: "gps",
+                    callback: opt_options.gps_callback
+                }),
+                new ol.control.CustomControl({
+                    character: '<i class="fa fa-home fa-lg"></i>',
+                    cls: "home",
+                    callback: opt_options.home_callback
+                })
+            ],
+            layers: [
+                new ol.layer.Tile({
+                    source: opt_options.source
+                }),
+                overlayLayer,
+                vectorLayer,
+                markerLayer
+            ],
+            target: opt_options.div,
+            view: new ol.View({
+                center: opt_options.default_center || [0,0],
+                zoom: opt_options.default_zoom || 2,
+                rotation: opt_options.default_rotation || 0
+            })
+        };
+
+        ol.Map.call(this, options);
+    };
+    ol.inherits(ol.MaplatMap, ol.Map);
+
+    ol.MaplatMap.prototype.setGPSPosition = function(xy, rad) {
+        var src = this._gps_source;
+        src.clear();
+        var iconFeature = new ol.Feature({
+            geometry: new ol.geom.Point(xy)
+        });
+        iconFeature.setStyle(gpsStyle);
+        var circle = new ol.Feature({
+            geometry: new ol.geom.Circle(xy, rad)
+        });
+        circle.setStyle(accCircleStyle);
+        src.addFeature(iconFeature);
+        src.addFeature(circle);
+    };
+
+    ol.MaplatMap.prototype.setMarker = function(xy, data, markerStyle) {
+        var src = this._marker_source;
+        data['geometry'] = new ol.geom.Point(xy);
+        var iconFeature = new ol.Feature(data);
+        if (!markerStyle) markerStyle = markerDefaultStyle;
+        iconFeature.setStyle(markerStyle);
+        src.addFeature(iconFeature);
+    };
+
+    ol.MaplatMap.prototype.exchangeSource = function (source) {
+        var layers = this.getLayers();
+        var layer  = layers.item(0);
+        layer.setSource(source);
+        source._map = this;
+    };
+
+    ol.MaplatMap.prototype.setLayer = function (source) {
+        var layers = this._overlay_group.getLayers();
+        layers.clear();
+        if (source) {
+            var layer = new ol.layer.Tile({
+                source: source
+            });
+            layers.push(layer);
+        }
     };
 
     ol.MathEx = {};
