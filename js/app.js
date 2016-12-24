@@ -292,28 +292,29 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                             toPromise = new Promise(function(res, rej){
                                 res(merc_buffer.buffer[key]);
                             });
-                        } else {
-                            to[1].AvoidFirstMoveStart = true;
                         }
                         toPromise.then(function(size){
                             console.log("To: Center: " + [size[0][0],size[0][1]] + " Zoom: " + size[1] + " Rotation: " + size[2]);
-                            merc_buffer.buffer[to[0].sourceID] = ol.MathEx.recursiveRound(size, 10);
-                            if (to[0] instanceof ol.source.nowMap) {
-                                to[1].exchangeSource(to[0]);
+                            var to_src = to[0];
+                            var to_map = to[1];
+                            var to_div = to[2];
+                            merc_buffer.buffer[to_src.sourceID] = ol.MathEx.recursiveRound(size, 10);
+                            if (to_src instanceof ol.source.nowMap) {
+                                to_map.exchangeSource(to_src);
                             }
-                            var view = to[1].getView();
+                            var view = to_map.getView();
                             view.setCenter(size[0]);
                             view.setZoom(size[1]);
                             view.setRotation(size[2]);
-                            $(to[2]).show();
+                            $(to_div).show();
                             for (var i=0;i<cache.length;i++) {
                                 var div = cache[i];
-                                if (div[2] != to[2]) {
+                                if (div[2] != to_div) {
                                     $(div[2]).hide();
                                 }
                             }
-                            to[1].updateSize();
-                            to[1].renderSync();
+                            to_map.updateSize();
+                            to_map.renderSync();
                             from = to;
                             if (init == true) {
                                 home_process();
