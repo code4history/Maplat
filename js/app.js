@@ -161,6 +161,7 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                     if (!nowMap && !(source instanceof ol.source.tmsMap)) {
                         nowMap = source.getMap();
                     }
+                    source._map = nowMap;
                     item = [source, nowMap, "#mapNowcontainer"];
                     if (!(source instanceof ol.source.tmsMap)) {
                         nowMap.exchangeSource(source);
@@ -319,12 +320,18 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                         toPromise.then(function(size){
                             console.log("To: Center: " + [size[0][0],size[0][1]] + " Zoom: " + size[1] + " Rotation: " + size[2]);
                             var to_src = to[0];
+                            var to_tms = null;
                             var to_map = to[1];
                             var to_div = to[2];
                             merc_buffer.buffer[to_src.sourceID] = ol.MathEx.recursiveRound(size, 10);
                             if (to_src instanceof ol.source.nowMap) {
-                                to_map.exchangeSource(to_src);
-                                nowSource = to_src;
+                                if (to_src instanceof ol.source.tmsMap) {
+                                    to_map.setLayer(to_src);
+                                } else {
+                                    to_map.setLayer();
+                                    to_map.exchangeSource(to_src);
+                                    nowSource = to_src;
+                                }
                             }
                             var view = to_map.getView();
                             view.setCenter(size[0]);

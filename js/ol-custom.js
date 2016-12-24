@@ -448,7 +448,7 @@ define(["ol3"], function(ol) {
     };
 
     ol.MaplatMap.prototype.setLayer = function (source) {
-        var layers = this._overlay_group;
+        var layers = this._overlay_group.getLayers();
         layers.clear();
         if (source) {
             var layer = new ol.layer.Tile({
