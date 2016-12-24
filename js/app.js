@@ -149,7 +149,6 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
             var cache_hash = {};
             var clickavoid = false;
             var nowMap = null;
-            var nowSource = null;
             var clear_buffer = function(){
                 console.log("Clear buffer");
                 merc_buffer = null;
@@ -165,7 +164,6 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                     item = [source, nowMap, "#mapNowcontainer"];
                     if (!(source instanceof ol.source.tmsMap)) {
                         nowMap.exchangeSource(source);
-                        nowSource = source;
                     }
                 } else {
                     var map = source.getMap();
@@ -330,7 +328,6 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                                 } else {
                                     to_map.setLayer();
                                     to_map.exchangeSource(to_src);
-                                    nowSource = to_src;
                                 }
                             }
                             var view = to_map.getView();
