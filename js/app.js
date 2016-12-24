@@ -133,6 +133,7 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
             var cache_hash = {};
             var clickavoid = false;
             var nowMap = null;
+            var nowSource = null;
             var clear_buffer = function(){
                 console.log("Clear buffer");
                 merc_buffer = null;
@@ -143,13 +144,12 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                 if (source instanceof ol.source.nowMap) {
                     if (!nowMap) {
                         nowMap = source.getMap();
-                        //nowMap.on("movestart",clear_buffer);
                     }
                     item = [source, nowMap, "#mapNowcontainer"];
                     nowMap.exchangeSource(source);
+                    nowSource = source;
                 } else {
                     var map = source.getMap();
-                    //map.on("movestart",clear_buffer);
                     item = [source, map, "#map" + i + "container"];
                 }
                 cache.push(item);
@@ -185,7 +185,7 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                                     return index==3 ? ret / 4.0 : ret;
                                 },0);
                                 if (target == from) view.setCenter(center);
-                                source.setGPSPosition(center,ave);
+                                map.setGPSPosition(center,ave);
                             });
                         })();
                     }
@@ -281,7 +281,6 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                     fromPromise.then(function(mercs){
                         merc_buffer.mercs = mercs;
                         var view = from[1].getView();
-                        var center = view.getCenter();
                         merc_buffer.buffer[from[0].sourceID] = ol.MathEx.recursiveRound([
                             view.getCenter(), view.getZoom(), view.getRotation()
                         ],10);
@@ -362,7 +361,7 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                     });
                     Promise.all(promise).then(function(xys){
                         filtered.map(function(item,index){
-                            item[0].setMarker(xys[index],{"datum":datum});
+                            item[1].setMarker(xys[index],{"datum":datum});
                         });
                     });
                 })(pois[i]);          
