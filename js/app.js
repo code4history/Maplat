@@ -187,7 +187,8 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                         (function(){
                             var target = cache[i];
                             var source = target[0];
-                            var view   = target[1].getView();
+                            var map    = target[1];
+                            var view   = map.getView();
                             if (!mercs) {
                                 mercs = source.mercsFromGPSValue(lnglat,acc);
                             }
@@ -202,7 +203,7 @@ require(["jquery", "ol-custom", "bootstrap", "slick"], function($, ol) {//"css!b
                                     var ret = prev + Math.sqrt(Math.pow(curr[0]-center[0],2)+Math.pow(curr[1]-center[1],2));
                                     return index==3 ? ret / 4.0 : ret;
                                 },0);
-                                if (target == from) view.setCenter(center);
+                                if (target[1] == from[1]) view.setCenter(center);
                                 map.setGPSPosition(center,ave);
                             });
                         })();
