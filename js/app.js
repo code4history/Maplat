@@ -152,13 +152,6 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
             var cacheHash = {};
             var clickAvoid = false;
             var nowMap = null;
-<<<<<<< HEAD
-            var clear_buffer = function(){
-                console.log("Clear buffer");
-                merc_buffer = null;
-            };
-=======
->>>>>>> 8b22f2b017c0ee222c76b92b37a112a08bacaaa3
             for (var i=0; i<sources.length; i++) {
                 var source = sources[i];
                 var item;
@@ -332,13 +325,8 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                                 if (toSrc instanceof ol.source.TmsMap) {
                                     toMap.setLayer(toSrc);
                                 } else {
-<<<<<<< HEAD
-                                    to_map.setLayer();
-                                    to_map.exchangeSource(to_src);
-=======
                                     toMap.setLayer();
                                     toMap.exchangeSource(toSrc);
->>>>>>> 8b22f2b017c0ee222c76b92b37a112a08bacaaa3
                                 }
                             }
                             var view = toMap.getView();
