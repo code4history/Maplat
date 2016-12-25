@@ -1,20 +1,20 @@
-define(["histmap", "tps"], function(ol, ThinPlateSpline) {
-    ol.source.histMap_tps = function(opt_options) {
-        var options = opt_options || {};
+define(['histmap', 'tps'], function(ol, ThinPlateSpline) {
+    ol.source.HistMap_tps = function(optOptions) {
+        var options = optOptions || {};
 
-        ol.source.histMap.call(this, options) ;
+        ol.source.HistMap.call(this, options);
 
         if (options.tps_points || options.tps_serial) {
-            var tps_option = {
-                'use_worker' : true,
-                'transform_callback' : options.transform_callback,
-                'error_callback' : options.error_callback,
-                'web_fallback' : options.web_fallback,
-                'on_solved' : options.on_solved,
-                'on_serialized' : options.on_serialized
+            var tpsOption = {
+                use_worker: true,
+                transform_callback: options.transform_callback,
+                error_callback: options.error_callback,
+                web_fallback: options.web_fallback,
+                on_solved: options.on_solved,
+                on_serialized: options.on_serialized
             };
 
-            this.tps = new ThinPlateSpline(tps_option);
+            this.tps = new ThinPlateSpline(tpsOption);
             if (options.tps_points) {
                 this.tps.load_points(options.tps_points);
             } else {
@@ -22,18 +22,18 @@ define(["histmap", "tps"], function(ol, ThinPlateSpline) {
             }
         }
     };
-    ol.inherits(ol.source.histMap_tps, ol.source.histMap);
+    ol.inherits(ol.source.HistMap_tps, ol.source.HistMap);
 
-    ol.source.histMap_tps.createAsync = function(options) {
-        var promise = new Promise(function(resolve, reject) {
+    ol.source.HistMap_tps.createAsync = function(options) {
+        return new Promise(function(resolve, reject) {
             var obj;
             options.on_serialized = function() {
                 if (options.tps_points) {
-                    var a = document.createElement("a");
+                    var a = document.createElement('a');
                     document.body.appendChild(a);
-                    a.style = "display: none";
-                    var blob = new Blob([ obj.tps.serialize() ]),
-                        url = window.URL.createObjectURL(blob);
+                    a.style = 'display: none';
+                    var blob = new Blob([obj.tps.serialize()]);
+                    var url = window.URL.createObjectURL(blob);
                     a.href = url;
                     a.download = options.tps_serial;
                     a.click();
@@ -41,41 +41,38 @@ define(["histmap", "tps"], function(ol, ThinPlateSpline) {
                 }
                 resolve(obj);
             };
-            options.transform_callback = function(coord, isRev, tf_options) {
-                if (tf_options.callback) {
-                    tf_options.callback(coord);
+            options.transform_callback = function(coord, isRev, tfOptions) {
+                if (tfOptions.callback) {
+                    tfOptions.callback(coord);
                 }
             };
-            obj = new ol.source.histMap_tps(options);
+            obj = new ol.source.HistMap_tps(options);
         });
-        return promise;
     };
 
-    ol.source.histMap_tps.prototype.xy2MercAsync_ = function(xy) {
+    ol.source.HistMap_tps.prototype.xy2MercAsync_ = function(xy) {
         var self = this;
-        var promise = new Promise(function(resolve, reject) {
-            var x = (xy[0]  + ol.const.MERC_MAX) * self._maxxy / (2*ol.const.MERC_MAX);
+        return new Promise(function(resolve, reject) {
+            var x = (xy[0] + ol.const.MERC_MAX) * self._maxxy / (2*ol.const.MERC_MAX);
             var y = (-xy[1] + ol.const.MERC_MAX) * self._maxxy / (2*ol.const.MERC_MAX);
-            self.tps.transform([x,y], false, {
+            self.tps.transform([x, y], false, {
                 callback: function(merc) {
                     resolve(merc);
                 }
             });
         });
-        return promise;
     };
-    ol.source.histMap_tps.prototype.merc2XyAsync_ = function(merc) {
+    ol.source.HistMap_tps.prototype.merc2XyAsync_ = function(merc) {
         var self = this;
-        var promise = new Promise(function(resolve, reject) {
+        return new Promise(function(resolve, reject) {
             self.tps.transform(merc, true, {
                 callback: function(xy) {
-                    var x =       xy[0] * (2*ol.const.MERC_MAX) / self._maxxy - ol.const.MERC_MAX;
+                    var x = xy[0] * (2*ol.const.MERC_MAX) / self._maxxy - ol.const.MERC_MAX;
                     var y = -1 * (xy[1] * (2*ol.const.MERC_MAX) / self._maxxy - ol.const.MERC_MAX);
-                    resolve([x,y]);
+                    resolve([x, y]);
                 }
             });
         });
-        return promise;
     };
 
     return ol;
