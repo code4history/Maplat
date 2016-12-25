@@ -1,5 +1,5 @@
-define(["ol-custom"], function(ol) {
-    //透明PNG定義
+define(['ol-custom'], function(ol) {
+    // 透明PNG定義
     var transPng = 'data:image/png;base64,'+
         'iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAMAAABrrFhUAAAAB3RJTUUH3QgIBToaSbAjlwAAABd0'+
         'RVh0U29mdHdhcmUAR0xEUE5HIHZlciAzLjRxhaThAAAACHRwTkdHTEQzAAAAAEqAKR8AAAAEZ0FN'+
@@ -7,16 +7,16 @@ define(["ol-custom"], function(ol) {
         'r+4ICgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'+
         'AAAAAAAAAAAAABgBDwABHHIJwwAAAABJRU5ErkJggg==';
     // タイル画像サイズ
-    var tileSize    = 256;
+    var tileSize = 256;
     // canvasのテンプレート
-    var canvBase = "<canvas width=\"" + tileSize +"\" height=\"" + tileSize + "\" src=\"" + transPng + "\"></canvas>";
+    var canvBase = '<canvas width="' + tileSize + '" height="' + tileSize + '" src="' + transPng + '"></canvas>';
 
-    ol.source.histMap = function(opt_options) {
+    ol.source.HistMap = function(optOptions) {
         var self = this;
-        var options = opt_options || {};
+        var options = optOptions || {};
         options.wrapX = false;
         if (options.mapID) {
-            this.mapID = options.mapID
+            this.mapID = options.mapID;
             options.url = 'tiles/' + options.mapID + '/{z}/{x}/{y}.jpg';
         }
 
@@ -30,40 +30,40 @@ define(["ol-custom"], function(ol) {
                     ol.TileUrlFunction.expandUrl(options.url));
         }
 
-        this.width   = options.width;
-        this.height  = options.height;
-        var zW       = Math.log2(this.width/tileSize);
-        var zH       = Math.log2(this.height/tileSize);
-        this.maxZoom = options.maxZoom = Math.ceil(Math.max(zW,zH));
-        this._maxxy  = Math.pow(2,this.maxZoom) * tileSize;
+        this.width = options.width;
+        this.height = options.height;
+        var zW = Math.log2(this.width/tileSize);
+        var zH = Math.log2(this.height/tileSize);
+        this.maxZoom = options.maxZoom = Math.ceil(Math.max(zW, zH));
+        this._maxxy = Math.pow(2, this.maxZoom) * tileSize;
         options.tileUrlFunction = function(coord) {
             var z = coord[0];
             var x = coord[1];
             var y = -1 * coord[2] - 1;
-            if (x * tileSize * Math.pow(2,this.maxZoom - z) > this.width || 
-                y * tileSize * Math.pow(2,this.maxZoom - z) > this.height ||
+            if (x * tileSize * Math.pow(2, this.maxZoom - z) > this.width ||
+                y * tileSize * Math.pow(2, this.maxZoom - z) > this.height ||
                 x < 0 || y < 0 ) {
                 return transPng;
             }
             return this._tileUrlFunction(coord);
         };
 
-        ol.source.XYZ.call(this, options) ;
+        ol.source.XYZ.call(this, options);
         ol.source.setCustomInitialize(this, options);
 
-        this.setTileLoadFunction((function() { 
-            var numLoadingTiles = 0; 
-            var tileLoadFn = self.getTileLoadFunction(); 
+        this.setTileLoadFunction((function() {
+            var numLoadingTiles = 0;
+            var tileLoadFn = self.getTileLoadFunction();
             return function(tile, src) {
-                if (numLoadingTiles === 0) { 
-                    //console.log('loading'); 
-                } 
-                ++numLoadingTiles; 
+                if (numLoadingTiles === 0) {
+                    // console.log('loading');
+                }
+                ++numLoadingTiles;
                 var image = tile.getImage();
                 var tImage = tile.tImage;
                 if (!tImage) {
                     tImage = $('<img>').get(0);
-                    tImage.crossOrigin = "Anonymous";
+                    tImage.crossOrigin = 'Anonymous';
                     tile.tImage = tImage;
                 }
                 tImage.onload = tImage.onerror = function() {
@@ -74,36 +74,36 @@ define(["ol-custom"], function(ol) {
                             ctx.drawImage(tImage, 0, 0);
                             var dataUrl = tCanv.toDataURL();
                             image.crossOrigin=null;
-                            tileLoadFn(tile, dataUrl);          
+                            tileLoadFn(tile, dataUrl);
                             tCanv = tImage = ctx = null;
                         } else {
-                            image.crossOrigin="Anonymous";
-                            tileLoadFn(tile, src); 
+                            image.crossOrigin='Anonymous';
+                            tileLoadFn(tile, src);
                         }
                     }
-                    --numLoadingTiles; 
-                    if (numLoadingTiles === 0) { 
-                        //console.log('idle'); 
-                    } 
+                    --numLoadingTiles;
+                    if (numLoadingTiles === 0) {
+                        // console.log('idle');
+                    }
                 };
                 tImage.src = src;
-            }; 
+            };
         })());
     };
 
-    ol.inherits(ol.source.histMap, ol.source.XYZ);
+    ol.inherits(ol.source.HistMap, ol.source.XYZ);
 
-    ol.source.histMap.createAsync = function(options) {
-        var algorythm = options.algorythm || "tin";
-        return ol.source["histMap_" + algorythm].createAsync(options);
+    ol.source.HistMap.createAsync = function(options) {
+        var algorythm = options.algorythm || 'tin';
+        return ol.source['HistMap_' + algorythm].createAsync(options);
     };
-    ol.source.setCustomFunction(ol.source.histMap);
-    ol.source.histMap.prototype.xy2MercAsync = function(xy) {
+    ol.source.setCustomFunction(ol.source.HistMap);
+    ol.source.HistMap.prototype.xy2MercAsync = function(xy) {
         return this.xy2MercAsync_(xy);
     };
-    ol.source.histMap.prototype.merc2XyAsync = function(merc) {
+    ol.source.HistMap.prototype.merc2XyAsync = function(merc) {
         return this.merc2XyAsync_(merc);
-    }; 
+    };
 
     return ol;
 });
