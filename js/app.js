@@ -18,10 +18,6 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
         var gpsCallback = function(e) {
             gpsProcess(e);
         };
-        var homeProcess;
-        var homeCallback = function(e) {
-            homeProcess(e);
-        };
         var homePos = appData.home_position;
         var defZoom = appData.default_zoom;
         var appName = appData.app_name;
@@ -53,7 +49,8 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                     },
                     sourceID: 'osm',
                     gps_callback: gpsCallback,
-                    home_callback: homeCallback
+                    home_position: homePos,
+                    merc_zoom: defZoom
                 }));
                 $('.slick-class').slick('slickAdd', '<div class="slick-item" data="osm">' +
                     '<img src="./tmbs/osm_menu.jpg"><div>OSM(現在)</div></div>');
@@ -78,7 +75,8 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                             url: data.url,
                             sourceID: data.sourceID,
                             gps_callback: gpsCallback,
-                            home_callback: homeCallback
+                            home_position: homePos,
+                            merc_zoom: defZoom
                         }));
                     } else if (data.maptype == 'overlay') {
                         data.sourceID = data.mapID;
@@ -94,7 +92,8 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                             url: data.url,
                             sourceID: data.sourceID,
                             gps_callback: gpsCallback,
-                            home_callback: homeCallback
+                            home_position: homePos,
+                            merc_zoom: defZoom
                         }));
                     } else {
                         data.sourceID = data.mapID + ':' + data.maptype + ':' + data.algorythm;
@@ -117,7 +116,8 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                                         div: div
                                     },
                                     gps_callback: gpsCallback,
-                                    home_callback: homeCallback
+                                    home_position: homePos,
+                                    merc_zoom: defZoom
                                 };
                                 if (data.algorythm == 'tin') {
                                     option.tin_points_url = 'json/' + data.mapID + '_points.json';
@@ -229,18 +229,6 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                 });
             };
 
-            homeProcess = function(e) {
-                var merc = ol.proj.transform(homePos, 'EPSG:4326', 'EPSG:3857');
-                var source = from[0];
-                var view = from[1].getView();
-                var mercs = source.mercsFromGivenZoom(merc, defZoom);
-                source.mercs2SizeAsync(mercs).then(function(size) {
-                    view.setCenter(size[0]);
-                    view.setZoom(size[1]);
-                    view.setRotation(0);
-                });
-            };
-
             $('.slick-item').on('click', function() {
                 if (!clickAvoid) {
                     changeMap(false, $(this).attr('data'));
@@ -264,16 +252,6 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                 var now = cacheHash['osm'];
                 var to = cacheHash[sourceID];
                 if ((to == from) && (to != now)) return;
-                /* if (from == now) {
-                    var layers = from[1].getLayers();
-                    //ここで以前はタイルマップを削除していた、POIレイヤを削除してしまうため一時保留、後日直す
-                    //while (layers.getLength() > 2) {
-                    //    layers.removeAt(1);
-                    //}
-                    if (init == true) {
-                        home_process();
-                    }
-                } */
                 if (to != from) {
                     var view = from[1].getView();
                     console.log('From: Center: ' + view.getCenter() + ' Zoom: ' + view.getZoom() + ' Rotation: ' + view.getRotation());
@@ -344,7 +322,7 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                             toMap.renderSync();
                             from = to;
                             if (init == true) {
-                                homeProcess();
+                                toSrc.goHome();
                             }
                         });
                     });

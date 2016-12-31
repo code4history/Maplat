@@ -46,6 +46,20 @@ define(['ol3'], function(ol) {
     };
     ol.inherits(ol.control.CustomControl, ol.control.Control);
 
+    ol.control.GoHome = function(optOptions) {
+        var options = optOptions || {};
+        options.character = '<i class="fa fa-home fa-lg"></i>';
+        options.cls = 'home';
+        var self = this;
+        options.callback = function() {
+            var source = self.getMap().getLayers().item(0).getSource();
+            source.goHome();
+        };
+
+        ol.control.CustomControl.call(this, options);
+    };
+    ol.inherits(ol.control.GoHome, ol.control.CustomControl);
+
     ol.control.CompassRotate = function(optOptions) {
         var options = optOptions || {};
         options.autoHide = false;
@@ -172,6 +186,18 @@ define(['ol3'], function(ol) {
             });*/
 
             return this._map;
+        };
+
+        target.prototype.goHome = function() {
+            var merc = ol.proj.transform(this.home_position, 'EPSG:4326', 'EPSG:3857');
+            var map = this._map;
+            var view = map.getView();
+            var mercs = this.mercsFromGivenZoom(merc, this.merc_zoom);
+            this.mercs2SizeAsync(mercs).then(function(size) {
+                view.setCenter(size[0]);
+                view.setZoom(size[1]);
+                view.setRotation(0);
+            });
         };
 
         target.prototype.getRadius = function(size) {
@@ -310,6 +336,8 @@ define(['ol3'], function(ol) {
     ol.source.setCustomInitialize = function(self, options) {
         self.sourceID = options.sourceID;
         self.map_option = options.map_option || {};
+        self.home_position = options.home_position;
+        self.merc_zoom = options.merc_zoom;
         self._gps_callback = options.gps_callback || function() {};
         self._home_callback = options.home_callback || function() {};
     };
@@ -378,11 +406,7 @@ define(['ol3'], function(ol) {
                     cls: 'gps',
                     callback: optOptions.gps_callback
                 }),
-                new ol.control.CustomControl({
-                    character: '<i class="fa fa-home fa-lg"></i>',
-                    cls: 'home',
-                    callback: optOptions.home_callback
-                })
+                new ol.control.GoHome()
             ],
             layers: [
                 new ol.layer.Tile({
@@ -401,6 +425,19 @@ define(['ol3'], function(ol) {
         };
 
         ol.Map.call(this, options);
+
+        var view = this.getView();
+        var self = this;
+        self.__AvoidFirstMoveStart = true;
+        var movestart = function() {
+            if (!self.__AvoidFirstMoveStart) self.dispatchEvent('movestart');
+            self.__AvoidFirstMoveStart = false;
+            view.un('propertychange', movestart);
+        };
+        view.on('propertychange', movestart);
+        self.on('moveend', function() {
+            view.on('propertychange', movestart);
+        });
     };
     ol.inherits(ol.MaplatMap, ol.Map);
 
