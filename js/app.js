@@ -14,10 +14,6 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
 
         var from;
         var mercBuffer = null;
-        var gpsProcess;
-        var gpsCallback = function(e) {
-            gpsProcess(e);
-        };
         var homePos = appData.home_position;
         var defZoom = appData.default_zoom;
         var appName = appData.app_name;
@@ -25,6 +21,7 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
         var fakeCenter = appData.fake_center;
         var fakeRadius = appData.fake_radius;
         var makeBinary = appData.make_binary;
+        var currentPosition = null;
         if (fakeGps) {
             $('#gps_etc').append('※' + fakeCenter + '中心より' + fakeRadius +
                 'km以上離れている場合は、' + fakeCenter + '中心周辺の疑似経緯度を発行します');
@@ -48,9 +45,9 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                         div: div
                     },
                     sourceID: 'osm',
-                    gps_callback: gpsCallback,
                     home_position: homePos,
-                    merc_zoom: defZoom
+                    merc_zoom: defZoom,
+                    fake_gps: fakeGps ? fakeRadius : false
                 }));
                 $('.slick-class').slick('slickAdd', '<div class="slick-item" data="osm">' +
                     '<img src="./tmbs/osm_menu.jpg"><div>OSM(現在)</div></div>');
@@ -74,9 +71,9 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                             ],
                             url: data.url,
                             sourceID: data.sourceID,
-                            gps_callback: gpsCallback,
                             home_position: homePos,
-                            merc_zoom: defZoom
+                            merc_zoom: defZoom,
+                            fake_gps: fakeGps ? fakeRadius : false
                         }));
                     } else if (data.maptype == 'overlay') {
                         data.sourceID = data.mapID;
@@ -91,9 +88,9 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                             ],
                             url: data.url,
                             sourceID: data.sourceID,
-                            gps_callback: gpsCallback,
                             home_position: homePos,
-                            merc_zoom: defZoom
+                            merc_zoom: defZoom,
+                            fake_gps: fakeGps ? fakeRadius : false
                         }));
                     } else {
                         data.sourceID = data.mapID + ':' + data.maptype + ':' + data.algorythm;
@@ -115,9 +112,9 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                                     map_option: {
                                         div: div
                                     },
-                                    gps_callback: gpsCallback,
                                     home_position: homePos,
-                                    merc_zoom: defZoom
+                                    merc_zoom: defZoom,
+                                    fake_gps: fakeGps ? fakeRadius : false
                                 };
                                 if (data.algorythm == 'tin') {
                                     option.tin_points_url = 'json/' + data.mapID + '_points.json';
@@ -158,6 +155,14 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                 if (source instanceof ol.source.NowMap) {
                     if (!nowMap && !(source instanceof ol.source.TmsMap)) {
                         nowMap = source.getMap();
+                        nowMap.on('gps_request', function() {
+                            $('#gpsWait').modal();
+                        });
+                        nowMap.on('gps_result', function(evt) {
+                            console.log(evt);
+                            currentPosition = evt.frameState;
+                            $('#gpsWait').modal('hide');
+                        });
                     }
                     source._map = nowMap;
                     item = [source, nowMap, '#mapNowcontainer'];
@@ -166,68 +171,19 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                     }
                 } else {
                     var map = source.getMap();
+                    map.on('gps_request', function() {
+                        $('#gpsWait').modal();
+                    });
+                    map.on('gps_result', function(evt) {
+                        console.log(evt);
+                        currentPosition = evt.frameState;
+                        $('#gpsWait').modal('hide');
+                    });
                     item = [source, map, '#map' + i + 'container'];
                 }
                 cache.push(item);
                 cacheHash[source.sourceID] = item;
             }
-
-            gpsProcess = function(e) {
-                var geolocation = new ol.Geolocation({tracking: true});
-                // listen to changes in position
-                $('#gpsWait').modal();
-                var handleGps = function(lnglat, acc) {
-                    var mercs = null;
-                    var filterBuffer = [];
-                    for (var i=0; i<cache.length; i++) {
-                        if (filterBuffer.indexOf(cache[i][1]) >= 0) continue;
-                        filterBuffer.push(cache[i][1]);
-                        (function() {
-                            var target = cache[i];
-                            var source = target[0];
-                            var map = target[1];
-                            var view = map.getView();
-                            if (!mercs) {
-                                mercs = source.mercsFromGPSValue(lnglat, acc);
-                            }
-                            Promise.all(mercs.map(function(merc, index) {
-                                if (index == 5) return merc;
-                                return source.merc2XyAsync(merc);
-                            })).then(function(xys) {
-                                var center = xys[0];
-                                var news = xys.slice(1);
-
-                                var ave = news.reduce(function(prev, curr, index) {
-                                    var ret = prev + Math.sqrt(Math.pow(curr[0]-center[0], 2)+Math.pow(curr[1]-center[1], 2));
-                                    return index==3 ? ret / 4.0 : ret;
-                                }, 0);
-                                if (target[1] == from[1]) view.setCenter(center);
-                                map.setGPSPosition(center, ave);
-                            });
-                        })();
-                    }
-                };
-                geolocation.once('change', function(evt) {
-                    var lngLat = geolocation.getPosition();
-                    var acc = geolocation.getAccuracy();
-                    if (fakeGps && ol.MathEx.getDistance(homePos, lngLat) > fakeRadius) {
-                        lngLat = [ol.MathEx.randomFromCenter(homePos[0], 0.001), ol.MathEx.randomFromCenter(homePos[1], 0.001)];
-                        acc = ol.MathEx.randomFromCenter(15.0, 10);
-                    }
-                    geolocation.setTracking(false);
-                    handleGps(lngLat, acc);
-                    $('#gpsWait').modal('hide');
-                });
-                geolocation.once('error', function(evt) {
-                    geolocation.setTracking(false);
-                    if (fakeGps) {
-                        var lnglat = [ol.MathEx.randomFromCenter(homePos[0], 0.001), ol.MathEx.randomFromCenter(homePos[1], 0.001)];
-                        var acc = ol.MathEx.randomFromCenter(15.0, 10);
-                        handleGps(lnglat, acc);
-                    }
-                    $('#gpsWait').modal('hide');
-                });
-            };
 
             $('.slick-item').on('click', function() {
                 if (!clickAvoid) {
@@ -311,6 +267,7 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                             view.setCenter(size[0]);
                             view.setZoom(size[1]);
                             view.setRotation(size[2]);
+                            toSrc.setGPSMarker(currentPosition, true);
                             $(toDiv).show();
                             for (var i=0; i<cache.length; i++) {
                                 var div = cache[i];
