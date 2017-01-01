@@ -139,6 +139,11 @@ html,body {
     background-color: rgba(0,60,136,.2);
 }
 
+.ol-control.receiving_gps button {
+    color: rgba(255,255,255,.7);
+    background-color: rgba(0,60,136,.2);
+}
+
 .ol-control.no_rotation button:focus,.ol-control.no_rotation button:hover {
     color: rgba(255,255,255,.7);
     background-color: rgba(0,60,136,.2)

@@ -159,7 +159,6 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                             $('#gpsWait').modal();
                         });
                         nowMap.on('gps_result', function(evt) {
-                            console.log(evt);
                             currentPosition = evt.frameState;
                             $('#gpsWait').modal('hide');
                         });
@@ -175,7 +174,6 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                         $('#gpsWait').modal();
                     });
                     map.on('gps_result', function(evt) {
-                        console.log(evt);
                         currentPosition = evt.frameState;
                         $('#gpsWait').modal('hide');
                     });
