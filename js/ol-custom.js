@@ -66,8 +66,15 @@ define(['ol3'], function(ol) {
         options.cls = 'gps';
         var self = this;
         options.callback = function() {
+            var receiving = self.element.classList.contains('receiving_gps');
             var source = self.getMap().getLayers().item(0).getSource();
-            source.handleGPS();
+
+            source.handleGPS(!receiving);
+            if (receiving) {
+                self.element.classList.remove('receiving_gps');
+            } else {
+                self.element.classList.add('receiving_gps');
+            }
         };
 
         ol.control.CustomControl.call(this, options);
@@ -180,37 +187,40 @@ define(['ol3'], function(ol) {
             });
         };
 
-        target.prototype.handleGPS = function() {
-            var geolocation = new ol.Geolocation({tracking: true});
-            // listen to changes in position
-            var map = this.getMap();
-            map.dispatchEvent('gps_request');
-            var self = this;
+        target.prototype.handleGPS = function(launch) {
+            if (launch) {
+                if (!this.geolocation) this.geolocation = new ol.Geolocation({tracking: true});
+                // listen to changes in position
+                var map = this.getMap();
+                map.dispatchEvent('gps_request');
+                var self = this;
 
-            geolocation.once('change', function(evt) {
-                var lnglat = geolocation.getPosition();
-                var acc = geolocation.getAccuracy();
-                if (self.fake_gps && ol.MathEx.getDistance(self.home_position, lnglat) > self.fake_gps) {
-                    lnglat = [ol.MathEx.randomFromCenter(self.home_position[0], 0.001),
-                        ol.MathEx.randomFromCenter(self.home_position[1], 0.001)];
-                    acc = ol.MathEx.randomFromCenter(15.0, 10);
-                }
-                geolocation.setTracking(false);
-                var gpsVal = {lnglat: lnglat, acc: acc};
-                self.setGPSMarker(gpsVal);
-                map.dispatchEvent(new ol.MapEvent('gps_result', map, gpsVal));
-            });
-            geolocation.once('error', function(evt) {
-                var gpsVal = null;
-                geolocation.setTracking(false);
-                if (self.fake_gps) {
-                    var lnglat = [ol.MathEx.randomFromCenter(homePos[0], 0.001), ol.MathEx.randomFromCenter(homePos[1], 0.001)];
-                    var acc = ol.MathEx.randomFromCenter(15.0, 10);
-                    gpsVal = {lnglat: lnglat, acc: acc};
-                }
-                self.setGPSMarker(gpsVal);
-                map.dispatchEvent(new ol.MapEvent('gps_result', map, gpsVal));
-            });
+                self.geolocation.once('change', function(evt) {
+                    var lnglat = self.geolocation.getPosition();
+                    var acc = self.geolocation.getAccuracy();
+                    if (self.fake_gps && ol.MathEx.getDistance(self.home_position, lnglat) > self.fake_gps) {
+                        lnglat = [ol.MathEx.randomFromCenter(self.home_position[0], 0.001),
+                            ol.MathEx.randomFromCenter(self.home_position[1], 0.001)];
+                        acc = ol.MathEx.randomFromCenter(15.0, 10);
+                    }
+                    var gpsVal = {lnglat: lnglat, acc: acc};
+                    self.setGPSMarker(gpsVal);
+                    map.dispatchEvent(new ol.MapEvent('gps_result', map, gpsVal));
+                });
+                self.geolocation.once('error', function(evt) {
+                    var gpsVal = null;
+                    if (self.fake_gps) {
+                        var lnglat = [ol.MathEx.randomFromCenter(homePos[0], 0.001), ol.MathEx.randomFromCenter(homePos[1], 0.001)];
+                        var acc = ol.MathEx.randomFromCenter(15.0, 10);
+                        gpsVal = {lnglat: lnglat, acc: acc};
+                    }
+                    self.setGPSMarker(gpsVal);
+                    map.dispatchEvent(new ol.MapEvent('gps_result', map, gpsVal));
+                });
+            } else {
+                if (this.geolocation) this.geolocation.setTracking(false);
+                this.geolocation = null;
+            }
         };
 
         target.prototype.setGPSMarker = function(position, ignoreMove) {
