@@ -60,6 +60,20 @@ define(['ol3'], function(ol) {
     };
     ol.inherits(ol.control.GoHome, ol.control.CustomControl);
 
+    ol.control.SetGPS = function(optOptions) {
+        var options = optOptions || {};
+        options.character = '<i class="fa fa-crosshairs fa-lg"></i>';
+        options.cls = 'gps';
+        var self = this;
+        options.callback = function() {
+            var source = self.getMap().getLayers().item(0).getSource();
+            source.handleGPS();
+        };
+
+        ol.control.CustomControl.call(this, options);
+    };
+    ol.inherits(ol.control.SetGPS, ol.control.CustomControl);
+
     ol.control.CompassRotate = function(optOptions) {
         var options = optOptions || {};
         options.autoHide = false;
@@ -145,46 +159,12 @@ define(['ol3'], function(ol) {
             }
 
             this._map = new ol.MaplatMap({
-                gps_callback: this._gps_callback,
-                home_callback: this._home_callback,
                 source: this,
                 div: this.map_option.div,
                 center: this.map_option.default_center,
                 zoom: this.map_option.default_zoom,
                 rotation: this.map_option.default_rotation
             });
-
-            /* var self = this;
-            this._map.on('click', function(evt) {
-                var stringifyFunc = ol.coordinate.createStringXY(8);
-                var coordinate = evt.coordinate;
-                self.xy2MercAsync(coordinate).then(function(values){
-                    var outstr = stringifyFunc(values);//ol.proj.transform(coordinate, "EPSG:3857", "EPSG:4326"));
-                    console.log(outstr);
-                    outstr = stringifyFunc(ol.proj.transform(values, "EPSG:3857", "EPSG:4326"));
-                    console.log(outstr);
-                    self.merc2XyAsync(values).then(function(values2){
-                        var outstr = stringifyFunc(values2);
-                        console.log(outstr);
-                    });
-                });
-                var promise = self.size2MercsAsync(coordinate);
-                promise.then(function(vals){
-                    console.log("########");
-                    console.log(vals);
-                    promise2 = self.mercs2SizeAsync(vals);
-                    promise2.then(function(vals2){
-                        console.log("********");
-                        console.log(vals2);
-                    });
-                });
-
-
-                var stringifyFunc = ol.coordinate.createStringXY(8);//initPrecision);
-                var outstr = stringifyFunc(coordinate);//ol.proj.transform(coordinate, "EPSG:3857", "EPSG:4326"));
-                console.log(outstr);
-            });*/
-
             return this._map;
         };
 
@@ -197,6 +177,64 @@ define(['ol3'], function(ol) {
                 view.setCenter(size[0]);
                 view.setZoom(size[1]);
                 view.setRotation(0);
+            });
+        };
+
+        target.prototype.handleGPS = function() {
+            var geolocation = new ol.Geolocation({tracking: true});
+            // listen to changes in position
+            var map = this.getMap();
+            map.dispatchEvent('gps_request');
+            var self = this;
+
+            geolocation.once('change', function(evt) {
+                var lnglat = geolocation.getPosition();
+                var acc = geolocation.getAccuracy();
+                if (self.fake_gps && ol.MathEx.getDistance(self.home_position, lnglat) > self.fake_gps) {
+                    lnglat = [ol.MathEx.randomFromCenter(self.home_position[0], 0.001),
+                        ol.MathEx.randomFromCenter(self.home_position[1], 0.001)];
+                    acc = ol.MathEx.randomFromCenter(15.0, 10);
+                }
+                geolocation.setTracking(false);
+                var gpsVal = {lnglat: lnglat, acc: acc};
+                self.setGPSMarker(gpsVal);
+                map.dispatchEvent(new ol.MapEvent('gps_result', map, gpsVal));
+            });
+            geolocation.once('error', function(evt) {
+                var gpsVal = null;
+                geolocation.setTracking(false);
+                if (self.fake_gps) {
+                    var lnglat = [ol.MathEx.randomFromCenter(homePos[0], 0.001), ol.MathEx.randomFromCenter(homePos[1], 0.001)];
+                    var acc = ol.MathEx.randomFromCenter(15.0, 10);
+                    gpsVal = {lnglat: lnglat, acc: acc};
+                }
+                self.setGPSMarker(gpsVal);
+                map.dispatchEvent(new ol.MapEvent('gps_result', map, gpsVal));
+            });
+        };
+
+        target.prototype.setGPSMarker = function(position, ignoreMove) {
+            var self = this;
+            var map = self.getMap();
+            var view = map.getView();
+            var mercs = position ? self.mercsFromGPSValue(position.lnglat, position.acc) : ['dummy'];
+
+            Promise.all(mercs.map(function(merc, index) {
+                if (index == 5 || merc == 'dummy') return merc;
+                return self.merc2XyAsync(merc);
+            })).then(function(xys) {
+                var pos = null;
+                if (xys != 'dummy') {
+                    pos = {xy: xys[0]};
+                    var news = xys.slice(1);
+
+                    pos.rad = news.reduce(function(prev, curr, index) {
+                        var ret = prev + Math.sqrt(Math.pow(curr[0] - pos.xy[0], 2) + Math.pow(curr[1] - pos.xy[1], 2));
+                        return index == 3 ? ret / 4.0 : ret;
+                    }, 0);
+                    if (!ignoreMove) view.setCenter(pos.xy);
+                }
+                map.setGPSPosition(pos);
             });
         };
 
@@ -328,18 +366,13 @@ define(['ol3'], function(ol) {
             // var scale = abss / 4.0;
             return Math.atan2(sinx, cosx);
         };
-
-        /* target.prototype.setGPSCallback = function(func) {
-            this._gps_callback = func;
-        };*/
     };
     ol.source.setCustomInitialize = function(self, options) {
         self.sourceID = options.sourceID;
         self.map_option = options.map_option || {};
         self.home_position = options.home_position;
         self.merc_zoom = options.merc_zoom;
-        self._gps_callback = options.gps_callback || function() {};
-        self._home_callback = options.home_callback || function() {};
+        self.fake_gps = options.fake_gps || false;
     };
 
     ol.source.NowMap = function(optOptions) {
@@ -401,11 +434,7 @@ define(['ol3'], function(ol) {
                 new ol.control.Attribution(),
                 new ol.control.CompassRotate(),
                 new ol.control.Zoom(),
-                new ol.control.CustomControl({
-                    character: '<i class="fa fa-crosshairs fa-lg"></i>',
-                    cls: 'gps',
-                    callback: optOptions.gps_callback
-                }),
+                new ol.control.SetGPS(),
                 new ol.control.GoHome()
             ],
             layers: [
@@ -441,19 +470,21 @@ define(['ol3'], function(ol) {
     };
     ol.inherits(ol.MaplatMap, ol.Map);
 
-    ol.MaplatMap.prototype.setGPSPosition = function(xy, rad) {
+    ol.MaplatMap.prototype.setGPSPosition = function(pos) {
         var src = this._gps_source;
         src.clear();
-        var iconFeature = new ol.Feature({
-            geometry: new ol.geom.Point(xy)
-        });
-        iconFeature.setStyle(gpsStyle);
-        var circle = new ol.Feature({
-            geometry: new ol.geom.Circle(xy, rad)
-        });
-        circle.setStyle(accCircleStyle);
-        src.addFeature(iconFeature);
-        src.addFeature(circle);
+        if (pos) {
+            var iconFeature = new ol.Feature({
+                geometry: new ol.geom.Point(pos.xy)
+            });
+            iconFeature.setStyle(gpsStyle);
+            var circle = new ol.Feature({
+                geometry: new ol.geom.Circle(pos.xy, pos.rad)
+            });
+            circle.setStyle(accCircleStyle);
+            src.addFeature(iconFeature);
+            src.addFeature(circle);
+        }
     };
 
     ol.MaplatMap.prototype.setMarker = function(xy, data, markerStyle) {
