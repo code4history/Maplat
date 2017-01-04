@@ -215,6 +215,17 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                             view.setZoom(size[1]);
                             view.setRotation(size[2]);
                             to.setGPSMarker(currentPosition, true);
+                            mapObject.resetMarker();
+                            for (var i=0; i < pois.length; i++) {
+                                (function(datum) {
+                                    var lngLat = [datum.lng, datum.lat];
+                                    var merc = ol.proj.transform(lngLat, 'EPSG:4326', 'EPSG:3857');
+
+                                    to.merc2XyAsync(merc).then(function(xy) {
+                                        mapObject.setMarker(xy, {'datum': datum});
+                                    });
+                                })(pois[i]);
+                            }
                             mapObject.updateSize();
                             mapObject.renderSync();
                             from = to;
@@ -239,61 +250,37 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                 $('#info').hide();
             });
 
-            /* for (var i=0; i < pois.length; i++) {
-                (function(datum) {
-                    var lngLat = [datum.lng, datum.lat];
-                    var merc = ol.proj.transform(lngLat, 'EPSG:4326', 'EPSG:3857');
-                    var filterBuffer = [];
-                    var filtered = cache.filter(function(item) {
-                        if (filterBuffer.indexOf(item[1]) >= 0) return false;
-                        filterBuffer.push(item[1]);
-                        return true;
-                    });
-                    var promise = filtered.map(function(item) {
-                        return item[0].merc2XyAsync(merc);
-                    });
-                    Promise.all(promise).then(function(xys) {
-                        filtered.map(function(item, index) {
-                            item[1].setMarker(xys[index], {'datum': datum});
+            var clickHandler = (function(map) {
+                return function(evt) {
+                    var feature = map.forEachFeatureAtPixel(evt.pixel,
+                        function(feature) {
+                            if (feature.get('datum')) return feature;
                         });
-                    });
-                })(pois[i]);
-            }*/
+                    if (feature) {
+                        showInfo(feature.get('datum'));
+                    }
+                };
+            })(mapObject);
+            mapObject.on('click', clickHandler);
 
-            for (var i = 0; i < cache.length; i++) {
-                /* var map = cache[i][1];
-                var clickHandler = (function(map) {
-                    return function(evt) {
-                        var feature = map.forEachFeatureAtPixel(evt.pixel,
+            // change mouse cursor when over marker
+            var moveHandler = (function(map) {
+                return function(e) {
+                    var pixel = map.getEventPixel(e.originalEvent);
+                    var hit = map.hasFeatureAtPixel(pixel);
+                    var target = map.getTarget();
+                    if (hit) {
+                        var feature = map.forEachFeatureAtPixel(e.pixel,
                             function(feature) {
                                 if (feature.get('datum')) return feature;
                             });
-                        if (feature) {
-                            showInfo(feature.get('datum'));
-                        }
-                    };
-                })(map);
-                map.on('click', clickHandler);
-
-                // change mouse cursor when over marker
-                var moveHandler = (function(map) {
-                    return function(e) {
-                        var pixel = map.getEventPixel(e.originalEvent);
-                        var hit = map.hasFeatureAtPixel(pixel);
-                        var target = map.getTarget();
-                        if (hit) {
-                            var feature = map.forEachFeatureAtPixel(e.pixel,
-                                function(feature) {
-                                    if (feature.get('datum')) return feature;
-                                });
-                            $('#' + target).css('cursor', feature ? 'pointer' : '');
-                            return;
-                        }
-                        $('#' + target).css('cursor', '');
-                    };
-                })(map);
-                map.on('pointermove', moveHandler);*/
-            }
+                        $('#' + target).css('cursor', feature ? 'pointer' : '');
+                        return;
+                    }
+                    $('#' + target).css('cursor', '');
+                };
+            })(mapObject);
+            mapObject.on('pointermove', moveHandler);
         });
     }, 'json');
 });

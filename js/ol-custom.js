@@ -498,6 +498,11 @@ define(['ol3'], function(ol) {
         }
     };
 
+    ol.MaplatMap.prototype.resetMarker = function() {
+        var src = this._marker_source;
+        src.clear();
+    };
+
     ol.MaplatMap.prototype.setMarker = function(xy, data, markerStyle) {
         var src = this._marker_source;
         data['geometry'] = new ol.geom.Point(xy);
