@@ -38,19 +38,21 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
         var dataHash = {};
 
         var sourcePromise = [];
+        var commonOption = {
+            map_option: {
+                div: mapDiv
+            },
+            home_position: homePos,
+            merc_zoom: defZoom,
+            fake_gps: fakeGps ? fakeRadius : false
+        };
+        $('<div id="' + mapDiv + 'container" class="col-xs-12 h100p mapcontainer w100p"><div id="' + mapDiv +
+            '" class="map h100p"></div></div>').insertBefore('#center_circle');
         for (var i = 0; i <= dataSource.length; i++) {
-            var div = 'map' + i;
             if (i == dataSource.length) {
-                div = 'mapNow';
-                sourcePromise.push(ol.source.NowMap.createAsync({
-                    map_option: {
-                        div: div
-                    },
-                    sourceID: 'osm',
-                    home_position: homePos,
-                    merc_zoom: defZoom,
-                    fake_gps: fakeGps ? fakeRadius : false
-                }));
+                sourcePromise.push(ol.source.NowMap.createAsync(Object.assign({
+                    sourceID: 'osm'
+                }, commonOption)));
                 $('.slick-class').slick('slickAdd', '<div class="slick-item" data="osm">' +
                     '<img src="./tmbs/osm_menu.jpg"><div>OSM(現在)</div></div>');
                 $('.slick-class').slick('slickGoTo', dataSource.length);
@@ -58,48 +60,25 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                 var data = dataSource[i];
                 if (!data.maptype) data.maptype = 'maplat';
                 if (!data.algorythm) data.algorythm = appArgo || 'tin';
-                if (data.maptype == 'base') div = null;
-                (function(data, div) {
-                    if (data.maptype == 'base') {
+                (function(data) {
+                    if (data.maptype == 'base' || data.maptype == 'overlay') {
                         data.sourceID = data.mapID;
-                        sourcePromise.push(ol.source.NowMap.createAsync({
-                            map_option: {
-                                div: 'mapNow'
-                            },
+                        var targetSrc = data.maptype == 'base' ? ol.source.NowMap : ol.source.TmsMap;
+                        sourcePromise.push(targetSrc.createAsync(Object.assign({
                             attributions: [
                                 new ol.Attribution({
                                     html: data.attr
                                 })
                             ],
                             url: data.url,
-                            sourceID: data.sourceID,
-                            home_position: homePos,
-                            merc_zoom: defZoom,
-                            fake_gps: fakeGps ? fakeRadius : false
-                        }));
-                    } else if (data.maptype == 'overlay') {
-                        data.sourceID = data.mapID;
-                        sourcePromise.push(ol.source.TmsMap.createAsync({
-                            map_option: {
-                                div: 'mapNow'
-                            },
-                            attributions: [
-                                new ol.Attribution({
-                                    html: data.attr
-                                })
-                            ],
-                            url: data.url,
-                            sourceID: data.sourceID,
-                            home_position: homePos,
-                            merc_zoom: defZoom,
-                            fake_gps: fakeGps ? fakeRadius : false
-                        }));
+                            sourceID: data.sourceID
+                        }, commonOption)));
                     } else {
                         data.sourceID = data.mapID + ':' + data.maptype + ':' + data.algorythm;
                         sourcePromise.push(new Promise(function(res, rej) {
                             var laterLogic = function() {
                                 dataHash[data.sourceID] = data;
-                                var option = {
+                                var option = Object.assign({
                                     attributions: [
                                         new ol.Attribution({
                                             html: data.attr
@@ -110,14 +89,8 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                                     height: data.height,
                                     maptype: data.maptype,
                                     algorythm: data.algorythm,
-                                    sourceID: data.sourceID,
-                                    map_option: {
-                                        div: div
-                                    },
-                                    home_position: homePos,
-                                    merc_zoom: defZoom,
-                                    fake_gps: fakeGps ? fakeRadius : false
-                                };
+                                    sourceID: data.sourceID
+                                }, commonOption);
                                 if (data.algorythm == 'tin') {
                                     option.tin_points_url = 'json/' + data.mapID + '_points.json';
                                 } else {
@@ -136,11 +109,7 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                     }
                     $('.slick-class').slick('slickAdd', '<div class="slick-item" data="' + data.sourceID + '">' +
                         '<img src="./tmbs/' + data.mapID + '_menu.jpg"><div>' + (data.label || data.year) + '</div></div>');
-                })(data, div);
-            }
-            if (div) {
-                $('<div id="' + div + 'container" class="col-xs-12 h100p mapcontainer w100p"><div id="' + div +
-                    '" class="map h100p"></div></div>').insertBefore('#center_circle');
+                })(data);
             }
         }
 
@@ -150,39 +119,21 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
             var cache = [];
             var cacheHash = {};
             var clickAvoid = false;
-            var nowMap = null;
             for (var i=0; i<sources.length; i++) {
                 var source = sources[i];
-                var item;
-                if (source instanceof ol.source.NowMap) {
-                    if (!nowMap && !(source instanceof ol.source.TmsMap)) {
-                        nowMap = source.getMap();
-                        nowMap.on('gps_request', function() {
-                            $('#gpsWait').modal();
-                        });
-                        nowMap.on('gps_result', function(evt) {
-                            currentPosition = evt.frameState;
-                            $('#gpsWait').modal('hide');
-                        });
-                    }
-                    source._map = nowMap;
-                    item = [source, nowMap, '#mapNowcontainer'];
-                    if (!(source instanceof ol.source.TmsMap)) {
-                        nowMap.exchangeSource(source);
-                    }
-                } else {
-                    var map = source.getMap();
-                    map.on('gps_request', function() {
+                if (!mapObject && !(source instanceof ol.source.TmsMap)) {
+                    mapObject = source.getMap();
+                    mapObject.on('gps_request', function() {
                         $('#gpsWait').modal();
                     });
-                    map.on('gps_result', function(evt) {
+                    mapObject.on('gps_result', function(evt) {
                         currentPosition = evt.frameState;
                         $('#gpsWait').modal('hide');
                     });
-                    item = [source, map, '#map' + i + 'container'];
                 }
-                cache.push(item);
-                cacheHash[source.sourceID] = item;
+                source._map = mapObject;
+                cache.push(source);
+                cacheHash[source.sourceID] = source;
             }
 
             $('.slick-item').on('click', function() {
@@ -199,7 +150,7 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
 
             from = cache.reduce(function(prev, curr) {
                 if (prev) return prev;
-                if (curr[0] instanceof ol.source.HistMap) return curr;
+                if (curr instanceof ol.source.HistMap) return curr;
                 return prev;
             }, null);
             changeMap(true, 'osm');
@@ -209,11 +160,11 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                 var to = cacheHash[sourceID];
                 if ((to == from) && (to != now)) return;
                 if (to != from) {
-                    var view = from[1].getView();
+                    var view = mapObject.getView();
                     console.log('From: Center: ' + view.getCenter() + ' Zoom: ' + view.getZoom() + ' Rotation: ' + view.getRotation());
-                    var fromPromise = from[0].size2MercsAsync();
-                    if (mercBuffer && mercBuffer.mercs && mercBuffer.buffer[from[0].sourceID]) {
-                        var buffer = mercBuffer.buffer[from[0].sourceID];
+                    var fromPromise = from.size2MercsAsync();
+                    if (mercBuffer && mercBuffer.mercs && mercBuffer.buffer[from.sourceID]) {
+                        var buffer = mercBuffer.buffer[from.sourceID];
                         var current = ol.MathEx.recursiveRound([
                             view.getCenter(), view.getZoom(), view.getRotation()
                         ], 10);
@@ -236,13 +187,13 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
 
                     fromPromise.then(function(mercs) {
                         mercBuffer.mercs = mercs;
-                        var view = from[1].getView();
-                        mercBuffer.buffer[from[0].sourceID] = ol.MathEx.recursiveRound([
+                        var view = mapObject.getView();
+                        mercBuffer.buffer[from.sourceID] = ol.MathEx.recursiveRound([
                             view.getCenter(), view.getZoom(), view.getRotation()
                         ], 10);
                         console.log('Mercs: ' + mercs);
-                        var toPromise = to[0].mercs2SizeAsync(mercs);
-                        var key = to[0].sourceID;
+                        var toPromise = to.mercs2SizeAsync(mercs);
+                        var key = to.sourceID;
                         if (mercBuffer.buffer[key]) {
                             console.log('To: Use buffer');
                             toPromise = new Promise(function(res, rej) {
@@ -251,39 +202,24 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                         }
                         toPromise.then(function(size) {
                             console.log('To: Center: ' + [size[0][0], size[0][1]] + ' Zoom: ' + size[1] + ' Rotation: ' + size[2]);
-                            var toSrc = to[0];
-                            to[1] = from[1];
-                            to[2] = from[2];
-                            var toMap = from[1];
-                            var toDiv = from[2];
-                            mercBuffer.buffer[toSrc.sourceID] = ol.MathEx.recursiveRound(size, 10);
-                            if (toSrc instanceof ol.source.NowMap) {
-                                if (toSrc instanceof ol.source.TmsMap) {
-                                    toMap.setLayer(toSrc);
-                                } else {
-                                    toMap.setLayer();
-                                    toMap.exchangeSource(toSrc);
-                                }
+                            mercBuffer.buffer[to.sourceID] = ol.MathEx.recursiveRound(size, 10);
+                            if (to instanceof ol.source.TmsMap) {
+                                mapObject.setLayer(to);
+                                if (!(from instanceof ol.source.NowMap)) mapObject.exchangeSource(now);
                             } else {
-                                toMap.exchangeSource(toSrc);
+                                mapObject.setLayer();
+                                mapObject.exchangeSource(to);
                             }
-                            var view = toMap.getView();
+                            var view = mapObject.getView();
                             view.setCenter(size[0]);
                             view.setZoom(size[1]);
                             view.setRotation(size[2]);
-                            toSrc.setGPSMarker(currentPosition, true);
-                            $(toDiv).show();
-                            for (var i=0; i<cache.length; i++) {
-                                var div = cache[i];
-                                if (div[2] != toDiv) {
-                                    $(div[2]).hide();
-                                }
-                            }
-                            toMap.updateSize();
-                            toMap.renderSync();
+                            to.setGPSMarker(currentPosition, true);
+                            mapObject.updateSize();
+                            mapObject.renderSync();
                             from = to;
                             if (init == true) {
-                                toSrc.goHome();
+                                to.goHome();
                             }
                         });
                     });
@@ -303,7 +239,7 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                 $('#info').hide();
             });
 
-            for (var i=0; i < pois.length; i++) {
+            /* for (var i=0; i < pois.length; i++) {
                 (function(datum) {
                     var lngLat = [datum.lng, datum.lat];
                     var merc = ol.proj.transform(lngLat, 'EPSG:4326', 'EPSG:3857');
@@ -322,10 +258,10 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                         });
                     });
                 })(pois[i]);
-            }
+            }*/
 
             for (var i = 0; i < cache.length; i++) {
-                var map = cache[i][1];
+                /* var map = cache[i][1];
                 var clickHandler = (function(map) {
                     return function(evt) {
                         var feature = map.forEachFeatureAtPixel(evt.pixel,
@@ -356,7 +292,7 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                         $('#' + target).css('cursor', '');
                     };
                 })(map);
-                map.on('pointermove', moveHandler);
+                map.on('pointermove', moveHandler);*/
             }
         });
     }, 'json');
