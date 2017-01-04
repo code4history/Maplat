@@ -46,8 +46,6 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
             merc_zoom: defZoom,
             fake_gps: fakeGps ? fakeRadius : false
         };
-        $('<div id="' + mapDiv + 'container" class="col-xs-12 h100p mapcontainer w100p"><div id="' + mapDiv +
-            '" class="map h100p"></div></div>').insertBefore('#center_circle');
         for (var i = 0; i <= dataSource.length; i++) {
             if (i == dataSource.length) {
                 sourcePromise.push(ol.source.NowMap.createAsync(Object.assign({
