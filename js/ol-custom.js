@@ -210,7 +210,8 @@ define(['ol3'], function(ol) {
                 self.geolocation.once('error', function(evt) {
                     var gpsVal = null;
                     if (self.fake_gps) {
-                        var lnglat = [ol.MathEx.randomFromCenter(homePos[0], 0.001), ol.MathEx.randomFromCenter(homePos[1], 0.001)];
+                        var lnglat = [ol.MathEx.randomFromCenter(self.home_position[0], 0.001),
+                            ol.MathEx.randomFromCenter(self.home_position[1], 0.001)];
                         var acc = ol.MathEx.randomFromCenter(15.0, 10);
                         gpsVal = {lnglat: lnglat, acc: acc};
                     }

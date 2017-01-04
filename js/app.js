@@ -22,6 +22,8 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
         var fakeRadius = appData.fake_radius;
         var makeBinary = appData.make_binary;
         var currentPosition = null;
+        var mapObject = null;
+        var mapDiv = 'map_div';
         if (fakeGps) {
             $('#gps_etc').append('※' + fakeCenter + '中心より' + fakeRadius +
                 'km以上離れている場合は、' + fakeCenter + '中心周辺の疑似経緯度を発行します');
@@ -250,8 +252,10 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                         toPromise.then(function(size) {
                             console.log('To: Center: ' + [size[0][0], size[0][1]] + ' Zoom: ' + size[1] + ' Rotation: ' + size[2]);
                             var toSrc = to[0];
-                            var toMap = to[1];
-                            var toDiv = to[2];
+                            to[1] = from[1];
+                            to[2] = from[2];
+                            var toMap = from[1];
+                            var toDiv = from[2];
                             mercBuffer.buffer[toSrc.sourceID] = ol.MathEx.recursiveRound(size, 10);
                             if (toSrc instanceof ol.source.NowMap) {
                                 if (toSrc instanceof ol.source.TmsMap) {
@@ -260,6 +264,8 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                                     toMap.setLayer();
                                     toMap.exchangeSource(toSrc);
                                 }
+                            } else {
+                                toMap.exchangeSource(toSrc);
                             }
                             var view = toMap.getView();
                             view.setCenter(size[0]);
