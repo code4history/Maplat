@@ -75,16 +75,17 @@
   </div>
 </body>
 <script src="js/require.min.js"></script>
-<script src="js/config.js"></script>
 <script>
-  var appid = "sample";
-  var appArgo = null;
-  var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-  for(var i = 0; i < hashes.length; i++) {
-    hash = hashes[i].split('=');
-    if (hash[0] == "appid") appid = hash[1];
-    if (hash[0] == "app_argo") appArgo = hash[1];
-  }
+require(['js/config'],function() {
+    require(['app'], function (app) {
+        var option = {};
+        var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+        for (var i = 0; i < hashes.length; i++) {
+            hash = hashes[i].split('=');
+            option[hash[0]] = hash[1];
+        }
+        app(option);
+    });
+});
 </script>
-<script src="js/app.js"></script>
 </html>
