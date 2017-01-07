@@ -232,13 +232,13 @@ define(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                                     view.setCenter(size[0]);
                                     view.setZoom(size[1]);
                                     view.setRotation(size[2]);
-                                    to.setGPSMarker(currentPosition, true);
                                 } else {
                                     $('#gpsDialogTitle').text('地図範囲外');
                                     $('#gpsDialogBody').text('表示位置が地図範囲外です。地図標準位置に戻します。');
                                     $('#gpsDialog').modal();
                                     to.goHome();
                                 }
+                                to.setGPSMarker(currentPosition, true);
                                 mapObject.resetMarker();
                                 for (var i = 0; i < pois.length; i++) {
                                     (function(datum) {
