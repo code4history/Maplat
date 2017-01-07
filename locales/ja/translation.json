@@ -1,0 +1,16 @@
+{
+    "html": {
+        "close": "閉じる",
+        "app_loading_body": "アプリロード中です...",
+        "app_loading_title": "アプリロード中",
+        "acquiring_gps": "GPS取得中"
+    },
+    "app": {
+        "fake_explanation": "※%1$s中心より%2$dkm以上離れている場合は、%1$s中心周辺の疑似経緯度を発行します。",
+        "acquiring_gps_desc": "GPSデータ取得中です。",
+        "osm_now": "OSM(現在)",
+        "out_of_map": "地図範囲外",
+        "out_of_map_desc": "GPSの取得結果が地図範囲外です。GPS機能をオフにします。",
+        "out_of_map_area": "GPS result is out of map. GPS function turns off."
+    }
+}
