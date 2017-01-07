@@ -1,6 +1,8 @@
-@import url('//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css');
-@import url('//code.jquery.com/ui/1.11.2/themes/cupertino/jquery-ui.min.css');
+@import url('bootstrap.min.css');
+/*@import url('jquery-ui.min.css');*/
 @import url('ol.css');
+@import url('slick.css');
+@import url('font-awesome.min.css');
 
 html,body {
     height:100%;
@@ -89,8 +91,9 @@ html,body {
 .slick-box {
     position: absolute;
     bottom: .5em;
-    left: calc(50% - 100px);
-    width: 200px;
+    left: calc(50% - 90px);
+    width: 180px;
+    background-color: rgba(32,32,32,0.5);
 }
 
 .slick-item {
@@ -132,6 +135,11 @@ html,body {
 }
 
 .ol-control.no_rotation button {
+    color: rgba(255,255,255,.7);
+    background-color: rgba(0,60,136,.2);
+}
+
+.ol-control.receiving_gps button {
     color: rgba(255,255,255,.7);
     background-color: rgba(0,60,136,.2);
 }

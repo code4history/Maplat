@@ -5,30 +5,22 @@
   <title>Maplat</title>
   <meta content="yes" name="apple-mobile-web-app-capable">
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.css">
-  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="css/slick.css">
+  <link rel="stylesheet" href="css/font-awesome.min.css">
   <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
   <div class="container-fluid h100p w100p">
     <div id="all" class="row-fluid h100p">
       <div class="row-fluid mainview">
+        <div id="map_div" class="col-xs-12 h100p w100p"></div></div>
         <img id="center_circle" style="position:absolute;top:50%;left:50%;margin-top:-10px;margin-left:-10px;" src="./parts/redcircle.png">
         <div class="slick-box">
           <div class="slick-class">
-            <!--div>your content1</div>
-            <div>your content2</div>
-            <div>your content3</div-->
           </div>
         </div>
       </div>
       <input type="hidden" name="map_type" id="map_type" value="plat">
-      <!--div class="row-fluid controlview" style="width: 100%">
-
-        <div class="col-xs-12 btn-container">
-          <select name="era_select" id="era_select" style="width: 100%"></select>
-        </div>
-      </div-->
     </div> 
   </div>
   <div class="modal" id="poi_info" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel" aria-hidden="true" data-show="true" data-keyboard="false" data-backdrop="static">
@@ -36,7 +28,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">
-            <span aria-hidden="true">&#215;</span><span class="sr-only">閉じる</span>
+            <span aria-hidden="true">&#215;</span><span class="sr-only" data-i18n="html.close"></span>
           </button>
           <h4 class="modal-title" id="poi_name"></h4>
         </div>
@@ -52,10 +44,10 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title">アプリロード中</h4>
+          <h4 class="modal-title" data-i18n="html.app_loading_title"></h4>
         </div>
         <div class="modal-body">
-          <p class="recipient"><img src="parts/loading.gif">アプリロード中です...</p>
+          <p class="recipient"><img src="parts/loading.gif"><span data-i18n="html.app_loading_body"></span></p>
         </div>
       </div>
     </div>
@@ -64,7 +56,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title">GPS取得中</h4>
+          <h4 class="modal-title"><span data-i18n="html.acquiring_gps"></span></h4>
         </div>
         <div class="modal-body">
           <p id="gps_etc" class="recipient"></p>
@@ -72,16 +64,35 @@
       </div>
     </div>
   </div>
+  <div class="modal" id="gpsDialog" tabindex="-1" role="dialog" aria-labelledby_="staticModalLabel" aria-hidden_="true" data-show="true" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&#215;</span><span class="sr-only" data-i18n="html.close"></span>
+          </button>
+          <h4 class="modal-title" id="gpsDialogTitle"></h4>
+        </div>
+        <div class="modal-body">
+          <p id="gpsDialogBody" class="recipient"></p>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js"></script>
-<script src="js/config.js"></script>
+<script src="js/require.min.js"></script>
 <script>
-  var appid = "sample";
-  var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-  for(var i = 0; i < hashes.length; i++) {
-    hash = hashes[i].split('=');
-    if (hash[0] == "appid") appid = hash[1];
-  }
+require(['js/config'],function() {
+    require(['app'], function (app) {
+        var option = {};
+        var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+        for (var i = 0; i < hashes.length; i++) {
+            hash = hashes[i].split('=');
+            option[hash[0]] = hash[1];
+        }
+        app(option);
+    });
+});
 </script>
 <script src="js/built.js"></script>
 </html>
