@@ -50,12 +50,11 @@ define(['histmap', 'tps'], function(ol, ThinPlateSpline) {
         });
     };
 
-    ol.source.HistMap_tps.prototype.xy2MercAsync_ = function(xy) {
+    ol.source.HistMap_tps.prototype.xy2MercAsync_ = function(histMapCoords) {
         var self = this;
         return new Promise(function(resolve, reject) {
-            var x = (xy[0] + ol.const.MERC_MAX) * self._maxxy / (2*ol.const.MERC_MAX);
-            var y = (-xy[1] + ol.const.MERC_MAX) * self._maxxy / (2*ol.const.MERC_MAX);
-            self.tps.transform([x, y], false, {
+            var xy = self.histMapCoords2Xy(histMapCoords);
+            self.tps.transform(xy, false, {
                 callback: function(merc) {
                     resolve(merc);
                 }
@@ -67,9 +66,8 @@ define(['histmap', 'tps'], function(ol, ThinPlateSpline) {
         return new Promise(function(resolve, reject) {
             self.tps.transform(merc, true, {
                 callback: function(xy) {
-                    var x = xy[0] * (2*ol.const.MERC_MAX) / self._maxxy - ol.const.MERC_MAX;
-                    var y = -1 * (xy[1] * (2*ol.const.MERC_MAX) / self._maxxy - ol.const.MERC_MAX);
-                    resolve([x, y]);
+                    var histMapCoords = self.xy2HistMapCoords(xy);
+                    resolve(histMapCoords);
                 }
             });
         });
