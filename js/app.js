@@ -302,6 +302,25 @@ define(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                     };
                 })(mapObject);
                 mapObject.on('pointermove', moveHandler);
+
+                var mapOutHandler = (function(map) {
+                    return function(e) {
+                        var histCoord = e.frameState.viewState.center;
+                        var source = map.getLayers().item(0).getSource();
+                        if (!source.insideCheckHistMapCoords(histCoord)) {
+                            var xy = source.histMapCoords2Xy(histCoord);
+                            debug(xy);
+                            var dx = xy[0] / (source.width / 2) - 1;
+                            var dy = xy[1] / (source.height / 2) - 1;
+                            var da = Math.max(Math.abs(dx), Math.abs(dy));
+                            xy = [(dx / da + 1) * source.width / 2, (dy / da + 1) * source.height / 2];
+                            debug(xy);
+                            histCoord = source.xy2HistMapCoords(xy);
+                            map.getView().setCenter(histCoord);
+                        }
+                    };
+                })(mapObject);
+                mapObject.on('moveend', mapOutHandler);
             });
         }, 'json');
     };
