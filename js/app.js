@@ -125,7 +125,12 @@ require(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                         $('#gpsWait').modal();
                     });
                     mapObject.on('gps_result', function(evt) {
-                        currentPosition = evt.frameState;
+                        var result = evt.frameState;
+                        if (result.error) {
+                            currentPosition = null;
+                        } else {
+                            currentPosition = result;
+                        }
                         $('#gpsWait').modal('hide');
                     });
                 }
