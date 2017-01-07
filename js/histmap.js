@@ -117,5 +117,13 @@ define(['ol-custom'], function(ol) {
         return [histX, histY];
     };
 
+    ol.source.HistMap.prototype.insideCheckXy = function(xy) {
+        return !(xy[0] < 0 || xy[0] > this.width || xy[1] < 0 || xy[1] > this.height);
+    };
+
+    ol.source.HistMap.prototype.insideCheckHistMapCoords = function(histCoords) {
+        return this.insideCheckXy(this.histMapCoords2Xy(histCoords));
+    };
+
     return ol;
 });

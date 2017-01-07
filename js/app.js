@@ -119,29 +119,39 @@ define(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
             Promise.all(sourcePromise).then(function(sources) {
                 $('#loadWait').modal('hide');
 
-            var cache = [];
-            var cacheHash = {};
-            var clickAvoid = false;
-            for (var i=0; i<sources.length; i++) {
-                var source = sources[i];
-                if (!mapObject && !(source instanceof ol.source.TmsMap)) {
-                    mapObject = source.getMap();
-                    mapObject.on('gps_request', function() {
-                        $('#gpsWait').modal();
-                    });
-                    mapObject.on('gps_result', function(evt) {
-                        var result = evt.frameState;
-                        if (result.error) {
-                            currentPosition = null;
-                        } else {
-                            currentPosition = result;
-                        }
-                        $('#gpsWait').modal('hide');
-                    });
+                var cache = [];
+                var cacheHash = {};
+                var clickAvoid = false;
+                for (var i=0; i<sources.length; i++) {
+                    var source = sources[i];
+                    if (!mapObject && !(source instanceof ol.source.TmsMap)) {
+                        mapObject = source.getMap();
+                        mapObject.on('gps_request', function () {
+                            $('#gpsWait').modal();
+                        });
+                        mapObject.on('gps_result', function (evt) {
+                            var shown = ($('#gpsWait').data('bs.modal') || {isShown: false}).isShown;
+                            var result = evt.frameState;
+                            if (result.error) {
+                                currentPosition = null;
+                                if (result.error == 'gps_out' && shown) {
+                                    $('#gpsWait').modal('hide');
+                                    $('#gpsDialogTitle').text('地図範囲外');
+                                    $('#gpsDialogBody').text('GPSの取得結果が地図範囲外です。GPS機能をオフにします。');
+                                    $('#gpsDialog').modal();
+                                }
+                            } else {
+                                currentPosition = result;
+                            }
+                            if (shown) {
+                                $('#gpsWait').modal('hide');
+                            }
+                        });
+                    }
+                    source._map = mapObject;
+                    cache.push(source);
+                    cacheHash[source.sourceID] = source;
                 }
-                source._map = mapObject;
-                cache.push(source);
-                cacheHash[source.sourceID] = source;
 
                 $('.slick-item').on('click', function() {
                     if (!clickAvoid) {
@@ -218,10 +228,17 @@ define(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                                     mapObject.exchangeSource(to);
                                 }
                                 var view = mapObject.getView();
-                                view.setCenter(size[0]);
-                                view.setZoom(size[1]);
-                                view.setRotation(size[2]);
-                                to.setGPSMarker(currentPosition, true);
+                                if (to.insideCheckHistMapCoords(size[0])) {
+                                    view.setCenter(size[0]);
+                                    view.setZoom(size[1]);
+                                    view.setRotation(size[2]);
+                                    to.setGPSMarker(currentPosition, true);
+                                } else {
+                                    $('#gpsDialogTitle').text('地図範囲外');
+                                    $('#gpsDialogBody').text('表示位置が地図範囲外です。地図標準位置に戻します。');
+                                    $('#gpsDialog').modal();
+                                    to.goHome();
+                                }
                                 mapObject.resetMarker();
                                 for (var i = 0; i < pois.length; i++) {
                                     (function(datum) {
@@ -229,7 +246,9 @@ define(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                                         var merc = ol.proj.transform(lngLat, 'EPSG:4326', 'EPSG:3857');
 
                                         to.merc2XyAsync(merc).then(function(xy) {
-                                            mapObject.setMarker(xy, {'datum': datum});
+                                            if (to.insideCheckHistMapCoords(xy)) {
+                                                mapObject.setMarker(xy, {'datum': datum});
+                                            }
                                         });
                                     })(pois[i]);
                                 }
@@ -251,11 +270,6 @@ define(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                     $('#poi_desc').html(data.desc.replace(/\n/g, '<br>'));
                     $('#poi_info').modal();
                 }
-
-                $('#poi_back').on('click', function() {
-                    $('#all').show();
-                    $('#info').hide();
-                });
 
                 var clickHandler = (function(map) {
                     return function(evt) {
