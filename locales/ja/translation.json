@@ -11,6 +11,6 @@
         "osm_now": "OSM(現在)",
         "out_of_map": "地図範囲外",
         "out_of_map_desc": "GPSの取得結果が地図範囲外です。GPS機能をオフにします。",
-        "out_of_map_area": "GPS result is out of map. GPS function turns off."
+        "out_of_map_area": "表示位置が地図範囲外です。地図標準位置に戻します。"
     }
 }
