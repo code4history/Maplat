@@ -8,7 +8,10 @@ define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap
         } : function() {};
         var lang = appOption.lang || 'ja';
         i18n.use(i18nxhr).init({
-            lng: lang
+            lng: lang,
+            backend: {
+                loadPath: 'locales/{{lng}}/{{ns}}.json'
+            }
         }, function(err, t) {
             ji18n.init(i18n, $);
             $('body').localize();
