@@ -33,7 +33,6 @@ define(['ol3'], function(ol) {
         button.innerHTML = options.character;
 
         button.addEventListener('click', options.callback, false);
-        button.addEventListener('touchstart', options.callback, false);
 
         var element = document.createElement('div');
         element.className = options.cls + ' ol-unselectable ol-control';
