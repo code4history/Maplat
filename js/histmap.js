@@ -40,8 +40,8 @@ define(['ol-custom'], function(ol) {
             var z = coord[0];
             var x = coord[1];
             var y = -1 * coord[2] - 1;
-            if (x * tileSize * Math.pow(2, this.maxZoom - z) > this.width ||
-                y * tileSize * Math.pow(2, this.maxZoom - z) > this.height ||
+            if (x * tileSize * Math.pow(2, this.maxZoom - z) >= this.width ||
+                y * tileSize * Math.pow(2, this.maxZoom - z) >= this.height ||
                 x < 0 || y < 0 ) {
                 return transPng;
             }
