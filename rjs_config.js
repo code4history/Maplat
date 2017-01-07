@@ -1,36 +1,43 @@
 ({
     baseUrl: 'js',
     name: 'app',
-    out: 'js/built.js',
+    out: 'js/app-built.js',
     paths: {
-        "jquery" : "//code.jquery.com/jquery-1.11.2.min",
-        "jui" : "//code.jquery.com/ui/1.10.3/jquery-ui.min",
-        "slick" : "//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.min",
-        "ol3" : "ol-debug",
-        "ol-custom" : "ol-custom",
-        //"ol3css" : "../css/ol",
-        "bootstrap" : "//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min",
-        //"bootstrapcss" : "//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min",
-        "tps" : "thinplatespline"
+        'jquery': 'empty:',
+        'jui': 'empty:',
+        'i18n': 'empty:',
+        'ji18n': 'empty:',
+        'i18nxhr': 'i18nextXHRBackend.min',
+        'turf': 'empty:',
+        'slick': 'empty:',
+        'ol3': 'ol-debug',
+        'ol-custom': 'ol-custom',
+        // "ol3css" : "../css/ol",
+        'bootstrap': 'empty:',
+        // "bootstrapcss" : "//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min",
+        'tps': 'empty:'
     },
     shim: {
-        'jquery' : {
+        'jquery': {
             exports: '$'
         },
-        'jui' : { 
-            deps: ['jquery'] 
-        },
-        'slick' : {
+        'jui': {
             deps: ['jquery']
         },
-        'ol' : {
+        'slick': {
+            deps: ['jquery']
+        },
+        'ol': {
             exports: 'ol'
         },
-        'tps' : {
+        'tps': {
             exports: 'ThinPlateSpline'
         },
-        'bootstrap' : { 
-            deps: ['jquery'] 
+        'bootstrap': {
+            deps: ['jquery']
+        },
+        'app': {
+            deps: ['histmap', 'histmap_tps', 'histmap_tin']
         }
     }
 })
