@@ -41,7 +41,8 @@ define(['ol3'], function(ol) {
 
         ol.control.Control.call(this, {
             element: element,
-            target: options.target
+            target: options.target,
+            render: options.render
         });
     };
     ol.inherits(ol.control.CustomControl, ol.control.Control);
@@ -65,6 +66,22 @@ define(['ol3'], function(ol) {
         options.character = '<i class="fa fa-crosshairs fa-lg"></i>';
         options.cls = 'gps';
         var self = this;
+        options.render = function(mapEvent) {
+            var frameState = mapEvent.frameState;
+            if (!frameState) {
+                return;
+            }
+            var map = this.getMap();
+            if (map.geolocation) {
+                var tracking = map.geolocation.getTracking();
+                var receiving = self.element.classList.contains('receiving_gps');
+                if (receiving && !tracking) {
+                    this.element.classList.remove('receiving_gps');
+                } else if (!receiving && tracking) {
+                    this.element.classList.add('receiving_gps');
+                }
+            }
+        };
         options.callback = function() {
             var receiving = self.element.classList.contains('receiving_gps');
             var map = self.getMap();
@@ -187,19 +204,23 @@ define(['ol3'], function(ol) {
             });
         };
 
-        target.prototype.setGPSMarker = function(position, ignoreMove) {
+        target.prototype.setGPSMarkerAsync = function(position, ignoreMove) {
             var self = this;
             var map = self.getMap();
             var view = map.getView();
             var mercs = position ? self.mercsFromGPSValue(position.lnglat, position.acc) : ['dummy'];
 
-            Promise.all(mercs.map(function(merc, index) {
+            return Promise.all(mercs.map(function(merc, index) {
                 if (index == 5 || merc == 'dummy') return merc;
                 return self.merc2XyAsync(merc);
             })).then(function(xys) {
                 var pos = null;
-                if (xys != 'dummy') {
+                if (xys[0] != 'dummy') {
                     pos = {xy: xys[0]};
+                    if (!self.insideCheckHistMapCoords(xys[0])) {
+                        map.handleGPS(false, true);
+                        return false;
+                    }
                     var news = xys.slice(1);
 
                     pos.rad = news.reduce(function(prev, curr, index) {
@@ -209,7 +230,12 @@ define(['ol3'], function(ol) {
                     if (!ignoreMove) view.setCenter(pos.xy);
                 }
                 map.setGPSPosition(pos);
+                return true;
             });
+        };
+
+        target.prototype.setGPSMarker = function(position, ignoreMove) {
+            this.setGPSMarkerAsync(position, ignoreMove).then(function() {});
         };
 
         target.prototype.getRadius = function(size) {
@@ -372,6 +398,15 @@ define(['ol3'], function(ol) {
             resolve(merc);
         });
     };
+
+    ol.source.NowMap.prototype.insideCheckXy = function(xy) {
+        return true;
+    };
+
+    ol.source.NowMap.prototype.insideCheckHistMapCoords = function(histCoords) {
+        return true;
+    };
+
     ol.source.TmsMap = function(optOptions) {
         var options = optOptions || {};
         ol.source.NowMap.call(this, options);
@@ -493,7 +528,7 @@ define(['ol3'], function(ol) {
         }
     };
 
-    ol.MaplatMap.prototype.handleGPS = function(launch) {
+    ol.MaplatMap.prototype.handleGPS = function(launch, avoidEventForOff) {
         if (launch) {
             this.dispatchEvent('gps_request');
             this._first_gps_request = true;
@@ -511,9 +546,14 @@ define(['ol3'], function(ol) {
                         acc = ol.MathEx.randomFromCenter(15.0, 10);
                     }
                     var gpsVal = {lnglat: lnglat, acc: acc};
-                    source.setGPSMarker(gpsVal, !map._first_gps_request);
-                    map._first_gps_request = false;
-                    map.dispatchEvent(new ol.MapEvent('gps_result', map, gpsVal));
+                    source.setGPSMarkerAsync(gpsVal, !map._first_gps_request)
+                        .then(function(result) {
+                            if (!result) {
+                                gpsVal = {error: 'gps_out'};
+                            }
+                            map._first_gps_request = false;
+                            map.dispatchEvent(new ol.MapEvent('gps_result', map, gpsVal));
+                        });
                 });
                 geolocation.on('error', function(evt) {
                     var source = map.getLayers().item(0).getSource();
@@ -524,9 +564,14 @@ define(['ol3'], function(ol) {
                         var acc = ol.MathEx.randomFromCenter(15.0, 10);
                         gpsVal = {lnglat: lnglat, acc: acc};
                     }
-                    source.setGPSMarker(gpsVal, !map._first_gps_request);
-                    map._first_gps_request = false;
-                    map.dispatchEvent(new ol.MapEvent('gps_result', map, gpsVal));
+                    source.setGPSMarkerAsync(gpsVal, !map._first_gps_request)
+                        .then(function(result) {
+                            if (!result) {
+                                gpsVal = {error: 'gps_out'};
+                            }
+                            map._first_gps_request = false;
+                            map.dispatchEvent(new ol.MapEvent('gps_result', map, gpsVal));
+                        });
                 });
             } else {
                 this.geolocation.setTracking(true);
@@ -535,7 +580,7 @@ define(['ol3'], function(ol) {
             if (this.geolocation) this.geolocation.setTracking(false);
             var source = this.getLayers().item(0).getSource();
             source.setGPSMarker();
-            this.dispatchEvent(new ol.MapEvent('gps_result', map, {error: 'gps_off'}));
+            if (!avoidEventForOff) this.dispatchEvent(new ol.MapEvent('gps_result', map, {error: 'gps_off'}));
         }
     };
 

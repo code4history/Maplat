@@ -33,12 +33,11 @@ define(['histmap', 'tin'], function(ol, Tin) {
         });
     };
 
-    ol.source.HistMap_tin.prototype.xy2MercAsync_ = function(xy) {
+    ol.source.HistMap_tin.prototype.xy2MercAsync_ = function(histMapCoords) {
         var self = this;
         return new Promise(function(resolve, reject) {
-            var x = (xy[0] + ol.const.MERC_MAX) * self._maxxy / (2*ol.const.MERC_MAX);
-            var y = (-xy[1] + ol.const.MERC_MAX) * self._maxxy / (2*ol.const.MERC_MAX);
-            var merc = self.tin.transform([x, y], false);
+            var xy = self.histMapCoords2Xy(histMapCoords);
+            var merc = self.tin.transform(xy, false);
             resolve(merc);
         });
     };
@@ -46,9 +45,8 @@ define(['histmap', 'tin'], function(ol, Tin) {
         var self = this;
         return new Promise(function(resolve, reject) {
             var xy = self.tin.transform(merc, true);
-            var x = xy[0] * (2*ol.const.MERC_MAX) / self._maxxy - ol.const.MERC_MAX;
-            var y = -1 * (xy[1] * (2*ol.const.MERC_MAX) / self._maxxy - ol.const.MERC_MAX);
-            resolve([x, y]);
+            var histMapCoords = self.xy2HistMapCoords(xy);
+            resolve(histMapCoords);
         });
     };
 });
