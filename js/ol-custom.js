@@ -195,7 +195,7 @@ define(['ol3'], function(ol) {
                 map.dispatchEvent('gps_request');
                 var self = this;
 
-                self.geolocation.once('change', function(evt) {
+                self.geolocation.on('change', function(evt) {
                     var lnglat = self.geolocation.getPosition();
                     var acc = self.geolocation.getAccuracy();
                     if (self.fake_gps && ol.MathEx.getDistance(self.home_position, lnglat) > self.fake_gps) {
@@ -207,7 +207,7 @@ define(['ol3'], function(ol) {
                     self.setGPSMarker(gpsVal);
                     map.dispatchEvent(new ol.MapEvent('gps_result', map, gpsVal));
                 });
-                self.geolocation.once('error', function(evt) {
+                self.geolocation.on('error', function(evt) {
                     var gpsVal = null;
                     if (self.fake_gps) {
                         var lnglat = [ol.MathEx.randomFromCenter(self.home_position[0], 0.001),
@@ -220,8 +220,34 @@ define(['ol3'], function(ol) {
                 });
             } else {
                 if (this.geolocation) this.geolocation.setTracking(false);
+                this.setGPSMarker();
                 this.geolocation = null;
             }
+        };
+
+        target.prototype.setGPSMarkerAsync = function(position, ignoreMove) {
+            var self = this;
+            var map = self.getMap();
+            var view = map.getView();
+            var mercs = position ? self.mercsFromGPSValue(position.lnglat, position.acc) : ['dummy'];
+
+            Promise.all(mercs.map(function(merc, index) {
+                if (index == 5 || merc == 'dummy') return merc;
+                return self.merc2XyAsync(merc);
+            })).then(function(xys) {
+                var pos = null;
+                if (xys[0] != 'dummy') {
+                    pos = {xy: xys[0]};
+                    var news = xys.slice(1);
+
+                    pos.rad = news.reduce(function(prev, curr, index) {
+                        var ret = prev + Math.sqrt(Math.pow(curr[0] - pos.xy[0], 2) + Math.pow(curr[1] - pos.xy[1], 2));
+                        return index == 3 ? ret / 4.0 : ret;
+                    }, 0);
+                    if (!ignoreMove) view.setCenter(pos.xy);
+                }
+                map.setGPSPosition(pos);
+            });
         };
 
         target.prototype.setGPSMarker = function(position, ignoreMove) {
@@ -235,8 +261,10 @@ define(['ol3'], function(ol) {
                 return self.merc2XyAsync(merc);
             })).then(function(xys) {
                 var pos = null;
-                if (xys != 'dummy') {
+                if (xys[0] != 'dummy') {
                     pos = {xy: xys[0]};
+                    var xy = self instanceof ol.source.HistMap ? self.histMapCoords2Xy(xys[0]) : null;
+                    console.log(xy);
                     var news = xys.slice(1);
 
                     pos.rad = news.reduce(function(prev, curr, index) {

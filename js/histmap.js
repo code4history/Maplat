@@ -105,5 +105,17 @@ define(['ol-custom'], function(ol) {
         return this.merc2XyAsync_(merc);
     };
 
+    ol.source.HistMap.prototype.histMapCoords2Xy = function(histCoords) {
+        var x = (histCoords[0] + ol.const.MERC_MAX) * this._maxxy / (2*ol.const.MERC_MAX);
+        var y = (-histCoords[1] + ol.const.MERC_MAX) * this._maxxy / (2*ol.const.MERC_MAX);
+        return [x, y];
+    };
+
+    ol.source.HistMap.prototype.xy2HistMapCoords = function(xy) {
+        var histX = xy[0] * (2*ol.const.MERC_MAX) / this._maxxy - ol.const.MERC_MAX;
+        var histY = -1 * (xy[1] * (2*ol.const.MERC_MAX) / this._maxxy - ol.const.MERC_MAX);
+        return [histX, histY];
+    };
+
     return ol;
 });
