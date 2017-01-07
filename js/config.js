@@ -7,6 +7,9 @@ require.config({
     // },
     paths: {
         'jquery': 'jquery-1.11.2.min',
+        'i18n': 'i18next.min',
+        'ji18n': 'jquery-i18next.min',
+        'i18nxhr': 'i18nextXHRBackend.min',
         // "jui" : "jquery-ui.min",
         'turf': 'turf.min',
         'slick': 'slick.min',
@@ -26,6 +29,12 @@ require.config({
     shim: {
         'jquery': {
             exports: '$'
+        },
+        'ji18n': {
+            deps: ['i18n', 'jquery']
+        },
+        'i18nxhr': {
+            deps: ['i18n']
         },
         'jui': {
             deps: ['jquery']
