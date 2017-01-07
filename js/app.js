@@ -119,25 +119,29 @@ define(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
             Promise.all(sourcePromise).then(function(sources) {
                 $('#loadWait').modal('hide');
 
-                var cache = [];
-                var cacheHash = {};
-                var clickAvoid = false;
-                for (var i = 0; i < sources.length; i++) {
-                    var source = sources[i];
-                    if (!mapObject && !(source instanceof ol.source.TmsMap)) {
-                        mapObject = source.getMap();
-                        mapObject.on('gps_request', function() {
-                            $('#gpsWait').modal();
-                        });
-                        mapObject.on('gps_result', function(evt) {
-                            currentPosition = evt.frameState;
-                            $('#gpsWait').modal('hide');
-                        });
-                    }
-                    source._map = mapObject;
-                    cache.push(source);
-                    cacheHash[source.sourceID] = source;
+            var cache = [];
+            var cacheHash = {};
+            var clickAvoid = false;
+            for (var i=0; i<sources.length; i++) {
+                var source = sources[i];
+                if (!mapObject && !(source instanceof ol.source.TmsMap)) {
+                    mapObject = source.getMap();
+                    mapObject.on('gps_request', function() {
+                        $('#gpsWait').modal();
+                    });
+                    mapObject.on('gps_result', function(evt) {
+                        var result = evt.frameState;
+                        if (result.error) {
+                            currentPosition = null;
+                        } else {
+                            currentPosition = result;
+                        }
+                        $('#gpsWait').modal('hide');
+                    });
                 }
+                source._map = mapObject;
+                cache.push(source);
+                cacheHash[source.sourceID] = source;
 
                 $('.slick-item').on('click', function() {
                     if (!clickAvoid) {

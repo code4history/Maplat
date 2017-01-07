@@ -67,9 +67,9 @@ define(['ol3'], function(ol) {
         var self = this;
         options.callback = function() {
             var receiving = self.element.classList.contains('receiving_gps');
-            var source = self.getMap().getLayers().item(0).getSource();
+            var map = self.getMap();
 
-            source.handleGPS(!receiving);
+            map.handleGPS(!receiving);
             if (receiving) {
                 self.element.classList.remove('receiving_gps');
             } else {
@@ -185,44 +185,6 @@ define(['ol3'], function(ol) {
                 view.setZoom(size[1]);
                 view.setRotation(0);
             });
-        };
-
-        target.prototype.handleGPS = function(launch) {
-            if (launch) {
-                if (!this.geolocation) this.geolocation = new ol.Geolocation({tracking: true});
-                // listen to changes in position
-                var map = this.getMap();
-                map.dispatchEvent('gps_request');
-                var self = this;
-
-                self.geolocation.on('change', function(evt) {
-                    var lnglat = self.geolocation.getPosition();
-                    var acc = self.geolocation.getAccuracy();
-                    if (self.fake_gps && ol.MathEx.getDistance(self.home_position, lnglat) > self.fake_gps) {
-                        lnglat = [ol.MathEx.randomFromCenter(self.home_position[0], 0.001),
-                            ol.MathEx.randomFromCenter(self.home_position[1], 0.001)];
-                        acc = ol.MathEx.randomFromCenter(15.0, 10);
-                    }
-                    var gpsVal = {lnglat: lnglat, acc: acc};
-                    self.setGPSMarker(gpsVal);
-                    map.dispatchEvent(new ol.MapEvent('gps_result', map, gpsVal));
-                });
-                self.geolocation.on('error', function(evt) {
-                    var gpsVal = null;
-                    if (self.fake_gps) {
-                        var lnglat = [ol.MathEx.randomFromCenter(self.home_position[0], 0.001),
-                            ol.MathEx.randomFromCenter(self.home_position[1], 0.001)];
-                        var acc = ol.MathEx.randomFromCenter(15.0, 10);
-                        gpsVal = {lnglat: lnglat, acc: acc};
-                    }
-                    self.setGPSMarker(gpsVal);
-                    map.dispatchEvent(new ol.MapEvent('gps_result', map, gpsVal));
-                });
-            } else {
-                if (this.geolocation) this.geolocation.setTracking(false);
-                this.setGPSMarker();
-                this.geolocation = null;
-            }
         };
 
         target.prototype.setGPSMarkerAsync = function(position, ignoreMove) {
@@ -555,6 +517,52 @@ define(['ol3'], function(ol) {
                 source: source
             });
             layers.push(layer);
+        }
+    };
+
+    ol.MaplatMap.prototype.handleGPS = function(launch) {
+        if (launch) {
+            this.dispatchEvent('gps_request');
+            this._first_gps_request = true;
+            if (!this.geolocation) {
+                var geolocation = this.geolocation = new ol.Geolocation({tracking: true});
+                // listen to changes in position
+                var map = this;
+                geolocation.on('change', function(evt) {
+                    var source = map.getLayers().item(0).getSource();
+                    var lnglat = geolocation.getPosition();
+                    var acc = geolocation.getAccuracy();
+                    if (source.fake_gps && ol.MathEx.getDistance(source.home_position, lnglat) > source.fake_gps) {
+                        lnglat = [ol.MathEx.randomFromCenter(source.home_position[0], 0.001),
+                            ol.MathEx.randomFromCenter(source.home_position[1], 0.001)];
+                        acc = ol.MathEx.randomFromCenter(15.0, 10);
+                    }
+                    var gpsVal = {lnglat: lnglat, acc: acc};
+                    source.setGPSMarker(gpsVal, !map._first_gps_request);
+                    map._first_gps_request = false;
+                    map.dispatchEvent(new ol.MapEvent('gps_result', map, gpsVal));
+                });
+                geolocation.on('error', function(evt) {
+                    var source = map.getLayers().item(0).getSource();
+                    var gpsVal = null;
+                    if (source.fake_gps) {
+                        var lnglat = [ol.MathEx.randomFromCenter(source.home_position[0], 0.001),
+                            ol.MathEx.randomFromCenter(source.home_position[1], 0.001)];
+                        var acc = ol.MathEx.randomFromCenter(15.0, 10);
+                        gpsVal = {lnglat: lnglat, acc: acc};
+                    }
+                    source.setGPSMarker(gpsVal, !map._first_gps_request);
+                    map._first_gps_request = false;
+                    map.dispatchEvent(new ol.MapEvent('gps_result', map, gpsVal));
+                });
+            } else {
+                this.geolocation.setTracking(true);
+            }
+        } else {
+            if (this.geolocation) this.geolocation.setTracking(false);
+            var source = this.getLayers().item(0).getSource();
+            source.setGPSMarker();
+            this.dispatchEvent(new ol.MapEvent('gps_result', map, {error: 'gps_off'}));
         }
     };
 
