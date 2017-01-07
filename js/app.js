@@ -132,7 +132,7 @@ define(['jquery', 'ol-custom', 'bootstrap', 'slick'], function($, ol) {
                         mapObject.on('gps_result', function (evt) {
                             var shown = ($('#gpsWait').data('bs.modal') || {isShown: false}).isShown;
                             var result = evt.frameState;
-                            if (result.error) {
+                            if (result && result.error) {
                                 currentPosition = null;
                                 if (result.error == 'gps_out' && shown) {
                                     $('#gpsWait').modal('hide');
