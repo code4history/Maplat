@@ -23,6 +23,12 @@ define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap
             console.log(val);
         } : function() {};
         var lang = appOption.lang || 'ja';
+        var overlay = appOption.overlay || false;
+        if (overlay) {
+            $('body').addClass('with-opacity');
+            $('.opacity-slider').removeClass('hide');
+            $('.opacity-slider input').prop('disabled', true);
+        }
         i18n.use(i18nxhr).init({
             lng: lang,
             backend: {
@@ -54,7 +60,21 @@ define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap
                 var makeBinary = appData.make_binary;
                 var currentPosition = null;
                 var mapObject = null;
+                var backMap = null;
                 var mapDiv = 'map_div';
+                var backDiv = null;
+                if (overlay) {
+                    $('<div id="map_div_back" class="map h100p w100p" style="top:0px; left:0px; width: 100%; ' +
+                        'position:absolute;"></div>').insertBefore('#center_circle');
+                    $('<div id="map_div_front" class="map h100p w100p" style="top:0px; left:0px; width: 100%; ' +
+                        'position:absolute;"></div>').insertBefore('#center_circle');
+                    mapDiv = 'map_div_front';
+                    backDiv = 'map_div_back';
+                    backMap = new ol.MaplatMap({
+                        off_control: true,
+                        div: backDiv
+                    });
+                }
                 if (fakeGps) {
                     $('#gps_etc').append(sprintf(t('app.fake_explanation'), fakeCenter, fakeRadius));
                 } else {
@@ -151,10 +171,10 @@ define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap
                         var source = sources[i];
                         if (!mapObject && !(source instanceof ol.source.TmsMap)) {
                             mapObject = source.getMap();
-                            mapObject.on('gps_request', function () {
+                            mapObject.on('gps_request', function() {
                                 $('#gpsWait').modal();
                             });
-                            mapObject.on('gps_result', function (evt) {
+                            mapObject.on('gps_result', function(evt) {
                                 var shown = ($('#gpsWait').data('bs.modal') || {isShown: false}).isShown;
                                 var result = evt.frameState;
                                 if (result && result.error) {
@@ -197,93 +217,136 @@ define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap
                     }, null);
                     changeMap(true, 'osm');
 
-                    function changeMap(init, sourceID) {
-                        var now = cacheHash['osm'];
-                        var to = cacheHash[sourceID];
-                        if ((to == from) && (to != now)) return;
-                        if (to != from) {
-                            var view = mapObject.getView();
-                            debug('From: Center: ' + view.getCenter() + ' Zoom: ' + view.getZoom() + ' Rotation: ' + view.getRotation());
-                            var fromPromise = from.size2MercsAsync();
-                            if (mercBuffer && mercBuffer.mercs && mercBuffer.buffer[from.sourceID]) {
-                                var buffer = mercBuffer.buffer[from.sourceID];
-                                var current = ol.MathEx.recursiveRound([
-                                    view.getCenter(), view.getZoom(), view.getRotation()
-                                ], 10);
-                                if (buffer[0][0] == current[0][0] && buffer[0][1] == current[0][1] &&
-                                    buffer[1] == current[1] && buffer[2] == current[2]) {
-                                    debug('From: Use buffer');
-                                    fromPromise = new Promise(function(res, rej) {
-                                        res(mercBuffer.mercs);
-                                    });
-                                } else {
-                                    mercBuffer = {
-                                        buffer: {}
-                                    };
-                                }
+                    function convertParametersFromCurrent(to, callback) {
+                        var view = mapObject.getView();
+                        var fromPromise = from.size2MercsAsync();
+                        if (mercBuffer && mercBuffer.mercs && mercBuffer.buffer[from.sourceID]) {
+                            var buffer = mercBuffer.buffer[from.sourceID];
+                            var current = ol.MathEx.recursiveRound([
+                                view.getCenter(), view.getZoom(), view.getRotation()
+                            ], 10);
+                            if (buffer[0][0] == current[0][0] && buffer[0][1] == current[0][1] &&
+                                buffer[1] == current[1] && buffer[2] == current[2]) {
+                                debug('From: Use buffer');
+                                fromPromise = new Promise(function(res, rej) {
+                                    res(mercBuffer.mercs);
+                                });
                             } else {
                                 mercBuffer = {
                                     buffer: {}
                                 };
                             }
+                        } else {
+                            mercBuffer = {
+                                buffer: {}
+                            };
+                        }
+                        fromPromise.then(function(mercs) {
+                            mercBuffer.mercs = mercs;
+                            var view = mapObject.getView();
+                            debug('From: Center: ' + view.getCenter() + ' Zoom: ' + view.getZoom() + ' Rotation: ' + view.getRotation());
+                            mercBuffer.buffer[from.sourceID] = ol.MathEx.recursiveRound([
+                                view.getCenter(), view.getZoom(), view.getRotation()
+                            ], 10);
+                            debug('Mercs: ' + mercs);
+                            var toPromise = to.mercs2SizeAsync(mercs);
+                            var key = to.sourceID;
+                            if (mercBuffer.buffer[key]) {
+                                debug('To: Use buffer');
+                                toPromise = new Promise(function(res, rej) {
+                                    res(mercBuffer.buffer[key]);
+                                });
+                            }
+                            toPromise.then(function(size) {
+                                debug('To: Center: ' + [size[0][0], size[0][1]] + ' Zoom: ' + size[1] + ' Rotation: ' + size[2]);
+                                mercBuffer.buffer[to.sourceID] = ol.MathEx.recursiveRound(size, 10);
+                                callback(size);
+                            });
+                        });
+                    }
 
-                            fromPromise.then(function(mercs) {
-                                mercBuffer.mercs = mercs;
-                                var view = mapObject.getView();
-                                mercBuffer.buffer[from.sourceID] = ol.MathEx.recursiveRound([
-                                    view.getCenter(), view.getZoom(), view.getRotation()
-                                ], 10);
-                                debug('Mercs: ' + mercs);
-                                var toPromise = to.mercs2SizeAsync(mercs);
-                                var key = to.sourceID;
-                                if (mercBuffer.buffer[key]) {
-                                    debug('To: Use buffer');
-                                    toPromise = new Promise(function(res, rej) {
-                                        res(mercBuffer.buffer[key]);
-                                    });
-                                }
-                                toPromise.then(function(size) {
-                                    debug('To: Center: ' + [size[0][0], size[0][1]] + ' Zoom: ' + size[1] + ' Rotation: ' + size[2]);
-                                    mercBuffer.buffer[to.sourceID] = ol.MathEx.recursiveRound(size, 10);
-                                    if (to instanceof ol.source.TmsMap) {
-                                        mapObject.setLayer(to);
-                                        if (!(from instanceof ol.source.NowMap)) mapObject.exchangeSource(now);
-                                    } else {
-                                        mapObject.setLayer();
-                                        mapObject.exchangeSource(to);
+                    function changeMap(init, sourceID) {
+                        var now = cacheHash['osm'];
+                        var to = cacheHash[sourceID];
+                        if ((to == from) && (to != now)) return;
+                        if (to != from) {
+                            convertParametersFromCurrent(to, function(size) {
+                                var backSrc = null;
+                                var backTo = null;
+                                if (backMap) {
+                                    backSrc = backMap.getSource();
+                                    if (!(to instanceof ol.source.NowMap)) {
+                                        if (!backSrc) {
+                                            backTo = now;
+                                            if (from instanceof ol.source.NowMap) {
+                                                backTo = from instanceof ol.source.TmsMap ?
+                                                    mapObject.getSource() :
+                                                    from;
+                                            }
+                                            backMap.exchangeSource(backTo);
+                                        } else {
+                                            backTo = backSrc;
+                                        }
+                                    } else if (to instanceof ol.source.NowMap) {
+                                        backMap.exchangeSource();
                                     }
-                                    var view = mapObject.getView();
-                                    if (to.insideCheckHistMapCoords(size[0])) {
+                                    if (!(to instanceof ol.source.NowMap) || to instanceof ol.source.TmsMap) {
+                                        $('.opacity-slider input').removeProp('disabled');
+                                    } else {
+                                        $('.opacity-slider input').val(0);
+                                        $('.opacity-slider input').prop('disabled', true);
+                                    }
+                                }
+                                if (to instanceof ol.source.TmsMap) {
+                                    mapObject.setLayer(to);
+                                    if (!(from instanceof ol.source.NowMap)) mapObject.exchangeSource(backSrc || now);
+                                    $('.opacity-slider input').removeProp('disabled');
+                                } else {
+                                    mapObject.setLayer();
+                                    mapObject.exchangeSource(to);
+                                }
+                                mapObject.setOpacity($('.opacity-slider input').val());
+                                var view = mapObject.getView();
+                                if (to.insideCheckHistMapCoords(size[0])) {
+                                    view.setCenter(size[0]);
+                                    view.setZoom(size[1]);
+                                    view.setRotation(size[2]);
+                                } else {
+                                    $('#gpsDialogTitle').text(t('app.out_of_map'));
+                                    $('#gpsDialogBody').text(t('app.out_of_map_area'));
+                                    $('#gpsDialog').modal();
+                                    to.goHome();
+                                }
+                                to.setGPSMarker(currentPosition, true);
+                                mapObject.resetMarker();
+                                for (var i = 0; i < pois.length; i++) {
+                                    (function(datum) {
+                                        var lngLat = [datum.lng, datum.lat];
+                                        var merc = ol.proj.transform(lngLat, 'EPSG:4326', 'EPSG:3857');
+
+                                        to.merc2XyAsync(merc).then(function(xy) {
+                                            if (to.insideCheckHistMapCoords(xy)) {
+                                                mapObject.setMarker(xy, {'datum': datum});
+                                            }
+                                        });
+                                    })(pois[i]);
+                                }
+                                mapObject.updateSize();
+                                mapObject.renderSync();
+                                from = to;
+                                if (init == true) {
+                                    to.goHome();
+                                }
+                                if (backMap && backTo) {
+                                    convertParametersFromCurrent(backTo, function(size) {
+                                        var view = backMap.getView();
                                         view.setCenter(size[0]);
                                         view.setZoom(size[1]);
                                         view.setRotation(size[2]);
-                                    } else {
-                                        $('#gpsDialogTitle').text(t('app.out_of_map'));
-                                        $('#gpsDialogBody').text(t('app.out_of_map_area'));
-                                        $('#gpsDialog').modal();
-                                        to.goHome();
-                                    }
-                                    to.setGPSMarker(currentPosition, true);
-                                    mapObject.resetMarker();
-                                    for (var i = 0; i < pois.length; i++) {
-                                        (function(datum) {
-                                            var lngLat = [datum.lng, datum.lat];
-                                            var merc = ol.proj.transform(lngLat, 'EPSG:4326', 'EPSG:3857');
-
-                                            to.merc2XyAsync(merc).then(function(xy) {
-                                                if (to.insideCheckHistMapCoords(xy)) {
-                                                    mapObject.setMarker(xy, {'datum': datum});
-                                                }
-                                            });
-                                        })(pois[i]);
-                                    }
-                                    mapObject.updateSize();
-                                    mapObject.renderSync();
-                                    from = to;
-                                    if (init == true) {
-                                        to.goHome();
-                                    }
-                                });
+                                        backMap.updateSize();
+                                        backMap.renderSync();
+                                    });
+                                }
                             });
                         }
                     }
@@ -317,7 +380,7 @@ define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap
                             var target = map.getTarget();
                             if (hit) {
                                 var feature = map.forEachFeatureAtPixel(e.pixel,
-                                    function (feature) {
+                                    function(feature) {
                                         if (feature.get('datum')) return feature;
                                     });
                                 $('#' + target).css('cursor', feature ? 'pointer' : '');
@@ -331,7 +394,7 @@ define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap
                     var mapOutHandler = (function(map) {
                         return function(e) {
                             var histCoord = e.frameState.viewState.center;
-                            var source = map.getLayers().item(0).getSource();
+                            var source = map.getSource();
                             if (!source.insideCheckHistMapCoords(histCoord)) {
                                 var xy = source.histMapCoords2Xy(histCoord);
                                 debug(xy);
@@ -342,10 +405,24 @@ define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap
                                 debug(xy);
                                 histCoord = source.xy2HistMapCoords(xy);
                                 map.getView().setCenter(histCoord);
+                            } else if (backMap) {
+                                var backSrc = backMap.getSource();
+                                if (backSrc) {
+                                    convertParametersFromCurrent(backSrc, function(size) {
+                                        var view = backMap.getView();
+                                        view.setCenter(size[0]);
+                                        view.setZoom(size[1]);
+                                        view.setRotation(size[2]);
+                                    });
+                                }
                             }
                         };
                     })(mapObject);
                     mapObject.on('moveend', mapOutHandler);
+
+                    $('.opacity-slider input').on('change', function() {
+                        mapObject.setOpacity($('.opacity-slider input').val());
+                    });
                 });
             }, 'json');
         });
