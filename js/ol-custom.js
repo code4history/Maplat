@@ -30,9 +30,13 @@ define(['ol3'], function(ol) {
         var options = optOptions || {};
 
         var button = document.createElement('button');
-        button.innerHTML = options.character;
+        button.setAttribute('type', 'button');
+        var span = document.createElement('span');
+        span.innerHTML = options.character;
+        button.appendChild(span);
 
-        button.addEventListener('click', options.callback, false);
+        ol.events.listen(button, ol.events.EventType.CLICK,
+            options.callback, this);
 
         var element = document.createElement('div');
         element.className = options.cls + ' ol-unselectable ol-control';
