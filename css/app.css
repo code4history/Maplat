@@ -88,12 +88,24 @@ html,body {
     vertical-align: middle;/*IE7*/
 }
 
+.opacity-slider {
+    position: absolute;
+    bottom: .5em;
+    left: calc(50% - 90px);
+    width: 180px;
+    height: 10px;
+}
+
 .slick-box {
     position: absolute;
     bottom: .5em;
     left: calc(50% - 90px);
     width: 180px;
     background-color: rgba(32,32,32,0.5);
+}
+
+.with-opacity .slick-box {
+    bottom: calc(.10em + 25px);
 }
 
 .slick-item {
@@ -126,6 +138,10 @@ html,body {
 
 .ol-attribution {
     bottom: calc(70px + .5em);
+}
+
+.with-opacity .ol-attribution {
+    bottom: calc(95px + .10em);
 }
 
 .ol-compass-fa {
