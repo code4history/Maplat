@@ -535,6 +535,22 @@ define(['ol3'], function(ol) {
         }
     };
 
+    ol.MaplatMap.prototype.getSource = function() {
+        return this.getLayers().item(0).getSource();
+    };
+
+    ol.MaplatMap.prototype.setOpacity = function(percentage) {
+        var opacity = (100 - percentage) / 100;
+        var source = this.getSource();
+        if (source instanceof ol.source.NowMap) {
+            this.getLayers().item(0).setOpacity(1);
+            this.getLayers().item(1).setOpacity(opacity);
+        } else {
+            this.getLayers().item(0).setOpacity(opacity);
+        }
+    };
+
+
     ol.MaplatMap.prototype.handleGPS = function(launch, avoidEventForOff) {
         if (launch) {
             this.dispatchEvent('gps_request');

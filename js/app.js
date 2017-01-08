@@ -24,6 +24,11 @@ define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap
         } : function() {};
         var lang = appOption.lang || 'ja';
         var overlay = appOption.overlay || false;
+        if (overlay) {
+            $('body').addClass('with-opacity');
+            $('.opacity-slider').removeClass('hide');
+            $('.opacity-slider input').prop('disabled', true);
+        }
         i18n.use(i18nxhr).init({
             lng: lang,
             backend: {
@@ -60,9 +65,7 @@ define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap
                 var backDiv = null;
                 if (overlay) {
                     $('<div id="map_div_back" class="map h100p w100p" style="top:0px; left:0px; width: 100%; ' +
-                        'position:absolute;' +
-                        ' background-image:url(https://pbs.twimg.com/profile_images/1808196479/PortraitMangatic.jpg);"></div>')
-                        .insertBefore('#center_circle');
+                        'position:absolute;"></div>').insertBefore('#center_circle');
                     $('<div id="map_div_front" class="map h100p w100p" style="top:0px; left:0px; width: 100%; ' +
                         'position:absolute;"></div>').insertBefore('#center_circle');
                     mapDiv = 'map_div_front';
@@ -313,13 +316,13 @@ define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap
                                     var backSrc = null;
                                     var backTo = null;
                                     if (backMap) {
-                                        backSrc = backMap.getLayers().item(0).getSource();
+                                        backSrc = backMap.getSource();
                                         if (!(to instanceof ol.source.NowMap)) {
                                             if (!backSrc) {
                                                 backTo = now;
                                                 if (from instanceof ol.source.NowMap) {
                                                     backTo = from instanceof ol.source.TmsMap ?
-                                                        mapObject.getLayers().item(0).getSource() :
+                                                        mapObject.getSource() :
                                                         from;
                                                 }
                                                 backMap.exchangeSource(backTo);
@@ -329,14 +332,22 @@ define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap
                                         } else if (to instanceof ol.source.NowMap) {
                                             backMap.exchangeSource();
                                         }
+                                        if (!(to instanceof ol.source.NowMap) || to instanceof ol.source.TmsMap) {
+                                            $('.opacity-slider input').removeProp('disabled');
+                                        } else {
+                                            $('.opacity-slider input').val(0);
+                                            $('.opacity-slider input').prop('disabled', true);
+                                        }
                                     }
                                     if (to instanceof ol.source.TmsMap) {
                                         mapObject.setLayer(to);
                                         if (!(from instanceof ol.source.NowMap)) mapObject.exchangeSource(backSrc || now);
+                                        $('.opacity-slider input').removeProp('disabled');
                                     } else {
                                         mapObject.setLayer();
                                         mapObject.exchangeSource(to);
                                     }
+                                    mapObject.setOpacity($('.opacity-slider input').val());
                                     var view = mapObject.getView();
                                     if (to.insideCheckHistMapCoords(size[0])) {
                                         view.setCenter(size[0]);
@@ -426,7 +437,7 @@ define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap
                     var mapOutHandler = (function(map) {
                         return function(e) {
                             var histCoord = e.frameState.viewState.center;
-                            var source = map.getLayers().item(0).getSource();
+                            var source = map.getSource();
                             if (!source.insideCheckHistMapCoords(histCoord)) {
                                 var xy = source.histMapCoords2Xy(histCoord);
                                 debug(xy);
@@ -438,9 +449,9 @@ define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap
                                 histCoord = source.xy2HistMapCoords(xy);
                                 map.getView().setCenter(histCoord);
                             } else if (backMap) {
-                                var backSrc = backMap.getLayers().item(0).getSource();
+                                var backSrc = backMap.getSource();
                                 if (backSrc) {
-                                    convertParametersFromCurrent(backSrc, function (size) {
+                                    convertParametersFromCurrent(backSrc, function(size) {
                                         var view = backMap.getView();
                                         view.setCenter(size[0]);
                                         view.setZoom(size[1]);
@@ -451,6 +462,10 @@ define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap
                         };
                     })(mapObject);
                     mapObject.on('moveend', mapOutHandler);
+
+                    $('.opacity-slider input').on('change', function() {
+                        mapObject.setOpacity($('.opacity-slider input').val());
+                    });
                 });
             }, 'json');
         });
