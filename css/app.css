@@ -96,6 +96,11 @@ html,body {
     height: 10px;
 }
 
+.opacity-slider input {
+    margin-top: 10px;
+    height: 15px;
+}
+
 .slick-box {
     position: absolute;
     bottom: .5em;
