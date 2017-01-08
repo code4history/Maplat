@@ -440,15 +440,17 @@ define(['ol3'], function(ol) {
         });
 
         var overlayLayer = this._overlay_group = new ol.layer.Group();
-
-        var options = {
-            controls: [
+        var controls = optOptions.off_control ? [] :
+            [
                 new ol.control.Attribution(),
                 new ol.control.CompassRotate(),
                 new ol.control.Zoom(),
                 new ol.control.SetGPS(),
                 new ol.control.GoHome()
-            ],
+            ];
+
+        var options = {
+            controls: controls,
             layers: [
                 new ol.layer.Tile({
                     source: optOptions.source
@@ -517,7 +519,9 @@ define(['ol3'], function(ol) {
         var layers = this.getLayers();
         var layer = layers.item(0);
         layer.setSource(source);
-        source._map = this;
+        if (source) {
+            source._map = this;
+        }
     };
 
     ol.MaplatMap.prototype.setLayer = function(source) {

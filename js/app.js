@@ -23,6 +23,7 @@ define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap
             console.log(val);
         } : function() {};
         var lang = appOption.lang || 'ja';
+        var overlay = appOption.overlay || false;
         i18n.use(i18nxhr).init({
             lng: lang,
             backend: {
@@ -54,7 +55,23 @@ define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap
                 var makeBinary = appData.make_binary;
                 var currentPosition = null;
                 var mapObject = null;
+                var backMap = null;
                 var mapDiv = 'map_div';
+                var backDiv = null;
+                if (overlay) {
+                    $('<div id="map_div_back" class="map h100p w100p" style="top:0px; left:0px; width: 100%; ' +
+                        'position:absolute;' +
+                        ' background-image:url(https://pbs.twimg.com/profile_images/1808196479/PortraitMangatic.jpg);"></div>')
+                        .insertBefore('#center_circle');
+                    $('<div id="map_div_front" class="map h100p w100p" style="top:0px; left:0px; width: 100%; ' +
+                        'position:absolute;"></div>').insertBefore('#center_circle');
+                    mapDiv = 'map_div_front';
+                    backDiv = 'map_div_back';
+                    backMap = new ol.MaplatMap({
+                        off_control: true,
+                        div: backDiv
+                    });
+                }
                 if (fakeGps) {
                     $('#gps_etc').append(sprintf(t('app.fake_explanation'), fakeCenter, fakeRadius));
                 } else {
@@ -197,6 +214,54 @@ define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap
                     }, null);
                     changeMap(true, 'osm');
 
+                    function convertParametersFromCurrent(to, callback) {
+                        var view = mapObject.getView();
+                        var fromPromise = from.size2MercsAsync();
+                        if (mercBuffer && mercBuffer.mercs && mercBuffer.buffer[from.sourceID]) {
+                            var buffer = mercBuffer.buffer[from.sourceID];
+                            var current = ol.MathEx.recursiveRound([
+                                view.getCenter(), view.getZoom(), view.getRotation()
+                            ], 10);
+                            if (buffer[0][0] == current[0][0] && buffer[0][1] == current[0][1] &&
+                                buffer[1] == current[1] && buffer[2] == current[2]) {
+                                debug('From: Use buffer');
+                                fromPromise = new Promise(function(res, rej) {
+                                    res(mercBuffer.mercs);
+                                });
+                            } else {
+                                mercBuffer = {
+                                    buffer: {}
+                                };
+                            }
+                        } else {
+                            mercBuffer = {
+                                buffer: {}
+                            };
+                        }
+                        fromPromise.then(function(mercs) {
+                            mercBuffer.mercs = mercs;
+                            var view = mapObject.getView();
+                            debug('From: Center: ' + view.getCenter() + ' Zoom: ' + view.getZoom() + ' Rotation: ' + view.getRotation());
+                            mercBuffer.buffer[from.sourceID] = ol.MathEx.recursiveRound([
+                                view.getCenter(), view.getZoom(), view.getRotation()
+                            ], 10);
+                            debug('Mercs: ' + mercs);
+                            var toPromise = to.mercs2SizeAsync(mercs);
+                            var key = to.sourceID;
+                            if (mercBuffer.buffer[key]) {
+                                debug('To: Use buffer');
+                                toPromise = new Promise(function (res, rej) {
+                                    res(mercBuffer.buffer[key]);
+                                });
+                            }
+                            toPromise.then(function (size) {
+                                debug('To: Center: ' + [size[0][0], size[0][1]] + ' Zoom: ' + size[1] + ' Rotation: ' + size[2]);
+                                mercBuffer.buffer[to.sourceID] = ol.MathEx.recursiveRound(size, 10);
+                                callback(size);
+                            });
+                        });
+                    }
+
                     function changeMap(init, sourceID) {
                         var now = cacheHash['osm'];
                         var to = cacheHash[sourceID];
@@ -245,9 +310,29 @@ define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap
                                 toPromise.then(function(size) {
                                     debug('To: Center: ' + [size[0][0], size[0][1]] + ' Zoom: ' + size[1] + ' Rotation: ' + size[2]);
                                     mercBuffer.buffer[to.sourceID] = ol.MathEx.recursiveRound(size, 10);
+                                    var backSrc = null;
+                                    var backTo = null;
+                                    if (backMap) {
+                                        backSrc = backMap.getLayers().item(0).getSource();
+                                        if (!(to instanceof ol.source.NowMap)) {
+                                            if (!backSrc) {
+                                                backTo = now;
+                                                if (from instanceof ol.source.NowMap) {
+                                                    backTo = from instanceof ol.source.TmsMap ?
+                                                        mapObject.getLayers().item(0).getSource() :
+                                                        from;
+                                                }
+                                                backMap.exchangeSource(backTo);
+                                            } else {
+                                                backTo = backSrc;
+                                            }
+                                        } else if (to instanceof ol.source.NowMap) {
+                                            backMap.exchangeSource();
+                                        }
+                                    }
                                     if (to instanceof ol.source.TmsMap) {
                                         mapObject.setLayer(to);
-                                        if (!(from instanceof ol.source.NowMap)) mapObject.exchangeSource(now);
+                                        if (!(from instanceof ol.source.NowMap)) mapObject.exchangeSource(backSrc || now);
                                     } else {
                                         mapObject.setLayer();
                                         mapObject.exchangeSource(to);
@@ -283,6 +368,16 @@ define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap
                                     if (init == true) {
                                         to.goHome();
                                     }
+                                    if (backMap && backTo) {
+                                        convertParametersFromCurrent(backTo, function(size) {
+                                            var view = backMap.getView();
+                                            view.setCenter(size[0]);
+                                            view.setZoom(size[1]);
+                                            view.setRotation(size[2]);
+                                            backMap.updateSize();
+                                            backMap.renderSync();
+                                        });
+                                    }
                                 });
                             });
                         }
@@ -317,7 +412,7 @@ define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap
                             var target = map.getTarget();
                             if (hit) {
                                 var feature = map.forEachFeatureAtPixel(e.pixel,
-                                    function (feature) {
+                                    function(feature) {
                                         if (feature.get('datum')) return feature;
                                     });
                                 $('#' + target).css('cursor', feature ? 'pointer' : '');
@@ -342,6 +437,16 @@ define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap
                                 debug(xy);
                                 histCoord = source.xy2HistMapCoords(xy);
                                 map.getView().setCenter(histCoord);
+                            } else if (backMap) {
+                                var backSrc = backMap.getLayers().item(0).getSource();
+                                if (backSrc) {
+                                    convertParametersFromCurrent(backSrc, function (size) {
+                                        var view = backMap.getView();
+                                        view.setCenter(size[0]);
+                                        view.setZoom(size[1]);
+                                        view.setRotation(size[2]);
+                                    });
+                                }
                             }
                         };
                     })(mapObject);
