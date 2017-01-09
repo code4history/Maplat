@@ -405,24 +405,40 @@ define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap
                                 debug(xy);
                                 histCoord = source.xy2HistMapCoords(xy);
                                 map.getView().setCenter(histCoord);
-                            } else if (backMap) {
-                                var backSrc = backMap.getSource();
-                                if (backSrc) {
-                                    convertParametersFromCurrent(backSrc, function(size) {
-                                        var view = backMap.getView();
-                                        view.setCenter(size[0]);
-                                        view.setZoom(size[1]);
-                                        view.setRotation(size[2]);
-                                    });
-                                }
                             }
                         };
                     })(mapObject);
                     mapObject.on('moveend', mapOutHandler);
 
-                    $('.opacity-slider input').on('change', function() {
+                    var backMapMove = (function(map) {
+                        return function(e) {
+                            if (!backMap) return;
+                            if (map._backMapMoving) {
+                                debug('Backmap moving skipped');
+                                return;
+                            }
+                            var backSrc = backMap.getSource();
+                            if (backSrc) {
+                                map._backMapMoving = true;
+                                debug('Backmap moving started');
+                                convertParametersFromCurrent(backSrc, function(size) {
+                                    var view = backMap.getView();
+                                    view.setCenter(size[0]);
+                                    view.setZoom(size[1]);
+                                    view.setRotation(size[2]);
+                                    debug('Backmap moving ended');
+                                    map._backMapMoving = false;
+                                });
+                            }
+                        };
+                    })(mapObject);
+                    mapObject.on('postrender', backMapMove);
+
+                    var opacityChange = function() {
                         mapObject.setOpacity($('.opacity-slider input').val());
-                    });
+                    };
+                    $('.opacity-slider input').on('input', opacityChange);
+                    $('.opacity-slider input').on('change', opacityChange);
                 });
             }, 'json');
         });
