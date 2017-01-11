@@ -3,47 +3,9 @@ var Tin = require('./tin2');
 Tin.setTurf(turf);
 var points = require('../json/morioka_points.json');
 
-var recursiveRound = function(val, decimal) {
-    if (val instanceof Array) return val.map(function(item) {
-        return recursiveRound(item, decimal);
-    });
-    var decVal = Math.pow(10, decimal);
-    return Math.round(val * decVal) / decVal;
-};
+// for turf inside patch
 
-var pt = turf.point([ 15712800, 4821900 ]);
-var poly = turf.polygon([[
-    [ 15712400, 4821900 ],
-    [ 15712600, 4822000 ],
-    [ 15712800, 4821900 ],
-    [ 15712400, 4821900 ]
-]]);
-
-var isInside = inside(pt, poly);
-console.log(isInside);
-
-//pt = turf.point([ 80, 80 ]);
-//poly = turf.polygon([[
-//    [ 40, 80 ],
-//    [ 60, 90 ],
-//    [ 80, 80 ],
-//    [ 40, 80 ]
-//]]);
-
-var pt1 = turf.point([ 10, 10 ]);
-var pt2 = turf.point([ 30, 20 ]);
-var pt3 = turf.point([ 50, 10 ]);
-poly = turf.polygon([[
-    [ 10, 10 ],
-    [ 30, 20 ],
-    [ 50, 10 ],
-    [ 10, 10 ]
-]]);
-
-isInside = inside(pt1, poly);
-console.log(inside(pt1, poly) + " " + inside(pt2, poly) + " " + inside(pt3, poly));
-
-function inside(point, polygon) {
+turf.inside = function input(point, polygon) {
     var pt = turf.getCoord(point);
     var polys = polygon.geometry.coordinates;
     // normalize to multipolygon
@@ -51,12 +13,12 @@ function inside(point, polygon) {
 
     for (var i = 0, insidePoly = false; i < polys.length && !insidePoly; i++) {
         // check if it is in the outer ring first
-        if (inRing(pt, polys[i][0])) {
+        if (turf.inRing(pt, polys[i][0])) {
             var inHole = false;
             var k = 1;
             // check for the point in any of the holes
             while (k < polys[i].length && !inHole) {
-                if (inRing(pt, polys[i][k])) {
+                if (turf.inRing(pt, polys[i][k], true)) {
                     inHole = true;
                 }
                 k++;
@@ -68,20 +30,23 @@ function inside(point, polygon) {
 };
 
 // pt is [x,y] and ring is [[x,y], [x,y],..]
-function inRing(pt, ring) {
+turf.inRing = function(pt, ring, ignoreBoundary) {
     var isInside = false;
+    if (ring[0][0] == ring[ring.length-1][0] && ring[0][1] == ring[ring.length-1][1]) ring = ring.slice(0, ring.length-1);
+
     for (var i = 0, j = ring.length - 1; i < ring.length; j = i++) {
         var xi = ring[i][0], yi = ring[i][1];
         var xj = ring[j][0], yj = ring[j][1];
-        var intersect = ((yi > pt[1]) !== (yj >= pt[1])) &&
-            (pt[0] <= (xj - xi) * (pt[1] - yi) / (yj - yi) + xi);
+        var onBoundary = (pt[1] * (xi - xj) + yi * (xj - pt[0]) + yj * (pt[0] - xi) == 0) &&
+            ((xi - pt[0]) * (xj - pt[0]) <= 0) && ((yi - pt[1]) * (yj - pt[1]) <= 0);
+        if (onBoundary) return !ignoreBoundary;
+        var intersect = ((yi > pt[1]) !== (yj > pt[1])) &&
+            (pt[0] < (xj - xi) * (pt[1] - yi) / (yj - yi) + xi);
         if (intersect) isInside = !isInside;
     }
     return isInside;
 }
 
-
-//var tin = new Tin({points: recursiveRound(points, -2), wh: [6144, 4096]});
-//tin.updateTin2();
-// console.log(tin);
+var tin = new Tin({points: points, wh: [6144, 4096]});
+tin.updateTin2();
 
