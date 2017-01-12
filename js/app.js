@@ -1,13 +1,13 @@
 define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap', 'slick'],
     function($, ol, sprintf, i18n, i18nxhr, ji18n) {
     $.fn.nodoubletapzoom = function() {
-        $(this).bind('touchstart', function preventZoom(e){
+        $(this).bind('touchstart', function preventZoom(e) {
             var t2 = e.timeStamp;
             var t1 = $(this).data('lastTouch') || t2;
             var dt = t2 - t1;
             var fingers = e.originalEvent.touches.length;
             $(this).data('lastTouch', t2);
-            if (!dt || dt > 500 || fingers > 1){
+            if (!dt || dt > 500 || fingers > 1) {
                 return; // not double-tap
             }
             e.preventDefault(); // double tap - prevent the zoom
@@ -245,6 +245,7 @@ define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap
                             mercBuffer.mercs = mercs;
                             var view = mapObject.getView();
                             debug('From: Center: ' + view.getCenter() + ' Zoom: ' + view.getZoom() + ' Rotation: ' + view.getRotation());
+                            debug('From: ' + from.sourceID);
                             mercBuffer.buffer[from.sourceID] = ol.MathEx.recursiveRound([
                                 view.getCenter(), view.getZoom(), view.getRotation()
                             ], 10);
@@ -259,6 +260,7 @@ define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap
                             }
                             toPromise.then(function(size) {
                                 debug('To: Center: ' + [size[0][0], size[0][1]] + ' Zoom: ' + size[1] + ' Rotation: ' + size[2]);
+                                debug('To: ' + to.sourceID);
                                 mercBuffer.buffer[to.sourceID] = ol.MathEx.recursiveRound(size, 10);
                                 callback(size);
                             });
@@ -304,6 +306,11 @@ define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap
                                     mapObject.setLayer();
                                     mapObject.exchangeSource(to);
                                 }
+
+                                // This must be here: Because, render process works after view.setCenter,
+                                // and Changing "from" content must be finished before "postrender" event
+                                from = to;
+
                                 mapObject.setOpacity($('.opacity-slider input').val());
                                 var view = mapObject.getView();
                                 if (to.insideCheckHistMapCoords(size[0])) {
@@ -332,7 +339,6 @@ define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap
                                 }
                                 mapObject.updateSize();
                                 mapObject.renderSync();
-                                from = to;
                                 if (init == true) {
                                     to.goHome();
                                 }
@@ -396,12 +402,10 @@ define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap
                             var source = map.getSource();
                             if (!source.insideCheckHistMapCoords(histCoord)) {
                                 var xy = source.histMapCoords2Xy(histCoord);
-                                debug(xy);
                                 var dx = xy[0] / (source.width / 2) - 1;
                                 var dy = xy[1] / (source.height / 2) - 1;
                                 var da = Math.max(Math.abs(dx), Math.abs(dy));
                                 xy = [(dx / da + 1) * source.width / 2, (dy / da + 1) * source.height / 2];
-                                debug(xy);
                                 histCoord = source.xy2HistMapCoords(xy);
                                 map.getView().setCenter(histCoord);
                             }
