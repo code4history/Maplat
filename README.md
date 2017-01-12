@@ -8,7 +8,7 @@ Maplatは古地図/絵地図を歪める事なくGPSや正確な地図と連携�
 
 # Latest result
 Latest result is shown below:
-* https://code4nara.github.io/Maplat/?lang=en (Function showcase)
+* https://code4nara.github.io/Maplat/?lang=en&overlay=true (Function showcase)
 * https://code4nara.github.io/Maplat/?appid=ueda&lang=en&overlay=true (Ueda city)
 * https://code4nara.github.io/Maplat/?appid=iwate&lang=en&overlay=true (Morioka city)
 * https://code4nara.github.io/Maplat/?appid=sabae&lang=en&overlay=true (Sabae city)
@@ -17,7 +17,7 @@ Latest result is shown below:
 Documentation is undergoing.
 
 最新の成果物は以下で確認できます。
-* https://code4nara.github.io/Maplat/ (盛岡市版をベースにした機能ショーケース)
+* https://code4nara.github.io/Maplat/?overlay=true (盛岡市版をベースにした機能ショーケース)
 * https://code4nara.github.io/Maplat/?appid=ueda&overlay=true (上田市版)
 * https://code4nara.github.io/Maplat/?appid=iwate&overlay=true (盛岡市版)
 * https://code4nara.github.io/Maplat/?appid=sabae&overlay=true (鯖江市版)
