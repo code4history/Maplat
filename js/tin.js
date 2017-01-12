@@ -3,6 +3,50 @@
         var Tin = function(options) {
             this.points = options.points;
             this.wh = options.wh;
+
+            // for turf inside patch
+
+            turf.inside = function input(point, polygon) {
+                var pt = turf.getCoord(point);
+                var polys = polygon.geometry.coordinates;
+                // normalize to multipolygon
+                if (polygon.geometry.type === 'Polygon') polys = [polys];
+
+                for (var i = 0, insidePoly = false; i < polys.length && !insidePoly; i++) {
+                    // check if it is in the outer ring first
+                    if (turf.inRing(pt, polys[i][0])) {
+                        var inHole = false;
+                        var k = 1;
+                        // check for the point in any of the holes
+                        while (k < polys[i].length && !inHole) {
+                            if (turf.inRing(pt, polys[i][k], true)) {
+                                inHole = true;
+                            }
+                            k++;
+                        }
+                        if (!inHole) insidePoly = true;
+                    }
+                }
+                return insidePoly;
+            };
+
+            // pt is [x,y] and ring is [[x,y], [x,y],..]
+            turf.inRing = function(pt, ring, ignoreBoundary) {
+                var isInside = false;
+                if (ring[0][0] == ring[ring.length-1][0] && ring[0][1] == ring[ring.length-1][1]) ring = ring.slice(0, ring.length-1);
+
+                for (var i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+                    var xi = ring[i][0], yi = ring[i][1];
+                    var xj = ring[j][0], yj = ring[j][1];
+                    var onBoundary = (pt[1] * (xi - xj) + yi * (xj - pt[0]) + yj * (pt[0] - xi) == 0) &&
+                        ((xi - pt[0]) * (xj - pt[0]) <= 0) && ((yi - pt[1]) * (yj - pt[1]) <= 0);
+                    if (onBoundary) return !ignoreBoundary;
+                    var intersect = ((yi > pt[1]) !== (yj > pt[1])) &&
+                        (pt[0] < (xj - xi) * (pt[1] - yi) / (yj - yi) + xi);
+                    if (intersect) isInside = !isInside;
+                }
+                return isInside;
+            };
         };
 
         Tin.setTurf = function(turf_) {
@@ -26,9 +70,8 @@
             var pointsSet = this.points;
             if (this.wh) {
                 bbox = [
-                    [0, 0], [this.wh[0] * 0.5, 0], [this.wh[0], 0],
-                    [0, this.wh[1] * 0.5], [this.wh[0], this.wh[1] * 0.5],
-                    [0, this.wh[1]], [this.wh[0] * 0.5, this.wh[1]], [this.wh[0], this.wh[1]]
+                    [0, 0], [this.wh[0], 0],
+                    [0, this.wh[1]], [this.wh[0], this.wh[1]]
                 ];
             }
             var forArr = [];
@@ -42,28 +85,137 @@
             var forPoints = turf.featureCollection(forArr);
             var bakPoints = turf.featureCollection(bakArr);
 
-            bbox.map(function(vertex) {
-                var vertexFt = turf.point(vertex);
-                var vertexMc = nearest7Arr(vertexFt, forPoints, 11);
-                return [createPoint(vertex, vertexMc), createPoint(vertexMc, vertex)];
-            }).map(function(vertex) {
-                forPoints.features.push(vertex[0]);
-                bakPoints.features.push(vertex[1]);
+            var tinForCentroid = turf.tin(forPoints, 'target');
+            var forCentroidFt = turf.centroid(forPoints);
+            var forCentroid = forCentroidFt.geometry.coordinates;
+            var bakCentroid = transformArr(forCentroidFt, tinForCentroid);
+            this.for_centroid = createPoint(forCentroid, bakCentroid);
+            this.bak_centroid = createPoint(bakCentroid, forCentroid);
+
+            var convex = turf.convex(forPoints).geometry.coordinates[0];
+            var orthant = convex.reduce(function(prev, forVertex) {
+                var bakVertex = transformArr(turf.point(forVertex), tinForCentroid);
+                var forVertexDelta = [forVertex[0] - forCentroid[0], forVertex[1] - forCentroid[1]];
+                var bakVertexDelta = [bakVertex[0] - bakCentroid[0], bakCentroid[1] - bakVertex[1]];
+
+                if (forVertexDelta[0] == 0 || forVertexDelta[1] == 0) return prev;
+                var index = 0;
+                if (forVertexDelta[0] > 0) index += 1;
+                if (forVertexDelta[1] > 0) index += 2;
+                prev[index].push([forVertexDelta, bakVertexDelta]);
+                return prev;
+            }, [[], [], [], []]).map(function(item) {
+                return item.reduce(function(prev, curr, index, arr) {
+                    if (!prev) prev = [0, 0, 0];
+                    var distanceSum = prev[0] + Math.sqrt(Math.pow(curr[0][0], 2) + Math.pow(curr[0][1], 2)) /
+                        Math.sqrt(Math.pow(curr[1][0], 2) + Math.pow(curr[1][1], 2));
+                    var thetaDelta = Math.atan2(curr[0][0], curr[0][1]) - Math.atan2(curr[1][0], curr[1][1]);
+                    var sumThetaX = prev[1] + Math.cos(thetaDelta);
+                    var sumThetaY = prev[2] + Math.sin(thetaDelta);
+                    if (index == arr.length - 1) {
+                        return [distanceSum / arr.length, Math.atan2(sumThetaY, sumThetaX)];
+                    }
+                    return [distanceSum, sumThetaX, sumThetaY];
+                }, null);
             });
+            var verticesSet = orthant.map(function(delta, index) {
+                var forVertex = bbox[index];
+                var forDelta = [forVertex[0] - forCentroid[0], forVertex[1] - forCentroid[1]];
+                var forDistance = Math.sqrt(Math.pow(forDelta[0], 2) + Math.pow(forDelta[1], 2));
+                var bakDistance = forDistance / delta[0];
+
+                var forTheta = Math.atan2(forDelta[0], forDelta[1]);
+                var bakTheta = forTheta - delta[1];
+
+                var bakVertex = [bakCentroid[0] + bakDistance * Math.sin(bakTheta), bakCentroid[1] - bakDistance * Math.cos(bakTheta)];
+
+                return [forVertex, bakVertex];
+            });
+            var swap = verticesSet[2];
+            verticesSet[2] = verticesSet[3];
+            verticesSet[3] = swap;
+            var forVerticesList = [];
+            var bakVerticesList = [];
+
+            for (var i = 0; i < verticesSet.length; i++ ) {
+                var n = (i + 1) % verticesSet.length;
+                var forVertex = verticesSet[i][0];
+                var bakVertex = verticesSet[i][1];
+                var forBound = [(forVertex[0] + verticesSet[n][0][0]) / 2, (forVertex[1] + verticesSet[n][0][1]) / 2];
+                var bakBound = [(bakVertex[0] + verticesSet[n][1][0]) / 2, (bakVertex[1] + verticesSet[n][1][1]) / 2];
+                forPoints.features.push(createPoint(forVertex, bakVertex));
+                bakPoints.features.push(createPoint(bakVertex, forVertex));
+                forVerticesList.push(createPoint(forVertex, bakVertex));
+                bakVerticesList.push(createPoint(bakVertex, forVertex));
+                forPoints.features.push(createPoint(forBound, bakBound));
+                bakPoints.features.push(createPoint(bakBound, forBound));
+            }
 
             this.for_points = forPoints;
             this.bak_points = bakPoints;
             this.for_tins = turf.tin(forPoints, 'target');
             this.bak_tins = turf.tin(bakPoints, 'target');
+
+            var forVertexCalc = vertexCalc(forVerticesList, this.for_centroid);
+            this.for_vertices_params = forVertexCalc;
+            var bakVertexCalc = vertexCalc(bakVerticesList, this.bak_centroid);
+            this.bak_vertices_params = bakVertexCalc;
         };
 
         Tin.prototype.transform = function(point, backward) {
             if (!this.bak_tins || !this.for_tins) this.updateTin();
             var tpoint = turf.point(point);
             var tins = backward ? this.bak_tins : this.for_tins;
-            var points = backward ? this.bak_points : this.for_points;
-            return transformArr(tpoint, tins, points);
+            var verticesParams = backward ? this.bak_vertices_params : this.for_vertices_params;
+            var centroid = backward ? this.bak_centroid : this.for_centroid;
+            return transformArr(tpoint, tins, verticesParams, centroid);
         };
+
+        function vertexCalc(list, centroid) {
+            var centCoord = centroid.geometry.coordinates;
+            return [0, 1, 2, 3].map(function(i) {
+                var j = (i + 1) % 4;
+                var itemi = list[i];
+                var itemj = list[j];
+                var coord = itemi.geometry.coordinates;
+                var radian = Math.atan2(coord[0] - centCoord[0], coord[1] - centCoord[1]);
+                var tin = turf.tin(turf.featureCollection([centroid, itemi, itemj]), 'target');
+                return [radian, tin];
+            }).reduce(function(prev, curr) {
+                prev[0].push(curr[0]);
+                prev[1].push(curr[1]);
+                return prev;
+            }, [[], []]);
+        }
+
+        function normalizeRadian(target, noNegative) {
+            var rangeFunc = noNegative ? function(val) {
+                    return !(val >= 0 && val < Math.PI * 2);
+                } : function(val) {
+                    return !(val > -1 * Math.PI && val <= Math.PI);
+                };
+            while (rangeFunc(target)) {
+                target = target + 2 * Math.PI * (target > 0 ? -1 : 1);
+            }
+            return target;
+        }
+
+        function decideUseVertex(radian, radianList) {
+            var idel = normalizeRadian(radian - radianList[0]);
+            var minTheta = Math.PI * 2;
+            var minIndex;
+            for (var i = 0; i < radianList.length; i++) {
+                var j = (i + 1) % radianList.length;
+                var jdel = normalizeRadian(radian - radianList[j]);
+                var minDel = Math.min(Math.abs(idel),Math.abs(jdel));
+                if (idel * jdel <= 0 && minDel < minTheta) {
+                    minTheta = minDel;
+                    minIndex = i;
+                }
+                idel = jdel;
+            }
+            return minIndex;
+        }
 
         function createPoint(xy, target) {
             return turf.point(xy, {target: target});
@@ -94,33 +246,16 @@
             return od;
         }
 
-        function nearest7(o, points, number) {
-            return turf.point(nearest7Arr(o, points, number));
+        function useVertices(o, verticesParams, centroid) {
+            return turf.point(useVerticesArr(o, verticesParams, centroid));
         }
-        function nearest7Arr(o, points, number) {
-            var work = points;
-            var nearests = [];
-            if (!number) number = 7;
-            for (var i=0; i<number; i++) {
-                var nearest = turf.nearest(o, work);
-                nearests.push(nearest);
-                work = turf.featureCollection(work.features.filter(function(val) {
-                    return val!=nearest;
-                }));
-                if (work.features.length == 0) break;
-            }
-            var nearestsFc = turf.featureCollection(nearests);
-
-            var tin = turf.tin(nearestsFc, 'target');
-
-            var od = tin.features.map(function(tri) {
-                return transformTinArr(o, tri);
-            }).reduce(function(prev, curr, index, arr) {
-                return [prev[0]+curr[0], prev[1]+curr[1]].map(function(val) {
-                    return index == arr.length - 1 ? val / arr.length : val;
-                });
-            }, [0, 0]);
-            return od;
+        function useVerticesArr(o, verticesParams, centroid) {
+            var coord = o.geometry.coordinates;
+            var centCoord = centroid.geometry.coordinates;
+            var radian = Math.atan2(coord[0] - centCoord[0],coord[1] - centCoord[1]);
+            var index = decideUseVertex(radian, verticesParams[0]);
+            var tin = verticesParams[1][index];
+            return transformTinArr(o, tin.features[0]);
         }
 
         function hit(point, tins) {
@@ -132,12 +267,12 @@
             }
         }
 
-        function transform(point, tins, forfallback) {
-            return turf.point(transformArr(point, tins, forfallback));
+        function transform(point, tins, verticesParams, centroid) {
+            return turf.point(transformArr(point, tins, verticesParams, centroid));
         }
-        function transformArr(point, tins, forfallback) {
+        function transformArr(point, tins, verticesParams, centroid) {
             var tin = hit(point, tins);
-            return tin ? transformTinArr(point, tin) : nearest7Arr(point, forfallback, 11);
+            return tin ? transformTinArr(point, tin) : useVerticesArr(point, verticesParams, centroid);
         }
 
         return Tin;
