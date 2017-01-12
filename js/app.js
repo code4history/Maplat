@@ -293,7 +293,6 @@ define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap
                                     if (!(to instanceof ol.source.NowMap) || to instanceof ol.source.TmsMap) {
                                         $('.opacity-slider input').removeProp('disabled');
                                     } else {
-                                        $('.opacity-slider input').val(0);
                                         $('.opacity-slider input').prop('disabled', true);
                                     }
                                 }
