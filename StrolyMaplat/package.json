@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "buffer": "^5.0.2",
+    "request": "^2.79.0",
+    "xmldom": "^0.1.27",
+    "xpath": "0.0.23"
+  }
+}

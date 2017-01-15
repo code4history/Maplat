@@ -1,0 +1,200 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: StrolyMaplat
+custom:
+  dynamodb:
+    start:
+      port: 8000
+      inMemory: true
+      migration: true
+    migration:
+      dir: ./migrations
+plugins: 
+ - serverless-dynamodb-local
+ - serverless-offline
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+# frameworkVersion: "=X.X.X"
+
+provider:
+  name: aws
+  runtime: nodejs4.3
+  # DynamoDBの利用の許可
+  iamRoleStatements:
+    -  Effect: 'Allow'
+       Action:
+         - 'dynamodb:PutItem'
+         - 'dynamodb:GetItem'
+         - 'dynamodb:Scan'
+       Resource: '*'
+
+
+# you can overwrite defaults here
+#  stage: dev
+#  region: us-east-1
+
+# you can add statements to the Lambda function's IAM Role here
+#  iamRoleStatements:
+#    - Effect: "Allow"
+#      Action:
+#        - "s3:ListBucket"
+#      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
+#    - Effect: "Allow"
+#      Action:
+#        - "s3:PutObject"
+#      Resource:
+#        Fn::Join:
+#          - ""
+#          - - "arn:aws:s3:::"
+#            - "Ref" : "ServerlessDeploymentBucket"
+
+# you can define service wide environment variables here
+#  environment:
+#    variable1: value1
+
+# you can add packaging information here
+#package:
+#  include:
+#    - include-me.js
+#    - include-me-dir/**
+#  exclude:
+#    - exclude-me.js
+#    - exclude-me-dir/**
+
+functions:
+  stmtgw_pr:
+    handler: stmlgw_pr.xmlgateway
+    events:
+      - http:
+          path: stgwp/xml/{mapid}
+          method: get
+          integration: lambda-proxy
+
+  stappgw_pr:
+    handler: stmlgw_pr.appgateway
+    events:
+      - http:
+          path: stgwp/app/{mapid}
+          method: get
+          integration: lambda-proxy
+
+  stimggw_pr:
+    handler: stmlgw_pr.imggateway
+    events:
+      - http:
+          path: stgwp/img/{mapid}/{zoom}/{x}/{y}
+          method: get
+          integration: lambda-proxy
+
+  stmtgw:
+    handler: stmlgw.xmlgateway
+    events:
+      - http:
+          path: stgw/xml/{mapid}
+          method: get
+          integration: lambda
+          request:
+            parameters:
+              paths:
+                mapid: true
+          response:
+            headers:
+              Content-Type: "integration.response.body.headers.Content-Type"
+            template: $input.path('$.body')
+  stappgw:
+    handler: stmlgw.appgateway
+    events:
+      - http:
+          path: stgw/app/{mapid}
+          method: get
+          integration: lambda
+          request:
+            parameters:
+              paths:
+                mapid: true
+          response:
+            headers:
+              Content-Type: "integration.response.body.headers.Content-Type"
+            template: $input.path('$.body')
+  stimggw:
+    handler: stmlgw.imggateway
+    events:
+      - http:
+          path: stgw/img/{mapid}/{zoom}/{x}/{y}
+          method: get
+          integration: lambda
+          contentHandling: "CONVERT_TO_BINARY"
+          request:
+            parameters:
+              paths:
+                mapid: true
+                zoom: true
+                x: true
+                y: true
+          response:
+            headers:
+              Content-Type: "integration.response.body.headers.Content-Type"
+            template: $input.path('$.body')
+            contentHandling: "CONVERT_TO_BINARY"
+            hoge: fuga
+
+# DynamoDB Tableの作成
+resources:
+  Resources:
+    JankensTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: strolykmls
+        KeySchema:
+          - AttributeName: mapid
+            KeyType: HASH
+        AttributeDefinitions:
+          - AttributeName: mapid
+            AttributeType: S
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+
+#    The following are a few example events you can configure
+#    NOTE: Please make sure to change your handler code to work with those events
+#    Check the event documentation for details
+#    events:
+#      - http:
+#          path: users/create
+#          method: get
+#      - s3: ${env:BUCKET}
+#      - schedule: rate(10 minutes)
+#      - sns: greeter-topic
+#      - stream: arn:aws:dynamodb:region:XXXXXX:table/foo/stream/1970-01-01T00:00:00.000
+#      - alexaSkill
+#      - iot:
+#          sql: "SELECT * FROM 'some_topic'"
+
+#    Define function environment variables here
+#    environment:
+#      variable2: value2
+
+# you can add CloudFormation resource templates here
+#resources:
+#  Resources:
+#    NewResource:
+#      Type: AWS::S3::Bucket
+#      Properties:
+#        BucketName: my-new-bucket
+#  Outputs:
+#     NewOutput:
+#       Description: "Description for the output"
+#       Value: "Some output value"
