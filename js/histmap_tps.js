@@ -25,6 +25,12 @@ define(['histmap', 'tps'], function(ol, ThinPlateSpline) {
     ol.inherits(ol.source.HistMap_tps, ol.source.HistMap);
 
     ol.source.HistMap_tps.createAsync = function(options) {
+        if (options.make_binary) {
+            options.tps_serial = options.tps_serial || options.mapID + '.bin';
+            options.tps_points = options.tps_points || '../json/' + options.mapID + '_points.json';
+        } else {
+            options.tps_serial = options.tps_serial || '../bin/' + options.mapID + '.bin';
+        }
         return new Promise(function(resolve, reject) {
             var obj;
             options.on_serialized = function() {
