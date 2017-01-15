@@ -13,7 +13,7 @@ define(['histmap', 'tin'], function(ol, Tin) {
     ol.source.HistMap_tin.createAsync = function(options) {
         return new Promise(function(resolve, reject) {
             var obj;
-            var url = options.tin_points_url;
+            var url = options.tin_points_url || 'json/' + options.mapID + '_points.json';
             var xhr = new XMLHttpRequest();
             xhr.open('GET', url, true);
             xhr.responseType = 'json';

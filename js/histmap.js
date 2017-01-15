@@ -17,7 +17,7 @@ define(['ol-custom'], function(ol) {
         options.wrapX = false;
         if (options.mapID) {
             this.mapID = options.mapID;
-            options.url = 'tiles/' + options.mapID + '/{z}/{x}/{y}.jpg';
+            options.url = options.url || 'tiles/' + options.mapID + '/{z}/{x}/{y}.jpg';
         }
 
         if (options.urls) {
@@ -94,7 +94,7 @@ define(['ol-custom'], function(ol) {
     ol.inherits(ol.source.HistMap, ol.source.XYZ);
 
     ol.source.HistMap.createAsync = function(options) {
-        var algorythm = options.algorythm || 'tin';
+        var algorythm = options.maptype == 'stroly-maplat' ? 'stroly' : options.algorythm || 'tin';
         return ol.source['HistMap_' + algorythm].createAsync(options);
     };
     ol.source.setCustomFunction(ol.source.HistMap);
