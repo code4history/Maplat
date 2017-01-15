@@ -376,6 +376,8 @@ define(['ol3'], function(ol) {
         self.home_position = options.home_position;
         self.merc_zoom = options.merc_zoom;
         self.fake_gps = options.fake_gps || false;
+        self.thumbnail = options.thumbnail || './tmbs/' + (options.mapID || options.sourceID) + '_menu.jpg';
+        self.label = options.label;
     };
 
     ol.source.NowMap = function(optOptions) {
@@ -549,7 +551,6 @@ define(['ol3'], function(ol) {
             this.getLayers().item(0).setOpacity(opacity);
         }
     };
-
 
     ol.MaplatMap.prototype.handleGPS = function(launch, avoidEventForOff) {
         if (launch) {
