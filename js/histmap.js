@@ -95,7 +95,11 @@ define(['ol-custom'], function(ol) {
 
     ol.source.HistMap.createAsync = function(options) {
         var algorythm = options.maptype == 'stroly-maplat' ? 'stroly' : options.algorythm || 'tin';
-        return ol.source['HistMap_' + algorythm].createAsync(options);
+        return new Promise(function(resolve, reject) {
+            require(['histmap_' + algorythm], resolve);
+        }).then(function() {
+            return ol.source['HistMap_' + algorythm].createAsync(options);
+        });
     };
     ol.source.setCustomFunction(ol.source.HistMap);
     ol.source.HistMap.prototype.xy2MercAsync = function(xy) {

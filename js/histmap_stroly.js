@@ -1,4 +1,21 @@
-define(['histmap', 'tin', 'histmap_tin'], function(ol, Tin) {
+define(['histmap_tin'], function(ol) {
+    var nsResolver = function(prefix) {
+        var ns = {
+            'kml': 'http://earth.google.com/kml/2.1',
+            'dcterms': 'http://purl.org/dc/terms/',
+            'illustmap': 'http://illustmap.org/ns/2.0',
+            'xml': 'http://www.w3.org/XML/1998/namespace'
+        };
+        return ns[prefix] || null;
+    };
+
+    var parseCoord = function(path, doc) {
+        return document.evaluate('.//' + path + '/text()', doc, nsResolver, XPathResult.STRING_TYPE, null)
+            .stringValue.split(',').map(function(val) {
+                return parseFloat(val);
+            });
+    };
+
     ol.source.HistMap_stroly = function(optOptions) {
         var options = optOptions || {};
         options.url = options.url || '' + 'https://cors-anywhere.herokuapp.com/https://' +
@@ -16,32 +33,74 @@ define(['histmap', 'tin', 'histmap_tin'], function(ol, Tin) {
     ol.inherits(ol.source.HistMap_stroly, ol.source.HistMap_tin);
 
     ol.source.HistMap_stroly.createAsync = function(options) {
-        return new Promise(function(resolve, reject) {
-            var obj;
-            if (options.stroly_points) {
-                obj = new ol.source.HistMap_stroly(options);
-                obj.tin.setPoints(options.stroly_points);
-                obj.tin.updateTin();
-                resolve(obj);
-            } else {
-                var url = options.stroly_url;
-                var xhr = new XMLHttpRequest();
+        var errNum = 0;
+        var xhr = new XMLHttpRequest();
+        var promises = ['cs', 'od'].map(function(sv) {
+            var url = 'https://cors-anywhere.herokuapp.com/https://' + sv +'s3.illustmap.org/' + options.mapID + '.kml';
+            return new Promise(function(resolve, reject) {
                 xhr.open('GET', url, true);
-                xhr.responseType = 'json';
+                xhr.responseType = 'document';
 
                 xhr.onload = function(e) {
                     if (this.status == 200) {
-                        var points = this.response;
-                        obj.tin.setPoints(points);
-                        obj.tin.updateTin();
-                        resolve(obj);
+                        var doc = this.responseXML;
+                        resolve([doc, sv]);
                     } else {
-                        // self.postMessage({'event':'cannotLoad'});
+                        errNum++;
+                        console.log('error');
+                        if (errNum == 2) console.log('all error');
                     }
                 };
                 xhr.send();
-                obj = new ol.source.HistMap_stroly(options);
+            });
+        });
+
+        return Promise.race(promises).then(function(result) {
+            var doc = result[0];
+            var server = result[1];
+            var coords = [];
+
+            var node = document.evaluate('//kml:Folder[@type="illustmap"]',
+                doc, nsResolver, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+            var points = document.evaluate('.//kml:Placemark', node.singleNodeValue,
+                nsResolver, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+            for (var i = 0; i < points.snapshotLength; i++) {
+                var point = points.snapshotItem(i);
+                var illsCoord = parseCoord('illustmap:xy', point);
+                var mercCoord = parseCoord('illustmap:mercator_xy', point);
+                coords.push([illsCoord, mercCoord]);
             }
+
+            var wh = parseCoord('illustmap:wh', doc);
+            options.width = wh[0];
+            options.height = wh[1];
+            var title = document.evaluate('//illustmap:title[@xml:lang="ja"]/text()',
+                doc, nsResolver, XPathResult.STRING_TYPE, null).stringValue;
+            options.title = title;
+            var museum = document.evaluate('//dcterms:contributor[@xml:lang="ja"]/text()',
+                doc, nsResolver, XPathResult.STRING_TYPE, null).stringValue;
+            options.attr = title + ' - ' + museum;
+            var sw = parseCoord('illustmap:sw', doc);
+            var ne = parseCoord('illustmap:ne', doc);
+            options.home_position = [(sw[0] + ne[0]) / 2, (sw[1] + ne[1]) / 2];
+
+            options.url = options.url || '' + 'https://cors-anywhere.herokuapp.com/https://' +
+                server + 's3.illustmap.org/tiles/' + options.mapID + '/' +
+                options.mapID + '-{z}_{x}_{y}.jpg';
+            options.thumbnail = 'https://cors-anywhere.herokuapp.com/https://' +
+                server + 's3.illustmap.org/' +
+                options.mapID + '_t.jpg';
+            xhr.open('GET', options.thumbnail, true);
+            xhr.send();
+
+            return coords;
+        }).then(function(points) {
+            var obj = new ol.source.HistMap_stroly(options);
+            obj.tin.setPoints(points);
+            obj.tin.updateTin();
+            return obj;
         });
     };
+
+    return ol;
 });

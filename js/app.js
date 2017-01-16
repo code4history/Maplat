@@ -1,4 +1,4 @@
-define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap', 'slick'],
+define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap', 'slick'],
     function($, ol, sprintf, i18n, i18nxhr, ji18n) {
     $.fn.nodoubletapzoom = function() {
         $(this).bind('touchstart', function preventZoom(e) {
@@ -60,12 +60,6 @@ define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap
                         });
                     });
                     Promise.race(promises).then(function(result) {
-                        return new Promise(function(res, rej) {
-                            require(['histmap_stroly'], function() {
-                                res(result);
-                            });
-                        });
-                    }).then(function(result) {
                         var data = result[0];
                         var appData = {
                             fake_gps: false,
@@ -212,9 +206,6 @@ define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap
                         sourceID: 'osm',
                         label: t('app.osm_now')
                     }, commonOption)));
-                    //$('.slick-class').slick('slickAdd', '<div class="slick-item" data="osm">' +
-                    //    '<img src="./tmbs/osm_menu.jpg"><div>' + t('app.osm_now') + '</div></div>');
-                    //$('.slick-class').slick('slickGoTo', dataSource.length);
                 } else {
                     var data = dataSource[i];
                     if (!data.maptype) data.maptype = 'maplat';
@@ -235,34 +226,28 @@ define(['jquery', 'ol-custom', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap
                             }, commonOption)));
                         } else {
                             data.sourceID = data.mapID + ':' + data.maptype + ':' + data.algorythm;
-                            sourcePromise.push(new Promise(function(res, rej) {
-                                var laterLogic = function() {
-                                    dataHash[data.sourceID] = data;
-                                    var option = Object.assign({
-                                        attributions: [
-                                            new ol.Attribution({
-                                                html: data.attr
-                                            })
-                                        ],
-                                        mapID: data.mapID,
-                                        width: data.width,
-                                        height: data.height,
-                                        maptype: data.maptype,
-                                        algorythm: data.algorythm,
-                                        sourceID: data.sourceID,
-                                        make_binary: makeBinary,
-                                        stroly_server: strolyServer,
-                                        stroly_points: strolyPoints,
-                                        label: data.label || data.year
-                                    }, commonOption);
-                                    res(ol.source.HistMap.createAsync(option));
-                                };
-                                if (data.maptype == 'maplat') require(['histmap_' + data.algorythm], laterLogic);
-                                else laterLogic();
+                            sourcePromise.push(new Promise(function(resolve, reject) {
+                                dataHash[data.sourceID] = data;
+                                var option = Object.assign({
+                                    attributions: [
+                                        new ol.Attribution({
+                                            html: data.attr
+                                        })
+                                    ],
+                                    mapID: data.mapID,
+                                    width: data.width,
+                                    height: data.height,
+                                    maptype: data.maptype,
+                                    algorythm: data.algorythm,
+                                    sourceID: data.sourceID,
+                                    make_binary: makeBinary,
+                                    stroly_server: strolyServer,
+                                    stroly_points: strolyPoints,
+                                    label: data.label || data.year
+                                }, commonOption);
+                                resolve(ol.source.HistMap.createAsync(option));
                             }));
                         }
-                        //$('.slick-class').slick('slickAdd', '<div class="slick-item" data="' + data.sourceID + '">' +
-                        //    '<img src="./tmbs/' + data.mapID + '_menu.jpg"><div>' + (data.label || data.year) + '</div></div>');
                     })(data);
                 }
             }
