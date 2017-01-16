@@ -18,15 +18,6 @@ define(['histmap_tin'], function(ol) {
 
     ol.source.HistMap_stroly = function(optOptions) {
         var options = optOptions || {};
-        options.url = options.url || '' + 'https://cors-anywhere.herokuapp.com/https://' +
-            options.stroly_server + 's3.illustmap.org/tiles/' + options.mapID + '/' +
-            options.mapID + '-{z}_{x}_{y}.jpg';
-        options.thumbnail = 'https://cors-anywhere.herokuapp.com/https://' +
-            options.stroly_server + 's3.illustmap.org/' +
-            options.mapID + '_t.jpg';
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', options.thumbnail, true);
-        xhr.send();
 
         ol.source.HistMap_tin.call(this, options);
     };
@@ -79,7 +70,11 @@ define(['histmap_tin'], function(ol) {
             options.title = title;
             var museum = document.evaluate('//dcterms:contributor[@xml:lang="ja"]/text()',
                 doc, nsResolver, XPathResult.STRING_TYPE, null).stringValue;
-            options.attr = title + ' - ' + museum;
+            options.attributions = [
+                new ol.Attribution({
+                    html: title + ' - ' + museum
+                })
+            ];
             var sw = parseCoord('illustmap:sw', doc);
             var ne = parseCoord('illustmap:ne', doc);
             options.home_position = [(sw[0] + ne[0]) / 2, (sw[1] + ne[1]) / 2];

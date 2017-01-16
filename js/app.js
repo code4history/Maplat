@@ -29,93 +29,34 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
             $('.opacity-slider input').prop('disabled', true);
         }
         var promises = [
-            new Promise(function(res, rej) {
+            new Promise(function(resolve, reject) {
                 if (appOption.stroly) {
-                    var errNum = 0;
-                    var nsResolver = function(prefix) {
-                        var ns = {
-                            'kml': 'http://earth.google.com/kml/2.1',
-                            'dcterms': 'http://purl.org/dc/terms/',
-                            'illustmap': 'http://illustmap.org/ns/2.0',
-                            'xml': 'http://www.w3.org/XML/1998/namespace'
-                        };
-                        return ns[prefix] || null;
+                    var appData = {
+                        fake_gps: false,
+                        default_zoom: 17,
+                        now_year: 2017,
+                        now_era: '現在',
+                        sources: [
+                            {
+                                attr: '国土地理院',
+                                label: '地理院',
+                                mapID: 'gsi',
+                                maptype: 'base',
+                                url: 'https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png'
+                            },
+                            {
+                                mapID: appid,
+                                maptype: 'stroly',
+                                algorythm: 'tin',
+                                label: '古地図'
+                            }
+                        ],
+                        pois: []
                     };
-                    var parseCoord = function(path, doc) {
-                        return document.evaluate('.//' + path + '/text()', doc, nsResolver, XPathResult.STRING_TYPE, null)
-                            .stringValue.split(',').map(function(val) {
-                                return parseFloat(val);
-                            });
-                    };
-                    var promises = ['cs', 'od'].map(function(sv) {
-                        var url = 'https://cors-anywhere.herokuapp.com/https://' + sv +'s3.illustmap.org/' + appid + '.kml';
-                        return new Promise(function(inRes, inRej) {
-                            $.get(url, function(appData) {
-                                inRes([appData, sv]);
-                            }, 'xml').fail(function() {
-                                errNum++;
-                                console.log( "error" );
-                                if (errNum == 2) console.log( "all error" );
-                            });
-                        });
-                    });
-                    Promise.race(promises).then(function(result) {
-                        var data = result[0];
-                        var appData = {
-                            fake_gps: false,
-                            default_zoom: 17,
-                            now_year: 2017,
-                            now_era: '現在',
-                            strolyServer: result[1],
-                            sources: [
-                                {
-                                    attr: '国土地理院',
-                                    label: '地理院',
-                                    mapID: 'gsi',
-                                    maptype: 'base',
-                                    url: 'https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png'
-                                },
-                                {
-                                    mapID: appid,
-                                    maptype: 'stroly-maplat',
-                                    algorythm: 'tin',
-                                    label: '古地図'
-                                }
-                            ],
-                            pois: []
-                        };
-                        var coords = [];
-
-                        var node = document.evaluate('//kml:Folder[@type="illustmap"]',
-                            data, nsResolver, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
-                        var points = document.evaluate('.//kml:Placemark', node.singleNodeValue,
-                            nsResolver, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-                        for (var i = 0; i < points.snapshotLength; i++) {
-                            var point = points.snapshotItem(i);
-                            var illsCoord = parseCoord('illustmap:xy', point);
-                            var mercCoord = parseCoord('illustmap:mercator_xy', point);
-                            coords.push([illsCoord, mercCoord]);
-                        }
-
-                        var mapSetting = appData.sources[1];
-                        var wh = parseCoord('illustmap:wh', data);
-                        mapSetting.width = wh[0];
-                        mapSetting.height = wh[1];
-                        var title = document.evaluate('//illustmap:title[@xml:lang="ja"]/text()',
-                            data, nsResolver, XPathResult.STRING_TYPE, null).stringValue;
-                        appData.app_name = title;
-                        var museum = document.evaluate('//dcterms:contributor[@xml:lang="ja"]/text()',
-                            data, nsResolver, XPathResult.STRING_TYPE, null).stringValue;
-                        mapSetting.attr = title + ' - ' + museum;
-                        var sw = parseCoord('illustmap:sw', data);
-                        var ne = parseCoord('illustmap:ne', data);
-                        appData.home_position = [(sw[0] + ne[0]) / 2, (sw[1] + ne[1]) / 2];
-                        appData.strolyPoints = coords;
-                        res(appData);
-                    });
+                    resolve(appData);
                 } else {
                     $.get('json/' + appid + '.json', function(appData) {
-                        res(appData);
+                        resolve(appData);
                     }, 'json').fail(function() {
                         console.log( "error" );
                     });
@@ -124,6 +65,7 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
             new Promise(function(res, rej) {
                 i18n.use(i18nxhr).init({
                     lng: lang,
+                    fallbackLng: ['en'],
                     backend: {
                         loadPath: 'locales/{{lng}}/{{ns}}.json'
                     }
@@ -160,8 +102,6 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
             var fakeCenter = appOption.fake ? appData.fake_center : false;
             var fakeRadius = appOption.fake ? appData.fake_radius :false;
             var makeBinary = appData.make_binary;
-            var strolyPoints = appData.strolyPoints;
-            var strolyServer = appData.strolyServer;
             var currentPosition = null;
             var mapObject = null;
             var backMap = null;
@@ -234,6 +174,7 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
                                             html: data.attr
                                         })
                                     ],
+                                    title: data.title || data.era,
                                     mapID: data.mapID,
                                     width: data.width,
                                     height: data.height,
@@ -241,8 +182,6 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
                                     algorythm: data.algorythm,
                                     sourceID: data.sourceID,
                                     make_binary: makeBinary,
-                                    stroly_server: strolyServer,
-                                    stroly_points: strolyPoints,
                                     label: data.label || data.year
                                 }, commonOption);
                                 resolve(ol.source.HistMap.createAsync(option));
@@ -255,6 +194,11 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
             Promise.all(sourcePromise).then(function(sources) {
                 $('#loadWait').modal('hide');
 
+                if (appOption.stroly) {
+                    homePos = sources[1].home_position;
+                    $('title').html(sources[1].title);
+                }
+
                 var cache = [];
                 var cacheHash = {};
                 var clickAvoid = false;
@@ -263,6 +207,9 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
                     $('.slick-class').slick('slickAdd', '<div class="slick-item" data="' + source.sourceID + '">' +
                         '<img src="' + source.thumbnail + '"><div>' + source.label + '</div></div>');
                     if (i == sources.length - 1) $('.slick-class').slick('slickGoTo', sources.length - 1);
+                    if (appOption.stroly) {
+                        source.home_position = homePos;
+                    }
                     if (!mapObject && !(source instanceof ol.source.TmsMap)) {
                         mapObject = source.getMap();
                         mapObject.on('gps_request', function() {

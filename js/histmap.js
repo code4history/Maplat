@@ -32,6 +32,7 @@ define(['ol-custom'], function(ol) {
 
         this.width = options.width;
         this.height = options.height;
+        this.title = options.title;
         var zW = Math.log2(this.width/tileSize);
         var zH = Math.log2(this.height/tileSize);
         this.maxZoom = options.maxZoom = Math.ceil(Math.max(zW, zH));
@@ -94,7 +95,7 @@ define(['ol-custom'], function(ol) {
     ol.inherits(ol.source.HistMap, ol.source.XYZ);
 
     ol.source.HistMap.createAsync = function(options) {
-        var algorythm = options.maptype == 'stroly-maplat' ? 'stroly' : options.algorythm || 'tin';
+        var algorythm = options.maptype == 'stroly' ? 'stroly' : options.algorythm || 'tin';
         return new Promise(function(resolve, reject) {
             require(['histmap_' + algorythm], resolve);
         }).then(function() {
