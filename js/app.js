@@ -108,9 +108,9 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
             var mapDiv = 'map_div';
             var backDiv = null;
             if (overlay) {
-                $('<div id="map_div_back" class="map h100p w100p" style="top:0px; left:0px; width: 100%; ' +
+                $('<div id="map_div_back" class="map" style="top:0; left:0; right:0; bottom:0; ' +
                     'position:absolute;"></div>').insertBefore('#center_circle');
-                $('<div id="map_div_front" class="map h100p w100p" style="top:0px; left:0px; width: 100%; ' +
+                $('<div id="map_div_front" class="map" style="top:0; left:0; right:0; bottom:0; ' +
                     'position:absolute;"></div>').insertBefore('#center_circle');
                 mapDiv = 'map_div_front';
                 backDiv = 'map_div_back';
