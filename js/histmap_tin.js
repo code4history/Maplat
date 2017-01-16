@@ -49,4 +49,6 @@ define(['histmap', 'tin'], function(ol, Tin) {
             resolve(histMapCoords);
         });
     };
+
+    return ol;
 });
