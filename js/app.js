@@ -18,7 +18,7 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
     $('body').nodoubletapzoom();
     return function(appOption) {
         var otherSpec = appOption.stroly ? 'stroly' : appOption.drumsey ? 'drumsey' : null;
-        var appid = appOption.appid || otherSpec ? appOption[otherSpec] : 'sample';
+        var appid = appOption.appid || (otherSpec ? appOption[otherSpec] : 'sample');
         var debug = appOption.debug ? function(val) {
             console.log(val);
         } : function() {};
