@@ -1,4 +1,6 @@
 define(['histmap_tin'], function(ol) {
+    var tileSize = 256;
+
     ol.source.HistMap_drumsey = function(optOptions) {
         var options = optOptions || {};
 
@@ -62,6 +64,31 @@ define(['histmap_tin'], function(ol) {
                 })
             ];
             options.home_position = georef.center;
+
+            var tileUrl = 'https://cors-anywhere.herokuapp.com/' + georef.pyramid.url;
+            options.tileUrlFunction = function(coord) {
+                var z = coord[0];
+                var x = coord[1];
+                var y = -1 * coord[2] - 1;
+                if (x * tileSize * Math.pow(2, this.maxZoom - z) >= this.width ||
+                    y * tileSize * Math.pow(2, this.maxZoom - z) >= this.height ||
+                    x < 0 || y < 0 ) {
+                    return ol.source.HistMap.getTransPng();
+                }
+                var level = this.maxZoom - z;
+                var powLevel = Math.pow(2, level);
+                var left = x * 256 * powLevel;
+                var top = y * 256 * powLevel;
+                var right = left + 256 * powLevel;
+                var bottom = top + 256 * powLevel;
+                if (right > this.width) right = this.width;
+                if (bottom > this.height) bottom = this.height;
+                var xcenter = (left + right) / 2;
+                var ycenter = (top + bottom) / 2;
+                var width = Math.floor((right - left) / powLevel);
+                var height = Math.floor((bottom - top) / powLevel);
+                return tileUrl + '&x=' + xcenter + '&y=' + ycenter + '&width=' + width + '&height=' + height + '&level=' + level;
+            };
 
             options.url = options.url || '' + 'https://cors-anywhere.herokuapp.com/https://' +
                 's3.illustmap.org/tiles/' + options.mapID + '/' +

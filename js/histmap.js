@@ -37,7 +37,7 @@ define(['ol-custom'], function(ol) {
         var zH = Math.log2(this.height/tileSize);
         this.maxZoom = options.maxZoom = Math.ceil(Math.max(zW, zH));
         this._maxxy = Math.pow(2, this.maxZoom) * tileSize;
-        options.tileUrlFunction = function(coord) {
+        options.tileUrlFunction = options.tileUrlFunction || function(coord) {
             var z = coord[0];
             var x = coord[1];
             var y = -1 * coord[2] - 1;
@@ -93,6 +93,10 @@ define(['ol-custom'], function(ol) {
     };
 
     ol.inherits(ol.source.HistMap, ol.source.XYZ);
+
+    ol.source.HistMap.getTransPng = function() {
+        return transPng;
+    };
 
     ol.source.HistMap.createAsync = function(options) {
         var algorythm = options.maptype != 'maplat' ? options.maptype : options.algorythm || 'tin';
