@@ -85,8 +85,6 @@ define(['histmap_tin'], function(ol) {
             options.thumbnail = 'https://cors-anywhere.herokuapp.com/https://' +
                 server + 's3.illustmap.org/' +
                 options.mapID + '_t.jpg';
-            xhr.open('GET', options.thumbnail, true);
-            xhr.send();
 
             return coords;
         }).then(function(points) {
