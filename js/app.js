@@ -28,59 +28,61 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
             $('.opacity-slider').removeClass('hide');
             $('.opacity-slider input').prop('disabled', true);
         }
-        var promises = [
-            new Promise(function(resolve, reject) {
-                if (appOption.stroly) {
-                    var appData = {
-                        fake_gps: false,
-                        default_zoom: 17,
-                        now_year: 2017,
-                        now_era: '現在',
-                        sources: [
-                            {
-                                attr: '国土地理院',
-                                label: '地理院',
-                                mapID: 'gsi',
-                                maptype: 'base',
-                                url: 'https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png'
-                            },
-                            {
-                                mapID: appid,
-                                maptype: 'stroly',
-                                algorythm: 'tin',
-                                label: '古地図'
-                            }
-                        ],
-                        pois: []
-                    };
+        var appPromise = appOption.stroly ?
+            function(t) {
+                var appData = {
+                    fake_gps: false,
+                    default_zoom: 17,
+                    now_year: 2017,
+                    now_era: '現在',
+                    sources: [
+                        {
+                            attr: t('app.gsi_attr'),
+                            label: t('app.gsi_label'),
+                            mapID: 'gsi',
+                            maptype: 'base',
+                            url: 'https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png'
+                        },
+                        {
+                            mapID: appid,
+                            maptype: 'stroly',
+                            algorythm: 'tin',
+                            label: t('app.histotical_label')
+                        }
+                    ],
+                    pois: []
+                };
+                return [t, appData];
+            } : new Promise(function(resolve, reject) {
+                $.get('json/' + appid + '.json', function(appData) {
                     resolve(appData);
-                } else {
-                    $.get('json/' + appid + '.json', function(appData) {
-                        resolve(appData);
-                    }, 'json').fail(function() {
-                        console.log( "error" );
-                    });
-                }
-            }),
-            new Promise(function(res, rej) {
-                i18n.use(i18nxhr).init({
-                    lng: lang,
-                    fallbackLng: ['en'],
-                    backend: {
-                        loadPath: 'locales/{{lng}}/{{ns}}.json'
-                    }
-                }, function(err, t) {
-                    ji18n.init(i18n, $);
-                    $('body').localize();
-                    res(t);
+                }, 'json').fail(function() {
+                    console.log('error');
                 });
-            })
-        ];
+            });
+
+        var i18nPromise = new Promise(function(resolve, reject) {
+            i18n.use(i18nxhr).init({
+                lng: lang,
+                fallbackLng: ['en'],
+                backend: {
+                    loadPath: 'locales/{{lng}}/{{ns}}.json'
+                }
+            }, function(err, t) {
+                ji18n.init(i18n, $);
+                $('body').localize();
+                resolve(t);
+            });
+        });
+
+        var promises = appOption.stroly ?
+            i18nPromise.then(appPromise) :
+            Promise.all([i18nPromise, appPromise]);
 
 
-        Promise.all(promises).then(function(result) {
-            var appData = result[0];
-            var t = result[1];
+        promises.then(function(result) {
+            var appData = result[1];
+            var t = result[0];
 
             $('#all').show();
             $('#loadWait').modal();
