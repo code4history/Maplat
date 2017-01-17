@@ -17,7 +17,7 @@ define(['ol-custom'], function(ol) {
         options.wrapX = false;
         if (options.mapID) {
             this.mapID = options.mapID;
-            options.url = 'tiles/' + options.mapID + '/{z}/{x}/{y}.jpg';
+            options.url = options.url || 'tiles/' + options.mapID + '/{z}/{x}/{y}.jpg';
         }
 
         if (options.urls) {
@@ -32,6 +32,7 @@ define(['ol-custom'], function(ol) {
 
         this.width = options.width;
         this.height = options.height;
+        this.title = options.title;
         var zW = Math.log2(this.width/tileSize);
         var zH = Math.log2(this.height/tileSize);
         this.maxZoom = options.maxZoom = Math.ceil(Math.max(zW, zH));
@@ -94,8 +95,12 @@ define(['ol-custom'], function(ol) {
     ol.inherits(ol.source.HistMap, ol.source.XYZ);
 
     ol.source.HistMap.createAsync = function(options) {
-        var algorythm = options.algorythm || 'tin';
-        return ol.source['HistMap_' + algorythm].createAsync(options);
+        var algorythm = options.maptype == 'stroly' ? 'stroly' : options.algorythm || 'tin';
+        return new Promise(function(resolve, reject) {
+            require(['histmap_' + algorythm], resolve);
+        }).then(function() {
+            return ol.source['HistMap_' + algorythm].createAsync(options);
+        });
     };
     ol.source.setCustomFunction(ol.source.HistMap);
     ol.source.HistMap.prototype.xy2MercAsync = function(xy) {
