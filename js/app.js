@@ -17,7 +17,8 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
     };
     $('body').nodoubletapzoom();
     return function(appOption) {
-        var appid = appOption.appid || appOption.stroly ? appOption.stroly : 'sample';
+        var otherSpec = appOption.stroly ? 'stroly' : appOption.drumsey ? 'drumsey' : null;
+        var appid = appOption.appid || otherSpec ? appOption[otherSpec] : 'sample';
         var debug = appOption.debug ? function(val) {
             console.log(val);
         } : function() {};
@@ -28,7 +29,7 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
             $('.opacity-slider').removeClass('hide');
             $('.opacity-slider input').prop('disabled', true);
         }
-        var appPromise = appOption.stroly ?
+        var appPromise = otherSpec ?
             function(t) {
                 var appData = {
                     fake_gps: false,
@@ -45,7 +46,7 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
                         },
                         {
                             mapID: appid,
-                            maptype: 'stroly',
+                            maptype: otherSpec,
                             algorythm: 'tin',
                             label: t('app.histotical_label')
                         }
@@ -75,7 +76,7 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
             });
         });
 
-        var promises = appOption.stroly ?
+        var promises = otherSpec ?
             i18nPromise.then(appPromise) :
             Promise.all([i18nPromise, appPromise]);
 
@@ -196,7 +197,7 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
             Promise.all(sourcePromise).then(function(sources) {
                 $('#loadWait').modal('hide');
 
-                if (appOption.stroly) {
+                if (otherSpec) {
                     homePos = sources[1].home_position;
                     $('title').html(sources[1].title);
                 }
@@ -207,9 +208,9 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
                 for (var i=0; i<sources.length; i++) {
                     var source = sources[i];
                     $('.slick-class').slick('slickAdd', '<div class="slick-item" data="' + source.sourceID + '">' +
-                        '<img src="' + source.thumbnail + '"><div>' + source.label + '</div></div>');
+                        '<img crossorigin="anonymous" src="' + source.thumbnail + '"><div>' + source.label + '</div></div>');
                     if (i == sources.length - 1) $('.slick-class').slick('slickGoTo', sources.length - 1);
-                    if (appOption.stroly) {
+                    if (otherSpec) {
                         source.home_position = homePos;
                     }
                     if (!mapObject && !(source instanceof ol.source.TmsMap)) {
