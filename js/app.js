@@ -405,77 +405,70 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
                     $('#poi_info').modal();
                 }
 
-                var clickHandler = (function(map) {
-                    return function(evt) {
-                        var feature = map.forEachFeatureAtPixel(evt.pixel,
-                            function(feature) {
-                                if (feature.get('datum')) return feature;
-                            });
-                        if (feature) {
-                            showInfo(feature.get('datum'));
-                        }
-                    };
-                })(mapObject);
+                var clickHandler = function(evt) {
+                    var feature = this.forEachFeatureAtPixel(evt.pixel,
+                        function(feature) {
+                            if (feature.get('datum')) return feature;
+                        });
+                    if (feature) {
+                        showInfo(feature.get('datum'));
+                    }
+                };
                 mapObject.on('click', clickHandler);
 
                 // change mouse cursor when over marker
-                var moveHandler = (function(map) {
-                    return function(e) {
-                        var pixel = map.getEventPixel(e.originalEvent);
-                        var hit = map.hasFeatureAtPixel(pixel);
-                        var target = map.getTarget();
-                        if (hit) {
-                            var feature = map.forEachFeatureAtPixel(e.pixel,
-                                function(feature) {
-                                    if (feature.get('datum')) return feature;
-                                });
-                            $('#' + target).css('cursor', feature ? 'pointer' : '');
-                            return;
-                        }
-                        $('#' + target).css('cursor', '');
-                    };
-                })(mapObject);
+                var moveHandler = function(evt) {
+                    var pixel = this.getEventPixel(evt.originalEvent);
+                    var hit = this.hasFeatureAtPixel(pixel);
+                    var target = this.getTarget();
+                    if (hit) {
+                        var feature = this.forEachFeatureAtPixel(evt.pixel,
+                            function(feature) {
+                                if (feature.get('datum')) return feature;
+                            });
+                        $('#' + target).css('cursor', feature ? 'pointer' : '');
+                        return;
+                    }
+                    $('#' + target).css('cursor', '');
+                };
                 mapObject.on('pointermove', moveHandler);
 
-                var mapOutHandler = (function(map) {
-                    return function(e) {
-                        var histCoord = e.frameState.viewState.center;
-                        var source = map.getSource();
-                        if (!source.insideCheckHistMapCoords(histCoord)) {
-                            var xy = source.histMapCoords2Xy(histCoord);
-                            var dx = xy[0] / (source.width / 2) - 1;
-                            var dy = xy[1] / (source.height / 2) - 1;
-                            var da = Math.max(Math.abs(dx), Math.abs(dy));
-                            xy = [(dx / da + 1) * source.width / 2, (dy / da + 1) * source.height / 2];
-                            histCoord = source.xy2HistMapCoords(xy);
-                            map.getView().setCenter(histCoord);
-                        }
-                    };
-                })(mapObject);
+                var mapOutHandler = function(evt) {
+                    var histCoord = evt.frameState.viewState.center;
+                    var source = this.getSource();
+                    if (!source.insideCheckHistMapCoords(histCoord)) {
+                        var xy = source.histMapCoords2Xy(histCoord);
+                        var dx = xy[0] / (source.width / 2) - 1;
+                        var dy = xy[1] / (source.height / 2) - 1;
+                        var da = Math.max(Math.abs(dx), Math.abs(dy));
+                        xy = [(dx / da + 1) * source.width / 2, (dy / da + 1) * source.height / 2];
+                        histCoord = source.xy2HistMapCoords(xy);
+                        this.getView().setCenter(histCoord);
+                    }
+                };
                 mapObject.on('moveend', mapOutHandler);
 
-                var backMapMove = (function(map) {
-                    return function(e) {
-                        if (!backMap) return;
-                        if (map._backMapMoving) {
-                            debug('Backmap moving skipped');
-                            return;
-                        }
-                        var backSrc = backMap.getSource();
-                        if (backSrc) {
-                            map._backMapMoving = true;
-                            debug('Backmap moving started');
-                            convertParametersFromCurrent(backSrc, function(size) {
-                                var view = backMap.getView();
-                                view.setCenter(size[0]);
-                                view.setZoom(size[1]);
-                                view.setRotation(size[2]);
-                                debug('Backmap moving ended');
-                                map._backMapMoving = false;
-                            });
-                        }
-                    };
-                })(mapObject);
+                var backMapMove = function(evt) {
+                    if (!backMap) return;
+                    if (this._backMapMoving) {
+                        debug('Backmap moving skipped');
+                        return;
+                    }
+                    var backSrc = backMap.getSource();
+                    if (backSrc) {
+                        this._backMapMoving = true;
+                        debug('Backmap moving started');
+                        var self = this;
+                        convertParametersFromCurrent(backSrc, function(size) {
+                            var view = backMap.getView();
+                            view.setCenter(size[0]);
+                            view.setZoom(size[1]);
+                            view.setRotation(size[2]);
+                            debug('Backmap moving ended');
+                            self._backMapMoving = false;
+                        });
+                    }
+                };
                 mapObject.on('postrender', backMapMove);
 
                 var opacityChange = function() {
