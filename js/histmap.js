@@ -95,7 +95,7 @@ define(['ol-custom'], function(ol) {
     ol.inherits(ol.source.HistMap, ol.source.XYZ);
 
     ol.source.HistMap.createAsync = function(options) {
-        var algorythm = options.maptype == 'stroly' ? 'stroly' : options.algorythm || 'tin';
+        var algorythm = options.maptype != 'maplat' ? options.maptype : options.algorythm || 'tin';
         return new Promise(function(resolve, reject) {
             require(['histmap_' + algorythm], resolve);
         }).then(function() {

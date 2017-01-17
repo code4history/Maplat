@@ -27,7 +27,7 @@ require.config({
         // "ol-custom" : "ol-custom",
         // "ol3css" : "../css/ol",
         'bootstrap': '//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min',
-        'app': 'app-built'
+        // 'app': 'app-built'
     },
     shim: {
         'jquery': {
