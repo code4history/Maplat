@@ -103,15 +103,40 @@ define(['ol-custom'], function(ol) {
         return new Promise(function(resolve, reject) {
             require(['histmap_' + algorythm], resolve);
         }).then(function() {
-            return ol.source['HistMap_' + algorythm].createAsync(options);
+            return ol.source['HistMap_' + algorythm].createAsync(options)
+                .then(function(obj) {
+                    return new Promise(function(resolve, reject) {
+                        obj.mapSize2MercSize(resolve);
+                    });
+                });
         });
     };
     ol.source.setCustomFunction(ol.source.HistMap);
     ol.source.HistMap.prototype.xy2MercAsync = function(xy) {
-        return this.xy2MercAsync_(xy);
+        var convertXy = this.histMapCoords2Xy(xy);
+        return this.xy2MercAsync_(convertXy);
     };
     ol.source.HistMap.prototype.merc2XyAsync = function(merc) {
-        return this.merc2XyAsync_(merc);
+        var self = this;
+        return this.merc2XyAsync_(merc).then(function(convertXy) {
+            return self.xy2HistMapCoords(convertXy);
+        });
+    };
+
+    ol.source.HistMap.prototype.mapSize2MercSize = function(callback) {
+        var xy = [this.width / 2, this.height / 2];
+        var self = this;
+        Promise.all([[xy[0] - 150, xy[1]], [xy[0] + 150, xy[1]], [xy[0], xy[1] - 150], [xy[0],
+            xy[1] + 150], [xy[0], xy[1]]].map(function(coord) {
+            return self.xy2MercAsync_(coord);
+        })).then(function(mercs) {
+            var delta1 = Math.sqrt(Math.pow(mercs[0][0] - mercs[1][0], 2) + Math.pow(mercs[0][1] - mercs[1][1], 2));
+            var delta2 = Math.sqrt(Math.pow(mercs[2][0] - mercs[3][0], 2) + Math.pow(mercs[2][1] - mercs[3][1], 2));
+            var delta = (delta1 + delta2) / 2;
+            self.merc_zoom = Math.log(300 * (2*ol.const.MERC_MAX) / 256 / delta) / Math.log(2) - 3;
+            self.home_position = ol.proj.toLonLat(mercs[4]);
+            callback(self);
+        });
     };
 
     ol.source.HistMap.prototype.histMapCoords2Xy = function(histCoords) {
