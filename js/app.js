@@ -199,6 +199,7 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
 
                 if (otherSpec) {
                     homePos = sources[1].home_position;
+                    defZoom = sources[1].merc_zoom;
                     $('title').html(sources[1].title);
                 }
 
@@ -212,6 +213,7 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
                     if (i == sources.length - 1) $('.slick-class').slick('slickGoTo', sources.length - 1);
                     if (otherSpec) {
                         source.home_position = homePos;
+                        source.merc_zoom = defZoom;
                     }
                     if (!mapObject && !(source instanceof ol.source.TmsMap)) {
                         mapObject = source.getMap();
