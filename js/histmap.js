@@ -108,11 +108,20 @@ define(['ol-custom'], function(ol) {
     };
     ol.source.setCustomFunction(ol.source.HistMap);
     ol.source.HistMap.prototype.xy2MercAsync = function(xy) {
-        return this.xy2MercAsync_(xy);
+        var convertXy = this.histMapCoords2Xy(xy);
+        return this.xy2MercAsync_(convertXy);
     };
     ol.source.HistMap.prototype.merc2XyAsync = function(merc) {
-        return this.merc2XyAsync_(merc);
+        var self = this;
+        return this.merc2XyAsync_(merc).then(function(convertXy) {
+            return self.xy2HistMapCoords(convertXy);
+        });
     };
+
+    /* ol.source.HistMap.prototype.mapSize2MercSize = function() {
+        var targetXy = [this.width / 2, this.height / 2];
+        var targetZoom = this.maxZoom;
+    };*/
 
     ol.source.HistMap.prototype.histMapCoords2Xy = function(histCoords) {
         var x = (histCoords[0] + ol.const.MERC_MAX) * this._maxxy / (2*ol.const.MERC_MAX);

@@ -20,10 +20,7 @@ define(['histmap', 'tin'], function(ol, Tin) {
 
             xhr.onload = function(e) {
                 if (this.status == 200) {
-                    var points = this.response;
-                    obj.tin.setPoints(points);
-                    obj.tin.updateTin();
-                    resolve(obj);
+                    obj.finalizeCreateAsync_(this.response, resolve);
                 } else {
                     // self.postMessage({'event':'cannotLoad'});
                 }
@@ -33,20 +30,22 @@ define(['histmap', 'tin'], function(ol, Tin) {
         });
     };
 
-    ol.source.HistMap_tin.prototype.xy2MercAsync_ = function(histMapCoords) {
+    ol.source.HistMap_tin.prototype.finalizeCreateAsync_ = function(points, resolve) {
+        this.tin.setPoints(points);
+        this.tin.updateTin();
+        resolve(this);
+    };
+
+    ol.source.HistMap_tin.prototype.xy2MercAsync_ = function(xy) {
         var self = this;
         return new Promise(function(resolve, reject) {
-            var xy = self.histMapCoords2Xy(histMapCoords);
-            var merc = self.tin.transform(xy, false);
-            resolve(merc);
+            resolve(self.tin.transform(xy, false));
         });
     };
     ol.source.HistMap_tin.prototype.merc2XyAsync_ = function(merc) {
         var self = this;
         return new Promise(function(resolve, reject) {
-            var xy = self.tin.transform(merc, true);
-            var histMapCoords = self.xy2HistMapCoords(xy);
-            resolve(histMapCoords);
+            resolve(self.tin.transform(merc, true));
         });
     };
 
