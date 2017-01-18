@@ -97,10 +97,10 @@ define(['histmap_tin'], function(ol) {
 
             return coords;
         }).then(function(points) {
-            var obj = new ol.source.HistMap_drumsey(options);
-            obj.tin.setPoints(points);
-            obj.tin.updateTin();
-            return obj;
+            return new Promise(function(resolve, reject) {
+                var obj = new ol.source.HistMap_drumsey(options);
+                obj.finalizeCreateAsync_(points, resolve);
+            });
         });
     };
 
