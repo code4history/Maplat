@@ -56,10 +56,9 @@ define(['histmap', 'tps'], function(ol, ThinPlateSpline) {
         });
     };
 
-    ol.source.HistMap_tps.prototype.xy2MercAsync_ = function(histMapCoords) {
+    ol.source.HistMap_tps.prototype.xy2MercAsync_ = function(xy) {
         var self = this;
         return new Promise(function(resolve, reject) {
-            var xy = self.histMapCoords2Xy(histMapCoords);
             self.tps.transform(xy, false, {
                 callback: function(merc) {
                     resolve(merc);
@@ -72,8 +71,7 @@ define(['histmap', 'tps'], function(ol, ThinPlateSpline) {
         return new Promise(function(resolve, reject) {
             self.tps.transform(merc, true, {
                 callback: function(xy) {
-                    var histMapCoords = self.xy2HistMapCoords(xy);
-                    resolve(histMapCoords);
+                    resolve(xy);
                 }
             });
         });

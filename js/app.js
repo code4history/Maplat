@@ -17,7 +17,8 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
     };
     $('body').nodoubletapzoom();
     return function(appOption) {
-        var appid = appOption.appid || appOption.stroly ? appOption.stroly : 'sample';
+        var otherSpec = appOption.stroly ? 'stroly' : appOption.drumsey ? 'drumsey' : null;
+        var appid = appOption.appid || (otherSpec ? appOption[otherSpec] : 'sample');
         var debug = appOption.debug ? function(val) {
             console.log(val);
         } : function() {};
@@ -28,59 +29,61 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
             $('.opacity-slider').removeClass('hide');
             $('.opacity-slider input').prop('disabled', true);
         }
-        var promises = [
-            new Promise(function(resolve, reject) {
-                if (appOption.stroly) {
-                    var appData = {
-                        fake_gps: false,
-                        default_zoom: 17,
-                        now_year: 2017,
-                        now_era: '現在',
-                        sources: [
-                            {
-                                attr: '国土地理院',
-                                label: '地理院',
-                                mapID: 'gsi',
-                                maptype: 'base',
-                                url: 'https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png'
-                            },
-                            {
-                                mapID: appid,
-                                maptype: 'stroly',
-                                algorythm: 'tin',
-                                label: '古地図'
-                            }
-                        ],
-                        pois: []
-                    };
+        var appPromise = otherSpec ?
+            function(t) {
+                var appData = {
+                    fake_gps: false,
+                    default_zoom: 17,
+                    now_year: 2017,
+                    now_era: '現在',
+                    sources: [
+                        {
+                            attr: t('app.gsi_attr'),
+                            label: t('app.gsi_label'),
+                            mapID: 'gsi',
+                            maptype: 'base',
+                            url: 'https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png'
+                        },
+                        {
+                            mapID: appid,
+                            maptype: otherSpec,
+                            algorythm: 'tin',
+                            label: t('app.histotical_label')
+                        }
+                    ],
+                    pois: []
+                };
+                return [t, appData];
+            } : new Promise(function(resolve, reject) {
+                $.get('json/' + appid + '.json', function(appData) {
                     resolve(appData);
-                } else {
-                    $.get('json/' + appid + '.json', function(appData) {
-                        resolve(appData);
-                    }, 'json').fail(function() {
-                        console.log( "error" );
-                    });
-                }
-            }),
-            new Promise(function(res, rej) {
-                i18n.use(i18nxhr).init({
-                    lng: lang,
-                    fallbackLng: ['en'],
-                    backend: {
-                        loadPath: 'locales/{{lng}}/{{ns}}.json'
-                    }
-                }, function(err, t) {
-                    ji18n.init(i18n, $);
-                    $('body').localize();
-                    res(t);
+                }, 'json').fail(function() {
+                    console.log('error');
                 });
-            })
-        ];
+            });
+
+        var i18nPromise = new Promise(function(resolve, reject) {
+            i18n.use(i18nxhr).init({
+                lng: lang,
+                fallbackLng: ['en'],
+                backend: {
+                    loadPath: 'locales/{{lng}}/{{ns}}.json'
+                }
+            }, function(err, t) {
+                ji18n.init(i18n, $);
+                $('body').localize();
+                resolve(t);
+            });
+        });
+
+        var promises = otherSpec ?
+            i18nPromise.then(appPromise) :
+            Promise.all([i18nPromise, appPromise]);
 
 
-        Promise.all(promises).then(function(result) {
-            var appData = result[0];
-            var t = result[1];
+        promises.then(function(result) {
+            var appData = result[1];
+            var t = result[0];
 
             $('#all').show();
             $('#loadWait').modal();
@@ -194,8 +197,9 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
             Promise.all(sourcePromise).then(function(sources) {
                 $('#loadWait').modal('hide');
 
-                if (appOption.stroly) {
+                if (otherSpec) {
                     homePos = sources[1].home_position;
+                    defZoom = sources[1].merc_zoom;
                     $('title').html(sources[1].title);
                 }
 
@@ -205,10 +209,11 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
                 for (var i=0; i<sources.length; i++) {
                     var source = sources[i];
                     $('.slick-class').slick('slickAdd', '<div class="slick-item" data="' + source.sourceID + '">' +
-                        '<img src="' + source.thumbnail + '"><div>' + source.label + '</div></div>');
+                        '<img crossorigin="anonymous" src="' + source.thumbnail + '"><div>' + source.label + '</div></div>');
                     if (i == sources.length - 1) $('.slick-class').slick('slickGoTo', sources.length - 1);
-                    if (appOption.stroly) {
+                    if (otherSpec) {
                         source.home_position = homePos;
+                        source.merc_zoom = defZoom;
                     }
                     if (!mapObject && !(source instanceof ol.source.TmsMap)) {
                         mapObject = source.getMap();

@@ -85,15 +85,13 @@ define(['histmap_tin'], function(ol) {
             options.thumbnail = 'https://cors-anywhere.herokuapp.com/https://' +
                 server + 's3.illustmap.org/' +
                 options.mapID + '_t.jpg';
-            xhr.open('GET', options.thumbnail, true);
-            xhr.send();
 
             return coords;
         }).then(function(points) {
-            var obj = new ol.source.HistMap_stroly(options);
-            obj.tin.setPoints(points);
-            obj.tin.updateTin();
-            return obj;
+            return new Promise(function(resolve, reject) {
+                var obj = new ol.source.HistMap_stroly(options);
+                obj.finalizeCreateAsync_(points, resolve);
+            });
         });
     };
 
