@@ -76,6 +76,7 @@ provider:
 functions:
   strolydata:
     handler: gateway.strolydata
+    timeout: 10
     events:
       - http:
           path: stroly/dat/{mapid}
@@ -84,6 +85,7 @@ functions:
 
   strolyimage:
     handler: gateway.strolyimage
+    timeout: 10
     events:
       - http:
           path: stroly/img/{mapid}/{zoom}/{x}/{y}
@@ -92,6 +94,7 @@ functions:
 
   drumseydata:
     handler: gateway.drumseydata
+    timeout: 10
     events:
       - http:
           path: drumsey/dat/{mapid}
@@ -100,6 +103,7 @@ functions:
 
   drumseyimage:
     handler: gateway.drumseyimage
+    timeout: 10
     events:
       - http:
           path: drumsey/img/{mapid}/{zoom}/{x}/{y}
@@ -108,6 +112,7 @@ functions:
 
   warperdata:
     handler: gateway.warperdata
+    timeout: 10
     events:
       - http:
           path: warper/dat/{mapid}
@@ -116,6 +121,7 @@ functions:
 
   warperimage:
     handler: gateway.warperimage
+    timeout: 10
     events:
       - http:
           path: warper/img/{mapid}/{zoom}/{x}/{y}
