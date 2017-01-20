@@ -74,81 +74,53 @@ provider:
 #    - exclude-me-dir/**
 
 functions:
-  stmtgw_pr:
-    handler: stmlgw_pr.xmlgateway
+  strolydata:
+    handler: gateway.strolydata
     events:
       - http:
-          path: stgwp/xml/{mapid}
+          path: stroly/dat/{mapid}
           method: get
           integration: lambda-proxy
 
-  stappgw_pr:
-    handler: stmlgw_pr.appgateway
+  strolyimage:
+    handler: gateway.strolyimage
     events:
       - http:
-          path: stgwp/app/{mapid}
+          path: stroly/img/{mapid}/{zoom}/{x}/{y}
           method: get
           integration: lambda-proxy
 
-  stimggw_pr:
-    handler: stmlgw_pr.imggateway
+  drumseydata:
+    handler: gateway.drumseydata
     events:
       - http:
-          path: stgwp/img/{mapid}/{zoom}/{x}/{y}
+          path: drumsey/dat/{mapid}
           method: get
           integration: lambda-proxy
 
-  stmtgw:
-    handler: stmlgw.xmlgateway
+  drumseyimage:
+    handler: gateway.drumseyimage
     events:
       - http:
-          path: stgw/xml/{mapid}
+          path: drumsey/img/{mapid}/{zoom}/{x}/{y}
           method: get
-          integration: lambda
-          request:
-            parameters:
-              paths:
-                mapid: true
-          response:
-            headers:
-              Content-Type: "integration.response.body.headers.Content-Type"
-            template: $input.path('$.body')
-  stappgw:
-    handler: stmlgw.appgateway
+          integration: lambda-proxy
+
+  warperdata:
+    handler: gateway.warperdata
     events:
       - http:
-          path: stgw/app/{mapid}
+          path: warper/dat/{mapid}
           method: get
-          integration: lambda
-          request:
-            parameters:
-              paths:
-                mapid: true
-          response:
-            headers:
-              Content-Type: "integration.response.body.headers.Content-Type"
-            template: $input.path('$.body')
-  stimggw:
-    handler: stmlgw.imggateway
+          integration: lambda-proxy
+
+  warperimage:
+    handler: gateway.warperimage
     events:
       - http:
-          path: stgw/img/{mapid}/{zoom}/{x}/{y}
+          path: warper/img/{mapid}/{zoom}/{x}/{y}
           method: get
-          integration: lambda
-          contentHandling: "CONVERT_TO_BINARY"
-          request:
-            parameters:
-              paths:
-                mapid: true
-                zoom: true
-                x: true
-                y: true
-          response:
-            headers:
-              Content-Type: "integration.response.body.headers.Content-Type"
-            template: $input.path('$.body')
-            contentHandling: "CONVERT_TO_BINARY"
-            hoge: fuga
+          integration: lambda-proxy
 
 # DynamoDB Tableの作成
 resources:
@@ -156,7 +128,7 @@ resources:
     JankensTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: strolykmls
+        TableName: gw_data
         KeySchema:
           - AttributeName: mapid
             KeyType: HASH

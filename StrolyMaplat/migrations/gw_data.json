@@ -1,0 +1,18 @@
+{
+    "Table": {
+        "TableName": "gw_data",
+        "KeySchema": [{
+            "AttributeName": "mapid",
+            "KeyType": "HASH"
+        }],
+        "AttributeDefinitions": [{
+            "AttributeName": "mapid",
+            "AttributeType": "S"
+        }],
+        "ProvisionedThroughput": {
+            "ReadCapacityUnits": 1,
+            "WriteCapacityUnits": 1
+        }
+    },
+    "Seeds": []
+}
