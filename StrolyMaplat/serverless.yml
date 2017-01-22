@@ -39,7 +39,12 @@ provider:
          - 'dynamodb:GetItem'
          - 'dynamodb:Scan'
        Resource: '*'
-
+    -  Effect: 'Allow'
+       Action:
+         - 'logs:CreateLogGroup'
+         - 'logs:CreateLogStream'
+         - 'logs:PutLogEvents'
+       Resource: 'arn:aws:logs:*:*:*'
 
 # you can overwrite defaults here
 #  stage: dev

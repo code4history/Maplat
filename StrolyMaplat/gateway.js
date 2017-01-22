@@ -110,6 +110,43 @@ urlAccess.stroly = function(mapid) {
     return Promise.race(promises);
 };
 
+urlAccess.drumsey = function(mapid) {
+    return new Promise(function(resolve, reject) {
+        var url = 'http://rumsey.georeferencer.com/map/' + mapid + '/';
+        var reqOpt = {
+            url: url,
+            method: 'GET'
+        };
+        request(reqOpt, function(err, resp, body) {
+            if (err) {
+                resolve('Err');
+                return;
+            }
+            var epoch = new Date(resp.headers['last-modified']).getTime() / 1000;
+            resolve({
+                server: sv,
+                epoch: epoch,
+                body: body
+            });
+        });
+
+        xhr.open('GET', url, true);
+        xhr.responseType = 'document';
+
+        xhr.onload = function (e) {
+            if (this.status == 200) {
+                var doc = this.responseXML;
+                resolve(doc);
+            } else {
+                console.log('error');
+            }
+        };
+        xhr.send();
+    }).then(function(doc) {
+
+    });
+};
+
 urlAccess.warper = function(mapid) {
     return new Promise(function(resolve, reject) {
         var reqOpt = {
@@ -202,6 +239,7 @@ analyzeData.warper = function(mapid, value) {
                 6378137 * Math.log(Math.tan(Math.PI / 360 * (90 + parseFloat(match[4]))))]]);
     }
     res = content.match(/var\s+title\s+=\s+'(.+)';/m);
+    console.warn(res[1]);
     result.title = result.attr = decodeURIComponent(res[1]);
     // populate_gcps(173950, 1548.5939947773, 204.0613577033, -71.2425076933, 42.3684689865, 10.31041522918661);
 
