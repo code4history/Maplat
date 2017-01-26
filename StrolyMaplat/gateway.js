@@ -7,17 +7,15 @@ var select = xpath.useNamespaces({
     'kml': 'http://earth.google.com/kml/2.1',
     'dcterms': 'http://purl.org/dc/terms/',
     'illustmap': 'http://illustmap.org/ns/2.0',
-    'xml': 'http://www.w3.org/XML/1998/namespace'
+    'xml': 'http://www.w3.org/XML/1998/namespace',
+    'xhtml': 'http://www.w3.org/1999/xhtml'
 });
 var gm = require('gm').subClass({imageMagick: true});
+var parse5 = require('parse5');
+var xmlser = require('xmlserializer');
+var _eval = require('eval');
 var warperpass = require('./warperpass.json');
 var dynamodb = null;
-var trans = gm('data:image/png;base64,'+
-    'iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAMAAABrrFhUAAAAB3RJTUUH3QgIBToaSbAjlwAAABd0'+
-    'RVh0U29mdHdhcmUAR0xEUE5HIHZlciAzLjRxhaThAAAACHRwTkdHTEQzAAAAAEqAKR8AAAAEZ0FN'+
-    'QQAAsY8L/GEFAAAAA1BMVEX///+nxBvIAAAAAXRSTlMAQObYZgAAAFRJREFUeNrtwQEBAAAAgJD+'+
-    'r+4ICgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'+
-    'AAAAAAAAAAAAABgBDwABHHIJwwAAAABJRU5ErkJggg==');
 
 var setDynamoClient = function(event) {
     if ('isOffline' in event && event.isOffline) {
@@ -113,6 +111,7 @@ urlAccess.stroly = function(mapid) {
 urlAccess.drumsey = function(mapid) {
     return new Promise(function(resolve, reject) {
         var url = 'http://rumsey.georeferencer.com/map/' + mapid + '/';
+        console.log(url);
         var reqOpt = {
             url: url,
             method: 'GET'
@@ -122,28 +121,24 @@ urlAccess.drumsey = function(mapid) {
                 resolve('Err');
                 return;
             }
-            var epoch = new Date(resp.headers['last-modified']).getTime() / 1000;
-            resolve({
-                server: sv,
-                epoch: epoch,
-                body: body
+
+            var document = parse5.parse(body);
+            var xhtml = xmlser.serializeToString(document);
+            var doc = new Dom().parseFromString(xhtml);
+            var accUrl = 'http://rumsey.georeferencer.com' + select('string(//xhtml:a[text()="Accuracy"]/@href)', doc);
+
+            reqOpt.url = accUrl;
+
+            request(reqOpt, function(err, resp, body) {
+                if (err) {
+                    resolve('Err');
+                } else {
+                    resolve({
+                        body: body
+                    });
+                }
             });
         });
-
-        xhr.open('GET', url, true);
-        xhr.responseType = 'document';
-
-        xhr.onload = function (e) {
-            if (this.status == 200) {
-                var doc = this.responseXML;
-                resolve(doc);
-            } else {
-                console.log('error');
-            }
-        };
-        xhr.send();
-    }).then(function(doc) {
-
     });
 };
 
@@ -205,6 +200,44 @@ analyzeData.stroly = function(mapid, value) {
     // var sw = parseCoord('illustmap:sw', doc);
     // var ne = parseCoord('illustmap:ne', doc);
     // body.home_position = [ (sw[0] + ne[0]) / 2, (sw[1] + ne[1]) / 2 ];
+
+    return result;
+};
+
+analyzeData.drumsey = function(mapid, value) {
+    var content = value.body;
+    var result = {
+        coords: [],
+        maptype: 'drumsey',
+        mapid: mapid
+    };
+    var document = parse5.parse(content);
+    var xhtml = xmlser.serializeToString(document);
+    var doc = new Dom().parseFromString(xhtml);
+
+    var scripts = select('//xhtml:script[@type="text/javascript" and @charset="utf-8"]/text()', doc).toString();
+    console.log(scripts);
+    var res = _eval(scripts + ' exports.georef = georef; exports.attr = ATTRIBUTION;');
+    console.log(res);
+    var points = res.georef.control_points;
+    for (var i = 0; i < points.length; i++) {
+        var point = points[i];
+        var illsCoord = [point.pixel_x, point.pixel_y];
+        var mercCoord = ol.proj.fromLonLat([point.longitude,point.latitude]);
+        result.coords.push([illsCoord, mercCoord]);
+    }
+    options.width = georef.pyramid.width;
+    options.height = georef.pyramid.height;
+    options.title = georef.title;
+    options.attributions = [
+        new ol.Attribution({
+            html: ATTRIBUTION
+        })
+    ];
+    options.home_position = georef.center;
+
+
+
 
     return result;
 };
@@ -318,6 +351,22 @@ module.exports.strolyimage= function(event, context, callback) {
         }
     });
 };
+
+module.exports.drumseydata = function(event, context, callback) {
+    var mapid = event.pathParameters.mapid;
+    setDynamoClient(event);
+    getDataItem('drumsey', mapid, function(content) {
+        var err = content =='Err';
+        var stat = err ? 404 : 200;
+        var body = err ? 'Url not found' : content;
+        callback(null, {
+            statusCode: stat,
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(body)
+        });
+    });
+};
+
 
 module.exports.warperdata = function(event, context, callback) {
     var mapid = event.pathParameters.mapid;
