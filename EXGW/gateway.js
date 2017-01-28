@@ -26,6 +26,7 @@ var setDynamoClient = function(event) {
     } else {
         dynamodb = new AWS.DynamoDB.DocumentClient();
     }
+    dynamodb.stage = event.requestContext.stage;
 };
 
 var parseCoord = function(pathString, target) {
@@ -38,7 +39,7 @@ var parseCoord = function(pathString, target) {
 var getDataItem = function(maptype, mapid, callback) {
     var dbmapid = maptype + ':' + mapid;
     var params = {
-        TableName: 'gw_data',
+        TableName: 'exgw_data_' + dynamodb.stage,
         Key: {
             mapid: dbmapid
         }
@@ -54,9 +55,8 @@ var getDataItem = function(maptype, mapid, callback) {
                     var epoch = content.epoch;
                     var analyzeDataFunc = analyzeData[maptype];
                     analyzeDataFunc(mapid, content).then(function(result) {
-                        console.log('a');
                         var putParams = {
-                            TableName: 'gw_data',
+                            TableName: 'exgw_data_' + dynamodb.stage,
                             Item: {
                                 mapid: dbmapid,
                                 epoch: epoch,
@@ -67,7 +67,6 @@ var getDataItem = function(maptype, mapid, callback) {
                         dynamodb.put(putParams, function(err) {
                             if (err) console.log(err);
                         });
-                        console.log('b');
                         callback(result);
                     });
                 }
@@ -113,7 +112,6 @@ urlAccess.stroly = function(mapid) {
 urlAccess.drumsey = function(mapid) {
     return new Promise(function(resolve, reject) {
         var url = 'http://rumsey.georeferencer.com/map/' + mapid + '/';
-        console.log(url);
         var reqOpt = {
             url: url,
             method: 'GET'
@@ -304,7 +302,6 @@ analyzeData.warper = function(mapid, value) {
             resolve();
         }),
         new Promise(function(resolve, reject) {
-            console.log(thmbUrl);
             var reqOpt = {
                 url: thmbUrl,
                 method: 'GET',
@@ -458,7 +455,7 @@ module.exports.drumseyimage= function(event, context, callback) {
             var lwidth = Math.floor((right - left) / powLevel);
             var lheight = Math.floor((bottom - top) / powLevel);
             var url = tileUrl + '&x=' + xcenter + '&y=' + ycenter + '&width=' + lwidth + '&height=' + lheight + '&level=' + level;
-            console.log(url);
+
             var reqOpt = {
                 url: url,
                 method: 'GET',

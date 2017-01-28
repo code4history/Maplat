@@ -11,7 +11,7 @@
 #
 # Happy Coding!
 
-service: StrolyMaplat
+service: EXGW
 custom:
   dynamodb:
     start:
@@ -20,6 +20,7 @@ custom:
       migration: true
     migration:
       dir: ./migrations
+  stage: "${opt:stage, self:provider.stage}"
 plugins: 
  - serverless-dynamodb-local
  - serverless-offline
@@ -87,6 +88,7 @@ functions:
           path: stroly/dat/{mapid}
           method: get
           integration: lambda-proxy
+          cors: true
 
   strolyimage:
     handler: gateway.strolyimage
@@ -96,6 +98,7 @@ functions:
           path: stroly/img/{mapid}/{zoom}/{x}/{y}
           method: get
           integration: lambda-proxy
+          cors: true
 
   drumseydata:
     handler: gateway.drumseydata
@@ -105,6 +108,7 @@ functions:
           path: drumsey/dat/{mapid}
           method: get
           integration: lambda-proxy
+          cors: true
 
   drumseyimage:
     handler: gateway.drumseyimage
@@ -114,6 +118,7 @@ functions:
           path: drumsey/img/{mapid}/{zoom}/{x}/{y}
           method: get
           integration: lambda-proxy
+          cors: true
 
   warperdata:
     handler: gateway.warperdata
@@ -123,6 +128,7 @@ functions:
           path: warper/dat/{mapid}
           method: get
           integration: lambda-proxy
+          cors: true
 
   warperimage:
     handler: gateway.warperimage
@@ -132,14 +138,15 @@ functions:
           path: warper/img/{mapid}/{zoom}/{x}/{y}
           method: get
           integration: lambda-proxy
+          cors: true
 
 # DynamoDB Tableの作成
 resources:
   Resources:
-    JankensTable:
+    EXGWDATA:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: gw_data
+        TableName: exgw_data_${self:custom.stage}
         KeySchema:
           - AttributeName: mapid
             KeyType: HASH

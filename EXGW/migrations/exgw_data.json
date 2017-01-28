@@ -1,6 +1,6 @@
 {
     "Table": {
-        "TableName": "gw_data",
+        "TableName": "exgw_data_dev",
         "KeySchema": [{
             "AttributeName": "mapid",
             "KeyType": "HASH"
