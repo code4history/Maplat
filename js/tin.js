@@ -118,6 +118,8 @@
                     return [distanceSum, sumThetaX, sumThetaY];
                 }, null);
             });
+
+            // Bug: if number of GCP is too small, some orthant values null. It cause error.
             var verticesSet = orthant.map(function(delta, index) {
                 var forVertex = bbox[index];
                 var forDelta = [forVertex[0] - forCentroid[0], forVertex[1] - forCentroid[1]];
