@@ -340,7 +340,10 @@ module.exports.strolydata = function(event, context, callback) {
         var body = err ? 'Kml not found' : content;
         callback(null, {
             statusCode: stat,
-            headers: {'Content-Type': 'application/json'},
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
             body: JSON.stringify(body)
         });
     });
@@ -361,7 +364,10 @@ module.exports.strolyimage= function(event, context, callback) {
         if (err) {
             callback(null, {
                 statusCode: 404,
-                headers: {'Content-Type': 'application/json'},
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
                 body: 'Image not found'
             });
         } else {
@@ -388,14 +394,20 @@ module.exports.strolyimage= function(event, context, callback) {
                     if (err || base64.match(/^PD94bWwgdmVyc2lvb/)) {
                         callback(null, {
                             statusCode: 404,
-                            headers: {'Content-Type': 'application/json'},
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Access-Control-Allow-Origin': '*'
+                            },
                             body: 'Image not found'
                         });
                         return;
                     }
                     callback(null, {
                         statusCode: 200,
-                        headers: {'Content-Type': 'application/json'},
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
                         body: 'data:' + ctype + ';base64,' + base64
                     });
                 });
@@ -413,7 +425,10 @@ module.exports.drumseydata = function(event, context, callback) {
         var body = err ? 'Url not found' : content;
         callback(null, {
             statusCode: stat,
-            headers: {'Content-Type': 'application/json'},
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
             body: JSON.stringify(body)
         });
     });
@@ -435,7 +450,10 @@ module.exports.drumseyimage= function(event, context, callback) {
         if (err) {
             callback(null, {
                 statusCode: 404,
-                headers: {'Content-Type': 'application/json'},
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
                 body: 'Image not found'
             });
         } else {
@@ -477,14 +495,20 @@ module.exports.drumseyimage= function(event, context, callback) {
                     if (err || base64.match(/^PD94bWwgdmVyc2lvb/)) {
                         callback(null, {
                             statusCode: 404,
-                            headers: {'Content-Type': 'application/json'},
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Access-Control-Allow-Origin': '*'
+                            },
                             body: 'Image not found'
                         });
                         return;
                     }
                     callback(null, {
                         statusCode: 200,
-                        headers: {'Content-Type': 'application/json'},
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
                         body: 'data:' + ctype + ';base64,' + base64
                     });
                 });
@@ -502,7 +526,10 @@ module.exports.warperdata = function(event, context, callback) {
         var body = err ? 'Url not found' : content;
         callback(null, {
             statusCode: stat,
-            headers: {'Content-Type': 'application/json'},
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
             body: JSON.stringify(body)
         });
     });
@@ -521,7 +548,10 @@ module.exports.warperimage= function(event, context, callback) {
         if (err) {
             callback(null, {
                 statusCode: 404,
-                headers: {'Content-Type': 'application/json'},
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
                 body: 'Image not found'
             });
         } else {
@@ -542,7 +572,10 @@ module.exports.warperimage= function(event, context, callback) {
                 if (err) {
                     callback(null, {
                         statusCode: 404,
-                        headers: {'Content-Type': 'application/json'},
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
                         body: 'Image not found'
                     });
                     return;
@@ -550,7 +583,10 @@ module.exports.warperimage= function(event, context, callback) {
                 var base64 = body.toString('base64');
                 callback(null, {
                     statusCode: 200,
-                    headers: {'Content-Type': 'application/json'},
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
                     body: 'data:' + ctype + ';base64,' + base64
                 });
             });
