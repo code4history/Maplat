@@ -53,21 +53,23 @@ var getDataItem = function(maptype, mapid, callback) {
                 } else {
                     var epoch = content.epoch;
                     var analyzeDataFunc = analyzeData[maptype];
-                    var result = analyzeDataFunc(mapid, content);
-
-                    var putParams = {
-                        TableName: 'gw_data',
-                        Item: {
-                            mapid: dbmapid,
-                            epoch: epoch,
-                            content: content,
-                            object: result
-                        }
-                    };
-                    dynamodb.put(putParams, function(err) {
-                        if (err) console.log(err);
+                    analyzeDataFunc(mapid, content).then(function(result) {
+                        console.log('a');
+                        var putParams = {
+                            TableName: 'gw_data',
+                            Item: {
+                                mapid: dbmapid,
+                                epoch: epoch,
+                                content: content,
+                                object: result
+                            }
+                        };
+                        dynamodb.put(putParams, function(err) {
+                            if (err) console.log(err);
+                        });
+                        console.log('b');
+                        callback(result);
                     });
-                    callback(result);
                 }
             });
         } else {
@@ -181,27 +183,44 @@ analyzeData.stroly = function(mapid, value) {
         mapid: mapid,
         server: server
     };
-    var doc = new Dom().parseFromString(content);
-    var nodes = select('//kml:Folder[@type="illustmap"]', doc);
-    var points = select('./kml:Placemark', nodes[0]);
-    for (var i = 0; i < points.length; i++) {
-        var point = points[i];
-        var illsCoord = parseCoord('illustmap:xy', point);
-        var mercCoord = parseCoord('illustmap:mercator_xy', point);
-        result.coords.push([illsCoord, mercCoord]);
-    }
-    var wh = parseCoord('illustmap:wh', doc);
-    result.width = wh[0];
-    result.height = wh[1];
-    result.maxZoom = Math.ceil(Math.log(Math.max(result.width, result.height) / 256) / Math.log(2));
-    result.title = select('//illustmap:title[@xml:lang="ja"]/text()', doc).toString();
-    var museum = select('//dcterms:contributor[@xml:lang="ja"]/text()', doc).toString();
-    result.attr = result.title + ' - ' + museum;
-    // var sw = parseCoord('illustmap:sw', doc);
-    // var ne = parseCoord('illustmap:ne', doc);
-    // body.home_position = [ (sw[0] + ne[0]) / 2, (sw[1] + ne[1]) / 2 ];
-
-    return result;
+    return Promise.all([
+        new Promise(function(resolve, reject) {
+            var doc = new Dom().parseFromString(content);
+            var nodes = select('//kml:Folder[@type="illustmap"]', doc);
+            var points = select('./kml:Placemark', nodes[0]);
+            for (var i = 0; i < points.length; i++) {
+                var point = points[i];
+                var illsCoord = parseCoord('illustmap:xy', point);
+                var mercCoord = parseCoord('illustmap:mercator_xy', point);
+                result.coords.push([illsCoord, mercCoord]);
+            }
+            var wh = parseCoord('illustmap:wh', doc);
+            result.width = wh[0];
+            result.height = wh[1];
+            result.maxZoom = Math.ceil(Math.log(Math.max(result.width, result.height) / 256) / Math.log(2));
+            result.title = select('//illustmap:title[@xml:lang="ja"]/text()', doc).toString();
+            var museum = select('//dcterms:contributor[@xml:lang="ja"]/text()', doc).toString();
+            result.attr = result.title + ' - ' + museum;
+            resolve();
+        }),
+        new Promise(function(resolve, reject) {
+            var reqOpt = {
+                url: 'https://' + server + 's3.illustmap.org/' + mapid + '_t.jpg',
+                method: 'GET',
+                encoding: null
+            };
+            request(reqOpt, function(err, resp, body) {
+                gm(body).resize(52, 52)
+                    .toBuffer('PNG', function(err, buffer) {
+                        var base64 = buffer.toString('base64');
+                        result.thumbnail = 'data:image/png;base64,' + base64;
+                        resolve();
+                    });
+            });
+        })
+    ]).then(function() {
+        return result;
+    });
 };
 
 analyzeData.drumsey = function(mapid, value) {
@@ -216,30 +235,42 @@ analyzeData.drumsey = function(mapid, value) {
     var doc = new Dom().parseFromString(xhtml);
 
     var scripts = select('//xhtml:script[@type="text/javascript" and @charset="utf-8"]/text()', doc).toString();
-    console.log(scripts);
     var res = _eval(scripts + ' exports.georef = georef; exports.attr = ATTRIBUTION;');
-    console.log(res);
-    var points = res.georef.control_points;
-    for (var i = 0; i < points.length; i++) {
-        var point = points[i];
-        var illsCoord = [point.pixel_x, point.pixel_y];
-        var mercCoord = ol.proj.fromLonLat([point.longitude,point.latitude]);
-        result.coords.push([illsCoord, mercCoord]);
-    }
-    options.width = georef.pyramid.width;
-    options.height = georef.pyramid.height;
-    options.title = georef.title;
-    options.attributions = [
-        new ol.Attribution({
-            html: ATTRIBUTION
+
+    return Promise.all([
+        new Promise(function(resolve, reject) {
+            var points = res.georef.control_points;
+            for (var i = 0; i < points.length; i++) {
+                var point = points[i];
+                var illsCoord = [point.pixel_x, point.pixel_y];
+                var mercCoord = [point.longitude * 6378137 * Math.PI / 180,
+                    6378137 * Math.log(Math.tan(Math.PI / 360 * (90 + point.latitude)))];
+                result.coords.push([illsCoord, mercCoord]);
+            }
+            result.width = res.georef.pyramid.width;
+            result.height = res.georef.pyramid.height;
+            result.maxZoom = Math.ceil(Math.log(Math.max(result.width, result.height) / 256) / Math.log(2));
+            result.title = res.georef.title;
+            result.attr = res.attr;
+            result.tile_url = res.georef.pyramid.url;
+            resolve();
+        }),
+        new Promise(function(resolve, reject) {
+            var reqOpt = {
+                url: res.georef.thumbnail_url + '=s52',
+                method: 'GET',
+                encoding: null
+            };
+            request(reqOpt, function(err, resp, body) {
+                var ctype = resp.headers['content-type'];
+                var base64 = body.toString('base64');
+                result.thumbnail = 'data:' + ctype + ';base64,' + base64;
+                resolve();
+            });
         })
-    ];
-    options.home_position = georef.center;
-
-
-
-
-    return result;
+    ]).then(function() {
+        return result;
+    });
 };
 
 analyzeData.warper = function(mapid, value) {
@@ -249,34 +280,58 @@ analyzeData.warper = function(mapid, value) {
         maptype: 'warper',
         mapid: mapid
     };
-    /* var doc = new Dom().parseFromString(content);
-    var nodes = select('//script[@type="text/javascript"]', doc);
-    for (var i = 0; i < nodes.length; i++) {
-        var node = nodes[i];
-        console.log(node.toString());
-    }*/
-    var res = content.match(/var image_width = ([0-9]+)/m);
-    result.width = parseInt(res[1]);
-    res = content.match(/var image_height = ([0-9]+)/m);
-    result.height = parseInt(res[1]);
-    result.maxZoom = Math.ceil(Math.log(Math.max(result.width, result.height) / 256) / Math.log(2));
-    var re = /populate_gcps\(\s*[0-9]+[,\s]+([\-0-9\.]+)[,\s]+([\-0-9\.]+)[,\s]+([\-0-9\.]+)[,\s]+([\-0-9\.]+)[,\s]+[\-0-9\.]+\);/gm;
-    var re2 = /populate_gcps\(\s*[0-9]+[,\s]+([\-0-9\.]+)[,\s]+([\-0-9\.]+)[,\s]+([\-0-9\.]+)[,\s]+([\-0-9\.]+)[,\s]+[\-0-9\.]+\);/;
-    res = content.match(re);
-    for (var i = 0; i < res.length; i++) {
-        var line = res[i];
-        var match = line.match(re2);
-        console.log(match);
-        result.coords.push([[parseFloat(match[1]), parseFloat(match[2])],
-            [parseFloat(match[3]) * 6378137 * Math.PI / 180,
-                6378137 * Math.log(Math.tan(Math.PI / 360 * (90 + parseFloat(match[4]))))]]);
-    }
-    res = content.match(/var\s+title\s+=\s+'(.+)';/m);
-    console.warn(res[1]);
-    result.title = result.attr = decodeURIComponent(res[1]);
-    // populate_gcps(173950, 1548.5939947773, 204.0613577033, -71.2425076933, 42.3684689865, 10.31041522918661);
-
-    return result;
+    var res = content.match(/<img alt=".+" src="(\/uploads\/[0-9]+\/thumb\/.+\.[a-z]+\?[0-9]+)" \/>/m);
+    var thmbUrl = 'http://mapwarper.net' + res[1];
+    return Promise.all([
+        new Promise(function(resolve, reject) {
+            res = content.match(/var image_width = ([0-9]+)/m);
+            result.width = parseInt(res[1]);
+            res = content.match(/var image_height = ([0-9]+)/m);
+            result.height = parseInt(res[1]);
+            result.maxZoom = Math.ceil(Math.log(Math.max(result.width, result.height) / 256) / Math.log(2));
+            var re = /populate_gcps\(\s*[0-9]+[,\s]+([\-0-9\.]+)[,\s]+([\-0-9\.]+)[,\s]+([\-0-9\.]+)[,\s]+([\-0-9\.]+)[,\s]+[\-0-9\.]+\);/gm;
+            var re2 = /populate_gcps\(\s*[0-9]+[,\s]+([\-0-9\.]+)[,\s]+([\-0-9\.]+)[,\s]+([\-0-9\.]+)[,\s]+([\-0-9\.]+)[,\s]+[\-0-9\.]+\);/;
+            res = content.match(re);
+            for (var i = 0; i < res.length; i++) {
+                var line = res[i];
+                var match = line.match(re2);
+                result.coords.push([[parseFloat(match[1]), parseFloat(match[2])],
+                    [parseFloat(match[3]) * 6378137 * Math.PI / 180,
+                        6378137 * Math.log(Math.tan(Math.PI / 360 * (90 + parseFloat(match[4]))))]]);
+            }
+            res = content.match(/var\s+title\s+=\s+'(.+)';/m);
+            result.title = result.attr = decodeURIComponent(res[1]);
+            resolve();
+        }),
+        new Promise(function(resolve, reject) {
+            console.log(thmbUrl);
+            var reqOpt = {
+                url: thmbUrl,
+                method: 'GET',
+                encoding: null
+            };
+            request(reqOpt, function(err, resp, body) {
+                var width = 52;
+                var height = 52;
+                var gmobj = gm(body);
+                gmobj.size(function (err, size) {
+                    if (size.width > size.height) {
+                        height = size.height * 52 / size.width;
+                    } else {
+                        width = size.width * 52 / size.height;
+                    }
+                    gmobj.resize(width, height)
+                        .toBuffer('PNG', function(err, buffer) {
+                            var base64 = buffer.toString('base64');
+                            result.thumbnail = 'data:image/png;base64,' + base64;
+                            resolve();
+                        });
+                });
+            });
+        })
+    ]).then(function() {
+        return result;
+    });
 };
 
 module.exports.strolydata = function(event, context, callback) {
@@ -367,6 +422,79 @@ module.exports.drumseydata = function(event, context, callback) {
     });
 };
 
+module.exports.drumseyimage= function(event, context, callback) {
+    var mapid = event.pathParameters.mapid;
+    var zoom = parseInt(event.pathParameters.zoom);
+    var x = parseInt(event.pathParameters.x);
+    var y = parseInt(event.pathParameters.y);
+    setDynamoClient(event);
+    getDataItem('drumsey', mapid, function(content) {
+        var width = parseInt(content.width);
+        var height = parseInt(content.height);
+        var maxZoom = parseInt(content.maxZoom);
+        var tileUrl = content.tile_url;
+        var needTransCover = ((x+1) * Math.pow(2, maxZoom - zoom) * 256 > width || (y+1) * Math.pow(2, maxZoom - zoom) * 256 > height);
+        var err = content == 'Err';
+        if (err) {
+            callback(null, {
+                statusCode: 404,
+                headers: {'Content-Type': 'application/json'},
+                body: 'Image not found'
+            });
+        } else {
+            var lz = zoom;
+            var lx = x;
+            var ly = y;
+            var level = maxZoom - lz;
+            var powLevel = Math.pow(2, level);
+            var left = lx * 256 * powLevel;
+            var top = ly * 256 * powLevel;
+            var right = left + 256 * powLevel;
+            var bottom = top + 256 * powLevel;
+            if (right > width) right = width;
+            if (bottom > height) bottom = height;
+            var xcenter = (left + right) / 2;
+            var ycenter = (top + bottom) / 2;
+            var lwidth = Math.floor((right - left) / powLevel);
+            var lheight = Math.floor((bottom - top) / powLevel);
+            var url = tileUrl + '&x=' + xcenter + '&y=' + ycenter + '&width=' + lwidth + '&height=' + lheight + '&level=' + level;
+            console.log(url);
+            var reqOpt = {
+                url: url,
+                method: 'GET',
+                encoding: null
+            };
+            request(reqOpt, function(err, resp, body) {
+                var ctype = resp.headers['content-type'];
+                new Promise(function(resolve, reject) {
+                    if (needTransCover) {
+                        gm(body).background('transparent').extent(256, 256)
+                            .toBuffer('PNG', function(err, buffer) {
+                                ctype = 'image/png';
+                                resolve(buffer.toString('base64'));
+                            });
+                    } else {
+                        resolve(body.toString('base64'));
+                    }
+                }).then(function(base64) {
+                    if (err || base64.match(/^PD94bWwgdmVyc2lvb/)) {
+                        callback(null, {
+                            statusCode: 404,
+                            headers: {'Content-Type': 'application/json'},
+                            body: 'Image not found'
+                        });
+                        return;
+                    }
+                    callback(null, {
+                        statusCode: 200,
+                        headers: {'Content-Type': 'application/json'},
+                        body: 'data:' + ctype + ';base64,' + base64
+                    });
+                });
+            });
+        }
+    });
+};
 
 module.exports.warperdata = function(event, context, callback) {
     var mapid = event.pathParameters.mapid;
