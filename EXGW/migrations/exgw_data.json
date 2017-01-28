@@ -1,0 +1,18 @@
+{
+    "Table": {
+        "TableName": "exgw_data_dev",
+        "KeySchema": [{
+            "AttributeName": "mapid",
+            "KeyType": "HASH"
+        }],
+        "AttributeDefinitions": [{
+            "AttributeName": "mapid",
+            "AttributeType": "S"
+        }],
+        "ProvisionedThroughput": {
+            "ReadCapacityUnits": 1,
+            "WriteCapacityUnits": 1
+        }
+    },
+    "Seeds": []
+}

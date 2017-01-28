@@ -12,7 +12,6 @@ define(['ol-custom'], function(ol) {
     var canvBase = '<canvas width="' + tileSize + '" height="' + tileSize + '" src="' + transPng + '"></canvas>';
 
     ol.source.HistMap = function(optOptions) {
-        var self = this;
         var options = optOptions || {};
         options.wrapX = false;
         if (options.mapID) {
@@ -52,6 +51,32 @@ define(['ol-custom'], function(ol) {
         ol.source.XYZ.call(this, options);
         ol.source.setCustomInitialize(this, options);
 
+        this.setupTileLoadFunction();
+    };
+
+    ol.inherits(ol.source.HistMap, ol.source.XYZ);
+
+    ol.source.HistMap.getTransPng = function() {
+        return transPng;
+    };
+
+    ol.source.HistMap.createAsync = function(options) {
+        var algorythm = options.maptype != 'maplat' ? 'external' : options.algorythm || 'tin';
+        return new Promise(function(resolve, reject) {
+            require(['histmap_' + algorythm], resolve);
+        }).then(function() {
+            return ol.source['HistMap_' + algorythm].createAsync(options)
+                .then(function(obj) {
+                    return new Promise(function(resolve, reject) {
+                        obj.mapSize2MercSize(resolve);
+                    });
+                });
+        });
+    };
+    ol.source.setCustomFunction(ol.source.HistMap);
+
+    ol.source.HistMap.prototype.setupTileLoadFunction = function(xy) {
+        var self = this;
         this.setTileLoadFunction((function() {
             var numLoadingTiles = 0;
             var tileLoadFn = self.getTileLoadFunction();
@@ -92,26 +117,6 @@ define(['ol-custom'], function(ol) {
         })());
     };
 
-    ol.inherits(ol.source.HistMap, ol.source.XYZ);
-
-    ol.source.HistMap.getTransPng = function() {
-        return transPng;
-    };
-
-    ol.source.HistMap.createAsync = function(options) {
-        var algorythm = options.maptype != 'maplat' ? options.maptype : options.algorythm || 'tin';
-        return new Promise(function(resolve, reject) {
-            require(['histmap_' + algorythm], resolve);
-        }).then(function() {
-            return ol.source['HistMap_' + algorythm].createAsync(options)
-                .then(function(obj) {
-                    return new Promise(function(resolve, reject) {
-                        obj.mapSize2MercSize(resolve);
-                    });
-                });
-        });
-    };
-    ol.source.setCustomFunction(ol.source.HistMap);
     ol.source.HistMap.prototype.xy2MercAsync = function(xy) {
         var convertXy = this.histMapCoords2Xy(xy);
         return this.xy2MercAsync_(convertXy);

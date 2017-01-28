@@ -37,7 +37,7 @@
             deps: ['jquery']
         },
         'app': {
-            deps: ['histmap', 'histmap_tps', 'histmap_tin', 'histmap_stroly', 'histmap_drumsey']
+            deps: ['histmap', 'histmap_tps', 'histmap_tin', 'histmap_external']
         }
     }
 })
