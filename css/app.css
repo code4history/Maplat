@@ -131,6 +131,7 @@ html,body {
 }
 
 .slick-item div {
+    font-size: 1em;
     position: absolute;
     right: .5em;
     bottom: .5em;
@@ -139,6 +140,9 @@ html,body {
     z-index: 1;
     color: white;
     background-color: rgba(32,32,32,0.5);
+}
+.slick-item div.minimize {
+    font-size: .8em;
 }
 
 .ol-attribution {
