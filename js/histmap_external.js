@@ -27,7 +27,8 @@ define(['histmap_tin'], function(ol) {
         }).then(function(dat) {
             options.width = dat.width;
             options.height = dat.height;
-            options.title = dat.title;
+            options.title = options.label = dat.title;
+
             options.attributions = [
                 new ol.Attribution({
                     html: dat.attr

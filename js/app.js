@@ -16,6 +16,63 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
         });
     };
     $('body').nodoubletapzoom();
+    var ellips = function() {
+        var omitMark = '…';
+        var omitLine = 2;
+        var stringSplit = function(element) {
+            var splitArr = element.text().split('');
+            var joinString = '';
+            for (var i = 0; i < splitArr.length; i++) {
+                joinString += '<span>' + splitArr[i] + '</span>';
+            }
+            joinString += '<span class="omit-mark">' + omitMark + '</span>';
+            element.html(joinString);
+        };
+        var omitCheck = function(element) {
+            var thisSpan = element.children('span');
+            var omitSpan = element.children('.omit-mark');
+            var lineCount = 0;
+            var omitCount;
+
+            if(omitLine <= 0) {
+                return;
+            }
+
+            thisSpan.hide();
+            thisSpan.eq(0).show();
+            omitSpan.show();
+            var divHeight = element.height();
+            var minimizeFont = false;
+            for (var i = 1; i < thisSpan.length - 1; i++) {
+                thisSpan.eq(i).show();
+                if(element.height() > divHeight) {
+                    if (!minimizeFont) {
+                        minimizeFont = true;
+                        element.addClass('minimize');
+                    } else {
+                        divHeight = element.height();
+                        lineCount++;
+                    }
+                }
+                if(lineCount >= omitLine) {
+                    omitCount = i - 2;
+                    break;
+                }
+                if(i >= thisSpan.length - 2) {
+                    omitSpan.hide();
+                    return;
+                }
+            }
+            for (var i = omitCount; i < thisSpan.length - 1; i++) {
+                thisSpan.eq(i).hide();
+            }
+        };
+        for (var i = 0; i < $('.slick-item div').length; i++) {
+            var element = $('.slick-item div').eq(i);
+            stringSplit(element);
+            omitCheck(element);
+        }
+    };
     return function(appOption) {
         var mapType = appOption.stroly ? 'stroly' : appOption.drumsey ? 'drumsey' : appOption.warper ? 'warper' : null;
         var appid = appOption.appid || (mapType ? appOption[mapType] : 'sample');
@@ -243,6 +300,7 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
                     cache.push(source);
                     cacheHash[source.sourceID] = source;
                 }
+                ellips();
 
                 $('.slick-item').on('click', function() {
                     if (!clickAvoid) {
