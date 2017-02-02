@@ -8,8 +8,35 @@ define(['ol-custom'], function(ol) {
         'AAAAAAAAAAAAABgBDwABHHIJwwAAAABJRU5ErkJggg==';
     // タイル画像サイズ
     var tileSize = 256;
+    var i18n;
+    var t;
     // canvasのテンプレート
     var canvBase = '<canvas width="' + tileSize + '" height="' + tileSize + '" src="' + transPng + '"></canvas>';
+    var baseDict = {
+        osm: {
+            mapID: 'osm',
+            label: 'OSM(Now)',
+            maptype: 'base'
+        },
+        gsi: {
+            mapID: 'gsi',
+            label: 'GSI Map',
+            attr: 'The Geospatial Information Authority of Japan',
+            maptype: 'base',
+            url: 'https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png'
+        }
+    };
+    var i18nData = {
+        'OSM(Now)': {
+            ja: 'OSM(現在)'
+        },
+        'The Geospatial Information Authority of Japan': {
+            ja: '地理院地図'
+        },
+        'GSI Map': {
+            ja: '地理院'
+        }
+    };
 
     ol.source.HistMap = function(optOptions) {
         var options = optOptions || {};
@@ -60,12 +87,57 @@ define(['ol-custom'], function(ol) {
         return transPng;
     };
 
-    ol.source.HistMap.createAsync = function(options) {
+    ol.source.HistMap.setI18n = function(i18n_, t_) {
+        i18n = i18n_;
+        t = t_;
+        Object.keys(i18nData).map(function(key) {
+            i18n.addResource('en', 'translation', key, key);
+            var resource = i18nData[key];
+            Object.keys(resource).map(function(lng) {
+                i18n.addResource(lng, 'translation', key, resource[lng]);
+            });
+        });
+    };
+
+    ol.source.HistMap.createAsync = function(options, commonOptions) {
+        if (typeof options === 'string') {
+            options = baseDict[options];
+        }
+        options = Object.assign(options, commonOptions);
+        if (!options.maptype) options.maptype = 'maplat';
+        if (!options.algorythm) options.algorythm = 'tin';
+        options.label = t(options.label || options.year);
+        if (options.attr) {
+            options.attributions = [
+                new ol.Attribution({
+                    html: t(options.attr)
+                })
+            ];
+        }
+        if (options.maptype == 'base' || options.maptype == 'overlay') {
+            options.sourceID = options.mapID;
+            var targetSrc = options.maptype == 'base' ? ol.source.NowMap : ol.source.TmsMap;
+            return targetSrc.createAsync(Object.assign({
+                url: options.url,
+                sourceID: options.sourceID,
+                label: options.label
+            }, options));
+        }
+
         var algorythm = options.maptype != 'maplat' ? 'external' : options.algorythm || 'tin';
         return new Promise(function(resolve, reject) {
             require(['histmap_' + algorythm], resolve);
         }).then(function() {
-            return ol.source['HistMap_' + algorythm].createAsync(options)
+            return ol.source['HistMap_' + algorythm].createAsync(Object.assign({
+                title: options.title || options.era,
+                mapID: options.mapID,
+                width: options.width,
+                height: options.height,
+                maptype: options.maptype,
+                algorythm: options.algorythm,
+                sourceID: options.sourceID || options.mapID + ':' + options.maptype + ':' + options.algorythm,
+                label: options.label
+            }, options))
                 .then(function(obj) {
                     return new Promise(function(resolve, reject) {
                         obj.mapSize2MercSize(resolve);

@@ -87,31 +87,23 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
             $('.opacity-slider input').prop('disabled', true);
         }
         var appPromise = mapType ?
-            function(t) {
+            new Promise(function(resolve, reject) {
                 var appData = {
                     fake_gps: false,
                     default_zoom: 17,
-                    now_year: 2017,
-                    now_era: '現在',
                     sources: [
-                        {
-                            attr: t('app.gsi_attr'),
-                            label: t('app.gsi_label'),
-                            mapID: 'gsi',
-                            maptype: 'base',
-                            url: 'https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png'
-                        },
                         {
                             mapID: appid,
                             maptype: mapType,
-                            algorythm: 'tin',
-                            label: t('app.histotical_label')
-                        }
+                            algorythm: 'tin'
+                        },
+                        'gsi',
+                        'osm'
                     ],
                     pois: []
                 };
-                return [t, appData];
-            } : new Promise(function(resolve, reject) {
+                resolve(appData);
+            }) : new Promise(function(resolve, reject) {
                 $.get('json/' + appid + '.json', function(appData) {
                     resolve(appData);
                 }, 'json').fail(function() {
@@ -129,18 +121,17 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
             }, function(err, t) {
                 ji18n.init(i18n, $);
                 $('body').localize();
-                resolve(t);
+                resolve([t, i18n]);
             });
         });
 
-        var promises = mapType ?
-            i18nPromise.then(appPromise) :
-            Promise.all([i18nPromise, appPromise]);
-
+        var promises = Promise.all([i18nPromise, appPromise]);
 
         promises.then(function(result) {
             var appData = result[1];
-            var t = result[0];
+            var i18n = result[0][1];
+            var t = result[0][0];
+            ol.source.HistMap.setI18n(i18n, t);
 
             $('#all').show();
             $('#loadWait').modal();
@@ -160,8 +151,7 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
             var appName = appData.app_name;
             var fakeGps = appOption.fake ? appData.fake_gps : false;
             var fakeCenter = appOption.fake ? appData.fake_center : false;
-            var fakeRadius = appOption.fake ? appData.fake_radius :false;
-            var makeBinary = appData.make_binary;
+            var fakeRadius = appOption.fake ? appData.fake_radius : false;
             var currentPosition = null;
             var mapObject = null;
             var backMap = null;
@@ -189,7 +179,6 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
             $('title').html(appName);
 
             var dataSource = appData.sources;
-            var dataHash = {};
 
             var sourcePromise = [];
             var commonOption = {
@@ -200,64 +189,18 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
                 merc_zoom: defZoom,
                 fake_gps: fakeGps ? fakeRadius : false
             };
-            for (var i = 0; i <= dataSource.length; i++) {
-                if (i == dataSource.length) {
-                    sourcePromise.push(ol.source.NowMap.createAsync(Object.assign({
-                        sourceID: 'osm',
-                        label: t('app.osm_now')
-                    }, commonOption)));
-                } else {
-                    var data = dataSource[i];
-                    if (!data.maptype) data.maptype = 'maplat';
-                    if (!data.algorythm) data.algorythm = appOption.algorythm || 'tin';
-                    (function(data) {
-                        if (data.maptype == 'base' || data.maptype == 'overlay') {
-                            data.sourceID = data.mapID;
-                            var targetSrc = data.maptype == 'base' ? ol.source.NowMap : ol.source.TmsMap;
-                            sourcePromise.push(targetSrc.createAsync(Object.assign({
-                                attributions: [
-                                    new ol.Attribution({
-                                        html: data.attr
-                                    })
-                                ],
-                                url: data.url,
-                                sourceID: data.sourceID,
-                                label: data.label || data.year
-                            }, commonOption)));
-                        } else {
-                            data.sourceID = data.mapID + ':' + data.maptype + ':' + data.algorythm;
-                            sourcePromise.push(new Promise(function(resolve, reject) {
-                                dataHash[data.sourceID] = data;
-                                var option = Object.assign({
-                                    attributions: [
-                                        new ol.Attribution({
-                                            html: data.attr
-                                        })
-                                    ],
-                                    title: data.title || data.era,
-                                    mapID: data.mapID,
-                                    width: data.width,
-                                    height: data.height,
-                                    maptype: data.maptype,
-                                    algorythm: data.algorythm,
-                                    sourceID: data.sourceID,
-                                    make_binary: makeBinary,
-                                    label: data.label || data.year
-                                }, commonOption);
-                                resolve(ol.source.HistMap.createAsync(option));
-                            }));
-                        }
-                    })(data);
-                }
+            for (var i = 0; i < dataSource.length; i++) {
+                var option = dataSource[i];
+                sourcePromise.push(ol.source.HistMap.createAsync(option, commonOption));
             }
 
             Promise.all(sourcePromise).then(function(sources) {
                 $('#loadWait').modal('hide');
 
                 if (mapType) {
-                    homePos = sources[1].home_position;
-                    defZoom = sources[1].merc_zoom;
-                    $('title').html(sources[1].title);
+                    homePos = sources[0].home_position;
+                    defZoom = sources[0].merc_zoom;
+                    $('title').html(sources[0].title);
                 }
 
                 var cache = [];
