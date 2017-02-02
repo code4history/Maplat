@@ -5,8 +5,6 @@
     "fake_radius" : 10,
     "home_position" : [141.149989,39.699952],
     "default_zoom" : 17,
-    "now_year" : 2016,
-    "now_era" : "現在",
     "sources" : [
         {
             "era" : "正保城絵図 南部領盛岡平城絵図 (正保元年)",
@@ -22,7 +20,9 @@
             "width" : 6144,
             "height" : 4096,
             "year" : 1735
-        }
+        },
+        "gsi",
+        "osm"
     ], 
     "pois" :[
         {

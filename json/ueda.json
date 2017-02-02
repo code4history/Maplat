@@ -5,8 +5,6 @@
     "fake_radius" : 10,
     "home_position" : [ 138.244582, 36.403664 ],
     "default_zoom" : 17,
-    "now_year" : 2016,
-    "now_era" : "現在",
     "sources" : [
         {
             "era" : "仙石氏在城時代上田城下町図 元禄15年",
@@ -36,7 +34,9 @@
             "width" : 5516,
             "height" : 5459,
             "year" : 1867
-        }
+        },
+        "gsi",
+        "osm"
     ], 
     "pois" :[
         {

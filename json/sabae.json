@@ -5,8 +5,6 @@
     "fake_radius" : 10,
     "home_position" : [136.188948,35.943469],
     "default_zoom" : 17,
-    "now_year" : 2016,
-    "now_era" : "現在",
     "sources" : [
         {
             "era" : "間部家入封以前の鯖江圖",
@@ -50,7 +48,9 @@
             "width" : 1655,
             "height" : 2440,
             "year" : 2002
-        }
+        },
+        "gsi",
+        "osm"
     ], 
     "pois" :[
         {
