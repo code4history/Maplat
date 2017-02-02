@@ -5,16 +5,7 @@
     "fake_radius" : 10,
     "home_position" : [141.149989,39.699952],
     "default_zoom" : 17,
-    "now_year" : 2016,
-    "now_era" : "現在",
     "sources" : [
-        {
-            "attr" : "国土地理院",
-            "label" : "地理院",
-            "mapID" : "gsi",
-            "maptype" : "base",
-            "url" : "https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png"
-        },
         {
             "attr" : "正保城絵図 南部領盛岡平城絵図 (正保元年) 国立公文書館",
             "label" : "1644 (TMS)",
@@ -51,7 +42,9 @@
             "width"     : 6144,
             "height"    : 4096,
             "year"      : 1735
-        }
+        },
+        "gsi",
+        "osm"
     ], 
     "pois" :[
         {

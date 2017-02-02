@@ -36,8 +36,10 @@
                 if (ring[0][0] == ring[ring.length-1][0] && ring[0][1] == ring[ring.length-1][1]) ring = ring.slice(0, ring.length-1);
 
                 for (var i = 0, j = ring.length - 1; i < ring.length; j = i++) {
-                    var xi = ring[i][0], yi = ring[i][1];
-                    var xj = ring[j][0], yj = ring[j][1];
+                    var xi = ring[i][0];
+                    var yi = ring[i][1];
+                    var xj = ring[j][0];
+                    var yj = ring[j][1];
                     var onBoundary = (pt[1] * (xi - xj) + yi * (xj - pt[0]) + yj * (pt[0] - xi) == 0) &&
                         ((xi - pt[0]) * (xj - pt[0]) <= 0) && ((yi - pt[1]) * (yj - pt[1]) <= 0);
                     if (onBoundary) return !ignoreBoundary;
