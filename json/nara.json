@@ -7,6 +7,14 @@
     "default_zoom" : 17,
     "sources" : [
         {
+            "era" : "和州奈良之図 (1844年)",
+            "attr" : "和州奈良之図 (1844年) 絵図屋庄八 国土地理院 古地図コレクション",
+            "mapID" : "nara_ezuya",
+            "width" : 16242,
+            "height" : 12368,
+            "year" : 1844
+        },
+        {
             "era" : "奈良市鳥瞰図 (1868年以降)",
             "attr" : "奈良市鳥瞰図 (1868年以降) Cartography Associates CC-BY-NC-SA 3.0",
             "mapID" : "NaraOldMap1",
