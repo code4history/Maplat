@@ -379,7 +379,7 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
 
                                     to.merc2XyAsync(merc).then(function(xy) {
                                         if (to.insideCheckHistMapCoords(xy)) {
-                                            mapObject.setMarker(xy, {'datum': datum});
+                                            mapObject.setMarker(xy, {'datum': datum}, datum.icon);
                                         }
                                     });
                                 })(pois[i]);
@@ -405,7 +405,8 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
 
                 function showInfo(data) {
                     $('#poi_name').text(data.name);
-                    $('#poi_img').attr('src', 'img/' + data.image);
+                    $('#poi_img').attr('src', 
+                        data.image.match(/^http/) ? data.image : 'img/' + data.image);
                     $('#poi_address').text(data.address);
                     $('#poi_desc').html(data.desc.replace(/\n/g, '<br>'));
                     $('#poi_info').modal();

@@ -513,6 +513,16 @@ define(['ol3'], function(ol) {
         data['geometry'] = new ol.geom.Point(xy);
         var iconFeature = new ol.Feature(data);
         if (!markerStyle) markerStyle = markerDefaultStyle;
+        else if (typeof markerStyle == 'string') {
+            markerStyle = new ol.style.Style({
+                image: new ol.style.Icon(({
+                    anchor: [0.5, 1.0],
+                    anchorXUnits: 'fraction',
+                    anchorYUnits: 'fraction',
+                    src: markerStyle
+                }))
+            });
+        }
         iconFeature.setStyle(markerStyle);
         src.addFeature(iconFeature);
     };
