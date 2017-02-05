@@ -257,12 +257,15 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
                     clickAvoid = false;
                 });
 
+                var initial = cache[cache.length - 1];
                 from = cache.reduce(function(prev, curr) {
-                    if (prev) return prev;
-                    if (curr instanceof ol.source.HistMap) return curr;
+                    if (prev) {
+                        return !(prev instanceof ol.source.HistMap) && curr !== initial ? curr : prev;
+                    }
+                    if (curr !== initial) return curr;
                     return prev;
                 }, null);
-                changeMap(true, 'osm');
+                changeMap(true, initial.sourceID);
 
                 function convertParametersFromCurrent(to, callback) {
                     var view = mapObject.getView();
@@ -365,9 +368,11 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
                                 view.setZoom(size[1]);
                                 view.setRotation(size[2]);
                             } else {
-                                $('#gpsDialogTitle').text(t('app.out_of_map'));
-                                $('#gpsDialogBody').text(t('app.out_of_map_area'));
-                                $('#gpsDialog').modal();
+                                if (!init) {
+                                    $('#gpsDialogTitle').text(t('app.out_of_map'));
+                                    $('#gpsDialogBody').text(t('app.out_of_map_area'));
+                                    $('#gpsDialog').modal();
+                                }
                                 to.goHome();
                             }
                             to.setGPSMarker(currentPosition, true);
@@ -405,7 +410,7 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
 
                 function showInfo(data) {
                     $('#poi_name').text(data.name);
-                    $('#poi_img').attr('src', 
+                    $('#poi_img').attr('src',
                         data.image.match(/^http/) ? data.image : 'img/' + data.image);
                     $('#poi_address').text(data.address);
                     $('#poi_desc').html(data.desc.replace(/\n/g, '<br>'));
