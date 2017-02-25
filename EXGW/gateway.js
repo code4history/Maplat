@@ -192,7 +192,7 @@ analyzeData.stroly = function(mapid, value) {
                 var mercCoord = parseCoord('illustmap:mercator_xy', point);
                 result.coords.push([illsCoord, mercCoord]);
             }
-            var wh = parseCoord('illustmap:wh', doc);
+            var wh = parseCoord('kml:Document/illustmap:wh', doc);
             result.width = wh[0];
             result.height = wh[1];
             result.maxZoom = Math.ceil(Math.log(Math.max(result.width, result.height) / 256) / Math.log(2));
