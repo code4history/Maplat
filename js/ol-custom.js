@@ -125,6 +125,13 @@ define(['ol3'], function(ol) {
                 }
                 var self = this;
                 var source = this.getMap().getLayers().item(0).getSource();
+                if (!source) {
+                    var transform = 'rotate(0rad)';
+                    self.label_.style.msTransform = transform;
+                    self.label_.style.webkitTransform = transform;
+                    self.label_.style.transform = transform;
+                    return;
+                }
                 source.size2MercsAsync().then(function(mercs) {
                     var rot = source.mercs2MercRotation(mercs);
                     var transform = 'rotate(' + rot + 'rad)';
@@ -181,17 +188,6 @@ define(['ol3'], function(ol) {
 
     ol.source.setCustomFunction = function(target) {
         target.prototype.getMap = function() {
-            if (this._map) {
-                return this._map;
-            }
-
-            this._map = new ol.MaplatMap({
-                source: this,
-                div: this.map_option.div,
-                center: this.map_option.default_center,
-                zoom: this.map_option.default_zoom,
-                rotation: this.map_option.default_rotation
-            });
             return this._map;
         };
 

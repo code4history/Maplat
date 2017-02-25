@@ -215,8 +215,10 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
                         source.home_position = homePos;
                         source.merc_zoom = defZoom;
                     }
-                    if (!mapObject && !(source instanceof ol.source.TmsMap)) {
-                        mapObject = source.getMap();
+                    if (!mapObject) {
+                        mapObject = new ol.MaplatMap({
+                            div: mapDiv
+                        });
                         mapObject.on('gps_request', function() {
                             $('#gpsWait').modal();
                         });

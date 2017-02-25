@@ -24,3 +24,7 @@ Documentation is undergoing.
 * https://code4nara.github.io/Maplat/?appid=nara&overlay=true (奈良市版)
 
 成果物を他人がコンテンツ作れる形でまとめられていないですが、おいおい整理します。
+
+# Collaboration demo with Jizo project
+Code 4 NaraからUrban data challenge 2016に応募中のMaplatと[地蔵プロジェクト](https://github.com/code4nara/JizoProject/wiki)をコラボレーションさせたデモを作りました。
+* https://code4nara.github.io/Maplat/?appid=jizoapp&overlay=true
