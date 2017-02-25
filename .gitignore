@@ -4,3 +4,5 @@ test*
 .serverless
 *.log
 warperpass.json
+s3bucket.json
+EXGW/s3

@@ -15,7 +15,7 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
             $(e.target).trigger('click');
         });
     };
-    $('body').nodoubletapzoom();
+    $('#map_div').nodoubletapzoom();
     var ellips = function() {
         var omitMark = '…';
         var omitLine = 2;
@@ -92,13 +92,13 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
                     fake_gps: false,
                     default_zoom: 17,
                     sources: [
+                        'gsi',
+                        'osm',
                         {
                             mapID: appid,
                             maptype: mapType,
                             algorythm: 'tin'
-                        },
-                        'gsi',
-                        'osm'
+                        }
                     ],
                     pois: []
                 };
@@ -155,23 +155,22 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
             var currentPosition = null;
             var backMap = null;
             var mapDiv = 'map_div';
+            var frontDiv = mapDiv + '_front';
+            $('#' + mapDiv).prepend('<div id="' + frontDiv + '" class="map" style="top:0; left:0; right:0; bottom:0; ' +
+                'position:absolute;"></div>');
+            var mapObject = new ol.MaplatMap({
+                div: frontDiv
+            });
             var backDiv = null;
             if (overlay) {
                 backDiv = mapDiv + '_back';
-                var newDiv = mapDiv + '_front';
-                $('#' + mapDiv).prepend('<div id="' + newDiv + '" class="map" style="top:0; left:0; right:0; bottom:0; ' +
-                    'position:absolute;"></div>');
                 $('#' + mapDiv).prepend('<div id="' + backDiv + '" class="map" style="top:0; left:0; right:0; bottom:0; ' +
                     'position:absolute;"></div>');
-                mapDiv = newDiv;
                 backMap = new ol.MaplatMap({
                     off_control: true,
                     div: backDiv
                 });
             }
-            var mapObject = new ol.MaplatMap({
-                div: mapDiv
-            });
             mapObject.on('gps_request', function() {
                 $('#gpsWait').modal();
             });
@@ -206,9 +205,6 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
 
             var sourcePromise = [];
             var commonOption = {
-                map_option: {
-                    div: mapDiv
-                },
                 home_position: homePos,
                 merc_zoom: defZoom,
                 fake_gps: fakeGps ? fakeRadius : false
