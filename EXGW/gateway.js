@@ -15,7 +15,11 @@ var parse5 = require('parse5');
 var xmlser = require('xmlserializer');
 var _eval = require('eval');
 var warperpass = require('./warperpass.json');
+var s3bucket = require('./s3bucket.json').bucket;
+var bucket = s3bucket.bucket;
+var s3url = s3bucket.url_template;
 var dynamodb = null;
+var s3 = null;
 
 var setDynamoClient = function(event) {
     if ('isOffline' in event && event.isOffline) {
@@ -23,8 +27,15 @@ var setDynamoClient = function(event) {
             region: 'localhost',
             endpoint: 'http://localhost:8000'
         });
+        s3 = new AWS.S3({
+            s3ForcePathStyle: true,
+            endpoint: new AWS.Endpoint('http://localhost:8800'),
+        });
+        bucket = 'local-bucket';
+        s3url = '//localhost:8888/EXGW/s3/local-bucket/{{key}}/.dummys3_content';
     } else {
         dynamodb = new AWS.DynamoDB.DocumentClient();
+        s3 = new AWS.S3();
     }
     dynamodb.stage = event.requestContext.stage;
 };
@@ -210,9 +221,17 @@ analyzeData.stroly = function(mapid, value) {
             request(reqOpt, function(err, resp, body) {
                 gm(body).resize(52, 52)
                     .toBuffer('PNG', function(err, buffer) {
-                        var base64 = buffer.toString('base64');
-                        result.thumbnail = 'data:image/png;base64,' + base64;
-                        resolve();
+                        s3.putObject({
+                            Bucket: bucket,
+                            Key: 'stroly/' + mapid,
+                            Body: buffer,
+                            ContentType: 'image/png',
+                            ACL: 'public-read'
+                        },
+                        function(err) {
+                            result.thumbnail = s3url.replace('{{key}}', 'stroly/' + mapid);
+                            resolve();
+                        });
                     });
             });
         })
@@ -261,9 +280,17 @@ analyzeData.drumsey = function(mapid, value) {
             };
             request(reqOpt, function(err, resp, body) {
                 var ctype = resp.headers['content-type'];
-                var base64 = body.toString('base64');
-                result.thumbnail = 'data:' + ctype + ';base64,' + base64;
-                resolve();
+                s3.putObject({
+                    Bucket: bucket,
+                    Key: 'drumsey/' + mapid,
+                    Body: body,
+                    ContentType: ctype,
+                    ACL: 'public-read'
+                },
+                function(err) {
+                    result.thumbnail = s3url.replace('{{key}}', 'drumsey/' + mapid);
+                    resolve();
+                });
             });
         })
     ]).then(function() {
@@ -319,9 +346,17 @@ analyzeData.warper = function(mapid, value) {
                     }
                     gmobj.resize(width, height)
                         .toBuffer('PNG', function(err, buffer) {
-                            var base64 = buffer.toString('base64');
-                            result.thumbnail = 'data:image/png;base64,' + base64;
-                            resolve();
+                            s3.putObject({
+                                Bucket: bucket,
+                                Key: 'warper/' + mapid,
+                                Body: buffer,
+                                ContentType: 'image/png',
+                                ACL: 'public-read'
+                            },
+                            function(err) {
+                                result.thumbnail = s3url.replace('{{key}}', 'warper/' + mapid);
+                                resolve();
+                            });
                         });
                 });
             });

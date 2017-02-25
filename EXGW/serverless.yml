@@ -20,11 +20,16 @@ custom:
       migration: true
     migration:
       dir: ./migrations
+  s3:
+    port: 8800
+    buckets:
+      - local-bucket
+    directory: ./s3
   stage: "${opt:stage, self:provider.stage}"
 plugins: 
  - serverless-dynamodb-local
  - serverless-offline
-
+ - serverless-s3-local
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
 # frameworkVersion: "=X.X.X"
@@ -46,6 +51,15 @@ provider:
          - 'logs:CreateLogStream'
          - 'logs:PutLogEvents'
        Resource: 'arn:aws:logs:*:*:*'
+    -  Effect: "Allow"
+       Action:
+         - 's3:getObject'
+         - 's3:putObject'
+       Resource: "arn:aws:s3:::${file(./s3bucket.json):bucket}/*"
+    -  Effect: "Allow"
+       Action:
+         - 's3:ListBucket'
+       Resource: "arn:aws:s3:::${file(./s3bucket.json):bucket}"
 
 # you can overwrite defaults here
 #  stage: dev
