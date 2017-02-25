@@ -1,7 +1,7 @@
 define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap', 'slick'],
     function($, ol, sprintf, i18n, i18nxhr, ji18n) {
     $.fn.nodoubletapzoom = function() {
-        $(this).bind('touchstart', function preventZoom(e) {
+        $(this).on('touchstart', function preventZoom(e) {
             var t2 = e.timeStamp;
             var t1 = $(this).data('lastTouch') || t2;
             var dt = t2 - t1;
@@ -153,22 +153,46 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
             var fakeCenter = appOption.fake ? appData.fake_center : false;
             var fakeRadius = appOption.fake ? appData.fake_radius : false;
             var currentPosition = null;
-            var mapObject = null;
             var backMap = null;
             var mapDiv = 'map_div';
             var backDiv = null;
             if (overlay) {
-                $('<div id="map_div_back" class="map" style="top:0; left:0; right:0; bottom:0; ' +
-                    'position:absolute;"></div>').insertBefore('#center_circle');
-                $('<div id="map_div_front" class="map" style="top:0; left:0; right:0; bottom:0; ' +
-                    'position:absolute;"></div>').insertBefore('#center_circle');
-                mapDiv = 'map_div_front';
-                backDiv = 'map_div_back';
+                backDiv = mapDiv + '_back';
+                var newDiv = mapDiv + '_front';
+                $('#' + mapDiv).prepend('<div id="' + newDiv + '" class="map" style="top:0; left:0; right:0; bottom:0; ' +
+                    'position:absolute;"></div>');
+                $('#' + mapDiv).prepend('<div id="' + backDiv + '" class="map" style="top:0; left:0; right:0; bottom:0; ' +
+                    'position:absolute;"></div>');
+                mapDiv = newDiv;
                 backMap = new ol.MaplatMap({
                     off_control: true,
                     div: backDiv
                 });
             }
+            var mapObject = new ol.MaplatMap({
+                div: mapDiv
+            });
+            mapObject.on('gps_request', function() {
+                $('#gpsWait').modal();
+            });
+            mapObject.on('gps_result', function(evt) {
+                var shown = ($('#gpsWait').data('bs.modal') || {isShown: false}).isShown;
+                var result = evt.frameState;
+                if (result && result.error) {
+                    currentPosition = null;
+                    if (result.error == 'gps_out' && shown) {
+                        $('#gpsWait').modal('hide');
+                        $('#gpsDialogTitle').text(t('app.out_of_map'));
+                        $('#gpsDialogBody').text(t('app.out_of_map_desc'));
+                        $('#gpsDialog').modal();
+                    }
+                } else {
+                    currentPosition = result;
+                }
+                if (shown) {
+                    $('#gpsWait').modal('hide');
+                }
+            });
             if (fakeGps) {
                 $('#gps_etc').append(sprintf(t('app.fake_explanation'), fakeCenter, fakeRadius));
             } else {
@@ -214,32 +238,6 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
                     if (mapType) {
                         source.home_position = homePos;
                         source.merc_zoom = defZoom;
-                    }
-                    if (!mapObject) {
-                        mapObject = new ol.MaplatMap({
-                            div: mapDiv
-                        });
-                        mapObject.on('gps_request', function() {
-                            $('#gpsWait').modal();
-                        });
-                        mapObject.on('gps_result', function(evt) {
-                            var shown = ($('#gpsWait').data('bs.modal') || {isShown: false}).isShown;
-                            var result = evt.frameState;
-                            if (result && result.error) {
-                                currentPosition = null;
-                                if (result.error == 'gps_out' && shown) {
-                                    $('#gpsWait').modal('hide');
-                                    $('#gpsDialogTitle').text(t('app.out_of_map'));
-                                    $('#gpsDialogBody').text(t('app.out_of_map_desc'));
-                                    $('#gpsDialog').modal();
-                                }
-                            } else {
-                                currentPosition = result;
-                            }
-                            if (shown) {
-                                $('#gpsWait').modal('hide');
-                            }
-                        });
                     }
                     source._map = mapObject;
                     cache.push(source);
