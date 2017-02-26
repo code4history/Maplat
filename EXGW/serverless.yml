@@ -53,13 +53,30 @@ provider:
        Resource: 'arn:aws:logs:*:*:*'
     -  Effect: "Allow"
        Action:
-         - 's3:getObject'
-         - 's3:putObject'
-       Resource: "arn:aws:s3:::${file(./s3bucket.json):bucket}/*"
+         - "s3:ListBucket"
+       Resource:
+         Fn::Join:
+           - ""
+           - - "arn:aws:s3:::"
+             - Ref: "ServerlessDeploymentBucket"
     -  Effect: "Allow"
        Action:
-         - 's3:ListBucket'
-       Resource: "arn:aws:s3:::${file(./s3bucket.json):bucket}"
+         - "s3:PutObject"
+         - "s3:PutObjectAcl"
+       Resource:
+         Fn::Join:
+           - ""
+           - - "arn:aws:s3:::"
+             - Ref : "ServerlessDeploymentBucket"
+#    -  Effect: "Allow"
+#       Action:
+#         - 's3:getObject'
+#         - 's3:putObject'
+#       Resource: "arn:aws:s3:::${file(./s3bucket.json):bucket}/*"
+#    -  Effect: "Allow"
+#       Action:
+#         - 's3:ListBucket'
+#       Resource: "arn:aws:s3:::${file(./s3bucket.json):bucket}"
 
 # you can overwrite defaults here
 #  stage: dev
@@ -157,6 +174,10 @@ functions:
 # DynamoDB Tableの作成
 resources:
   Resources:
+    THUMBBUCKET:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${file(./s3bucket.json):bucket}
     EXGWDATA:
       Type: AWS::DynamoDB::Table
       Properties:
