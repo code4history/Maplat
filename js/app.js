@@ -218,9 +218,10 @@ define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap',
                 $('#loadWait').modal('hide');
 
                 if (mapType) {
-                    homePos = sources[0].home_position;
-                    defZoom = sources[0].merc_zoom;
-                    $('title').html(sources[0].title);
+                    var index = sources.length - 1;
+                    homePos = sources[index].home_position;
+                    defZoom = sources[index].merc_zoom;
+                    $('title').html(sources[index].title);
                 }
 
                 var cache = [];
