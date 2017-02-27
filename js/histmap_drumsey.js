@@ -1,4 +1,4 @@
-define(['histmap_tin'], function(ol) {
+define(['histmap_tin', 'aigle'], function(ol, Promise) {
     var tileSize = 256;
 
     ol.source.HistMap_drumsey = function(optOptions) {

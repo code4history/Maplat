@@ -1,4 +1,4 @@
-define(['histmap', 'tin'], function(ol, Tin) {
+define(['histmap', 'tin', 'aigle'], function(ol, Tin, Promise) {
     ol.source.HistMap_tin = function(optOptions) {
         var options = optOptions || {};
 

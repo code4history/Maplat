@@ -1,4 +1,4 @@
-define(['histmap', 'tps'], function(ol, ThinPlateSpline) {
+define(['histmap', 'tps', 'aigle'], function(ol, ThinPlateSpline, Promise) {
     ol.source.HistMap_tps = function(optOptions) {
         var options = optOptions || {};
 

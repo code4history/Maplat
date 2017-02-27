@@ -1,5 +1,5 @@
-define(['jquery', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap', 'slick'],
-    function($, ol, sprintf, i18n, i18nxhr, ji18n) {
+define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap', 'slick'],
+    function($, Promise, ol, sprintf, i18n, i18nxhr, ji18n) {
     $.fn.nodoubletapzoom = function() {
         $(this).on('touchstart', function preventZoom(e) {
             var t2 = e.timeStamp;

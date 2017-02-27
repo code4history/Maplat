@@ -1,4 +1,4 @@
-define(['ol3'], function(ol) {
+define(['ol3', 'aigle'], function(ol, Promise) {
     // スマホタッチで中間ズームを許す
     ol.interaction.PinchZoom.handleUpEvent_ = function(mapBrowserEvent) {
         if (this.targetPointers.length < 2) {
