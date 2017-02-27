@@ -1,4 +1,4 @@
-define(['histmap_tin'], function(ol) {
+define(['histmap_tin', 'aigle'], function(ol, Promise) {
     var nsResolver = function(prefix) {
         var ns = {
             'kml': 'http://earth.google.com/kml/2.1',

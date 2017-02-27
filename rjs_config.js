@@ -14,6 +14,7 @@
         'ol-custom': 'ol-custom',
         // "ol3css" : "../css/ol",
         'bootstrap': 'empty:',
+        'aigle': 'aigle-es5.min',
         // "bootstrapcss" : "//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min",
         'tps': 'empty:'
     },
@@ -29,6 +30,9 @@
         },
         'ol': {
             exports: 'ol'
+        },
+        'aigle': {
+            exports: 'Promise'
         },
         'tps': {
             exports: 'ThinPlateSpline'

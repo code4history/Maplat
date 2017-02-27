@@ -1,4 +1,4 @@
-define(['ol-custom'], function(ol) {
+define(['ol-custom', 'aigle'], function(ol, Promise) {
     // 透明PNG定義
     var transPng = 'data:image/png;base64,'+
         'iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAMAAABrrFhUAAAAB3RJTUUH3QgIBToaSbAjlwAAABd0'+

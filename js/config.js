@@ -27,6 +27,7 @@ require.config({
         // "ol-custom" : "ol-custom",
         // "ol3css" : "../css/ol",
         'bootstrap': '//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min',
+        'aigle': 'aigle-es5.min',
         'app': 'app-built'
     },
     shim: {
@@ -50,6 +51,9 @@ require.config({
         },
         'ol': {
             exports: 'ol'
+        },
+        'aigle': {
+            exports: 'Promise'
         },
         'tps': {
             exports: 'ThinPlateSpline'
