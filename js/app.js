@@ -364,12 +364,10 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bo
                                 view.setCenter(size[0]);
                                 view.setZoom(size[1]);
                                 view.setRotation(size[2]);
-                            } else {
-                                if (!init) {
-                                    $('#gpsDialogTitle').text(t('app.out_of_map'));
-                                    $('#gpsDialogBody').text(t('app.out_of_map_area'));
-                                    $('#gpsDialog').modal();
-                                }
+                            } else if (!init) {
+                                $('#gpsDialogTitle').text(t('app.out_of_map'));
+                                $('#gpsDialogBody').text(t('app.out_of_map_area'));
+                                $('#gpsDialog').modal();
                                 to.goHome();
                             }
                             to.setGPSMarker(currentPosition, true);
@@ -390,8 +388,7 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bo
                             mapObject.renderSync();
                             if (init == true) {
                                 to.goHome();
-                            }
-                            if (backMap && backTo) {
+                            } else if (backMap && backTo) {
                                 convertParametersFromCurrent(backTo, function(size) {
                                     var view = backMap.getView();
                                     view.setCenter(size[0]);
