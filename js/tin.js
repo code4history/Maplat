@@ -95,7 +95,7 @@
             this.bak_centroid = createPoint(bakCentroid, forCentroid);
 
             var convex = turf.convex(forPoints).geometry.coordinates[0];
-            var orthant = convex.reduce(function(prev, forVertex) {
+            var orthant = convex.reduce(function(prev, forVertex, idx, array) {
                 var bakVertex = transformArr(turf.point(forVertex), tinForCentroid);
                 var forVertexDelta = [forVertex[0] - forCentroid[0], forVertex[1] - forCentroid[1]];
                 var bakVertexDelta = [bakVertex[0] - bakCentroid[0], bakCentroid[1] - bakVertex[1]];
@@ -105,6 +105,14 @@
                 if (forVertexDelta[0] > 0) index += 1;
                 if (forVertexDelta[1] > 0) index += 2;
                 prev[index].push([forVertexDelta, bakVertexDelta]);
+                if (idx == array.length -1) {
+                    return (prev.length == prev.filter(function(val) {
+                        return val.length > 0;
+                    }).length) ? prev : prev.reduce(function(pre, cur) {
+                            var ret = [pre[0].concat(cur)];
+                            return ret;
+                        }, [[]]);
+                }
                 return prev;
             }, [[], [], [], []]).map(function(item) {
                 return item.reduce(function(prev, curr, index, arr) {
@@ -120,8 +128,8 @@
                     return [distanceSum, sumThetaX, sumThetaY];
                 }, null);
             });
+            if (orthant.length == 1) orthant = [orthant[0], orthant[0], orthant[0], orthant[0]];
 
-            // Bug: if number of GCP is too small, some orthant values null. It cause error.
             var verticesSet = orthant.map(function(delta, index) {
                 var forVertex = bbox[index];
                 var forDelta = [forVertex[0] - forCentroid[0], forVertex[1] - forCentroid[1]];
@@ -138,6 +146,7 @@
             var swap = verticesSet[2];
             verticesSet[2] = verticesSet[3];
             verticesSet[3] = swap;
+
             var forVerticesList = [];
             var bakVerticesList = [];
 
