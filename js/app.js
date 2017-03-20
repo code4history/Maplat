@@ -1,21 +1,29 @@
 define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap', 'slick'],
     function($, Promise, ol, sprintf, i18n, i18nxhr, ji18n) {
-    $.fn.nodoubletapzoom = function() {
-        $(this).on('touchstart', function preventZoom(e) {
+    (function() {
+        var mapDiv = document.getElementById('map_div');
+        var lastTouch = 0;
+        function preventZoom(e) {
             var t2 = e.timeStamp;
-            var t1 = $(this).data('lastTouch') || t2;
+            var t1 = lastTouch || t2;
             var dt = t2 - t1;
-            var fingers = e.originalEvent.touches.length;
-            $(this).data('lastTouch', t2);
-            if (!dt || dt > 500 || fingers > 1) {
-                return; // not double-tap
+            var fingers = e.touches.length;
+            lastTouch = t2;
+
+            if (!dt || dt >= 300 || fingers > 1) {
+                return;
             }
-            e.preventDefault(); // double tap - prevent the zoom
-            // also synthesize click events we just swallowed up
-            $(e.target).trigger('click');
-        });
-    };
-    $('#map_div').nodoubletapzoom();
+            resetPreventZoom();
+            e.preventDefault();
+            e.target.click();
+        }
+        function resetPreventZoom() {
+            lastTouch = 0;
+        }
+
+        mapDiv.addEventListener('touchstart', preventZoom, false);
+        mapDiv.addEventListener('touchmove', resetPreventZoom, false);
+    })();
     var ellips = function() {
         var omitMark = '…';
         var omitLine = 2;
