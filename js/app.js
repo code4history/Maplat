@@ -24,6 +24,47 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bo
         mapDiv.addEventListener('touchstart', preventZoom, false);
         mapDiv.addEventListener('touchmove', resetPreventZoom, false);
     })();
+    var LoggerLevel={
+        ALL: -99,
+        DEBUG: -1,
+        INFO: 0,
+        WARN: 1,
+        ERROR: 2,
+        OFF: 99
+    };
+    var Logger=function(level) {
+        var self=this;
+        self.level=isNaN(level) ? LoggerLevel.INFO : level;
+        self.make();
+    };
+    Logger.prototype.make=function() {
+        var self=this;
+        for (var key in console) {
+            var l=LoggerLevel[key.toUpperCase()];
+            if(!l) {
+                // l=LoggerLevel.OFF;
+                continue;
+            }
+            if(self.level<=l) {
+                if(Function.bind) {
+                    Logger.prototype[key]=(
+                        function(k) {
+                            return console[k].bind(console);
+                        }
+                    )(key);
+                }else{
+                    Logger.prototype[key]=(
+                        function(k) {
+                            return console[k].apply(console, arguments);
+                        }
+                    )(key);
+                }
+            }else{
+                Logger.prototype[key]=function() {
+                };
+            }
+        }
+    };
     var ellips = function() {
         var omitMark = '…';
         var omitLine = 2;
@@ -84,9 +125,7 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bo
     return function(appOption) {
         var mapType = appOption.stroly ? 'stroly' : appOption.drumsey ? 'drumsey' : appOption.warper ? 'warper' : null;
         var appid = appOption.appid || (mapType ? appOption[mapType] : 'sample');
-        var debug = appOption.debug ? function(val) {
-            console.log(val);
-        } : function() {};
+        var logger = new Logger(appOption.debug ? LoggerLevel.ALL : LoggerLevel.INFO);
         var lang = appOption.lang || 'ja';
         var overlay = appOption.overlay || false;
         if (overlay) {
@@ -275,14 +314,16 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bo
                 function convertParametersFromCurrent(to, callback) {
                     var view = mapObject.getView();
                     var fromPromise = from.size2MercsAsync();
+                    var current = ol.MathEx.recursiveRound([
+                        view.getCenter(), view.getZoom(), view.getRotation()
+                    ], 10);
                     if (mercBuffer && mercBuffer.mercs && mercBuffer.buffer[from.sourceID]) {
                         var buffer = mercBuffer.buffer[from.sourceID];
-                        var current = ol.MathEx.recursiveRound([
-                            view.getCenter(), view.getZoom(), view.getRotation()
-                        ], 10);
                         if (buffer[0][0] == current[0][0] && buffer[0][1] == current[0][1] &&
                             buffer[1] == current[1] && buffer[2] == current[2]) {
-                            debug('From: Use buffer');
+                            logger.debug(buffer);
+                            logger.debug(current);
+                            logger.debug('From: Use buffer');
                             fromPromise = new Promise(function(res, rej) {
                                 res(mercBuffer.mercs);
                             });
@@ -290,32 +331,30 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bo
                             mercBuffer = {
                                 buffer: {}
                             };
+                            mercBuffer.buffer[from.sourceID] = current;
                         }
                     } else {
                         mercBuffer = {
                             buffer: {}
                         };
+                        mercBuffer.buffer[from.sourceID] = current;
                     }
+                    logger.debug('From: Center: ' + current[0] + ' Zoom: ' + current[1] + ' Rotation: ' + current[2]);
+                    logger.debug('From: ' + from.sourceID);
                     fromPromise.then(function(mercs) {
                         mercBuffer.mercs = mercs;
-                        var view = mapObject.getView();
-                        debug('From: Center: ' + view.getCenter() + ' Zoom: ' + view.getZoom() + ' Rotation: ' + view.getRotation());
-                        debug('From: ' + from.sourceID);
-                        mercBuffer.buffer[from.sourceID] = ol.MathEx.recursiveRound([
-                            view.getCenter(), view.getZoom(), view.getRotation()
-                        ], 10);
-                        debug('Mercs: ' + mercs);
+                        logger.debug('Mercs: ' + mercs);
                         var toPromise = to.mercs2SizeAsync(mercs);
                         var key = to.sourceID;
                         if (mercBuffer.buffer[key]) {
-                            debug('To: Use buffer');
+                            logger.debug('To: Use buffer');
                             toPromise = new Promise(function(res, rej) {
                                 res(mercBuffer.buffer[key]);
                             });
                         }
                         toPromise.then(function(size) {
-                            debug('To: Center: ' + [size[0][0], size[0][1]] + ' Zoom: ' + size[1] + ' Rotation: ' + size[2]);
-                            debug('To: ' + to.sourceID);
+                            logger.debug('To: Center: ' + size[0] + ' Zoom: ' + size[1] + ' Rotation: ' + size[2]);
+                            logger.debug('To: ' + to.sourceID);
                             mercBuffer.buffer[to.sourceID] = ol.MathEx.recursiveRound(size, 10);
                             callback(size);
                         });
@@ -465,20 +504,20 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bo
                 var backMapMove = function(evt) {
                     if (!backMap) return;
                     if (this._backMapMoving) {
-                        debug('Backmap moving skipped');
+                        logger.debug('Backmap moving skipped');
                         return;
                     }
                     var backSrc = backMap.getSource();
                     if (backSrc) {
                         this._backMapMoving = true;
-                        debug('Backmap moving started');
+                        logger.debug('Backmap moving started');
                         var self = this;
                         convertParametersFromCurrent(backSrc, function(size) {
                             var view = backMap.getView();
                             view.setCenter(size[0]);
                             view.setZoom(size[1]);
                             view.setRotation(size[2]);
-                            debug('Backmap moving ended');
+                            logger.debug('Backmap moving ended');
                             self._backMapMoving = false;
                         });
                     }
