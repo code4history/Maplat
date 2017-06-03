@@ -1,9 +1,10 @@
 #!/usr/local/bin/node
 
-var fs       = require('fs'),
-    path     = require('path'),
-    argv     = require('argv'),
-    readline = require('readline');
+var fs = require('fs');
+var path = require('path');
+var argv = require('argv');
+var readline = require('readline');
+var csvSync = require('csv-parse/lib/sync');
 
 var args = argv.option( [{
     name: 'source',
@@ -31,26 +32,27 @@ var args = argv.option( [{
     example: "'datacreator.js --tps[=path]' or 'datacreator.js -t [path]'"
 }] ).run();
 
-var source   = args.options.source;
-var output   = args.options.output;
-var tps_opt  = args.options.tps;
+var source = args.options.source;
+var output = args.options.output;
+var tpsOpt = args.options.tps;
 var backward = args.options.backward;
-var basename = path.basename(source).split(".")[0].replace(/_points$/,"");
+var basename = path.basename(source).split('.')[0].replace(/_points$/, '');
 if (!source) stop('Source option is mandatory.');
 if (!output)
-    output = path.resolve(basename + "_points.json");
-var tps_out = !tps_opt ? null :
-    tps_opt.split("/").slice(-1)[0] == 'true' ?
-        path.resolve(basename + ".bin") :
-        tps_opt;
-var bak_out = !backward ? null :
-    backward.split("/").slice(-1)[0] == 'true' ?
-        path.resolve(basename + ".jpg.points") :
+    output = path.resolve(basename + '.json');
+var tpsOut = !tpsOpt ? null :
+    tpsOpt.split('/').slice(-1)[0] == 'true' ?
+        path.resolve(basename + '.bin') :
+        tpsOpt;
+var bakOut = !backward ? null :
+    backward.split('/').slice(-1)[0] == 'true' ?
+        path.resolve(basename + '.jpg.points') :
         backward;
+var bakIn = false;
 
 var tps;
-if (tps_out) {
-    var ThinPlateSpline = require("../js/thinplatespline");
+if (tpsOut) {
+    var ThinPlateSpline = require('../js/thinplatespline');
     tps = new ThinPlateSpline({});
 }
 
@@ -58,56 +60,64 @@ var rs = fs.ReadStream(source);
 var rl = readline.createInterface({'input': rs, 'output': {}});
 var filebuf = null;
 var points = [];
-rl.on('line', function (line) {
+rl.on('line', function(line) {
     if (!filebuf) {
-        if (line.indexOf("mapX,mapY,") == 0) {
-            if (bak_out) {
+        if (line.indexOf('mapX,mapY,') == 0) {
+            if (bakOut) {
                 stop('Source file is already QGIS format.');
             }
-            filebuf = "qgis";
-        } else if (line.indexOf("[") == 0) {
-            if (!tps_out && !bak_out) {
+            filebuf = 'qgis';
+        } else if (line.indexOf('{') == 0) {
+            bakIn = true;
+            if (!tpsOut && !bakOut) {
                 stop('Source file is already Maplat format.');
             }
             filebuf = line;
-        } else stop("Source file format is not match");
+        } else stop('Source file format is not match');
     } else {
-        if (filebuf == "qgis") {
-            var values = line.split(",").map(function(val){return parseFloat(val)});
-            var point = [[values[2],-1.0*values[3]], [values[0], values[1]]];
+        if (filebuf == 'qgis') {
+            var values = line.split(',').map(function(val){
+                return parseFloat(val);
+            });
+            var point = [[values[2], -1.0*values[3]], [values[0], values[1]]];
             points.push(point);
-            if (tps_out) tps.add_point(point[0],point[1]);
+            if (tpsOut) tps.add_point(point[0], point[1]);
         } else filebuf = filebuf + line;
     }
 });
-rl.on('close', function (line) {
-    if (filebuf != "qgis") {
-        points = JSON.parse(filebuf);
-        if (tps_out) tps.push_points(points);
+rl.on('close', function(line) {
+    if (filebuf != 'qgis') {
+        var jval = JSON.parse(filebuf);
+        points = jval.gcps;
+        console.log(points);
+        if (tpsOut) tps.push_points(points);
     }
-    if (!bak_out) {
-        for (var i = 0; i < points.length; i++) {
-            if (i == 0) fs.writeFileSync(output, "[\n");
-            fs.appendFileSync(output, "    " + JSON.stringify(points[i]));
-            if (i == points.length - 1) fs.appendFileSync(output, "\n]\n");
-            else fs.appendFileSync(output, ",\n");
+    if (!bakOut) {
+        if (!bakIn) {
+            for (var i = 0; i < points.length; i++) {
+                if (i == 0) fs.writeFileSync(output, '[\n');
+                fs.appendFileSync(output, '    ' + JSON.stringify(points[i]));
+                if (i == points.length - 1) fs.appendFileSync(output, '\n]\n');
+                else fs.appendFileSync(output, ',\n');
+            }
         }
     } else {
-        for (var i=0;i<points.length;i++) {
-            if (i==0) fs.writeFileSync(bak_out,"mapX,mapY,pixelX,pixelY,enable\n");
-            fs.appendFileSync(bak_out, points[i][1][0] + "," + points[i][1][1] + "," + points[i][0][0] + "," + (-1.0*points[i][0][1]) + ",1\n" );
+        for (var i=0; i<points.length; i++) {
+            if (i==0) fs.writeFileSync(bakOut, 'mapX,mapY,pixelX,pixelY,enable\n');
+            fs.appendFileSync(bakOut, points[i][1][0] + ',' + points[i][1][1] + ',' +
+                points[i][0][0] + ',' + (-1.0*points[i][0][1]) + ',1\n');
         }
     }
-    if (tps_out) {
+    if (tpsOut) {
         tps.solve();
-        fs.writeFile(tps_out, new Buffer(tps.serialize()), function (err) {
+        fs.writeFile(tpsOut, new Buffer(tps.serialize()), function (err) {
             if (err) stop(err);
         });
     }
 });
 rl.resume();
 
-function stop (message) {
+function stop(message) {
     console.log(message);
     process.exit(1);
 }
