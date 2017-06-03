@@ -12,21 +12,25 @@ define(['histmap', 'tin', 'aigle'], function(ol, Tin, Promise) {
 
     ol.source.HistMap_tin.createAsync = function(options) {
         return new Promise(function(resolve, reject) {
-            var obj;
-            var url = options.tin_points_url || 'json/' + options.mapID + '_points.json';
+            var url = options.setting_file || 'json/' + options.mapID + '.json';
             var xhr = new XMLHttpRequest();
             xhr.open('GET', url, true);
             xhr.responseType = 'json';
 
             xhr.onload = function(e) {
                 if (this.status == 200) {
-                    obj.finalizeCreateAsync_(this.response, resolve);
+                    var resp = this.response;
+                    options.title = options.title || resp.title;
+                    options.width = options.width || resp.width;
+                    options.height = options.height || resp.height;
+                    options.label = options.label || resp.label;
+                    var obj = new ol.source.HistMap_tin(options);
+                    obj.finalizeCreateAsync_(resp.gcps, resolve);
                 } else {
                     // self.postMessage({'event':'cannotLoad'});
                 }
             };
             xhr.send();
-            obj = new ol.source.HistMap_tin(options);
         });
     };
 

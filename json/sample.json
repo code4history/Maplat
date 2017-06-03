@@ -14,34 +14,21 @@
             "url" : "./tiles/morioka_ndl_affine/{z}/{x}/{-y}.png"
         },
         {
-            "era"       : "正保城絵図 南部領盛岡平城絵図 (正保元年)",
-            "attr"      : "正保城絵図 南部領盛岡平城絵図 (正保元年) 国立公文書館",
             "mapID"     : "morioka_ndl",
             "maptype"   : "maplat",
             "algorythm" : "tin",
-            "width"     : 5287,
-            "height"    : 4631,
-            "year"      : 1644,
             "label"     : "1644 (TIN)"
-        },{
-            "era"       : "正保城絵図 南部領盛岡平城絵図 (正保元年)",
-            "attr"      : "正保城絵図 南部領盛岡平城絵図 (正保元年) 国立公文書館",
+        },
+        {
             "mapID"     : "morioka_ndl",
             "maptype"   : "maplat",
             "algorythm" : "tps",
-            "width"     : 5287,
-            "height"    : 4631,
-            "year"      : 1644,
             "label"     : "1644 (TPS)"
-        },{
-            "era"       : "日本古城絵図 東山道之部 奥州盛岡城図 (江戸中期－末期)",
-            "attr"      : "日本古城絵図 東山道之部 奥州盛岡城図 (江戸中期－末期) 国立国会図書館",
+        },
+        {
             "mapID"     : "morioka",
             "maptype"   : "maplat",
-            "algorythm" : "tin",
-            "width"     : 6144,
-            "height"    : 4096,
-            "year"      : 1735
+            "algorythm" : "tin"
         },
         "gsi",
         "osm"

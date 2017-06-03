@@ -25,34 +25,40 @@ define(['histmap', 'tps', 'aigle'], function(ol, ThinPlateSpline, Promise) {
     ol.inherits(ol.source.HistMap_tps, ol.source.HistMap);
 
     ol.source.HistMap_tps.createAsync = function(options) {
-        if (options.make_binary) {
-            options.tps_serial = options.tps_serial || options.mapID + '.bin';
-            options.tps_points = options.tps_points || '../json/' + options.mapID + '_points.json';
-        } else {
-            options.tps_serial = options.tps_serial || '../bin/' + options.mapID + '.bin';
-        }
+        var metaUrl = options.setting_file || 'json/' + options.mapID + '.json';
+        options.tps_serial = options.tps_serial || '../bin/' + options.mapID + '.bin';
+
         return new Promise(function(resolve, reject) {
-            var obj;
-            options.on_serialized = function() {
-                if (options.tps_points) {
-                    var a = document.createElement('a');
-                    document.body.appendChild(a);
-                    a.style = 'display: none';
-                    var blob = new Blob([obj.tps.serialize()]);
-                    var url = window.URL.createObjectURL(blob);
-                    a.href = url;
-                    a.download = options.tps_serial;
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                }
-                resolve(obj);
-            };
-            options.transform_callback = function(coord, isRev, tfOptions) {
-                if (tfOptions.callback) {
-                    tfOptions.callback(coord);
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', metaUrl, true);
+            xhr.responseType = 'json';
+
+            xhr.onload = function(e) {
+                if (this.status == 200) {
+                    var resp = this.response;
+                    options.title = options.title || resp.title;
+                    options.width = options.width || resp.width;
+                    options.height = options.height || resp.height;
+                    options.label = options.label || resp.label;
+                    resolve(options);
+                } else {
+                    // self.postMessage({'event':'cannotLoad'});
                 }
             };
-            obj = new ol.source.HistMap_tps(options);
+            xhr.send();
+        }).then(function(options) {
+            return new Promise(function(resolve, reject) {
+                var obj;
+                options.on_serialized = function() {
+                    resolve(obj);
+                };
+                options.transform_callback = function(coord, isRev, tfOptions) {
+                    if (tfOptions.callback) {
+                        tfOptions.callback(coord);
+                    }
+                };
+                obj = new ol.source.HistMap_tps(options);
+            });
         });
     };
 
