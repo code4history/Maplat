@@ -39,7 +39,15 @@ define(['histmap', 'tps', 'aigle'], function(ol, ThinPlateSpline, Promise) {
                     options.title = options.title || resp.title;
                     options.width = options.width || resp.width;
                     options.height = options.height || resp.height;
-                    options.label = options.label || resp.label;
+                    options.label = options.label || resp.label || resp.year;
+                    options.attr = options.attr || resp.attr;
+                    if (options.attr && !options.attributions) {
+                        options.attributions = [
+                            new ol.Attribution({
+                                html: options.attr
+                            })
+                        ];
+                    }
                     resolve(options);
                 } else {
                     // self.postMessage({'event':'cannotLoad'});

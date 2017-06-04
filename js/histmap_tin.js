@@ -23,7 +23,15 @@ define(['histmap', 'tin', 'aigle'], function(ol, Tin, Promise) {
                     options.title = options.title || resp.title;
                     options.width = options.width || resp.width;
                     options.height = options.height || resp.height;
-                    options.label = options.label || resp.label;
+                    options.label = options.label || resp.label || resp.year;
+                    options.attr = options.attr || resp.attr;
+                    if (options.attr && !options.attributions) {
+                        options.attributions = [
+                            new ol.Attribution({
+                                html: options.attr
+                            })
+                        ];
+                    }
                     var obj = new ol.source.HistMap_tin(options);
                     obj.finalizeCreateAsync_(resp.gcps, resolve);
                 } else {
