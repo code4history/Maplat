@@ -464,6 +464,9 @@ define(['ol3', 'aigle'], function(ol, Promise) {
                 rotation: optOptions.default_rotation || 0
             })
         };
+        if (optOptions.off_rotation) {
+            options.interactions = ol.interaction.defaults({altShiftDragRotate: false, pinchRotate: false});
+        }
 
         ol.Map.call(this, options);
 
@@ -521,6 +524,15 @@ define(['ol3', 'aigle'], function(ol, Promise) {
         }
         iconFeature.setStyle(markerStyle);
         src.addFeature(iconFeature);
+    };
+
+    ol.MaplatMap.prototype.setLine = function(xys) {
+        var src = this._marker_source;
+        var lineFeature = new ol.Feature({
+            geometry: new ol.geom.LineString(xys),
+            name: 'Line'
+        });
+        src.addFeature(lineFeature);
     };
 
     ol.MaplatMap.prototype.exchangeSource = function(source) {

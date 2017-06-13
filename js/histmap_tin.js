@@ -18,7 +18,7 @@ define(['histmap', 'tin', 'aigle'], function(ol, Tin, Promise) {
             xhr.responseType = 'json';
 
             xhr.onload = function(e) {
-                if (this.status == 200) {
+                if (this.status == 200 || this.status == 0 ) { // 0 for UIWebView
                     var resp = this.response;
                     options.title = options.title || resp.title;
                     options.width = options.width || resp.width;

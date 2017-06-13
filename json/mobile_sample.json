@@ -1,0 +1,13 @@
+{
+    "app_name" : "モバイルアプリ",
+    "sources" : [
+        "gsi",
+        "osm",
+        {
+            "mapID"     : "morioka_ndl",
+            "maptype"   : "maplat",
+            "algorythm" : "tin"
+        }
+    ], 
+    "pois" :[]
+}

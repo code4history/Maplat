@@ -125,13 +125,26 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bo
     return function(appOption) {
         var mapType = appOption.stroly ? 'stroly' : appOption.drumsey ? 'drumsey' : appOption.warper ? 'warper' : null;
         var appid = appOption.appid || (mapType ? appOption[mapType] : 'sample');
+        var mobileIF = false;
+        var noUI = appOption.no_ui || false;
+        if (appOption.mobile_if) {
+            mobileIF = true;
+            noUI = true;
+            appOption.debug = true;
+        }
         var logger = new Logger(appOption.debug ? LoggerLevel.ALL : LoggerLevel.INFO);
         var lang = appOption.lang || 'ja';
         var overlay = appOption.overlay || false;
+        var noRotate = appOption.no_rotate || false;
         if (overlay) {
             $('body').addClass('with-opacity');
-            $('.opacity-slider').removeClass('hide');
-            $('.opacity-slider input').prop('disabled', true);
+            if (!noUI) {
+                $('.opacity-slider').removeClass('hide');
+                $('.opacity-slider input').prop('disabled', true);
+            }
+        }
+        if (noUI) {
+            $('.slick-box').addClass('hide');
         }
         var appPromise = mapType ?
             new Promise(function(resolve, reject) {
@@ -153,8 +166,12 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bo
             }) : new Promise(function(resolve, reject) {
                 $.get('json/' + appid + '.json', function(appData) {
                     resolve(appData);
-                }, 'json').fail(function() {
-                    console.log('error');
+                }, 'json').fail(function(e) {
+                    // I don't know the reason, but UIWebView's jQuery comes here even if json is successfully loaded.
+                    if (e.responseJSON) {
+                        resolve(e.responseJSON);
+                    }
+                    // console.log('error');
                 });
             });
 
@@ -174,22 +191,24 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bo
 
         var promises = Promise.all([i18nPromise, appPromise]);
 
-        promises.then(function(result) {
+        return promises.then(function(result) {
             var appData = result[1];
             var i18n = result[0][1];
             var t = result[0][0];
             ol.source.HistMap.setI18n(i18n, t);
 
             $('#all').show();
-            $('#loadWait').modal();
-            $('.slick-class').slick({
-                prevArrow: '',
-                nextArrow: '',
-                centerMode: true,
-                focusOnSelect: true,
-                slidesToScroll: 3,
-                centerPadding: '40px'
-            });
+            if (!noUI) {
+                $('#loadWait').modal();
+                $('.slick-class').slick({
+                    prevArrow: '',
+                    nextArrow: '',
+                    centerMode: true,
+                    focusOnSelect: true,
+                    slidesToScroll: 3,
+                    centerPadding: '40px'
+                });
+            }
 
             var from;
             var mercBuffer = null;
@@ -206,7 +225,9 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bo
             $('#' + mapDiv).prepend('<div id="' + frontDiv + '" class="map" style="top:0; left:0; right:0; bottom:0; ' +
                 'position:absolute;"></div>');
             var mapObject = new ol.MaplatMap({
-                div: frontDiv
+                div: frontDiv,
+                off_control: noUI ? true : false,
+                off_rotation: noRotate ? true : false
             });
             var backDiv = null;
             if (overlay) {
@@ -218,31 +239,33 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bo
                     div: backDiv
                 });
             }
-            mapObject.on('gps_request', function() {
-                $('#gpsWait').modal();
-            });
-            mapObject.on('gps_result', function(evt) {
-                var shown = ($('#gpsWait').data('bs.modal') || {isShown: false}).isShown;
-                var result = evt.frameState;
-                if (result && result.error) {
-                    currentPosition = null;
-                    if (result.error == 'gps_out' && shown) {
-                        $('#gpsWait').modal('hide');
-                        $('#gpsDialogTitle').text(t('app.out_of_map'));
-                        $('#gpsDialogBody').text(t('app.out_of_map_desc'));
-                        $('#gpsDialog').modal();
+            if (!noUI) {
+                mapObject.on('gps_request', function() {
+                    $('#gpsWait').modal();
+                });
+                mapObject.on('gps_result', function(evt) {
+                    var shown = ($('#gpsWait').data('bs.modal') || {isShown: false}).isShown;
+                    var result = evt.frameState;
+                    if (result && result.error) {
+                        currentPosition = null;
+                        if (result.error == 'gps_out' && shown) {
+                            $('#gpsWait').modal('hide');
+                            $('#gpsDialogTitle').text(t('app.out_of_map'));
+                            $('#gpsDialogBody').text(t('app.out_of_map_desc'));
+                            $('#gpsDialog').modal();
+                        }
+                    } else {
+                        currentPosition = result;
                     }
+                    if (shown) {
+                        $('#gpsWait').modal('hide');
+                    }
+                });
+                if (fakeGps) {
+                    $('#gps_etc').append(sprintf(t('app.fake_explanation'), fakeCenter, fakeRadius));
                 } else {
-                    currentPosition = result;
+                    $('#gps_etc').append(t('app.acquiring_gps_desc'));
                 }
-                if (shown) {
-                    $('#gpsWait').modal('hide');
-                }
-            });
-            if (fakeGps) {
-                $('#gps_etc').append(sprintf(t('app.fake_explanation'), fakeCenter, fakeRadius));
-            } else {
-                $('#gps_etc').append(t('app.acquiring_gps_desc'));
             }
             var pois = appData.pois;
 
@@ -261,8 +284,10 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bo
                 sourcePromise.push(ol.source.HistMap.createAsync(option, commonOption));
             }
 
-            Promise.all(sourcePromise).then(function(sources) {
-                $('#loadWait').modal('hide');
+            return Promise.all(sourcePromise).then(function(sources) {
+                if (!noUI) {
+                    $('#loadWait').modal('hide');
+                }
 
                 if (mapType) {
                     var index = sources.length - 1;
@@ -276,9 +301,11 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bo
                 var clickAvoid = false;
                 for (var i=0; i<sources.length; i++) {
                     var source = sources[i];
-                    $('.slick-class').slick('slickAdd', '<div class="slick-item" data="' + source.sourceID + '">' +
-                        '<img crossorigin="anonymous" src="' + source.thumbnail + '"><div>' + source.label + '</div></div>');
-                    if (i == sources.length - 1) $('.slick-class').slick('slickGoTo', sources.length - 1);
+                    if (!noUI) {
+                        $('.slick-class').slick('slickAdd', '<div class="slick-item" data="' + source.sourceID + '">' +
+                            '<img crossorigin="anonymous" src="' + source.thumbnail + '"><div>' + source.label + '</div></div>');
+                        if (i == sources.length - 1) $('.slick-class').slick('slickGoTo', sources.length - 1);
+                    }
                     if (mapType) {
                         source.home_position = homePos;
                         source.merc_zoom = defZoom;
@@ -287,19 +314,21 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bo
                     cache.push(source);
                     cacheHash[source.sourceID] = source;
                 }
-                ellips();
+                if (!noUI) {
+                    ellips();
 
-                $('.slick-item').on('click', function() {
-                    if (!clickAvoid) {
-                        changeMap(false, $(this).attr('data'));
-                    }
-                });
-                $('.slick-class').on('beforeChange', function(ev, slick, currentSlide, nextSlide) {
-                    clickAvoid = currentSlide != nextSlide;
-                });
-                $('.slick-class').on('afterChange', function(ev, slick, currentSlide) {
-                    clickAvoid = false;
-                });
+                    $('.slick-item').on('click', function() {
+                        if (!clickAvoid) {
+                            changeMap(false, $(this).attr('data'));
+                        }
+                    });
+                    $('.slick-class').on('beforeChange', function(ev, slick, currentSlide, nextSlide) {
+                        clickAvoid = currentSlide != nextSlide;
+                    });
+                    $('.slick-class').on('afterChange', function(ev, slick, currentSlide) {
+                        clickAvoid = false;
+                    });
+                }
 
                 var initial = cache[cache.length - 1];
                 from = cache.reduce(function(prev, curr) {
@@ -450,17 +479,25 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bo
                 }
 
                 function showInfo(data) {
-                    $('#poi_name').text(data.name);
-                    $('#poi_img').attr('src',
-                        data.image.match(/^http/) ? data.image : 'img/' + data.image);
-                    $('#poi_address').text(data.address);
-                    $('#poi_desc').html(data.desc.replace(/\n/g, '<br>'));
-                    $('#poi_info').modal();
+                    if (mobileIF) {
+                        logger.debug(data);
+                        var json = JSON.stringify(data);
+                        jsBridge.callWeb2App('poiClick', json);
+                    } else {
+                        $('#poi_name').text(data.name);
+                        $('#poi_img').attr('src',
+                            data.image.match(/^http/) ? data.image : 'img/' + data.image);
+                        $('#poi_address').text(data.address);
+                        $('#poi_desc').html(data.desc.replace(/\n/g, '<br>'));
+                        $('#poi_info').modal();
+                    }
                 }
 
                 var clickHandler = function(evt) {
+                    logger.debug(evt.pixel);
                     var feature = this.forEachFeatureAtPixel(evt.pixel,
                         function(feature) {
+                            logger.debug(evt.pixel);
                             if (feature.get('datum')) return feature;
                         });
                     if (feature) {
@@ -529,6 +566,31 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bo
                 };
                 $('.opacity-slider input').on('input', opacityChange);
                 $('.opacity-slider input').on('change', opacityChange);
+
+                if (mobileIF) return {
+                    'setMarker': function(dataStr) {
+                        logger.debug(dataStr);
+                        var data = JSON.parse(dataStr);
+                        var lat = data.latitude;
+                        var long = data.longitude;
+                        var x = data.x;
+                        var y = data.y;
+                        var src = mapObject.getSource();
+                        var promise = (x && y) ?
+                            new Promise(function(resolve) {
+                                resolve(src.xy2HistMapCoords([x, y]));
+                            }):
+                            (function() {
+                                var merc = ol.proj.transform([long, lat], 'EPSG:4326', 'EPSG:3857');
+                                return src.merc2XyAsync(merc);
+                            })();
+                        var datum = data.data;
+                        promise.then(function(xy) {
+                            mapObject.setMarker(xy, {'datum': datum}, datum.icon);
+                        });
+                    }
+
+                };
             });
         });
     };
