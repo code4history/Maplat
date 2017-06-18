@@ -87,6 +87,7 @@
 <script>
 var jsBridge = jsBridge || {};
 jsBridge.callWeb2App = jsBridge.callWeb2App || function (key, data) {
+    window.location = "jsBridge://call?key=" + encodeURIComponent(key) + "&value=" + encodeURIComponent(data);
 };
 jsBridge.callApp2Web = function (key, data) {
     var func = jsBridge._cA2W[key];
