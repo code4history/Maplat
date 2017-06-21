@@ -11,4 +11,11 @@
 
 @interface MaplatCache : NSURLCache <UIWebViewDelegate>
 
+- (void)webView:(UIWebView *)webView callApp2WebWithKey:(NSString *)key value:(NSString *)value;
+
+@end
+
+@interface UIView (FindUIViewController)
+- (UIViewController *) firstAvailableUIViewController;
+- (id) traverseResponderChainForUIViewController;
 @end

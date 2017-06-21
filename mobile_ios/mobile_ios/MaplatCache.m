@@ -56,7 +56,7 @@
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
     NSURL *URL = [request URL];
-    if ([[URL scheme] isEqualToString:@"jsBridge"]) {
+    if ([[URL scheme] isEqualToString:@"jsbridge"]) {
         NSString *key = @"";
         NSString *value = @"";
         for (NSString *param in [[URL query] componentsSeparatedByString:@"&"]) {
@@ -64,24 +64,41 @@
             if ([elts count] < 2) continue;
             NSString *lkey = (NSString *)[elts objectAtIndex:0];
             NSString *lval = (NSString *)[elts objectAtIndex:1];
-            if ([lkey isEqualToString:@"key"]) key = lval;
-            if ([lkey isEqualToString:@"value"]) value = lval;
+            if ([lkey isEqualToString:@"key"]) key = [lval stringByRemovingPercentEncoding];
+            if ([lkey isEqualToString:@"value"]) value = [lval stringByRemovingPercentEncoding];
         }
         
-        //if (key.equals("callApp2Web") && data.equals("ready")) {
-        //    this.callApp2Web("setMarker", "{\"latitude\":39.69994722,\"longitude\":141.1501111,\"data\":{\"id\":1,\"data\":1}}");
-        //    this.callApp2Web("setMarker", "{\"latitude\":39.7006006,\"longitude\":141.1529555,\"data\":{\"id\":5,\"data\":5}}");
-        //    this.callApp2Web("setMarker", "{\"latitude\":39.701599,\"longitude\":141.151995,\"data\":{\"id\":6,\"data\":6}}");
-        //    this.callApp2Web("setMarker", "{\"latitude\":39.703736,\"longitude\":141.151137,\"data\":{\"id\":7,\"data\":7}}");
-        //    this.callApp2Web("setMarker", "{\"latitude\":39.7090232,\"longitude\":141.1521671,\"data\":{\"id\":9,\"data\":9}}");
-        //} else {
-        //    Toast.makeText(mContext, key + ":" + data, Toast.LENGTH_LONG).show();
-        //}
+        if ([key isEqualToString:@"callApp2Web"] && [value isEqualToString:@"ready"]) {
+            [self webView:webView callApp2WebWithKey:@"setMarker" value:@"{\"latitude\":39.69994722,\"longitude\":141.1501111,\"data\":{\"id\":1,\"data\":1}}"];
+            [self webView:webView callApp2WebWithKey:@"setMarker" value:@"{\"latitude\":39.7006006,\"longitude\":141.1529555,\"data\":{\"id\":5,\"data\":5}}"];
+            [self webView:webView callApp2WebWithKey:@"setMarker" value:@"{\"latitude\":39.701599,\"longitude\":141.151995,\"data\":{\"id\":6,\"data\":6}}"];
+            [self webView:webView callApp2WebWithKey:@"setMarker" value:@"{\"latitude\":39.703736,\"longitude\":141.151137,\"data\":{\"id\":7,\"data\":7}}"];
+            [self webView:webView callApp2WebWithKey:@"setMarker" value:@"{\"latitude\":39.7090232,\"longitude\":141.1521671,\"data\":{\"id\":9,\"data\":9}}"];
+        } else {
+            NSString *message = [NSString stringWithFormat:@"%@:%@", key, value];
+            
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+                                                                           message:message
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+            UIViewController *controller = [webView firstAvailableUIViewController];
+            [controller presentViewController:alert animated:YES completion:nil];
+            
+            int duration = 1; // duration in seconds
+            
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, duration * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                [alert dismissViewControllerAnimated:YES completion:nil];
+            });
+        }
         
         return NO;
     }
     
     return YES;
+}
+
+- (void)webView:(UIWebView *)webView callApp2WebWithKey:(NSString *)key value:(NSString *)value
+{
+    [webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"javascript:jsBridge.callApp2Web('%@','%@');", key, value]];
 }
 
 //- (BOOL)webView:(UIWebView*)webView shouldStartLoadWithRequest:(NSURLRequest*)request navigationType:(UIWebViewNavigationType)navigationType {
@@ -92,4 +109,22 @@
 //}
 
 
+@end
+
+@implementation UIView (FindUIViewController)
+- (UIViewController *) firstAvailableUIViewController {
+    // convenience function for casting and to "mask" the recursive function
+    return (UIViewController *)[self traverseResponderChainForUIViewController];
+}
+
+- (id) traverseResponderChainForUIViewController {
+    id nextResponder = [self nextResponder];
+    if ([nextResponder isKindOfClass:[UIViewController class]]) {
+        return nextResponder;
+    } else if ([nextResponder isKindOfClass:[UIView class]]) {
+        return [nextResponder traverseResponderChainForUIViewController];
+    } else {
+        return nil;
+    }
+}
 @end

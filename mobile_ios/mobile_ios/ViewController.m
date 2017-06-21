@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import <UIKit/UIKit.h>
+#import "MaplatCache.h"
 
 @interface ViewController ()
 
@@ -29,6 +30,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     [NSThread sleepForTimeInterval:10]; //Safariのデバッガを繋ぐための時間。本番では不要。
+    MaplatCache *cache = (MaplatCache *)[NSURLCache sharedURLCache];
+    self.webView.delegate = cache;
     [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://localresource/mobile_sample.html"]]];
 }
 
