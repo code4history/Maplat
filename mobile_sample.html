@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Maplat</title>
+  <meta content="yes" name="apple-mobile-web-app-capable">
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+  <link rel="stylesheet" href="css/slick.css">
+  <link rel="stylesheet" href="css/font-awesome.min.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <div class="container-fluid h100p w100p">
+    <div id="all" class="row-fluid h100p">
+      <div class="row-fluid mainview">
+        <div id="map_div" class="col-xs-12 h100p w100p">
+          <img id="center_circle" style="position:absolute;top:50%;left:50%;margin-top:-10px;margin-left:-10px;" src="./parts/redcircle.png">
+          <div class="slick-box ol-control">
+            <div class="slick-class"></div>
+          </div>
+        </div>
+        <div class="form-group opacity-slider hide">
+          <input type="range" min ="0" max="100" step ="1" value="0" class="form-control">
+        </div>
+      </div>
+      <input type="hidden" name="map_type" id="map_type" value="plat">
+    </div> 
+  </div>
+  <div class="modal" id="poi_info" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel" aria-hidden="true" data-show="true" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&#215;</span><span class="sr-only" data-i18n="html.close"></span>
+          </button>
+          <h4 class="modal-title" id="poi_name"></h4>
+        </div>
+        <div class="modal-body">
+          <p class="col-xs-12 poi_img"><img id="poi_img" src=""></img></p>
+          <p class="recipient" id="poi_address"></p>
+          <p class="recipient" id="poi_desc"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal" id="loadWait" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel" aria-hidden="true" data-show="true" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" data-i18n="html.app_loading_title"></h4>
+        </div>
+        <div class="modal-body">
+          <p class="recipient"><img src="parts/loading.gif"><span data-i18n="html.app_loading_body"></span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal" id="gpsWait" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel" aria-hidden="true" data-show="true" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title"><span data-i18n="html.acquiring_gps"></span></h4>
+        </div>
+        <div class="modal-body">
+          <p id="gps_etc" class="recipient"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal" id="gpsDialog" tabindex="-1" role="dialog" aria-labelledby_="staticModalLabel" aria-hidden_="true" data-show="true" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&#215;</span><span class="sr-only" data-i18n="html.close"></span>
+          </button>
+          <h4 class="modal-title" id="gpsDialogTitle"></h4>
+        </div>
+        <div class="modal-body">
+          <p id="gpsDialogBody" class="recipient"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+<script src="js/require.min.js"></script>
+<script>
+var jsBridge = jsBridge || {};
+jsBridge.callWeb2App = jsBridge.callWeb2App || function (key, data) {
+    window.location = "jsBridge://call?key=" + encodeURIComponent(key) + "&value=" + encodeURIComponent(data);
+};
+jsBridge.callApp2Web = function (key, data) {
+    var func = jsBridge._cA2W[key];
+    func(data);
+};
+jsBridge._cA2W = {};
+require(['js/config'],function() {
+    require(['app'], function (app) {
+        var option = {
+            appid: 'mobile_sample',
+            mobile_if: true,
+            no_rotate: true
+        };
+        app(option).then(function(_cA2W){
+            jsBridge._cA2W = _cA2W;
+            jsBridge.callWeb2App('callApp2Web', 'ready');
+        });
+    });
+});
+</script>
+</html>

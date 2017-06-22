@@ -41,9 +41,10 @@ define(['ol-custom', 'aigle'], function(ol, Promise) {
     ol.source.HistMap = function(optOptions) {
         var options = optOptions || {};
         options.wrapX = false;
+        if (!options.imageExtention) options.imageExtention = 'jpg';
         if (options.mapID) {
             this.mapID = options.mapID;
-            options.url = options.url || 'tiles/' + options.mapID + '/{z}/{x}/{y}.jpg';
+            options.url = options.url || 'tiles/' + options.mapID + '/{z}/{x}/{y}.' + options.imageExtention;
         }
 
         if (options.urls) {
