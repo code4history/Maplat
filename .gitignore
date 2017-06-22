@@ -6,3 +6,10 @@ test*
 warperpass.json
 s3bucket.json
 EXGW/s3
+local.properties
+mobile_android.iml
+.gradle
+app.iml
+build
+project.xcworkspace
+xcuserdata
