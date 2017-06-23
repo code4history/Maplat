@@ -19,15 +19,23 @@
         padding: 0;
     }
     .swiper-container {
-        width: 100%;
-        height: 300px;
-        margin: 20px auto;
+        /*width: 100%;
+        height: 300px;*/
+        position: absolute;
+        bottom: .5em;
+        left: calc(50% - 90px);
+        width: 140px;
+        background-color: rgba(32,32,32,0.5);
+        height: 70px;
+        padding-top: 10px;
+        /*margin: 20px auto;*/
     }
     .swiper-slide {
         text-align: center;
         font-size: 18px;
         background: #fff;
-        width: 60%;
+        width: 60px;
+        height:60px;
 
         /* Center slide text vertically */
         display: -webkit-box;
@@ -77,10 +85,11 @@
     <script>
     var swiper = new Swiper('.swiper-container', {
         //pagination: '.swiper-pagination',
-        slidesPerView: 4,
+        slidesPerView: 2,
         centeredSlides: true,
         paginationClickable: true,
-        spaceBetween: 30
+        spaceBetween: 10,
+        loop: true
     });
     </script>
 </body>
