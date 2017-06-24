@@ -24,18 +24,18 @@
         position: absolute;
         bottom: .5em;
         left: calc(50% - 90px);
-        width: 140px;
+        width: 180px;
         background-color: rgba(32,32,32,0.5);
-        height: 70px;
-        padding-top: 10px;
+        height: 56px;
+        padding-top: 4px;
         /*margin: 20px auto;*/
     }
     .swiper-slide {
         text-align: center;
         font-size: 18px;
-        background: #fff;
-        width: 60px;
-        height:60px;
+        background-color: rgba(0,0,0,0);
+        width: 80px;
+        height:52px;
 
         /* Center slide text vertically */
         display: -webkit-box;
@@ -51,6 +51,34 @@
         -webkit-align-items: center;
         align-items: center;
     }
+    .swiper-slide.selected {
+        background-color: rgba(0,0,255,0.1);
+    }
+    .swiper-slide img {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        margin: auto;
+        z-index: 0;
+    }
+
+    .swiper-slide div {
+        font-size: 1em;
+        position: absolute;
+        right: 0;
+        bottom: .1em;
+        left: 0;
+        margin: auto;
+        z-index: 1;
+        color: white;
+        background-color: rgba(32,32,32,0.5);
+    }
+    .swiper-slide div.minimize {
+        font-size: .8em;
+    }
+
     /*.swiper-slide:nth-child(2n) {
         width: 40%;
     }
@@ -63,16 +91,16 @@
     <!-- Swiper -->
     <div class="swiper-container">
         <div class="swiper-wrapper">
-            <div class="swiper-slide">Slide 1</div>
-            <div class="swiper-slide">Slide 2</div>
-            <div class="swiper-slide">Slide 3</div>
-            <div class="swiper-slide">Slide 4</div>
-            <div class="swiper-slide">Slide 5</div>
-            <div class="swiper-slide">Slide 6</div>
-            <div class="swiper-slide">Slide 7</div>
-            <div class="swiper-slide">Slide 8</div>
-            <div class="swiper-slide">Slide 9</div>
-            <div class="swiper-slide">Slide 10</div>
+            <div class="swiper-slide" data="data1"><img crossorigin="anonymous" src="../tmbs/gsi_menu.jpg"><div>Label1</div></div>
+            <div class="swiper-slide" data="data2"><img crossorigin="anonymous" src="../tmbs/morioka_menu.jpg"><div>Label2</div></div>
+            <div class="swiper-slide" data="data3"><img crossorigin="anonymous" src="../tmbs/osm_menu.jpg"><div>Label3</div></div>
+            <div class="swiper-slide" data="data4"><img crossorigin="anonymous" src="../tmbs/gsi_menu.jpg"><div>Label4</div></div>
+            <div class="swiper-slide" data="data5"><img crossorigin="anonymous" src="../tmbs/morioka_menu.jpg"><div>Label5</div></div>
+            <div class="swiper-slide" data="data6"><img crossorigin="anonymous" src="../tmbs/osm_menu.jpg"><div>Label6</div></div>
+            <div class="swiper-slide" data="data7"><img crossorigin="anonymous" src="../tmbs/gsi_menu.jpg"><div>Label7</div></div>
+            <div class="swiper-slide" data="data8"><img crossorigin="anonymous" src="../tmbs/morioka_menu.jpg"><div class="minimize">Label8</div></div>
+            <div class="swiper-slide" data="data9"><img crossorigin="anonymous" src="../tmbs/osm_menu.jpg"><div>Label9</div></div>
+            <div class="swiper-slide" data="data10"><img crossorigin="anonymous" src="../tmbs/gsi_menu.jpg"><div>Label10</div></div>
         </div>
         <!-- Add Pagination -->
         <div class="swiper-pagination"></div>
@@ -84,13 +112,24 @@
     <!-- Initialize Swiper -->
     <script>
     var swiper = new Swiper('.swiper-container', {
-        //pagination: '.swiper-pagination',
         slidesPerView: 2,
         centeredSlides: true,
-        paginationClickable: true,
         spaceBetween: 10,
-        loop: true
+        loop: true,
+        onClick: function(sw, e) {
+            e.preventDefault();
+            if (!sw.clickedSlide) return;
+            console.log(sw.clickedSlide.getAttribute("data"));
+            for (var i=0; i<sw.slides.length;i++) {
+                if (i == sw.clickedIndex) {
+                    sw.slides[i].classList.add("selected");
+                } else {
+                    sw.slides[i].classList.remove("selected");
+                }
+            }
+        }
     });
+    swiper.on
     </script>
 </body>
 </html>
