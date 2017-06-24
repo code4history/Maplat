@@ -162,14 +162,16 @@ define(['ol-custom', 'aigle'], function(ol, Promise) {
                 var image = tile.getImage();
                 var tImage = tile.tImage;
                 if (!tImage) {
-                    tImage = $('<img>').get(0);
+                    tImage = document.createElement('img');
                     tImage.crossOrigin = 'Anonymous';
                     tile.tImage = tImage;
                 }
                 tImage.onload = tImage.onerror = function() {
                     if (tImage.width && tImage.height) {
                         if (tImage.width != tileSize || tImage.height != tileSize) {
-                            var tCanv = $(canvBase).get(0);
+                            var tmp = document.createElement('div');
+                            tmp.innerHTML = canvBase;
+                            var tCanv = tmp.childNodes[0];
                             var ctx = tCanv.getContext('2d');
                             ctx.drawImage(tImage, 0, 0);
                             var dataUrl = tCanv.toDataURL();

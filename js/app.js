@@ -1,5 +1,5 @@
-define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
-    function($, Promise, ol, sprintf, i18n, i18nxhr, swiper, bsn) {
+define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
+    function(Promise, ol, sprintf, i18n, i18nxhr, swiper, bsn) {
     (function() {
         var mapDiv = document.getElementById('map_div');
         var lastTouch = 0;
@@ -140,7 +140,7 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'b
             var node = tmp.childNodes[i];
 
             // SCRIPT要素は新たに生成し直さなければ実行されない
-            if (node.tagName.toLowerCase() === 'script') {
+            if (node.tagName && node.tagName.toLowerCase() === 'script') {
                 var script = document.createElement('script');
                 if (node.type) {
                     script.type = node.type;
@@ -202,15 +202,18 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'b
                 };
                 resolve(appData);
             }) : new Promise(function(resolve, reject) {
-                $.get('json/' + appid + '.json', function(appData) {
-                    resolve(appData);
-                }, 'json').fail(function(e) {
-                    // I don't know the reason, but UIWebView's jQuery comes here even if json is successfully loaded.
-                    if (e.responseJSON) {
-                        resolve(e.responseJSON);
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', 'json/' + appid + '.json', true);
+                xhr.responseType = 'json';
+
+                xhr.onload = function(e) {
+                    if (this.status == 200) {
+                        resolve(this.response);
+                    } else {
+                        resolve(this.response);
                     }
-                    // console.log('error');
-                });
+                };
+                xhr.send();
             });
 
         var i18nPromise = new Promise(function(resolve, reject) {
@@ -343,14 +346,18 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'b
                     }
                 });
                 if (fakeGps) {
-                    $('#gps_etc').append(sprintf(t('app.fake_explanation'), fakeCenter, fakeRadius));
+                    var newElem = createElement(sprintf(t('app.fake_explanation'), fakeCenter, fakeRadius))[0];
+                    var elem = document.querySelector('#gps_etc');
+                    elem.appendChild(newElem);
                 } else {
-                    $('#gps_etc').append(t('app.acquiring_gps_desc'));
+                    var newElem = createElement(t('app.acquiring_gps_desc'))[0];
+                    var elem = document.querySelector('#gps_etc');
+                    elem.appendChild(newElem);
                 }
             }
             var pois = appData.pois;
 
-            $('title').html(appName);
+            document.querySelector('title').innerHTML = appName;
 
             var dataSource = appData.sources;
 
@@ -376,7 +383,7 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'b
                     var index = sources.length - 1;
                     homePos = sources[index].home_position;
                     defZoom = sources[index].merc_zoom;
-                    $('title').html(sources[index].title);
+                    document.querySelector('title').innerHTML = sources[index].title;
                 }
 
                 var cache = [];
@@ -487,15 +494,15 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'b
                                     backMap.exchangeSource();
                                 }
                                 if (!(to instanceof ol.source.NowMap) || to instanceof ol.source.TmsMap) {
-                                    $('.opacity-slider input').removeProp('disabled');
+                                    document.querySelector('.opacity-slider input').removeAttribute('disabled');
                                 } else {
-                                    $('.opacity-slider input').prop('disabled', true);
+                                    document.querySelector('.opacity-slider input').setAttribute('disabled', true);
                                 }
                             }
                             if (to instanceof ol.source.TmsMap) {
                                 mapObject.setLayer(to);
                                 if (!(from instanceof ol.source.NowMap)) mapObject.exchangeSource(backSrc || now);
-                                $('.opacity-slider input').removeProp('disabled');
+                                document.querySelector('.opacity-slider input').removeAttribute('disabled');
                             } else {
                                 mapObject.setLayer();
                                 mapObject.exchangeSource(to);
@@ -505,15 +512,16 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'b
                             // and Changing "from" content must be finished before "postrender" event
                             from = to;
 
-                            mapObject.setOpacity($('.opacity-slider input').val());
+                            var opacity = document.querySelector('.opacity-slider input').value;
+                            mapObject.setOpacity(opacity);
                             var view = mapObject.getView();
                             if (to.insideCheckHistMapCoords(size[0])) {
                                 view.setCenter(size[0]);
                                 view.setZoom(size[1]);
                                 view.setRotation(size[2]);
                             } else if (!init) {
-                                $('#gpsDialogTitle').text(t('app.out_of_map'));
-                                $('#gpsDialogBody').text(t('app.out_of_map_area'));
+                                document.querySelector('#gpsDialogTitle').innerText = t('app.out_of_map');
+                                document.querySelector('#gpsDialogBody').innerText = t('app.out_of_map_area');
                                 var gdModalElm = document.getElementById('gpsDialog');
                                 var gdModal = new bsn.Modal(gdModalElm);
                                 gdModal.show();
@@ -558,11 +566,11 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'b
                         var json = JSON.stringify(data);
                         jsBridge.callWeb2App('poiClick', json);
                     } else {
-                        $('#poi_name').text(data.name);
-                        $('#poi_img').attr('src',
+                        document.querySelector('#poi_name').innerText = data.name;
+                        document.querySelector('#poi_img').setAttribute('src',
                             data.image.match(/^http/) ? data.image : 'img/' + data.image);
-                        $('#poi_address').text(data.address);
-                        $('#poi_desc').html(data.desc.replace(/\n/g, '<br>'));
+                        document.querySelector('#poi_address').innerText = data.address;
+                        document.querySelector('#poi_desc').innerHTML = data.desc.replace(/\n/g, '<br>');
                         var piModalElm = document.getElementById('poi_info');
                         var piModal = new bsn.Modal(piModalElm);
                         piModal.show();
@@ -592,10 +600,10 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'b
                             function(feature) {
                                 if (feature.get('datum')) return feature;
                             });
-                        $('#' + target).css('cursor', feature ? 'pointer' : '');
+                        document.querySelector('#' + target).style.cursor = feature ? 'pointer' : '';
                         return;
                     }
-                    $('#' + target).css('cursor', '');
+                    document.querySelector('#' + target).style.cursor = '';
                 };
                 mapObject.on('pointermove', moveHandler);
 
@@ -637,11 +645,12 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'b
                 };
                 mapObject.on('postrender', backMapMove);
 
+                var slider = document.querySelector('.opacity-slider input');
                 var opacityChange = function() {
-                    mapObject.setOpacity($('.opacity-slider input').val());
+                    mapObject.setOpacity(slider.value);
                 };
-                $('.opacity-slider input').on('input', opacityChange);
-                $('.opacity-slider input').on('change', opacityChange);
+                slider.addEventListener('input', opacityChange);
+                slider.addEventListener('change', opacityChange);
 
                 if (mobileIF) return {
                     'setMarker': function(dataStr) {
