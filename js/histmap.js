@@ -23,7 +23,8 @@ define(['ol-custom', 'aigle'], function(ol, Promise) {
             label: 'GSI Map',
             attr: 'The Geospatial Information Authority of Japan',
             maptype: 'base',
-            url: 'https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png'
+            url: 'https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png',
+            maxZoom: 18
         }
     };
     var i18nData = {
