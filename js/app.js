@@ -1,5 +1,5 @@
 define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'swiper', 'bootstrap'],
-    function($, Promise, ol, sprintf, i18n, i18nxhr, ji18n, swiper) {
+    function($, Promise, ol, sprintf, i18n, i18nxhr, ji18n, swiper, bsn) {
     (function() {
         var mapDiv = document.getElementById('map_div');
         var lastTouch = 0;
@@ -125,6 +125,41 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'sw
             omitCheck(swiperItem);
         }
     };
+    var createElement = function(domStr) {
+        var context = document,
+            fragment = context.createDocumentFragment(),
+            nodes = [],
+            i = 0, tmp;
+
+        // ダミーのDIV要素を作成して中にテキストを挿入
+        tmp = fragment.appendChild( context.createElement('div'));
+        tmp.innerHTML = domStr;
+
+        for ( ; i < tmp.childNodes.length; i++) {
+            // ダミーのDIV要素からHTML要素としてchildNodesで取り出せる
+            var node = tmp.childNodes[i];
+
+            // SCRIPT要素は新たに生成し直さなければ実行されない
+            if (node.tagName.toLowerCase() === 'script') {
+                var script = document.createElement('script');
+                if (node.type) {
+                    script.type = node.type;
+                }
+                if (node.src) {
+                    script.src = node.src;
+                } else {
+                    script.text = node.text;
+                }
+                nodes[i] = script;
+            } else {
+                // SCRIPT以外の要素
+                nodes[i] = node;
+            }
+        }
+
+        // HTML要素配列を返す
+        return nodes;
+    };
     return function(appOption) {
         var mapType = appOption.stroly ? 'stroly' : appOption.drumsey ? 'drumsey' : appOption.warper ? 'warper' : null;
         var appid = appOption.appid || (mapType ? appOption[mapType] : 'sample');
@@ -140,10 +175,10 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'sw
         var overlay = appOption.overlay || false;
         var noRotate = appOption.no_rotate || false;
         if (overlay) {
-            $('body').addClass('with-opacity');
+            document.querySelector('body').classList.add('with-opacity');
             if (!noUI) {
-                $('.opacity-slider').removeClass('hide');
-                $('.opacity-slider input').prop('disabled', true);
+                document.querySelector('.opacity-slider').classList.remove('hide');
+                document.querySelector('.opacity-slider input').setAttribute('disabled', true);
             }
         }
         if (noUI) {
@@ -202,9 +237,11 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'sw
             var changeMapCache;
             ol.source.HistMap.setI18n(i18n, t);
 
-            $('#all').show();
+            document.querySelector('#all').style.display = null;
             if (!noUI) {
-                $('#loadWait').modal();
+                var lwModalElm = document.getElementById('loadWait');
+                var lwModal = new bsn.Modal(lwModalElm);
+                lwModal.show();
                 var slidesPerView = 2;
                 swiper = new Swiper('.swiper-container', {
                     slidesPerView: slidesPerView,
@@ -248,8 +285,10 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'sw
             var backMap = null;
             var mapDiv = 'map_div';
             var frontDiv = mapDiv + '_front';
-            $('#' + mapDiv).prepend('<div id="' + frontDiv + '" class="map" style="top:0; left:0; right:0; bottom:0; ' +
-                'position:absolute;"></div>');
+            var newElem = createElement('<div id="' + frontDiv + '" class="map" style="top:0; left:0; right:0; bottom:0; ' +
+                'position:absolute;"></div>')[0];
+            var elem = document.querySelector('#' + mapDiv);
+            elem.insertBefore(newElem, elem.firstChild);
             var mapObject = new ol.MaplatMap({
                 div: frontDiv,
                 off_control: noUI ? true : false,
@@ -258,8 +297,10 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'sw
             var backDiv = null;
             if (overlay) {
                 backDiv = mapDiv + '_back';
-                $('#' + mapDiv).prepend('<div id="' + backDiv + '" class="map" style="top:0; left:0; right:0; bottom:0; ' +
-                    'position:absolute;"></div>');
+                var newElem = createElement('<div id="' + backDiv + '" class="map" style="top:0; left:0; right:0; bottom:0; ' +
+                    'position:absolute;"></div>')[0];
+                var elem = document.querySelector('#' + mapDiv);
+                elem.insertBefore(newElem, elem.firstChild);
                 backMap = new ol.MaplatMap({
                     off_control: true,
                     div: backDiv
@@ -267,24 +308,33 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'sw
             }
             if (!noUI) {
                 mapObject.on('gps_request', function() {
-                    $('#gpsWait').modal();
+                    var gwModalElm = document.getElementById('gpsWait');
+                    var gwModal = new bsn.Modal(gwModalElm);
+                    gwModal.show();
                 });
                 mapObject.on('gps_result', function(evt) {
-                    var shown = ($('#gpsWait').data('bs.modal') || {isShown: false}).isShown;
+                    var gwElm = document.querySelector('#gpsWait.in');
+                    var shown = gwElm ? true : false;
                     var result = evt.frameState;
                     if (result && result.error) {
                         currentPosition = null;
                         if (result.error == 'gps_out' && shown) {
-                            $('#gpsWait').modal('hide');
-                            $('#gpsDialogTitle').text(t('app.out_of_map'));
-                            $('#gpsDialogBody').text(t('app.out_of_map_desc'));
-                            $('#gpsDialog').modal();
+                            var gwModalElm = document.getElementById('gpsWait');
+                            var gwModal = new bsn.Modal(gwModalElm);
+                            gwModal.hide();
+                            document.querySelector('#gpsDialogTitle').innerText = t('app.out_of_map');
+                            document.querySelector('#gpsDialogBody').innerText = t('app.out_of_map_desc');
+                            var gdModalElm = document.getElementById('gpsDialog');
+                            var gdModal = new bsn.Modal(gdModalElm);
+                            gdModal.show();
                         }
                     } else {
                         currentPosition = result;
                     }
                     if (shown) {
-                        $('#gpsWait').modal('hide');
+                        var gwModalElm = document.getElementById('gpsWait');
+                        var gwModal = new bsn.Modal(gwModalElm);
+                        gwModal.hide();
                     }
                 });
                 if (fakeGps) {
@@ -312,7 +362,9 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'sw
 
             return Promise.all(sourcePromise).then(function(sources) {
                 if (!noUI) {
-                    $('#loadWait').modal('hide');
+                    var lwModalElm = document.getElementById('loadWait');
+                    var lwModal = new bsn.Modal(lwModalElm);
+                    lwModal.hide();
                 }
 
                 if (mapType) {
@@ -457,7 +509,9 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'sw
                             } else if (!init) {
                                 $('#gpsDialogTitle').text(t('app.out_of_map'));
                                 $('#gpsDialogBody').text(t('app.out_of_map_area'));
-                                $('#gpsDialog').modal();
+                                var gdModalElm = document.getElementById('gpsDialog');
+                                var gdModal = new bsn.Modal(gdModalElm);
+                                gdModal.show();
                                 to.goHome();
                             }
                             to.setGPSMarker(currentPosition, true);
@@ -504,7 +558,9 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'sw
                             data.image.match(/^http/) ? data.image : 'img/' + data.image);
                         $('#poi_address').text(data.address);
                         $('#poi_desc').html(data.desc.replace(/\n/g, '<br>'));
-                        $('#poi_info').modal();
+                        var piModalElm = document.getElementById('poi_info');
+                        var piModal = new bsn.Modal(piModalElm);
+                        piModal.show();
                     }
                 }
 

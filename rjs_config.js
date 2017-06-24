@@ -27,9 +27,6 @@
         'tps': {
             exports: 'ThinPlateSpline'
         },
-        'bootstrap': {
-            deps: ['jquery']
-        },
         'app': {
             deps: ['histmap', 'histmap_tps', 'histmap_tin', 'histmap_external']
         }
