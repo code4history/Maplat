@@ -1,5 +1,5 @@
-define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bootstrap', 'slick'],
-    function($, Promise, ol, sprintf, i18n, i18nxhr, ji18n) {
+define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'swiper', 'bootstrap'],
+    function($, Promise, ol, sprintf, i18n, i18nxhr, ji18n, swiper) {
     (function() {
         var mapDiv = document.getElementById('map_div');
         var lastTouch = 0;
@@ -118,11 +118,11 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bo
                 thisSpan[i].style.display = 'none';
             }
         };
-        var slickItems = document.querySelectorAll('.slick-item div');
-        for (var i = 0; i < slickItems.length; i++) {
-            var slickItem = slickItems[i];
-            stringSplit(slickItem);
-            omitCheck(slickItem);
+        var swiperItems = document.querySelectorAll('.swiper-slide div');
+        for (var i = 0; i < swiperItems.length; i++) {
+            var swiperItem = swiperItems[i];
+            stringSplit(swiperItem);
+            omitCheck(swiperItem);
         }
     };
     return function(appOption) {
@@ -147,7 +147,7 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bo
             }
         }
         if (noUI) {
-            $('.slick-box').addClass('hide');
+            document.querySelector('.swiper-container').style.display = 'none';
         }
         var appPromise = mapType ?
             new Promise(function(resolve, reject) {
@@ -198,19 +198,42 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bo
             var appData = result[1];
             var i18n = result[0][1];
             var t = result[0][0];
+            var swiper;
+            var changeMapCache;
             ol.source.HistMap.setI18n(i18n, t);
 
             $('#all').show();
             if (!noUI) {
                 $('#loadWait').modal();
-                $('.slick-class').slick({
-                    prevArrow: '',
-                    nextArrow: '',
-                    centerMode: true,
-                    focusOnSelect: true,
-                    slidesToScroll: 3,
-                    centerPadding: '40px'
+                var slidesPerView = 2;
+                swiper = new Swiper('.swiper-container', {
+                    slidesPerView: slidesPerView,
+                    centeredSlides: true,
+                    spaceBetween: 10,
+                    loop: true,
+                    onClick: function(sw, e) {
+                        e.preventDefault();
+                        if (!sw.clickedSlide) return;
+                        var slide = sw.clickedSlide;
+                        changeMapCache(false, slide.getAttribute('data'));
+                        sw.setSlideIndexAsSelected(slide.getAttribute('data-swiper-slide-index'));
+                    }
                 });
+                swiper.setSlideIndex = function(index) {
+                    swiper.slideTo(index + slidesPerView); // <= Maybe bug of swiper;
+                    swiper.setSlideIndexAsSelected(index);
+                };
+                swiper.setSlideIndexAsSelected = function(index) {
+                    var sliders = document.querySelectorAll('.swiper-slide');
+                    for (var i=0; i<sliders.length; i++) {
+                        var slider = sliders[i];
+                        if (slider.getAttribute('data-swiper-slide-index') == index) {
+                            slider.classList.add('selected');
+                        } else {
+                            slider.classList.remove('selected');
+                        }
+                    }
+                };
             }
 
             var from;
@@ -301,13 +324,11 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bo
 
                 var cache = [];
                 var cacheHash = {};
-                var clickAvoid = false;
                 for (var i=0; i<sources.length; i++) {
                     var source = sources[i];
                     if (!noUI) {
-                        $('.slick-class').slick('slickAdd', '<div class="slick-item" data="' + source.sourceID + '">' +
+                        swiper.appendSlide('<div class="swiper-slide" data="' + source.sourceID + '">' +
                             '<img crossorigin="anonymous" src="' + source.thumbnail + '"><div>' + source.label + '</div></div>');
-                        if (i == sources.length - 1) $('.slick-class').slick('slickGoTo', sources.length - 1);
                     }
                     if (mapType) {
                         source.home_position = homePos;
@@ -318,19 +339,9 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bo
                     cacheHash[source.sourceID] = source;
                 }
                 if (!noUI) {
+                    swiper.on;
+                    swiper.setSlideIndex(sources.length - 1);
                     ellips();
-
-                    $('.slick-item').on('click', function() {
-                        if (!clickAvoid) {
-                            changeMap(false, $(this).attr('data'));
-                        }
-                    });
-                    $('.slick-class').on('beforeChange', function(ev, slick, currentSlide, nextSlide) {
-                        clickAvoid = currentSlide != nextSlide;
-                    });
-                    $('.slick-class').on('afterChange', function(ev, slick, currentSlide) {
-                        clickAvoid = false;
-                    });
                 }
 
                 var initial = cache[cache.length - 1];
@@ -480,6 +491,7 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bo
                         });
                     }
                 }
+                changeMapCache = changeMap;
 
                 function showInfo(data) {
                     if (mobileIF) {
