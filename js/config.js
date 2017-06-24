@@ -8,7 +8,6 @@ require.config({
     paths: {
         // 'jquery': 'jquery-1.11.2.min',
         // 'i18n': 'i18next.min',
-        // 'ji18n': 'jquery-i18next.min',
         'i18nxhr': 'i18nextXHRBackend.min',
         // 'swiper': 'swiper.min',
         // 'turf': 'turf.min',
@@ -18,7 +17,6 @@ require.config({
         'tps': 'thinplatespline',
         'jquery': '//code.jquery.com/jquery-1.11.2.min',
         'i18n': '//cdnjs.cloudflare.com/ajax/libs/i18next/4.1.4/i18next.min',
-        'ji18n': '//cdnjs.cloudflare.com/ajax/libs/jquery-i18next/1.2.0/jquery-i18next.min',
         'turf': '//npmcdn.com/@turf/turf@3.7.0/turf.min',
         'swiper': '//cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/js/swiper.min',
         // "ol3" : "ol-debug",
@@ -31,9 +29,6 @@ require.config({
     shim: {
         'jquery': {
             exports: '$'
-        },
-        'ji18n': {
-            deps: ['i18n', 'jquery']
         },
         'i18nxhr': {
             deps: ['i18n']

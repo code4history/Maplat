@@ -5,7 +5,6 @@
     paths: {
         'jquery': 'empty:',
         'i18n': 'empty:',
-        'ji18n': 'empty:',
         'i18nxhr': 'i18nextXHRBackend.min',
         'turf': 'empty:',
         'swiper': 'empty:',

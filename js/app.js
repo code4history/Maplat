@@ -1,5 +1,5 @@
-define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'swiper', 'bootstrap'],
-    function($, Promise, ol, sprintf, i18n, i18nxhr, ji18n, swiper, bsn) {
+define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
+    function($, Promise, ol, sprintf, i18n, i18nxhr, swiper, bsn) {
     (function() {
         var mapDiv = document.getElementById('map_div');
         var lastTouch = 0;
@@ -221,8 +221,13 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'sw
                     loadPath: 'locales/{{lng}}/{{ns}}.json'
                 }
             }, function(err, t) {
-                ji18n.init(i18n, $);
-                $('body').localize();
+                var i18nTargets =document.querySelectorAll('[data-i18n]');
+                for (var i=0; i<i18nTargets.length; i++) {
+                    var target = i18nTargets[i];
+                    var key = target.getAttribute('data-i18n');
+                    target.innerText = t(key);
+                }
+
                 resolve([t, i18n]);
             });
         });
