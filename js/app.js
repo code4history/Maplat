@@ -69,17 +69,17 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bo
         var omitMark = '…';
         var omitLine = 2;
         var stringSplit = function(element) {
-            var splitArr = element.text().split('');
+            var splitArr = element.innerText.split('');
             var joinString = '';
             for (var i = 0; i < splitArr.length; i++) {
                 joinString += '<span>' + splitArr[i] + '</span>';
             }
             joinString += '<span class="omit-mark">' + omitMark + '</span>';
-            element.html(joinString);
+            element.innerHTML = joinString;
         };
         var omitCheck = function(element) {
-            var thisSpan = element.children('span');
-            var omitSpan = element.children('.omit-mark');
+            var thisSpan = element.querySelectorAll('span');
+            var omitSpan = element.querySelector('.omit-mark');
             var lineCount = 0;
             var omitCount;
 
@@ -87,19 +87,21 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bo
                 return;
             }
 
-            thisSpan.hide();
-            thisSpan.eq(0).show();
-            omitSpan.show();
-            var divHeight = element.height();
+            thisSpan[0].style.display = null;
+            for (var i=1; i < thisSpan.length; i++) {
+                thisSpan[i].style.display = 'none';
+            }
+            omitSpan.style.display = null;
+            var divHeight = element.offsetHeight;
             var minimizeFont = false;
             for (var i = 1; i < thisSpan.length - 1; i++) {
-                thisSpan.eq(i).show();
-                if(element.height() > divHeight) {
+                thisSpan[i].style.display = null;
+                if(element.offsetHeight > divHeight) {
                     if (!minimizeFont) {
                         minimizeFont = true;
-                        element.addClass('minimize');
+                        element.classList.add('minimize');
                     } else {
-                        divHeight = element.height();
+                        divHeight = element.offsetHeight;
                         lineCount++;
                     }
                 }
@@ -108,18 +110,19 @@ define(['jquery', 'aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'ji18n', 'bo
                     break;
                 }
                 if(i >= thisSpan.length - 2) {
-                    omitSpan.hide();
+                    omitSpan.style.display ='none';
                     return;
                 }
             }
             for (var i = omitCount; i < thisSpan.length - 1; i++) {
-                thisSpan.eq(i).hide();
+                thisSpan[i].style.display = 'none';
             }
         };
-        for (var i = 0; i < $('.slick-item div').length; i++) {
-            var element = $('.slick-item div').eq(i);
-            stringSplit(element);
-            omitCheck(element);
+        var slickItems = document.querySelectorAll('.slick-item div');
+        for (var i = 0; i < slickItems.length; i++) {
+            var slickItem = slickItems[i];
+            stringSplit(slickItem);
+            omitCheck(slickItem);
         }
     };
     return function(appOption) {

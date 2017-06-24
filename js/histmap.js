@@ -31,10 +31,10 @@ define(['ol-custom', 'aigle'], function(ol, Promise) {
             ja: 'OSM(現在)'
         },
         'The Geospatial Information Authority of Japan': {
-            ja: '地理院地図'
+            ja: '国土地理院'
         },
         'GSI Map': {
-            ja: '地理院'
+            ja: '地理院地図'
         }
     };
 

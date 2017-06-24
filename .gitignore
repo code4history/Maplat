@@ -13,3 +13,4 @@ app.iml
 build
 project.xcworkspace
 xcuserdata
+*.qgs
