@@ -1,0 +1,29 @@
+html {
+  height: 100vh;
+}
+
+body {
+  padding-top: 70px;
+  padding-bottom: 30px;
+  height: 100%;
+}
+
+.container {
+  width: auto;
+}
+
+.container.main {
+  height: 100%; /*calc(100vh - 71px );*/
+}
+
+.theme-dropdown .dropdown-menu {
+  position: static;
+  display: block;
+  margin-bottom: 20px;
+}
+
+.h100 {
+  height: 100%;
+}
+
+
