@@ -6,20 +6,13 @@ require.config({
         }
     },
     paths: {
-        // 'i18n': 'i18next.min',
         'i18nxhr': 'i18nextXHRBackend.min',
-        // 'swiper': 'swiper.min',
-        // 'turf': 'turf.min',
         'ol3': 'ol-debug',
         'ol-custom': 'ol-custom',
-        // 'bootstrap': 'bootstrap-native.min',
         'tps': 'thinplatespline',
-        'i18n': '//cdnjs.cloudflare.com/ajax/libs/i18next/4.1.4/i18next.min',
-        'turf': '//npmcdn.com/@turf/turf@3.7.0/turf.min',
+        'i18n': '//cdnjs.cloudflare.com/ajax/libs/i18next/8.4.2/i18next.min',
+        'turf': '//npmcdn.com/@turf/turf@4.4.0/turf.min',
         'swiper': '//cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/js/swiper.min',
-        // "ol3" : "ol-debug",
-        // "ol-custom" : "ol-custom",
-        // "ol3css" : "../css/ol",
         'bootstrap': '//cdnjs.cloudflare.com/ajax/libs/bootstrap.native/2.0.10/bootstrap-native.min',
         'aigle': 'aigle-es5.min',
         'app': 'app-built'
@@ -37,8 +30,13 @@ require.config({
         'tps': {
             exports: 'ThinPlateSpline'
         },
-        'bootstrap': {
-            deps: ['css!//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min']
+        'app': {
+            deps: [
+                'css!//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min',
+                'css!//cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/css/swiper.min',
+                'css!//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min',
+                'css!../css/ol', 'css!../css/app'
+            ]
         }
     }
 });
