@@ -1,4 +1,4 @@
-@import url('bootstrap.min.css');
+/*@import url('bootstrap.min.css');*/
 @import url('ol.css');
 @import url('swiper.min.css');
 @import url('font-awesome.min.css');
@@ -19,6 +19,10 @@ html,body {
 }
 
 .w100p {
+    padding-right: 0px;
+    padding-left: 0px;
+}
+.container-fluid.w100p {
     padding-right: 0px;
     padding-left: 0px;
 }
