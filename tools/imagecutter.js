@@ -124,5 +124,8 @@ function doCrop(srcFile) {
   });
 }
 
-
+function stop(message) {
+    console.log(message);
+    process.exit(1);
+}
 
