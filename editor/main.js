@@ -7,8 +7,8 @@ var Menu = electron.Menu;
 
 var mainWindow = null;
 
-const appWidth = 1200;
-const appHeight = 800;
+var appWidth = 1200;
+var appHeight = 800;
 
 app.on('window-all-closed', function() {
     if (process.platform != 'darwin')
@@ -46,6 +46,10 @@ var template = [
                         openWindow(baseDir[0]);
                     }
                 });
+            }},
+            {label: 'Create Tile', accelerator: 'Command+T', click: function() {
+                var imagecut = require('./lib/imagecut');
+                imagecut.cutImageToTile();
             }}
         ]
     }, {

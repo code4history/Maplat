@@ -61,10 +61,32 @@
 </nav>
 
 <div class="container main" role="main">
-  <div class="row h100">
-    <div id="map1" class="col-xs-6 h100">
+  <!-- タブ・メニュー -->
+  <ul class="nav nav-tabs">
+    <li><a href="#sampleContentA" data-toggle="tab">タブＡ</a></li>
+    <li class="active"><a href="#sampleContentB" data-toggle="tab">タブＢ</a></li>
+    <li><a href="#sampleContentC" data-toggle="tab">タブＣ</a></li>
+    <li><a href="#sampleContentD" data-toggle="tab">タブＤ</a></li>
+  </ul>
+
+  <!-- タブ内容 -->
+  <div class="tab-content">
+    <div class="tab-pane" id="sampleContentA">
+      <p>タブＡの内容</p>
     </div>
-    <div id="map2" class="col-xs-6 h100">
+    <div class="tab-pane active h100" id="sampleContentB">
+      <div class="row h100">
+        <div id="map1" class="col-xs-6 h100">
+        </div>
+        <div id="map2" class="col-xs-6 h100">
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane" id="sampleContentC">
+      <p>タブＣの内容</p>
+    </div>
+    <div class="tab-pane" id="sampleContentD">
+      <p>タブＤの内容</p>
     </div>
   </div>
 </div> <!-- /container -->
