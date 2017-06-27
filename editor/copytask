@@ -7,3 +7,4 @@ cp ../css/ol.css common/css/ol.css
 cp ../js/bootstrap-native.min.js common/js/bootstrap-native.min.js
 cp ../js/ol-debug.js common/js/ol-debug.js
 cp ../tools/imagecutter.js common/tools/imagecutter.js
+
