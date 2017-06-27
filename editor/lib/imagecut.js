@@ -9,11 +9,14 @@ var imageCutterTool = path.resolve(__dirname + '/../common/tools/imagecutter.js'
 
 var imagecut = {
     cutImageToTile: function(cb) {
-        console.log(imageCutterTool);
-        console.log(sourceFile);
         exec('node ' + imageCutterTool + ' -s ' + sourceFile + ' -o ' + cutOutDirectory, function(err, stdout, stderr) {
-            if (err) { console.log(err); }
+            if (err) cb(false, err);
             console.log(stdout);
+            if (stdout.match(/All done/gm)) {
+                cb(true, null);
+            } else {
+                cb(false, 'Some error occurred');
+            }
         });
     }
 };

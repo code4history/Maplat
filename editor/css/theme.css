@@ -27,10 +27,18 @@ body {
 }
 
 .tab-content {
-  height: calc(100% - 42px);
+  height: calc(100% - 52px);
 }
 
 .auto {
   height: auto;
 }
 
+.title-container {
+  height: 20px;
+}
+
+.nav-tabs>li>a {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}

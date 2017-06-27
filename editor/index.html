@@ -16,9 +16,6 @@
   <link href="css/non-responsive.css" rel="stylesheet">
   <!-- Bootstrap theme -->
   <link href="common/css/bootstrap-theme.min.css" rel="stylesheet">
-  <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-  <link href="css/ie10-viewport-bug-workaround.css" rel="stylesheet">
-
   <!-- Custom styles for this template -->
   <link href="common/css/ol.css" rel="stylesheet">
   <link href="css/theme.css" rel="stylesheet">
@@ -61,20 +58,25 @@
 </nav>
 
 <div class="container main" role="main">
+  <div class="row title-container">
+    <div class="col-xs-12">
+      <span class="map-title">タイトル未設定</span>
+    </div>
+  </div>
   <!-- タブ・メニュー -->
-  <ul class="nav nav-tabs nav-justified">
-    <li><a href="#sampleContentA" data-toggle="tab">タブＡ</a></li>
-    <li class="active"><a href="#sampleContentB" data-toggle="tab">タブＢ</a></li>
-    <li><a href="#sampleContentC" data-toggle="tab">タブＣ</a></li>
-    <li class="disabled"><a href="#sampleContentD">タブＤ</a></li>
+  <ul class="nav nav-tabs nav-justified" role="tablist">
+    <li class="active"><a href="#sampleContentA" data-toggle="tab" role="tab">メタデータ</a></li>
+    <li><a href="#sampleContentB" data-toggle="tab" role="tab">対応点設定</a></li>
+    <li><a href="#sampleContentC" data-toggle="tab" role="tab">ランドマーク設定</a></li>
+    <li class="disabled"><a href="#sampleContentD" role="tab">タブＤ</a></li>
   </ul>
 
   <!-- タブ内容 -->
   <div class="tab-content">
-    <div class="tab-pane" id="sampleContentA">
+    <div class="tab-pane active" id="sampleContentA">
       <p>タブＡの内容</p>
     </div>
-    <div class="tab-pane active h100" id="sampleContentB">
+    <div class="tab-pane h100" id="sampleContentB">
       <div class="row h100">
         <div id="map1" class="col-xs-6 h100">
         </div>
@@ -91,49 +93,87 @@
   </div>
 </div> <!-- /container -->
 
+<div class="modal" id="staticModal" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel" aria-hidden="true" data-show="true" data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&#215;</span><span class="sr-only">閉じる</span>
+        </button>
+        <h4 class="modal-title">Static Modal タイトル</h4>
+      </div><!-- /modal-header -->
+      <div class="modal-body">
+        <p class="recipient">本文</p>
+        <p>
+          <a class="btn btn-info" href="#001" data-dismiss="modal">data-dismiss 有り</a>
+          <a class="btn btn-info" href="#002">data-dismiss 無し</a>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+        <button type="button" class="btn btn-primary">変更を保存</button>
+      </div>
+    </div> <!-- /.modal-content -->
+  </div> <!-- /.modal-dialog -->
+</div> <!-- /.modal -->
 
 <!-- Bootstrap core JavaScript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
-<script src="common/js/bootstrap-native.min.js"></script>
-<script src="js/docs.min.js"></script>
-<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-<script src="js/ie10-viewport-bug-workaround.js"></script>
+<!--script src="common/js/bootstrap-native.min.js"></script-->
 <script src="common/js/ol-debug.js"></script>
 <script>
-    var map1 = new ol.Map({
-        layers: [
-            new ol.layer.Tile({
-                source: new ol.source.OSM()
-            })
-        ],
-        target: 'map1',
-        controls: ol.control.defaults({
-            attributionOptions: /** @type {olx.control.AttributionOptions} */ ({
-                collapsible: false
-            })
-        }),
-        view: new ol.View({
-            center: [0, 0],
-            zoom: 2
-        })
+    var bsn = require('./common/js/bootstrap-native.min');
+    const {ipcRenderer} = require('electron');
+    var map1;
+    var map2;
+
+    var myModal = new bsn.Modal(document.getElementById('staticModal'), {});
+
+    ipcRenderer.on('showModal', function(event, arg) {
+        myModal.show();
     });
-    var map2 = new ol.Map({
-        layers: [
-            new ol.layer.Tile({
-                source: new ol.source.OSM()
+
+    ipcRenderer.on('hideModal', function(event, arg) {
+        myModal.hide();
+    });
+
+    var myMapTab = document.querySelector('a[href="#sampleContentB"]');
+    myMapTab.addEventListener('shown.bs.tab', function(event) {
+        if (!map1) map1 = new ol.Map({
+            layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.OSM()
+                })
+            ],
+            target: 'map1',
+            controls: ol.control.defaults({
+                attributionOptions: /** @type {olx.control.AttributionOptions} */ ({
+                    collapsible: false
+                })
+            }),
+            view: new ol.View({
+                center: [0, 0],
+                zoom: 2
             })
-        ],
-        target: 'map2',
-        controls: ol.control.defaults({
-            attributionOptions: /** @type {olx.control.AttributionOptions} */ ({
-                collapsible: false
+        });
+        if (!map2) map2 = new ol.Map({
+            layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.OSM()
+                })
+            ],
+            target: 'map2',
+            controls: ol.control.defaults({
+                attributionOptions: /** @type {olx.control.AttributionOptions} */ ({
+                    collapsible: false
+                })
+            }),
+            view: new ol.View({
+                center: [0, 0],
+                zoom: 2
             })
-        }),
-        view: new ol.View({
-            center: [0, 0],
-            zoom: 2
-        })
+        });
     });
 </script>
 </body>
