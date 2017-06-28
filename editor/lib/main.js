@@ -1,6 +1,7 @@
 'use strict';
 
 var electron = require('electron');
+var path = require('path');
 var app = electron.app;
 var BrowserWindow = electron.BrowserWindow;
 var Menu = electron.Menu;
@@ -20,7 +21,8 @@ app.on('ready', function() {
 
     // ブラウザ(Chromium)の起動, 初期画面のロード
     mainWindow = new BrowserWindow({width: appWidth, height: appHeight});
-    mainWindow.loadURL('file://' + __dirname + '/index.html');
+    var indexurl = 'file://' + __dirname.replace(/\\/g, '/') + '/../index.html';
+    mainWindow.loadURL(indexurl);
     mainWindow.setMinimumSize(appWidth, appHeight);
 
     mainWindow.on('closed', function() {
@@ -49,7 +51,7 @@ var template = [
             }},
             {label: 'Create Tile', accelerator: 'Command+T', click: function() {
                 var focused = BrowserWindow.getFocusedWindow();
-                var imagecut = require('./lib/imagecut');
+                var imagecut = require('./imagecut');
                 imagecut.cutImageToTile(function(success, err) {
                     focused.webContents.send('hideModal');
                     if (success) {

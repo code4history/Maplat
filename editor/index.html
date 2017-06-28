@@ -125,8 +125,40 @@
 <script>
     var bsn = require('./common/js/bootstrap-native.min');
     const {ipcRenderer} = require('electron');
-    var map1;
-    var map2;
+    var map1 = new ol.Map({
+        layers: [
+            new ol.layer.Tile({
+                source: new ol.source.OSM()
+            })
+        ],
+        target: 'map1',
+        controls: ol.control.defaults({
+            attributionOptions: /** @type {olx.control.AttributionOptions} */ ({
+                collapsible: false
+            })
+        }),
+        view: new ol.View({
+            center: [0, 0],
+            zoom: 2
+        })
+    });
+    var map2 = new ol.Map({
+        layers: [
+            new ol.layer.Tile({
+                source: new ol.source.OSM()
+            })
+        ],
+        target: 'map2',
+        controls: ol.control.defaults({
+            attributionOptions: /** @type {olx.control.AttributionOptions} */ ({
+                collapsible: false
+            })
+        }),
+        view: new ol.View({
+            center: [0, 0],
+            zoom: 2
+        })
+    });
 
     var myModal = new bsn.Modal(document.getElementById('staticModal'), {});
 
@@ -140,40 +172,8 @@
 
     var myMapTab = document.querySelector('a[href="#sampleContentB"]');
     myMapTab.addEventListener('shown.bs.tab', function(event) {
-        if (!map1) map1 = new ol.Map({
-            layers: [
-                new ol.layer.Tile({
-                    source: new ol.source.OSM()
-                })
-            ],
-            target: 'map1',
-            controls: ol.control.defaults({
-                attributionOptions: /** @type {olx.control.AttributionOptions} */ ({
-                    collapsible: false
-                })
-            }),
-            view: new ol.View({
-                center: [0, 0],
-                zoom: 2
-            })
-        });
-        if (!map2) map2 = new ol.Map({
-            layers: [
-                new ol.layer.Tile({
-                    source: new ol.source.OSM()
-                })
-            ],
-            target: 'map2',
-            controls: ol.control.defaults({
-                attributionOptions: /** @type {olx.control.AttributionOptions} */ ({
-                    collapsible: false
-                })
-            }),
-            view: new ol.View({
-                center: [0, 0],
-                zoom: 2
-            })
-        });
+        map1.updateSize();
+        map2.updateSize();
     });
 </script>
 </body>
