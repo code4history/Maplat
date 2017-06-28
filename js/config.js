@@ -1,10 +1,10 @@
 require.config({
     baseUrl: 'js',
-    map: {
+    /* map: {
         '*': {
             'css': '//cdnjs.cloudflare.com/ajax/libs/require-css/0.1.8/css.min.js'
         }
-    },
+    },*/
     paths: {
         'i18nxhr': 'i18nextXHRBackend.min',
         'ol3': 'ol-debug',
@@ -29,7 +29,7 @@ require.config({
         },
         'tps': {
             exports: 'ThinPlateSpline'
-        },
+        }/* ,
         'app': {
             deps: [
                 'css!//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min',
@@ -37,6 +37,6 @@ require.config({
                 'css!//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min',
                 'css!../css/ol', 'css!../css/app'
             ]
-        }
+        }*/
     }
 });

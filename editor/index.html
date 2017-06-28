@@ -74,7 +74,24 @@
   <!-- タブ内容 -->
   <div class="tab-content">
     <div class="tab-pane active" id="sampleContentA">
-      <p>タブＡの内容</p>
+      <form>
+        <div class="row">
+          <div class="form-group col-xs-5">
+            <label for="mapName">地図名称</label>
+            <input type="text" class="form-control" id="mapName" aria-describedby="mapNameHelp" placeholder="地図名を入力してください">
+            <small id="mapNameHelp" class="form-text text-muted">地図の名称を入力してください。</small>
+          </div>
+          <div class="form-group col-xs-5">
+            <label for="mapID">地図ID</label>
+            <input type="text" class="form-control" id="mapID" aria-describedby="mapIDHelp" placeholder="地図IDを入力してください。">
+            <small id="mapIDHelp" class="form-text text-muted">一意な地図IDを入力してください。自動生成する事もできます。</small>
+          </div>
+          <div class="form-group col-xs-2">
+            <label for="createID" class="w100">　</label>
+            <button type="button" class="btn" id="createID">地図ID生成</button>
+          </div>
+        </div>
+      </form>
     </div>
     <div class="tab-pane h100" id="sampleContentB">
       <div class="row h100">
@@ -120,61 +137,12 @@
 <!-- Bootstrap core JavaScript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
-<!--script src="common/js/bootstrap-native.min.js"></script-->
-<script src="common/js/ol-debug.js"></script>
+<script src="common/js/require.min.js"></script>
 <script>
-    var bsn = require('./common/js/bootstrap-native.min');
-    const {ipcRenderer} = require('electron');
-    var map1 = new ol.Map({
-        layers: [
-            new ol.layer.Tile({
-                source: new ol.source.OSM()
-            })
-        ],
-        target: 'map1',
-        controls: ol.control.defaults({
-            attributionOptions: /** @type {olx.control.AttributionOptions} */ ({
-                collapsible: false
-            })
-        }),
-        view: new ol.View({
-            center: [0, 0],
-            zoom: 2
-        })
+requirejs(['js/config'],function() {
+    requirejs(['app'], function (app) {
     });
-    var map2 = new ol.Map({
-        layers: [
-            new ol.layer.Tile({
-                source: new ol.source.OSM()
-            })
-        ],
-        target: 'map2',
-        controls: ol.control.defaults({
-            attributionOptions: /** @type {olx.control.AttributionOptions} */ ({
-                collapsible: false
-            })
-        }),
-        view: new ol.View({
-            center: [0, 0],
-            zoom: 2
-        })
-    });
-
-    var myModal = new bsn.Modal(document.getElementById('staticModal'), {});
-
-    ipcRenderer.on('showModal', function(event, arg) {
-        myModal.show();
-    });
-
-    ipcRenderer.on('hideModal', function(event, arg) {
-        myModal.hide();
-    });
-
-    var myMapTab = document.querySelector('a[href="#sampleContentB"]');
-    myMapTab.addEventListener('shown.bs.tab', function(event) {
-        map1.updateSize();
-        map2.updateSize();
-    });
+});
 </script>
 </body>
 </html>
