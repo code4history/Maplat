@@ -1,3 +1,8 @@
+@import url('../common/css/bootstrap.min.css');
+@import url('non-responsive.css');
+@import url('../common/css/bootstrap-theme.min.css');
+@import url('../common/css/ol.css');
+
 html {
   height: 100vh;
 }
