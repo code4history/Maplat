@@ -51,4 +51,8 @@ define(['ol3', 'bootstrap'],
             map1.updateSize();
             map2.updateSize();
         });
+
+        var settings = require('electron').remote.require('../lib/settings');
+        alert(settings.getSetting('saveFolder') + "\n" + settings.getSetting('tmpFolder'));
+
     });

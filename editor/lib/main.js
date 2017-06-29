@@ -2,6 +2,7 @@
 
 var electron = require('electron');
 var path = require('path');
+var settings = require('./settings');
 var app = electron.app;
 var BrowserWindow = electron.BrowserWindow;
 var Menu = electron.Menu;

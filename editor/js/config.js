@@ -10,7 +10,7 @@ requirejs.config({
         'bootstrap': '../common/js/bootstrap-native.min',
     },
     shim: {
-        'app': {
+        /* 'app': {
             deps: [
                 'css!../common/css/bootstrap.min',
                 'css!../css/non-responsive',
@@ -18,6 +18,6 @@ requirejs.config({
                 'css!../common/css/ol',
                 'css!../css/theme.css'
             ]
-        }
+        }*/
     }
 });
