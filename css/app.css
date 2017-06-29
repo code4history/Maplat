@@ -1,3 +1,11 @@
+@import url('//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css');
+/* @import url('bootstrap.min.css');*/
+@import url('//cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/css/swiper.min.css');
+/* @import url('swiper.min.css');*/
+@import url('//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+/* @import url('font-awesome.min.css');*/
+@import url('ol.css');
+
 html,body {
     height:100%;
 }
