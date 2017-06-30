@@ -1,0 +1,3 @@
+[submodule "editor/common"]
+	path = editor/common
+	url = https://github.com/code4nara/Maplat.git
