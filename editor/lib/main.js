@@ -36,7 +36,26 @@ var template = [
     {
         label: 'ReadUs',
         submenu: [
-            {label: 'Quit', accelerator: 'Command+Q', click: function () {app.quit();}}
+            {label: 'Quit', accelerator: 'Command+Q', click: function () {app.quit();}},
+            {
+                label: 'Settings',
+                accelerator: 'Command+S',
+                click: function() {
+                    var parent = BrowserWindow.getFocusedWindow();
+                    var child = new BrowserWindow({parent: parent, modal: false, show: false, width: 650, height: 280, resizable: false });
+                    child.loadURL('file://' + __dirname.replace(/\\/g, '/') + '/../settings.html');
+                    var focusRejector = function() {
+                        child.focus();
+                    };
+                    child.once('ready-to-show', function() {
+                        child.show();
+                    });
+                    parent.on('focus', focusRejector);
+                    child.once('close', function() {
+                        parent.removeListener('focus', focusRejector);
+                    });
+                }
+            }
         ]
     }, {
         label: 'File',
