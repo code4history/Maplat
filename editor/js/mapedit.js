@@ -1,6 +1,14 @@
 define(['ol3', 'bootstrap'],
     function(ol, bsn) {
         const {ipcRenderer} = require('electron');
+        var mapID;
+        var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+        for (var i = 0; i < hashes.length; i++) {
+            hash = hashes[i].split('=');
+            if (hash[0] == 'mapid') mapID = hash[1];
+            console.log(mapID);
+        }
+
         var map1 = new ol.Map({
             layers: [
                 new ol.layer.Tile({
