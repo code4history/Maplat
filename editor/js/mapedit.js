@@ -1,13 +1,30 @@
-define(['ol3', 'bootstrap'],
-    function(ol, bsn) {
+define(['ol3', 'bootstrap', 'model/map'],
+    function(ol, bsn, Map) {
         const {ipcRenderer} = require('electron');
+        var backend = require('electron').remote.require('../lib/mapedit');
+        backend.init();
         var mapID;
         var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
         for (var i = 0; i < hashes.length; i++) {
             hash = hashes[i].split('=');
             if (hash[0] == 'mapid') mapID = hash[1];
-            console.log(mapID);
         }
+
+        var mapObject;
+        if (mapID) {
+            var mapIDElm = document.querySelector('#mapID');
+            mapIDElm.value = mapID;
+            mapIDElm.setAttribute('disabled', true);
+            document.querySelector('#createID').setAttribute('disabled', true);
+            backend.request(mapID);
+        } else {
+            mapObject = new Map({});
+        }
+        ipcRenderer.on('mapData', function(event, arg) {
+            mapObject = new Map(arg);
+            console.log(mapObject);
+            document.querySelector('#mapName').value = mapObject.get('title');
+        });
 
         var map1 = new ol.Map({
             layers: [
