@@ -22,7 +22,7 @@ app.on('ready', function() {
 
     // ブラウザ(Chromium)の起動, 初期画面のロード
     mainWindow = new BrowserWindow({width: appWidth, height: appHeight});
-    var indexurl = 'file://' + __dirname.replace(/\\/g, '/') + '/../index.html';
+    var indexurl = 'file://' + __dirname.replace(/\\/g, '/') + '/../maplist.html';
     mainWindow.loadURL(indexurl);
     mainWindow.setMinimumSize(appWidth, appHeight);
 

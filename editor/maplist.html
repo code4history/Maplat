@@ -29,9 +29,9 @@
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-        <li class="active"><a href="#">Home</a></li>
-        <li><a href="#about">About</a></li>
-        <li><a href="#contact">Contact</a></li>
+        <li class="active"><a href="#">地図一覧</a></li>
+        <li><a href="mapedit.html">地図編集</a></li>
+        <!--li><a href="#contact">Contact</a></li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
           <ul class="dropdown-menu">
@@ -43,63 +43,75 @@
             <li><a href="#">Separated link</a></li>
             <li><a href="#">One more separated link</a></li>
           </ul>
-        </li>
+        </li-->
       </ul>
     </div><!--/.nav-collapse -->
   </div>
 </nav>
 
 <div class="container main" role="main">
-  <div class="row title-container">
-    <div class="col-xs-12">
-      <span class="map-title">タイトル未設定</span>
-    </div>
-  </div>
-  <!-- タブ・メニュー -->
-  <ul class="nav nav-tabs nav-justified" role="tablist">
-    <li class="active"><a href="#sampleContentA" data-toggle="tab" role="tab">メタデータ</a></li>
-    <li><a href="#sampleContentB" data-toggle="tab" role="tab">対応点設定</a></li>
-    <li><a href="#sampleContentC" data-toggle="tab" role="tab">ランドマーク設定</a></li>
-    <li class="disabled"><a href="#sampleContentD" role="tab">タブＤ</a></li>
+  <ul id="maplist" class="tiles-wrap animated">
+    <li>
+      <a href="../sample-images/image_1_big.jpg" rel="lightbox">
+        <img src="../sample-images/image_1.jpg" width="200" height="283">
+      </a>
+      <p>1</p>
+    </li>
+    <li>
+      <a href="../sample-images/image_2_big.jpg" rel="lightbox">
+        <img src="../sample-images/image_2.jpg" width="200" height="300">
+      </a>
+      <p>2</p>
+    </li>
+    <li>
+      <a href="../sample-images/image_3_big.jpg" rel="lightbox">
+        <img src="../sample-images/image_3.jpg" width="200" height="252">
+      </a>
+      <p>3</p>
+    </li>
+    <li>
+      <a href="../sample-images/image_4_big.jpg" rel="lightbox">
+        <img src="../sample-images/image_4.jpg" width="200" height="158">
+      </a>
+      <p>4</p>
+    </li>
+    <li>
+      <a href="../sample-images/image_5_big.jpg" rel="lightbox">
+        <img src="../sample-images/image_5.jpg" width="200" height="300">
+      </a>
+      <p>5</p>
+    </li>
+    <li>
+      <a href="../sample-images/image_6_big.jpg" rel="lightbox">
+        <img src="../sample-images/image_6.jpg" width="200" height="297">
+      </a>
+      <p>6</p>
+    </li>
+    <li>
+      <a href="../sample-images/image_7_big.jpg" rel="lightbox">
+        <img src="../sample-images/image_7.jpg" width="200" height="200">
+      </a>
+      <p>7</p>
+    </li>
+    <li>
+      <a href="../sample-images/image_8_big.jpg" rel="lightbox">
+        <img src="../sample-images/image_8.jpg" width="200" height="200">
+      </a>
+      <p>8</p>
+    </li>
+    <li>
+      <a href="../sample-images/image_9_big.jpg" rel="lightbox">
+        <img src="../sample-images/image_9.jpg" width="200" height="398">
+      </a>
+      <p>9</p>
+    </li>
+    <li>
+      <a href="../sample-images/image_10_big.jpg" rel="lightbox">
+        <img src="../sample-images/image_10.jpg" width="200" height="267">
+      </a>
+      <p>10</p>
+    </li>
   </ul>
-
-  <!-- タブ内容 -->
-  <div class="tab-content">
-    <div class="tab-pane active" id="sampleContentA">
-      <form>
-        <div class="row">
-          <div class="form-group col-xs-5">
-            <label for="mapName">地図名称</label>
-            <input type="text" class="form-control" id="mapName" aria-describedby="mapNameHelp" placeholder="地図名を入力してください">
-            <small id="mapNameHelp" class="form-text text-muted">地図の名称を入力してください。</small>
-          </div>
-          <div class="form-group col-xs-5">
-            <label for="mapID">地図ID</label>
-            <input type="text" class="form-control" id="mapID" aria-describedby="mapIDHelp" placeholder="地図IDを入力してください。">
-            <small id="mapIDHelp" class="form-text text-muted">一意な地図IDを入力してください。自動生成する事もできます。</small>
-          </div>
-          <div class="form-group col-xs-2">
-            <label for="createID" class="w100">　</label>
-            <button type="button" class="btn btn-secondary" id="createID">地図ID生成</button>
-          </div>
-        </div>
-      </form>
-    </div>
-    <div class="tab-pane h100" id="sampleContentB">
-      <div class="row h100">
-        <div id="map1" class="col-xs-6 h100">
-        </div>
-        <div id="map2" class="col-xs-6 h100">
-        </div>
-      </div>
-    </div>
-    <div class="tab-pane" id="sampleContentC">
-      <p>タブＣの内容</p>
-    </div>
-    <div class="tab-pane" id="sampleContentD">
-      <p>タブＤの内容</p>
-    </div>
-  </div>
 </div> <!-- /container -->
 
 <div class="modal" id="staticModal" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel" aria-hidden="true" data-show="true" data-keyboard="false" data-backdrop="static">
@@ -132,7 +144,7 @@
 <script src="common/js/require.min.js"></script>
 <script>
 requirejs(['js/config'],function() {
-    requirejs(['index'], function (app) {
+    requirejs(['maplist'], function (app) {
     });
 });
 </script>
