@@ -11,6 +11,19 @@ requirejs.config({
         'backbone': 'backbone-min',
         'underscore': 'underscore-min',
         'jquery': 'dummy-jq', // Dummy
+        'histmap': '../common/js/histmap',
+        'aigle': '../common/js/aigle-es5.min',
+        'ol-custom': '../common/js/ol-custom',
+        'histmap_tin': '../common/js/histmap_tin',
+        'tin': '../common/js/tin',
+        'turf': '../common/js/turf.min'
     },
-    shim: {}
+    shim: {
+        'turf': {
+            exports: 'turf'
+        },
+        'aigle': {
+            exports: 'Promise'
+        }
+    }
 });

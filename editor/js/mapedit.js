@@ -1,4 +1,4 @@
-define(['ol3', 'bootstrap', 'model/map'],
+define(['histmap', 'bootstrap', 'model/map'],
     function(ol, bsn, Map) {
         const {ipcRenderer} = require('electron');
         var backend = require('electron').remote.require('../lib/mapedit');
@@ -24,42 +24,30 @@ define(['ol3', 'bootstrap', 'model/map'],
             mapObject = new Map(arg);
             console.log(mapObject);
             document.querySelector('#mapName').value = mapObject.get('title');
+            ol.source.HistMap.createAsync({
+                mapID: mapID,
+                url: mapObject.get('url'),
+                width: mapObject.get('width'),
+                height: mapObject.get('height'),
+                attr: mapObject.get('attr'),
+                noload: true
+            },{})
+                .then(function(source) {
+                    illstMap.exchangeSource(source);
+                });
         });
 
-        var map1 = new ol.Map({
-            layers: [
-                new ol.layer.Tile({
-                    source: new ol.source.OSM()
-                })
-            ],
-            target: 'map1',
-            controls: ol.control.defaults({
-                attributionOptions: /** @type {olx.control.AttributionOptions} */ ({
-                    collapsible: false
-                })
-            }),
-            view: new ol.View({
-                center: [0, 0],
-                zoom: 2
-            })
+        var illstMap = new ol.MaplatMap({
+            div: 'illstMap'
         });
-        var map2 = new ol.Map({
-            layers: [
-                new ol.layer.Tile({
-                    source: new ol.source.OSM()
-                })
-            ],
-            target: 'map2',
-            controls: ol.control.defaults({
-                attributionOptions: /** @type {olx.control.AttributionOptions} */ ({
-                    collapsible: false
-                })
-            }),
-            view: new ol.View({
-                center: [0, 0],
-                zoom: 2
-            })
+
+        var mercMap = new ol.MaplatMap({
+            div: 'mercMap'
         });
+        ol.source.HistMap.createAsync('osm', {})
+            .then(function(source) {
+                mercMap.exchangeSource(source);
+            });
 
         var myModal = new bsn.Modal(document.getElementById('staticModal'), {});
 
@@ -73,7 +61,7 @@ define(['ol3', 'bootstrap', 'model/map'],
 
         var myMapTab = document.querySelector('a[href="#sampleContentB"]');
         myMapTab.addEventListener('shown.bs.tab', function(event) {
-            map1.updateSize();
-            map2.updateSize();
+            illstMap.updateSize();
+            mercMap.updateSize();
         });
     });
