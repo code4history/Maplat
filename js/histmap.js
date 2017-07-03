@@ -128,7 +128,7 @@ define(['ol-custom', 'aigle'], function(ol, Promise) {
 
         var algorythm = options.maptype != 'maplat' ? 'external' : options.algorythm || 'tin';
         return new Promise(function(resolve, reject) {
-            require(['histmap_' + algorythm], resolve);
+            requirejs(['histmap_' + algorythm], resolve);
         }).then(function() {
             return ol.source['HistMap_' + algorythm].createAsync(Object.assign({
                 title: options.title || options.era,
@@ -142,6 +142,7 @@ define(['ol-custom', 'aigle'], function(ol, Promise) {
             }, options))
                 .then(function(obj) {
                     return new Promise(function(resolve, reject) {
+                        if (!options.gcps || options.gcps.length < 3) resolve(obj);
                         obj.mapSize2MercSize(resolve);
                     });
                 });
