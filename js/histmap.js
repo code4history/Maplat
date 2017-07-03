@@ -9,7 +9,7 @@ define(['ol-custom', 'aigle'], function(ol, Promise) {
     // タイル画像サイズ
     var tileSize = 256;
     var i18n;
-    var t;
+    var t = function(arg) { return arg; };
     // canvasのテンプレート
     var canvBase = '<canvas width="' + tileSize + '" height="' + tileSize + '" src="' + transPng + '"></canvas>';
     var baseDict = {
