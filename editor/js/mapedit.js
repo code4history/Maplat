@@ -148,6 +148,12 @@ define(['histmap', 'bootstrap', 'model/map'],
          * @return {boolean} `false` to stop the drag sequence.
          */
         app.Drag.prototype.handleUpEvent = function(evt) {
+            var map = evt.map;
+            var isIllst = map == illstMap;
+            var feature = this.feature_;
+            var xy = feature.getGeometry().getCoordinates();
+            xy = isIllst ? illstSource.histMapCoords2Xy(xy) : xy;
+            console.log(xy);
             this.coordinate_ = null;
             this.feature_ = null;
             return false;
