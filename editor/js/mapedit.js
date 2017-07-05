@@ -41,7 +41,8 @@ define(['histmap', 'bootstrap', 'model/map'],
                     illstSource = source;
                     illstMap.exchangeSource(illstSource);
                     var initialCenter = illstSource.xy2HistMapCoords([mapObject.get('width') / 2, mapObject.get('height') / 2]);
-                    illstMap.getView().setCenter(initialCenter);
+                    var illstView = illstMap.getView();
+                    illstView.setCenter(initialCenter);
 
                     var gcps = mapObject.get('gcps');
                     if (gcps && gcps.length > 0) {
@@ -69,10 +70,19 @@ define(['histmap', 'bootstrap', 'model/map'],
                                 } else return prev;
                             },[[0,0],[-1*ol.const.MERC_MAX,-1*ol.const.MERC_MAX],[ol.const.MERC_MAX,ol.const.MERC_MAX]]);
                         }
-                        var view = mercMap.getView();
-                        view.setCenter(results[0]);
-                        view.setZoom(results[1]);
+                        var mercView = mercMap.getView();
+                        mercView.setCenter(results[0]);
+                        mercView.setZoom(results[1]);
+
+                        for (var i=0; i<gcps.length; i++) {
+                            var gcp = gcps[i];
+                            var mapXyIllst = illstSource.xy2HistMapCoords(gcp[0]);
+                            illstMap.setMarker(mapXyIllst, {}, 'https://mt.googleapis.com/vt/icon/name=icons/onion/123-red-dot.png');
+                            mercMap.setMarker(gcp[1], {}, 'https://mt.googleapis.com/vt/icon/name=icons/onion/123-red-dot.png');
+                        }
                     }
+                }).catch(function (err) {
+                    throw err;
                 });
         });
 
