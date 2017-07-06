@@ -16,7 +16,8 @@ requirejs.config({
         'ol-custom': '../common/js/ol-custom',
         'histmap_tin': '../common/js/histmap_tin',
         'tin': '../common/js/tin',
-        'turf': '../common/js/turf.min'
+        'turf': '../common/js/turf.min',
+        'contextmenu': 'ol3-contextmenu'
     },
     shim: {
         'turf': {
@@ -24,6 +25,9 @@ requirejs.config({
         },
         'aigle': {
             exports: 'Promise'
+        },
+        'contextmenu': {
+            deps: ['ol3']
         }
     }
 });

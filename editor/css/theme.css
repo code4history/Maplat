@@ -2,6 +2,7 @@
 @import url('non-responsive.css');
 @import url('bootstrap-theme.min.css');
 @import url('../common/css/ol.css');
+@import url('ol3-contextmenu.min.css');
 
 html {
   height: 100vh;

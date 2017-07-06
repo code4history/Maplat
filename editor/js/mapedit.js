@@ -1,5 +1,5 @@
-define(['histmap', 'bootstrap', 'model/map'],
-    function(ol, bsn, Map) {
+define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu'],
+    function(ol, bsn, _, Map, ContextMenu) {
         var labelFontStyle = "Normal 12px Arial";
         const {ipcRenderer} = require('electron');
         var backend = require('electron').remote.require('../lib/mapedit');
@@ -25,6 +25,44 @@ define(['histmap', 'bootstrap', 'model/map'],
 
             return metrics.width;
         }
+
+        function gcpsToMarkers (gcps) {
+            illstMap.resetMarker();
+            mercMap.resetMarker();
+
+            for (var i=0; i<gcps.length; i++) {
+                var gcp = gcps[i];
+                var mapXyIllst = illstSource.xy2HistMapCoords(gcp[0]);
+
+                var labelWidth = getTextWidth( (i + 1), labelFontStyle ) + 10;
+
+                var iconSVG = '<svg ' +
+                    'version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ' +
+                    'x="0px" y="0px" width="' + labelWidth + 'px" height="20px" ' +
+                    'viewBox="0 0 ' + labelWidth + ' 20" enable-background="new 0 0 ' + labelWidth + ' 20" xml:space="preserve">'+
+                    '<polygon x="0" y="0" points="0,0 ' + labelWidth + ',0 ' + labelWidth + ',16 ' + (labelWidth / 2 + 4) + ',16 ' +
+                    (labelWidth / 2) + ',20 ' + (labelWidth / 2 - 4) + ',16 0,16 0,0" stroke="#000000" fill="#DEEFAE" stroke-width="2"></polygon>' +
+                    //'<rect x="0" y="0" width="' + labelWidth + '" height="16" stroke="#000000" fill="#DEEFAE" stroke-width="2"></rect>' +
+                    '<text x="5" y="13" fill="#000000" font-family="Arial" font-size="12" font-weight="normal">' + (i + 1) + '</text>' +
+                    '</svg>';
+
+                var imageElement = new Image();
+                imageElement.src = 'data:image/svg+xml,' + encodeURIComponent( iconSVG );
+
+                var iconStyle = new ol.style.Style({
+                    "image": new ol.style.Icon({
+                        "img": imageElement,
+                        "imgSize":[labelWidth, 70],
+                        "anchor": [0.5, 1],
+                        "offset": [0, -50]
+                    })
+                });
+
+                illstMap.setMarker(mapXyIllst, { gcpIndex: i }, iconStyle);
+                mercMap.setMarker(gcp[1], { gcpIndex: i }, iconStyle);
+            }
+        }
+
 
         var app = {};
         //マーカードラッグ用(Exampleよりコピペ)
@@ -153,7 +191,16 @@ define(['histmap', 'bootstrap', 'model/map'],
             var feature = this.feature_;
             var xy = feature.getGeometry().getCoordinates();
             xy = isIllst ? illstSource.histMapCoords2Xy(xy) : xy;
-            console.log(xy);
+
+            var gcpIndex = feature.get('gcpIndex');
+            var gcps = mapObject.get('gcps');
+            gcps[gcpIndex][isIllst ? 0 : 1] = xy;
+            mapObject.set('gcps', gcps);
+            mapObject.trigger('change:gcps', mapObject, gcps);
+            mapObject.trigger('change', mapObject);
+            console.log('Dirty: ' + mapObject.dirty());
+            console.log(gcps[gcpIndex]);
+
             this.coordinate_ = null;
             this.feature_ = null;
             return false;
@@ -223,37 +270,7 @@ define(['histmap', 'bootstrap', 'model/map'],
                         mercView.setCenter(results[0]);
                         mercView.setZoom(results[1]);
 
-                        for (var i=0; i<gcps.length; i++) {
-                            var gcp = gcps[i];
-                            var mapXyIllst = illstSource.xy2HistMapCoords(gcp[0]);
-
-                            var labelWidth = getTextWidth( (i + 1), labelFontStyle ) + 10;
-
-                            var iconSVG = '<svg ' +
-                                'version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ' +
-                                'x="0px" y="0px" width="' + labelWidth + 'px" height="20px" ' +
-                                'viewBox="0 0 ' + labelWidth + ' 20" enable-background="new 0 0 ' + labelWidth + ' 20" xml:space="preserve">'+
-                                '<polygon x="0" y="0" points="0,0 ' + labelWidth + ',0 ' + labelWidth + ',16 ' + (labelWidth / 2 + 4) + ',16 ' +
-                                (labelWidth / 2) + ',20 ' + (labelWidth / 2 - 4) + ',16 0,16 0,0" stroke="#000000" fill="#DEEFAE" stroke-width="2"></polygon>' +
-                                //'<rect x="0" y="0" width="' + labelWidth + '" height="16" stroke="#000000" fill="#DEEFAE" stroke-width="2"></rect>' +
-                                '<text x="5" y="13" fill="#000000" font-family="Arial" font-size="12" font-weight="normal">' + (i + 1) + '</text>' +
-                                '</svg>';
-
-                            var imageElement = new Image();
-                            imageElement.src = 'data:image/svg+xml,' + encodeURIComponent( iconSVG );
-
-                            var iconStyle = new ol.style.Style({
-                                "image": new ol.style.Icon({
-                                    "img": imageElement,
-                                    "imgSize":[labelWidth, 70],
-                                    "anchor": [0.5, 1],
-                                    "offset": [0, -50]
-                                })
-                            });
-
-                            illstMap.setMarker(mapXyIllst, {}, iconStyle);
-                            mercMap.setMarker(gcp[1], {}, iconStyle);
-                        }
+                        gcpsToMarkers(gcps);
 
                         illstMap.addInteraction(new app.Drag());
                         mercMap.addInteraction(new app.Drag());
@@ -261,6 +278,44 @@ define(['histmap', 'bootstrap', 'model/map'],
                 }).catch(function (err) {
                     console.log(err);
                 });
+        });
+        var illstContext = new ContextMenu({
+            width: 170,
+            defaultItems: false,
+            items: [
+                {
+                    text: 'Add a Marker',
+                    classname: 'some-style-class', // you can add this icon with a CSS class
+                                                   // instead of `icon` property (see next line)
+                    icon: 'img/marker.png',  // this can be relative or absolute
+                    callback: function() {}
+                }
+            ]
+        });
+        illstMap.addControl(illstContext);
+        var illstRestore = false;
+        illstContext.on('open', function(evt){
+            var feature = illstMap.forEachFeatureAtPixel(evt.pixel, function(ft, l){
+                return ft;
+            });
+            if (feature) {
+                illstContext.clear();
+                //removeMarkerItem.data = {
+                //    marker: feature
+                //};
+                illstContext.push({
+                    text: 'Remove this Marker',
+                    icon: 'img/marker.png',
+                    callback: function() {},
+                    data: feature
+                });
+                illstRestore = true;
+            } else if (illstRestore) {
+                illstContext.clear();
+                //contextmenu.extend(contextmenu_items);
+                //contextmenu.extend(contextmenu.getDefaultItems());
+                illstRestore = false;
+            }
         });
 
         var mercMap = new ol.MaplatMap({
@@ -272,6 +327,20 @@ define(['histmap', 'bootstrap', 'model/map'],
                 mercSource = source;
                 mercMap.exchangeSource(mercSource);
             });
+        var contextmenu = new ContextMenu({
+            width: 170,
+            defaultItems: false,
+            items: [
+                {
+                    text: 'Add a Marker',
+                    classname: 'some-style-class', // you can add this icon with a CSS class
+                                                   // instead of `icon` property (see next line)
+                    icon: 'img/marker.png',  // this can be relative or absolute
+                    callback: function() {}
+                }
+            ]
+        });
+        mercMap.addControl(contextmenu);
 
         var myModal = new bsn.Modal(document.getElementById('staticModal'), {});
 
