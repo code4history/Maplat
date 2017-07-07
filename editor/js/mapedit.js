@@ -158,6 +158,8 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu'],
          * @param {ol.MapBrowserEvent} evt Event.
          */
         app.Drag.prototype.handleMoveEvent = function(evt) {
+            var anotherMap = evt.map == illstMap ? mercMap : illstMap;
+            anotherMap.closeContextMenu();
             if (this.cursor_) {
                 var map = evt.map;
 
@@ -206,9 +208,60 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu'],
             return false;
         };
 
+        ol.MaplatMap.prototype.initContextMenu = function() {
+            var normalContextMenu = {
+                text: 'マーカー追加',
+                //classname: 'some-style-class', // you can add this icon with a CSS class
+                // instead of `icon` property (see next line)
+                icon: 'img/marker.png',  // this can be relative or absolute
+                callback: this.addNewMarkerCallback
+            };
+
+            var removeContextMenu = {
+                text: 'マーカー削除',
+                icon: 'img/marker.png',
+                callback: this.removeMarkerCallback
+            }
+
+            var contextmenu = this.contextmenu = new ContextMenu({
+                width: 170,
+                defaultItems: false,
+                items: [ normalContextMenu ]
+            });
+            this.addControl(contextmenu);
+            var restore = false;
+
+            contextmenu.on('open', function(evt){
+                var feature = this.map_.forEachFeatureAtPixel(evt.pixel, function(ft, l){
+                    return ft;
+                });
+                if (feature) {
+                    contextmenu.clear();
+                    //removeMarkerItem.data = {
+                    //    marker: feature
+                    //};
+                    contextmenu.push(removeContextMenu);
+                    restore = true;
+                } else if (restore) {
+                    contextmenu.clear();
+                    contextmenu.push(normalContextMenu);
+                    //contextmenu.extend(contextmenu.getDefaultItems());
+                    restore = false;
+                }
+            });
+
+            this.on('unfocus',function() {
+                console.log('unfocus');
+            });
+        };
+        ol.MaplatMap.prototype.closeContextMenu = function() {
+            this.contextmenu.close();
+        };
+
         var illstMap = new ol.MaplatMap({
             div: 'illstMap'
         });
+        illstMap.initContextMenu();
         var illstSource;
 
         var mapObject;
@@ -279,68 +332,17 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu'],
                     console.log(err);
                 });
         });
-        var illstContext = new ContextMenu({
-            width: 170,
-            defaultItems: false,
-            items: [
-                {
-                    text: 'Add a Marker',
-                    classname: 'some-style-class', // you can add this icon with a CSS class
-                                                   // instead of `icon` property (see next line)
-                    icon: 'img/marker.png',  // this can be relative or absolute
-                    callback: function() {}
-                }
-            ]
-        });
-        illstMap.addControl(illstContext);
-        var illstRestore = false;
-        illstContext.on('open', function(evt){
-            var feature = illstMap.forEachFeatureAtPixel(evt.pixel, function(ft, l){
-                return ft;
-            });
-            if (feature) {
-                illstContext.clear();
-                //removeMarkerItem.data = {
-                //    marker: feature
-                //};
-                illstContext.push({
-                    text: 'Remove this Marker',
-                    icon: 'img/marker.png',
-                    callback: function() {},
-                    data: feature
-                });
-                illstRestore = true;
-            } else if (illstRestore) {
-                illstContext.clear();
-                //contextmenu.extend(contextmenu_items);
-                //contextmenu.extend(contextmenu.getDefaultItems());
-                illstRestore = false;
-            }
-        });
 
         var mercMap = new ol.MaplatMap({
             div: 'mercMap'
         });
+        mercMap.initContextMenu();
         var mercSource;
         ol.source.HistMap.createAsync('osm', {})
             .then(function(source) {
                 mercSource = source;
                 mercMap.exchangeSource(mercSource);
             });
-        var contextmenu = new ContextMenu({
-            width: 170,
-            defaultItems: false,
-            items: [
-                {
-                    text: 'Add a Marker',
-                    classname: 'some-style-class', // you can add this icon with a CSS class
-                                                   // instead of `icon` property (see next line)
-                    icon: 'img/marker.png',  // this can be relative or absolute
-                    callback: function() {}
-                }
-            ]
-        });
-        mercMap.addControl(contextmenu);
 
         var myModal = new bsn.Modal(document.getElementById('staticModal'), {});
 
