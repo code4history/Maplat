@@ -63,6 +63,17 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu'],
             }
         }
 
+        function removeMarker (arg, map) {
+            var gcpIndex = arg.data.marker.get('gcpIndex');
+            console.log(gcpIndex);
+            var gcps = mapObject.get('gcps');
+            gcps.splice(gcpIndex, 1);
+            mapObject.set('gcps', gcps);
+            mapObject.trigger('change:gcps', mapObject, gcps);
+            mapObject.trigger('change', mapObject);
+            gcpsToMarkers(gcps);
+        }
+
 
         var app = {};
         //マーカードラッグ用(Exampleよりコピペ)
@@ -200,8 +211,6 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu'],
             mapObject.set('gcps', gcps);
             mapObject.trigger('change:gcps', mapObject, gcps);
             mapObject.trigger('change', mapObject);
-            console.log('Dirty: ' + mapObject.dirty());
-            console.log(gcps[gcpIndex]);
 
             this.coordinate_ = null;
             this.feature_ = null;
@@ -237,9 +246,9 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu'],
                 });
                 if (feature) {
                     contextmenu.clear();
-                    //removeMarkerItem.data = {
-                    //    marker: feature
-                    //};
+                    removeContextMenu.data = {
+                        marker: feature
+                    };
                     contextmenu.push(removeContextMenu);
                     restore = true;
                 } else if (restore) {
@@ -261,6 +270,7 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu'],
         var illstMap = new ol.MaplatMap({
             div: 'illstMap'
         });
+        illstMap.removeMarkerCallback = removeMarker;
         illstMap.initContextMenu();
         var illstSource;
 
@@ -336,6 +346,7 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu'],
         var mercMap = new ol.MaplatMap({
             div: 'mercMap'
         });
+        mercMap.removeMarkerCallback = removeMarker;
         mercMap.initContextMenu();
         var mercSource;
         ol.source.HistMap.createAsync('osm', {})
