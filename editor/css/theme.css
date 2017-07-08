@@ -108,7 +108,7 @@ body.settings {
 }
 
 .tab-content {
-  height: calc(100% - 52px);
+  height: calc(100% - 82px);
 }
 
 .auto {
@@ -116,7 +116,11 @@ body.settings {
 }
 
 .title-container {
-  height: 20px;
+  height: 50px;
+}
+
+.title-container h4 {
+  margin-top: 0px;
 }
 
 .nav-tabs>li>a {

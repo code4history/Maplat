@@ -51,7 +51,7 @@ define(['bootstrap', 'model/settings'],
 
         window.addEventListener('beforeunload', function(e) {
             if (!settings.dirty()) return;
-            if (!confirm('設定に変更が加えられていますが保存されていません。\n保存せずに閉じていいですか?')) {
+            if (!confirm('設定に変更が加えられていますが保存されていません。\n保存せずに閉じてよいですか?')) {
                 e.returnValue = "false";
             }
         });

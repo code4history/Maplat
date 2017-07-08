@@ -5,6 +5,7 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu'],
         var backend = require('electron').remote.require('../lib/mapedit');
         backend.init();
         var mapID;
+        var newlyAddGcp;
         var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
         for (var i = 0; i < hashes.length; i++) {
             hash = hashes[i].split('=');
@@ -16,7 +17,7 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu'],
                 context = undefined,
                 metrics = undefined;
 
-            canvas = document.createElement( "canvas" )
+            canvas = document.createElement( "canvas" );
 
             context = canvas.getContext( "2d" );
 
@@ -42,7 +43,6 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu'],
                     'viewBox="0 0 ' + labelWidth + ' 20" enable-background="new 0 0 ' + labelWidth + ' 20" xml:space="preserve">'+
                     '<polygon x="0" y="0" points="0,0 ' + labelWidth + ',0 ' + labelWidth + ',16 ' + (labelWidth / 2 + 4) + ',16 ' +
                     (labelWidth / 2) + ',20 ' + (labelWidth / 2 - 4) + ',16 0,16 0,0" stroke="#000000" fill="#DEEFAE" stroke-width="2"></polygon>' +
-                    //'<rect x="0" y="0" width="' + labelWidth + '" height="16" stroke="#000000" fill="#DEEFAE" stroke-width="2"></rect>' +
                     '<text x="5" y="13" fill="#000000" font-family="Arial" font-size="12" font-weight="normal">' + (i + 1) + '</text>' +
                     '</svg>';
 
@@ -64,16 +64,81 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu'],
         }
 
         function removeMarker (arg, map) {
-            var gcpIndex = arg.data.marker.get('gcpIndex');
-            console.log(gcpIndex);
-            var gcps = mapObject.get('gcps');
-            gcps.splice(gcpIndex, 1);
-            mapObject.set('gcps', gcps);
-            mapObject.trigger('change:gcps', mapObject, gcps);
-            mapObject.trigger('change', mapObject);
-            gcpsToMarkers(gcps);
+            var marker = arg.data.marker;
+            var gcpIndex = marker.get('gcpIndex');
+            if (gcpIndex == 'new') {
+                newlyAddGcp = null;
+                map._marker_source.removeFeature(marker);
+            } else {
+                var gcps = mapObject.get('gcps');
+                gcps.splice(gcpIndex, 1);
+                mapObject.set('gcps', gcps);
+                mapObject.trigger('change:gcps', mapObject, gcps);
+                mapObject.trigger('change', mapObject);
+                gcpsToMarkers(gcps);
+            }
         }
 
+        function addNewMarker (arg, map) {
+            var gcps = mapObject.get('gcps');
+            var number = gcps.length + 1;
+            var isIllst = map == illstMap;
+            var coord = arg.coordinate;
+            var xy = isIllst ? illstSource.histMapCoords2Xy(coord) : coord;
+
+            if (!newlyAddGcp) {
+                var labelWidth = getTextWidth( number, labelFontStyle ) + 10;
+
+                var iconSVG = '<svg ' +
+                    'version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ' +
+                    'x="0px" y="0px" width="' + labelWidth + 'px" height="20px" ' +
+                    'viewBox="0 0 ' + labelWidth + ' 20" enable-background="new 0 0 ' + labelWidth + ' 20" xml:space="preserve">'+
+                    '<polygon x="0" y="0" points="0,0 ' + labelWidth + ',0 ' + labelWidth + ',16 ' + (labelWidth / 2 + 4) + ',16 ' +
+                    (labelWidth / 2) + ',20 ' + (labelWidth / 2 - 4) + ',16 0,16 0,0" stroke="#000000" fill="#FFCCCC" stroke-width="2"></polygon>' +
+                    '<text x="5" y="13" fill="#000000" font-family="Arial" font-size="12" font-weight="normal">' + number + '</text>' +
+                    '</svg>';
+
+                var imageElement = new Image();
+                imageElement.src = 'data:image/svg+xml,' + encodeURIComponent( iconSVG );
+
+                var iconStyle = new ol.style.Style({
+                    "image": new ol.style.Icon({
+                        "img": imageElement,
+                        "imgSize":[labelWidth, 70],
+                        "anchor": [0.5, 1],
+                        "offset": [0, -50]
+                    })
+                });
+
+                map.setMarker(coord, { gcpIndex: 'new' }, iconStyle);
+
+                newlyAddGcp = isIllst ? [xy, ] : [, xy];
+            } else if ((isIllst && !newlyAddGcp[0]) || (!isIllst && !newlyAddGcp[1])) {
+                if (isIllst) { newlyAddGcp[0] = xy; } else { newlyAddGcp[1] = xy; }
+                gcps.push(newlyAddGcp);
+                mapObject.set('gcps', gcps);
+                mapObject.trigger('change:gcps', mapObject, gcps);
+                mapObject.trigger('change', mapObject);
+                gcpsToMarkers(gcps);
+                newlyAddGcp = null;
+            }
+        }
+
+        function setEventListner(mapObject) {
+            mapObject.on('change', function(ev){
+                if (mapObject.dirty()) {
+                    document.querySelector('#saveMap').removeAttribute('disabled');
+                } else {
+                    document.querySelector('#saveMap').setAttribute('disabled', true);
+                }
+            });
+            window.addEventListener('beforeunload', function(e) {
+                if (!mapObject.dirty()) return;
+                if (!confirm('地図に変更が加えられていますが保存されていません。\n保存せずに閉じてよいですか?')) {
+                    e.returnValue = "false";
+                }
+            });
+        }
 
         var app = {};
         //マーカードラッグ用(Exampleよりコピペ)
@@ -206,12 +271,15 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu'],
             xy = isIllst ? illstSource.histMapCoords2Xy(xy) : xy;
 
             var gcpIndex = feature.get('gcpIndex');
-            var gcps = mapObject.get('gcps');
-            gcps[gcpIndex][isIllst ? 0 : 1] = xy;
-            mapObject.set('gcps', gcps);
-            mapObject.trigger('change:gcps', mapObject, gcps);
-            mapObject.trigger('change', mapObject);
-
+            if (gcpIndex != 'new') {
+                var gcps = mapObject.get('gcps');
+                gcps[gcpIndex][isIllst ? 0 : 1] = xy;
+                mapObject.set('gcps', gcps);
+                mapObject.trigger('change:gcps', mapObject, gcps);
+                mapObject.trigger('change', mapObject);
+            } else {
+                newlyAddGcp[isIllst ? 0 : 1] = xy;
+            }
             this.coordinate_ = null;
             this.feature_ = null;
             return false;
@@ -270,6 +338,7 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu'],
         var illstMap = new ol.MaplatMap({
             div: 'illstMap'
         });
+        illstMap.addNewMarkerCallback = addNewMarker;
         illstMap.removeMarkerCallback = removeMarker;
         illstMap.initContextMenu();
         var illstSource;
@@ -283,10 +352,11 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu'],
             backend.request(mapID);
         } else {
             mapObject = new Map({});
+            setEventListner(mapObject);
         }
         ipcRenderer.on('mapData', function(event, arg) {
             mapObject = new Map(arg);
-            console.log(mapObject);
+            setEventListner(mapObject);
             document.querySelector('#mapName').value = mapObject.get('title');
             ol.source.HistMap.createAsync({
                 mapID: mapID,
@@ -346,6 +416,7 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu'],
         var mercMap = new ol.MaplatMap({
             div: 'mercMap'
         });
+        mercMap.addNewMarkerCallback = addNewMarker;
         mercMap.removeMarkerCallback = removeMarker;
         mercMap.initContextMenu();
         var mercSource;
