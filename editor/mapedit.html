@@ -48,8 +48,8 @@
   <!-- タブ・メニュー -->
   <ul class="nav nav-tabs nav-justified" role="tablist">
     <li class="active"><a href="#metadataTab" data-toggle="tab" role="tab">メタデータ</a></li>
-    <li><a href="#gcpsTab" data-toggle="tab" role="tab">対応点設定</a></li>
-    <li class="disabled"><a href="#landmarkTab" role="tab">ランドマーク設定</a></li>
+    <li><a href="#gcpsTab" data-toggle="tab" role="tab" disabled>対応点設定</a></li>
+    <li class="disabled"><a href="#landmarkTab" data-toggle="tab" role="tab">ランドマーク設定</a></li>
   </ul>
 
   <!-- タブ内容 -->
@@ -58,21 +58,33 @@
       <form>
         <div class="row">
           <div class="form-group col-xs-5">
-            <label for="mapName">地図名称</label>
-            <input type="text" class="form-control" id="mapName" aria-describedby="mapNameHelp" placeholder="地図名を入力してください">
-            <small id="mapNameHelp" class="form-text text-muted">地図の名称を入力してください。</small>
+            <label for="title">地図名称</label>
+            <input type="text" class="form-control" id="title" aria-describedby="titleHelp" placeholder="地図名を入力してください">
+            <small id="titleHelp" class="form-text text-muted">地図の名称を入力してください。</small>
           </div>
           <div class="form-group col-xs-5">
             <label for="mapID">地図ID</label>
             <input type="text" class="form-control" id="mapID" aria-describedby="mapIDHelp" placeholder="地図IDを入力してください。">
-            <small id="mapIDHelp" class="form-text text-muted">一意な地図IDを入力してください。自動生成する事もできます。</small>
+            <small id="mapIDHelp" class="form-text text-muted">一意な地図IDを入力してください。</small>
           </div>
-          <div class="form-group col-xs-2">
-            <label for="createID" class="w100">　</label>
-            <button type="button" class="btn btn-secondary" id="createID">地図ID生成</button>
+          <div class="form-group col-xs-2" id="changeIDdiv">
+            <label for="changeID" class="w100">　</label>
+            <button type="button" class="btn btn-danger" id="changeID">地図ID変更</button>
+          </div>
+          <div class="form-group col-xs-2 hide" id="checkIDdiv">
+            <label for="checkID" class="w100">　</label>
+            <button type="button" class="btn btn-secondary" id="checkID">一意性確認</button>
           </div>
         </div>
       </form>
+      <form>
+        <div class="row">
+          <div class="form-group col-xs-offset-10 col-xs-2">
+            <button type="button" class="btn btn-secondary" id="uploadMap">地図アップロード</button>
+          </div>
+        </div>
+      </form>
+
     </div>
     <div class="tab-pane h100" id="gcpsTab">
       <div class="row h100">

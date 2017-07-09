@@ -50,6 +50,10 @@ var maplist = {
                     var thumbFolder = tileFolder + path.sep + file.mapID + path.sep + '0' + path.sep + '0';
                     return new Promise(function(resolve, reject) {
                         fs.readdir(thumbFolder, function(err, thumbs) {
+                            if (!thumbs) {
+                                resolve(file);
+                                return;
+                            }
                             for (var i=0; i<thumbs.length; i++) {
                                 var thumb = thumbs[i];
                                 if (/^0\.(?:jpg|jpeg|png)$/.test(thumb)) {

@@ -4,6 +4,7 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu'],
         const {ipcRenderer} = require('electron');
         var backend = require('electron').remote.require('../lib/mapedit');
         backend.init();
+        var uploader;
         var mapID;
         var newlyAddGcp;
         var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
@@ -124,19 +125,149 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu'],
             }
         }
 
-        function setEventListner(mapObject) {
+        var eventInit = false;
+        function setEventListner() {
+            var a = document.querySelector('a[href="#gcpsTab"]');
+            var li = a.parentNode;
+            if (mapObject.gcpsEditReady()) {
+                li.classList.remove('disabled');
+            } else {
+                li.classList.add('disabled');
+            }
             mapObject.on('change', function(ev){
-                if (mapObject.dirty()) {
+                if (mapObject.dirty() && mapObject.isValid()) {
                     document.querySelector('#saveMap').removeAttribute('disabled');
                 } else {
                     document.querySelector('#saveMap').setAttribute('disabled', true);
                 }
+                var a = document.querySelector('a[href="#gcpsTab"]');
+                var li = a.parentNode;
+                if (mapObject.gcpsEditReady()) {
+                    li.classList.remove('disabled');
+                } else {
+                    li.classList.add('disabled');
+                }
             });
+            if (eventInit) return;
+            eventInit = true;
             window.addEventListener('beforeunload', function(e) {
                 if (!mapObject.dirty()) return;
                 if (!confirm('地図に変更が加えられていますが保存されていません。\n保存せずに閉じてよいですか?')) {
                     e.returnValue = "false";
                 }
+            });
+            document.querySelector('#title').addEventListener('change', function(ev) {
+                mapObject.set('title', ev.target.value);
+            });
+            document.querySelector('#mapID').addEventListener('change', function(ev) {
+                mapObject.set('mapID', ev.target.value);
+                if (mapObject.get('status') == 'Update') {
+                    mapObject.set('status', 'Change:' + mapID);
+                }
+            });
+            document.querySelector('#saveMap').addEventListener('click', function(ev) {
+                if (!confirm('変更を保存します。\nよろしいですか?')) return;
+                var saveValue = mapObject.attributes;
+                if (saveValue.status.match(/^Change:(.+)$/) &&
+                    confirm('地図IDが変更されています。コピーを行いますか?\nコピーの場合はOK、移動の場合はキャンセルを選んでください。')) {
+                    saveValue.status = 'Copy:' + mapID;
+                }
+                backend.save(saveValue);
+                ipcRenderer.once('saveResult', function(event, arg) {
+                    if (arg == 'Success') {
+                        alert('正常に保存できました。');
+                        mapObject.set('status', 'Update');
+                        mapObject.setCurrentAsDefault();
+                        document.querySelector('#saveMap').setAttribute('disabled', true);
+                        if (mapID != mapObject.get('mapID')) {
+                            mapID = mapObject.get('mapID');
+                            backend.request(mapID);
+                        }
+                    } else if (arg == 'Exist') {
+                        alert('地図IDが重複しています。\n地図IDを変更してください。');
+                    } else {
+                        alert('保存時エラーが発生しました。');
+                    }
+                });
+            });
+            document.querySelector('#changeID').addEventListener('click', function(ev) {
+                if (!confirm('地図IDを変更してよろしいですか?')) return;
+                document.querySelector('#mapID').removeAttribute('disabled');
+                document.querySelector('#changeIDdiv').classList.add('hide');
+                document.querySelector('#checkIDdiv').classList.remove('hide');
+                mapObject.set('status', 'Change:' + mapID);
+            });
+            document.querySelector('#uploadMap').addEventListener('click', function(ev) {
+                if (mapObject.gcpsEditReady() && !confirm('地図画像は既に登録されています。\n置き換えてよいですか?')) return;
+                if (!uploader) {
+                    uploader = require('electron').remote.require('../lib/mapupload');
+                    uploader.init();
+                    ipcRenderer.on('mapUploaded', function(event, arg) {
+                        if (arg.err) {
+                            alert('地図アップロードでエラーが発生しました。');
+                            console.log(arg.err);
+                            return;
+                        }
+                        mapObject.set('width', arg.width);
+                        mapObject.set('height', arg.height);
+                        mapObject.set('url', arg.url);
+                        reflectIllstMap();
+                    });
+                }
+                uploader.showMapSelectDialog();
+            });
+        }
+
+        function reflectIllstMap() {
+            ol.source.HistMap.createAsync({
+                mapID: mapID,
+                url: mapObject.get('url'),
+                width: mapObject.get('width'),
+                height: mapObject.get('height'),
+                attr: mapObject.get('attr'),
+                noload: true
+            },{})
+                .then(function(source) {
+                    illstSource = source;
+                    illstMap.exchangeSource(illstSource);
+                    var initialCenter = illstSource.xy2HistMapCoords([mapObject.get('width') / 2, mapObject.get('height') / 2]);
+                    var illstView = illstMap.getView();
+                    illstView.setCenter(initialCenter);
+
+                    var gcps = mapObject.get('gcps');
+                    if (gcps && gcps.length > 0) {
+                        var center;
+                        var zoom;
+                        if (gcps.length == 1) {
+                            center = gcps[0][1];
+                            zoom = 16;
+                        } else {
+                            var results = gcps.reduce(function(prev, curr, index) {
+                                var merc = curr[1];
+                                prev[0][0] = prev[0][0] + merc[0];
+                                prev[0][1] = prev[0][1] + merc[1];
+                                if (merc[0] > prev[1][0]) prev[1][0] = merc[0];
+                                if (merc[1] > prev[1][1]) prev[1][1] = merc[1];
+                                if (merc[0] < prev[2][0]) prev[2][0] = merc[0];
+                                if (merc[1] < prev[2][1]) prev[2][1] = merc[1];
+                                if (index == gcps.length - 1) {
+                                    var center = [prev[0][0]/gcps.length, prev[0][1]/gcps.length];
+                                    var deltax = prev[1][0] - prev[2][0];
+                                    var deltay = prev[1][1] - prev[2][1];
+                                    var delta = deltax > deltay ? deltax : deltay;
+                                    var zoom = Math.log(600 / 256 * ol.const.MERC_MAX * 2 / deltax) / Math.log(2);
+                                    return [center, zoom];
+                                } else return prev;
+                            },[[0,0],[-1*ol.const.MERC_MAX,-1*ol.const.MERC_MAX],[ol.const.MERC_MAX,ol.const.MERC_MAX]]);
+                        }
+                        var mercView = mercMap.getView();
+                        mercView.setCenter(results[0]);
+                        mercView.setZoom(results[1]);
+
+                        gcpsToMarkers(gcps);
+                    }
+                }).catch(function (err) {
+                console.log(err);
             });
         }
 
@@ -348,70 +479,27 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu'],
             var mapIDElm = document.querySelector('#mapID');
             mapIDElm.value = mapID;
             mapIDElm.setAttribute('disabled', true);
-            document.querySelector('#createID').setAttribute('disabled', true);
+            document.querySelector('#changeIDdiv').classList.remove('hide');
+            document.querySelector('#checkIDdiv').classList.add('hide');
             backend.request(mapID);
         } else {
-            mapObject = new Map({});
+            mapObject = new Map({
+                status: 'New'
+            });
+            document.querySelector('#changeIDdiv').classList.add('hide');
+            document.querySelector('#checkIDdiv').classList.remove('hide');
             setEventListner(mapObject);
         }
         ipcRenderer.on('mapData', function(event, arg) {
+            arg.mapID = mapID;
+            arg.status = 'Update';
             mapObject = new Map(arg);
             setEventListner(mapObject);
-            document.querySelector('#mapName').value = mapObject.get('title');
-            ol.source.HistMap.createAsync({
-                mapID: mapID,
-                url: mapObject.get('url'),
-                width: mapObject.get('width'),
-                height: mapObject.get('height'),
-                attr: mapObject.get('attr'),
-                noload: true
-            },{})
-                .then(function(source) {
-                    illstSource = source;
-                    illstMap.exchangeSource(illstSource);
-                    var initialCenter = illstSource.xy2HistMapCoords([mapObject.get('width') / 2, mapObject.get('height') / 2]);
-                    var illstView = illstMap.getView();
-                    illstView.setCenter(initialCenter);
-
-                    var gcps = mapObject.get('gcps');
-                    if (gcps && gcps.length > 0) {
-                        var center;
-                        var zoom;
-                        if (gcps.length == 1) {
-                            center = gcps[0][1];
-                            zoom = 16;
-                        } else {
-                            var results = gcps.reduce(function(prev, curr, index) {
-                                var merc = curr[1];
-                                prev[0][0] = prev[0][0] + merc[0];
-                                prev[0][1] = prev[0][1] + merc[1];
-                                if (merc[0] > prev[1][0]) prev[1][0] = merc[0];
-                                if (merc[1] > prev[1][1]) prev[1][1] = merc[1];
-                                if (merc[0] < prev[2][0]) prev[2][0] = merc[0];
-                                if (merc[1] < prev[2][1]) prev[2][1] = merc[1];
-                                if (index == gcps.length - 1) {
-                                    var center = [prev[0][0]/gcps.length, prev[0][1]/gcps.length];
-                                    var deltax = prev[1][0] - prev[2][0];
-                                    var deltay = prev[1][1] - prev[2][1];
-                                    var delta = deltax > deltay ? deltax : deltay;
-                                    var zoom = Math.log(600 / 256 * ol.const.MERC_MAX * 2 / deltax) / Math.log(2);
-                                    return [center, zoom];
-                                } else return prev;
-                            },[[0,0],[-1*ol.const.MERC_MAX,-1*ol.const.MERC_MAX],[ol.const.MERC_MAX,ol.const.MERC_MAX]]);
-                        }
-                        var mercView = mercMap.getView();
-                        mercView.setCenter(results[0]);
-                        mercView.setZoom(results[1]);
-
-                        gcpsToMarkers(gcps);
-
-                        illstMap.addInteraction(new app.Drag());
-                        mercMap.addInteraction(new app.Drag());
-                    }
-                }).catch(function (err) {
-                    console.log(err);
-                });
+            document.querySelector('#title').value = mapObject.get('title');
+            document.querySelector('.map-title').innerText = mapObject.get('title');
+            reflectIllstMap();
         });
+        illstMap.addInteraction(new app.Drag());
 
         var mercMap = new ol.MaplatMap({
             div: 'mercMap'
@@ -425,6 +513,7 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu'],
                 mercSource = source;
                 mercMap.exchangeSource(mercSource);
             });
+        mercMap.addInteraction(new app.Drag());
 
         var myModal = new bsn.Modal(document.getElementById('staticModal'), {});
 

@@ -127,3 +127,7 @@ body.settings {
   padding-top: 5px;
   padding-bottom: 5px;
 }
+
+li.disabled {
+  pointer-events: none;
+}
