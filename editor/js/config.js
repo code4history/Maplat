@@ -17,7 +17,8 @@ requirejs.config({
         'histmap_tin': '../common/js/histmap_tin',
         'tin': '../common/js/tin',
         'turf': '../common/js/turf.min',
-        'contextmenu': 'ol3-contextmenu'
+        'contextmenu': 'ol3-contextmenu',
+        'geocoder': 'ol3-geocoder-debug'
     },
     shim: {
         'turf': {
@@ -28,6 +29,9 @@ requirejs.config({
         },
         'contextmenu': {
             deps: ['ol3']
-        }
+        },
+        'geocoder': {
+            deps: ['ol3']
+        },
     }
 });

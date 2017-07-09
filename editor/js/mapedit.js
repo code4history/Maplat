@@ -1,5 +1,5 @@
-define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu'],
-    function(ol, bsn, _, Map, ContextMenu) {
+define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu', 'geocoder'],
+    function(ol, bsn, _, Map, ContextMenu, Geocoder) {
         var labelFontStyle = "Normal 12px Arial";
         const {ipcRenderer} = require('electron');
         var backend = require('electron').remote.require('../lib/mapedit');
@@ -421,13 +421,13 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu'],
                 text: 'マーカー追加',
                 //classname: 'some-style-class', // you can add this icon with a CSS class
                 // instead of `icon` property (see next line)
-                icon: 'img/marker.png',  // this can be relative or absolute
+                // icon: 'img/marker.png',  // this can be relative or absolute
                 callback: this.addNewMarkerCallback
             };
 
             var removeContextMenu = {
                 text: 'マーカー削除',
-                icon: 'img/marker.png',
+                // icon: 'img/marker.png',
                 callback: this.removeMarkerCallback
             }
 
@@ -514,6 +514,15 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu'],
                 mercMap.exchangeSource(mercSource);
             });
         mercMap.addInteraction(new app.Drag());
+
+        var geocoder = new Geocoder('nominatim', {
+            provider: 'osm',
+            lang: 'en-US', //en-US, fr-FR
+            placeholder: '住所を指定してください',
+            limit: 5,
+            keepOpen: false
+        });
+        mercMap.addControl(geocoder);
 
         var myModal = new bsn.Modal(document.getElementById('staticModal'), {});
 
