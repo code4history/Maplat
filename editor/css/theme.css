@@ -4,6 +4,7 @@
 @import url('../common/css/ol.css');
 @import url('ol3-contextmenu.min.css');
 @import url('ol3-geocoder.min.css');
+@import url('ol3-layerswitcher.css');
 
 html {
   height: 100vh;

@@ -18,7 +18,8 @@ requirejs.config({
         'tin': '../common/js/tin',
         'turf': '../common/js/turf.min',
         'contextmenu': 'ol3-contextmenu',
-        'geocoder': 'ol3-geocoder-debug'
+        'geocoder': 'ol3-geocoder-debug',
+        'switcher': 'ol3-layerswitcher'
     },
     shim: {
         'turf': {
@@ -33,5 +34,8 @@ requirejs.config({
         'geocoder': {
             deps: ['ol3']
         },
+        'switcher': {
+            deps: ['ol3']
+        }
     }
 });

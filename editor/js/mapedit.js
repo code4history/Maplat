@@ -1,4 +1,4 @@
-define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu', 'geocoder'],
+define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu', 'geocoder', 'switcher'],
     function(ol, bsn, _, Map, ContextMenu, Geocoder) {
         var labelFontStyle = "Normal 12px Arial";
         const {ipcRenderer} = require('electron');
@@ -467,7 +467,11 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu', 'geoco
         };
 
         var illstMap = new ol.MaplatMap({
-            div: 'illstMap'
+            div: 'illstMap',
+            interactions: ol.interaction.defaults().extend([
+                new ol.interaction.DragRotateAndZoom()
+            ]),
+            controls: ol.control.defaults()
         });
         illstMap.addNewMarkerCallback = addNewMarker;
         illstMap.removeMarkerCallback = removeMarker;
@@ -502,17 +506,49 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu', 'geoco
         illstMap.addInteraction(new app.Drag());
 
         var mercMap = new ol.MaplatMap({
-            div: 'mercMap'
+            div: 'mercMap',
+            interactions: ol.interaction.defaults().extend([
+                new ol.interaction.DragRotateAndZoom()
+            ]),
+            controls: ol.control.defaults()
         });
         mercMap.addNewMarkerCallback = addNewMarker;
         mercMap.removeMarkerCallback = removeMarker;
         mercMap.initContextMenu();
         var mercSource;
-        ol.source.HistMap.createAsync('osm', {})
-            .then(function(source) {
-                mercSource = source;
-                mercMap.exchangeSource(mercSource);
+        Promise.all([
+            ol.source.HistMap.createAsync('osm', {})
+                .then(function(source) {
+                    mercSource = source;
+                    mercSource._map = mercMap;
+                    return new ol.layer.Tile({
+                        title: 'OpenStreetMap',
+                        type: 'base',
+                        visible: true,
+                        source: source
+                    });
+                }),
+            ol.source.HistMap.createAsync('gsi', {})
+                .then(function(source) {
+                    return new ol.layer.Tile({
+                        title: '地理院地図',
+                        type: 'base',
+                        visible: false,
+                        source: source
+                    });
+                })
+        ]).then(function(layers) {
+            var layerGroup = new ol.layer.Group({
+                'title': 'ベースマップ',
+                layers: layers
             });
+            var layers = mercMap.getLayers();
+            layers.removeAt(0);
+            layers.insertAt(0, layerGroup);
+
+            var layerSwitcher = new ol.control.LayerSwitcher({});
+            mercMap.addControl(layerSwitcher);
+        });
         mercMap.addInteraction(new app.Drag());
 
         var geocoder = new Geocoder('nominatim', {
@@ -523,6 +559,9 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu', 'geoco
             keepOpen: false
         });
         mercMap.addControl(geocoder);
+
+        var switcher = new ol.control.LayerSwitcher();
+        mercMap.addControl(switcher);
 
         var myModal = new bsn.Modal(document.getElementById('staticModal'), {});
 
