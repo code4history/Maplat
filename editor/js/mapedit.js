@@ -147,6 +147,8 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu', 'geoco
                 } else {
                     li.classList.add('disabled');
                 }
+                document.querySelector('#width').value = mapObject.get('width');
+                document.querySelector('#height').value = mapObject.get('height');
             });
             if (eventInit) return;
             eventInit = true;
@@ -158,12 +160,16 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu', 'geoco
             });
             document.querySelector('#title').addEventListener('change', function(ev) {
                 mapObject.set('title', ev.target.value);
+                document.querySelector('.map-title').innerText = ev.target.value == '' ? 'タイトル未設定' : ev.target.value;
             });
             document.querySelector('#mapID').addEventListener('change', function(ev) {
                 mapObject.set('mapID', ev.target.value);
                 if (mapObject.get('status') == 'Update') {
                     mapObject.set('status', 'Change:' + mapID);
                 }
+            });
+            document.querySelector('#attr').addEventListener('change', function(ev) {
+                mapObject.set('attr', ev.target.value);
             });
             document.querySelector('#saveMap').addEventListener('click', function(ev) {
                 if (!confirm('変更を保存します。\nよろしいですか?')) return;
@@ -172,8 +178,10 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu', 'geoco
                     confirm('地図IDが変更されています。コピーを行いますか?\nコピーの場合はOK、移動の場合はキャンセルを選んでください。')) {
                     saveValue.status = 'Copy:' + mapID;
                 }
+                document.body.style.pointerEvents = 'none';
                 backend.save(saveValue);
                 ipcRenderer.once('saveResult', function(event, arg) {
+                    document.body.style.pointerEvents = null;
                     if (arg == 'Success') {
                         alert('正常に保存できました。');
                         mapObject.set('status', 'Update');
@@ -203,10 +211,13 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu', 'geoco
                     uploader = require('electron').remote.require('../lib/mapupload');
                     uploader.init();
                     ipcRenderer.on('mapUploaded', function(event, arg) {
+                        document.body.style.pointerEvents = null;
+                        myModal.hide();
                         if (arg.err) {
                             alert('地図アップロードでエラーが発生しました。');
-                            console.log(arg.err);
                             return;
+                        } else {
+                            alert('正常に地図がアップロードできました。');
                         }
                         mapObject.set('width', arg.width);
                         mapObject.set('height', arg.height);
@@ -214,6 +225,9 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu', 'geoco
                         reflectIllstMap();
                     });
                 }
+                document.body.style.pointerEvents = 'none';
+                document.querySelector('div.modal-body > p').innerText = '地図アップロード中です。';
+                myModal.show();
                 uploader.showMapSelectDialog();
             });
         }
@@ -267,8 +281,8 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu', 'geoco
                         gcpsToMarkers(gcps);
                     }
                 }).catch(function (err) {
-                console.log(err);
-            });
+                    console.log(err);
+                });
         }
 
         var app = {};
@@ -501,6 +515,9 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu', 'geoco
             setEventListner(mapObject);
             document.querySelector('#title').value = mapObject.get('title');
             document.querySelector('.map-title').innerText = mapObject.get('title');
+            document.querySelector('#attr').value = mapObject.get('attr');
+            document.querySelector('#width').value = mapObject.get('width');
+            document.querySelector('#height').value = mapObject.get('height');
             reflectIllstMap();
         });
         illstMap.addInteraction(new app.Drag());
@@ -517,14 +534,19 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu', 'geoco
         mercMap.initContextMenu();
         var mercSource;
         Promise.all([
-            ol.source.HistMap.createAsync('osm', {})
+            ol.source.HistMap.createAsync({
+                mapID: 'gsimap',
+                label: 'GSI Aerial Photo',
+                attr: 'The Geospatial Information Authority of Japan',
+                maptype: 'base',
+                url: 'https://cyberjapandata.gsi.go.jp/xyz/ort/{z}/{x}/{y}.jpg',
+                maxZoom: 18
+            }, {})
                 .then(function(source) {
-                    mercSource = source;
-                    mercSource._map = mercMap;
                     return new ol.layer.Tile({
-                        title: 'OpenStreetMap',
+                        title: '地理院航空写真',
                         type: 'base',
-                        visible: true,
+                        visible: false,
                         source: source
                     });
                 }),
@@ -534,6 +556,17 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu', 'geoco
                         title: '地理院地図',
                         type: 'base',
                         visible: false,
+                        source: source
+                    });
+                }),
+            ol.source.HistMap.createAsync('osm', {})
+                .then(function(source) {
+                    mercSource = source;
+                    mercSource._map = mercMap;
+                    return new ol.layer.Tile({
+                        title: 'OpenStreetMap',
+                        type: 'base',
+                        visible: true,
                         source: source
                     });
                 })

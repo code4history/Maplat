@@ -76,8 +76,21 @@
             <button type="button" class="btn btn-secondary" id="checkID">一意性確認</button>
           </div>
         </div>
-      </form>
-      <form>
+        <div class="row">
+          <div class="form-group col-xs-6">
+            <label for="attr">コピーライト表記</label>
+            <input type="text" class="form-control" id="attr" aria-describedby="attrHelp" placeholder="コピーライト表記を入力してください">
+            <small id="attrHelp" class="form-text text-muted">コピーライト表記を入力してください。</small>
+          </div>
+          <div class="form-group col-xs-3">
+            <label for="width">地図画像幅</label>
+            <input type="text" class="form-control" id="width" disabled>
+          </div>
+          <div class="form-group col-xs-3">
+            <label for="height">地図画像高さ</label>
+            <input type="text" class="form-control" id="height" disabled>
+          </div>
+        </div>
         <div class="row">
           <div class="form-group col-xs-offset-10 col-xs-2">
             <button type="button" class="btn btn-secondary" id="uploadMap">地図アップロード</button>
@@ -103,23 +116,23 @@
 <div class="modal" id="staticModal" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel" aria-hidden="true" data-show="true" data-keyboard="false" data-backdrop="static">
   <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header">
+      <!--div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">
           <span aria-hidden="true">&#215;</span><span class="sr-only">閉じる</span>
         </button>
         <h4 class="modal-title">Static Modal タイトル</h4>
-      </div><!-- /modal-header -->
+      </div--><!-- /modal-header -->
       <div class="modal-body">
-        <p class="recipient">本文</p>
-        <p>
+        <p class="recipient"></p>
+        <!--p>
           <a class="btn btn-info" href="#001" data-dismiss="modal">data-dismiss 有り</a>
           <a class="btn btn-info" href="#002">data-dismiss 無し</a>
-        </p>
+        </p-->
       </div>
-      <div class="modal-footer">
+      <!--div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
         <button type="button" class="btn btn-primary">変更を保存</button>
-      </div>
+      </div-->
     </div> <!-- /.modal-content -->
   </div> <!-- /.modal-dialog -->
 </div> <!-- /.modal -->
