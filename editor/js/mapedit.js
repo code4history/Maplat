@@ -152,11 +152,26 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu', 'geoco
             });
             if (eventInit) return;
             eventInit = true;
+            var allowClose = false;
+            document.querySelector('a[data-nav]').addEventListener('click', function(ev) {
+                if (!mapObject.dirty() || confirm('地図に変更が加えられていますが保存されていません。\n保存せずに閉じてよいですか?')) {
+                    allowClose = true;
+                    window.location.href = ev.target.getAttribute('data-nav');
+                }
+            });
             window.addEventListener('beforeunload', function(e) {
                 if (!mapObject.dirty()) return;
-                if (!confirm('地図に変更が加えられていますが保存されていません。\n保存せずに閉じてよいですか?')) {
-                    e.returnValue = "false";
+                if (allowClose) {
+                    allowClose = false;
+                    return;
                 }
+                e.returnValue = 'false';
+                setTimeout(function() {
+                    if (confirm('地図に変更が加えられていますが保存されていません。\n保存せずに閉じてよいですか?')) {
+                        allowClose = true;
+                        window.close();
+                    }
+                }, 2);
             });
             document.querySelector('#title').addEventListener('change', function(ev) {
                 mapObject.set('title', ev.target.value);
@@ -215,7 +230,7 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu', 'geoco
                         document.body.style.pointerEvents = null;
                         myModal.hide();
                         if (arg.err) {
-                            alert('地図アップロードでエラーが発生しました。');
+                            if (err != 'Canceled') alert('地図アップロードでエラーが発生しました。');
                             return;
                         } else {
                             alert('正常に地図がアップロードできました。');

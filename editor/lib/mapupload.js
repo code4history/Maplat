@@ -34,6 +34,10 @@ var MapUpload = {
             filters: [ {name: '地図画像', extensions: ['jpg', 'png', 'jpeg']} ] }, function (baseDir){
             if(baseDir && baseDir[0]) {
                 self.imageCutter(baseDir[0]);
+            } else {
+                focused.webContents.send('mapUploaded', {
+                    err: 'Canceled'
+                });
             }
         });
     },
