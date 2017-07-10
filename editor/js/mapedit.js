@@ -541,7 +541,9 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu', 'geoco
         var mercMap = new ol.MaplatMap({
             div: 'mercMap',
             interactions: ol.interaction.defaults().extend([
-                new ol.interaction.DragRotateAndZoom()
+                new ol.interaction.DragRotateAndZoom({
+                    condition: ol.events.condition.altKeyOnly
+                })
             ]),
             controls: ol.control.defaults()
         });
