@@ -74,7 +74,10 @@ var mapedit = {
                         var oldTile = tileFolder + path.sep + oldMapID;
                         var newTile = tileFolder + path.sep + mapID;
                         fs.writeFile(mapFile, content, function(err) {
-                            if (err) reject('Error');
+                            if (err) {
+                                reject('Error');
+                                return;
+                            }
                             Promise.all([
                                 new Promise(function(resolve_, reject_) {
                                     if (isCopy) {
@@ -100,6 +103,15 @@ var mapedit = {
                             });
                         });
                         return;
+                    } else {
+                        fs.writeFile(mapFile, content, function(err) {
+                            if (err) {
+                                reject('Error');
+                                return;
+                            } else {
+                                resolve('Success');
+                            }
+                        });
                     }
                 } else {
                     fs.writeFile(mapFile, content, function(err) {
@@ -113,7 +125,7 @@ var mapedit = {
                 var tmpUrl = fileUrl(tmpFolder);
                 var newTile = tileFolder + path.sep + mapID;
                 var regex = new RegExp('^' + tmpUrl);
-                if (url.match(regex)) {
+                if (url && url.match(regex)) {
                     try {
                         fs.statSync(newTile);
                         fs.removeSync(newTile);

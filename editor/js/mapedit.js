@@ -194,6 +194,7 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu', 'geoco
                     } else if (arg == 'Exist') {
                         alert('地図IDが重複しています。\n地図IDを変更してください。');
                     } else {
+                        console.log(arg);
                         alert('保存時エラーが発生しました。');
                     }
                 });
