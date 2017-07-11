@@ -12,6 +12,11 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu', 'geoco
             hash = hashes[i].split('=');
             if (hash[0] == 'mapid') mapID = hash[1];
         }
+        var formHelp = {
+            'mapID': '一意な地図IDを入力してください。',
+            'title': '地図の表示用名称を入力してください。',
+            'attr': 'コピーライト表記等地図隅に表示しておく文字列を入力してください。'
+        };
 
         function getTextWidth ( _text, _fontStyle ) {
             var canvas = undefined,
@@ -71,17 +76,15 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu', 'geoco
                 newlyAddGcp = null;
                 map._marker_source.removeFeature(marker);
             } else {
-                var gcps = mapObject.get('gcps');
+                var gcps = _.clone(mapObject.get('gcps'));
                 gcps.splice(gcpIndex, 1);
                 mapObject.set('gcps', gcps);
-                mapObject.trigger('change:gcps', mapObject, gcps);
-                mapObject.trigger('change', mapObject);
                 gcpsToMarkers(gcps);
             }
         }
 
         function addNewMarker (arg, map) {
-            var gcps = mapObject.get('gcps');
+            var gcps = _.clone(mapObject.get('gcps'));
             var number = gcps.length + 1;
             var isIllst = map == illstMap;
             var coord = arg.coordinate;
@@ -118,8 +121,6 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu', 'geoco
                 if (isIllst) { newlyAddGcp[0] = xy; } else { newlyAddGcp[1] = xy; }
                 gcps.push(newlyAddGcp);
                 mapObject.set('gcps', gcps);
-                mapObject.trigger('change:gcps', mapObject, gcps);
-                mapObject.trigger('change', mapObject);
                 gcpsToMarkers(gcps);
                 newlyAddGcp = null;
             }
@@ -135,11 +136,26 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu', 'geoco
                 li.classList.add('disabled');
             }
             mapObject.on('change', function(ev){
-                if (mapObject.dirty() && mapObject.isValid()) {
+                if (mapObject.isValid() && mapObject.dirty()) {
                     document.querySelector('#saveMap').removeAttribute('disabled');
                 } else {
                     document.querySelector('#saveMap').setAttribute('disabled', true);
                 }
+                var invalid = mapObject.validationErro || {};
+                _.each(formHelp, function(val, key) {
+                    var errText = invalid[key];
+                    var targetHelp = document.querySelector('#' + key + 'Help');
+                    var targetForm = targetHelp.parentNode;
+                    if (errText) {
+                        targetHelp.classList.add('text-danger');
+                        targetHelp.innerText = errText;
+                        targetForm.classList.add('has-error');
+                    } else {
+                        targetHelp.classList.remove('text-danger');
+                        targetHelp.innerText = val;
+                        targetForm.classList.remove('has-error');
+                    }
+                });
                 var a = document.querySelector('a[href="#gcpsTab"]');
                 var li = a.parentNode;
                 if (mapObject.gcpsEditReady()) {
@@ -147,8 +163,8 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu', 'geoco
                 } else {
                     li.classList.add('disabled');
                 }
-                document.querySelector('#width').value = mapObject.get('width');
-                document.querySelector('#height').value = mapObject.get('height');
+                document.querySelector('#width').value = mapObject.get('width') || '';
+                document.querySelector('#height').value = mapObject.get('height') || '';
             });
             if (eventInit) return;
             eventInit = true;
@@ -433,11 +449,9 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu', 'geoco
 
             var gcpIndex = feature.get('gcpIndex');
             if (gcpIndex != 'new') {
-                var gcps = mapObject.get('gcps');
-                gcps[gcpIndex][isIllst ? 0 : 1] = xy;
+                var gcps = _.clone(mapObject.get('gcps'));
+                gcps[gcpIndex] = isIllst ? [xy, gcps[gcpIndex][1]] : [gcps[gcpIndex][0], xy];
                 mapObject.set('gcps', gcps);
-                mapObject.trigger('change:gcps', mapObject, gcps);
-                mapObject.trigger('change', mapObject);
             } else {
                 newlyAddGcp[isIllst ? 0 : 1] = xy;
             }
