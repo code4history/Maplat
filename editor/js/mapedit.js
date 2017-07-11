@@ -616,14 +616,6 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu', 'geoco
 
         var myModal = new bsn.Modal(document.getElementById('staticModal'), {});
 
-        ipcRenderer.on('showModal', function(event, arg) {
-            myModal.show();
-        });
-
-        ipcRenderer.on('hideModal', function(event, arg) {
-            myModal.hide();
-        });
-
         var myMapTab = document.querySelector('a[href="#gcpsTab"]');
         myMapTab.addEventListener('shown.bs.tab', function(event) {
             illstMap.updateSize();

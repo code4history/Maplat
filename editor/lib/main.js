@@ -68,20 +68,6 @@ var template = [
                         openWindow(baseDir[0]);
                     }
                 });
-            }},
-            {label: 'Create Tile', accelerator: 'Command+T', click: function() {
-                var focused = BrowserWindow.getFocusedWindow();
-                var imagecut = require('./imagecut');
-                imagecut.cutImageToTile(function(success, err) {
-                    focused.webContents.send('hideModal');
-                    if (success) {
-                        console.log('Success!');
-                    } else {
-                        console.log('Error!');
-                        console.log(err);
-                    }
-                });
-                focused.webContents.send('showModal');
             }}
         ]
     }, {
