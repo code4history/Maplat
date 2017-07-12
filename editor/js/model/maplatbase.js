@@ -1,4 +1,4 @@
-define(['backbone', 'underscore', 'deepcompare'], function(Backbone, _, deepcompare) {
+define(['backbone', 'underscore_extension'], function(Backbone, _) {
     var MaplatBase = Backbone.Model.extend({
         initialize: function(value) {
             this.setCurrentAsDefault();
@@ -26,7 +26,7 @@ define(['backbone', 'underscore', 'deepcompare'], function(Backbone, _, deepcomp
             if (arg == 'change' && this.__defObject) {
                 var self = this;
                 _.each(this.changedAttributes(), function(value, key) {
-                    self.__dirty_hash[key] = !deepcompare(value, self.__defObject[key]);
+                    self.__dirty_hash[key] = !_.isDeepEqual(value, self.__defObject[key]);
                 });
             }
             Backbone.Model.prototype.trigger.call(this, arg);

@@ -1,5 +1,17 @@
-define([], function() {
-    var deepcompare = function( x, y ) {
+define(['underscore'], function(_) {
+    _.deepClone = function(object) {
+        var clone = _.clone(object);
+
+        _.each(clone, function(value, key) {
+            if (_.isObject(value)) {
+                clone[key] = _.deepClone(value);
+            }
+        });
+
+        return clone;
+    };
+
+    _.isDeepEqual = function(x, y) {
         if ( x === y ) return true;
         // if both x and y are null or undefined and exactly the same
 
@@ -17,13 +29,13 @@ define([], function() {
             if ( ! y.hasOwnProperty( p ) ) return false;
             // allows to compare x[ p ] and y[ p ] when set to undefined
 
-            if ( x[ p ] === y[ p ] ) continue;
+            if ( x[p] === y[p] ) continue;
             // if they have the same strict value or identity then they are equal
 
-            if ( typeof( x[ p ] ) !== "object" ) return false;
+            if ( typeof( x[p] ) !== 'object' ) return false;
             // Numbers, Strings, Functions, Booleans must be strictly equal
 
-            if ( ! deepcompare( x[ p ],  y[ p ] ) ) return false;
+            if ( ! _.isDeepEqual( x[p], y[p] ) ) return false;
             // Objects and Arrays must be tested recursively
         }
 
@@ -33,5 +45,7 @@ define([], function() {
         }
         return true;
     };
-    return deepcompare;
+
+    return _;
 });
+

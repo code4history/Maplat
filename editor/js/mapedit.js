@@ -1,4 +1,4 @@
-define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu', 'geocoder', 'switcher'],
+define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmenu', 'geocoder', 'switcher'],
     function(ol, bsn, _, Map, ContextMenu, Geocoder) {
         var labelFontStyle = "Normal 12px Arial";
         const {ipcRenderer} = require('electron');
@@ -76,7 +76,7 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu', 'geoco
                 newlyAddGcp = null;
                 map._marker_source.removeFeature(marker);
             } else {
-                var gcps = _.clone(mapObject.get('gcps'));
+                var gcps = _.deepClone(mapObject.get('gcps'));
                 gcps.splice(gcpIndex, 1);
                 mapObject.set('gcps', gcps);
                 gcpsToMarkers(gcps);
@@ -84,7 +84,7 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu', 'geoco
         }
 
         function addNewMarker (arg, map) {
-            var gcps = _.clone(mapObject.get('gcps'));
+            var gcps = _.deepClone(mapObject.get('gcps'));
             var number = gcps.length + 1;
             var isIllst = map == illstMap;
             var coord = arg.coordinate;
@@ -141,7 +141,7 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu', 'geoco
                 } else {
                     document.querySelector('#saveMap').setAttribute('disabled', true);
                 }
-                var invalid = mapObject.validationErro || {};
+                var invalid = mapObject.validationError || {};
                 _.each(formHelp, function(val, key) {
                     var errText = invalid[key];
                     var targetHelp = document.querySelector('#' + key + 'Help');
@@ -449,8 +449,8 @@ define(['histmap', 'bootstrap', 'underscore', 'model/map', 'contextmenu', 'geoco
 
             var gcpIndex = feature.get('gcpIndex');
             if (gcpIndex != 'new') {
-                var gcps = _.clone(mapObject.get('gcps'));
-                gcps[gcpIndex] = isIllst ? [xy, gcps[gcpIndex][1]] : [gcps[gcpIndex][0], xy];
+                var gcps = _.deepClone(mapObject.get('gcps'));
+                gcps[gcpIndex][isIllst ? 0 : 1] = xy;
                 mapObject.set('gcps', gcps);
             } else {
                 newlyAddGcp[isIllst ? 0 : 1] = xy;
