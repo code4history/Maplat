@@ -14,6 +14,7 @@ require.config({
         'turf': '//npmcdn.com/@turf/turf@4.4.0/turf.min',
         'swiper': '//cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/js/swiper.min',
         'bootstrap': '//cdnjs.cloudflare.com/ajax/libs/bootstrap.native/2.0.10/bootstrap-native.min',
+        'proj': '//cdnjs.cloudflare.com/ajax/libs/proj4js/2.4.3/proj4',
         'aigle': 'aigle-es5.min',
         'app': 'app-built'
     },
