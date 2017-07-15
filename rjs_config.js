@@ -11,7 +11,8 @@
         'ol-custom': 'ol-custom',
         'bootstrap': 'empty:',
         'aigle': 'aigle-es5.min',
-        'tps': 'empty:'
+        'tps': 'empty:',
+        'proj': 'empty:'
     },
     shim: {
         'aigle': {
