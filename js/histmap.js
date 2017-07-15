@@ -1,4 +1,15 @@
-define(['ol-custom', 'aigle'], function(ol, Promise) {
+define(['ol-custom', 'aigle', 'proj'], function(ol, Promise, proj4) {
+    ol.proj.setProj4(proj4);
+    var projs = [];
+    for (var z = 0; z < 9; z++) {
+        var key = 'ZOOM:' + z;
+        var radius = 6378137 * 256 * Math.pow(2, z) / ol.const.MERC_MAX / 2;
+        var offset = 128 * Math.pow(2, z);
+        var proj4text = '+proj=merc +a=' + radius + ' +b=' + radius + ' +lat_ts=0.0 +lon_0=0.0 +x_0=' + offset + '.0 +y_0=-' +
+            offset + '.0 +k=1.0 +units=m  +axis=esu +nadgrids=@null +wktext  +no_defs';
+        projs.push([key, proj4text]);
+    }
+    proj4.defs(projs);
     // 透明PNG定義
     var transPng = 'data:image/png;base64,'+
         'iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAMAAABrrFhUAAAAB3RJTUUH3QgIBToaSbAjlwAAABd0'+

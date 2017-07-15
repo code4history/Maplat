@@ -124,7 +124,8 @@ define(['ol3', 'aigle'], function(ol, Promise) {
                     this.element.classList.remove('no_rotation');
                 }
                 var self = this;
-                var source = this.getMap().getLayers().item(0).getSource();
+                var layer = this.getMap().getLayers().item(0);
+                var source = layer.getSource ? layer.getSource() : layer.getLayers().item(0).getSource();
                 if (!source) {
                     var transform = 'rotate(0rad)';
                     self.label_.style.msTransform = transform;
@@ -436,9 +437,14 @@ define(['ol3', 'aigle'], function(ol, Promise) {
         var markerLayer = new ol.layer.Vector({
             source: this._marker_source
         });
+        var baseLayer = optOptions.baseLayer ? optOptions.baseLayer :
+            new ol.layer.Tile({
+                source: optOptions.source
+            });
 
         var overlayLayer = this._overlay_group = new ol.layer.Group();
-        var controls = optOptions.off_control ? [] :
+        var controls = optOptions.controls ? optOptions.controls :
+            optOptions.off_control ? [] :
             [
                 new ol.control.Attribution(),
                 new ol.control.CompassRotate(),
@@ -450,9 +456,7 @@ define(['ol3', 'aigle'], function(ol, Promise) {
         var options = {
             controls: controls,
             layers: [
-                new ol.layer.Tile({
-                    source: optOptions.source
-                }),
+                baseLayer,
                 overlayLayer,
                 vectorLayer,
                 markerLayer
@@ -464,7 +468,9 @@ define(['ol3', 'aigle'], function(ol, Promise) {
                 rotation: optOptions.default_rotation || 0
             })
         };
-        if (optOptions.off_rotation) {
+        if (optOptions.interactions) {
+            options.interactions = optOptions.interactions;
+        } else if (optOptions.off_rotation) {
             options.interactions = ol.interaction.defaults({altShiftDragRotate: false, pinchRotate: false});
         }
 
