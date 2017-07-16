@@ -431,18 +431,22 @@ define(['ol3', 'aigle'], function(ol, Promise) {
         });
         vectorLayer.set('name', 'gps');
 
-        this._marker_source = new ol.source.Vector({
-            wrapX: false
-        });
         var markerLayer = new ol.layer.Vector({
-            source: this._marker_source
+            source: new ol.source.Vector({
+                wrapX: false
+            })
         });
+        markerLayer.set('name', 'marker');
+
         var baseLayer = optOptions.baseLayer ? optOptions.baseLayer :
             new ol.layer.Tile({
                 source: optOptions.source
             });
+        baseLayer.set('name', 'base');
 
         var overlayLayer = this._overlay_group = new ol.layer.Group();
+        overlayLayer.set('name', 'overlay');
+
         var controls = optOptions.controls ? optOptions.controls :
             optOptions.off_control ? [] :
             [
@@ -490,6 +494,20 @@ define(['ol3', 'aigle'], function(ol, Promise) {
         });
     };
     ol.inherits(ol.MaplatMap, ol.Map);
+
+    ol.MaplatMap.prototype.getLayer = function(name) {
+        var layers = this.getLayers().getArray().map(function(layer) {
+            return layer.get('name') == name;
+        });
+        if (layers.length == 0) return;
+        return layers[0];
+    });
+
+    ol.MaplatMap.prototype.getSource = function(name) {
+        var layer = this.getLayer(name);
+        if (!layer) return;
+        return layer.getSource();
+    });
 
     ol.MaplatMap.prototype.setGPSPosition = function(pos) {
         var src = this._gps_source;
