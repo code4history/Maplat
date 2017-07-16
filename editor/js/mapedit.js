@@ -172,15 +172,15 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
 
                     var forTin = arg.forw;
                     var bakTin = arg.bakw;
-                    mercMap._json_source.clear();
-                    illstMap._json_source.clear();
+                    mercMap.getSource('json').clear();
+                    illstMap.getSource('json').clear();
                     var bakProj = 'ZOOM:' + illstSource.maxZoom;
                     console.log(bakProj);
                     var jsonReader = new ol.format.GeoJSON();
                     var forFeatures = jsonReader.readFeatures(forTin, {dataProjection:'EPSG:3857'});
                     var bakFeatures = jsonReader.readFeatures(bakTin, {dataProjection:bakProj, featureProjection:'EPSG:3857'});
-                    mercMap._json_source.addFeatures(forFeatures); //, {dataProjection:'EPSG:3857'});
-                    illstMap._json_source.addFeatures(bakFeatures);// , {dataProjection:bakProj, featureProjection:'EPSG:3857'});
+                    mercMap.getSource('json').addFeatures(forFeatures); //, {dataProjection:'EPSG:3857'});
+                    illstMap.getSource('json').addFeatures(bakFeatures);// , {dataProjection:bakProj, featureProjection:'EPSG:3857'});
                 });
             });
             if (eventInit) return;
@@ -373,7 +373,7 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
             this.previousCursor_ = undefined;
 
             //マーカーレイヤのみ対象とするようにlayerFilterを設定
-            this.layerFilter = 'MarkerLayer';
+            this.layerFilter = 'marker';
 
         };
         ol.inherits(app.Drag, ol.interaction.Pointer);
@@ -388,8 +388,10 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
             var this_ = this;
             var feature = map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
                 return feature;
-            }, {}, function(layer) {
-                return layer.get('name') == this_.layerFilter;
+            }, {
+                layerFilter: function(layer) {
+                    return layer.get('name') == this_.layerFilter;
+                }
             });
 
             if (feature) {
@@ -537,11 +539,10 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
         illstMap.addNewMarkerCallback = addNewMarker;
         illstMap.removeMarkerCallback = removeMarker;
         illstMap.initContextMenu();
-        illstMap._json_source = new ol.source.Vector({
-            wrapX: false
-        });
-        illstMap.addLayer(new ol.layer.Vector({
-            source: illstMap._json_source,
+        var jsonLayer = new ol.layer.Vector({
+            source: new ol.source.Vector({
+                wrapX: false
+            }),
             style: new ol.style.Style({
                 stroke: new ol.style.Stroke({
                     color: 'blue',
@@ -552,7 +553,9 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
                     color: 'rgba(0, 0, 255, 0.1)'
                 })
             })
-        }));
+        });
+        jsonLayer.set('name', 'json');
+        illstMap.getLayer('overlay').getLayers().push(jsonLayer);
         var illstSource;
 
         var mapObject;
@@ -597,11 +600,10 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
         mercMap.addNewMarkerCallback = addNewMarker;
         mercMap.removeMarkerCallback = removeMarker;
         mercMap.initContextMenu();
-        mercMap._json_source = new ol.source.Vector({
-            wrapX: false
-        });
-        mercMap.addLayer(new ol.layer.Vector({
-            source: mercMap._json_source,
+        jsonLayer = new ol.layer.Vector({
+            source: new ol.source.Vector({
+                wrapX: false
+            }),
             style: new ol.style.Style({
                 stroke: new ol.style.Stroke({
                     color: 'blue',
@@ -612,7 +614,9 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
                     color: 'rgba(0, 0, 255, 0.1)'
                 })
             })
-        }));
+        });
+        jsonLayer.set('name', 'json');
+        mercMap.getLayer('overlay').getLayers().push(jsonLayer);
         var mercSource;
         Promise.all([
             ol.source.HistMap.createAsync({
