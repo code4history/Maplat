@@ -74,7 +74,7 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
             var gcpIndex = marker.get('gcpIndex');
             if (gcpIndex == 'new') {
                 newlyAddGcp = null;
-                map._marker_source.removeFeature(marker);
+                map.getSource('marker').removeFeature(marker);
             } else {
                 var gcps = _.deepClone(mapObject.get('gcps'));
                 gcps.splice(gcpIndex, 1);
