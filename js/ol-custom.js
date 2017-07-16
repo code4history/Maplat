@@ -496,18 +496,19 @@ define(['ol3', 'aigle'], function(ol, Promise) {
     ol.inherits(ol.MaplatMap, ol.Map);
 
     ol.MaplatMap.prototype.getLayer = function(name) {
-        var layers = this.getLayers().getArray().map(function(layer) {
+        var layers = this.getLayers().getArray().filter(function(layer) {
             return layer.get('name') == name;
         });
         if (layers.length == 0) return;
         return layers[0];
-    });
+    };
 
     ol.MaplatMap.prototype.getSource = function(name) {
+        if (!name) name = 'base';
         var layer = this.getLayer(name);
         if (!layer) return;
         return layer.getSource();
-    });
+    };
 
     ol.MaplatMap.prototype.setGPSPosition = function(pos) {
         var src = this.getSource('gps');
@@ -577,10 +578,6 @@ define(['ol3', 'aigle'], function(ol, Promise) {
             });
             layers.push(layer);
         }
-    };
-
-    ol.MaplatMap.prototype.getSource = function() {
-        return this.getLayers().item(0).getSource();
     };
 
     ol.MaplatMap.prototype.setOpacity = function(percentage) {
