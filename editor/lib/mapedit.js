@@ -5,6 +5,9 @@ var fs = require('fs-extra');
 var fileUrl = require('file-url');
 var electron = require('electron');
 var BrowserWindow = electron.BrowserWindow;
+var turf = require('turf');
+var wkt = require('wellknown');
+var isClockwise = require('turf-is-clockwise');
 
 settings.init();
 
@@ -144,7 +147,196 @@ var mapedit = {
         }).catch(function(err) {
             focused.webContents.send('saveResult', err);
         });
+    },
+    updateTin: function(gcps) {
+        var pointArr = gcps.map(function(gcp, index) {
+            return turf.point(gcp[1], {target: {index: index, geom: gcp[0]}});
+        });
+        var points = turf.featureCollection(pointArr);
+
+        var tins = {forw: turf.tin(points, 'target')};
+
+        tins.bakw = turf.featureCollection(tins.forw.features.map(function(tri) {
+            return counterTri(tri);
+        }));
+
+        var searchIndex = {};
+        tins.forw.features.map(function(forTri, index) {
+            var bakTri = tins.bakw.features[index];
+            insertSearchIndex(searchIndex, {forw: forTri, bakw: bakTri});
+        });
+
+        console.log('searchIndex created');
+        var overlapped = overlapCheck(searchIndex);
+        console.log('overlap checked');
+
+        Object.keys(overlapped.bakw).map(function(key) {
+            if (overlapped.bakw[key] == 'Not include case') return;
+            var trises = searchIndex[key];
+            var forUnion = turf.union(trises[0].forw, trises[1].forw);
+            var forConvex = turf.convex(turf.featureCollection([trises[0].forw, trises[1].forw]));
+            var forDiff = turf.difference(forConvex, forUnion);
+            if (forDiff) return;
+            var sharedVtx = key.split('-').map(function(val) {
+                var index = parseFloat(val);
+                return ['a', 'b', 'c'].map(function(alpha, index) {
+                    var prop = trises[0].bakw.properties[alpha];
+                    var geom = trises[0].bakw.geometry.coordinates[0][index];
+                    return {geom: geom, prop: prop};
+                }).filter(function(vtx) {
+                    return vtx.prop.index == index;
+                })[0];
+            });
+            var nonSharedVtx = trises.map(function(tris) {
+                return ['a', 'b', 'c'].map(function(alpha, index) {
+                    var prop = tris.bakw.properties[alpha];
+                    var geom = tris.bakw.geometry.coordinates[0][index];
+                    return {geom: geom, prop: prop};
+                }).filter(function(vtx) {
+                    return vtx.prop.index != sharedVtx[0].prop.index &&
+                        vtx.prop.index != sharedVtx[1].prop.index;
+                })[0];
+            });
+            removeSearchIndex(searchIndex, trises[0], tins);
+            removeSearchIndex(searchIndex, trises[1], tins);
+            sharedVtx.map(function(sVtx) {
+                var newTriCoords = [sVtx.geom, nonSharedVtx[0].geom, nonSharedVtx[1].geom, sVtx.geom];
+                var cwCheck = isClockwise(newTriCoords);
+                if (cwCheck) newTriCoords = [sVtx.geom, nonSharedVtx[1].geom, nonSharedVtx[0].geom, sVtx.geom];
+                var newTriProp = !cwCheck ? {a: sVtx.prop, b: nonSharedVtx[0].prop, c: nonSharedVtx[1].prop} :
+                    {a: sVtx.prop, b: nonSharedVtx[1].prop, c: nonSharedVtx[0].prop};
+                var newBakTri = turf.polygon([newTriCoords], newTriProp);
+                var newForTri = counterTri(newBakTri);
+                insertSearchIndex(searchIndex, {forw: newForTri, bakw: newBakTri}, tins);
+            });
+        });
+        // var newResult = overlapCheck(triSearchIndex);
+        focused.webContents.send('updatedTin', tins);
     }
 };
+
+function counterTri(tri) {
+    var coordinates = ['a', 'b', 'c', 'a'].map(function(key) {
+        return tri.properties[key].geom;
+    });
+    var cwCheck = isClockwise(coordinates);
+    if (cwCheck) coordinates = ['a', 'c', 'b', 'a'].map(function(key) {
+        return tri.properties[key].geom;
+    });
+    var geoms = tri.geometry.coordinates[0];
+    var props = tri.properties;
+    var properties = !cwCheck ? {
+        a: {geom: geoms[0], index: props['a'].index},
+        b: {geom: geoms[1], index: props['b'].index},
+        c: {geom: geoms[2], index: props['c'].index}
+    } : {
+        a: {geom: geoms[0], index: props['a'].index},
+        b: {geom: geoms[2], index: props['c'].index},
+        c: {geom: geoms[1], index: props['b'].index}
+    };
+    return turf.polygon([coordinates], properties);
+}
+
+var stop = false;
+
+function overlapCheck(searchIndex) {
+    return Object.keys(searchIndex).reduce(function(prev, key) {
+        //console.log(key);
+        //console.log(searchIndex[key]);
+        var searchResult = searchIndex[key];
+        if (searchResult.length < 2) return prev;
+        ['forw', 'bakw'].map(function(dir) {
+            var result = turf.intersect(searchResult[0][dir], searchResult[1][dir]);
+            //console.log('Intersect:' + result);
+            if (!result || result.geometry.type == 'Point' || result.geometry.type == 'LineString') return;
+            //console.log('a');
+            if (!prev[dir]) prev[dir] = {};
+            //console.log(JSON.stringify(searchResult[0][dir]));
+            //console.log(JSON.stringify(searchResult[1][dir]));
+            //console.log(JSON.stringify(result));
+            try {
+                var diff1 = turf.difference(searchResult[0][dir], result);
+                var diff2 = turf.difference(searchResult[1][dir], result);
+                //console.log('Diff : ' + diff1 + ' ' + diff2);
+                if (!diff1 || !diff2) {
+                    prev[dir][key] = 'Include case';
+                } else {
+                    prev[dir][key] = 'Not include case';
+                }
+                /*if (!stop) {
+                    console.log(key + ': OK');
+                    console.log(JSON.stringify(searchResult[0][dir]));
+                    console.log(JSON.stringify(searchResult[1][dir]));
+                    console.log(JSON.stringify(result));
+                }*/
+            } catch(e) {
+                /*console.log(key + ':' + JSON.stringify(e));
+                console.log(JSON.stringify(searchResult[0][dir]));
+                console.log(JSON.stringify(searchResult[1][dir]));
+                console.log(JSON.stringify(result));
+                stop = true;*/
+                prev[dir][key] = 'Not include case';
+            }
+        });
+        return prev;
+    }, {});
+}
+
+function insertSearchIndex(searchIndex, tris, tins) {
+    var keys = calcSearchKeys(tris.forw);
+    var bakKeys = calcSearchKeys(tris.bakw);
+    if (JSON.stringify(keys) != JSON.stringify(bakKeys))
+        throw JSON.stringify(tris, null, 2) + '\n' + JSON.stringify(keys) + '\n' + JSON.stringify(bakKeys);
+
+    for (var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+        if (!searchIndex[key]) searchIndex[key] = [];
+        searchIndex[key].push(tris);
+    }
+    if (tins) {
+        tins.forw.features.push(tris.forw);
+        tins.bakw.features.push(tris.bakw);
+    }
+}
+
+function removeSearchIndex(searchIndex, tris, tins) {
+    var keys = calcSearchKeys(tris.forw);
+    var bakKeys = calcSearchKeys(tris.bakw);
+    if (JSON.stringify(keys) != JSON.stringify(bakKeys))
+        throw JSON.stringify(tris, null, 2) + '\n' + JSON.stringify(keys) + '\n' + JSON.stringify(bakKeys);
+
+    for (var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+        var newArray = searchIndex[key].filter(function(eachTris) {
+            return eachTris.forw != tris.forw;
+        });
+        if (newArray.length == 0) delete searchIndex[key];
+        else searchIndex[key] = newArray;
+    }
+    if (tins) {
+        var newArray = tins.forw.features.filter(function(eachTri) {
+            return eachTri != tris.forw;
+        });
+        tins.forw.features = newArray;
+        newArray = tins.bakw.features.filter(function(eachTri) {
+            return eachTri != tris.bakw;
+        });
+        tins.bakw.features = newArray;
+    }
+}
+
+function calcSearchKeys(tri) {
+    var vtx = ['a', 'b', 'c'].map(function(key) {
+        return tri.properties[key].index;
+    });
+    return [[0, 1], [0, 2], [1, 2], [0, 1, 2]].map(function(set) {
+        var index = set.map(function(i) {
+            return vtx[i];
+        }).sort(function(a, b) {
+            return a - b;
+        }).join('-');
+        return index;
+    }).sort();
+}
 
 module.exports = mapedit;

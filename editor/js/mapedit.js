@@ -166,6 +166,23 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
                 document.querySelector('#width').value = mapObject.get('width') || '';
                 document.querySelector('#height').value = mapObject.get('height') || '';
             });
+            mapObject.on('change:gcps', function(ev) {
+                backend.updateTin(mapObject.get('gcps'));
+                ipcRenderer.once('updatedTin', function(event, arg) {
+
+                    var forTin = arg.forw;
+                    var bakTin = arg.bakw;
+                    mercMap._json_source.clear();
+                    illstMap._json_source.clear();
+                    var bakProj = 'ZOOM:' + illstSource.maxZoom;
+                    console.log(bakProj);
+                    var jsonReader = new ol.format.GeoJSON();
+                    var forFeatures = jsonReader.readFeatures(forTin, {dataProjection:'EPSG:3857'});
+                    var bakFeatures = jsonReader.readFeatures(bakTin, {dataProjection:bakProj, featureProjection:'EPSG:3857'});
+                    mercMap._json_source.addFeatures(forFeatures); //, {dataProjection:'EPSG:3857'});
+                    illstMap._json_source.addFeatures(bakFeatures);// , {dataProjection:bakProj, featureProjection:'EPSG:3857'});
+                });
+            });
             if (eventInit) return;
             eventInit = true;
             var allowClose = false;
@@ -520,6 +537,22 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
         illstMap.addNewMarkerCallback = addNewMarker;
         illstMap.removeMarkerCallback = removeMarker;
         illstMap.initContextMenu();
+        illstMap._json_source = new ol.source.Vector({
+            wrapX: false
+        });
+        illstMap.addLayer(new ol.layer.Vector({
+            source: illstMap._json_source,
+            style: new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'blue',
+                    lineDash: [4],
+                    width: 3
+                }),
+                fill: new ol.style.Fill({
+                    color: 'rgba(0, 0, 255, 0.1)'
+                })
+            })
+        }));
         var illstSource;
 
         var mapObject;
@@ -564,6 +597,22 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
         mercMap.addNewMarkerCallback = addNewMarker;
         mercMap.removeMarkerCallback = removeMarker;
         mercMap.initContextMenu();
+        mercMap._json_source = new ol.source.Vector({
+            wrapX: false
+        });
+        mercMap.addLayer(new ol.layer.Vector({
+            source: mercMap._json_source,
+            style: new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'blue',
+                    lineDash: [4],
+                    width: 3
+                }),
+                fill: new ol.style.Fill({
+                    color: 'rgba(0, 0, 255, 0.1)'
+                })
+            })
+        }));
         var mercSource;
         Promise.all([
             ol.source.HistMap.createAsync({
