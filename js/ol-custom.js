@@ -424,12 +424,12 @@ define(['ol3', 'aigle'], function(ol, Promise) {
 
     ol.MaplatMap = function(optOptions) {
         optOptions = optOptions || {};
-        this._gps_source = new ol.source.Vector({
-            wrapX: false
-        });
         var vectorLayer = new ol.layer.Vector({
-            source: this._gps_source
+            source: new ol.source.Vector({
+                wrapX: false
+            })
         });
+        vectorLayer.set('name', 'gps');
 
         this._marker_source = new ol.source.Vector({
             wrapX: false
