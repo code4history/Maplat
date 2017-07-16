@@ -496,15 +496,22 @@ define(['ol3', 'aigle'], function(ol, Promise) {
     ol.inherits(ol.MaplatMap, ol.Map);
 
     ol.MaplatMap.prototype.getLayer = function(name) {
-        var layers = this.getLayers().getArray().filter(function(layer) {
-            return layer.get('name') == name;
-        });
-        if (layers.length == 0) return;
-        return layers[0];
+        if (!name) name = 'base';
+        var recur = function(layers) {
+            var filtered = layers.getArray().map(function(layer) {
+                if (layer.get('name') == name) return layer;
+                if (layer.getLayers) return recur(layer.getLayers());
+                return;
+            }).filter(function(layer) {
+                return layer;
+            });
+            if (filtered.length == 0) return;
+            return filtered[0];
+        };
+        return recur(this.getLayers());
     };
 
     ol.MaplatMap.prototype.getSource = function(name) {
-        if (!name) name = 'base';
         var layer = this.getLayer(name);
         if (!layer) return;
         return layer.getSource();
