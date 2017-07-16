@@ -1,15 +1,35 @@
-define(['ol-custom', 'aigle', 'proj'], function(ol, Promise, proj4) {
-    ol.proj.setProj4(proj4);
-    var projs = [];
+define(['ol-custom', 'aigle'], function(ol, Promise) {
     for (var z = 0; z < 9; z++) {
         var key = 'ZOOM:' + z;
-        var radius = 6378137 * 256 * Math.pow(2, z) / ol.const.MERC_MAX / 2;
-        var offset = 128 * Math.pow(2, z);
-        var proj4text = '+proj=merc +a=' + radius + ' +b=' + radius + ' +lat_ts=0.0 +lon_0=0.0 +x_0=' + offset + '.0 +y_0=-' +
-            offset + '.0 +k=1.0 +units=m  +axis=esu +nadgrids=@null +wktext  +no_defs';
-        projs.push([key, proj4text]);
+        var maxxy = 256 * Math.pow(2, z);
+
+        (function(key, maxxy) {
+            var projection = new ol.proj.Projection({
+                code: key,
+                // The extent is used to determine zoom level 0. Recommended values for a
+                // projection's validity extent can be found at https://epsg.io/.
+                extent: [0.0, 0.0, maxxy, maxxy],
+                units: 'm'
+            });
+            ol.proj.addProjection(projection);
+
+            // We also declare EPSG:21781/EPSG:4326 transform functions. These functions
+            // are necessary for the ScaleLine control and when calling ol.proj.transform
+            // for setting the view's initial center (see below).
+
+            ol.proj.addCoordinateTransforms('EPSG:3857', projection,
+                function(coordinate) {
+                    var x = (coordinate[0] + ol.const.MERC_MAX) * maxxy / (2 * ol.const.MERC_MAX);
+                    var y = (-coordinate[1] + ol.const.MERC_MAX) * maxxy / (2 * ol.const.MERC_MAX);
+                    return [x, y];
+                },
+                function(coordinate) {
+                    var x = coordinate[0] * (2 * ol.const.MERC_MAX) / maxxy - ol.const.MERC_MAX;
+                    var y = -1 * (coordinate[1] * (2 * ol.const.MERC_MAX) / maxxy - ol.const.MERC_MAX);
+                    return [x, y];
+                });
+        })(key, maxxy);
     }
-    proj4.defs(projs);
     // 透明PNG定義
     var transPng = 'data:image/png;base64,'+
         'iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAMAAABrrFhUAAAAB3RJTUUH3QgIBToaSbAjlwAAABd0'+
