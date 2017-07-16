@@ -510,7 +510,7 @@ define(['ol3', 'aigle'], function(ol, Promise) {
     });
 
     ol.MaplatMap.prototype.setGPSPosition = function(pos) {
-        var src = this._gps_source;
+        var src = this.getSource('gps');
         src.clear();
         if (pos) {
             var iconFeature = new ol.Feature({
@@ -527,12 +527,12 @@ define(['ol3', 'aigle'], function(ol, Promise) {
     };
 
     ol.MaplatMap.prototype.resetMarker = function() {
-        var src = this._marker_source;
+        var src = this.getSource('marker');
         src.clear();
     };
 
     ol.MaplatMap.prototype.setMarker = function(xy, data, markerStyle) {
-        var src = this._marker_source;
+        var src = this.getSource('marker');
         data['geometry'] = new ol.geom.Point(xy);
         var iconFeature = new ol.Feature(data);
         if (!markerStyle) markerStyle = markerDefaultStyle;
@@ -551,7 +551,7 @@ define(['ol3', 'aigle'], function(ol, Promise) {
     };
 
     ol.MaplatMap.prototype.setLine = function(xys) {
-        var src = this._marker_source;
+        var src = this.getSource('marker');
         var lineFeature = new ol.Feature({
             geometry: new ol.geom.LineString(xys),
             name: 'Line'
@@ -569,7 +569,7 @@ define(['ol3', 'aigle'], function(ol, Promise) {
     };
 
     ol.MaplatMap.prototype.setLayer = function(source) {
-        var layers = this._overlay_group.getLayers();
+        var layers = this.getLayer('overlay').getLayers();
         layers.clear();
         if (source) {
             var layer = new ol.layer.Tile({
