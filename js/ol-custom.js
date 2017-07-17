@@ -1,13 +1,20 @@
 define(['ol3', 'aigle'], function(ol, Promise) {
     // Direct transforamation between 2 projection
     ol.proj.transformDirect = function(xy, src, dist) {
+        if (!dist) {
+            dist = src;
+            src = xy;
+            xy = null;
+        }
+        var srcCode = src.getCode ? src.getCode() : src;
+        var distCode = dist.getCode ? dist.getCode() : dist;
         var func = ol.proj.getTransform(src, dist);
-        if (func == ol.proj.identityTransform && !ol.proj.equivalent(src, dist)) {
+        if (func == ol.proj.identityTransform && srcCode != distCode) {
             var srcFunc = ol.proj.getTransform(src, 'EPSG:3857');
             var distFunc = ol.proj.getTransform('EPSG:3857', dist);
-            if (srcFunc == ol.proj.identityTransform && !ol.proj.equivalent(src, 'EPSG:3857'))
+            if (srcFunc == ol.proj.identityTransform && srcCode != 'EPSG:3857')
                 throw 'Transform of Source projection is not defined.';
-            if (distFunc == ol.proj.identityTransform && !ol.proj.equivalent(dist, 'EPSG:3857'))
+            if (distFunc == ol.proj.identityTransform && distCode != 'EPSG:3857')
                 throw 'Transform of Distination projection is not defined.';
             func = function(xy) {
                 return ol.proj.transform(ol.proj.transform(xy, src, 'EPSG:3857'), 'EPSG:3857', dist);
@@ -18,7 +25,7 @@ define(['ol3', 'aigle'], function(ol, Promise) {
             ol.proj.addCoordinateTransforms(src, dist, func, invFunc);
         }
 
-        return func(xy);
+        if (xy) return func(xy);
     };
 
     // スマホタッチで中間ズームを許す
@@ -253,7 +260,7 @@ define(['ol3', 'aigle'], function(ol, Promise) {
                 }
                 map.setGPSPosition(pos);
                 return true;
-            });
+            }).catch(function(err) { throw err; });
         };
 
         target.prototype.setGPSMarker = function(position, ignoreMove) {
@@ -318,7 +325,7 @@ define(['ol3', 'aigle'], function(ol, Promise) {
                 if (index == 5) return val;
                 return self.xy2MercAsync(val);
             });
-            return Promise.all(promises);
+            return Promise.all(promises).catch(function(err) { throw err; });
         };
 
         target.prototype.mercs2SizeAsync = function(mercs) {
@@ -329,7 +336,7 @@ define(['ol3', 'aigle'], function(ol, Promise) {
             });
             return Promise.all(promises).then(function(xys) {
                 return self.xys2Size(xys);
-            });
+            }).catch(function(err) { throw err; });
         };
 
         target.prototype.xys2Size = function(xys) {
@@ -409,7 +416,7 @@ define(['ol3', 'aigle'], function(ol, Promise) {
         return new Promise(function(resolve, reject) {
             var obj = new ol.source.NowMap(options);
             resolve(obj);
-        });
+        }).catch(function(err) { throw err; });
     };
     ol.source.setCustomFunction(ol.source.NowMap);
     ol.source.NowMap.prototype.xy2MercAsync = function(xy) {
@@ -441,7 +448,7 @@ define(['ol3', 'aigle'], function(ol, Promise) {
             var obj = new ol.source.TmsMap(options);
             resolve(obj);
         });
-        return promise;
+        return promise.catch(function(err) { throw err; });
     };
 
     ol.MaplatMap = function(optOptions) {
