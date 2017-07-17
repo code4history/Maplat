@@ -1,4 +1,26 @@
 define(['ol3', 'aigle'], function(ol, Promise) {
+    // Direct transforamation between 2 projection
+    ol.proj.transformDirect = function(xy, src, dist) {
+        var func = ol.proj.getTransform(src, dist);
+        if (func == ol.proj.identityTransform && !ol.proj.equivalent(src, dist)) {
+            var srcFunc = ol.proj.getTransform(src, 'EPSG:3857');
+            var distFunc = ol.proj.getTransform('EPSG:3857', dist);
+            if (srcFunc == ol.proj.identityTransform && !ol.proj.equivalent(src, 'EPSG:3857'))
+                throw 'Transform of Source projection is not defined.';
+            if (distFunc == ol.proj.identityTransform && !ol.proj.equivalent(dist, 'EPSG:3857'))
+                throw 'Transform of Distination projection is not defined.';
+            func = function(xy) {
+                return ol.proj.transform(ol.proj.transform(xy, src, 'EPSG:3857'), 'EPSG:3857', dist);
+            };
+            var invFunc = function(xy) {
+                return ol.proj.transform(ol.proj.transform(xy, dist, 'EPSG:3857'), 'EPSG:3857', src);
+            };
+            ol.proj.addCoordinateTransforms(src, dist, func, invFunc);
+        }
+
+        return func(xy);
+    };
+
     // スマホタッチで中間ズームを許す
     ol.interaction.PinchZoom.handleUpEvent_ = function(mapBrowserEvent) {
         if (this.targetPointers.length < 2) {
