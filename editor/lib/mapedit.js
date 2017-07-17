@@ -6,6 +6,7 @@ var fileUrl = require('file-url');
 var electron = require('electron');
 var BrowserWindow = electron.BrowserWindow;
 var turf = require('turf');
+var Tin = require('../common/js/tin');
 var wkt = require('wellknown');
 var isClockwise = require('turf-is-clockwise');
 
