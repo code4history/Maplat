@@ -154,34 +154,32 @@ var mapedit = {
         });
         var points = turf.featureCollection(pointArr);
 
-        var tins = {forw: turf.tin(points, 'target')};
+        var tins = {bakw: turf.tin(points, 'target')};
 
-        tins.bakw = turf.featureCollection(tins.forw.features.map(function(tri) {
+        tins.forw = turf.featureCollection(tins.bakw.features.map(function(tri) {
             return counterTri(tri);
         }));
 
         var searchIndex = {};
-        tins.forw.features.map(function(forTri, index) {
-            var bakTri = tins.bakw.features[index];
+        tins.bakw.features.map(function(bakTri, index) {
+            var forTri = tins.forw.features[index];
             insertSearchIndex(searchIndex, {forw: forTri, bakw: bakTri});
         });
 
-        console.log('searchIndex created');
         var overlapped = overlapCheck(searchIndex);
-        console.log('overlap checked');
 
-        Object.keys(overlapped.bakw).map(function(key) {
-            if (overlapped.bakw[key] == 'Not include case') return;
+        Object.keys(overlapped.forw).map(function(key) {
+            if (overlapped.forw[key] == 'Not include case') return;
             var trises = searchIndex[key];
-            var forUnion = turf.union(trises[0].forw, trises[1].forw);
-            var forConvex = turf.convex(turf.featureCollection([trises[0].forw, trises[1].forw]));
-            var forDiff = turf.difference(forConvex, forUnion);
-            if (forDiff) return;
+            var bakUnion = turf.union(trises[0].bakw, trises[1].bakw);
+            var bakConvex = turf.convex(turf.featureCollection([trises[0].bakw, trises[1].bakw]));
+            var bakDiff = turf.difference(bakConvex, bakUnion);
+            if (bakDiff) return;
             var sharedVtx = key.split('-').map(function(val) {
                 var index = parseFloat(val);
                 return ['a', 'b', 'c'].map(function(alpha, index) {
-                    var prop = trises[0].bakw.properties[alpha];
-                    var geom = trises[0].bakw.geometry.coordinates[0][index];
+                    var prop = trises[0].forw.properties[alpha];
+                    var geom = trises[0].forw.geometry.coordinates[0][index];
                     return {geom: geom, prop: prop};
                 }).filter(function(vtx) {
                     return vtx.prop.index == index;
@@ -189,8 +187,8 @@ var mapedit = {
             });
             var nonSharedVtx = trises.map(function(tris) {
                 return ['a', 'b', 'c'].map(function(alpha, index) {
-                    var prop = tris.bakw.properties[alpha];
-                    var geom = tris.bakw.geometry.coordinates[0][index];
+                    var prop = tris.forw.properties[alpha];
+                    var geom = tris.forw.geometry.coordinates[0][index];
                     return {geom: geom, prop: prop};
                 }).filter(function(vtx) {
                     return vtx.prop.index != sharedVtx[0].prop.index &&
@@ -205,8 +203,8 @@ var mapedit = {
                 if (cwCheck) newTriCoords = [sVtx.geom, nonSharedVtx[1].geom, nonSharedVtx[0].geom, sVtx.geom];
                 var newTriProp = !cwCheck ? {a: sVtx.prop, b: nonSharedVtx[0].prop, c: nonSharedVtx[1].prop} :
                     {a: sVtx.prop, b: nonSharedVtx[1].prop, c: nonSharedVtx[0].prop};
-                var newBakTri = turf.polygon([newTriCoords], newTriProp);
-                var newForTri = counterTri(newBakTri);
+                var newForTri = turf.polygon([newTriCoords], newTriProp);
+                var newBakTri = counterTri(newForTri);
                 insertSearchIndex(searchIndex, {forw: newForTri, bakw: newBakTri}, tins);
             });
         });
@@ -237,44 +235,23 @@ function counterTri(tri) {
     return turf.polygon([coordinates], properties);
 }
 
-var stop = false;
-
 function overlapCheck(searchIndex) {
     return Object.keys(searchIndex).reduce(function(prev, key) {
-        //console.log(key);
-        //console.log(searchIndex[key]);
         var searchResult = searchIndex[key];
         if (searchResult.length < 2) return prev;
         ['forw', 'bakw'].map(function(dir) {
             var result = turf.intersect(searchResult[0][dir], searchResult[1][dir]);
-            //console.log('Intersect:' + result);
             if (!result || result.geometry.type == 'Point' || result.geometry.type == 'LineString') return;
-            //console.log('a');
             if (!prev[dir]) prev[dir] = {};
-            //console.log(JSON.stringify(searchResult[0][dir]));
-            //console.log(JSON.stringify(searchResult[1][dir]));
-            //console.log(JSON.stringify(result));
             try {
                 var diff1 = turf.difference(searchResult[0][dir], result);
                 var diff2 = turf.difference(searchResult[1][dir], result);
-                //console.log('Diff : ' + diff1 + ' ' + diff2);
                 if (!diff1 || !diff2) {
                     prev[dir][key] = 'Include case';
                 } else {
                     prev[dir][key] = 'Not include case';
                 }
-                /*if (!stop) {
-                    console.log(key + ': OK');
-                    console.log(JSON.stringify(searchResult[0][dir]));
-                    console.log(JSON.stringify(searchResult[1][dir]));
-                    console.log(JSON.stringify(result));
-                }*/
             } catch(e) {
-                /*console.log(key + ':' + JSON.stringify(e));
-                console.log(JSON.stringify(searchResult[0][dir]));
-                console.log(JSON.stringify(searchResult[1][dir]));
-                console.log(JSON.stringify(result));
-                stop = true;*/
                 prev[dir][key] = 'Not include case';
             }
         });

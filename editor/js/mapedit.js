@@ -174,13 +174,12 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
                     var bakTin = arg.bakw;
                     mercMap.getSource('json').clear();
                     illstMap.getSource('json').clear();
-                    var bakProj = 'ZOOM:' + illstSource.maxZoom;
-                    console.log(bakProj);
+                    var forProj = 'ZOOM:' + illstSource.maxZoom;
                     var jsonReader = new ol.format.GeoJSON();
-                    var forFeatures = jsonReader.readFeatures(forTin, {dataProjection:'EPSG:3857'});
-                    var bakFeatures = jsonReader.readFeatures(bakTin, {dataProjection:bakProj, featureProjection:'EPSG:3857'});
-                    mercMap.getSource('json').addFeatures(forFeatures); //, {dataProjection:'EPSG:3857'});
-                    illstMap.getSource('json').addFeatures(bakFeatures);// , {dataProjection:bakProj, featureProjection:'EPSG:3857'});
+                    var bakFeatures = jsonReader.readFeatures(bakTin, {dataProjection:'EPSG:3857'});
+                    var forFeatures = jsonReader.readFeatures(forTin, {dataProjection:forProj, featureProjection:'EPSG:3857'});
+                    mercMap.getSource('json').addFeatures(bakFeatures); //, {dataProjection:'EPSG:3857'});
+                    illstMap.getSource('json').addFeatures(forFeatures);// , {dataProjection:bakProj, featureProjection:'EPSG:3857'});
                 });
             });
             if (eventInit) return;
