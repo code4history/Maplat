@@ -154,7 +154,9 @@ define(['ol-custom', 'aigle'], function(ol, Promise) {
                 url: options.url,
                 sourceID: options.sourceID,
                 label: options.label
-            }, options));
+            }, options)).catch(function(err) {
+                throw err;
+            });
         }
 
         var algorythm = options.maptype != 'maplat' ? 'external' : options.algorythm || 'tin';
@@ -176,7 +178,11 @@ define(['ol-custom', 'aigle'], function(ol, Promise) {
                         if (!options.gcps || options.gcps.length < 3) resolve(obj);
                         obj.mapSize2MercSize(resolve);
                     });
+                }).catch(function(err) {
+                    throw err;
                 });
+        }).catch(function(err) {
+            throw err;
         });
     };
     ol.source.setCustomFunction(ol.source.HistMap);
@@ -233,7 +239,7 @@ define(['ol-custom', 'aigle'], function(ol, Promise) {
         var self = this;
         return this.merc2XyAsync_(merc).then(function(convertXy) {
             return self.xy2HistMapCoords(convertXy);
-        });
+        }).catch(function(err) { throw err; });
     };
 
     ol.source.HistMap.prototype.mapSize2MercSize = function(callback) {
@@ -249,7 +255,7 @@ define(['ol-custom', 'aigle'], function(ol, Promise) {
             self.merc_zoom = Math.log(300 * (2*ol.const.MERC_MAX) / 256 / delta) / Math.log(2) - 3;
             self.home_position = ol.proj.toLonLat(mercs[4]);
             callback(self);
-        });
+        }).catch(function(err) { throw err; });
     };
 
     ol.source.HistMap.prototype.histMapCoords2Xy = function(histCoords) {
