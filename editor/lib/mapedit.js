@@ -10,6 +10,7 @@ var Tin = require('../common/js/tin');
 var wkt = require('wellknown');
 var isClockwise = turf.booleanClockwise;
 const {ipcMain} = require('electron');
+var internal = require('mapshaper').internal;
 
 settings.init();
 
@@ -114,6 +115,11 @@ function lineIntersects(line1StartX, line1StartY, line1EndX, line1EndY, line2Sta
     }
 }
 
+function findIntersections(coords) {
+    var arcs = new internal.ArcCollection(coords);
+    return internal.findSegmentIntersections(arcs);
+}
+
 var mapedit = {
     init: function() {
         var saveFolder = settings.getSetting('saveFolder');
@@ -124,7 +130,6 @@ var mapedit = {
         focused = BrowserWindow.getFocusedWindow();
         var self = this;
         ipcMain.on('updateTin', function(event, arg) {
-            console.log(arg);
             self.updateTin(arg);
         });
     },
@@ -315,9 +320,15 @@ var mapedit = {
         });
         // var newResult = overlapCheck(triSearchIndex);
         focused.webContents.send('updatedTin', tins);
-        var fkinks = turf.kinks(turf.multiPolygon(tins.forw.features.map(function(poly) { return poly.geometry.coordinates; })));
-        var bkinks = turf.kinks(turf.multiPolygon(tins.bakw.features.map(function(poly) { return poly.geometry.coordinates; })));
-        focused.webContents.send('updatedKinks', {forw: fkinks, bakw: bkinks});
+        // var fkinks = turf.kinks(turf.multiPolygon(tins.forw.features.map(function(poly) { return poly.geometry.coordinates; })));
+        // var bkinks = turf.kinks(turf.multiPolygon(tins.bakw.features.map(function(poly) { return poly.geometry.coordinates; })));
+        // focused.webContents.send('updatedKinks', {forw: fkinks, bakw: bkinks});
+
+        var coords = tins.bakw.features.map(function(poly) { return poly.geometry.coordinates[0]; });
+        var xy = findIntersections(coords);
+        var xy2 = internal.dedupIntersections(xy).map(function(point) { return [point.x, point.y] });
+        focused.webContents.send('updatedKinks', [coords, xy2]);
+
         //fs.writeFileSync('Kinks.json',JSON.stringify(kinks, null, 2));
         /*var forArray = [];
         var bakArray = [];
