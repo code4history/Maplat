@@ -138,45 +138,50 @@
 
         };
 
-        Tin.prototype.updateTin = function() {
+        Tin.prototype.updateTin = function(strict) {
             var bbox = [];
-            var pointsSet = this.points;
             if (this.wh) {
                 bbox = [
                     [0, 0], [this.wh[0], 0],
                     [0, this.wh[1]], [this.wh[0], this.wh[1]]
                 ];
             }
-            var forArr = [];
-            var bakArr = [];
-            for (var i=0; i<pointsSet.length; i++) {
-                var mapxy = pointsSet[i][0];
-                var mercs = pointsSet[i][1];
-                forArr.push(createPoint(mapxy, mercs));
-                bakArr.push(createPoint(mercs, mapxy));
+            var pointsArray = {forw: [], bakw: []};
+            for (var i=0; i<this.points.length; i++) {
+                var mapxy = this.points[i][0];
+                var mercs = this.points[i][1];
+                var forPoint = createPoint(mapxy, mercs, i);
+                pointsArray.forw.push(forPoint);
+                pointsArray.bakw.push(counterPoint(forPoint));
             }
-            var forPoints = turf.featureCollection(forArr);
-            var bakPoints = turf.featureCollection(bakArr);
+            var pointsSet = {forw: turf.featureCollection(forArr), bakw: turf.featureCollection(bakArr)};
 
-            var tinForCentroid = turf.tin(forPoints, 'target');
-            var forCentroidFt = turf.centroid(forPoints);
-            var forCentroid = forCentroidFt.geometry.coordinates;
-            var bakCentroid = transformArr(forCentroidFt, tinForCentroid);
-            this.for_centroid = createPoint(forCentroid, bakCentroid);
-            this.bak_centroid = createPoint(bakCentroid, forCentroid);
+            // Forward TIN for calcurating Backward Centroid and Backward Vertices
+            var tinForCentroid = turf.tin(pointsSet.forw, 'target');
+            var forCentroidFt = turf.centroid(pointsSet.forw);
 
-            var convex = turf.convex(forPoints).geometry.coordinates[0];
+            // Calcurating Forward/Backward Centroid
+            var centroid = {forw: forCentroidFt.geometry.coordinates};
+            centroid.bakw = transformArr(forCentroidFt, tinForCentroid);
+            this.centroid = {forw: createPoint(forCentroid, bakCentroid, 'cent')};
+            this.centroid.bakw = counterPoint(this.centroid.forw);
+
+            // Calcurating Convex full to get Convex full polygon's vertices
+            var convex = turf.convex(pointsSet.forw).geometry.coordinates[0];
+
+            // Calcurating Average scaling factors and rotation factors per orthants
             var orthant = convex.reduce(function(prev, forVertex, idx, array) {
                 var bakVertex = transformArr(turf.point(forVertex), tinForCentroid);
-                var forVertexDelta = [forVertex[0] - forCentroid[0], forVertex[1] - forCentroid[1]];
-                var bakVertexDelta = [bakVertex[0] - bakCentroid[0], bakCentroid[1] - bakVertex[1]];
+                var vertexDelta = {forw: [forVertex[0] - centroid.forw[0], forVertex[1] - centroid.forw[1]]};
+                vertexDelta.bakw = [bakVertex[0] - centroid.bakw[0], centroid.bakw[1] - bakVertex[1]];
 
-                if (forVertexDelta[0] == 0 || forVertexDelta[1] == 0) return prev;
+                if (vertexDelta.forw[0] == 0 || vertexDelta.forw[1] == 0) return prev;
                 var index = 0;
-                if (forVertexDelta[0] > 0) index += 1;
-                if (forVertexDelta[1] > 0) index += 2;
-                prev[index].push([forVertexDelta, bakVertexDelta]);
+                if (vertexDelta.forw[0] > 0) index += 1;
+                if (vertexDelta.forw[1] > 0) index += 2;
+                prev[index].push([vertexDelta.forw, vertexDelta.bakw]);
                 if (idx == array.length -1) {
+                    // If some orthants have no Convex full polygon's vertices, use same average factor to every orthants
                     return (prev.length == prev.filter(function(val) {
                         return val.length > 0;
                     }).length) ? prev : prev.reduce(function(pre, cur) {
@@ -186,6 +191,7 @@
                 }
                 return prev;
             }, [[], [], [], []]).map(function(item) {
+                // Finalize calcuration of Average scaling factors and rotation factors
                 return item.reduce(function(prev, curr, index, arr) {
                     if (!prev) prev = [0, 0, 0];
                     var distanceSum = prev[0] + Math.sqrt(Math.pow(curr[0][0], 2) + Math.pow(curr[0][1], 2)) /
@@ -199,8 +205,10 @@
                     return [distanceSum, sumThetaX, sumThetaY];
                 }, null);
             });
+            // "Using same average factor to every orthants" case
             if (orthant.length == 1) orthant = [orthant[0], orthant[0], orthant[0], orthant[0]];
 
+            // Calcurating Backward Bounding box of map
             var verticesSet = orthant.map(function(delta, index) {
                 var forVertex = bbox[index];
                 var forDelta = [forVertex[0] - forCentroid[0], forVertex[1] - forCentroid[1]];
@@ -218,8 +226,7 @@
             verticesSet[2] = verticesSet[3];
             verticesSet[3] = swap;
 
-            var forVerticesList = [];
-            var bakVerticesList = [];
+            var verticesList = {forw: [], bakw: []};
 
             for (var i = 0; i < verticesSet.length; i++ ) {
                 var n = (i + 1) % verticesSet.length;
@@ -227,31 +234,37 @@
                 var bakVertex = verticesSet[i][1];
                 var forBound = [(forVertex[0] + verticesSet[n][0][0]) / 2, (forVertex[1] + verticesSet[n][0][1]) / 2];
                 var bakBound = [(bakVertex[0] + verticesSet[n][1][0]) / 2, (bakVertex[1] + verticesSet[n][1][1]) / 2];
-                forPoints.features.push(createPoint(forVertex, bakVertex));
-                bakPoints.features.push(createPoint(bakVertex, forVertex));
-                forVerticesList.push(createPoint(forVertex, bakVertex));
-                bakVerticesList.push(createPoint(bakVertex, forVertex));
-                forPoints.features.push(createPoint(forBound, bakBound));
-                bakPoints.features.push(createPoint(bakBound, forBound));
+                var forVertexFt = createPoint(forVertex, bakVertex, 'bbox' + i);
+                var bakVertexFt = counterPoint(forVertexFt);
+                var forBoundFt = createPoint(forBound, bakBound, 'bmid' + i);
+                pointsSet.forw.features.push(forVertexFt);
+                pointsSet.bakw.features.push(bakVertexFt);
+                verticesList.forw.push(forVertexFt);
+                verticesList.bakw.push(bakVertexFt);
+                pointsSet.forw.features.push(forBoundFt);
+                pointsSet.bakw.features.push(counterPoint(forBoundFt));
             }
 
-            this.for_points = forPoints;
-            this.bak_points = bakPoints;
-            this.for_tins = turf.tin(forPoints, 'target');
-            this.bak_tins = turf.tin(bakPoints, 'target');
+            this.pointsSet = pointsSet;
+            this.tins = {forw: turf.tin(pointsSet.forw, 'target')};
+            if (strict == 'strict' || strict == 'auto') {
+                this.tins.bakw = this.calcurateStrictTin();
+            }
+            if (strict == 'loose' || (strict == 'auto' && this.strict_status == 'strict_error')) {
+                this.tins.bakw = turf.tin(pointsSet.bakw, 'target');
+                this.strict_status = 'loose';
+            }
 
-            var forVertexCalc = vertexCalc(forVerticesList, this.for_centroid);
-            this.for_vertices_params = forVertexCalc;
-            var bakVertexCalc = vertexCalc(bakVerticesList, this.bak_centroid);
-            this.bak_vertices_params = bakVertexCalc;
+            this.vertices_params = {forw: vertexCalc(verticesList.forw, this.centroid.forw),
+                bakw: vertexCalc(verticesList.bakw, this.centroid.bakw)};
         };
 
         Tin.prototype.transform = function(point, backward) {
-            if (!this.bak_tins || !this.for_tins) this.updateTin();
+            if (!this.tins) this.updateTin();
             var tpoint = turf.point(point);
-            var tins = backward ? this.bak_tins : this.for_tins;
-            var verticesParams = backward ? this.bak_vertices_params : this.for_vertices_params;
-            var centroid = backward ? this.bak_centroid : this.for_centroid;
+            var tins = backward ? this.tins.bakw : this.tins.forw;
+            var verticesParams = backward ? this.vertices_params.bakw : this.vertices_params.forw;
+            var centroid = backward ? this.centroid.bakw : this.centroid.forw;
             return transformArr(tpoint, tins, verticesParams, centroid);
         };
 
@@ -301,8 +314,13 @@
             return minIndex;
         }
 
-        function createPoint(xy, target) {
-            return turf.point(xy, {target: target});
+        function createPoint(xy, geom, index) {
+            return turf.point(xy, {target: {geom: geom, index: index}});
+        }
+
+        function counterPoint(point) {
+            return turf.point(point.properties.target.geom, {target: {geom: point.geometry.coordinates,
+                index: point.properties.target.index}});
         }
 
         function transformTin(of, tri) {
@@ -313,9 +331,9 @@
             var b = tri.geometry.coordinates[0][1];
             var c = tri.geometry.coordinates[0][2];
             var o = of.geometry.coordinates;
-            var ad = tri.properties.a;
-            var bd = tri.properties.b;
-            var cd = tri.properties.c;
+            var ad = tri.properties.a.geom;
+            var bd = tri.properties.b.geom;
+            var cd = tri.properties.c.geom;
 
             var ab = [b[0] -a[0], b[1] -a[1]];
             var ac = [c[0] -a[0], c[1] -a[1]];
