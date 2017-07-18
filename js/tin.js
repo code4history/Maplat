@@ -65,38 +65,31 @@
             this.tins = undefined;
         };
 
-        Tin.prototype.createTinStrict = function() {
-            var pointArr = this.points.map(function(gcp, index) {
-                return turf.point(gcp[1], {target: {index: index, geom: gcp[0]}});
-            });
-            var points = turf.featureCollection(pointArr);
-
-            var tins = {bakw: turf.tin(points, 'target')};
-
-            tins.forw = turf.featureCollection(tins.bakw.features.map(function(tri) {
+        Tin.prototype.calcurateStrictTin = function() {
+            this.tins.bakw = turf.featureCollection(this.tins.forw.features.map(function(tri) {
                 return counterTri(tri);
             }));
 
             var searchIndex = {};
-            tins.bakw.features.map(function(bakTri, index) {
-                var forTri = tins.forw.features[index];
+            this.tins.forw.features.map(function(forTri, index) {
+                var bakTri = this.tins.bakw.features[index];
                 insertSearchIndex(searchIndex, {forw: forTri, bakw: bakTri});
             });
 
             var overlapped = overlapCheck(searchIndex);
 
-            Object.keys(overlapped.forw).map(function(key) {
-                if (overlapped.forw[key] == 'Not include case') return;
+            Object.keys(overlapped.bakw).map(function(key) {
+                if (overlapped.bakw[key] == 'Not include case') return;
                 var trises = searchIndex[key];
-                var bakUnion = turf.union(trises[0].bakw, trises[1].bakw);
-                var bakConvex = turf.convex(turf.featureCollection([trises[0].bakw, trises[1].bakw]));
-                var bakDiff = turf.difference(bakConvex, bakUnion);
-                if (bakDiff) return;
+                var forUnion = turf.union(trises[0].forw, trises[1].forw);
+                var forConvex = turf.convex(turf.featureCollection([trises[0].forw, trises[1].forw]));
+                var forDiff = turf.difference(forConvex, forUnion);
+                if (forDiff) return;
                 var sharedVtx = key.split('-').map(function(val) {
                     var index = parseFloat(val);
                     return ['a', 'b', 'c'].map(function(alpha, index) {
-                        var prop = trises[0].forw.properties[alpha];
-                        var geom = trises[0].forw.geometry.coordinates[0][index];
+                        var prop = trises[0].bakw.properties[alpha];
+                        var geom = trises[0].bakw.geometry.coordinates[0][index];
                         return {geom: geom, prop: prop};
                     }).filter(function(vtx) {
                         return vtx.prop.index == index;
@@ -104,38 +97,33 @@
                 });
                 var nonSharedVtx = trises.map(function(tris) {
                     return ['a', 'b', 'c'].map(function(alpha, index) {
-                        var prop = tris.forw.properties[alpha];
-                        var geom = tris.forw.geometry.coordinates[0][index];
+                        var prop = tris.bakw.properties[alpha];
+                        var geom = tris.bakw.geometry.coordinates[0][index];
                         return {geom: geom, prop: prop};
                     }).filter(function(vtx) {
                         return vtx.prop.index != sharedVtx[0].prop.index &&
                             vtx.prop.index != sharedVtx[1].prop.index;
                     })[0];
                 });
-                removeSearchIndex(searchIndex, trises[0], tins);
-                removeSearchIndex(searchIndex, trises[1], tins);
+                removeSearchIndex(searchIndex, trises[0], this.tins);
+                removeSearchIndex(searchIndex, trises[1], this.tins);
                 sharedVtx.map(function(sVtx) {
                     var newTriCoords = [sVtx.geom, nonSharedVtx[0].geom, nonSharedVtx[1].geom, sVtx.geom];
                     var cwCheck = isClockwise(newTriCoords);
                     if (cwCheck) newTriCoords = [sVtx.geom, nonSharedVtx[1].geom, nonSharedVtx[0].geom, sVtx.geom];
                     var newTriProp = !cwCheck ? {a: sVtx.prop, b: nonSharedVtx[0].prop, c: nonSharedVtx[1].prop} :
                         {a: sVtx.prop, b: nonSharedVtx[1].prop, c: nonSharedVtx[0].prop};
-                    var newForTri = turf.polygon([newTriCoords], newTriProp);
-                    var newBakTri = counterTri(newForTri);
-                    insertSearchIndex(searchIndex, {forw: newForTri, bakw: newBakTri}, tins);
+                    var newBakTri = turf.polygon([newTriCoords], newTriProp);
+                    var newForTri = counterTri(newBakTri);
+                    insertSearchIndex(searchIndex, {forw: newForTri, bakw: newBakTri}, this.tins);
                 });
             });
             var secondCheck = overlapCheck(searchIndex);
-            if (Object.keys(secondCheck.forw).length == 0  && Object.keys(secondCheck.bakw).length == 0) {
-                // 頂点処理へ
+            if (Object.keys(secondCheck.forw).length == 0 && Object.keys(secondCheck.bakw).length == 0) {
+                this.strict_status = 'strict';
             } else {
                 this.strict_status = 'strict_error';
-                this.tins = tins;
             }
-        };
-
-        Tin.prototype.createTinLoose = function(gcps) {
-
         };
 
         Tin.prototype.updateTin = function(strict) {
@@ -248,7 +236,7 @@
             this.pointsSet = pointsSet;
             this.tins = {forw: turf.tin(pointsSet.forw, 'target')};
             if (strict == 'strict' || strict == 'auto') {
-                this.tins.bakw = this.calcurateStrictTin();
+                this.calcurateStrictTin();
             }
             if (strict == 'loose' || (strict == 'auto' && this.strict_status == 'strict_error')) {
                 this.tins.bakw = turf.tin(pointsSet.bakw, 'target');
@@ -501,7 +489,7 @@
             ? function _loaderForCommonjs(commonDefine) {
                 var turf;
                 try {
-                    turf = require('turf');
+                    turf = require('@turf/turf');
                 } catch (e) {}
                 module.exports = commonDefine(turf);
             }
