@@ -14,5 +14,5 @@ build
 project.xcworkspace
 xcuserdata
 *.qgs
-*Backward.json
-Forward.json
+*Backward*.json
+*Forward*.json

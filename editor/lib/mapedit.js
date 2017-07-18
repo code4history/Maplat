@@ -5,10 +5,10 @@ var fs = require('fs-extra');
 var fileUrl = require('file-url');
 var electron = require('electron');
 var BrowserWindow = electron.BrowserWindow;
-var turf = require('turf');
+var turf = require('@turf/turf');
 var Tin = require('../common/js/tin');
 var wkt = require('wellknown');
-var isClockwise = require('turf-is-clockwise');
+var isClockwise = turf.booleanClockwise;
 
 settings.init();
 

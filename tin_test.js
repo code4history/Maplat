@@ -1,28 +1,28 @@
-var turf = require('turf');
+var turf = require('@turf/turf');
 var wkt = require('wellknown');
 var path = require("path");
 var userHome = process.env[process.platform == 'win32' ? 'USERPROFILE' : 'HOME'];
 var docFolder = path.join(userHome, 'Documents');
-var gcps = require(path.join(docFolder, 'MaplatEditor/maps/nara_ezuya_renew.json')).gcps;
-var isClockwise = require('turf-is-clockwise');
+var gcps = require(path.join(docFolder, 'MaplatEditor/maps/nara_ezuya.json')).gcps;
+var isClockwise = turf.booleanClockwise;
 var fs = require('fs');
 
 var pointArr = gcps.map(function(gcp, index) {
-    return turf.point(gcp[1], {target: {index: index, geom: gcp[0]}});
+    return turf.point(gcp[0], {target: {index: index, geom: gcp[1]}});
 });
 var points = turf.featureCollection(pointArr);
 
 var tin = turf.tin(points, 'target');
 
-fs.writeFileSync('Forward.json',JSON.stringify(tin, null, 2));
-console.log('Forward');
+fs.writeFileSync('Forward_true.json',JSON.stringify(tin, null, 2));
+console.log('Forward_true');
 
 var bakTin = turf.featureCollection(tin.features.map(function(tri) {
     return counterTri(tri);
 }));
 
-fs.writeFileSync('Backward.json',JSON.stringify(bakTin, null, 2));
-console.log('Backward');
+fs.writeFileSync('Backward_true.json',JSON.stringify(bakTin, null, 2));
+console.log('Backward_true');
 
 var triSearchIndex = {}; 
 tin.features.map(function(forTri, index) {
@@ -92,20 +92,20 @@ Object.keys(overlapped.bakw).map(function(key) {
 });
 var newResult = overlapCheck(triSearchIndex);
 console.log('Final: ' + JSON.stringify(newResult, null, 2));
-fs.writeFileSync('newBackward.json',JSON.stringify(bakTin, null, 2));
+fs.writeFileSync('Backward_true_after.json',JSON.stringify(bakTin, null, 2));
 
 function counterTri(tri) {
     var coordinates = ['a', 'b', 'c', 'a'].map(function(key) {
         return tri.properties[key].geom;
     });
 	var cwCheck = isClockwise(coordinates);
-	if (!cwCheck) coordinates = ['a', 'c', 'b', 'a'].map(function(key) {
+	if (cwCheck) coordinates = ['a', 'c', 'b', 'a'].map(function(key) {
         return tri.properties[key].geom;
     });
     //console.log(coordinates);
     var geoms = tri.geometry.coordinates[0];
     var props = tri.properties;
-    var properties = cwCheck ? {
+    var properties = !cwCheck ? {
     	a: {geom: geoms[0], index: props['a'].index},
     	b: {geom: geoms[1], index: props['b'].index},
     	c: {geom: geoms[2], index: props['c'].index}

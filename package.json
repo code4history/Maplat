@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@turf/turf": "^4.5.2",
     "argv": "0.0.2",
     "csv-parse": "^1.2.0",
     "fs-extra": "^1.0.0",
