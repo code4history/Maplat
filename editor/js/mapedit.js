@@ -167,9 +167,10 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
                 document.querySelector('#height').value = mapObject.get('height') || '';
             });
             mapObject.on('change:gcps', function(ev) {
-                backend.updateTin(mapObject.get('gcps'));
+                ipcRenderer.send('updateTin', mapObject.get('gcps'));
+                // backend.updateTin(mapObject.get('gcps'));
+                console.log('backend call');
                 ipcRenderer.once('updatedTin', function(event, arg) {
-
                     var forTin = arg.forw;
                     var bakTin = arg.bakw;
                     mercMap.getSource('json').clear();
@@ -180,6 +181,9 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
                     var forFeatures = jsonReader.readFeatures(forTin, {dataProjection:forProj, featureProjection:'EPSG:3857'});
                     mercMap.getSource('json').addFeatures(bakFeatures); //, {dataProjection:'EPSG:3857'});
                     illstMap.getSource('json').addFeatures(forFeatures);// , {dataProjection:bakProj, featureProjection:'EPSG:3857'});
+                });
+                ipcRenderer.once('updatedKinks', function(event, arg) {
+                    console.log(arg);
                 });
             });
             if (eventInit) return;
@@ -408,11 +412,6 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
             var map = evt.map;
 
             var this_ = this;
-            var feature = map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
-                return feature;
-            }, {}, function(layer) {
-                return layer.get('name') == this_.layerFilter;
-            });
 
             var deltaX = evt.coordinate[0] - this.coordinate_[0];
             var deltaY = evt.coordinate[1] - this.coordinate_[1];
@@ -437,8 +436,10 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
                 var this_ = this;
                 var feature = map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
                     return feature;
-                }, {}, function(layer) {
-                    return layer.get("name") == this_.layerFilter;
+                }, {
+                    layerFilter: function(layer) {
+                        return layer.get('name') == this_.layerFilter;
+                    }
                 });
 
                 var element = evt.map.getTargetElement();
@@ -504,6 +505,10 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
             contextmenu.on('open', function(evt){
                 var feature = this.map_.forEachFeatureAtPixel(evt.pixel, function(ft, l){
                     return ft;
+                }, {
+                    layerFilter: function(layer) {
+                        return layer.get('name') == 'marker';
+                    }
                 });
                 if (feature) {
                     contextmenu.clear();

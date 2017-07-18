@@ -9,12 +9,110 @@ var turf = require('@turf/turf');
 var Tin = require('../common/js/tin');
 var wkt = require('wellknown');
 var isClockwise = turf.booleanClockwise;
+const {ipcMain} = require('electron');
 
 settings.init();
 
 var mapFolder;
 var tileFolder;
 var focused;
+
+turf.kinks = function(featureIn) {
+    var coordinates;
+    var feature;
+    var results = {
+        type: 'FeatureCollection',
+        features: []
+    };
+    if (featureIn.type === 'Feature') {
+        feature = featureIn.geometry;
+    } else {
+        feature = featureIn;
+    }
+    if (feature.type === 'LineString') {
+        coordinates = [feature.coordinates];
+    } else if (feature.type === 'MultiLineString') {
+        coordinates = feature.coordinates;
+    } else if (feature.type === 'MultiPolygon') {
+        coordinates = [].concat.apply([], feature.coordinates);
+    } else if (feature.type === 'Polygon') {
+        coordinates = feature.coordinates;
+    } else {
+        throw new Error('Input must be a LineString, MultiLineString, ' +
+            'Polygon, or MultiPolygon Feature or Geometry');
+    }
+    coordinates.forEach(function (segment1) {
+        coordinates.forEach(function (segment2) {
+            for (var i = 0; i < segment1.length - 1; i++) {
+                for (var k = 0; k < segment2.length - 1; k++) {
+                    // don't check adjacent sides of a given segment, since of course they intersect in a vertex.
+                    if (segment1 === segment2 && (Math.abs(i - k) === 1 || Math.abs(i - k) === segment1.length - 2)) {
+                        continue;
+                    }
+
+                    var intersection = lineIntersects(segment1[i][0], segment1[i][1], segment1[i + 1][0], segment1[i + 1][1],
+                        segment2[k][0], segment2[k][1], segment2[k + 1][0], segment2[k + 1][1]);
+                    if (intersection) {
+                        results.features.push(turf.point([intersection[0], intersection[1]]));
+                    }
+                }
+            }
+        });
+    });
+    return results;
+};
+
+function lineIntersects(line1StartX, line1StartY, line1EndX, line1EndY, line2StartX, line2StartY, line2EndX, line2EndY) {
+    // if the lines intersect, the result contains the x and y of the intersection (treating the lines as infinite) and booleans for whether line segment 1 or line segment 2 contain the point
+    var denominator, a, b, numerator1, numerator2,
+        result = {
+            x: null,
+            y: null,
+            onLine1: false,
+            onLine2: false
+        };
+    denominator = ((line2EndY - line2StartY) * (line1EndX - line1StartX)) - ((line2EndX - line2StartX) * (line1EndY - line1StartY));
+    if (denominator === 0) {
+        if (result.x !== null && result.y !== null) {
+            return result;
+        } else {
+            return false;
+        }
+    }
+    a = line1StartY - line2StartY;
+    b = line1StartX - line2StartX;
+    numerator1 = ((line2EndX - line2StartX) * a) - ((line2EndY - line2StartY) * b);
+    numerator2 = ((line1EndX - line1StartX) * a) - ((line1EndY - line1StartY) * b);
+    a = numerator1 / denominator;
+    b = numerator2 / denominator;
+
+    // if we cast these lines infinitely in both directions, they intersect here:
+    result.x = line1StartX + (a * (line1EndX - line1StartX));
+    result.y = line1StartY + (a * (line1EndY - line1StartY));
+
+    // if line1 is a segment and line2 is infinite, they intersect if:
+    var smallVal = Math.pow(10, -10);
+    if (a >= 0 && a <= 1) {
+        result.onLine1 = true;
+    }
+    if (a < smallVal || Math.abs(1 - a) < smallVal) {
+        result.onEnd1 = true;
+    }
+    // if line2 is a segment and line1 is infinite, they intersect if:
+    if (b >= 0 && b <= 1) {
+        result.onLine2 = true;
+    }
+    if (b < smallVal || Math.abs(1 - b) < smallVal) {
+        result.onEnd2 = true;
+    }
+    // if line1 and line2 are segments, they intersect if both of the above are true
+    if (result.onLine1 && result.onLine2 && !(result.onEnd1 && result.onEnd2)) {
+        // console.log(a + ' : ' + b);
+        return [result.x, result.y];
+    } else {
+        return false;
+    }
+}
 
 var mapedit = {
     init: function() {
@@ -24,6 +122,11 @@ var mapedit = {
         tileFolder = saveFolder + path.sep + 'tiles';
         fs.ensureDir(tileFolder, function(err) {});
         focused = BrowserWindow.getFocusedWindow();
+        var self = this;
+        ipcMain.on('updateTin', function(event, arg) {
+            console.log(arg);
+            self.updateTin(arg);
+        });
     },
     request: function(mapID) {
         var mapFile = mapFolder + path.sep + mapID + '.json';
@@ -150,37 +253,38 @@ var mapedit = {
         });
     },
     updateTin: function(gcps) {
+        setTimeout(function () {
         var pointArr = gcps.map(function(gcp, index) {
-            return turf.point(gcp[1], {target: {index: index, geom: gcp[0]}});
+            return turf.point(gcp[0], {target: {index: index, geom: gcp[1]}});
         });
         var points = turf.featureCollection(pointArr);
 
-        var tins = {bakw: turf.tin(points, 'target')};
+        var tins = {forw: turf.tin(points, 'target')};
 
-        tins.forw = turf.featureCollection(tins.bakw.features.map(function(tri) {
+        tins.bakw = turf.featureCollection(tins.forw.features.map(function(tri) {
             return counterTri(tri);
         }));
 
         var searchIndex = {};
-        tins.bakw.features.map(function(bakTri, index) {
-            var forTri = tins.forw.features[index];
+        tins.forw.features.map(function(forTri, index) {
+            var bakTri = tins.bakw.features[index];
             insertSearchIndex(searchIndex, {forw: forTri, bakw: bakTri});
         });
 
         var overlapped = overlapCheck(searchIndex);
 
-        Object.keys(overlapped.forw).map(function(key) {
-            if (overlapped.forw[key] == 'Not include case') return;
+        Object.keys(overlapped.bakw).map(function(key) {
+            if (overlapped.bakw[key] == 'Not include case') return;
             var trises = searchIndex[key];
-            var bakUnion = turf.union(trises[0].bakw, trises[1].bakw);
-            var bakConvex = turf.convex(turf.featureCollection([trises[0].bakw, trises[1].bakw]));
-            var bakDiff = turf.difference(bakConvex, bakUnion);
-            if (bakDiff) return;
+            var forUnion = turf.union(trises[0].forw, trises[1].forw);
+            var forConvex = turf.convex(turf.featureCollection([trises[0].forw, trises[1].forw]));
+            var forDiff = turf.difference(forConvex, forUnion);
+            if (forDiff) return;
             var sharedVtx = key.split('-').map(function(val) {
                 var index = parseFloat(val);
                 return ['a', 'b', 'c'].map(function(alpha, index) {
-                    var prop = trises[0].forw.properties[alpha];
-                    var geom = trises[0].forw.geometry.coordinates[0][index];
+                    var prop = trises[0].bakw.properties[alpha];
+                    var geom = trises[0].bakw.geometry.coordinates[0][index];
                     return {geom: geom, prop: prop};
                 }).filter(function(vtx) {
                     return vtx.prop.index == index;
@@ -188,8 +292,8 @@ var mapedit = {
             });
             var nonSharedVtx = trises.map(function(tris) {
                 return ['a', 'b', 'c'].map(function(alpha, index) {
-                    var prop = tris.forw.properties[alpha];
-                    var geom = tris.forw.geometry.coordinates[0][index];
+                    var prop = tris.bakw.properties[alpha];
+                    var geom = tris.bakw.geometry.coordinates[0][index];
                     return {geom: geom, prop: prop};
                 }).filter(function(vtx) {
                     return vtx.prop.index != sharedVtx[0].prop.index &&
@@ -204,13 +308,29 @@ var mapedit = {
                 if (cwCheck) newTriCoords = [sVtx.geom, nonSharedVtx[1].geom, nonSharedVtx[0].geom, sVtx.geom];
                 var newTriProp = !cwCheck ? {a: sVtx.prop, b: nonSharedVtx[0].prop, c: nonSharedVtx[1].prop} :
                     {a: sVtx.prop, b: nonSharedVtx[1].prop, c: nonSharedVtx[0].prop};
-                var newForTri = turf.polygon([newTriCoords], newTriProp);
-                var newBakTri = counterTri(newForTri);
+                var newBakTri = turf.polygon([newTriCoords], newTriProp);
+                var newForTri = counterTri(newBakTri);
                 insertSearchIndex(searchIndex, {forw: newForTri, bakw: newBakTri}, tins);
             });
         });
         // var newResult = overlapCheck(triSearchIndex);
         focused.webContents.send('updatedTin', tins);
+        var fkinks = turf.kinks(turf.multiPolygon(tins.forw.features.map(function(poly) { return poly.geometry.coordinates; })));
+        var bkinks = turf.kinks(turf.multiPolygon(tins.bakw.features.map(function(poly) { return poly.geometry.coordinates; })));
+        focused.webContents.send('updatedKinks', {forw: fkinks, bakw: bkinks});
+        //fs.writeFileSync('Kinks.json',JSON.stringify(kinks, null, 2));
+        /*var forArray = [];
+        var bakArray = [];
+        for (var i = 0; i < tins.forw.features.length - 1; i++) {
+            for (var j = i + 1; j < tins.forw.features.length; j++ ) {
+                var forResult = turf.lineIntersect(tins.forw.features[i], tins.forw.features[j]);
+                var bakResult = turf.lineIntersect(tins.bakw.features[i], tins.bakw.features[j]);
+                Array.prototype.push.apply(forArray, forResult.features);
+                Array.prototype.push.apply(bakArray, bakResult.features);
+            }
+        }
+        focused.webContents.send('updatedKinks', {forw: forArray, bakw:bakArray});*/
+        }, 1);
     }
 };
 
