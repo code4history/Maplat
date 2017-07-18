@@ -169,7 +169,6 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
             mapObject.on('change:gcps', function(ev) {
                 ipcRenderer.send('updateTin', mapObject.get('gcps'));
                 // backend.updateTin(mapObject.get('gcps'));
-                console.log('backend call');
                 ipcRenderer.once('updatedTin', function(event, arg) {
                     var forTin = arg.forw;
                     var bakTin = arg.bakw;
@@ -183,7 +182,14 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
                     illstMap.getSource('json').addFeatures(forFeatures);// , {dataProjection:bakProj, featureProjection:'EPSG:3857'});
                 });
                 ipcRenderer.once('updatedKinks', function(event, arg) {
-                    console.log(arg);
+                    var forPoints = arg.forw;
+                    var bakPoints = arg.bakw;
+                    var forProj = 'ZOOM:' + illstSource.maxZoom;
+                    var jsonReader = new ol.format.GeoJSON();
+                    var bakFeatures = jsonReader.readFeatures(bakPoints, {dataProjection:'EPSG:3857'});
+                    var forFeatures = jsonReader.readFeatures(forPoints, {dataProjection:forProj, featureProjection:'EPSG:3857'});
+                    mercMap.getSource('json').addFeatures(bakFeatures); //, {dataProjection:'EPSG:3857'});
+                    illstMap.getSource('json').addFeatures(forFeatures);
                 });
             });
             if (eventInit) return;
@@ -547,16 +553,34 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
             source: new ol.source.Vector({
                 wrapX: false
             }),
-            style: new ol.style.Style({
-                stroke: new ol.style.Stroke({
-                    color: 'blue',
-                    lineDash: [4],
-                    width: 3
-                }),
-                fill: new ol.style.Fill({
-                    color: 'rgba(0, 0, 255, 0.1)'
-                })
-            })
+            style: function(feature) {
+                if (feature.getGeometry().getType() == 'Polygon') return new ol.style.Style({
+                    stroke: new ol.style.Stroke({
+                        color: 'blue',
+                        width: 1
+                    }),
+                    fill: new ol.style.Fill({
+                        color: 'rgba(0, 0, 255, 0.05)'
+                    })
+                });
+                var iconSVG = '<svg ' +
+                    'version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ' +
+                    'x="0px" y="0px" width="6px" height="6px" ' +
+                    'viewBox="0 0 6 6" enable-background="new 0 0 6 6" xml:space="preserve">'+
+                    '<polygon x="0" y="0" points="3,0 6,3 3,6 0,3 ' +
+                    '3,0" stroke="#FF0000" fill="#FFFF00" stroke-width="2"></polygon>' +
+                    '</svg>';
+                var imageElement = new Image();
+                imageElement.src = 'data:image/svg+xml,' + encodeURIComponent( iconSVG );
+
+                return new ol.style.Style({
+                    "image": new ol.style.Icon({
+                        "img": imageElement,
+                        "imgSize":[6, 6],
+                        "anchor": [0.5, 0.5]
+                    })
+                });
+            }
         });
         jsonLayer.set('name', 'json');
         illstMap.getLayer('overlay').getLayers().push(jsonLayer);
@@ -608,16 +632,34 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
             source: new ol.source.Vector({
                 wrapX: false
             }),
-            style: new ol.style.Style({
-                stroke: new ol.style.Stroke({
-                    color: 'blue',
-                    lineDash: [4],
-                    width: 3
-                }),
-                fill: new ol.style.Fill({
-                    color: 'rgba(0, 0, 255, 0.1)'
-                })
-            })
+            style: function(feature) {
+                if (feature.getGeometry().getType() == 'Polygon') return new ol.style.Style({
+                    stroke: new ol.style.Stroke({
+                        color: 'blue',
+                        width: 1
+                    }),
+                    fill: new ol.style.Fill({
+                        color: 'rgba(0, 0, 255, 0.05)'
+                    })
+                });
+                var iconSVG = '<svg ' +
+                    'version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ' +
+                    'x="0px" y="0px" width="6px" height="6px" ' +
+                    'viewBox="0 0 6 6" enable-background="new 0 0 6 6" xml:space="preserve">'+
+                    '<polygon x="0" y="0" points="3,0 6,3 3,6 0,3 ' +
+                    '3,0" stroke="#FF0000" fill="#FFFF00" stroke-width="2"></polygon>' +
+                    '</svg>';
+                var imageElement = new Image();
+                imageElement.src = 'data:image/svg+xml,' + encodeURIComponent( iconSVG );
+
+                return new ol.style.Style({
+                    "image": new ol.style.Icon({
+                        "img": imageElement,
+                        "imgSize":[6, 6],
+                        "anchor": [0.5, 0.5]
+                    })
+                });
+            }
         });
         jsonLayer.set('name', 'json');
         mercMap.getLayer('overlay').getLayers().push(jsonLayer);

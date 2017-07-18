@@ -258,7 +258,6 @@ var mapedit = {
         });
     },
     updateTin: function(gcps) {
-        setTimeout(function () {
         var pointArr = gcps.map(function(gcp, index) {
             return turf.point(gcp[0], {target: {index: index, geom: gcp[1]}});
         });
@@ -324,10 +323,17 @@ var mapedit = {
         // var bkinks = turf.kinks(turf.multiPolygon(tins.bakw.features.map(function(poly) { return poly.geometry.coordinates; })));
         // focused.webContents.send('updatedKinks', {forw: fkinks, bakw: bkinks});
 
-        var coords = tins.bakw.features.map(function(poly) { return poly.geometry.coordinates[0]; });
-        var xy = findIntersections(coords);
-        var xy2 = internal.dedupIntersections(xy).map(function(point) { return [point.x, point.y] });
-        focused.webContents.send('updatedKinks', [coords, xy2]);
+        var bakCoords = tins.bakw.features.map(function(poly) { return poly.geometry.coordinates[0]; });
+        var forCoords = tins.forw.features.map(function(poly) { return poly.geometry.coordinates[0]; });
+        var bakXy = findIntersections(bakCoords);
+        var forXy = findIntersections(bakCoords);
+        var bakXy2 = turf.featureCollection(internal.dedupIntersections(bakXy).map(function(point) {
+            return turf.point([point.x, point.y]);
+        }));
+        var forXy2 = turf.featureCollection(internal.dedupIntersections(forXy).map(function(point) {
+            return turf.point([point.x, point.y]);
+        }));
+        focused.webContents.send('updatedKinks', {forw: forXy2, bakw: bakXy2});
 
         //fs.writeFileSync('Kinks.json',JSON.stringify(kinks, null, 2));
         /*var forArray = [];
@@ -341,7 +347,6 @@ var mapedit = {
             }
         }
         focused.webContents.send('updatedKinks', {forw: forArray, bakw:bakArray});*/
-        }, 1);
     }
 };
 
