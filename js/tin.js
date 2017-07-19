@@ -1,5 +1,7 @@
 (function(loader) {
-    loader(function _commonDefine(turf) {
+    loader(function _commonDefine(turf, mapshaper) {
+        var isClockwise = turf.booleanClockwise;
+        var internal = mapshaper.internal;
         var Tin = function(options) {
             this.points = options.points;
             this.wh = options.wh;
@@ -66,19 +68,19 @@
         };
 
         Tin.prototype.calcurateStrictTin = function() {
+            var self = this;
             this.tins.bakw = turf.featureCollection(this.tins.forw.features.map(function(tri) {
                 return counterTri(tri);
             }));
-
             var searchIndex = {};
             this.tins.forw.features.map(function(forTri, index) {
-                var bakTri = this.tins.bakw.features[index];
+                var bakTri = self.tins.bakw.features[index];
                 insertSearchIndex(searchIndex, {forw: forTri, bakw: bakTri});
             });
 
             var overlapped = overlapCheck(searchIndex);
 
-            Object.keys(overlapped.bakw).map(function(key) {
+            if (overlapped.bakw) Object.keys(overlapped.bakw).map(function(key) {
                 if (overlapped.bakw[key] == 'Not include case') return;
                 var trises = searchIndex[key];
                 var forUnion = turf.union(trises[0].forw, trises[1].forw);
@@ -86,13 +88,12 @@
                 var forDiff = turf.difference(forConvex, forUnion);
                 if (forDiff) return;
                 var sharedVtx = key.split('-').map(function(val) {
-                    var index = parseFloat(val);
                     return ['a', 'b', 'c'].map(function(alpha, index) {
                         var prop = trises[0].bakw.properties[alpha];
                         var geom = trises[0].bakw.geometry.coordinates[0][index];
                         return {geom: geom, prop: prop};
                     }).filter(function(vtx) {
-                        return vtx.prop.index == index;
+                        return vtx.prop.index == val;
                     })[0];
                 });
                 var nonSharedVtx = trises.map(function(tris) {
@@ -118,11 +119,26 @@
                     insertSearchIndex(searchIndex, {forw: newForTri, bakw: newBakTri}, this.tins);
                 });
             });
-            var secondCheck = overlapCheck(searchIndex);
-            if (Object.keys(secondCheck.forw).length == 0 && Object.keys(secondCheck.bakw).length == 0) {
+
+            var bakCoords = this.tins.bakw.features.map(function(poly) { return poly.geometry.coordinates[0]; });
+            var forCoords = this.tins.forw.features.map(function(poly) { return poly.geometry.coordinates[0]; });
+            var bakXy = findIntersections(bakCoords);
+            var forXy = findIntersections(forCoords);
+            var bakXy2 = internal.dedupIntersections(bakXy).map(function(point) {
+                return turf.point([point.x, point.y]);
+            });
+            var forXy2 = internal.dedupIntersections(forXy).map(function(point) {
+                return turf.point([point.x, point.y]);
+            });
+
+            if (bakXy2.length == 0 && forXy2.length == 0) {
                 this.strict_status = 'strict';
+                delete this.kinks;
             } else {
                 this.strict_status = 'strict_error';
+                this.kinks = {};
+                if (bakXy2.length > 0) this.kinks.bakw = turf.featureCollection(bakXy2);
+                if (forXy2.length > 0) this.kinks.forw = turf.featureCollection(forXy2);
             }
         };
 
@@ -142,7 +158,7 @@
                 pointsArray.forw.push(forPoint);
                 pointsArray.bakw.push(counterPoint(forPoint));
             }
-            var pointsSet = {forw: turf.featureCollection(forArr), bakw: turf.featureCollection(bakArr)};
+            var pointsSet = {forw: turf.featureCollection(pointsArray.forw), bakw: turf.featureCollection(pointsArray.bakw)};
 
             // Forward TIN for calcurating Backward Centroid and Backward Vertices
             var tinForCentroid = turf.tin(pointsSet.forw, 'target');
@@ -151,7 +167,7 @@
             // Calcurating Forward/Backward Centroid
             var centroid = {forw: forCentroidFt.geometry.coordinates};
             centroid.bakw = transformArr(forCentroidFt, tinForCentroid);
-            this.centroid = {forw: createPoint(forCentroid, bakCentroid, 'cent')};
+            this.centroid = {forw: createPoint(centroid.forw, centroid.bakw, 'cent')};
             this.centroid.bakw = counterPoint(this.centroid.forw);
 
             // Calcurating Convex full to get Convex full polygon's vertices
@@ -199,14 +215,14 @@
             // Calcurating Backward Bounding box of map
             var verticesSet = orthant.map(function(delta, index) {
                 var forVertex = bbox[index];
-                var forDelta = [forVertex[0] - forCentroid[0], forVertex[1] - forCentroid[1]];
+                var forDelta = [forVertex[0] - centroid.forw[0], forVertex[1] - centroid.forw[1]];
                 var forDistance = Math.sqrt(Math.pow(forDelta[0], 2) + Math.pow(forDelta[1], 2));
                 var bakDistance = forDistance / delta[0];
 
                 var forTheta = Math.atan2(forDelta[0], forDelta[1]);
                 var bakTheta = forTheta - delta[1];
 
-                var bakVertex = [bakCentroid[0] + bakDistance * Math.sin(bakTheta), bakCentroid[1] - bakDistance * Math.cos(bakTheta)];
+                var bakVertex = [centroid.bakw[0] + bakDistance * Math.sin(bakTheta), centroid.bakw[1] - bakDistance * Math.cos(bakTheta)];
 
                 return [forVertex, bakVertex];
             });
@@ -240,6 +256,7 @@
             }
             if (strict == 'loose' || (strict == 'auto' && this.strict_status == 'strict_error')) {
                 this.tins.bakw = turf.tin(pointsSet.bakw, 'target');
+                delete this.kinks;
                 this.strict_status = 'loose';
             }
 
@@ -255,6 +272,11 @@
             var centroid = backward ? this.centroid.bakw : this.centroid.forw;
             return transformArr(tpoint, tins, verticesParams, centroid);
         };
+
+        function findIntersections(coords) {
+            var arcs = new internal.ArcCollection(coords);
+            return internal.findSegmentIntersections(arcs);
+        }
 
         function vertexCalc(list, centroid) {
             var centCoord = centroid.geometry.coordinates;
@@ -461,9 +483,7 @@
             return [[0, 1], [0, 2], [1, 2], [0, 1, 2]].map(function(set) {
                 var index = set.map(function(i) {
                     return vtx[i];
-                }).sort(function(a, b) {
-                    return a - b;
-                }).join('-');
+                }).sort().join('-');
                 return index;
             }).sort();
         }
@@ -474,13 +494,13 @@
 // Already defined turf
     'function' === typeof turf
     ? function _loaderForReady(commonDefine) {
-        this.Tin = commonDefine(this.turf);
+        this.Tin = commonDefine(this.turf, this.mapshaper);
     }
 // AMD RequireJS
     : 'function' === typeof define && define.amd
         ? function _loaderForRequirejs(commonDefine) {
-            define(['turf'], function(turf) {
-                return commonDefine(turf);
+            define(['turf', 'mapshaper'], function(turf, mapshaper) {
+                return commonDefine(turf, mapshaper);
             });
         }
 // CommonJS NodeJS
@@ -488,16 +508,18 @@
             'function' === typeof require
             ? function _loaderForCommonjs(commonDefine) {
                 var turf;
+                var mapshaper;
                 try {
                     turf = require('@turf/turf');
+                    mapshaper = require('mapshaper');
                 } catch (e) {}
-                module.exports = commonDefine(turf);
+                module.exports = commonDefine(turf, mapshaper);
             }
 // this === window
             : function _loaderForWindow(commonDefine) {
                 if (! this.turf )
                     throw new Error('"turf" not found');
 
-                this.Tin = commonDefine(this.turf);
+                this.Tin = commonDefine(this.turf, this.mapshaper);
             }
 );
