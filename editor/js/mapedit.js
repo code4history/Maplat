@@ -258,6 +258,7 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
                         mapObject.set('width', arg.width);
                         mapObject.set('height', arg.height);
                         mapObject.set('url', arg.url);
+                        backend.setWh([arg.width, arg.height]);
                         reflectIllstMap();
                     });
                 }

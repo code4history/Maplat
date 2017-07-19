@@ -17,11 +17,7 @@ settings.init();
 var mapFolder;
 var tileFolder;
 var focused;
-
-function findIntersections(coords) {
-    var arcs = new internal.ArcCollection(coords);
-    return internal.findSegmentIntersections(arcs);
-}
+var tinObject;
 
 var mapedit = {
     init: function() {
@@ -35,8 +31,10 @@ var mapedit = {
         ipcMain.on('updateTin', function(event, arg) {
             self.updateTin(arg);
         });
+        tinObject = new Tin({});
     },
     request: function(mapID) {
+        var self = this;
         var mapFile = mapFolder + path.sep + mapID + '.json';
 
         fs.readFile(mapFile, 'utf8', function(err, data) {
@@ -58,11 +56,15 @@ var mapedit = {
                         var thumbURL = fileUrl(thumbFolder + path.sep + thumb);
                         thumbURL = thumbURL.replace(/\/0\/0\/0\./, '/{z}/{x}/{y}.');
                         json.url = thumbURL;
+                        self.setWh([json.width, json.height]);
                         focused.webContents.send('mapData', json);
                     }
                 }
             });
         });
+    },
+    setWh: function(wh) {
+        tinObject.setWh(wh);
     },
     save: function(mapObject) {
         var status = mapObject.status;
@@ -161,78 +163,14 @@ var mapedit = {
         });
     },
     updateTin: function(gcps) {
-        var pointArr = gcps.map(function(gcp, index) {
-            return turf.point(gcp[0], {target: {index: index, geom: gcp[1]}});
-        });
-        var points = turf.featureCollection(pointArr);
+        tinObject.setPoints(gcps);
+        tinObject.updateTin('strict');
 
-        var tins = {forw: turf.tin(points, 'target')};
+        var tins = JSON.parse(JSON.stringify(tinObject.tins));
+        var kinks = tinObject.kinks;
 
-        tins.bakw = turf.featureCollection(tins.forw.features.map(function(tri) {
-            return counterTri(tri);
-        }));
-
-        var searchIndex = {};
-        tins.forw.features.map(function(forTri, index) {
-            var bakTri = tins.bakw.features[index];
-            insertSearchIndex(searchIndex, {forw: forTri, bakw: bakTri});
-        });
-
-        var overlapped = overlapCheck(searchIndex);
-
-        Object.keys(overlapped.bakw).map(function(key) {
-            if (overlapped.bakw[key] == 'Not include case') return;
-            var trises = searchIndex[key];
-            var forUnion = turf.union(trises[0].forw, trises[1].forw);
-            var forConvex = turf.convex(turf.featureCollection([trises[0].forw, trises[1].forw]));
-            var forDiff = turf.difference(forConvex, forUnion);
-            if (forDiff) return;
-            var sharedVtx = key.split('-').map(function(val) {
-                var index = parseFloat(val);
-                return ['a', 'b', 'c'].map(function(alpha, index) {
-                    var prop = trises[0].bakw.properties[alpha];
-                    var geom = trises[0].bakw.geometry.coordinates[0][index];
-                    return {geom: geom, prop: prop};
-                }).filter(function(vtx) {
-                    return vtx.prop.index == index;
-                })[0];
-            });
-            var nonSharedVtx = trises.map(function(tris) {
-                return ['a', 'b', 'c'].map(function(alpha, index) {
-                    var prop = tris.bakw.properties[alpha];
-                    var geom = tris.bakw.geometry.coordinates[0][index];
-                    return {geom: geom, prop: prop};
-                }).filter(function(vtx) {
-                    return vtx.prop.index != sharedVtx[0].prop.index &&
-                        vtx.prop.index != sharedVtx[1].prop.index;
-                })[0];
-            });
-            removeSearchIndex(searchIndex, trises[0], tins);
-            removeSearchIndex(searchIndex, trises[1], tins);
-            sharedVtx.map(function(sVtx) {
-                var newTriCoords = [sVtx.geom, nonSharedVtx[0].geom, nonSharedVtx[1].geom, sVtx.geom];
-                var cwCheck = isClockwise(newTriCoords);
-                if (cwCheck) newTriCoords = [sVtx.geom, nonSharedVtx[1].geom, nonSharedVtx[0].geom, sVtx.geom];
-                var newTriProp = !cwCheck ? {a: sVtx.prop, b: nonSharedVtx[0].prop, c: nonSharedVtx[1].prop} :
-                    {a: sVtx.prop, b: nonSharedVtx[1].prop, c: nonSharedVtx[0].prop};
-                var newBakTri = turf.polygon([newTriCoords], newTriProp);
-                var newForTri = counterTri(newBakTri);
-                insertSearchIndex(searchIndex, {forw: newForTri, bakw: newBakTri}, tins);
-            });
-        });
-
-        var bakCoords = tins.bakw.features.map(function(poly) { return poly.geometry.coordinates[0]; });
-        var forCoords = tins.forw.features.map(function(poly) { return poly.geometry.coordinates[0]; });
-        var bakXy = findIntersections(bakCoords);
-        var forXy = findIntersections(bakCoords);
-        var bakXy2 = internal.dedupIntersections(bakXy).map(function(point) {
-            return turf.point([point.x, point.y]);
-        });
-        var forXy2 = internal.dedupIntersections(forXy).map(function(point) {
-            return turf.point([point.x, point.y]);
-        });
-        Array.prototype.push.apply(tins.forw.features, forXy2);
-        Array.prototype.push.apply(tins.bakw.features, bakXy2);
+        if (kinks && kinks.forw) Array.prototype.push.apply(tins.forw.features, kinks.forw.features);
+        if (kinks && kinks.bakw) Array.prototype.push.apply(tins.bakw.features, kinks.bakw.features);
 
         focused.webContents.send('updatedTin', tins);
     }
