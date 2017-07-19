@@ -317,36 +317,21 @@ var mapedit = {
                 insertSearchIndex(searchIndex, {forw: newForTri, bakw: newBakTri}, tins);
             });
         });
-        // var newResult = overlapCheck(triSearchIndex);
-        focused.webContents.send('updatedTin', tins);
-        // var fkinks = turf.kinks(turf.multiPolygon(tins.forw.features.map(function(poly) { return poly.geometry.coordinates; })));
-        // var bkinks = turf.kinks(turf.multiPolygon(tins.bakw.features.map(function(poly) { return poly.geometry.coordinates; })));
-        // focused.webContents.send('updatedKinks', {forw: fkinks, bakw: bkinks});
 
         var bakCoords = tins.bakw.features.map(function(poly) { return poly.geometry.coordinates[0]; });
         var forCoords = tins.forw.features.map(function(poly) { return poly.geometry.coordinates[0]; });
         var bakXy = findIntersections(bakCoords);
         var forXy = findIntersections(bakCoords);
-        var bakXy2 = turf.featureCollection(internal.dedupIntersections(bakXy).map(function(point) {
+        var bakXy2 = internal.dedupIntersections(bakXy).map(function(point) {
             return turf.point([point.x, point.y]);
-        }));
-        var forXy2 = turf.featureCollection(internal.dedupIntersections(forXy).map(function(point) {
+        });
+        var forXy2 = internal.dedupIntersections(forXy).map(function(point) {
             return turf.point([point.x, point.y]);
-        }));
-        focused.webContents.send('updatedKinks', {forw: forXy2, bakw: bakXy2});
+        });
+        Array.prototype.push.apply(tins.forw.features, forXy2);
+        Array.prototype.push.apply(tins.bakw.features, bakXy2);
 
-        //fs.writeFileSync('Kinks.json',JSON.stringify(kinks, null, 2));
-        /*var forArray = [];
-        var bakArray = [];
-        for (var i = 0; i < tins.forw.features.length - 1; i++) {
-            for (var j = i + 1; j < tins.forw.features.length; j++ ) {
-                var forResult = turf.lineIntersect(tins.forw.features[i], tins.forw.features[j]);
-                var bakResult = turf.lineIntersect(tins.bakw.features[i], tins.bakw.features[j]);
-                Array.prototype.push.apply(forArray, forResult.features);
-                Array.prototype.push.apply(bakArray, bakResult.features);
-            }
-        }
-        focused.webContents.send('updatedKinks', {forw: forArray, bakw:bakArray});*/
+        focused.webContents.send('updatedTin', tins);
     }
 };
 
