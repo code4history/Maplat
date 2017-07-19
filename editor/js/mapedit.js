@@ -67,7 +67,6 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
                 illstMap.setMarker(mapXyIllst, { gcpIndex: i }, iconStyle);
                 mercMap.setMarker(gcp[1], { gcpIndex: i }, iconStyle);
             }
-            ipcRenderer.send('updateTin', gcps);
         }
 
         function removeMarker (arg, map) {
@@ -357,6 +356,7 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
                         mercView.setZoom(results[1]);
 
                         gcpsToMarkers(gcps);
+                        ipcRenderer.send('updateTin', gcps);
                     }
                 }).catch(function (err) {
                     console.log(err);
