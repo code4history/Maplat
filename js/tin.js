@@ -197,14 +197,19 @@
             }, [[], [], [], []]).map(function(item) {
                 // Finalize calcuration of Average scaling factors and rotation factors
                 return item.reduce(function(prev, curr, index, arr) {
-                    if (!prev) prev = [0, 0, 0];
-                    var distanceSum = prev[0] + Math.sqrt(Math.pow(curr[0][0], 2) + Math.pow(curr[0][1], 2)) /
+                    if (!prev) prev = [Infinity, 0, 0];
+                    // if (!prev) prev = [0, 0, 0];
+                    // var distanceSum = prev[0] + Math.sqrt(Math.pow(curr[0][0], 2) + Math.pow(curr[0][1], 2)) /
+                    //     Math.sqrt(Math.pow(curr[1][0], 2) + Math.pow(curr[1][1], 2));
+                    var distanceSum = Math.sqrt(Math.pow(curr[0][0], 2) + Math.pow(curr[0][1], 2)) /
                         Math.sqrt(Math.pow(curr[1][0], 2) + Math.pow(curr[1][1], 2));
+                    distanceSum = distanceSum < prev[0] ? distanceSum : prev[0];
                     var thetaDelta = Math.atan2(curr[0][0], curr[0][1]) - Math.atan2(curr[1][0], curr[1][1]);
                     var sumThetaX = prev[1] + Math.cos(thetaDelta);
                     var sumThetaY = prev[2] + Math.sin(thetaDelta);
                     if (index == arr.length - 1) {
-                        return [distanceSum / arr.length, Math.atan2(sumThetaY, sumThetaX)];
+                        // return [distanceSum / arr.length, Math.atan2(sumThetaY, sumThetaX)];
+                        return [distanceSum, Math.atan2(sumThetaY, sumThetaX)];
                     }
                     return [distanceSum, sumThetaX, sumThetaY];
                 }, null);
