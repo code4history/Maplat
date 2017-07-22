@@ -124,12 +124,22 @@
             var forCoords = this.tins.forw.features.map(function(poly) { return poly.geometry.coordinates[0]; });
             var bakXy = findIntersections(bakCoords);
             var forXy = findIntersections(forCoords);
-            var bakXy2 = internal.dedupIntersections(bakXy).map(function(point) {
-                return turf.point([point.x, point.y]);
-            });
-            var forXy2 = internal.dedupIntersections(forXy).map(function(point) {
-                return turf.point([point.x, point.y]);
-            });
+            var bakXy2 = internal.dedupIntersections(bakXy).reduce(function(prev, point, index, array) {
+                if (!prev) prev = {};
+                prev[point.x + ':' + point.y] = point;
+                if (index != array.length - 1) return prev;
+                return Object.keys(prev).map(function(key) {
+                    return turf.point([prev[key].x, prev[key].y]);
+                });
+            }, []);
+            var forXy2 = internal.dedupIntersections(forXy).reduce(function(prev, point, index, array) {
+                if (!prev) prev = {};
+                prev[point.x + ':' + point.y] = point;
+                if (index != array.length - 1) return prev;
+                return Object.keys(prev).map(function(key) {
+                    return turf.point([prev[key].x, prev[key].y]);
+                });
+            }, []);
 
             if (bakXy2.length == 0 && forXy2.length == 0) {
                 this.strict_status = 'strict';
