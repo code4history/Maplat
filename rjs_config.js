@@ -12,7 +12,8 @@
         'bootstrap': 'empty:',
         'aigle': 'aigle-es5.min',
         'tps': 'empty:',
-        'proj': 'empty:'
+        'proj': 'empty:',
+        'buffer': 'buffer'
     },
     shim: {
         'aigle': {
@@ -23,6 +24,9 @@
         },
         'app': {
             deps: ['histmap', 'histmap_tps', 'histmap_tin', 'histmap_external']
+        },
+        'buffer': {
+            exports: 'exports'
         }
     }
 })

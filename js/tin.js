@@ -143,6 +143,7 @@
         };
 
         Tin.prototype.updateTin = function(strict) {
+            if (strict != 'strict' || strict != 'loose') strict = 'auto';
             var self = this;
             var bbox = [];
             if (this.wh) {
