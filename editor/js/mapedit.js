@@ -7,6 +7,8 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
         var uploader;
         var mapID;
         var newlyAddGcp;
+        var tinObject;
+        var errorNumber;
         var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
         for (var i = 0; i < hashes.length; i++) {
             hash = hashes[i].split('=');
@@ -69,6 +71,23 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
             }
         }
 
+        function pairingMarker (arg, map) {
+            var marker = arg.data.marker;
+            var gcpIndex = marker.get('gcpIndex');
+            if (gcpIndex != 'new') {
+                var gcps = mapObject.get('gcps');
+                var gcp = gcps[gcpIndex];
+                var forw = illstSource.xy2HistMapCoords(gcp[0]);
+                var bakw = gcp[1];
+                var forView = illstMap.getView();
+                var bakView = mercMap.getView();
+                forView.setCenter(forw);
+                bakView.setCenter(bakw);
+                forView.setZoom(illstSource.maxZoom - 1);
+                bakView.setZoom(17);
+            }
+        }
+
         function removeMarker (arg, map) {
             var marker = arg.data.marker;
             var gcpIndex = marker.get('gcpIndex');
@@ -126,6 +145,65 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
             }
         }
 
+        function jsonClear() {
+            illstMap.getSource('json').clear();
+            mercMap.getSource('json').clear();
+        }
+
+        function checkClear() {
+            illstMap.getSource('check').clear();
+            mercMap.getSource('check').clear();
+        }
+
+        function onClick(evt) {
+            if (tinObject)
+            var isIllst = this == illstMap;
+            var srcMap = isIllst ? illstMap : mercMap;
+            var distMap = isIllst ? mercMap : illstMap;
+            var srcMarkerLoc = evt.coordinate;
+            var srcXy = isIllst ? illstSource.histMapCoords2Xy(srcMarkerLoc) : srcMarkerLoc;
+
+            var srcCheck = srcMap.getSource('check');
+            var distCheck = distMap.getSource('check');
+            srcCheck.clear();
+            distCheck.clear();
+
+            var distXy = backend.transform(srcXy, isIllst);
+            if (distXy == 'tooLessGcps') {
+                alert('変換テストに必要な対応点の数が少なすぎます');
+                return;
+            } else if (distXy == 'strictError') {
+                alert('厳格モードでエラーがある際は、逆変換ができません');
+                return;
+            }
+            var distMarkerLoc = isIllst ? distXy : illstSource.xy2HistMapCoords(distXy);
+            distMap.getView().setCenter(distMarkerLoc);
+
+            var iconSVG = '<svg ' +
+                'version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ' +
+                'x="0px" y="0px" width="10px" height="15px" ' +
+                'viewBox="0 0 10 15" enable-background="new 0 0 10 15" xml:space="preserve">'+
+                '<polygon x="0" y="0" points="5,1 9,5 5,14 1,5 5,1" ' +
+                'stroke="#FF0000" fill="#FFFF00" stroke-width="2"></polygon>' +
+                '</svg>';
+            var imageElement = new Image();
+            imageElement.src = 'data:image/svg+xml,' + encodeURIComponent( iconSVG );
+
+            var style = new ol.style.Style({
+                "image": new ol.style.Icon({
+                    "img": imageElement,
+                    "imgSize":[10, 15],
+                    "anchor": [0.5, 1]
+                })
+            });
+            var srcFeature = new ol.Feature({geometry: new ol.geom.Point(srcMarkerLoc)});
+            var distFeature = new ol.Feature({geometry: new ol.geom.Point(distMarkerLoc)});
+            srcFeature.setStyle(style);
+            distFeature.setStyle(style);
+            srcCheck.addFeature(srcFeature);
+            distCheck.addFeature(distFeature);
+        }
+
         var eventInit = false;
         function setEventListner() {
             var a = document.querySelector('a[href="#gcpsTab"]');
@@ -167,8 +245,8 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
                 document.querySelector('#height').value = mapObject.get('height') || '';
             });
             mapObject.on('change:gcps', function(ev) {
-                ipcRenderer.send('updateTin', mapObject.get('gcps'));
-                // backend.updateTin(mapObject.get('gcps'));
+                var strict = document.querySelector('input[name=strict]:checked').value;
+                backend.updateTin(mapObject.get('gcps'), strict);
             });
             if (eventInit) return;
             eventInit = true;
@@ -267,9 +345,31 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
                 myModal.show();
                 uploader.showMapSelectDialog();
             });
+            document.querySelector('#viewError').addEventListener('click', function(ev) {
+                if (!tinObject) return;
+                var kinks = tinObject.kinks.bakw.features;
+                if (errorNumber == null) {
+                    errorNumber = 0;
+                } else {
+                    errorNumber++;
+                    if (errorNumber >= kinks.length) errorNumber = 0;
+                }
+                var errorPoint = kinks[errorNumber].geometry.coordinates;
+                var view = mercMap.getView();
+                view.setCenter(errorPoint);
+                view.setZoom(17);
+            });
             ipcRenderer.on('updatedTin', function(event, arg) {
-                var forTin = arg.forw;
-                var bakTin = arg.bakw;
+                checkClear();
+                if (arg == 'tooLessGcps') {
+                    delete tinObject;
+                    document.querySelector('#error_status').innerText = '対応点が少なすぎます';
+                    document.querySelector('#viewError').parentNode.classList.add('hide');
+                    jsonClear();
+                }
+                tinObject = arg;
+                var forTin = arg.tins.forw;
+                var bakTin = arg.tins.bakw;
                 mercMap.getSource('json').clear();
                 illstMap.getSource('json').clear();
                 var forProj = 'ZOOM:' + illstSource.maxZoom;
@@ -278,6 +378,17 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
                 var forFeatures = jsonReader.readFeatures(forTin, {dataProjection:forProj, featureProjection:'EPSG:3857'});
                 mercMap.getSource('json').addFeatures(bakFeatures); //, {dataProjection:'EPSG:3857'});
                 illstMap.getSource('json').addFeatures(forFeatures);// , {dataProjection:bakProj, featureProjection:'EPSG:3857'});
+                document.querySelector('#error_status').innerText = tinObject.strict_status == 'strict' ? 'エラーなし' :
+                    tinObject.strict_status == 'strict_error' ? 'エラー' + tinObject.kinks.bakw.features.length + '件' :
+                        'エラーのため簡易モード';
+                errorNumber = null;
+                if (tinObject.strict_status == 'strict_error') {
+                    document.querySelector('#viewError').parentNode.classList.remove('hide');
+                    var kinkFeatures = jsonReader.readFeatures(tinObject.kinks.bakw, {dataProjection:'EPSG:3857'});
+                    mercMap.getSource('json').addFeatures(kinkFeatures);
+                } else {
+                    document.querySelector('#viewError').parentNode.classList.add('hide');
+                }
             });
         }
 
@@ -357,7 +468,9 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
                         mercView.setZoom(results[1]);
 
                         gcpsToMarkers(gcps);
-                        ipcRenderer.send('updateTin', gcps);
+                        var strict = document.querySelector('input[name=strict]:checked').value;
+                        console.log(strict);
+                        backend.updateTin(gcps, strict);
                     }
                 }).catch(function (err) {
                     console.log(err);
@@ -509,17 +622,19 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
         ol.MaplatMap.prototype.initContextMenu = function() {
             var normalContextMenu = {
                 text: 'マーカー追加',
-                //classname: 'some-style-class', // you can add this icon with a CSS class
-                // instead of `icon` property (see next line)
-                // icon: 'img/marker.png',  // this can be relative or absolute
-                callback: this.addNewMarkerCallback
+                callback: addNewMarker
             };
 
             var removeContextMenu = {
                 text: 'マーカー削除',
+                callback: removeMarker
+            };
+
+            var pairingContextMenu = {
+                text: '対応マーカー表示',
                 // icon: 'img/marker.png',
-                callback: this.removeMarkerCallback
-            }
+                callback: pairingMarker
+            };
 
             var contextmenu = this.contextmenu = new ContextMenu({
                 width: 170,
@@ -539,6 +654,12 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
                 });
                 if (feature) {
                     contextmenu.clear();
+                    if (feature.get('gcpIndex') != 'new') {
+                        pairingContextMenu.data = {
+                            marker: feature
+                        };
+                        contextmenu.push(pairingContextMenu);
+                    }
                     removeContextMenu.data = {
                         marker: feature
                     };
@@ -549,6 +670,11 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
                     contextmenu.push(normalContextMenu);
                     //contextmenu.extend(contextmenu.getDefaultItems());
                     restore = false;
+                }
+                if (this.map_ == illstMap) {
+                    var xy = illstSource.histMapCoords2Xy(evt.coordinate);
+                    if (xy[0] < 0 || xy[1] < 0 || xy[0] > mapObject.get('width') || xy[1] > mapObject.get('height'))
+                        setTimeout(function() {contextmenu.close();}, 10);
                 }
             });
 
@@ -563,12 +689,12 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
         var illstMap = new ol.MaplatMap({
             div: 'illstMap',
             interactions: ol.interaction.defaults().extend([
-                new ol.interaction.DragRotateAndZoom()
+                new ol.interaction.DragRotateAndZoom({
+                    condition: ol.events.condition.altKeyOnly
+                })
             ]),
             controls: ol.control.defaults()
         });
-        illstMap.addNewMarkerCallback = addNewMarker;
-        illstMap.removeMarkerCallback = removeMarker;
         illstMap.initContextMenu();
         var jsonLayer = new ol.layer.Vector({
             source: new ol.source.Vector({
@@ -578,6 +704,16 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
         });
         jsonLayer.set('name', 'json');
         illstMap.getLayer('overlay').getLayers().push(jsonLayer);
+        var checkLayer = new ol.layer.Vector({
+            source: new ol.source.Vector({
+                wrapX: false
+            }),
+            style: tinStyle
+        });
+        checkLayer.set('name', 'check');
+        illstMap.getLayers().push(checkLayer);
+        illstMap.on('click', onClick);
+
         var illstSource;
 
         var mapObject;
@@ -619,8 +755,6 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
             ]),
             controls: ol.control.defaults()
         });
-        mercMap.addNewMarkerCallback = addNewMarker;
-        mercMap.removeMarkerCallback = removeMarker;
         mercMap.initContextMenu();
         jsonLayer = new ol.layer.Vector({
             source: new ol.source.Vector({
@@ -630,6 +764,16 @@ define(['histmap', 'bootstrap', 'underscore_extension', 'model/map', 'contextmen
         });
         jsonLayer.set('name', 'json');
         mercMap.getLayer('overlay').getLayers().push(jsonLayer);
+        checkLayer = new ol.layer.Vector({
+            source: new ol.source.Vector({
+                wrapX: false
+            }),
+            style: tinStyle
+        });
+        checkLayer.set('name', 'check');
+        mercMap.getLayers().push(checkLayer);
+        mercMap.on('click', onClick);
+
         var mercSource;
         Promise.all([
             ol.source.HistMap.createAsync({

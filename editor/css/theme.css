@@ -109,6 +109,15 @@ body.settings {
   width: 100%;
 }
 
+.map-row {
+  height: calc(100% - 50px);
+}
+
+.map-control-footer {
+  height: 50px;
+  padding-top: 10px;
+}
+
 .tab-content {
   height: calc(100% - 82px);
 }

@@ -100,10 +100,23 @@
 
     </div>
     <div class="tab-pane h100" id="gcpsTab">
-      <div class="row h100">
+      <div class="row map-row">
         <div id="illstMap" class="col-xs-6 h100">
         </div>
         <div id="mercMap" class="col-xs-6 h100">
+        </div>
+      </div>
+      <div class="row map-control-footer">
+        <div class="col-xs-3">
+          <label>エラーモード</label>
+          <label><input type="radio" name="strict" value="strict" checked>厳格</label>
+          <label><input type="radio" name="strict" value="auto">自動</label>
+        </div>
+        <div class="col-xs-3">
+          <label>エラー状態:</label><label id="error_status"></label>
+        </div>
+        <div class="col-xs-3 hide">
+          <button type="button" class="btn btn-secondary" id="viewError">次のエラー表示</button>
         </div>
       </div>
     </div>

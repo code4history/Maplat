@@ -162,17 +162,24 @@ var mapedit = {
             focused.webContents.send('saveResult', err);
         });
     },
-    updateTin: function(gcps) {
+    updateTin: function(gcps, strict) {
         tinObject.setPoints(gcps);
-        tinObject.updateTin('strict');
+        if (gcps.length < 3) {
+            focused.webContents.send('updatedTin', 'tooLessGcps');
+            return;
+        }
+        tinObject.updateTin(strict);
 
-        var tins = JSON.parse(JSON.stringify(tinObject.tins));
-        var kinks = tinObject.kinks;
-
-        if (kinks && kinks.forw) Array.prototype.push.apply(tins.forw.features, kinks.forw.features);
-        if (kinks && kinks.bakw) Array.prototype.push.apply(tins.bakw.features, kinks.bakw.features);
-
-        focused.webContents.send('updatedTin', tins);
+        focused.webContents.send('updatedTin', tinObject);
+    },
+    transform: function(srcXy, isBackward) {
+        if (!tinObject.points || tinObject.points.length < 3) {
+            return 'tooLessGcps';
+        }
+        if (tinObject.strict_status == 'strict_error' && !isBackward) {
+            return 'strictError';
+        }
+        return tinObject.transform(srcXy, !isBackward);
     }
 };
 
