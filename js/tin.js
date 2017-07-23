@@ -68,17 +68,31 @@
         };
 
         Tin.prototype.calcurateStrictTin = function() {
+            var start = Date.now();
             var self = this;
             this.tins.bakw = turf.featureCollection(this.tins.forw.features.map(function(tri) {
                 return counterTri(tri);
             }));
+
+            var next = Date.now();
+            console.log('Create backward Tin: ' + (next - start));
+            start = next;
+
             var searchIndex = {};
             this.tins.forw.features.map(function(forTri, index) {
                 var bakTri = self.tins.bakw.features[index];
                 insertSearchIndex(searchIndex, {forw: forTri, bakw: bakTri});
             });
 
+            var next = Date.now();
+            console.log('Create search index: ' + (next - start));
+            start = next;
+
             var overlapped = overlapCheck(searchIndex);
+
+            var next = Date.now();
+            console.log('Overlap check: ' + (next - start));
+            start = next;
 
             if (overlapped.bakw) Object.keys(overlapped.bakw).map(function(key) {
                 if (overlapped.bakw[key] == 'Not include case') return;
@@ -120,6 +134,10 @@
                 });
             });
 
+            var next = Date.now();
+            console.log('First aid for Overlap: ' + (next - start));
+            start = next;
+
             var bakCoords = this.tins.bakw.features.map(function(poly) { return poly.geometry.coordinates[0]; });
             var forCoords = this.tins.forw.features.map(function(poly) { return poly.geometry.coordinates[0]; });
             var bakXy = findIntersections(bakCoords);
@@ -150,9 +168,13 @@
                 if (bakXy2.length > 0) this.kinks.bakw = turf.featureCollection(bakXy2);
                 if (forXy2.length > 0) this.kinks.forw = turf.featureCollection(forXy2);
             }
+            var next = Date.now();
+            console.log('Kink check: ' + (next - start));
+            start = next;
         };
 
         Tin.prototype.updateTin = function(strict) {
+            var start = Date.now();
             if (strict != 'strict' && strict != 'loose') strict = 'auto';
             var self = this;
             var bbox = [];
@@ -172,10 +194,18 @@
             }
             var pointsSet = {forw: turf.featureCollection(pointsArray.forw), bakw: turf.featureCollection(pointsArray.bakw)};
 
+            var next = Date.now();
+            console.log('Preparing: ' + (next - start));
+            start = next;
+
             // Forward TIN for calcurating Backward Centroid and Backward Vertices
             var tinForCentroid = turf.tin(pointsSet.forw, 'target');
             var tinBakCentroid = turf.tin(pointsSet.bakw, 'target');
             var forCentroidFt = turf.centroid(pointsSet.forw);
+
+            next = Date.now();
+            console.log('Creating Tin for centroid: ' + (next - start));
+            start = next;
 
             // Calcurating Forward/Backward Centroid
             var centroid = {forw: forCentroidFt.geometry.coordinates};
@@ -190,6 +220,10 @@
             var convexBuf = {};
             convex1.map(function(vertex) { convexBuf[vertex.forw[0] + ':' + vertex.forw[1]] = vertex; });
             convex2.map(function(vertex) { convexBuf[vertex.forw[0] + ':' + vertex.forw[1]] = vertex; });
+
+            next = Date.now();
+            console.log('Preparing Vertex calculation: ' + (next - start));
+            start = next;
 
             // Calcurating Convex full to get Convex full polygon's vertices
             var expandConvex = Object.keys(convexBuf).reduce(function(prev, key, index, array) {
@@ -217,6 +251,10 @@
                 }
                 return prev;
             }, [[], [], [], []]);
+
+            next = Date.now();
+            console.log('Vertex calculation step 1: ' + (next - start));
+            start = next;
 
             // Calcurating Average scaling factors and rotation factors per orthants
             var orthant = Object.keys(convexBuf).reduce(function(prev, key, idx, array) {
@@ -263,6 +301,10 @@
             // "Using same average factor to every orthants" case
             if (orthant.length == 1) orthant = [orthant[0], orthant[0], orthant[0], orthant[0]];
 
+            next = Date.now();
+            console.log('Vertex calculation step 2: ' + (next - start));
+            start = next;
+
             // Calcurating Backward Bounding box of map
             var verticesSet = orthant.map(function(delta, index) {
                 var forVertex = bbox[index];
@@ -307,6 +349,10 @@
                 return {forw: vertex.forw, bakw: point};
             })
 
+            next = Date.now();
+            console.log('Vertex calculation step 3: ' + (next - start));
+            start = next;
+
             var verticesList = {forw: [], bakw: []};
 
             for (var i = 0; i < verticesSet.length; i++ ) {
@@ -319,6 +365,10 @@
                 verticesList.forw.push(forVertexFt);
                 verticesList.bakw.push(bakVertexFt);
             }
+
+            next = Date.now();
+            console.log('Vertex calculation step 4: ' + (next - start));
+            start = next;
 
             this.pointsSet = pointsSet;
             this.tins = {forw: turf.tin(pointsSet.forw, 'target')};
