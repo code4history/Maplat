@@ -58,22 +58,24 @@ define(['histmap', 'tin', 'aigle'], function(ol, Tin, Promise) {
     };
 
     ol.source.HistMap_tin.prototype.finalizeCreateAsync_ = function(points, resolve) {
-        this.tin.setPoints(points);
-        this.tin.updateTin();
         var self = this;
-        var proj = new ol.proj.Projection({
-            code: 'Illst:' + this.mapID,
-            extent: [0.0, 0.0, this.width, this.height],
-            units: 'm'
-        });
-        ol.proj.addProjection(proj);
-        ol.proj.addCoordinateTransforms(proj, 'EPSG:3857', function(xy) {
-            return self.tin.transform(xy, false);
-        }, function(merc) {
-            return self.tin.transform(merc, true);
-        });
-        ol.proj.transformDirect('EPSG:4326', proj);
-        resolve(this);
+        this.tin.setPoints(points);
+        this.tin.updateTinAsync()
+            .then(function() {
+                var proj = new ol.proj.Projection({
+                    code: 'Illst:' + self.mapID,
+                    extent: [0.0, 0.0, self.width, self.height],
+                    units: 'm'
+                });
+                ol.proj.addProjection(proj);
+                ol.proj.addCoordinateTransforms(proj, 'EPSG:3857', function(xy) {
+                    return self.tin.transform(xy, false);
+                }, function(merc) {
+                    return self.tin.transform(merc, true);
+                });
+                ol.proj.transformDirect('EPSG:4326', proj);
+                resolve(self);
+            });
     };
 
     ol.source.HistMap_tin.prototype.xy2MercAsync_ = function(xy) {
