@@ -168,9 +168,12 @@ var mapedit = {
             focused.webContents.send('updatedTin', 'tooLessGcps');
             return;
         }
-        tinObject.updateTin(strict);
-
-        focused.webContents.send('updatedTin', tinObject);
+        tinObject.updateTinAsync(strict)
+            .then(function() {
+                focused.webContents.send('updatedTin', tinObject);
+            }).catch(function(err) {
+                throw err;
+            });
     },
     transform: function(srcXy, isBackward) {
         if (!tinObject.points || tinObject.points.length < 3) {
