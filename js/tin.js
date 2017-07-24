@@ -68,141 +68,114 @@
         };
 
         Tin.prototype.calcurateStrictTinAsync = function() {
-            var start = Date.now();
-            var next;
             var self = this;
-
-            return new Promise(function() {
-                return Promise.all(self.tins.forw.features.map(function(tri) {
-                    return Promise.resolve(counterTri(tri));
-                })).then(function(tris) {
-                    self.tins.bakw = turf.featureCollection(tris);
-                }).catch(function(err) {
-                    throw err;
-                });
+            return Promise.all(self.tins.forw.features.map(function(tri) {
+                return Promise.resolve(counterTri(tri));
+            })).then(function(tris) {
+                self.tins.bakw = turf.featureCollection(tris);
             }).then(function() {
-                next = Date.now();
-                console.log('Create backward Tin: ' + (next - start));
-                start = next;
-
                 var searchIndex = {};
                 return Promise.all(self.tins.forw.features.map(function(forTri, index) {
                     var bakTri = self.tins.bakw.features[index];
                     return Promise.resolve(insertSearchIndex(searchIndex, {forw: forTri, bakw: bakTri}));
-                })).catch(function(err) {
+                })).then(function() {
+                    return searchIndex;
+                }).catch(function(err) {
+                    throw err;
+                });
+            }).then(function(searchIndex) {
+                return overlapCheckAsync(searchIndex);
+            }).then(function(overlapped) {
+                if (overlapped.bakw) Object.keys(overlapped.bakw).map(function(key) {
+                    if (overlapped.bakw[key] == 'Not include case') return;
+                    var trises = searchIndex[key];
+                    var forUnion = turf.union(trises[0].forw, trises[1].forw);
+                    var forConvex = turf.convex(turf.featureCollection([trises[0].forw, trises[1].forw]));
+                    var forDiff = turf.difference(forConvex, forUnion);
+                    if (forDiff) return;
+                    var sharedVtx = key.split('-').map(function(val) {
+                        return ['a', 'b', 'c'].map(function(alpha, index) {
+                            var prop = trises[0].bakw.properties[alpha];
+                            var geom = trises[0].bakw.geometry.coordinates[0][index];
+                            return {geom: geom, prop: prop};
+                        }).filter(function(vtx) {
+                            return vtx.prop.index == val;
+                        })[0];
+                    });
+                    var nonSharedVtx = trises.map(function(tris) {
+                        return ['a', 'b', 'c'].map(function(alpha, index) {
+                            var prop = tris.bakw.properties[alpha];
+                            var geom = tris.bakw.geometry.coordinates[0][index];
+                            return {geom: geom, prop: prop};
+                        }).filter(function(vtx) {
+                            return vtx.prop.index != sharedVtx[0].prop.index &&
+                                vtx.prop.index != sharedVtx[1].prop.index;
+                        })[0];
+                    });
+                    removeSearchIndex(searchIndex, trises[0], self.tins);
+                    removeSearchIndex(searchIndex, trises[1], self.tins);
+                    sharedVtx.map(function(sVtx) {
+                        var newTriCoords = [sVtx.geom, nonSharedVtx[0].geom, nonSharedVtx[1].geom, sVtx.geom];
+                        var cwCheck = isClockwise(newTriCoords);
+                        if (cwCheck) newTriCoords = [sVtx.geom, nonSharedVtx[1].geom, nonSharedVtx[0].geom, sVtx.geom];
+                        var newTriProp = !cwCheck ? {a: sVtx.prop, b: nonSharedVtx[0].prop, c: nonSharedVtx[1].prop} :
+                            {a: sVtx.prop, b: nonSharedVtx[1].prop, c: nonSharedVtx[0].prop};
+                        var newBakTri = turf.polygon([newTriCoords], newTriProp);
+                        var newForTri = counterTri(newBakTri);
+                        insertSearchIndex(searchIndex, {forw: newForTri, bakw: newBakTri}, self.tins);
+                    });
+                });
+
+                return Promise.all(['forw', 'bakw'].map(function(direc) {
+                    return new Promise(function(resolve) {
+                        var coords = self.tins[direc].features.map(function(poly) { return poly.geometry.coordinates[0]; });
+                        var xy = findIntersections(coords);
+                        var retXy = internal.dedupIntersections(xy).reduce(function(prev, point, index, array) {
+                            if (!prev) prev = {};
+                            prev[point.x + ':' + point.y] = point;
+                            if (index != array.length - 1) return prev;
+                            return Object.keys(prev).map(function(key) {
+                                return turf.point([prev[key].x, prev[key].y]);
+                            });
+                        }, []);
+                        resolve(retXy);
+                    }).catch(function(err) {
+                        throw err;
+                    });
+                })).then(function(result) {
+                    if (result[0].length == 0 && result[1].length == 0) {
+                        self.strict_status = 'strict';
+                        delete self.kinks;
+                    } else {
+                        self.strict_status = 'strict_error';
+                        self.kinks = {};
+                        if (result[0].length > 0) self.kinks.forw = turf.featureCollection(result[0]);
+                        if (result[1].length > 0) self.kinks.bakw = turf.featureCollection(result[1]);
+                    }
+                }).catch(function(err) {
                     throw err;
                 });
             }).catch(function(err) {
                 throw err;
             });
-
-            next = Date.now();
-            console.log('Create search index: ' + (next - start));
-            start = next;
-
-            var overlapped = overlapCheck(searchIndex);
-
-            next = Date.now();
-            console.log('Overlap check: ' + (next - start));
-            start = next;
-
-            if (overlapped.bakw) Object.keys(overlapped.bakw).map(function(key) {
-                if (overlapped.bakw[key] == 'Not include case') return;
-                var trises = searchIndex[key];
-                var forUnion = turf.union(trises[0].forw, trises[1].forw);
-                var forConvex = turf.convex(turf.featureCollection([trises[0].forw, trises[1].forw]));
-                var forDiff = turf.difference(forConvex, forUnion);
-                if (forDiff) return;
-                var sharedVtx = key.split('-').map(function(val) {
-                    return ['a', 'b', 'c'].map(function(alpha, index) {
-                        var prop = trises[0].bakw.properties[alpha];
-                        var geom = trises[0].bakw.geometry.coordinates[0][index];
-                        return {geom: geom, prop: prop};
-                    }).filter(function(vtx) {
-                        return vtx.prop.index == val;
-                    })[0];
-                });
-                var nonSharedVtx = trises.map(function(tris) {
-                    return ['a', 'b', 'c'].map(function(alpha, index) {
-                        var prop = tris.bakw.properties[alpha];
-                        var geom = tris.bakw.geometry.coordinates[0][index];
-                        return {geom: geom, prop: prop};
-                    }).filter(function(vtx) {
-                        return vtx.prop.index != sharedVtx[0].prop.index &&
-                            vtx.prop.index != sharedVtx[1].prop.index;
-                    })[0];
-                });
-                removeSearchIndex(searchIndex, trises[0], this.tins);
-                removeSearchIndex(searchIndex, trises[1], this.tins);
-                sharedVtx.map(function(sVtx) {
-                    var newTriCoords = [sVtx.geom, nonSharedVtx[0].geom, nonSharedVtx[1].geom, sVtx.geom];
-                    var cwCheck = isClockwise(newTriCoords);
-                    if (cwCheck) newTriCoords = [sVtx.geom, nonSharedVtx[1].geom, nonSharedVtx[0].geom, sVtx.geom];
-                    var newTriProp = !cwCheck ? {a: sVtx.prop, b: nonSharedVtx[0].prop, c: nonSharedVtx[1].prop} :
-                        {a: sVtx.prop, b: nonSharedVtx[1].prop, c: nonSharedVtx[0].prop};
-                    var newBakTri = turf.polygon([newTriCoords], newTriProp);
-                    var newForTri = counterTri(newBakTri);
-                    insertSearchIndex(searchIndex, {forw: newForTri, bakw: newBakTri}, this.tins);
-                });
-            });
-
-            var next = Date.now();
-            console.log('First aid for Overlap: ' + (next - start));
-            start = next;
-
-            var bakCoords = this.tins.bakw.features.map(function(poly) { return poly.geometry.coordinates[0]; });
-            var forCoords = this.tins.forw.features.map(function(poly) { return poly.geometry.coordinates[0]; });
-            var bakXy = findIntersections(bakCoords);
-            var forXy = findIntersections(forCoords);
-            var bakXy2 = internal.dedupIntersections(bakXy).reduce(function(prev, point, index, array) {
-                if (!prev) prev = {};
-                prev[point.x + ':' + point.y] = point;
-                if (index != array.length - 1) return prev;
-                return Object.keys(prev).map(function(key) {
-                    return turf.point([prev[key].x, prev[key].y]);
-                });
-            }, []);
-            var forXy2 = internal.dedupIntersections(forXy).reduce(function(prev, point, index, array) {
-                if (!prev) prev = {};
-                prev[point.x + ':' + point.y] = point;
-                if (index != array.length - 1) return prev;
-                return Object.keys(prev).map(function(key) {
-                    return turf.point([prev[key].x, prev[key].y]);
-                });
-            }, []);
-
-            if (bakXy2.length == 0 && forXy2.length == 0) {
-                this.strict_status = 'strict';
-                delete this.kinks;
-            } else {
-                this.strict_status = 'strict_error';
-                this.kinks = {};
-                if (bakXy2.length > 0) this.kinks.bakw = turf.featureCollection(bakXy2);
-                if (forXy2.length > 0) this.kinks.forw = turf.featureCollection(forXy2);
-            }
-            var next = Date.now();
-            console.log('Kink check: ' + (next - start));
-            start = next;
         };
 
         Tin.prototype.updateTinAsync = function(strict) {
-            var start = Date.now();
-            var next;
             var self = this;
             return new Promise(function(resolve, reject) {
                 if (strict != 'strict' && strict != 'loose') strict = 'auto';
 
                 var bbox = [];
-                if (this.wh) {
+                if (self.wh) {
                     bbox = [
-                        [0, 0], [this.wh[0], 0],
-                        [0, this.wh[1]], [this.wh[0], this.wh[1]]
+                        [0, 0], [self.wh[0], 0],
+                        [0, self.wh[1]], [self.wh[0], self.wh[1]]
                     ];
                 }
                 var pointsArray = {forw: [], bakw: []};
-                for (var i=0; i<this.points.length; i++) {
-                    var mapxy = this.points[i][0];
-                    var mercs = this.points[i][1];
+                for (var i=0; i < self.points.length; i++) {
+                    var mapxy = self.points[i][0];
+                    var mercs = self.points[i][1];
                     var forPoint = createPoint(mapxy, mercs, i);
                     pointsArray.forw.push(forPoint);
                     pointsArray.bakw.push(counterPoint(forPoint));
@@ -211,39 +184,34 @@
                 resolve([pointsSet, bbox]);
             }).then(function(prevResults) {
                 var pointsSet = prevResults[0];
-                next = Date.now();
-                console.log('Preparing: ' + (next - start));
-                start = next;
 
                 // Forward TIN for calcurating Backward Centroid and Backward Vertices
                 return Promise.all([
                     new Promise(function(resolve) {
-                        return turf.tin(pointsSet.forw, 'target');
+                        resolve(turf.tin(pointsSet.forw, 'target'));
                     }),
                     new Promise(function(resolve) {
-                        return turf.tin(pointsSet.bakw, 'target');
+                        resolve(turf.tin(pointsSet.bakw, 'target'));
                     }),
                     new Promise(function(resolve) {
-                        return turf.centroid(pointsSet.forw);
+                        resolve(turf.centroid(pointsSet.forw));
                     }),
                     Promise.resolve(prevResults)
                 ]).catch(function(err) {
                     throw err;
                 });
             }).then(function(prevResults) {
-                next = Date.now();
-                console.log('Creating Tin for centroid: ' + (next - start));
-                start = next;
                 var tinForCentroid = prevResults[0];
                 var tinBakCentroid = prevResults[1];
                 var forCentroidFt = prevResults[2];
                 var pointsSetBbox = prevResults[3];
+                var pointsSet = pointsSetBbox[0];
 
                 // Calcurating Forward/Backward Centroid
                 var centroid = {forw: forCentroidFt.geometry.coordinates};
                 centroid.bakw = transformArr(forCentroidFt, tinForCentroid);
-                this.centroid = {forw: createPoint(centroid.forw, centroid.bakw, 'cent')};
-                this.centroid.bakw = counterPoint(this.centroid.forw);
+                self.centroid = {forw: createPoint(centroid.forw, centroid.bakw, 'cent')};
+                self.centroid.bakw = counterPoint(self.centroid.forw);
 
                 var convexBuf = {};
                 return Promise.all([
@@ -271,10 +239,6 @@
                 var convexBuf = prevResults[1];
                 var pointsSetBbox = prevResults[2];
 
-                next = Date.now();
-                console.log('Preparing Vertex calculation: ' + (next - start));
-                start = next;
-
                 // Calcurating Convex full to get Convex full polygon's vertices
                 var expandConvex = Object.keys(convexBuf).reduce(function(prev, key, index, array) {
                     var forVertex = convexBuf[key].forw;
@@ -299,10 +263,6 @@
                     }
                     return prev;
                 }, [[], [], [], []]);
-
-                next = Date.now();
-                console.log('Vertex calculation step 1: ' + (next - start));
-                start = next;
 
                 // Calcurating Average scaling factors and rotation factors per orthants
                 var orthant = Object.keys(convexBuf).reduce(function(prev, key, idx, array) {
@@ -356,9 +316,6 @@
                 var expandConvex = prevResults[2];
                 var pointsSet = prevResults[3][0];
                 var bbox = prevResults[3][1];
-                next = Date.now();
-                console.log('Vertex calculation step 2: ' + (next - start));
-                start = next;
 
                 // Calcurating Backward Bounding box of map
                 var verticesSet = orthant.map(function(delta, index) {
@@ -408,9 +365,6 @@
             }).then(function(prevResults) {
                 var verticesSet = prevResults[0];
                 var pointsSet = prevResults[1];
-                next = Date.now();
-                console.log('Vertex calculation step 3: ' + (next - start));
-                start = next;
 
                 var verticesList = {forw: [], bakw: []};
 
@@ -425,10 +379,6 @@
                     verticesList.bakw.push(bakVertexFt);
                 }
 
-                next = Date.now();
-                console.log('Vertex calculation step 4: ' + (next - start));
-                start = next;
-
                 self.pointsSet = pointsSet;
                 self.tins = {forw: turf.tin(pointsSet.forw, 'target')};
                 var prom;
@@ -438,12 +388,12 @@
                     prom = Promise.resolve();
                 }
                 return prom.then(function() {
-                    if (strict == 'loose' || (strict == 'auto' && this.strict_status == 'strict_error')) {
+                    if (strict == 'loose' || (strict == 'auto' && self.strict_status == 'strict_error')) {
                         self.tins.bakw = turf.tin(pointsSet.bakw, 'target');
                         delete self.kinks;
                         self.strict_status = 'loose';
                     }
-                    this.vertices_params = {forw: vertexCalc(verticesList.forw, self.centroid.forw),
+                    self.vertices_params = {forw: vertexCalc(verticesList.forw, self.centroid.forw),
                         bakw: vertexCalc(verticesList.bakw, self.centroid.bakw)};
                 }).catch(function(err) {
                     throw err;
@@ -454,7 +404,7 @@
         };
 
         Tin.prototype.transform = function(point, backward) {
-            if (!this.tins) this.updateTin();
+            // if (!this.tins) this.updateTin();
             var tpoint = turf.point(point);
             var tins = backward ? this.tins.bakw : this.tins.forw;
             var verticesParams = backward ? this.vertices_params.bakw : this.vertices_params.forw;
@@ -598,28 +548,32 @@
             return turf.polygon([coordinates], properties);
         }
 
-        function overlapCheck(searchIndex) {
-            return Object.keys(searchIndex).reduce(function(prev, key) {
-                var searchResult = searchIndex[key];
-                if (searchResult.length < 2) return prev;
-                ['forw', 'bakw'].map(function(dir) {
-                    var result = turf.intersect(searchResult[0][dir], searchResult[1][dir]);
-                    if (!result || result.geometry.type == 'Point' || result.geometry.type == 'LineString') return;
-                    if (!prev[dir]) prev[dir] = {};
-                    try {
+        function overlapCheckAsync(searchIndex) {
+            var retValue = {forw: {}, bakw: {}};
+            return Promise.all(Object.keys(searchIndex).map(function(key) {
+                return new Promise(function(resolve) {
+                    var searchResult = searchIndex[key];
+                    if (searchResult.length < 2) return resolve();
+                    ['forw', 'bakw'].map(function(dir) {
+                        var result = turf.intersect(searchResult[0][dir], searchResult[1][dir]);
+                        if (!result || result.geometry.type == 'Point' || result.geometry.type == 'LineString') return resolve();
                         var diff1 = turf.difference(searchResult[0][dir], result);
                         var diff2 = turf.difference(searchResult[1][dir], result);
                         if (!diff1 || !diff2) {
-                            prev[dir][key] = 'Include case';
+                            searchResult[dir][key] = 'Include case';
                         } else {
-                            prev[dir][key] = 'Not include case';
+                            searchResult[dir][key] = 'Not include case';
                         }
-                    } catch(e) {
-                        prev[dir][key] = 'Not include case';
-                    }
+                        resolve();
+                    });
                 });
-                return prev;
-            }, {});
+            })).then(function() {
+                if (Object.keys(retValue.forw).length == 0) delete retValue.forw;
+                if (Object.keys(retValue.bakw).length == 0) delete retValue.bakw;
+                return retValue;
+            }).catch(function(err) {
+                throw err;
+            });
         }
 
         function insertSearchIndex(searchIndex, tris, tins) {
