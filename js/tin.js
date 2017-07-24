@@ -67,30 +67,42 @@
             this.tins = undefined;
         };
 
-        Tin.prototype.calcurateStrictTin = function() {
+        Tin.prototype.calcurateStrictTinAsync = function() {
             var start = Date.now();
+            var next;
             var self = this;
-            this.tins.bakw = turf.featureCollection(this.tins.forw.features.map(function(tri) {
-                return counterTri(tri);
-            }));
 
-            var next = Date.now();
-            console.log('Create backward Tin: ' + (next - start));
-            start = next;
+            return new Promise(function() {
+                return Promise.all(self.tins.forw.features.map(function(tri) {
+                    return Promise.resolve(counterTri(tri));
+                })).then(function(tris) {
+                    self.tins.bakw = turf.featureCollection(tris);
+                }).catch(function(err) {
+                    throw err;
+                });
+            }).then(function() {
+                next = Date.now();
+                console.log('Create backward Tin: ' + (next - start));
+                start = next;
 
-            var searchIndex = {};
-            this.tins.forw.features.map(function(forTri, index) {
-                var bakTri = self.tins.bakw.features[index];
-                insertSearchIndex(searchIndex, {forw: forTri, bakw: bakTri});
+                var searchIndex = {};
+                return Promise.all(self.tins.forw.features.map(function(forTri, index) {
+                    var bakTri = self.tins.bakw.features[index];
+                    return Promise.resolve(insertSearchIndex(searchIndex, {forw: forTri, bakw: bakTri}));
+                })).catch(function(err) {
+                    throw err;
+                });
+            }).catch(function(err) {
+                throw err;
             });
 
-            var next = Date.now();
+            next = Date.now();
             console.log('Create search index: ' + (next - start));
             start = next;
 
             var overlapped = overlapCheck(searchIndex);
 
-            var next = Date.now();
+            next = Date.now();
             console.log('Overlap check: ' + (next - start));
             start = next;
 
@@ -173,216 +185,272 @@
             start = next;
         };
 
-        Tin.prototype.updateTin = function(strict) {
+        Tin.prototype.updateTinAsync = function(strict) {
             var start = Date.now();
-            if (strict != 'strict' && strict != 'loose') strict = 'auto';
+            var next;
             var self = this;
-            var bbox = [];
-            if (this.wh) {
-                bbox = [
-                    [0, 0], [this.wh[0], 0],
-                    [0, this.wh[1]], [this.wh[0], this.wh[1]]
-                ];
-            }
-            var pointsArray = {forw: [], bakw: []};
-            for (var i=0; i<this.points.length; i++) {
-                var mapxy = this.points[i][0];
-                var mercs = this.points[i][1];
-                var forPoint = createPoint(mapxy, mercs, i);
-                pointsArray.forw.push(forPoint);
-                pointsArray.bakw.push(counterPoint(forPoint));
-            }
-            var pointsSet = {forw: turf.featureCollection(pointsArray.forw), bakw: turf.featureCollection(pointsArray.bakw)};
+            return new Promise(function(resolve, reject) {
+                if (strict != 'strict' && strict != 'loose') strict = 'auto';
 
-            var next = Date.now();
-            console.log('Preparing: ' + (next - start));
-            start = next;
-
-            // Forward TIN for calcurating Backward Centroid and Backward Vertices
-            var tinForCentroid = turf.tin(pointsSet.forw, 'target');
-            var tinBakCentroid = turf.tin(pointsSet.bakw, 'target');
-            var forCentroidFt = turf.centroid(pointsSet.forw);
-
-            next = Date.now();
-            console.log('Creating Tin for centroid: ' + (next - start));
-            start = next;
-
-            // Calcurating Forward/Backward Centroid
-            var centroid = {forw: forCentroidFt.geometry.coordinates};
-            centroid.bakw = transformArr(forCentroidFt, tinForCentroid);
-            this.centroid = {forw: createPoint(centroid.forw, centroid.bakw, 'cent')};
-            this.centroid.bakw = counterPoint(this.centroid.forw);
-
-            var forConvex = turf.convex(pointsSet.forw).geometry.coordinates[0];
-            var bakConvex = turf.convex(pointsSet.bakw).geometry.coordinates[0];
-            var convex1 = forConvex.map(function(forw) {return {forw: forw, bakw: transformArr(turf.point(forw), tinForCentroid)}; });
-            var convex2 = bakConvex.map(function(bakw) {return {bakw: bakw, forw: transformArr(turf.point(bakw), tinBakCentroid)}; });
-            var convexBuf = {};
-            convex1.map(function(vertex) { convexBuf[vertex.forw[0] + ':' + vertex.forw[1]] = vertex; });
-            convex2.map(function(vertex) { convexBuf[vertex.forw[0] + ':' + vertex.forw[1]] = vertex; });
-
-            next = Date.now();
-            console.log('Preparing Vertex calculation: ' + (next - start));
-            start = next;
-
-            // Calcurating Convex full to get Convex full polygon's vertices
-            var expandConvex = Object.keys(convexBuf).reduce(function(prev, key, index, array) {
-                var forVertex = convexBuf[key].forw;
-                var bakVertex = convexBuf[key].bakw;
-                var vertexDelta = {forw: [forVertex[0] - centroid.forw[0], forVertex[1] - centroid.forw[1]]};
-                vertexDelta.bakw = [bakVertex[0] - centroid.bakw[0], bakVertex[1] - centroid.bakw[1]];
-                // var deltaDist = {forw: Math.sqrt(Math.pow(vertexDelta.forw[0], 2) + Math.pow(vertexDelta.forw[1], 2)),
-                //     bakw: Math.sqrt(Math.pow(vertexDelta.bakw[0], 2) + Math.pow(vertexDelta.bakw[1], 2))};
-                var xRate = vertexDelta.forw[0] == 0 ? Infinity :
-                    ((vertexDelta.forw[0] < 0 ? 0 : self.wh[0]) - centroid.forw[0]) / vertexDelta.forw[0];
-                var yRate = vertexDelta.forw[1] == 0 ? Infinity :
-                    ((vertexDelta.forw[1] < 0 ? 0 : self.wh[1]) - centroid.forw[1]) / vertexDelta.forw[1];
-                if (Math.abs(xRate) / Math.abs(yRate) < 1.1 ) {
-                    var point = {forw: [vertexDelta.forw[0] * xRate + centroid.forw[0], vertexDelta.forw[1] * xRate + centroid.forw[1]],
-                        bakw: [vertexDelta.bakw[0] * xRate + centroid.bakw[0], vertexDelta.bakw[1] * xRate + centroid.bakw[1]]};
-                    if (vertexDelta.forw[0] < 0) prev[3].push(point);
-                    else prev[1].push(point);
+                var bbox = [];
+                if (this.wh) {
+                    bbox = [
+                        [0, 0], [this.wh[0], 0],
+                        [0, this.wh[1]], [this.wh[0], this.wh[1]]
+                    ];
                 }
-                if (Math.abs(yRate) / Math.abs(xRate) < 1.1 ) {
-                    var point = {forw: [vertexDelta.forw[0] * yRate + centroid.forw[0], vertexDelta.forw[1] * yRate + centroid.forw[1]],
-                        bakw: [vertexDelta.bakw[0] * yRate + centroid.bakw[0], vertexDelta.bakw[1] * yRate + centroid.bakw[1]]};
-                    if (vertexDelta.forw[1] < 0) prev[0].push(point);
-                    else prev[2].push(point);
+                var pointsArray = {forw: [], bakw: []};
+                for (var i=0; i<this.points.length; i++) {
+                    var mapxy = this.points[i][0];
+                    var mercs = this.points[i][1];
+                    var forPoint = createPoint(mapxy, mercs, i);
+                    pointsArray.forw.push(forPoint);
+                    pointsArray.bakw.push(counterPoint(forPoint));
                 }
-                return prev;
-            }, [[], [], [], []]);
+                var pointsSet = {forw: turf.featureCollection(pointsArray.forw), bakw: turf.featureCollection(pointsArray.bakw)};
+                resolve([pointsSet, bbox]);
+            }).then(function(prevResults) {
+                var pointsSet = prevResults[0];
+                next = Date.now();
+                console.log('Preparing: ' + (next - start));
+                start = next;
 
-            next = Date.now();
-            console.log('Vertex calculation step 1: ' + (next - start));
-            start = next;
-
-            // Calcurating Average scaling factors and rotation factors per orthants
-            var orthant = Object.keys(convexBuf).reduce(function(prev, key, idx, array) {
-                var forVertex = convexBuf[key].forw;
-                var bakVertex = convexBuf[key].bakw;
-                var vertexDelta = {forw: [forVertex[0] - centroid.forw[0], forVertex[1] - centroid.forw[1]]};
-                vertexDelta.bakw = [bakVertex[0] - centroid.bakw[0], centroid.bakw[1] - bakVertex[1]];
-
-                if (vertexDelta.forw[0] == 0 || vertexDelta.forw[1] == 0) return prev;
-                var index = 0;
-                if (vertexDelta.forw[0] > 0) index += 1;
-                if (vertexDelta.forw[1] > 0) index += 2;
-                prev[index].push([vertexDelta.forw, vertexDelta.bakw]);
-                if (idx == array.length -1) {
-                    // If some orthants have no Convex full polygon's vertices, use same average factor to every orthants
-                    return (prev.length == prev.filter(function(val) {
-                        return val.length > 0;
-                    }).length) ? prev : prev.reduce(function(pre, cur) {
-                            var ret = [pre[0].concat(cur)];
-                            return ret;
-                        }, [[]]);
-                }
-                return prev;
-            }, [[], [], [], []]).map(function(item) {
-                // Finalize calcuration of Average scaling factors and rotation factors
-                return item.reduce(function(prev, curr, index, arr) {
-                    if (!prev) prev = [Infinity, 0, 0];
-                    // if (!prev) prev = [0, 0, 0];
-                    // var distanceSum = prev[0] + Math.sqrt(Math.pow(curr[0][0], 2) + Math.pow(curr[0][1], 2)) /
-                    //     Math.sqrt(Math.pow(curr[1][0], 2) + Math.pow(curr[1][1], 2));
-                    var distanceSum = Math.sqrt(Math.pow(curr[0][0], 2) + Math.pow(curr[0][1], 2)) /
-                        Math.sqrt(Math.pow(curr[1][0], 2) + Math.pow(curr[1][1], 2));
-                    distanceSum = distanceSum < prev[0] ? distanceSum : prev[0];
-                    var thetaDelta = Math.atan2(curr[0][0], curr[0][1]) - Math.atan2(curr[1][0], curr[1][1]);
-                    var sumThetaX = prev[1] + Math.cos(thetaDelta);
-                    var sumThetaY = prev[2] + Math.sin(thetaDelta);
-                    if (index == arr.length - 1) {
-                        // return [distanceSum / arr.length, Math.atan2(sumThetaY, sumThetaX)];
-                        return [distanceSum, Math.atan2(sumThetaY, sumThetaX)];
-                    }
-                    return [distanceSum, sumThetaX, sumThetaY];
-                }, null);
-            });
-            // "Using same average factor to every orthants" case
-            if (orthant.length == 1) orthant = [orthant[0], orthant[0], orthant[0], orthant[0]];
-
-            next = Date.now();
-            console.log('Vertex calculation step 2: ' + (next - start));
-            start = next;
-
-            // Calcurating Backward Bounding box of map
-            var verticesSet = orthant.map(function(delta, index) {
-                var forVertex = bbox[index];
-                var forDelta = [forVertex[0] - centroid.forw[0], forVertex[1] - centroid.forw[1]];
-                var forDistance = Math.sqrt(Math.pow(forDelta[0], 2) + Math.pow(forDelta[1], 2));
-                var bakDistance = forDistance / delta[0];
-
-                var forTheta = Math.atan2(forDelta[0], forDelta[1]);
-                var bakTheta = forTheta - delta[1];
-
-                var bakVertex = [centroid.bakw[0] + bakDistance * Math.sin(bakTheta), centroid.bakw[1] - bakDistance * Math.cos(bakTheta)];
-
-                return {forw: forVertex, bakw: bakVertex};
-            });
-            var swap = verticesSet[2];
-            verticesSet[2] = verticesSet[3];
-            verticesSet[3] = swap;
-
-            var expandRate = [1, 1, 1, 1];
-            for(var i = 0; i < 4; i++) {
-                var j = (i + 1) % 4;
-                var side = turf.lineString([verticesSet[i].bakw, verticesSet[j].bakw]);
-                var expands = expandConvex[i];
-                expands.map(function(expand) {
-                    var expandLine = turf.lineString([centroid.bakw, expand.bakw]);
-                    var intersect = turf.intersect(side, expandLine);
-                    if (intersect) {
-                        var expandDist = Math.sqrt(Math.pow(expand.bakw[0] - centroid.bakw[0], 2) +
-                            Math.pow(expand.bakw[1] - centroid.bakw[1], 2));
-                        var onSideDist = Math.sqrt(Math.pow(intersect.geometry.coordinates[0] - centroid.bakw[0], 2) +
-                            Math.pow(intersect.geometry.coordinates[1] - centroid.bakw[1], 2));
-                        var rate = expandDist / onSideDist;
-                        if (rate > expandRate[i]) expandRate[i] = rate;
-                        if (rate > expandRate[j]) expandRate[j] = rate;
-                    }
+                // Forward TIN for calcurating Backward Centroid and Backward Vertices
+                return Promise.all([
+                    new Promise(function(resolve) {
+                        return turf.tin(pointsSet.forw, 'target');
+                    }),
+                    new Promise(function(resolve) {
+                        return turf.tin(pointsSet.bakw, 'target');
+                    }),
+                    new Promise(function(resolve) {
+                        return turf.centroid(pointsSet.forw);
+                    }),
+                    Promise.resolve(prevResults)
+                ]).catch(function(err) {
+                    throw err;
                 });
-            }
-            verticesSet = verticesSet.map(function(vertex, index) {
-                var rate = expandRate[index];
-                var point = [(vertex.bakw[0] - centroid.bakw[0]) * rate + centroid.bakw[0],
-                    (vertex.bakw[1] - centroid.bakw[1]) * rate + centroid.bakw[1]];
-                return {forw: vertex.forw, bakw: point};
-            })
+            }).then(function(prevResults) {
+                next = Date.now();
+                console.log('Creating Tin for centroid: ' + (next - start));
+                start = next;
+                var tinForCentroid = prevResults[0];
+                var tinBakCentroid = prevResults[1];
+                var forCentroidFt = prevResults[2];
+                var pointsSetBbox = prevResults[3];
 
-            next = Date.now();
-            console.log('Vertex calculation step 3: ' + (next - start));
-            start = next;
+                // Calcurating Forward/Backward Centroid
+                var centroid = {forw: forCentroidFt.geometry.coordinates};
+                centroid.bakw = transformArr(forCentroidFt, tinForCentroid);
+                this.centroid = {forw: createPoint(centroid.forw, centroid.bakw, 'cent')};
+                this.centroid.bakw = counterPoint(this.centroid.forw);
 
-            var verticesList = {forw: [], bakw: []};
+                var convexBuf = {};
+                return Promise.all([
+                    new Promise(function(resolve) {
+                        var forConvex = turf.convex(pointsSet.forw).geometry.coordinates[0];
+                        var convex = forConvex.map(function(forw) {return {forw: forw,
+                            bakw: transformArr(turf.point(forw), tinForCentroid)}; });
+                        convex.map(function(vertex) { convexBuf[vertex.forw[0] + ':' + vertex.forw[1]] = vertex; });
+                        resolve();
+                    }),
+                    new Promise(function(resolve) {
+                        var bakConvex = turf.convex(pointsSet.bakw).geometry.coordinates[0];
+                        var convex = bakConvex.map(function(bakw) {return {bakw: bakw,
+                            forw: transformArr(turf.point(bakw), tinBakCentroid)}; });
+                        convex.map(function(vertex) { convexBuf[vertex.forw[0] + ':' + vertex.forw[1]] = vertex; });
+                        resolve();
+                    })
+                ]).then(function() {
+                    return [centroid, convexBuf, pointsSetBbox];
+                }).catch(function(err) {
+                    throw err;
+                });
+            }).then(function(prevResults) {
+                var centroid = prevResults[0];
+                var convexBuf = prevResults[1];
+                var pointsSetBbox = prevResults[2];
 
-            for (var i = 0; i < verticesSet.length; i++ ) {
-                var forVertex = verticesSet[i].forw;
-                var bakVertex = verticesSet[i].bakw;
-                var forVertexFt = createPoint(forVertex, bakVertex, 'bbox' + i);
-                var bakVertexFt = counterPoint(forVertexFt);
-                pointsSet.forw.features.push(forVertexFt);
-                pointsSet.bakw.features.push(bakVertexFt);
-                verticesList.forw.push(forVertexFt);
-                verticesList.bakw.push(bakVertexFt);
-            }
+                next = Date.now();
+                console.log('Preparing Vertex calculation: ' + (next - start));
+                start = next;
 
-            next = Date.now();
-            console.log('Vertex calculation step 4: ' + (next - start));
-            start = next;
+                // Calcurating Convex full to get Convex full polygon's vertices
+                var expandConvex = Object.keys(convexBuf).reduce(function(prev, key, index, array) {
+                    var forVertex = convexBuf[key].forw;
+                    var bakVertex = convexBuf[key].bakw;
+                    var vertexDelta = {forw: [forVertex[0] - centroid.forw[0], forVertex[1] - centroid.forw[1]]};
+                    vertexDelta.bakw = [bakVertex[0] - centroid.bakw[0], bakVertex[1] - centroid.bakw[1]];
+                    var xRate = vertexDelta.forw[0] == 0 ? Infinity :
+                        ((vertexDelta.forw[0] < 0 ? 0 : self.wh[0]) - centroid.forw[0]) / vertexDelta.forw[0];
+                    var yRate = vertexDelta.forw[1] == 0 ? Infinity :
+                        ((vertexDelta.forw[1] < 0 ? 0 : self.wh[1]) - centroid.forw[1]) / vertexDelta.forw[1];
+                    if (Math.abs(xRate) / Math.abs(yRate) < 1.1 ) {
+                        var point = {forw: [vertexDelta.forw[0] * xRate + centroid.forw[0], vertexDelta.forw[1] * xRate + centroid.forw[1]],
+                            bakw: [vertexDelta.bakw[0] * xRate + centroid.bakw[0], vertexDelta.bakw[1] * xRate + centroid.bakw[1]]};
+                        if (vertexDelta.forw[0] < 0) prev[3].push(point);
+                        else prev[1].push(point);
+                    }
+                    if (Math.abs(yRate) / Math.abs(xRate) < 1.1 ) {
+                        var point = {forw: [vertexDelta.forw[0] * yRate + centroid.forw[0], vertexDelta.forw[1] * yRate + centroid.forw[1]],
+                            bakw: [vertexDelta.bakw[0] * yRate + centroid.bakw[0], vertexDelta.bakw[1] * yRate + centroid.bakw[1]]};
+                        if (vertexDelta.forw[1] < 0) prev[0].push(point);
+                        else prev[2].push(point);
+                    }
+                    return prev;
+                }, [[], [], [], []]);
 
-            this.pointsSet = pointsSet;
-            this.tins = {forw: turf.tin(pointsSet.forw, 'target')};
-            if (strict == 'strict' || strict == 'auto') {
-                this.calcurateStrictTin();
-            }
-            if (strict == 'loose' || (strict == 'auto' && this.strict_status == 'strict_error')) {
-                this.tins.bakw = turf.tin(pointsSet.bakw, 'target');
-                delete this.kinks;
-                this.strict_status = 'loose';
-            }
+                next = Date.now();
+                console.log('Vertex calculation step 1: ' + (next - start));
+                start = next;
 
-            this.vertices_params = {forw: vertexCalc(verticesList.forw, this.centroid.forw),
-                bakw: vertexCalc(verticesList.bakw, this.centroid.bakw)};
+                // Calcurating Average scaling factors and rotation factors per orthants
+                var orthant = Object.keys(convexBuf).reduce(function(prev, key, idx, array) {
+                    var forVertex = convexBuf[key].forw;
+                    var bakVertex = convexBuf[key].bakw;
+                    var vertexDelta = {forw: [forVertex[0] - centroid.forw[0], forVertex[1] - centroid.forw[1]]};
+                    vertexDelta.bakw = [bakVertex[0] - centroid.bakw[0], centroid.bakw[1] - bakVertex[1]];
+
+                    if (vertexDelta.forw[0] == 0 || vertexDelta.forw[1] == 0) return prev;
+                    var index = 0;
+                    if (vertexDelta.forw[0] > 0) index += 1;
+                    if (vertexDelta.forw[1] > 0) index += 2;
+                    prev[index].push([vertexDelta.forw, vertexDelta.bakw]);
+                    if (idx == array.length -1) {
+                        // If some orthants have no Convex full polygon's vertices, use same average factor to every orthants
+                        return (prev.length == prev.filter(function(val) {
+                            return val.length > 0;
+                        }).length) ? prev : prev.reduce(function(pre, cur) {
+                                var ret = [pre[0].concat(cur)];
+                                return ret;
+                            }, [[]]);
+                    }
+                    return prev;
+                }, [[], [], [], []]).map(function(item) {
+                    // Finalize calcuration of Average scaling factors and rotation factors
+                    return item.reduce(function(prev, curr, index, arr) {
+                        if (!prev) prev = [Infinity, 0, 0];
+                        // if (!prev) prev = [0, 0, 0];
+                        // var distanceSum = prev[0] + Math.sqrt(Math.pow(curr[0][0], 2) + Math.pow(curr[0][1], 2)) /
+                        //     Math.sqrt(Math.pow(curr[1][0], 2) + Math.pow(curr[1][1], 2));
+                        var distanceSum = Math.sqrt(Math.pow(curr[0][0], 2) + Math.pow(curr[0][1], 2)) /
+                            Math.sqrt(Math.pow(curr[1][0], 2) + Math.pow(curr[1][1], 2));
+                        distanceSum = distanceSum < prev[0] ? distanceSum : prev[0];
+                        var thetaDelta = Math.atan2(curr[0][0], curr[0][1]) - Math.atan2(curr[1][0], curr[1][1]);
+                        var sumThetaX = prev[1] + Math.cos(thetaDelta);
+                        var sumThetaY = prev[2] + Math.sin(thetaDelta);
+                        if (index == arr.length - 1) {
+                            // return [distanceSum / arr.length, Math.atan2(sumThetaY, sumThetaX)];
+                            return [distanceSum, Math.atan2(sumThetaY, sumThetaX)];
+                        }
+                        return [distanceSum, sumThetaX, sumThetaY];
+                    }, null);
+                });
+                // "Using same average factor to every orthants" case
+                if (orthant.length == 1) orthant = [orthant[0], orthant[0], orthant[0], orthant[0]];
+
+                return [orthant, centroid, expandConvex, pointsSetBbox];
+            }).then(function(prevResults) {
+                var orthant = prevResults[0];
+                var centroid = prevResults[1];
+                var expandConvex = prevResults[2];
+                var pointsSet = prevResults[3][0];
+                var bbox = prevResults[3][1];
+                next = Date.now();
+                console.log('Vertex calculation step 2: ' + (next - start));
+                start = next;
+
+                // Calcurating Backward Bounding box of map
+                var verticesSet = orthant.map(function(delta, index) {
+                    var forVertex = bbox[index];
+                    var forDelta = [forVertex[0] - centroid.forw[0], forVertex[1] - centroid.forw[1]];
+                    var forDistance = Math.sqrt(Math.pow(forDelta[0], 2) + Math.pow(forDelta[1], 2));
+                    var bakDistance = forDistance / delta[0];
+
+                    var forTheta = Math.atan2(forDelta[0], forDelta[1]);
+                    var bakTheta = forTheta - delta[1];
+
+                    var bakVertex = [centroid.bakw[0] + bakDistance * Math.sin(bakTheta),
+                        centroid.bakw[1] - bakDistance * Math.cos(bakTheta)];
+
+                    return {forw: forVertex, bakw: bakVertex};
+                });
+                var swap = verticesSet[2];
+                verticesSet[2] = verticesSet[3];
+                verticesSet[3] = swap;
+
+                var expandRate = [1, 1, 1, 1];
+                for(var i = 0; i < 4; i++) {
+                    var j = (i + 1) % 4;
+                    var side = turf.lineString([verticesSet[i].bakw, verticesSet[j].bakw]);
+                    var expands = expandConvex[i];
+                    expands.map(function(expand) {
+                        var expandLine = turf.lineString([centroid.bakw, expand.bakw]);
+                        var intersect = turf.intersect(side, expandLine);
+                        if (intersect) {
+                            var expandDist = Math.sqrt(Math.pow(expand.bakw[0] - centroid.bakw[0], 2) +
+                                Math.pow(expand.bakw[1] - centroid.bakw[1], 2));
+                            var onSideDist = Math.sqrt(Math.pow(intersect.geometry.coordinates[0] - centroid.bakw[0], 2) +
+                                Math.pow(intersect.geometry.coordinates[1] - centroid.bakw[1], 2));
+                            var rate = expandDist / onSideDist;
+                            if (rate > expandRate[i]) expandRate[i] = rate;
+                            if (rate > expandRate[j]) expandRate[j] = rate;
+                        }
+                    });
+                }
+                verticesSet = verticesSet.map(function(vertex, index) {
+                    var rate = expandRate[index];
+                    var point = [(vertex.bakw[0] - centroid.bakw[0]) * rate + centroid.bakw[0],
+                        (vertex.bakw[1] - centroid.bakw[1]) * rate + centroid.bakw[1]];
+                    return {forw: vertex.forw, bakw: point};
+                });
+                return [verticesSet, pointsSet];
+            }).then(function(prevResults) {
+                var verticesSet = prevResults[0];
+                var pointsSet = prevResults[1];
+                next = Date.now();
+                console.log('Vertex calculation step 3: ' + (next - start));
+                start = next;
+
+                var verticesList = {forw: [], bakw: []};
+
+                for (var i = 0; i < verticesSet.length; i++ ) {
+                    var forVertex = verticesSet[i].forw;
+                    var bakVertex = verticesSet[i].bakw;
+                    var forVertexFt = createPoint(forVertex, bakVertex, 'bbox' + i);
+                    var bakVertexFt = counterPoint(forVertexFt);
+                    pointsSet.forw.features.push(forVertexFt);
+                    pointsSet.bakw.features.push(bakVertexFt);
+                    verticesList.forw.push(forVertexFt);
+                    verticesList.bakw.push(bakVertexFt);
+                }
+
+                next = Date.now();
+                console.log('Vertex calculation step 4: ' + (next - start));
+                start = next;
+
+                self.pointsSet = pointsSet;
+                self.tins = {forw: turf.tin(pointsSet.forw, 'target')};
+                var prom;
+                if (strict == 'strict' || strict == 'auto') {
+                    prom = self.calcurateStrictTinAsync();
+                } else {
+                    prom = Promise.resolve();
+                }
+                return prom.then(function() {
+                    if (strict == 'loose' || (strict == 'auto' && this.strict_status == 'strict_error')) {
+                        self.tins.bakw = turf.tin(pointsSet.bakw, 'target');
+                        delete self.kinks;
+                        self.strict_status = 'loose';
+                    }
+                    this.vertices_params = {forw: vertexCalc(verticesList.forw, self.centroid.forw),
+                        bakw: vertexCalc(verticesList.bakw, self.centroid.bakw)};
+                }).catch(function(err) {
+                    throw err;
+                });
+            }).catch(function(err) {
+                throw err;
+            });
         };
 
         Tin.prototype.transform = function(point, backward) {
