@@ -84,8 +84,10 @@
                     throw err;
                 });
             }).then(function(searchIndex) {
-                return overlapCheckAsync(searchIndex);
-            }).then(function(overlapped) {
+                return [overlapCheckAsync(searchIndex), searchIndex];
+            }).then(function(prevResult) {
+                var overlapped = prevResult[0];
+                var searchIndex = prevResult[1];
                 if (overlapped.bakw) Object.keys(overlapped.bakw).map(function(key) {
                     if (overlapped.bakw[key] == 'Not include case') return;
                     var trises = searchIndex[key];
@@ -395,6 +397,8 @@
                     }
                     self.vertices_params = {forw: vertexCalc(verticesList.forw, self.centroid.forw),
                         bakw: vertexCalc(verticesList.bakw, self.centroid.bakw)};
+
+                    return self.calculatePointsWeightAsync();
                 }).catch(function(err) {
                     throw err;
                 });
@@ -409,7 +413,73 @@
             var tins = backward ? this.tins.bakw : this.tins.forw;
             var verticesParams = backward ? this.vertices_params.bakw : this.vertices_params.forw;
             var centroid = backward ? this.centroid.bakw : this.centroid.forw;
-            return transformArr(tpoint, tins, verticesParams, centroid);
+            var weightBuffer = backward ? this.pointsWeightBuffer.bakw : this.pointsWeightBuffer.forw;
+            return transformArr(tpoint, tins, verticesParams, centroid, weightBuffer);
+        };
+
+        Tin.prototype.calculatePointsWeightAsync = function() {
+            var self = this;
+            var calcTargets = ['forw'];
+            if (self.strict_status == 'loose') calcTargets.push('bakw');
+            var weightBuffer = {};
+            return Promise.all(calcTargets.map(function(target) {
+                weightBuffer[target] = {};
+                var alreadyChecked = {};
+                var tin = self.tins[target];
+                return Promise.all(tin.features.map(function(tri) {
+                    var vtxes = ['a', 'b', 'c'];
+                    return new Promise(function(resolve) {
+                        for (var i = 0; i < 3; i++) {
+                            var j = (i + 1) % 3;
+                            var vi = vtxes[i];
+                            var vj = vtxes[j];
+                            var indexi = tri.properties[vi].index;
+                            var indexj = tri.properties[vj].index;
+                            var key = [indexi, indexj].sort().join('-');
+                            if (!alreadyChecked[key]) {
+                                var fromi = tri.geometry.coordinates[0][i];
+                                var fromj = tri.geometry.coordinates[0][j];
+                                var toi = tri.properties[vi].geom;
+                                var toj = tri.properties[vj].geom;
+                                alreadyChecked[key] = 1;
+
+                                var weight = Math.sqrt(Math.pow(toi[0] - toj[0], 2) + Math.pow(toi[1] - toj[1], 2)) /
+                                    Math.sqrt(Math.pow(fromi[0] - fromj[0], 2) + Math.pow(fromi[1] - fromj[1], 2));
+
+                                if (!weightBuffer[target][indexi]) weightBuffer[target][indexi] = {};
+                                if (!weightBuffer[target][indexj]) weightBuffer[target][indexj] = {};
+                                weightBuffer[target][indexi][key] = weight;
+                                weightBuffer[target][indexj][key] = weight;
+                            }
+                        }
+                        resolve();
+                    });
+                })).catch(function(err) {
+                    throw err;
+                });
+            })).then(function() {
+                var pointsWeightBuffer = {};
+                calcTargets.map(function(target) {
+                    pointsWeightBuffer[target] = {};
+                    if (self.strict_status == 'strict') pointsWeightBuffer['bakw'] = {};
+                    Object.keys(weightBuffer[target]).map(function(vtx) {
+                        pointsWeightBuffer[target][vtx] = Object.keys(weightBuffer[target][vtx]).reduce(function(prev, key, idx, arr) {
+                            prev = prev + weightBuffer[target][vtx][key];
+                            return idx == arr.length - 1 ? prev / arr.length : prev;
+                        }, 0);
+                        if (self.strict_status == 'strict') pointsWeightBuffer['bakw'][vtx] = 1 / pointsWeightBuffer[target][vtx];
+                    });
+                    pointsWeightBuffer[target]['cent'] = [0, 1, 2, 3].reduce(function(prev, curr) {
+                        var key = 'bbox' + curr;
+                        prev = prev + pointsWeightBuffer[target][key];
+                        return curr == 3 ? prev / 4 : prev;
+                    }, 0);
+                    if (self.strict_status == 'strict') pointsWeightBuffer['bakw']['cent'] = 1 / pointsWeightBuffer[target]['cent'];
+                });
+                self.pointsWeightBuffer = pointsWeightBuffer;
+            }).catch(function(err) {
+                throw err;
+            });
         };
 
         function findIntersections(coords) {
@@ -453,7 +523,7 @@
             for (var i = 0; i < radianList.length; i++) {
                 var j = (i + 1) % radianList.length;
                 var jdel = normalizeRadian(radian - radianList[j]);
-                var minDel = Math.min(Math.abs(idel),Math.abs(jdel));
+                var minDel = Math.min(Math.abs(idel), Math.abs(jdel));
                 if (idel * jdel <= 0 && minDel < minTheta) {
                     minTheta = minDel;
                     minIndex = i;
@@ -472,10 +542,10 @@
                 index: point.properties.target.index}});
         }
 
-        function transformTin(of, tri) {
-            return turf.point(transformTinArr(of, tri));
+        function transformTin(of, tri, weightBuffer) {
+            return turf.point(transformTinArr(of, tri, weightBuffer));
         }
-        function transformTinArr(of, tri) {
+        function transformTinArr(of, tri, weightBuffer) {
             var a = tri.geometry.coordinates[0][0];
             var b = tri.geometry.coordinates[0][1];
             var c = tri.geometry.coordinates[0][2];
@@ -493,20 +563,30 @@
             var abv = (ac[1]*ao[0]-ac[0]*ao[1])/(ab[0]*ac[1]-ab[1]*ac[0]);
             var acv = (ab[0]*ao[1]-ab[1]*ao[0])/(ab[0]*ac[1]-ab[1]*ac[0]);
 
+            // Considering weight
+            if (weightBuffer) {
+                var aW = weightBuffer[tri.properties.a.index];
+                var bW = weightBuffer[tri.properties.b.index];
+                var cW = weightBuffer[tri.properties.c.index];
+                var nabv = abv / bW / (abv / bW + acv / cW + (1 - abv - acv) / aW);
+                var nacv = acv / cW / (abv / bW + acv / cW + (1 - abv - acv) / aW);
+                abv = nabv;
+                acv = nacv;
+            }
             var od = [abv*abd[0]+acv*acd[0]+ad[0], abv*abd[1]+acv*acd[1]+ad[1]];
             return od;
         }
 
-        function useVertices(o, verticesParams, centroid) {
+        function useVertices(o, verticesParams, centroid, weightBuffer) {
             return turf.point(useVerticesArr(o, verticesParams, centroid));
         }
-        function useVerticesArr(o, verticesParams, centroid) {
+        function useVerticesArr(o, verticesParams, centroid, weightBuffer) {
             var coord = o.geometry.coordinates;
             var centCoord = centroid.geometry.coordinates;
-            var radian = Math.atan2(coord[0] - centCoord[0],coord[1] - centCoord[1]);
+            var radian = Math.atan2(coord[0] - centCoord[0], coord[1] - centCoord[1]);
             var index = decideUseVertex(radian, verticesParams[0]);
             var tin = verticesParams[1][index];
-            return transformTinArr(o, tin.features[0]);
+            return transformTinArr(o, tin.features[0], weightBuffer);
         }
 
         function hit(point, tins) {
@@ -518,12 +598,12 @@
             }
         }
 
-        function transform(point, tins, verticesParams, centroid) {
-            return turf.point(transformArr(point, tins, verticesParams, centroid));
+        function transform(point, tins, verticesParams, centroid, weightBuffer) {
+            return turf.point(transformArr(point, tins, verticesParams, centroid, weightBuffer));
         }
-        function transformArr(point, tins, verticesParams, centroid) {
+        function transformArr(point, tins, verticesParams, centroid, weightBuffer) {
             var tin = hit(point, tins);
-            return tin ? transformTinArr(point, tin) : useVerticesArr(point, verticesParams, centroid);
+            return tin ? transformTinArr(point, tin, weightBuffer) : useVerticesArr(point, verticesParams, centroid, weightBuffer);
         }
 
         function counterTri(tri) {
