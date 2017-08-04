@@ -1,8 +1,0 @@
-1.git submodule add https://github.com/code4nara/Maplat.git common
-2.git commit -m "blar blar"
-3.cd common
-4.git config core.sparsecheckout true
-5.echo js/ > ../../.git/modules/common/info/sparse-checkout
-6.echo css/ >> ../../.git/modules/common/info/sparse-checkout
-7.echo tools/ >> ../../.git/modules/common/info/sparse-checkout
-8.git read-tree -mu HEAD
