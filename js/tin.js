@@ -495,7 +495,24 @@
                 var itemj = list[j];
                 var coord = itemi.geometry.coordinates;
                 var radian = Math.atan2(coord[0] - centCoord[0], coord[1] - centCoord[1]);
-                var tin = turf.tin(turf.featureCollection([centroid, itemi, itemj]), 'target');
+                var coordinates = [centroid, itemi, itemj, centroid].map(function(point) {
+                    return point.geometry.coordinates;
+                });
+                var cwCheck = isClockwise(coordinates);
+                if (cwCheck) coordinates = [centroid, itemj, itemi, centroid].map(function(point) {
+                    return point.geometry.coordinates;
+                });
+                var properties = !cwCheck ? {
+                    a: {geom: centroid.properties.target.geom, index: centroid.properties.target.index},
+                    b: {geom: itemi.properties.target.geom, index: itemi.properties.target.index},
+                    c: {geom: itemj.properties.target.geom, index: itemj.properties.target.index}
+                } : {
+                    a: {geom: centroid.properties.target.geom, index: centroid.properties.target.index},
+                    b: {geom: itemj.properties.target.geom, index: itemj.properties.target.index},
+                    c: {geom: itemi.properties.target.geom, index: itemi.properties.target.index}
+                };
+                var tin = turf.featureCollection([turf.polygon([coordinates], properties)]);
+
                 return [radian, tin];
             }).reduce(function(prev, curr) {
                 prev[0].push(curr[0]);
@@ -568,10 +585,18 @@
                 var aW = weightBuffer[tri.properties.a.index];
                 var bW = weightBuffer[tri.properties.b.index];
                 var cW = weightBuffer[tri.properties.c.index];
-                var nabv = abv / bW / (abv / bW + acv / cW + (1 - abv - acv) / aW);
-                var nacv = acv / cW / (abv / bW + acv / cW + (1 - abv - acv) / aW);
+
+                var nabv;
+                if (abv < 0 || acv < 0 || 1 - abv - acv < 0) {
+                    var normB = abv / (abv + acv);
+                    var normC = acv / (abv + acv);
+                    nabv = abv / bW / (normB / bW + normC / cW);
+                    acv = acv / cW / (normB / bW + normC / cW);
+                } else {
+                    nabv = abv / bW / (abv / bW + acv / cW + (1 - abv - acv) / aW);
+                    acv = acv / cW / (abv / bW + acv / cW + (1 - abv - acv) / aW);
+                }
                 abv = nabv;
-                acv = nacv;
             }
             var od = [abv*abd[0]+acv*acd[0]+ad[0], abv*abd[1]+acv*acd[1]+ad[1]];
             return od;
