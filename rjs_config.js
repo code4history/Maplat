@@ -1,6 +1,6 @@
 ({
     baseUrl: 'js',
-    name: 'app',
+    name: 'config',
     out: 'js/app-built.js',
     paths: {
         'i18n': 'empty:',
@@ -12,7 +12,6 @@
         'bootstrap': 'empty:',
         'aigle': 'aigle-es5.min',
         'tps': 'empty:',
-        'proj': 'empty:',
         'buffer': 'buffer'
     },
     shim: {

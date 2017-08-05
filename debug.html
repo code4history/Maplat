@@ -81,17 +81,17 @@
     </div>
   </div>
 </body>
-<script data-main="js/app-built" src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
+<script data-main="js/config" src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
 <script>
-    document.addEventListener('loadMaplat', function(evt) {
-        var app = evt.detail;
-        var option = {};
-        var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-        for (var i = 0; i < hashes.length; i++) {
-            hash = hashes[i].split('=');
-            option[hash[0]] = hash[1];
-        }
-        app(option);
-    });
+document.addEventListener('loadMaplat', function(evt) {
+    var app = evt.detail;
+    var option = {};
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for (var i = 0; i < hashes.length; i++) {
+        hash = hashes[i].split('=');
+        option[hash[0]] = hash[1];
+    }
+    app(option);
+});
 </script>
 </html>

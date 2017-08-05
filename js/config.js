@@ -1,10 +1,5 @@
 require.config({
     baseUrl: 'js',
-    /* map: {
-        '*': {
-            'css': '//cdnjs.cloudflare.com/ajax/libs/require-css/0.1.8/css.min.js'
-        }
-    },*/
     paths: {
         'i18nxhr': 'i18nextXHRBackend.min',
         'ol3': 'ol-debug',
@@ -15,8 +10,7 @@ require.config({
         'swiper': '//cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/js/swiper.min',
         'bootstrap': '//cdnjs.cloudflare.com/ajax/libs/bootstrap.native/2.0.10/bootstrap-native.min',
         'aigle': 'aigle-es5.min',
-        'buffer': 'buffer',
-        'app': 'app-built'
+        'buffer': 'buffer'
     },
     shim: {
         'i18nxhr': {
@@ -33,14 +27,24 @@ require.config({
         },
         'buffer': {
             exports: 'exports'
-        }/* ,
-        'app': {
-            deps: [
-                'css!//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min',
-                'css!//cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/css/swiper.min',
-                'css!//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min',
-                'css!../css/ol', 'css!../css/app'
-            ]
-        }*/
+        }
     }
+});
+(function() {
+    if ( typeof window.CustomEvent === 'function' ) return false;
+
+    var CustomEvent = function(event, params) {
+        params = params || {bubbles: false, cancelable: false, detail: undefined};
+        var evt = document.createEvent( 'CustomEvent' );
+        evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+        return evt;
+    }
+
+    CustomEvent.prototype = window.Event.prototype;
+
+    window.CustomEvent = CustomEvent;
+})();
+require(['app'], function(app) {
+    var event = new CustomEvent('loadMaplat', {detail: app});
+    document.dispatchEvent(event);
 });
