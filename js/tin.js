@@ -62,6 +62,27 @@
             this.tins = undefined;
         };
 
+        Tin.prototype.setCompiled = function(compiled) {
+            var self = this;
+            this.tins = compiled.tins;
+            this.strict_status = compiled.strict_status;
+            this.pointsWeightBuffer = compiled.weight_buffer;
+            this.vertices_params = compiled.vertices_params;
+            this.centroid = compiled.centroid;
+            this.kinks = compiled.kinks;
+            var points = [];
+            for (var i = 0; i < this.tins.forw.features.length; i++) {
+                var tri = this.tins.forw.features[i];
+                ['a', 'b', 'c'].map(function(key, idx) {
+                    var forw = tri.geometry.coordinates[0][idx];
+                    var bakw = tri.properties[key].geom;
+                    var pIdx = tri.properties[key].index;
+                    points[pIdx] = [forw, bakw];
+                });
+            }
+            this.points = points;
+        };
+
         Tin.prototype.setWh = function(wh) {
             this.wh = wh;
             this.tins = undefined;
