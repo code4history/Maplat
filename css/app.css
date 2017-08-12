@@ -53,7 +53,7 @@ html,body {
 }
 
 .gps {
-    top: 65px;
+    top: 80px;
     left: .5em;
 }
 
@@ -62,7 +62,7 @@ html,body {
 }
 
 .home {
-    top: 95px;
+    top: 120px;
     left: .5em;
 }
 
@@ -194,5 +194,10 @@ html,body {
 .ol-control.no_rotation button:focus,.ol-control.no_rotation button:hover {
     color: rgba(255,255,255,.7);
     background-color: rgba(0,60,136,.2)
+}
+
+.ol-control button {
+    height: 2.0625em;
+    width: 2.0625em;
 }
 
