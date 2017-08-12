@@ -58,7 +58,7 @@ html,body {
 }
 
 .ol-touch .gps {
-    top: 80px;
+    top: 100px;
 }
 
 .home {
@@ -67,7 +67,7 @@ html,body {
 }
 
 .ol-touch .home {
-    top: 110px;
+    top: 150px;
 }
 
 .poi_img {
@@ -201,3 +201,16 @@ html,body {
     width: 2.0625em;
 }
 
+.ol-slidercommon {
+    top: 4.5em;
+    left: .5em;
+    height: 200px;
+}
+.ol-slidercommon button {
+    position: relative;
+    height: 10px;
+}
+
+.ol-touch .ol-slidercommon {
+    top: 5.5em;
+}
