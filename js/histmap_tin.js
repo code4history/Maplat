@@ -44,7 +44,25 @@ define(['histmap', 'tin', 'aigle'], function(ol, Tin, Promise) {
                             ];
                         }
                         var obj = new ol.source.HistMap_tin(options);
-                        obj.finalizeCreateAsync_(resp.gcps, resolve);
+                        var proj = new ol.proj.Projection({
+                            code: 'Illst:' + obj.mapID,
+                            extent: [0.0, 0.0, obj.width, obj.height],
+                            units: 'm'
+                        });
+                        ol.proj.addProjection(proj);
+                        ol.proj.addCoordinateTransforms(proj, 'EPSG:3857', function(xy) {
+                            return obj.tin.transform(xy, false);
+                        }, function(merc) {
+                            return obj.tin.transform(merc, true);
+                        });
+                        ol.proj.transformDirect('EPSG:4326', proj);
+                        if (resp.compiled) {
+                            obj.tin.setCompiled(resp.compiled);
+                            resolve(obj);
+                        } else {
+                            obj.finalizeCreateAsync_(resp.gcps, resolve);
+                        }
+
                     } catch(err) {
                         throw err;
                     }
@@ -62,18 +80,6 @@ define(['histmap', 'tin', 'aigle'], function(ol, Tin, Promise) {
         this.tin.setPoints(points);
         this.tin.updateTinAsync()
             .then(function() {
-                var proj = new ol.proj.Projection({
-                    code: 'Illst:' + self.mapID,
-                    extent: [0.0, 0.0, self.width, self.height],
-                    units: 'm'
-                });
-                ol.proj.addProjection(proj);
-                ol.proj.addCoordinateTransforms(proj, 'EPSG:3857', function(xy) {
-                    return self.tin.transform(xy, false);
-                }, function(merc) {
-                    return self.tin.transform(merc, true);
-                });
-                ol.proj.transformDirect('EPSG:4326', proj);
                 resolve(self);
             });
     };

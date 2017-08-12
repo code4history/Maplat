@@ -63,7 +63,6 @@
         };
 
         Tin.prototype.setCompiled = function(compiled) {
-            var self = this;
             this.tins = compiled.tins;
             this.strict_status = compiled.strict_status;
             this.pointsWeightBuffer = compiled.weight_buffer;
