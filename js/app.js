@@ -65,6 +65,23 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
             }
         }
     };
+
+    Swiper.prototype.setSlideIndex = function(index) {
+        this.slideTo(index + this.params.slidesPerView); // <= Maybe bug of swiper;
+        this.setSlideIndexAsSelected(index);
+    };
+    Swiper.prototype.setSlideIndexAsSelected = function(index) {
+        var sliders = this.container[0].querySelectorAll('.swiper-slide');
+        for (var i=0; i<sliders.length; i++) {
+            var slider = sliders[i];
+            if (slider.getAttribute('data-swiper-slide-index') == index) {
+                slider.classList.add('selected');
+            } else {
+                slider.classList.remove('selected');
+            }
+        }
+    };
+
     var ellips = function() {
         var omitMark = '…';
         var omitLine = 2;
@@ -237,7 +254,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
             var appData = result[1];
             var i18n = result[0][1];
             var t = result[0][0];
-            var swiper;
+            var baseSwiper, overlaySwiper;
             var changeMapCache;
             ol.source.HistMap.setI18n(i18n, t);
 
@@ -246,8 +263,8 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                 var lwModalElm = document.getElementById('loadWait');
                 var lwModal = new bsn.Modal(lwModalElm);
                 lwModal.show();
-                var slidesPerView = 2;
-                swiper = new Swiper('.swiper-container', {
+                var slidesPerView = 1.5;
+                baseSwiper = new Swiper('.base-swiper', {
                     slidesPerView: slidesPerView,
                     centeredSlides: true,
                     spaceBetween: 10,
@@ -260,21 +277,19 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                         sw.setSlideIndexAsSelected(slide.getAttribute('data-swiper-slide-index'));
                     }
                 });
-                swiper.setSlideIndex = function(index) {
-                    swiper.slideTo(index + slidesPerView); // <= Maybe bug of swiper;
-                    swiper.setSlideIndexAsSelected(index);
-                };
-                swiper.setSlideIndexAsSelected = function(index) {
-                    var sliders = document.querySelectorAll('.swiper-slide');
-                    for (var i=0; i<sliders.length; i++) {
-                        var slider = sliders[i];
-                        if (slider.getAttribute('data-swiper-slide-index') == index) {
-                            slider.classList.add('selected');
-                        } else {
-                            slider.classList.remove('selected');
-                        }
+                overlaySwiper = new Swiper('.overlay-swiper', {
+                    slidesPerView: slidesPerView,
+                    centeredSlides: true,
+                    spaceBetween: 10,
+                    loop: true,
+                    onClick: function(sw, e) {
+                        e.preventDefault();
+                        if (!sw.clickedSlide) return;
+                        var slide = sw.clickedSlide;
+                        changeMapCache(false, slide.getAttribute('data'));
+                        sw.setSlideIndexAsSelected(slide.getAttribute('data-swiper-slide-index'));
                     }
-                };
+                });
             }
 
             var from;
@@ -392,8 +407,13 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                 for (var i=0; i<sources.length; i++) {
                     var source = sources[i];
                     if (!noUI) {
-                        swiper.appendSlide('<div class="swiper-slide" data="' + source.sourceID + '">' +
-                            '<img crossorigin="anonymous" src="' + source.thumbnail + '"><div>' + source.label + '</div></div>');
+                        if (source instanceof ol.source.NowMap && !(source instanceof ol.source.TmsMap)) {
+                            baseSwiper.appendSlide('<div class="swiper-slide" data="' + source.sourceID + '">' +
+                                '<img crossorigin="anonymous" src="' + source.thumbnail + '"><div>' + source.label + '</div></div>');
+                        } else {
+                            overlaySwiper.appendSlide('<div class="swiper-slide" data="' + source.sourceID + '">' +
+                                '<img crossorigin="anonymous" src="' + source.thumbnail + '"><div>' + source.label + '</div></div>');
+                        }
                     }
                     if (mapType) {
                         source.home_position = homePos;
@@ -404,8 +424,9 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                     cacheHash[source.sourceID] = source;
                 }
                 if (!noUI) {
-                    swiper.on;
-                    swiper.setSlideIndex(sources.length - 1);
+                    baseSwiper.on;
+                    overlaySwiper.on;
+                    //swiper.setSlideIndex(sources.length - 1);
                     ellips();
                 }
 

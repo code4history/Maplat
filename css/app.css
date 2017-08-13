@@ -52,13 +52,17 @@ html,body {
     text-align:center;
 }
 
+.ol-touch .ol-zoom {
+    display: none;
+}
+
 .gps {
     top: 80px;
     left: .5em;
 }
 
 .ol-touch .gps {
-    top: 100px;
+    top: .5em;
 }
 
 .home {
@@ -67,7 +71,7 @@ html,body {
 }
 
 .ol-touch .home {
-    top: 150px;
+    top: calc(.5em + 50px);
 }
 
 .poi_img {
@@ -93,14 +97,26 @@ html,body {
 .swiper-container {
     position: absolute;
     bottom: .5em;
-    left: calc(50% - 90px);
-    width: 180px;
+    width: 115px;
     background-color: rgba(32,32,32,0.5);
     height: 60px;
 }
 
-.with-opacity .swiper-container {
-    bottom: calc(.10em + 35px);
+.base-swiper {
+    left: calc(50% - 60px - .5em - 115px);
+}
+
+.overlay-swiper {
+    left: calc(50% + 60px + .5em);
+}
+
+.ol-touch .base-swiper {
+    left: .5em;
+}
+
+.ol-touch .overlay-swiper {
+    left: auto;
+    right: .5em;
 }
 
 .swiper-slide {
@@ -155,20 +171,12 @@ html,body {
 }
 
 .ol-attribution {
-    bottom: calc(70px + .5em);
-}
-
-.with-opacity .ol-attribution {
-    bottom: calc(105px + .10em);
+    bottom: calc(65px + .5em);
 }
 
 .ol-maplat {
     left: .5em;
-    bottom: calc(70px + .5em);
-}
-
-.with-opacity .ol-maplat {
-    bottom: calc(105px + .10em);
+    bottom: calc(65px + .5em);
 }
 
 .ol-compass-fa {
@@ -204,8 +212,8 @@ html,body {
 .with-opacity .ol-slidercommon {
     display: block;
     bottom: .5em;
-    left: calc(50% - 100px);
-    width: 200px;
+    left: calc(50% - 60px);
+    width: 120px;
     height: 25px;
     padding: 0;
 }

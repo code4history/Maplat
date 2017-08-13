@@ -113,6 +113,12 @@ define(['ol3', 'aigle'], function(ol, Promise) {
          */
         this.duration_ = options.duration !== undefined ? options.duration : 200;
 
+        /**
+         * @type {number}
+         * @private
+         */
+        this.reverse_ = options.reverse !== undefined ? options.reverse : false;
+
         var className = options.className !== undefined ? options.className : 'ol-slidercommon';
         var thumbElement = document.createElement('button');
         thumbElement.setAttribute('type', 'button');
@@ -209,6 +215,7 @@ define(['ol3', 'aigle'], function(ol, Promise) {
             this.direction_ = ol.control.SliderCommon.Direction_.VERTICAL;
             this.heightLimit_ = containerSize.height - thumbHeight;
         }
+        this.setValue(0);
         this.sliderInitialized_ = true;
     };
 
@@ -310,7 +317,7 @@ define(['ol3', 'aigle'], function(ol, Promise) {
         } else {
             thumb.style.top = this.heightLimit_ * res + 'px';
         }
-        this.set('slidervalue', res);
+        this.set('slidervalue', this.reverse_ ? 1 - res : res);
     };
 
     /**
@@ -334,6 +341,7 @@ define(['ol3', 'aigle'], function(ol, Promise) {
     };
 
     ol.control.SliderCommon.prototype.setValue = function(res) {
+        res = this.reverse_ ? 1 - res : res;
         this.setThumbPosition_(res);
     };
 
@@ -793,7 +801,7 @@ define(['ol3', 'aigle'], function(ol, Promise) {
         var overlayLayer = this._overlay_group = new ol.layer.Group();
         overlayLayer.set('name', 'overlay');
 
-        this.sliderCommon = new ol.control.SliderCommon();
+        this.sliderCommon = new ol.control.SliderCommon({reverse: true});
         var controls = optOptions.controls ? optOptions.controls :
             optOptions.off_control ? [] :
             [
