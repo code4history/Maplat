@@ -176,10 +176,6 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
         var noRotate = appOption.no_rotate || false;
         if (overlay) {
             document.querySelector('body').classList.add('with-opacity');
-            if (!noUI) {
-                document.querySelector('.opacity-slider').classList.remove('hide');
-                document.querySelector('.opacity-slider input').setAttribute('disabled', true);
-            }
         }
         if (noUI) {
             document.querySelector('.swiper-container').style.display = 'none';
@@ -302,6 +298,9 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                 off_control: noUI ? true : false,
                 off_rotation: noRotate ? true : false
             });
+            var sliderCommon = mapObject.sliderCommon;
+            sliderCommon.setEnable(false);
+
             var backDiv = null;
             if (overlay) {
                 backDiv = mapDiv + '_back';
@@ -315,18 +314,19 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                 });
             }
             if (!noUI) {
+                var shown = false;
                 mapObject.on('gps_request', function() {
+                    shown = true;
                     var gwModalElm = document.getElementById('gpsWait');
                     var gwModal = new bsn.Modal(gwModalElm);
                     gwModal.show();
                 });
                 mapObject.on('gps_result', function(evt) {
-                    var gwElm = document.querySelector('#gpsWait.in');
-                    var shown = gwElm ? true : false;
                     var result = evt.frameState;
                     if (result && result.error) {
                         currentPosition = null;
                         if (result.error == 'gps_out' && shown) {
+                            shown = false;
                             var gwModalElm = document.getElementById('gpsWait');
                             var gwModal = new bsn.Modal(gwModalElm);
                             gwModal.hide();
@@ -340,6 +340,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                         currentPosition = result;
                     }
                     if (shown) {
+                        shown = false;
                         var gwModalElm = document.getElementById('gpsWait');
                         var gwModal = new bsn.Modal(gwModalElm);
                         gwModal.hide();
@@ -494,15 +495,15 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                                     backMap.exchangeSource();
                                 }
                                 if (!(to instanceof ol.source.NowMap) || to instanceof ol.source.TmsMap) {
-                                    document.querySelector('.opacity-slider input').removeAttribute('disabled');
+                                    sliderCommon.setEnable(true);
                                 } else {
-                                    document.querySelector('.opacity-slider input').setAttribute('disabled', true);
+                                    sliderCommon.setEnable(false);
                                 }
                             }
                             if (to instanceof ol.source.TmsMap) {
                                 mapObject.setLayer(to);
                                 if (!(from instanceof ol.source.NowMap)) mapObject.exchangeSource(backSrc || now);
-                                document.querySelector('.opacity-slider input').removeAttribute('disabled');
+                                sliderCommon.setEnable(true);
                             } else {
                                 mapObject.setLayer();
                                 mapObject.exchangeSource(to);
@@ -512,7 +513,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                             // and Changing "from" content must be finished before "postrender" event
                             from = to;
 
-                            var opacity = document.querySelector('.opacity-slider input').value;
+                            var opacity = sliderCommon.get('slidervalue') * 100;
                             mapObject.setOpacity(opacity);
                             var view = mapObject.getView();
                             if (to.insideCheckHistMapCoords(size[0])) {
@@ -649,12 +650,11 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                 };
                 mapObject.on('postrender', backMapMove);
 
-                var slider = document.querySelector('.opacity-slider input');
-                var opacityChange = function() {
-                    mapObject.setOpacity(slider.value);
-                };
-                slider.addEventListener('input', opacityChange);
-                slider.addEventListener('change', opacityChange);
+                sliderCommon.on('propertychange', function(evt) {
+                    if (evt.key === 'slidervalue') {
+                        mapObject.setOpacity(sliderCommon.get(evt.key) * 100);
+                    }
+                });
 
                 if (mobileIF) return {
                     'setMarker': function(dataStr) {

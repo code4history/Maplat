@@ -90,19 +90,6 @@ html,body {
     vertical-align: middle;/*IE7*/
 }
 
-.opacity-slider {
-    position: absolute;
-    bottom: .5em;
-    left: calc(50% - 90px);
-    width: 180px;
-    height: 10px;
-}
-
-.opacity-slider input {
-    margin-top: 10px;
-    height: 15px;
-}
-
 .swiper-container {
     position: absolute;
     bottom: .5em;
@@ -113,7 +100,7 @@ html,body {
 }
 
 .with-opacity .swiper-container {
-    bottom: calc(.10em + 25px);
+    bottom: calc(.10em + 35px);
 }
 
 .swiper-slide {
@@ -172,7 +159,7 @@ html,body {
 }
 
 .with-opacity .ol-attribution {
-    bottom: calc(95px + .10em);
+    bottom: calc(105px + .10em);
 }
 
 .ol-compass-fa {
@@ -202,15 +189,32 @@ html,body {
 }
 
 .ol-slidercommon {
-    top: 4.5em;
-    left: .5em;
-    height: 200px;
-}
-.ol-slidercommon button {
-    position: relative;
-    height: 10px;
+    display: none;
 }
 
-.ol-touch .ol-slidercommon {
-    top: 5.5em;
+.with-opacity .ol-slidercommon {
+    display: block;
+    bottom: .5em;
+    left: calc(50% - 100px);
+    width: 200px;
+    height: 25px;
+    padding: 0;
+}
+
+.with-opacity .ol-slidercommon button {
+    position: relative;
+    width: 20px;
+    height: 25px;
+}
+
+.with-opacity .ol-slidercommon-thumb {
+    height: 15px;
+    width: 15px;
+    margin: 0;
+    filter: none;
+}
+
+.with-opacity .ol-slidercommon.disable button {
+    color: rgba(255,255,255,.7);
+    background-color: rgba(0,60,136,.2);
 }

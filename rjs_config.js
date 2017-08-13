@@ -9,7 +9,7 @@
         'swiper': 'empty:',
         'ol3': 'ol-debug',
         'ol-custom': 'ol-custom',
-        'bootstrap': 'empty:',
+        'bootstrap': 'bootstrap-native',
         'aigle': 'aigle-es5.min',
         'tps': 'empty:',
         'buffer': 'buffer'

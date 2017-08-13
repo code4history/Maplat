@@ -36,6 +36,316 @@ define(['ol3', 'aigle'], function(ol, Promise) {
         return offset !== undefined ? this.minZoom_ + offset : offset;
     };
 
+    /**
+     * @classdesc
+     * A slider type of control for zooming.
+     *
+     * Example:
+     *
+     *     map.addControl(new ol.control.SliderCommon());
+     *
+     * @constructor
+     * @extends {ol.control.Control}
+     * @param {olx.control.SliderCommonOptions=} opt_options Zoom slider options.
+     * @api
+     */
+    ol.control.SliderCommon = function(opt_options) {
+
+        var options = opt_options ? opt_options : {};
+
+        /**
+         * The direction of the slider. Will be determined from actual display of the
+         * container and defaults to ol.control.SliderCommon.Direction_.VERTICAL.
+         *
+         * @type {ol.control.SliderCommon.Direction_}
+         * @private
+         */
+        this.direction_ = ol.control.SliderCommon.Direction_.VERTICAL;
+
+        /**
+         * @type {boolean}
+         * @private
+         */
+        this.dragging_;
+
+        /**
+         * @type {number}
+         * @private
+         */
+        this.heightLimit_ = 0;
+
+        /**
+         * @type {number}
+         * @private
+         */
+        this.widthLimit_ = 0;
+
+        /**
+         * @type {number|undefined}
+         * @private
+         */
+        this.previousX_;
+
+        /**
+         * @type {number|undefined}
+         * @private
+         */
+        this.previousY_;
+
+        /**
+         * The calculated thumb size (border box plus margins).  Set when initSlider_
+         * is called.
+         * @type {ol.Size}
+         * @private
+         */
+        this.thumbSize_ = null;
+
+        /**
+         * Whether the slider is initialized.
+         * @type {boolean}
+         * @private
+         */
+        this.sliderInitialized_ = false;
+
+        /**
+         * @type {number}
+         * @private
+         */
+        this.duration_ = options.duration !== undefined ? options.duration : 200;
+
+        var className = options.className !== undefined ? options.className : 'ol-slidercommon';
+        var thumbElement = document.createElement('button');
+        thumbElement.setAttribute('type', 'button');
+        thumbElement.className = className + '-thumb ' + ol.css.CLASS_UNSELECTABLE;
+        var containerElement = document.createElement('div');
+        containerElement.className = className + ' ' + ol.css.CLASS_UNSELECTABLE + ' ' + ol.css.CLASS_CONTROL;
+        containerElement.appendChild(thumbElement);
+        /**
+         * @type {ol.pointer.PointerEventHandler}
+         * @private
+         */
+        this.dragger_ = new ol.pointer.PointerEventHandler(containerElement);
+
+        ol.events.listen(this.dragger_, ol.pointer.EventType.POINTERDOWN,
+            this.handleDraggerStart_, this);
+        ol.events.listen(this.dragger_, ol.pointer.EventType.POINTERMOVE,
+            this.handleDraggerDrag_, this);
+        ol.events.listen(this.dragger_, ol.pointer.EventType.POINTERUP,
+            this.handleDraggerEnd_, this);
+
+        ol.events.listen(thumbElement, ol.events.EventType.CLICK,
+            ol.events.Event.stopPropagation);
+
+        var render = options.render ? options.render : ol.control.SliderCommon.render;
+
+        ol.control.Control.call(this, {
+            element: containerElement,
+            render: render
+        });
+        ol.events.listen(this.element, ol.events.EventType.MOUSEOUT,
+            this.handleDraggerEnd_, this);
+    };
+    ol.inherits(ol.control.SliderCommon, ol.control.Control);
+
+
+    /**
+     * @inheritDoc
+     */
+    ol.control.SliderCommon.prototype.disposeInternal = function() {
+        this.dragger_.dispose();
+        ol.control.Control.prototype.disposeInternal.call(this);
+    };
+
+    /**
+     * The enum for available directions.
+     *
+     * @enum {number}
+     * @private
+     */
+    ol.control.SliderCommon.Direction_ = {
+        VERTICAL: 0,
+        HORIZONTAL: 1
+    };
+
+
+    /**
+     * @inheritDoc
+     */
+    ol.control.SliderCommon.prototype.setMap = function(map) {
+        ol.control.Control.prototype.setMap.call(this, map);
+        if (map) {
+            map.render();
+        }
+    };
+
+
+    /**
+     * Initializes the slider element. This will determine and set this controls
+     * direction_ and also constrain the dragging of the thumb to always be within
+     * the bounds of the container.
+     *
+     * @private
+     */
+    ol.control.SliderCommon.prototype.initSlider_ = function() {
+        var container = this.element;
+        var containerSize = {
+            width: container.offsetWidth, height: container.offsetHeight
+        };
+
+        var thumb = container.firstElementChild;
+        var computedStyle = getComputedStyle(thumb);
+        var thumbWidth = thumb.offsetWidth +
+            parseFloat(computedStyle['marginRight']) +
+            parseFloat(computedStyle['marginLeft']);
+        var thumbHeight = thumb.offsetHeight +
+            parseFloat(computedStyle['marginTop']) +
+            parseFloat(computedStyle['marginBottom']);
+        this.thumbSize_ = [thumbWidth, thumbHeight];
+
+        if (containerSize.width > containerSize.height) {
+            this.direction_ = ol.control.SliderCommon.Direction_.HORIZONTAL;
+            this.widthLimit_ = containerSize.width - thumbWidth;
+        } else {
+            this.direction_ = ol.control.SliderCommon.Direction_.VERTICAL;
+            this.heightLimit_ = containerSize.height - thumbHeight;
+        }
+        this.sliderInitialized_ = true;
+    };
+
+
+    /**
+     * Update the SliderCommon element.
+     * @param {ol.MapEvent} mapEvent Map event.
+     * @this {ol.control.SliderCommon}
+     * @api
+     */
+    ol.control.SliderCommon.render = function(mapEvent) {
+        if (!mapEvent.frameState) {
+            return;
+        }
+        if (!this.sliderInitialized_) {
+            this.initSlider_();
+        }
+    };
+
+
+    /**
+     * @param {Event} event The browser event to handle.
+     * @private
+     */
+    ol.control.SliderCommon.prototype.handleContainerClick_ = function(event) {
+        var relativePosition = this.getRelativePosition_(
+            event.offsetX - this.thumbSize_[0] / 2,
+            event.offsetY - this.thumbSize_[1] / 2);
+
+        this.setThumbPosition_(relativePosition);
+    };
+
+    /**
+     * Handle dragger start events.
+     * @param {ol.pointer.PointerEvent} event The drag event.
+     * @private
+     */
+    ol.control.SliderCommon.prototype.handleDraggerStart_ = function(event) {
+        if (!this.dragging_ && event.originalEvent.target === this.element.firstElementChild &&
+            !this.element.classList.contains('disable')) {
+            this.getMap().getView().setHint(ol.ViewHint.INTERACTING, 1);
+            this.previousX_ = event.clientX;
+            this.previousY_ = event.clientY;
+            this.dragging_ = true;
+        }
+    };
+
+    /**
+     * Handle dragger drag events.
+     *
+     * @param {ol.pointer.PointerEvent|Event} event The drag event.
+     * @private
+     */
+    ol.control.SliderCommon.prototype.handleDraggerDrag_ = function(event) {
+        if (this.dragging_) {
+            var element = this.element.firstElementChild;
+            var deltaX = event.clientX - this.previousX_ + (parseInt(element.style.left, 10) || 0);
+            var deltaY = event.clientY - this.previousY_ + (parseInt(element.style.top, 10) || 0);
+            var relativePosition = this.getRelativePosition_(deltaX, deltaY);
+            this.setThumbPosition_(relativePosition);
+            this.previousX_ = event.clientX;
+            this.previousY_ = event.clientY;
+        }
+    };
+
+    /**
+     * Handle dragger end events.
+     * @param {ol.pointer.PointerEvent|Event} event The drag event.
+     * @private
+     */
+    ol.control.SliderCommon.prototype.handleDraggerEnd_ = function(event) {
+        if (this.dragging_) {
+            var view = this.getMap().getView();
+            view.setHint(ol.ViewHint.INTERACTING, -1);
+
+            /* view.animate({
+                resolution: view.constrainResolution(this.currentResolution_),
+                duration: this.duration_,
+                easing: ol.easing.easeOut
+            });*/
+
+            this.dragging_ = false;
+            this.previousX_ = undefined;
+            this.previousY_ = undefined;
+        }
+    };
+
+    /**
+     * Positions the thumb inside its container according to the given resolution.
+     *
+     * @param {number} res The res.
+     * @private
+     */
+    ol.control.SliderCommon.prototype.setThumbPosition_ = function(res) {
+        var thumb = this.element.firstElementChild;
+
+        if (this.direction_ == ol.control.SliderCommon.Direction_.HORIZONTAL) {
+            thumb.style.left = this.widthLimit_ * res + 'px';
+        } else {
+            thumb.style.top = this.heightLimit_ * res + 'px';
+        }
+        this.set('slidervalue', res);
+    };
+
+    /**
+     * Calculates the relative position of the thumb given x and y offsets.  The
+     * relative position scales from 0 to 1.  The x and y offsets are assumed to be
+     * in pixel units within the dragger limits.
+     *
+     * @param {number} x Pixel position relative to the left of the slider.
+     * @param {number} y Pixel position relative to the top of the slider.
+     * @return {number} The relative position of the thumb.
+     * @private
+     */
+    ol.control.SliderCommon.prototype.getRelativePosition_ = function(x, y) {
+        var amount;
+        if (this.direction_ === ol.control.SliderCommon.Direction_.HORIZONTAL) {
+            amount = x / this.widthLimit_;
+        } else {
+            amount = y / this.heightLimit_;
+        }
+        return ol.math.clamp(amount, 0, 1);
+    };
+
+    ol.control.SliderCommon.prototype.setValue = function(res) {
+        this.setThumbPosition_(res);
+    };
+
+    ol.control.SliderCommon.prototype.setEnable = function(cond) {
+        var elem = this.element;
+        if (cond) {
+            elem.classList.remove('disable');
+        } else {
+            elem.classList.add('disable');
+        }
+    };
+
     ol.control.CustomControl = function(optOptions) {
         var options = optOptions || {};
 
@@ -456,6 +766,7 @@ define(['ol3', 'aigle'], function(ol, Promise) {
         var overlayLayer = this._overlay_group = new ol.layer.Group();
         overlayLayer.set('name', 'overlay');
 
+        this.sliderCommon = new ol.control.SliderCommon();
         var controls = optOptions.controls ? optOptions.controls :
             optOptions.off_control ? [] :
             [
@@ -463,7 +774,8 @@ define(['ol3', 'aigle'], function(ol, Promise) {
                 new ol.control.CompassRotate(),
                 new ol.control.Zoom(),
                 new ol.control.SetGPS(),
-                new ol.control.GoHome()
+                new ol.control.GoHome(),
+                this.sliderCommon
             ];
 
         var options = {

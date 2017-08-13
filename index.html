@@ -17,9 +17,6 @@
             <div class="swiper-wrapper"></div>
           </div>
         </div>
-        <div class="form-group opacity-slider hide">
-          <input type="range" min ="0" max="100" step ="1" value="0" class="form-control">
-        </div>
       </div>
       <input type="hidden" name="map_type" id="map_type" value="plat">
     </div> 
@@ -91,7 +88,30 @@
             hash = hashes[i].split('=');
             option[hash[0]] = hash[1];
         }
+        var lang = browserLanguage();
+        if (lang == 'ja') {
+            if (!option.lang) option.lang = 'ja';
+        } else {
+            if (!option.lang) option.lang = 'en';
+        }
+        if (option.appid == 'aizu' && option.lang == 'en') option.appid = 'aizu_en';
         app(option);
     });
+    var browserLanguage = function() {
+        var ua = window.navigator.userAgent.toLowerCase();
+        try {
+            // Chrome
+            if( ua.indexOf( 'chrome' ) != -1 ){
+                return ( navigator.languages[0] || navigator.browserLanguage || navigator.language || navigator.userLanguage).substr(0,2);
+            }
+            // Other
+            else{
+                return ( navigator.browserLanguage || navigator.language || navigator.userLanguage).substr(0,2);
+            }
+        }
+        catch( e ) {
+            return undefined;
+        }
+    }
 </script>
 </html>
