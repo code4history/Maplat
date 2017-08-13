@@ -8,90 +8,110 @@
   <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
-  <div class="container-fluid h100p w100p">
-    <div id="all" class="row-fluid h100p">
-      <div class="row-fluid mainview">
-        <div id="map_div" class="col-xs-12 h100p w100p">
-          <img id="center_circle" style="position:absolute;top:50%;left:50%;margin-top:-10px;margin-left:-10px;" src="./parts/redcircle.png">
-          <div class="swiper-container ol-control">
-            <div class="swiper-wrapper"></div>
-          </div>
-        </div>
-        <div class="form-group opacity-slider hide">
-          <input type="range" min ="0" max="100" step ="1" value="0" class="form-control">
-        </div>
-      </div>
-      <input type="hidden" name="map_type" id="map_type" value="plat">
-    </div> 
-  </div>
-  <div class="modal" id="poi_info" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel" aria-hidden="true" data-show="true" data-keyboard="false" data-backdrop="static">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">
-            <span aria-hidden="true">&#215;</span><span class="sr-only" data-i18n="html.close"></span>
-          </button>
-          <h4 class="modal-title" id="poi_name"></h4>
-        </div>
-        <div class="modal-body">
-          <p class="col-xs-12 poi_img"><img id="poi_img" src=""></img></p>
-          <p class="recipient" id="poi_address"></p>
-          <p class="recipient" id="poi_desc"></p>
+<div class="container-fluid h100p w100p">
+  <div id="all" class="row-fluid h100p">
+    <div class="row-fluid mainview">
+      <div id="map_div" class="col-xs-12 h100p w100p">
+        <img id="center_circle" style="position:absolute;top:50%;left:50%;margin-top:-10px;margin-left:-10px;" src="./parts/redcircle.png">
+        <div class="swiper-container ol-control">
+          <div class="swiper-wrapper"></div>
         </div>
       </div>
     </div>
+    <input type="hidden" name="map_type" id="map_type" value="plat">
   </div>
-  <div class="modal" id="loadWait" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel" aria-hidden="true" data-show="true" data-keyboard="false" data-backdrop="static">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title" data-i18n="html.app_loading_title"></h4>
-        </div>
-        <div class="modal-body">
-          <p class="recipient"><img src="parts/loading.gif"><span data-i18n="html.app_loading_body"></span></p>
-        </div>
+</div>
+<div class="modal" id="poi_info" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel" aria-hidden="true" data-show="true" data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&#215;</span><span class="sr-only" data-i18n="html.close"></span>
+        </button>
+        <h4 class="modal-title" id="poi_name"></h4>
+      </div>
+      <div class="modal-body">
+        <p class="col-xs-12 poi_img"><img id="poi_img" src=""></img></p>
+        <p class="recipient" id="poi_address"></p>
+        <p class="recipient" id="poi_desc"></p>
       </div>
     </div>
   </div>
-  <div class="modal" id="gpsWait" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel" aria-hidden="true" data-show="true" data-keyboard="false" data-backdrop="static">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title"><span data-i18n="html.acquiring_gps"></span></h4>
-        </div>
-        <div class="modal-body">
-          <p id="gps_etc" class="recipient"></p>
-        </div>
+</div>
+<div class="modal" id="loadWait" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel" aria-hidden="true" data-show="true" data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" data-i18n="html.app_loading_title"></h4>
+      </div>
+      <div class="modal-body">
+        <p class="recipient"><img src="parts/loading.gif"><span data-i18n="html.app_loading_body"></span></p>
       </div>
     </div>
   </div>
-  <div class="modal" id="gpsDialog" tabindex="-1" role="dialog" aria-labelledby_="staticModalLabel" aria-hidden_="true" data-show="true" data-keyboard="false" data-backdrop="static">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">
-            <span aria-hidden="true">&#215;</span><span class="sr-only" data-i18n="html.close"></span>
-          </button>
-          <h4 class="modal-title" id="gpsDialogTitle"></h4>
-        </div>
-        <div class="modal-body">
-          <p id="gpsDialogBody" class="recipient"></p>
-        </div>
+</div>
+<div class="modal" id="gpsWait" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel" aria-hidden="true" data-show="true" data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span data-i18n="html.acquiring_gps"></span></h4>
+      </div>
+      <div class="modal-body">
+        <p id="gps_etc" class="recipient"></p>
       </div>
     </div>
   </div>
+</div>
+<div class="modal" id="gpsDialog" tabindex="-1" role="dialog" aria-labelledby_="staticModalLabel" aria-hidden_="true" data-show="true" data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&#215;</span><span class="sr-only" data-i18n="html.close"></span>
+        </button>
+        <h4 class="modal-title" id="gpsDialogTitle"></h4>
+      </div>
+      <div class="modal-body">
+        <p id="gpsDialogBody" class="recipient"></p>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 <script data-main="js/config" src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
 <script>
-document.addEventListener('loadMaplat', function(evt) {
-    var app = evt.detail;
-    var option = {};
-    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-    for (var i = 0; i < hashes.length; i++) {
-        hash = hashes[i].split('=');
-        option[hash[0]] = hash[1];
+    document.addEventListener('loadMaplat', function(evt) {
+        var app = evt.detail;
+        var option = {};
+        var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+        for (var i = 0; i < hashes.length; i++) {
+            hash = hashes[i].split('=');
+            option[hash[0]] = hash[1];
+        }
+        var lang = browserLanguage();
+        if (lang == 'ja') {
+            if (!option.lang) option.lang = 'ja';
+        } else {
+            if (!option.lang) option.lang = 'en';
+        }
+        if (option.appid == 'aizu' && option.lang == 'en') option.appid = 'aizu_en';
+        app(option);
+    });
+    var browserLanguage = function() {
+        var ua = window.navigator.userAgent.toLowerCase();
+        try {
+            // Chrome
+            if( ua.indexOf( 'chrome' ) != -1 ){
+                return ( navigator.languages[0] || navigator.browserLanguage || navigator.language || navigator.userLanguage).substr(0,2);
+            }
+            // Other
+            else{
+                return ( navigator.browserLanguage || navigator.language || navigator.userLanguage).substr(0,2);
+            }
+        }
+        catch( e ) {
+            return undefined;
+        }
     }
-    app(option);
-});
 </script>
 </html>

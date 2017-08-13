@@ -162,6 +162,15 @@ html,body {
     bottom: calc(105px + .10em);
 }
 
+.ol-maplat {
+    left: .5em;
+    bottom: calc(70px + .5em);
+}
+
+.with-opacity .ol-maplat {
+    bottom: calc(105px + .10em);
+}
+
 .ol-compass-fa {
     -webkit-transform: rotate(-33deg);
     -o-transform: rotate(-33deg);

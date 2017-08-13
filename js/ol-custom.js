@@ -470,6 +470,33 @@ define(['ol3', 'aigle'], function(ol, Promise) {
     };
     ol.inherits(ol.control.CompassRotate, ol.control.Rotate);
 
+    ol.control.GoHome = function(optOptions) {
+        var options = optOptions || {};
+        options.character = '<i class="fa fa-home fa-lg"></i>';
+        options.cls = 'home';
+        var self = this;
+        options.callback = function() {
+            var source = self.getMap().getLayers().item(0).getSource();
+            source.goHome();
+        };
+
+        ol.control.CustomControl.call(this, options);
+    };
+    ol.inherits(ol.control.GoHome, ol.control.CustomControl);
+
+    ol.control.Maplat = function(optOptions) {
+        var options = optOptions || {};
+        options.character = '<img src="parts/Maplat.png">';
+        options.cls = 'ol-maplat';
+        var self = this;
+        options.callback = function() {
+            window.open('https://github.com/code4nara/Maplat/wiki');
+        };
+
+        ol.control.CustomControl.call(this, options);
+    };
+    ol.inherits(ol.control.Maplat, ol.control.CustomControl);
+
     ol.const = ol.const ? ol.const : {};
     ol.const.MERC_MAX = 20037508.342789244;
     ol.const.MERC_CROSSMATRIX = [
@@ -775,7 +802,8 @@ define(['ol3', 'aigle'], function(ol, Promise) {
                 new ol.control.Zoom(),
                 new ol.control.SetGPS(),
                 new ol.control.GoHome(),
-                this.sliderCommon
+                this.sliderCommon,
+                new ol.control.Maplat()
             ];
 
         var options = {
