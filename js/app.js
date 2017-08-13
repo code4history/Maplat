@@ -66,6 +66,10 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
         }
     };
 
+    if ('ontouchstart' in window) {
+        document.querySelector('body').classList.add('ol-touch');
+    }
+
     Swiper.prototype.setSlideIndex = function(index) {
         this.slideTo(index + this.params.slidesPerView); // <= Maybe bug of swiper;
         this.setSlideIndexAsSelected(index);
@@ -263,7 +267,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                 var lwModalElm = document.getElementById('loadWait');
                 var lwModal = new bsn.Modal(lwModalElm);
                 lwModal.show();
-                var slidesPerView = 1.5;
+                var slidesPerView = 1.4;
                 baseSwiper = new Swiper('.base-swiper', {
                     slidesPerView: slidesPerView,
                     centeredSlides: true,

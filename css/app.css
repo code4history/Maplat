@@ -112,11 +112,13 @@ html,body {
 
 .ol-touch .base-swiper {
     left: .5em;
+    width: 110px;
 }
 
 .ol-touch .overlay-swiper {
     left: auto;
     right: .5em;
+    width: 110px;
 }
 
 .swiper-slide {
@@ -169,6 +171,12 @@ html,body {
 .swiper-slide div.minimize {
     font-size: .8em;
 }
+.ol-touch .swiper-slide div {
+    font-size: .8em;
+}
+.ol-touch .swiper-slide div.minimize {
+    font-size: .6em;
+}
 
 .ol-attribution {
     bottom: calc(65px + .5em);
@@ -216,6 +224,11 @@ html,body {
     width: 120px;
     height: 25px;
     padding: 0;
+}
+
+.ol-touch.with-opacity .ol-slidercommon {
+    left: calc(50% - 38px);
+    width: 76px;
 }
 
 .with-opacity .ol-slidercommon button {
