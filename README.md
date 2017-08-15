@@ -1,9 +1,12 @@
 ![Maplat Logo](https://code4nara.github.io/Maplat/page_imgs/maplat.png)
 ![Maplat Catch Phrase](https://code4nara.github.io/Maplat/page_imgs/bijective.png)
 
-Maplat is the cool Historical Map/Illustrated Map Viewer. It makes possible that the maps can collaborate with GPS/accurate maps, without distorting original maps. It is originally found at Open data hackathon in Nara, 2015.
+Maplat is the cool Historical Map/Illustrated Map Viewer.  
+It can transform each map coordinates with nonlinear but bijective projection and makes possible that the maps can collaborate with GPS/accurate maps, without distorting original maps.  
+Data editor of this solution is provided as another project, [MaplatEditor](https://github.com/code4nara/MaplatEditor/).
 
-Maplatは古地図/絵地図を歪める事なくGPSや正確な地図と連携させられるオープンソースプラットフォームです。チームここ掘れワイワイの奈良オープンデータハッカソン2015成果：旧名「ここ掘れワイワイ」を元にしています。
+Maplatは古地図/絵地図を歪める事なくGPSや正確な地図と連携させられるオープンソースプラットフォームです。  
+他のソリューションにない特徴として、各地図の座標変換において非線形かつ全単射な投影変換が定義可能という点が挙げられます。
 
 # Introduction slide (In Japanese)
 <a href="http://www.slideshare.net/kokogiko/foss4gplatform-maplat-off4g-2016">![Introduction of Maplat](https://code4nara.github.io/Maplat/page_imgs/maplat_slide.png)</a>
