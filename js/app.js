@@ -593,14 +593,24 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                         jsBridge.callWeb2App('poiClick', json);
                     } else {
                         document.querySelector('#poi_name').innerText = data.name;
-                        if (data.image && data.image != '') {
-                            document.querySelector('#poi_img').setAttribute('src',
-                                data.image.match(/^http/) ? data.image : 'img/' + data.image);
+                        if (data.url) {
+                            document.querySelector('#poi_web').classList.remove('hide');
+                            document.querySelector('#poi_data').classList.add('hide');
+
+                            document.querySelector('#poi_iframe').setAttribute('src', data.url);
                         } else {
-                            document.querySelector('#poi_img').setAttribute('src', 'parts/no_image.png');
+                            document.querySelector('#poi_data').classList.remove('hide');
+                            document.querySelector('#poi_web').classList.add('hide');
+
+                            if (data.image && data.image != '') {
+                                document.querySelector('#poi_img').setAttribute('src',
+                                    data.image.match(/^http/) ? data.image : 'img/' + data.image);
+                            } else {
+                                document.querySelector('#poi_img').setAttribute('src', 'parts/no_image.png');
+                            }
+                            document.querySelector('#poi_address').innerText = data.address;
+                            document.querySelector('#poi_desc').innerHTML = data.desc.replace(/\n/g, '<br>');
                         }
-                        document.querySelector('#poi_address').innerText = data.address;
-                        document.querySelector('#poi_desc').innerHTML = data.desc.replace(/\n/g, '<br>');
                         var piModalElm = document.getElementById('poi_info');
                         var piModal = new bsn.Modal(piModalElm);
                         piModal.show();
