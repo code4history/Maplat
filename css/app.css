@@ -171,6 +171,25 @@ html,body {
 .swiper-slide div.minimize {
     font-size: .8em;
 }
+
+.swiper-left-icon {
+    position:absolute;
+    left:0px;
+    top:calc(50% - 5px);
+    width:10px;
+    height:10px;
+    color:#ffffff;
+}
+
+.swiper-right-icon {
+    position:absolute;
+    left:calc(100% - 10px);
+    top:calc(50% - 5px);
+    width:10px;
+    height:10px;
+    color:#ffffff;
+}
+
 .ol-touch .swiper-slide div {
     font-size: .8em;
 }
