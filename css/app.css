@@ -243,6 +243,7 @@ html,body {
     width: 120px;
     height: 25px;
     padding: 0;
+    border: 1px solid #dddddd;
 }
 
 .ol-touch.with-opacity .ol-slidercommon {
