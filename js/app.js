@@ -502,34 +502,47 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                         convertParametersFromCurrent(to, function(size) {
                             var backSrc = null;
                             var backTo = null;
+
                             if (backMap) {
-                                backSrc = backMap.getSource();
+                                // Overlay = true case:
+                                backSrc = backMap.getSource(); // Get current source of background map
                                 if (!(to instanceof ol.source.NowMap)) {
+                                    // If new foreground source is nonlinear map:
                                     if (!backSrc) {
+                                        // If current background source is not set, specify it
                                         backTo = now;
                                         if (from instanceof ol.source.NowMap) {
                                             backTo = from instanceof ol.source.TmsMap ?
                                                 mapObject.getSource() :
-                                                from;
+                                                // If current foreground is TMS overlay, set current basemap as new background
+                                                from; // If current foreground source is basemap, set current foreground as new background
                                         }
                                         backMap.exchangeSource(backTo);
                                     } else {
+                                        // If current background source is set, use it again
                                         backTo = backSrc;
                                     }
                                 } else if (to instanceof ol.source.NowMap) {
+                                    // If new foreground source is basemap or TMS overlay, remove source from background map
                                     backMap.exchangeSource();
                                 }
                                 if (!(to instanceof ol.source.NowMap) || to instanceof ol.source.TmsMap) {
+                                    // If new foreground is nonlinear map or TMS overlay, enable opacity slider
                                     sliderCommon.setEnable(true);
                                 } else {
+                                    // If new foreground is basemap, disable opacity slider
                                     sliderCommon.setEnable(false);
                                 }
+                                // Overlay = true case: end
                             }
                             if (to instanceof ol.source.TmsMap) {
+                                // Foreground is TMS overlay case: set TMS as Layer
                                 mapObject.setLayer(to);
+                                // If current foreground is basemap then set it as basemap layer
                                 if (!(from instanceof ol.source.NowMap)) mapObject.exchangeSource(backSrc || now);
                                 sliderCommon.setEnable(true);
                             } else {
+                                // Remove overlay from foreground and set current source to foreground
                                 mapObject.setLayer();
                                 mapObject.exchangeSource(to);
                             }
