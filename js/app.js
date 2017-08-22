@@ -220,7 +220,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                 resolve(appData);
             }) : new Promise(function(resolve, reject) {
                 var xhr = new XMLHttpRequest();
-                xhr.open('GET', 'json/' + appid + '.json', true);
+                xhr.open('GET', 'apps/' + appid + '.json', true);
                 xhr.responseType = 'json';
 
                 xhr.onload = function(e) {

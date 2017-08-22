@@ -159,7 +159,7 @@ define(['ol-custom', 'aigle'], function(ol, Promise) {
             });
         }
 
-        var algorythm = options.maptype != 'maplat' ? 'external' : options.algorythm || 'tin';
+        var algorythm = options.algorythm || 'tin';
         return new Promise(function(resolve, reject) {
             requirejs(['histmap_' + algorythm], resolve);
         }).then(function() {

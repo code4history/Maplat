@@ -15,20 +15,10 @@
         },
         {
             "mapID"     : "morioka_ndl",
-            "maptype"   : "maplat",
-            "algorythm" : "tin",
-            "label"     : "1644 (TIN)"
+            "label" : "1644 (Maplat)"
         },
         {
-            "mapID"     : "morioka_ndl",
-            "maptype"   : "maplat",
-            "algorythm" : "tps",
-            "label"     : "1644 (TPS)"
-        },
-        {
-            "mapID"     : "morioka",
-            "maptype"   : "maplat",
-            "algorythm" : "tin"
+            "mapID"     : "morioka"
         },
         "gsi",
         "osm"

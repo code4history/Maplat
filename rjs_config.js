@@ -11,18 +11,14 @@
         'ol-custom': 'ol-custom',
         'bootstrap': 'bootstrap-native',
         'aigle': 'aigle-es5.min',
-        'tps': 'empty:',
         'buffer': 'buffer'
     },
     shim: {
         'aigle': {
             exports: 'Promise'
         },
-        'tps': {
-            exports: 'ThinPlateSpline'
-        },
         'app': {
-            deps: ['histmap', 'histmap_tps', 'histmap_tin', 'histmap_external']
+            deps: ['histmap', 'histmap_tin']
         },
         'buffer': {
             exports: 'exports'

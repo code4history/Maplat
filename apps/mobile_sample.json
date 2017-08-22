@@ -4,9 +4,7 @@
         "gsi",
         "osm",
         {
-            "mapID"     : "morioka_ndl",
-            "maptype"   : "maplat",
-            "algorythm" : "tin"
+            "mapID"     : "morioka_ndl"
         }
     ], 
     "pois" :[]

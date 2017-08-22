@@ -22,7 +22,7 @@ define(['histmap', 'tin', 'aigle'], function(ol, Tin, Promise) {
             return Promise.resolve(new ol.source.HistMap_tin(options));
         }
         return new Promise(function(resolve, reject) {
-            var url = options.setting_file || 'json/' + options.mapID + '.json';
+            var url = options.setting_file || 'maps/' + options.mapID + '.json';
             var xhr = new XMLHttpRequest();
             xhr.open('GET', url, true);
             xhr.responseType = 'json';
