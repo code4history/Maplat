@@ -10,8 +10,7 @@
         'ol3': 'ol-debug',
         'ol-custom': 'ol-custom',
         'bootstrap': 'bootstrap-native',
-        'aigle': 'aigle-es5.min',
-        'buffer': 'buffer'
+        'aigle': 'aigle-es5.min'
     },
     shim: {
         'aigle': {
@@ -19,9 +18,6 @@
         },
         'app': {
             deps: ['histmap', 'histmap_tin']
-        },
-        'buffer': {
-            exports: 'exports'
         }
     }
 })
