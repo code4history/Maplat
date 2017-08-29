@@ -36,6 +36,8 @@ define(['histmap', 'tin', 'aigle'], function(ol, Tin, Promise) {
                         options.height = options.height || resp.height;
                         options.label = options.label || resp.label || resp.year;
                         options.attr = options.attr || resp.attr;
+                        options.urls = options.urls || resp.urls;
+                        options.url = options.url || resp.url;
                         if (options.attr && !options.attributions) {
                             options.attributions = [
                                 new ol.Attribution({
