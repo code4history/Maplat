@@ -82,6 +82,17 @@
             this.points = points;
         };
 
+        Tin.prototype.getCompiled = function() {
+            var compiled = {};
+            compiled.tins = this.tins;
+            compiled.strict_status = this.strict_status;
+            compiled.weight_buffer = this.pointsWeightBuffer;
+            compiled.vertices_params = this.vertices_params;
+            compiled.centroid = this.centroid;
+            compiled.kinks = this.kinks;
+            return compiled;
+        };
+
         Tin.prototype.setWh = function(wh) {
             this.wh = wh;
             this.tins = undefined;
