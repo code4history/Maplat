@@ -413,7 +413,7 @@
                 }
 
                 self.pointsSet = pointsSet;
-                self.tins = {forw: turf.tin(pointsSet.forw, 'target')};
+                self.tins = {forw: rotateVerticesTriangle(turf.tin(pointsSet.forw, 'target'))};
                 var prom;
                 if (strict == 'strict' || strict == 'auto') {
                     prom = self.calcurateStrictTinAsync();
@@ -422,7 +422,7 @@
                 }
                 return prom.then(function() {
                     if (strict == 'loose' || (strict == 'auto' && self.strict_status == 'strict_error')) {
-                        self.tins.bakw = turf.tin(pointsSet.bakw, 'target');
+                        self.tins.bakw = rotateVerticesTriangle(turf.tin(pointsSet.bakw, 'target'));
                         delete self.kinks;
                         self.strict_status = 'loose';
                     }
@@ -512,6 +512,68 @@
                 throw err;
             });
         };
+
+        function rotateVerticesTriangle(tins) {
+            console.log(tins);
+            var features = tins.features;
+            for (var i=0; i<features.length; i++) {
+                var feature = features[i];
+                if ((feature.properties.a.index + '').substring(0, 4) == 'bbox' &&
+                    (feature.properties.b.index + '').substring(0, 4) == 'bbox') {
+                    features[i] = {
+                        geometry: {
+                            type: 'Polygon',
+                            coordinates: [
+                                [feature.geometry.coordinates[0][2], feature.geometry.coordinates[0][0], feature.geometry.coordinates[0][1],
+                                    feature.geometry.coordinates[0][2]]
+                            ]
+                        },
+                        properties: {
+                            a: {
+                                geom: feature.properties.c.geom,
+                                index: feature.properties.c.index
+                            },
+                            b: {
+                                geom: feature.properties.a.geom,
+                                index: feature.properties.a.index
+                            },
+                            c: {
+                                geom: feature.properties.b.geom,
+                                index: feature.properties.b.index
+                            }
+                        },
+                        type: 'Feature'
+                    };
+                } else if ((feature.properties.c.index + '').substring(0, 4) == 'bbox' &&
+                    (feature.properties.a.index + '').substring(0, 4) == 'bbox') {
+                    features[i] = {
+                        geometry: {
+                            type: 'Polygon',
+                            coordinates: [
+                                [feature.geometry.coordinates[0][1], feature.geometry.coordinates[0][2], feature.geometry.coordinates[0][0],
+                                    feature.geometry.coordinates[0][1]]
+                            ]
+                        },
+                        properties: {
+                            a: {
+                                geom: feature.properties.b.geom,
+                                index: feature.properties.b.index
+                            },
+                            b: {
+                                geom: feature.properties.c.geom,
+                                index: feature.properties.c.index
+                            },
+                            c: {
+                                geom: feature.properties.a.geom,
+                                index: feature.properties.a.index
+                            }
+                        },
+                        type: 'Feature'
+                    };
+                }
+            }
+            return tins;
+        }
 
         function findIntersections(coords) {
             var arcs = new internal.ArcCollection(coords);
