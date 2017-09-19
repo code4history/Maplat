@@ -379,7 +379,7 @@
                     expands.map(function(expand) {
                         var expandLine = turf.lineString([centroid.bakw, expand.bakw]);
                         var intersect = turf.intersect(side, expandLine);
-                        if (intersect) {
+                        if (intersect && intersect.geometry) {
                             var expandDist = Math.sqrt(Math.pow(expand.bakw[0] - centroid.bakw[0], 2) +
                                 Math.pow(expand.bakw[1] - centroid.bakw[1], 2));
                             var onSideDist = Math.sqrt(Math.pow(intersect.geometry.coordinates[0] - centroid.bakw[0], 2) +
