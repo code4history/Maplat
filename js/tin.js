@@ -201,8 +201,10 @@
                 var bbox = [];
                 if (self.wh) {
                     bbox = [
-                        [0, 0], [self.wh[0], 0],
-                        [0, self.wh[1]], [self.wh[0], self.wh[1]]
+                        [self.wh[0] * -0.05, self.wh[1] * -0.05], [self.wh[0] * 1.05, self.wh[1] * -0.05],
+                        [self.wh[0] * -0.05, self.wh[1] * 1.05], [self.wh[0] * 1.05, self.wh[1] * 1.05]
+                        //[0, 0], [self.wh[0], 0],
+                        //[0, self.wh[1]], [self.wh[0], self.wh[1]]
                     ];
                 }
                 var pointsArray = {forw: [], bakw: []};
@@ -514,7 +516,6 @@
         };
 
         function rotateVerticesTriangle(tins) {
-            console.log(tins);
             var features = tins.features;
             for (var i=0; i<features.length; i++) {
                 var feature = features[i];
