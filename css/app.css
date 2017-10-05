@@ -212,6 +212,14 @@ html,body {
     transform: rotate(-33deg);
 }
 
+.ol-control {
+    opacity: 1;
+}
+
+.ol-control.fade {
+    opacity: 0;
+}
+
 .ol-control.no_rotation button {
     color: rgba(255,255,255,.7);
     background-color: rgba(120,5,8,.2);
