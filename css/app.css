@@ -94,6 +94,27 @@ html,body {
     vertical-align: middle;/*IE7*/
 }
 
+.map-title {
+    top: .5em;
+    width: 500px;
+    height: 25px;
+    left: calc(50% - 250px);
+    background-color: rgba(32,32,32,0.5);
+    color: white;
+    margin: auto;
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+@media screen and (max-width: 550px) {
+    .map-title {
+        width: calc(100% - 100px);
+        left: 50px;
+    }
+}
+
 .swiper-container {
     position: absolute;
     bottom: .5em;
