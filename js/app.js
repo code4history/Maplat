@@ -582,6 +582,10 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                             }
                             mapObject.updateSize();
                             mapObject.renderSync();
+
+                            var title = to.officialTitle || to.title || to.label;
+                            document.querySelector('.map-title span').innerText = title;
+
                             if (init == true) {
                                 to.goHome();
                             } else if (backMap && backTo) {
@@ -676,7 +680,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                         for (var i = 0; i < ctls.length; i++) {
                             ctls[i].classList.remove('fade');
                         }
-                    }, 5000);
+                    }, 3000);
                 });
 
                 // change mouse cursor when over marker

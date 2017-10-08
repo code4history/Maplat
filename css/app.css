@@ -97,7 +97,6 @@ html,body {
 .map-title {
     top: .5em;
     width: 500px;
-    height: 25px;
     left: calc(50% - 250px);
     background-color: rgba(32,32,32,0.5);
     color: white;
@@ -106,12 +105,18 @@ html,body {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    font-size: 18px;
 }
 
-@media screen and (max-width: 550px) {
+@media screen and (max-width: 600px) {
     .map-title {
         width: calc(100% - 100px);
         left: 50px;
+    }
+
+    .ol-touch .map-title {
+        width: calc(100% - 130px);
+        left: 65px;
     }
 }
 
