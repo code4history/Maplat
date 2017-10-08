@@ -201,7 +201,6 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
         if (noUI) {
             document.querySelector('.swiper-container').style.display = 'none';
         }
-        var fadeInit = true; // For UI visible/nonvisible
         var appPromise = mapType ?
             new Promise(function(resolve, reject) {
                 var appData = {
@@ -585,7 +584,6 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                             mapObject.renderSync();
                             if (init == true) {
                                 to.goHome();
-                                setTimeout(function() { fadeInit = false; }, 500);
                             } else if (backMap && backTo) {
                                 convertParametersFromCurrent(backTo, function(size) {
                                     var view = backMap.getView();
@@ -648,25 +646,23 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                 // MapUI on off
                 var timer;
                 mapObject.on('click', function() {
-                    var ctls = document.querySelectorAll('.ol-control');
-                    for (var i = 0; i < ctls.length; i++) {
-                        ctls[i].classList.remove('fade');
-                        if (timer) {
-                            clearTimeout(timer);
-                            delete timer;
-                        }
-                    }
-                });
-                mapObject.on('movestart', function() {
                     if (timer) {
                         clearTimeout(timer);
                         delete timer;
                     }
-                    if (!fadeInit) {
-                        var ctls = document.querySelectorAll('.ol-control');
-                        for (var i = 0; i < ctls.length; i++) {
-                            ctls[i].classList.add('fade');
-                        }
+                    var ctls = document.querySelectorAll('.ol-control');
+                    for (var i = 0; i < ctls.length; i++) {
+                        ctls[i].classList.remove('fade');
+                    }
+                });
+                mapObject.on('pointerdrag', function() {
+                    if (timer) {
+                        clearTimeout(timer);
+                        delete timer;
+                    }
+                    var ctls = document.querySelectorAll('.ol-control');
+                    for (var i = 0; i < ctls.length; i++) {
+                        ctls[i].classList.add('fade');
                     }
                 });
                 mapObject.on('moveend', function() {
@@ -674,15 +670,13 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                         clearTimeout(timer);
                         delete timer;
                     }
-                    if (!fadeInit) {
-                        timer = setTimeout(function() {
-                            delete timer;
-                            var ctls = document.querySelectorAll('.ol-control');
-                            for (var i = 0; i < ctls.length; i++) {
-                                ctls[i].classList.remove('fade');
-                            }
-                        }, 5000);
-                    }
+                    timer = setTimeout(function() {
+                        delete timer;
+                        var ctls = document.querySelectorAll('.ol-control');
+                        for (var i = 0; i < ctls.length; i++) {
+                            ctls[i].classList.remove('fade');
+                        }
+                    }, 5000);
                 });
 
                 // change mouse cursor when over marker
