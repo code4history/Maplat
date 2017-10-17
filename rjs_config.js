@@ -1,7 +1,8 @@
 ({
     baseUrl: 'js',
     name: 'config',
-    out: 'js/app-built.js',
+    out: 'js/maplat.js',
+    include: ['require.min'],
     paths: {
         'i18n': 'empty:',
         'i18nxhr': 'i18nextXHRBackend.min',

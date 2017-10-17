@@ -26,21 +26,12 @@ require.config({
         }
     }
 });
-(function() {
-    if ( typeof window.CustomEvent === 'function' ) return false;
-
-    var CustomEvent = function(event, params) {
-        params = params || {bubbles: false, cancelable: false, detail: undefined};
-        var evt = document.createEvent( 'CustomEvent' );
-        evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
-        return evt;
-    }
-
-    CustomEvent.prototype = window.Event.prototype;
-
-    window.CustomEvent = CustomEvent;
-})();
+window.Maplat = {};
+Maplat.onLoad = function(func) {
+    Maplat.__func = func;
+    if (Maplat.__app) func(Maplat.__app);
+};
 require(['app'], function(app) {
-    var event = new CustomEvent('loadMaplat', {detail: app});
-    document.dispatchEvent(event);
+    Maplat.__app = app;
+    if (Maplat.__func) Maplat.__func(app);
 });
