@@ -24,6 +24,24 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
         mapDiv.addEventListener('touchstart', preventZoom, false);
         mapDiv.addEventListener('touchmove', resetPreventZoom, false);
     };
+
+    var browserLanguage = function() {
+        var ua = window.navigator.userAgent.toLowerCase();
+        try {
+            // Chrome
+            if( ua.indexOf( 'chrome' ) != -1 ) {
+                return ( navigator.languages[0] || navigator.browserLanguage || navigator.language || navigator.userLanguage).substr(0, 2);
+            }
+            // Other
+            else {
+                return ( navigator.browserLanguage || navigator.language || navigator.userLanguage).substr(0, 2);
+            }
+        }
+        catch( e ) {
+            return undefined;
+        }
+    };
+
     var LoggerLevel={
         ALL: -99,
         DEBUG: -1,
@@ -194,7 +212,13 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
             appOption.debug = true;
         }
         var logger = new Logger(appOption.debug ? LoggerLevel.ALL : LoggerLevel.INFO);
-        var lang = appOption.lang || 'ja';
+        var lang = appOption.lang;
+        if (!lang) {
+            lang = browserLanguage();
+            if (lang != 'ja') {
+                lang = 'en';
+            }
+        }
         var overlay = appOption.overlay || false;
         var noRotate = appOption.no_rotate || false;
         if (overlay) {

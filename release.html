@@ -100,29 +100,7 @@
             hash = hashes[i].split('=');
             option[hash[0]] = hash[1];
         }
-        var lang = browserLanguage();
-        if (lang == 'ja') {
-            if (!option.lang) option.lang = 'ja';
-        } else {
-            if (!option.lang) option.lang = 'en';
-        }
         MaplatApp(option);
     });
-    function browserLanguage() {
-        var ua = window.navigator.userAgent.toLowerCase();
-        try {
-            // Chrome
-            if( ua.indexOf( 'chrome' ) != -1 ){
-                return ( navigator.languages[0] || navigator.browserLanguage || navigator.language || navigator.userLanguage).substr(0,2);
-            }
-            // Other
-            else{
-                return ( navigator.browserLanguage || navigator.language || navigator.userLanguage).substr(0,2);
-            }
-        }
-        catch( e ) {
-            return undefined;
-        }
-    }
 </script>
 </html>
