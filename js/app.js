@@ -174,7 +174,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
         tmp = fragment.appendChild( context.createElement('div'));
         tmp.innerHTML = domStr;
 
-        for ( ; i < tmp.childNodes.length; i++) {
+        for (; i < tmp.childNodes.length; i++) {
             // ダミーのDIV要素からHTML要素としてchildNodesで取り出せる
             var node = tmp.childNodes[i];
 
@@ -199,7 +199,10 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
         // HTML要素配列を返す
         return nodes;
     };
-    return function(appOption) {
+
+    // Maplat App Class
+
+    var MaplatApp = function(appOption) {
         var mapType = appOption.stroly ? 'stroly' : appOption.drumsey ? 'drumsey' : appOption.warper ? 'warper' : null;
         var appid = appOption.appid || (mapType ? appOption[mapType] : 'sample');
         var mobileIF = false;
@@ -219,6 +222,27 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                 lang = 'en';
             }
         }
+
+        // Add UI HTML Element
+        var newElems = createElement('<div class="ol-control map-title"><span></span></div>' +
+            '<img id="center_circle" style="position:absolute;top:50%;left:50%;margin-top:-10px;' +
+            'margin-left:-10px;" src="./parts/redcircle.png">' +
+            '<div class="swiper-container ol-control base-swiper">' +
+            '<i class="fa fa-chevron-left swiper-left-icon" aria-hidden="true"></i>' +
+            '<i class="fa fa-chevron-right swiper-right-icon" aria-hidden="true"></i>' +
+            '<div class="swiper-wrapper"></div>' +
+            '</div>' +
+            '<div class="swiper-container ol-control overlay-swiper">' +
+            '<i class="fa fa-chevron-left swiper-left-icon" aria-hidden="true"></i>' +
+            '<i class="fa fa-chevron-right swiper-right-icon" aria-hidden="true"></i>' +
+            '<div class="swiper-wrapper"></div>' +
+            '</div>');
+        var elem = document.querySelector('#' + mapDiv);
+        for (var i=newElems.length - 1; i >= 0; i--) {
+            console.log(i);
+            elem.insertBefore(newElems[i], elem.firstChild);
+        }
+
         var overlay = appOption.overlay || false;
         var noRotate = appOption.no_rotate || false;
         if (overlay) {
@@ -348,9 +372,8 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
             var backDiv = null;
             if (overlay) {
                 backDiv = mapDiv + '_back';
-                var newElem = createElement('<div id="' + backDiv + '" class="map" style="top:0; left:0; right:0; bottom:0; ' +
+                newElem = createElement('<div id="' + backDiv + '" class="map" style="top:0; left:0; right:0; bottom:0; ' +
                     'position:absolute;"></div>')[0];
-                var elem = document.querySelector('#' + mapDiv);
                 elem.insertBefore(newElem, elem.firstChild);
                 backMap = new ol.MaplatMap({
                     off_control: true,
@@ -791,9 +814,10 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                             mapObject.setMarker(xy, {'datum': datum}, datum.icon);
                         });
                     }
-
                 };
             });
         });
     };
+
+    return MaplatApp;
 });

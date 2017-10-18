@@ -5,9 +5,9 @@ require.config({
         'ol3': 'ol-debug',
         'ol-custom': 'ol-custom',
         'tps': 'thinplatespline',
-        'i18n': '//cdnjs.cloudflare.com/ajax/libs/i18next/8.4.2/i18next.min',
-        'turf': '//npmcdn.com/@turf/turf@4.7.3/turf.min',
-        'swiper': '//cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/js/swiper.min',
+        'i18n': 'i18next.min', //8.4.2
+        'turf': 'turf.min', //4.7.3
+        'swiper': 'swiper.min', //3.4.2
         'bootstrap': 'bootstrap-native',
         'aigle': 'aigle-es5.min'
     },
