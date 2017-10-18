@@ -1,7 +1,7 @@
 define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
     function(Promise, ol, sprintf, i18n, i18nxhr, swiper, bsn) {
-    (function() {
-        var mapDiv = document.getElementById('map_div');
+    var preventDoubleClick = function(mapDivId) {
+        var mapDiv = document.getElementById(mapDivId);
         var lastTouch = 0;
         function preventZoom(e) {
             var t2 = e.timeStamp;
@@ -23,7 +23,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
 
         mapDiv.addEventListener('touchstart', preventZoom, false);
         mapDiv.addEventListener('touchmove', resetPreventZoom, false);
-    })();
+    };
     var LoggerLevel={
         ALL: -99,
         DEBUG: -1,
@@ -185,6 +185,8 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
         var mapType = appOption.stroly ? 'stroly' : appOption.drumsey ? 'drumsey' : appOption.warper ? 'warper' : null;
         var appid = appOption.appid || (mapType ? appOption[mapType] : 'sample');
         var mobileIF = false;
+        var mapDiv = appOption.div || 'map_div';
+        preventDoubleClick(mapDiv);
         var noUI = appOption.no_ui || false;
         if (appOption.mobile_if) {
             mobileIF = true;
@@ -306,7 +308,6 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
             var fakeRadius = appOption.fake ? appData.fake_radius : false;
             var currentPosition = null;
             var backMap = null;
-            var mapDiv = 'map_div';
             var frontDiv = mapDiv + '_front';
             var newElem = createElement('<div id="' + frontDiv + '" class="map" style="top:0; left:0; right:0; bottom:0; ' +
                 'position:absolute;"></div>')[0];
