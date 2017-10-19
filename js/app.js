@@ -203,14 +203,16 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
     // Maplat App Class
 
     var MaplatApp = function(appOption) {
+        var app = this;
+        console.log(app);
         var mapType = appOption.stroly ? 'stroly' : appOption.drumsey ? 'drumsey' : appOption.warper ? 'warper' : null;
         var appid = appOption.appid || (mapType ? appOption[mapType] : 'sample');
-        var mobileIF = false;
+        app.mobileIF = false;
         var mapDiv = appOption.div || 'map_div';
         preventDoubleClick(mapDiv);
         var noUI = appOption.no_ui || false;
         if (appOption.mobile_if) {
-            mobileIF = true;
+            app.mobileIF = true;
             noUI = true;
             appOption.debug = true;
         }
@@ -361,12 +363,12 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                 'position:absolute;"></div>')[0];
             var elem = document.querySelector('#' + mapDiv);
             elem.insertBefore(newElem, elem.firstChild);
-            var mapObject = new ol.MaplatMap({
+            app.mapObject = new ol.MaplatMap({
                 div: frontDiv,
                 off_control: noUI ? true : false,
                 off_rotation: noRotate ? true : false
             });
-            var sliderCommon = mapObject.sliderCommon;
+            var sliderCommon = app.mapObject.sliderCommon;
             sliderCommon.setEnable(false);
 
             var backDiv = null;
@@ -382,13 +384,13 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
             }
             if (!noUI) {
                 var shown = false;
-                mapObject.on('gps_request', function() {
+                app.mapObject.on('gps_request', function() {
                     shown = true;
                     var gwModalElm = document.getElementById('gpsWait');
                     var gwModal = new bsn.Modal(gwModalElm);
                     gwModal.show();
                 });
-                mapObject.on('gps_result', function(evt) {
+                app.mapObject.on('gps_result', function(evt) {
                     var result = evt.frameState;
                     if (result && result.error) {
                         currentPosition = null;
@@ -471,7 +473,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                         source.home_position = homePos;
                         source.merc_zoom = defZoom;
                     }
-                    source._map = mapObject;
+                    source._map = app.mapObject;
                     cache.push(source);
                     cacheHash[source.sourceID] = source;
                 }
@@ -493,7 +495,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                 changeMap(true, initial.sourceID);
 
                 function convertParametersFromCurrent(to, callback) {
-                    var view = mapObject.getView();
+                    var view = app.mapObject.getView();
                     var fromPromise = from.size2MercsAsync();
                     var current = ol.MathEx.recursiveRound([
                         view.getCenter(), view.getZoom(), view.getRotation()
@@ -561,7 +563,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                                         backTo = now;
                                         if (from instanceof ol.source.NowMap) {
                                             backTo = from instanceof ol.source.TmsMap ?
-                                                mapObject.getSource() :
+                                                app.mapObject.getSource() :
                                                 // If current foreground is TMS overlay, set current basemap as new background
                                                 from; // If current foreground source is basemap, set current foreground as new background
                                         }
@@ -585,14 +587,14 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                             }
                             if (to instanceof ol.source.TmsMap) {
                                 // Foreground is TMS overlay case: set TMS as Layer
-                                mapObject.setLayer(to);
+                                app.mapObject.setLayer(to);
                                 // If current foreground is basemap then set it as basemap layer
-                                if (!(from instanceof ol.source.NowMap)) mapObject.exchangeSource(backSrc || now);
+                                if (!(from instanceof ol.source.NowMap)) app.mapObject.exchangeSource(backSrc || now);
                                 sliderCommon.setEnable(true);
                             } else {
                                 // Remove overlay from foreground and set current source to foreground
-                                mapObject.setLayer();
-                                mapObject.exchangeSource(to);
+                                app.mapObject.setLayer();
+                                app.mapObject.exchangeSource(to);
                             }
 
                             // This must be here: Because, render process works after view.setCenter,
@@ -600,8 +602,8 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                             from = to;
 
                             var opacity = sliderCommon.get('slidervalue') * 100;
-                            mapObject.setOpacity(opacity);
-                            var view = mapObject.getView();
+                            app.mapObject.setOpacity(opacity);
+                            var view = app.mapObject.getView();
                             if (to.insideCheckHistMapCoords(size[0])) {
                                 view.setCenter(size[0]);
                                 view.setZoom(size[1]);
@@ -615,7 +617,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                                 to.goHome();
                             }
                             to.setGPSMarker(currentPosition, true);
-                            mapObject.resetMarker();
+                            app.mapObject.resetMarker();
                             for (var i = 0; i < pois.length; i++) {
                                 (function(datum) {
                                     var lngLat = [datum.lng, datum.lat];
@@ -623,13 +625,13 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
 
                                     to.merc2XyAsync(merc).then(function(xy) {
                                         if (to.insideCheckHistMapCoords(xy)) {
-                                            mapObject.setMarker(xy, {'datum': datum}, datum.icon);
+                                            app.mapObject.setMarker(xy, {'datum': datum}, datum.icon);
                                         }
                                     });
                                 })(pois[i]);
                             }
-                            mapObject.updateSize();
-                            mapObject.renderSync();
+                            app.mapObject.updateSize();
+                            app.mapObject.renderSync();
 
                             var title = to.officialTitle || to.title || to.label;
                             document.querySelector('.map-title span').innerText = title;
@@ -652,7 +654,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                 changeMapCache = changeMap;
 
                 function showInfo(data) {
-                    if (mobileIF) {
+                    if (app.mobileIF) {
                         logger.debug(data);
                         var json = JSON.stringify(data);
                         jsBridge.callWeb2App('poiClick', json);
@@ -693,11 +695,11 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                         showInfo(feature.get('datum'));
                     }
                 };
-                mapObject.on('click', clickHandler);
+                app.mapObject.on('click', clickHandler);
 
                 // MapUI on off
                 var timer;
-                mapObject.on('click', function() {
+                app.mapObject.on('click', function() {
                     if (timer) {
                         clearTimeout(timer);
                         delete timer;
@@ -707,7 +709,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                         ctls[i].classList.remove('fade');
                     }
                 });
-                mapObject.on('pointerdrag', function() {
+                app.mapObject.on('pointerdrag', function() {
                     if (timer) {
                         clearTimeout(timer);
                         delete timer;
@@ -717,7 +719,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                         ctls[i].classList.add('fade');
                     }
                 });
-                mapObject.on('moveend', function() {
+                app.mapObject.on('moveend', function() {
                     if (timer) {
                         clearTimeout(timer);
                         delete timer;
@@ -746,7 +748,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                     }
                     document.querySelector('#' + target).style.cursor = '';
                 };
-                mapObject.on('pointermove', moveHandler);
+                app.mapObject.on('pointermove', moveHandler);
 
                 var mapOutHandler = function(evt) {
                     var histCoord = evt.frameState.viewState.center;
@@ -761,7 +763,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                         this.getView().setCenter(histCoord);
                     }
                 };
-                mapObject.on('moveend', mapOutHandler);
+                app.mapObject.on('moveend', mapOutHandler);
 
                 var backMapMove = function(evt) {
                     if (!backMap) return;
@@ -784,39 +786,44 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                         });
                     }
                 };
-                mapObject.on('postrender', backMapMove);
+                app.mapObject.on('postrender', backMapMove);
 
                 sliderCommon.on('propertychange', function(evt) {
                     if (evt.key === 'slidervalue') {
-                        mapObject.setOpacity(sliderCommon.get(evt.key) * 100);
+                        app.mapObject.setOpacity(sliderCommon.get(evt.key) * 100);
                     }
                 });
-
-                if (mobileIF) return {
-                    'setMarker': function(dataStr) {
-                        logger.debug(dataStr);
-                        var data = JSON.parse(dataStr);
-                        var lat = data.latitude;
-                        var long = data.longitude;
-                        var x = data.x;
-                        var y = data.y;
-                        var src = mapObject.getSource();
-                        var promise = (x && y) ?
-                            new Promise(function(resolve) {
-                                resolve(src.xy2HistMapCoords([x, y]));
-                            }):
-                            (function() {
-                                var merc = ol.proj.transform([long, lat], 'EPSG:4326', 'EPSG:3857');
-                                return src.merc2XyAsync(merc);
-                            })();
-                        var datum = data.data;
-                        promise.then(function(xy) {
-                            mapObject.setMarker(xy, {'datum': datum}, datum.icon);
-                        });
-                    }
-                };
             });
         });
+    };
+
+    MaplatApp.prototype.setMarker = function(data) {
+        var app = this;
+        logger.debug(data);
+        if (typeof data == 'string') {
+            data = JSON.parse(data);
+        }
+        var lat = data.latitude;
+        var long = data.longitude;
+        var x = data.x;
+        var y = data.y;
+        var src = app.mapObject.getSource();
+        var promise = (x && y) ?
+            new Promise(function(resolve) {
+                resolve(src.xy2HistMapCoords([x, y]));
+            }):
+            (function() {
+                var merc = ol.proj.transform([long, lat], 'EPSG:4326', 'EPSG:3857');
+                return src.merc2XyAsync(merc);
+            })();
+        var datum = data.data;
+        promise.then(function(xy) {
+            app.mapObject.setMarker(xy, {'datum': datum}, datum.icon);
+        });
+    };
+
+    MaplatApp.prototype.resetMarker = function(data) {
+        this.mapObject.resetMarker();
     };
 
     return MaplatApp;
