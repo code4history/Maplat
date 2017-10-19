@@ -216,7 +216,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
             noUI = true;
             appOption.debug = true;
         }
-        var logger = new Logger(appOption.debug ? LoggerLevel.ALL : LoggerLevel.INFO);
+        app.logger = new Logger(appOption.debug ? LoggerLevel.ALL : LoggerLevel.INFO);
         var lang = appOption.lang;
         if (!lang) {
             lang = browserLanguage();
@@ -311,7 +311,6 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
             var i18n = result[0][1];
             var t = result[0][0];
             var baseSwiper, overlaySwiper;
-            var changeMapCache;
             ol.source.HistMap.setI18n(i18n, t);
 
             document.querySelector('#all').style.display = null;
@@ -329,7 +328,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                         e.preventDefault();
                         if (!sw.clickedSlide) return;
                         var slide = sw.clickedSlide;
-                        changeMapCache(false, slide.getAttribute('data'));
+                        app.changeMap(slide.getAttribute('data'));
                         sw.setSlideIndexAsSelected(slide.getAttribute('data-swiper-slide-index'));
                     }
                 });
@@ -342,22 +341,22 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                         e.preventDefault();
                         if (!sw.clickedSlide) return;
                         var slide = sw.clickedSlide;
-                        changeMapCache(false, slide.getAttribute('data'));
+                        app.changeMap(slide.getAttribute('data'));
                         sw.setSlideIndexAsSelected(slide.getAttribute('data-swiper-slide-index'));
                     }
                 });
             }
 
-            var from;
-            var mercBuffer = null;
+            app.mercBuffer = null;
             var homePos = appData.home_position;
             var defZoom = appData.default_zoom;
             var appName = appData.app_name;
             var fakeGps = appOption.fake ? appData.fake_gps : false;
             var fakeCenter = appOption.fake ? appData.fake_center : false;
             var fakeRadius = appOption.fake ? appData.fake_radius : false;
-            var currentPosition = null;
-            var backMap = null;
+            app.currentPosition = null;
+            app.backMap = null;
+            app.__init = true;
             var frontDiv = mapDiv + '_front';
             var newElem = createElement('<div id="' + frontDiv + '" class="map" style="top:0; left:0; right:0; bottom:0; ' +
                 'position:absolute;"></div>')[0];
@@ -368,8 +367,8 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                 off_control: noUI ? true : false,
                 off_rotation: noRotate ? true : false
             });
-            var sliderCommon = app.mapObject.sliderCommon;
-            sliderCommon.setEnable(false);
+            app.sliderCommon = app.mapObject.sliderCommon;
+            app.sliderCommon.setEnable(false);
 
             var backDiv = null;
             if (overlay) {
@@ -377,7 +376,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                 newElem = createElement('<div id="' + backDiv + '" class="map" style="top:0; left:0; right:0; bottom:0; ' +
                     'position:absolute;"></div>')[0];
                 elem.insertBefore(newElem, elem.firstChild);
-                backMap = new ol.MaplatMap({
+                app.backMap = new ol.MaplatMap({
                     off_control: true,
                     div: backDiv
                 });
@@ -393,7 +392,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                 app.mapObject.on('gps_result', function(evt) {
                     var result = evt.frameState;
                     if (result && result.error) {
-                        currentPosition = null;
+                        app.currentPosition = null;
                         if (result.error == 'gps_out' && shown) {
                             shown = false;
                             var gwModalElm = document.getElementById('gpsWait');
@@ -406,7 +405,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                             gdModal.show();
                         }
                     } else {
-                        currentPosition = result;
+                        app.currentPosition = result;
                     }
                     if (shown) {
                         shown = false;
@@ -425,7 +424,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                     elem.appendChild(newElem);
                 }
             }
-            var pois = appData.pois;
+            app.pois = appData.pois;
 
             document.querySelector('title').innerHTML = appName;
 
@@ -457,7 +456,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                 }
 
                 var cache = [];
-                var cacheHash = {};
+                app.cacheHash = {};
                 for (var i=0; i<sources.length; i++) {
                     var source = sources[i];
                     if (!noUI) {
@@ -475,7 +474,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                     }
                     source._map = app.mapObject;
                     cache.push(source);
-                    cacheHash[source.sourceID] = source;
+                    app.cacheHash[source.sourceID] = source;
                 }
                 if (!noUI) {
                     baseSwiper.on;
@@ -485,177 +484,18 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                 }
 
                 var initial = cache[cache.length - 1];
-                from = cache.reduce(function(prev, curr) {
+                app.from = cache.reduce(function(prev, curr) {
                     if (prev) {
                         return !(prev instanceof ol.source.HistMap) && curr !== initial ? curr : prev;
                     }
                     if (curr !== initial) return curr;
                     return prev;
                 }, null);
-                changeMap(true, initial.sourceID);
-
-                function convertParametersFromCurrent(to, callback) {
-                    var view = app.mapObject.getView();
-                    var fromPromise = from.size2MercsAsync();
-                    var current = ol.MathEx.recursiveRound([
-                        view.getCenter(), view.getZoom(), view.getRotation()
-                    ], 10);
-                    if (mercBuffer && mercBuffer.mercs && mercBuffer.buffer[from.sourceID]) {
-                        var buffer = mercBuffer.buffer[from.sourceID];
-                        if (buffer[0][0] == current[0][0] && buffer[0][1] == current[0][1] &&
-                            buffer[1] == current[1] && buffer[2] == current[2]) {
-                            logger.debug(buffer);
-                            logger.debug(current);
-                            logger.debug('From: Use buffer');
-                            fromPromise = new Promise(function(res, rej) {
-                                res(mercBuffer.mercs);
-                            });
-                        } else {
-                            mercBuffer = {
-                                buffer: {}
-                            };
-                            mercBuffer.buffer[from.sourceID] = current;
-                        }
-                    } else {
-                        mercBuffer = {
-                            buffer: {}
-                        };
-                        mercBuffer.buffer[from.sourceID] = current;
-                    }
-                    logger.debug('From: Center: ' + current[0] + ' Zoom: ' + current[1] + ' Rotation: ' + current[2]);
-                    logger.debug('From: ' + from.sourceID);
-                    fromPromise.then(function(mercs) {
-                        mercBuffer.mercs = mercs;
-                        logger.debug('Mercs: ' + mercs);
-                        var toPromise = to.mercs2SizeAsync(mercs);
-                        var key = to.sourceID;
-                        if (mercBuffer.buffer[key]) {
-                            logger.debug('To: Use buffer');
-                            toPromise = new Promise(function(res, rej) {
-                                res(mercBuffer.buffer[key]);
-                            });
-                        }
-                        toPromise.then(function(size) {
-                            logger.debug('To: Center: ' + size[0] + ' Zoom: ' + size[1] + ' Rotation: ' + size[2]);
-                            logger.debug('To: ' + to.sourceID);
-                            mercBuffer.buffer[to.sourceID] = ol.MathEx.recursiveRound(size, 10);
-                            callback(size);
-                        });
-                    });
-                }
-
-                function changeMap(init, sourceID) {
-                    var now = cacheHash['osm'];
-                    var to = cacheHash[sourceID];
-                    if ((to == from) && (to != now)) return;
-                    if (to != from) {
-                        convertParametersFromCurrent(to, function(size) {
-                            var backSrc = null;
-                            var backTo = null;
-
-                            if (backMap) {
-                                // Overlay = true case:
-                                backSrc = backMap.getSource(); // Get current source of background map
-                                if (!(to instanceof ol.source.NowMap)) {
-                                    // If new foreground source is nonlinear map:
-                                    if (!backSrc) {
-                                        // If current background source is not set, specify it
-                                        backTo = now;
-                                        if (from instanceof ol.source.NowMap) {
-                                            backTo = from instanceof ol.source.TmsMap ?
-                                                app.mapObject.getSource() :
-                                                // If current foreground is TMS overlay, set current basemap as new background
-                                                from; // If current foreground source is basemap, set current foreground as new background
-                                        }
-                                        backMap.exchangeSource(backTo);
-                                    } else {
-                                        // If current background source is set, use it again
-                                        backTo = backSrc;
-                                    }
-                                } else if (to instanceof ol.source.NowMap) {
-                                    // If new foreground source is basemap or TMS overlay, remove source from background map
-                                    backMap.exchangeSource();
-                                }
-                                if (!(to instanceof ol.source.NowMap) || to instanceof ol.source.TmsMap) {
-                                    // If new foreground is nonlinear map or TMS overlay, enable opacity slider
-                                    sliderCommon.setEnable(true);
-                                } else {
-                                    // If new foreground is basemap, disable opacity slider
-                                    sliderCommon.setEnable(false);
-                                }
-                                // Overlay = true case: end
-                            }
-                            if (to instanceof ol.source.TmsMap) {
-                                // Foreground is TMS overlay case: set TMS as Layer
-                                app.mapObject.setLayer(to);
-                                // If current foreground is basemap then set it as basemap layer
-                                if (!(from instanceof ol.source.NowMap)) app.mapObject.exchangeSource(backSrc || now);
-                                sliderCommon.setEnable(true);
-                            } else {
-                                // Remove overlay from foreground and set current source to foreground
-                                app.mapObject.setLayer();
-                                app.mapObject.exchangeSource(to);
-                            }
-
-                            // This must be here: Because, render process works after view.setCenter,
-                            // and Changing "from" content must be finished before "postrender" event
-                            from = to;
-
-                            var opacity = sliderCommon.get('slidervalue') * 100;
-                            app.mapObject.setOpacity(opacity);
-                            var view = app.mapObject.getView();
-                            if (to.insideCheckHistMapCoords(size[0])) {
-                                view.setCenter(size[0]);
-                                view.setZoom(size[1]);
-                                view.setRotation(size[2]);
-                            } else if (!init) {
-                                document.querySelector('#gpsDialogTitle').innerText = t('app.out_of_map');
-                                document.querySelector('#gpsDialogBody').innerText = t('app.out_of_map_area');
-                                var gdModalElm = document.getElementById('gpsDialog');
-                                var gdModal = new bsn.Modal(gdModalElm);
-                                gdModal.show();
-                                to.goHome();
-                            }
-                            to.setGPSMarker(currentPosition, true);
-                            app.mapObject.resetMarker();
-                            for (var i = 0; i < pois.length; i++) {
-                                (function(datum) {
-                                    var lngLat = [datum.lng, datum.lat];
-                                    var merc = ol.proj.transform(lngLat, 'EPSG:4326', 'EPSG:3857');
-
-                                    to.merc2XyAsync(merc).then(function(xy) {
-                                        if (to.insideCheckHistMapCoords(xy)) {
-                                            app.mapObject.setMarker(xy, {'datum': datum}, datum.icon);
-                                        }
-                                    });
-                                })(pois[i]);
-                            }
-                            app.mapObject.updateSize();
-                            app.mapObject.renderSync();
-
-                            var title = to.officialTitle || to.title || to.label;
-                            document.querySelector('.map-title span').innerText = title;
-
-                            if (init == true) {
-                                to.goHome();
-                            } else if (backMap && backTo) {
-                                convertParametersFromCurrent(backTo, function(size) {
-                                    var view = backMap.getView();
-                                    view.setCenter(size[0]);
-                                    view.setZoom(size[1]);
-                                    view.setRotation(size[2]);
-                                    backMap.updateSize();
-                                    backMap.renderSync();
-                                });
-                            }
-                        });
-                    }
-                }
-                changeMapCache = changeMap;
+                app.changeMap(initial.sourceID);
 
                 function showInfo(data) {
                     if (app.mobileIF) {
-                        logger.debug(data);
+                        app.logger.debug(data);
                         var json = JSON.stringify(data);
                         jsBridge.callWeb2App('poiClick', json);
                     } else {
@@ -685,10 +525,10 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                 }
 
                 var clickHandler = function(evt) {
-                    logger.debug(evt.pixel);
+                    app.logger.debug(evt.pixel);
                     var feature = this.forEachFeatureAtPixel(evt.pixel,
                         function(feature) {
-                            logger.debug(evt.pixel);
+                            app.logger.debug(evt.pixel);
                             if (feature.get('datum')) return feature;
                         });
                     if (feature) {
@@ -766,31 +606,31 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                 app.mapObject.on('moveend', mapOutHandler);
 
                 var backMapMove = function(evt) {
-                    if (!backMap) return;
+                    if (!app.backMap) return;
                     if (this._backMapMoving) {
-                        logger.debug('Backmap moving skipped');
+                        app.logger.debug('Backmap moving skipped');
                         return;
                     }
-                    var backSrc = backMap.getSource();
+                    var backSrc = app.backMap.getSource();
                     if (backSrc) {
                         this._backMapMoving = true;
-                        logger.debug('Backmap moving started');
+                        app.logger.debug('Backmap moving started');
                         var self = this;
-                        convertParametersFromCurrent(backSrc, function(size) {
-                            var view = backMap.getView();
+                        app.convertParametersFromCurrent(backSrc, function(size) {
+                            var view = app.backMap.getView();
                             view.setCenter(size[0]);
                             view.setZoom(size[1]);
                             view.setRotation(size[2]);
-                            logger.debug('Backmap moving ended');
+                            app.logger.debug('Backmap moving ended');
                             self._backMapMoving = false;
                         });
                     }
                 };
                 app.mapObject.on('postrender', backMapMove);
 
-                sliderCommon.on('propertychange', function(evt) {
+                app.sliderCommon.on('propertychange', function(evt) {
                     if (evt.key === 'slidervalue') {
-                        app.mapObject.setOpacity(sliderCommon.get(evt.key) * 100);
+                        app.mapObject.setOpacity(app.sliderCommon.get(evt.key) * 100);
                     }
                 });
             });
@@ -799,7 +639,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
 
     MaplatApp.prototype.setMarker = function(data) {
         var app = this;
-        logger.debug(data);
+        app.logger.debug(data);
         if (typeof data == 'string') {
             data = JSON.parse(data);
         }
@@ -824,6 +664,167 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
 
     MaplatApp.prototype.resetMarker = function(data) {
         this.mapObject.resetMarker();
+    };
+
+    MaplatApp.prototype.changeMap = function(sourceID) {
+        var app = this;
+        var now = app.cacheHash['osm'];
+        var to = app.cacheHash[sourceID];
+        if ((to == app.from) && (to != now)) return;
+        if (to != app.from) {
+            app.convertParametersFromCurrent(to, function(size) {
+                var backSrc = null;
+                var backTo = null;
+
+                if (app.backMap) {
+                    // Overlay = true case:
+                    backSrc = app.backMap.getSource(); // Get current source of background map
+                    if (!(to instanceof ol.source.NowMap)) {
+                        // If new foreground source is nonlinear map:
+                        if (!backSrc) {
+                            // If current background source is not set, specify it
+                            backTo = now;
+                            if (app.from instanceof ol.source.NowMap) {
+                                backTo = app.from instanceof ol.source.TmsMap ?
+                                    app.mapObject.getSource() :
+                                    // If current foreground is TMS overlay, set current basemap as new background
+                                    app.from; // If current foreground source is basemap, set current foreground as new background
+                            }
+                            app.backMap.exchangeSource(backTo);
+                        } else {
+                            // If current background source is set, use it again
+                            backTo = backSrc;
+                        }
+                    } else if (to instanceof ol.source.NowMap) {
+                        // If new foreground source is basemap or TMS overlay, remove source from background map
+                        app.backMap.exchangeSource();
+                    }
+                    if (!(to instanceof ol.source.NowMap) || to instanceof ol.source.TmsMap) {
+                        // If new foreground is nonlinear map or TMS overlay, enable opacity slider
+                        app.sliderCommon.setEnable(true);
+                    } else {
+                        // If new foreground is basemap, disable opacity slider
+                        app.sliderCommon.setEnable(false);
+                    }
+                    // Overlay = true case: end
+                }
+                if (to instanceof ol.source.TmsMap) {
+                    // Foreground is TMS overlay case: set TMS as Layer
+                    app.mapObject.setLayer(to);
+                    // If current foreground is basemap then set it as basemap layer
+                    if (!(app.from instanceof ol.source.NowMap)) app.mapObject.exchangeSource(backSrc || now);
+                    app.sliderCommon.setEnable(true);
+                } else {
+                    // Remove overlay from foreground and set current source to foreground
+                    app.mapObject.setLayer();
+                    app.mapObject.exchangeSource(to);
+                }
+
+                // This must be here: Because, render process works after view.setCenter,
+                // and Changing "from" content must be finished before "postrender" event
+                app.from = to;
+
+                var opacity = app.sliderCommon.get('slidervalue') * 100;
+                app.mapObject.setOpacity(opacity);
+                var view = app.mapObject.getView();
+                if (to.insideCheckHistMapCoords(size[0])) {
+                    view.setCenter(size[0]);
+                    view.setZoom(size[1]);
+                    view.setRotation(size[2]);
+                } else if (!init) {
+                    document.querySelector('#gpsDialogTitle').innerText = t('app.out_of_map');
+                    document.querySelector('#gpsDialogBody').innerText = t('app.out_of_map_area');
+                    var gdModalElm = document.getElementById('gpsDialog');
+                    var gdModal = new bsn.Modal(gdModalElm);
+                    gdModal.show();
+                    to.goHome();
+                }
+                to.setGPSMarker(app.currentPosition, true);
+                app.mapObject.resetMarker();
+                for (var i = 0; i < app.pois.length; i++) {
+                    (function(datum) {
+                        var lngLat = [datum.lng, datum.lat];
+                        var merc = ol.proj.transform(lngLat, 'EPSG:4326', 'EPSG:3857');
+
+                        to.merc2XyAsync(merc).then(function(xy) {
+                            if (to.insideCheckHistMapCoords(xy)) {
+                                app.mapObject.setMarker(xy, {'datum': datum}, datum.icon);
+                            }
+                        });
+                    })(app.pois[i]);
+                }
+                app.mapObject.updateSize();
+                app.mapObject.renderSync();
+
+                var title = to.officialTitle || to.title || to.label;
+                document.querySelector('.map-title span').innerText = title;
+
+                if (app.__init == true) {
+                    app.__init = false;
+                    to.goHome();
+                } else if (app.backMap && backTo) {
+                    app.convertParametersFromCurrent(backTo, function(size) {
+                        var view = app.backMap.getView();
+                        view.setCenter(size[0]);
+                        view.setZoom(size[1]);
+                        view.setRotation(size[2]);
+                        app.backMap.updateSize();
+                        app.backMap.renderSync();
+                    });
+                }
+            });
+        }
+    };
+
+    MaplatApp.prototype.convertParametersFromCurrent = function(to, callback) {
+        var app = this;
+        var view = app.mapObject.getView();
+        var fromPromise = app.from.size2MercsAsync();
+        var current = ol.MathEx.recursiveRound([
+            view.getCenter(), view.getZoom(), view.getRotation()
+        ], 10);
+        if (app.mercBuffer && app.mercBuffer.mercs && app.mercBuffer.buffer[app.from.sourceID]) {
+            var buffer = app.mercBuffer.buffer[app.from.sourceID];
+            if (buffer[0][0] == current[0][0] && buffer[0][1] == current[0][1] &&
+                buffer[1] == current[1] && buffer[2] == current[2]) {
+                app.logger.debug(buffer);
+                app.logger.debug(current);
+                app.logger.debug('From: Use buffer');
+                fromPromise = new Promise(function(res, rej) {
+                    res(app.mercBuffer.mercs);
+                });
+            } else {
+                app.mercBuffer = {
+                    buffer: {}
+                };
+                app.mercBuffer.buffer[app.from.sourceID] = current;
+            }
+        } else {
+            app.mercBuffer = {
+                buffer: {}
+            };
+            app.mercBuffer.buffer[app.from.sourceID] = current;
+        }
+        app.logger.debug('From: Center: ' + current[0] + ' Zoom: ' + current[1] + ' Rotation: ' + current[2]);
+        app.logger.debug('From: ' + app.from.sourceID);
+        fromPromise.then(function(mercs) {
+            app.mercBuffer.mercs = mercs;
+            app.logger.debug('Mercs: ' + mercs);
+            var toPromise = to.mercs2SizeAsync(mercs);
+            var key = to.sourceID;
+            if (app.mercBuffer.buffer[key]) {
+                app.logger.debug('To: Use buffer');
+                toPromise = new Promise(function(res, rej) {
+                    res(app.mercBuffer.buffer[key]);
+                });
+            }
+            toPromise.then(function(size) {
+                app.logger.debug('To: Center: ' + size[0] + ' Zoom: ' + size[1] + ' Rotation: ' + size[2]);
+                app.logger.debug('To: ' + to.sourceID);
+                app.mercBuffer.buffer[to.sourceID] = ol.MathEx.recursiveRound(size, 10);
+                callback(size);
+            });
+        });
     };
 
     return MaplatApp;
