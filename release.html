@@ -87,7 +87,10 @@
             hash = hashes[i].split('=');
             option[hash[0]] = hash[1];
         }
-        new MaplatApp(option);
+        var app = new MaplatApp(option);
+        app.addEventListener('clickPoi', function(evt) {
+            console.log(evt);
+        })
     });
 </script>
 </html>

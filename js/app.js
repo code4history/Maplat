@@ -200,11 +200,18 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
         return nodes;
     };
 
+    var CustomEvent = function(event, data) {
+        var evt = document.createEvent( 'CustomEvent' );
+        evt.initCustomEvent(event, false, false, data);
+        return evt;
+    }
+    CustomEvent.prototype = window.Event.prototype;
+
     // Maplat App Class
 
     var MaplatApp = function(appOption) {
         var app = this;
-        console.log(app);
+        ol.events.EventTarget.call(app);
         var mapType = appOption.stroly ? 'stroly' : appOption.drumsey ? 'drumsey' : appOption.warper ? 'warper' : null;
         var appid = appOption.appid || (mapType ? appOption[mapType] : 'sample');
         app.mobileIF = false;
@@ -241,7 +248,6 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
             '</div>');
         var elem = document.querySelector('#' + mapDiv);
         for (var i=newElems.length - 1; i >= 0; i--) {
-            console.log(i);
             elem.insertBefore(newElems[i], elem.firstChild);
         }
 
@@ -306,7 +312,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
 
         var promises = Promise.all([i18nPromise, appPromise]);
 
-        return promises.then(function(result) {
+        promises.then(function(result) {
             var appData = result[1];
             var i18n = result[0][1];
             var t = result[0][0];
@@ -494,11 +500,8 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                 app.changeMap(initial.sourceID);
 
                 function showInfo(data) {
-                    if (app.mobileIF) {
-                        app.logger.debug(data);
-                        var json = JSON.stringify(data);
-                        jsBridge.callWeb2App('poiClick', json);
-                    } else {
+                    app.dispatchEvent(new CustomEvent('clickPoi', data));
+                    if (!app.mobileIF) {
                         document.querySelector('#poi_name').innerText = data.name;
                         if (data.url) {
                             document.querySelector('#poi_web').classList.remove('hide');
@@ -636,6 +639,8 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
             });
         });
     };
+
+    ol.inherits(MaplatApp, ol.events.EventTarget);
 
     MaplatApp.prototype.setMarker = function(data) {
         var app = this;
