@@ -6,12 +6,25 @@
   <meta content="yes" name="apple-mobile-web-app-capable">
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
   <link rel="stylesheet" href="css/app.css">
+  <style>
+    .h80p {
+      padding-top: 10%;
+      padding-bottom: 10%;
+      height:80%;
+    }
+
+    .w80p {
+      padding-right: 10%;
+      padding-left: 10%;
+      width:80%;
+    }
+  </style>
 </head>
-  <body>
+<body>
   <div class="container-fluid h100p w100p">
     <div id="all" class="row-fluid h100p">
       <div class="row-fluid mainview">
-        <div id="map_div" class="col-xs-12 h100p w100p"></div>
+        <div id="map_div" class="col-xs-12 h80p w80p"></div>
       </div>
       <input type="hidden" name="map_type" id="map_type" value="plat">
     </div>
@@ -78,31 +91,20 @@
     </div>
   </div>
 </body>
-<script src="js/maplat.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
+<script src="js/config.js"></script>
 <script>
-    var jsBridge = jsBridge || {};
-    jsBridge.callWeb2App = jsBridge.callWeb2App || function (key, data) {
-        window.location = "jsBridge://call?key=" + encodeURIComponent(key) + "&value=" + encodeURIComponent(data);
-    };
     Maplat.onLoad(function(MaplatApp) {
-        var option = {
-            appid: 'mobile_sample',
-            mobile_if: true,
-            no_rotate: true
-        };
+        var option = {};
+        var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+        for (var i = 0; i < hashes.length; i++) {
+            hash = hashes[i].split('=');
+            option[hash[0]] = hash[1];
+        }
         var app = new MaplatApp(option);
-        jsBridge.callApp2Web = function (key, data) {
-            var func = app[key];
-            if (func) {
-                func.call(app, data);
-            }
-        };
         app.addEventListener('clickPoi', function(evt) {
-            jsBridge.callWeb2App('clickPoi', JSON.stringify(evt.detail));
-        });
-        app.waitReady.then(function(){
-            jsBridge.callWeb2App('callApp2Web', 'ready');
-        });
+            console.log(evt);
+        })
     });
 </script>
 </html>

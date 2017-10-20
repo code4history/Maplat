@@ -257,7 +257,9 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
             document.querySelector('body').classList.add('with-opacity');
         }
         if (noUI) {
-            document.querySelector('.swiper-container').style.display = 'none';
+            document.querySelector('.base-swiper').style.display = 'none';
+            document.querySelector('.overlay-swiper').style.display = 'none';
+            document.querySelector('.map-title').style.display = 'none';
         }
         var appPromise = mapType ?
             new Promise(function(resolve, reject) {
@@ -312,7 +314,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
 
         var promises = Promise.all([i18nPromise, appPromise]);
 
-        promises.then(function(result) {
+        app.waitReady = promises.then(function(result) {
             var appData = result[1];
             var i18n = result[0][1];
             var t = result[0][0];
