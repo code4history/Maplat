@@ -807,7 +807,6 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                     view.setZoom(size[1]);
                     view.setRotation(size[2]);
                 } else if (!app.__init) {
-                    var sel = app.mapDivDocument.querySelector('#gpsDialogTitle');
                     app.mapDivDocument.querySelector('#gpsDialogTitle').innerText = app.t('app.out_of_map');
                     app.mapDivDocument.querySelector('#gpsDialogBody').innerText = app.t('app.out_of_map_area');
                     var gdModalElm = app.mapDivDocument.querySelector('#gpsDialog');
