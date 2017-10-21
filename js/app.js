@@ -104,66 +104,6 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
         }
     };
 
-    var ellips = function() {
-        var omitMark = '…';
-        var omitLine = 2;
-        var stringSplit = function(element) {
-            var splitArr = element.innerText.split('');
-            var joinString = '';
-            for (var i = 0; i < splitArr.length; i++) {
-                joinString += '<span>' + splitArr[i] + '</span>';
-            }
-            joinString += '<span class="omit-mark">' + omitMark + '</span>';
-            element.innerHTML = joinString;
-        };
-        var omitCheck = function(element) {
-            var thisSpan = element.querySelectorAll('span');
-            var omitSpan = element.querySelector('.omit-mark');
-            var lineCount = 0;
-            var omitCount;
-
-            if(omitLine <= 0) {
-                return;
-            }
-
-            thisSpan[0].style.display = null;
-            for (var i=1; i < thisSpan.length; i++) {
-                thisSpan[i].style.display = 'none';
-            }
-            omitSpan.style.display = null;
-            var divHeight = element.offsetHeight;
-            var minimizeFont = false;
-            for (var i = 1; i < thisSpan.length - 1; i++) {
-                thisSpan[i].style.display = null;
-                if(element.offsetHeight > divHeight) {
-                    if (!minimizeFont) {
-                        minimizeFont = true;
-                        element.classList.add('minimize');
-                    } else {
-                        divHeight = element.offsetHeight;
-                        lineCount++;
-                    }
-                }
-                if(lineCount >= omitLine) {
-                    omitCount = i - 2;
-                    break;
-                }
-                if(i >= thisSpan.length - 2) {
-                    omitSpan.style.display ='none';
-                    return;
-                }
-            }
-            for (var i = omitCount; i < thisSpan.length - 1; i++) {
-                thisSpan[i].style.display = 'none';
-            }
-        };
-        var swiperItems = document.querySelectorAll('.swiper-slide div');
-        for (var i = 0; i < swiperItems.length; i++) {
-            var swiperItem = swiperItems[i];
-            stringSplit(swiperItem);
-            omitCheck(swiperItem);
-        }
-    };
     var createElement = function(domStr) {
         var context = document,
             fragment = context.createDocumentFragment(),
@@ -180,7 +120,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
 
             // SCRIPT要素は新たに生成し直さなければ実行されない
             if (node.tagName && node.tagName.toLowerCase() === 'script') {
-                var script = document.createElement('script');
+                var script = context.createElement('script');
                 if (node.type) {
                     script.type = node.type;
                 }
@@ -217,6 +157,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
         app.mobileIF = false;
         app.mapDiv = appOption.div || 'map_div';
         preventDoubleClick(app.mapDiv);
+        app.mapDivDocument = document.querySelector('#' + app.mapDiv);
         var noUI = appOption.no_ui || false;
         if (appOption.mobile_if) {
             app.mobileIF = true;
@@ -246,7 +187,6 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
             '<i class="fa fa-chevron-right swiper-right-icon" aria-hidden="true"></i>' +
             '<div class="swiper-wrapper"></div>' +
             '</div>');
-        app.mapDivDocument = document.querySelector('#' + app.mapDiv);
         for (var i=newElems.length - 1; i >= 0; i--) {
             app.mapDivDocument.insertBefore(newElems[i], app.mapDivDocument.firstChild);
         }
@@ -556,7 +496,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                     baseSwiper.on;
                     overlaySwiper.on;
                     //swiper.setSlideIndex(sources.length - 1);
-                    ellips();
+                    app.ellips();
                 }
 
                 var initial = cache[cache.length - 1];
@@ -900,6 +840,68 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                 callback(size);
             });
         });
+    };
+
+    MaplatApp.prototype.ellips = function() {
+        var app = this;
+        var omitMark = '…';
+        var omitLine = 2;
+        var stringSplit = function(element) {
+            var splitArr = element.innerText.split('');
+            var joinString = '';
+            for (var i = 0; i < splitArr.length; i++) {
+                joinString += '<span>' + splitArr[i] + '</span>';
+            }
+            joinString += '<span class="omit-mark">' + omitMark + '</span>';
+            element.innerHTML = joinString;
+        };
+        var omitCheck = function(element) {
+            var thisSpan = element.querySelectorAll('span');
+            var omitSpan = element.querySelector('.omit-mark');
+            var lineCount = 0;
+            var omitCount;
+
+            if(omitLine <= 0) {
+                return;
+            }
+
+            thisSpan[0].style.display = null;
+            for (var i=1; i < thisSpan.length; i++) {
+                thisSpan[i].style.display = 'none';
+            }
+            omitSpan.style.display = null;
+            var divHeight = element.offsetHeight;
+            var minimizeFont = false;
+            for (var i = 1; i < thisSpan.length - 1; i++) {
+                thisSpan[i].style.display = null;
+                if(element.offsetHeight > divHeight) {
+                    if (!minimizeFont) {
+                        minimizeFont = true;
+                        element.classList.add('minimize');
+                    } else {
+                        divHeight = element.offsetHeight;
+                        lineCount++;
+                    }
+                }
+                if(lineCount >= omitLine) {
+                    omitCount = i - 2;
+                    break;
+                }
+                if(i >= thisSpan.length - 2) {
+                    omitSpan.style.display ='none';
+                    return;
+                }
+            }
+            for (var i = omitCount; i < thisSpan.length - 1; i++) {
+                thisSpan[i].style.display = 'none';
+            }
+        };
+        var swiperItems = app.mapDivDocument.querySelectorAll('.swiper-slide div');
+        for (var i = 0; i < swiperItems.length; i++) {
+            var swiperItem = swiperItems[i];
+            stringSplit(swiperItem);
+            omitCheck(swiperItem);
+        }
     };
 
     return MaplatApp;

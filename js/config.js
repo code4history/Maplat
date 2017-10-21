@@ -39,7 +39,7 @@ Maplat.createObject = function(option) {
     return new Promise(function(resolve) {
         Maplat.onLoad(function(MaplatApp) {
             var app = new MaplatApp(option);
-            app.waitReady.then(function(){
+            app.waitReady.then(function() {
                 resolve(app);
             });
         })
