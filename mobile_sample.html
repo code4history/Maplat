@@ -84,13 +84,13 @@
     jsBridge.callWeb2App = jsBridge.callWeb2App || function (key, data) {
         window.location = "jsBridge://call?key=" + encodeURIComponent(key) + "&value=" + encodeURIComponent(data);
     };
-    Maplat.onLoad(function(MaplatApp) {
-        var option = {
-            appid: 'mobile_sample',
-            mobile_if: true,
-            no_rotate: true
-        };
-        var app = new MaplatApp(option);
+    var option = {
+        appid: 'mobile_sample',
+        mobile_if: true,
+        no_rotate: true
+    };
+
+    Maplat.createObject(option).then(function(app) {
         jsBridge.callApp2Web = function (key, data) {
             var func = app[key];
             if (func) {
@@ -100,9 +100,7 @@
         app.addEventListener('clickPoi', function(evt) {
             jsBridge.callWeb2App('clickPoi', JSON.stringify(evt.detail));
         });
-        app.waitReady.then(function(){
-            jsBridge.callWeb2App('callApp2Web', 'ready');
-        });
+        jsBridge.callWeb2App('callApp2Web', 'ready');
     });
 </script>
 </html>
