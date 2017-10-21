@@ -386,10 +386,10 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
 
         app.waitReady = promises.then(function(result) {
             var appData = result[1];
-            var i18n = result[0][1];
-            var t = result[0][0];
+            app.i18n = result[0][1];
+            app.t = result[0][0];
             var baseSwiper, overlaySwiper;
-            ol.source.HistMap.setI18n(i18n, t);
+            ol.source.HistMap.setI18n(app.i18n, app.t);
 
             if (!noUI) {
                 var lwModalElm = app.mapDivDocument.querySelector('#loadWait');
@@ -474,8 +474,8 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                             var gwModalElm = app.mapDivDocument.querySelector('#gpsWait');
                             var gwModal = new bsn.Modal(gwModalElm);
                             gwModal.hide();
-                            app.mapDivDocument.querySelector('#gpsDialogTitle').innerText = t('app.out_of_map');
-                            app.mapDivDocument.querySelector('#gpsDialogBody').innerText = t('app.out_of_map_desc');
+                            app.mapDivDocument.querySelector('#gpsDialogTitle').innerText = app.t('app.out_of_map');
+                            app.mapDivDocument.querySelector('#gpsDialogBody').innerText = app.t('app.out_of_map_desc');
                             var gdModalElm = app.mapDivDocument.querySelector('#gpsDialog');
                             var gdModal = new bsn.Modal(gdModalElm);
                             gdModal.show();
@@ -491,11 +491,11 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                     }
                 });
                 if (fakeGps) {
-                    var newElem = createElement(sprintf(t('app.fake_explanation'), fakeCenter, fakeRadius))[0];
+                    var newElem = createElement(sprintf(app.t('app.fake_explanation'), fakeCenter, fakeRadius))[0];
                     var elem = app.mapDivDocument.querySelector('#gps_etc');
                     elem.appendChild(newElem);
                 } else {
-                    var newElem = createElement(t('app.acquiring_gps_desc'))[0];
+                    var newElem = createElement(app.t('app.acquiring_gps_desc'))[0];
                     var elem = app.mapDivDocument.querySelector('#gps_etc');
                     elem.appendChild(newElem);
                 }
@@ -806,9 +806,10 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                     view.setCenter(size[0]);
                     view.setZoom(size[1]);
                     view.setRotation(size[2]);
-                } else if (!init) {
-                    app.mapDivDocument.querySelector('#gpsDialogTitle').innerText = t('app.out_of_map');
-                    app.mapDivDocument.querySelector('#gpsDialogBody').innerText = t('app.out_of_map_area');
+                } else if (!app.__init) {
+                    var sel = app.mapDivDocument.querySelector('#gpsDialogTitle');
+                    app.mapDivDocument.querySelector('#gpsDialogTitle').innerText = app.t('app.out_of_map');
+                    app.mapDivDocument.querySelector('#gpsDialogBody').innerText = app.t('app.out_of_map_area');
                     var gdModalElm = app.mapDivDocument.querySelector('#gpsDialog');
                     var gdModal = new bsn.Modal(gdModalElm);
                     gdModal.show();
