@@ -215,8 +215,8 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
         var mapType = appOption.stroly ? 'stroly' : appOption.drumsey ? 'drumsey' : appOption.warper ? 'warper' : null;
         var appid = appOption.appid || (mapType ? appOption[mapType] : 'sample');
         app.mobileIF = false;
-        var mapDiv = appOption.div || 'map_div';
-        preventDoubleClick(mapDiv);
+        app.mapDiv = appOption.div || 'map_div';
+        preventDoubleClick(app.mapDiv);
         var noUI = appOption.no_ui || false;
         if (appOption.mobile_if) {
             app.mobileIF = true;
@@ -246,9 +246,79 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
             '<i class="fa fa-chevron-right swiper-right-icon" aria-hidden="true"></i>' +
             '<div class="swiper-wrapper"></div>' +
             '</div>');
-        var elem = document.querySelector('#' + mapDiv);
+        app.mapDivDocument = document.querySelector('#' + app.mapDiv);
         for (var i=newElems.length - 1; i >= 0; i--) {
-            elem.insertBefore(newElems[i], elem.firstChild);
+            app.mapDivDocument.insertBefore(newElems[i], app.mapDivDocument.firstChild);
+        }
+
+        var newElems = createElement('<div class="modal" id="poi_info" tabindex="-1" role="dialog" ' +
+            'aria-labelledby="staticModalLabel" aria-hidden="true" data-show="true" data-keyboard="false" ' +
+            'data-backdrop="static">' +
+            '<div class="modal-dialog">' +
+            '<div class="modal-content">' +
+            '<div class="modal-header">' +
+            '<button type="button" class="close" data-dismiss="modal">' +
+            '<span aria-hidden="true">&#215;</span><span class="sr-only" data-i18n="html.close"></span>' +
+            '</button>' +
+            '<h4 class="modal-title" id="poi_name"></h4>' +
+            '</div>' +
+            '<div class="modal-body">' +
+            '<div id="poi_web" class="embed-responsive embed-responsive-4by3" style="overflow-y: scroll;">' +
+            '<iframe id="poi_iframe" width="99.6%" frameborder="0" src=""></iframe>' +
+            '</div>' +
+            '<div id="poi_data" class="hide">' +
+            '<p class="col-xs-12 poi_img"><img id="poi_img" src=""></img></p>' +
+            '<p class="recipient" id="poi_address"></p>' +
+            '<p class="recipient" id="poi_desc"></p>' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '<div class="modal" id="loadWait" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel" ' +
+            'aria-hidden="true" data-show="true" data-keyboard="false" data-backdrop="static">' +
+            '<div class="modal-dialog">' +
+            '<div class="modal-content">' +
+            '<div class="modal-header">' +
+            '<h4 class="modal-title" data-i18n="html.app_loading_title"></h4>' +
+            '</div>' +
+            '<div class="modal-body">' +
+            '<p class="recipient"><img src="parts/loading.gif"><span data-i18n="html.app_loading_body"></span></p>' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '<div class="modal" id="gpsWait" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel" ' +
+            'aria-hidden="true" data-show="true" data-keyboard="false" data-backdrop="static">' +
+            '<div class="modal-dialog">' +
+            '<div class="modal-content">' +
+            '<div class="modal-header">' +
+            '<h4 class="modal-title"><span data-i18n="html.acquiring_gps"></span></h4>' +
+            '</div>' +
+            '<div class="modal-body">' +
+            '<p id="gps_etc" class="recipient"></p>' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '<div class="modal" id="gpsDialog" tabindex="-1" role="dialog" aria-labelledby_="staticModalLabel" ' +
+            'aria-hidden_="true" data-show="true" data-keyboard="false" data-backdrop="static">' +
+            '<div class="modal-dialog">' +
+            '<div class="modal-content">' +
+            '<div class="modal-header">' +
+            '<button type="button" class="close" data-dismiss="modal">' +
+            '<span aria-hidden="true">&#215;</span><span class="sr-only" data-i18n="html.close"></span>' +
+            '</button>' +
+            '<h4 class="modal-title" id="gpsDialogTitle"></h4>' +
+            '</div>' +
+            '<div class="modal-body">' +
+            '<p id="gpsDialogBody" class="recipient"></p>' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '</div>');
+        for (var i=newElems.length - 1; i >= 0; i--) {
+            app.mapDivDocument.insertBefore(newElems[i], app.mapDivDocument.firstChild);
         }
 
         var overlay = appOption.overlay || false;
@@ -257,9 +327,9 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
             document.querySelector('body').classList.add('with-opacity');
         }
         if (noUI) {
-            document.querySelector('.base-swiper').style.display = 'none';
-            document.querySelector('.overlay-swiper').style.display = 'none';
-            document.querySelector('.map-title').style.display = 'none';
+            app.mapDivDocument.querySelector('.base-swiper').style.display = 'none';
+            app.mapDivDocument.querySelector('.overlay-swiper').style.display = 'none';
+            app.mapDivDocument.querySelector('.map-title').style.display = 'none';
         }
         var appPromise = mapType ?
             new Promise(function(resolve, reject) {
@@ -301,7 +371,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                     loadPath: 'locales/{{lng}}/{{ns}}.json'
                 }
             }, function(err, t) {
-                var i18nTargets =document.querySelectorAll('[data-i18n]');
+                var i18nTargets = app.mapDivDocument.querySelectorAll('[data-i18n]');
                 for (var i=0; i<i18nTargets.length; i++) {
                     var target = i18nTargets[i];
                     var key = target.getAttribute('data-i18n');
@@ -321,9 +391,8 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
             var baseSwiper, overlaySwiper;
             ol.source.HistMap.setI18n(i18n, t);
 
-            document.querySelector('#all').style.display = null;
             if (!noUI) {
-                var lwModalElm = document.getElementById('loadWait');
+                var lwModalElm = app.mapDivDocument.querySelector('#loadWait');
                 var lwModal = new bsn.Modal(lwModalElm);
                 lwModal.show();
                 var slidesPerView = 1.4;
@@ -365,11 +434,10 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
             app.currentPosition = null;
             app.backMap = null;
             app.__init = true;
-            var frontDiv = mapDiv + '_front';
+            var frontDiv = app.mapDiv + '_front';
             var newElem = createElement('<div id="' + frontDiv + '" class="map" style="top:0; left:0; right:0; bottom:0; ' +
                 'position:absolute;"></div>')[0];
-            var elem = document.querySelector('#' + mapDiv);
-            elem.insertBefore(newElem, elem.firstChild);
+            app.mapDivDocument.insertBefore(newElem, app.mapDivDocument.firstChild);
             app.mapObject = new ol.MaplatMap({
                 div: frontDiv,
                 off_control: noUI ? true : false,
@@ -380,10 +448,10 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
 
             var backDiv = null;
             if (overlay) {
-                backDiv = mapDiv + '_back';
+                backDiv = app.mapDiv + '_back';
                 newElem = createElement('<div id="' + backDiv + '" class="map" style="top:0; left:0; right:0; bottom:0; ' +
                     'position:absolute;"></div>')[0];
-                elem.insertBefore(newElem, elem.firstChild);
+                app.mapDivDocument.insertBefore(newElem, app.mapDivDocument.firstChild);
                 app.backMap = new ol.MaplatMap({
                     off_control: true,
                     div: backDiv
@@ -393,7 +461,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                 var shown = false;
                 app.mapObject.on('gps_request', function() {
                     shown = true;
-                    var gwModalElm = document.getElementById('gpsWait');
+                    var gwModalElm = app.mapDivDocument.querySelector('#gpsWait');
                     var gwModal = new bsn.Modal(gwModalElm);
                     gwModal.show();
                 });
@@ -403,12 +471,12 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                         app.currentPosition = null;
                         if (result.error == 'gps_out' && shown) {
                             shown = false;
-                            var gwModalElm = document.getElementById('gpsWait');
+                            var gwModalElm = app.mapDivDocument.querySelector('#gpsWait');
                             var gwModal = new bsn.Modal(gwModalElm);
                             gwModal.hide();
-                            document.querySelector('#gpsDialogTitle').innerText = t('app.out_of_map');
-                            document.querySelector('#gpsDialogBody').innerText = t('app.out_of_map_desc');
-                            var gdModalElm = document.getElementById('gpsDialog');
+                            app.mapDivDocument.querySelector('#gpsDialogTitle').innerText = t('app.out_of_map');
+                            app.mapDivDocument.querySelector('#gpsDialogBody').innerText = t('app.out_of_map_desc');
+                            var gdModalElm = app.mapDivDocument.querySelector('#gpsDialog');
                             var gdModal = new bsn.Modal(gdModalElm);
                             gdModal.show();
                         }
@@ -417,18 +485,18 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                     }
                     if (shown) {
                         shown = false;
-                        var gwModalElm = document.getElementById('gpsWait');
+                        var gwModalElm = app.mapDivDocument.querySelector('#gpsWait');
                         var gwModal = new bsn.Modal(gwModalElm);
                         gwModal.hide();
                     }
                 });
                 if (fakeGps) {
                     var newElem = createElement(sprintf(t('app.fake_explanation'), fakeCenter, fakeRadius))[0];
-                    var elem = document.querySelector('#gps_etc');
+                    var elem = app.mapDivDocument.querySelector('#gps_etc');
                     elem.appendChild(newElem);
                 } else {
                     var newElem = createElement(t('app.acquiring_gps_desc'))[0];
-                    var elem = document.querySelector('#gps_etc');
+                    var elem = app.mapDivDocument.querySelector('#gps_etc');
                     elem.appendChild(newElem);
                 }
             }
@@ -451,7 +519,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
 
             return Promise.all(sourcePromise).then(function(sources) {
                 if (!noUI) {
-                    var lwModalElm = document.getElementById('loadWait');
+                    var lwModalElm = app.mapDivDocument.querySelector('#loadWait');
                     var lwModal = new bsn.Modal(lwModalElm);
                     lwModal.hide();
                 }
@@ -504,26 +572,26 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                 function showInfo(data) {
                     app.dispatchEvent(new CustomEvent('clickPoi', data));
                     if (!app.mobileIF) {
-                        document.querySelector('#poi_name').innerText = data.name;
+                        app.mapDivDocument.querySelector('#poi_name').innerText = data.name;
                         if (data.url) {
-                            document.querySelector('#poi_web').classList.remove('hide');
-                            document.querySelector('#poi_data').classList.add('hide');
+                            app.mapDivDocument.querySelector('#poi_web').classList.remove('hide');
+                            app.mapDivDocument.querySelector('#poi_data').classList.add('hide');
 
-                            document.querySelector('#poi_iframe').setAttribute('src', data.url);
+                            app.mapDivDocument.querySelector('#poi_iframe').setAttribute('src', data.url);
                         } else {
-                            document.querySelector('#poi_data').classList.remove('hide');
-                            document.querySelector('#poi_web').classList.add('hide');
+                            app.mapDivDocument.querySelector('#poi_data').classList.remove('hide');
+                            app.mapDivDocument.querySelector('#poi_web').classList.add('hide');
 
                             if (data.image && data.image != '') {
-                                document.querySelector('#poi_img').setAttribute('src',
+                                app.mapDivDocument.querySelector('#poi_img').setAttribute('src',
                                     data.image.match(/^http/) ? data.image : 'img/' + data.image);
                             } else {
-                                document.querySelector('#poi_img').setAttribute('src', 'parts/no_image.png');
+                                app.mapDivDocument.querySelector('#poi_img').setAttribute('src', 'parts/no_image.png');
                             }
-                            document.querySelector('#poi_address').innerText = data.address;
-                            document.querySelector('#poi_desc').innerHTML = data.desc.replace(/\n/g, '<br>');
+                            app.mapDivDocument.querySelector('#poi_address').innerText = data.address;
+                            app.mapDivDocument.querySelector('#poi_desc').innerHTML = data.desc.replace(/\n/g, '<br>');
                         }
-                        var piModalElm = document.getElementById('poi_info');
+                        var piModalElm = app.mapDivDocument.querySelector('#poi_info');
                         var piModal = new bsn.Modal(piModalElm);
                         piModal.show();
                     }
@@ -549,7 +617,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                         clearTimeout(timer);
                         delete timer;
                     }
-                    var ctls = document.querySelectorAll('.ol-control');
+                    var ctls = app.mapDivDocument.querySelectorAll('.ol-control');
                     for (var i = 0; i < ctls.length; i++) {
                         ctls[i].classList.remove('fade');
                     }
@@ -559,7 +627,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                         clearTimeout(timer);
                         delete timer;
                     }
-                    var ctls = document.querySelectorAll('.ol-control');
+                    var ctls = app.mapDivDocument.querySelectorAll('.ol-control');
                     for (var i = 0; i < ctls.length; i++) {
                         ctls[i].classList.add('fade');
                     }
@@ -571,7 +639,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                     }
                     timer = setTimeout(function() {
                         delete timer;
-                        var ctls = document.querySelectorAll('.ol-control');
+                        var ctls = app.mapDivDocument.querySelectorAll('.ol-control');
                         for (var i = 0; i < ctls.length; i++) {
                             ctls[i].classList.remove('fade');
                         }
@@ -588,10 +656,10 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                             function(feature) {
                                 if (feature.get('datum')) return feature;
                             });
-                        document.querySelector('#' + target).style.cursor = feature ? 'pointer' : '';
+                        app.mapDivDocument.querySelector('#' + target).style.cursor = feature ? 'pointer' : '';
                         return;
                     }
-                    document.querySelector('#' + target).style.cursor = '';
+                    app.mapDivDocument.querySelector('#' + target).style.cursor = '';
                 };
                 app.mapObject.on('pointermove', moveHandler);
 
@@ -739,9 +807,9 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                     view.setZoom(size[1]);
                     view.setRotation(size[2]);
                 } else if (!init) {
-                    document.querySelector('#gpsDialogTitle').innerText = t('app.out_of_map');
-                    document.querySelector('#gpsDialogBody').innerText = t('app.out_of_map_area');
-                    var gdModalElm = document.getElementById('gpsDialog');
+                    app.mapDivDocument.querySelector('#gpsDialogTitle').innerText = t('app.out_of_map');
+                    app.mapDivDocument.querySelector('#gpsDialogBody').innerText = t('app.out_of_map_area');
+                    var gdModalElm = app.mapDivDocument.querySelector('#gpsDialog');
                     var gdModal = new bsn.Modal(gdModalElm);
                     gdModal.show();
                     to.goHome();
@@ -764,7 +832,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                 app.mapObject.renderSync();
 
                 var title = to.officialTitle || to.title || to.label;
-                document.querySelector('.map-title span').innerText = title;
+                app.mapDivDocument.querySelector('.map-title span').innerText = title;
 
                 if (app.__init == true) {
                     app.__init = false;
