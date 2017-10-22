@@ -46,27 +46,25 @@ define(['ol-custom', 'aigle'], function(ol, Promise) {
     var baseDict = {
         osm: {
             mapID: 'osm',
-            label: 'OSM(Now)',
+            label: {
+                ja: 'OSM(現在)',
+                en: 'OSM(Now)'
+            },
             maptype: 'base'
         },
         gsi: {
             mapID: 'gsi',
-            label: 'GSI Map',
-            attr: 'The Geospatial Information Authority of Japan',
+            label: {
+                ja: '地理院地図',
+                en: 'GSI Map'
+            },
+            attr: {
+                ja: '国土地理院',
+                en: 'The Geospatial Information Authority of Japan'
+            },
             maptype: 'base',
             url: 'https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png',
             maxZoom: 18
-        }
-    };
-    var i18nData = {
-        'OSM(Now)': {
-            ja: 'OSM(現在)'
-        },
-        'The Geospatial Information Authority of Japan': {
-            ja: '国土地理院'
-        },
-        'GSI Map': {
-            ja: '地理院地図'
         }
     };
 
@@ -123,13 +121,26 @@ define(['ol-custom', 'aigle'], function(ol, Promise) {
     ol.source.HistMap.setI18n = function(i18n_, t_) {
         i18n = i18n_;
         t = t_;
-        Object.keys(i18nData).map(function(key) {
-            i18n.addResource('en', 'translation', key, key);
-            var resource = i18nData[key];
-            Object.keys(resource).map(function(lng) {
-                i18n.addResource(lng, 'translation', key, resource[lng]);
-            });
-        });
+    };
+
+    ol.source.HistMap.translate = function(dataFragment, defLang) {
+        if (!dataFragment || typeof dataFragment != 'object') return dataFragment;
+        var langs = Object.keys(dataFragment);
+        var key = langs.reduce(function(prev, curr, idx, arr) {
+            if (curr == defLang) {
+                prev = [dataFragment[curr], true];
+            } else if (!prev || (curr == 'en' && !prev[1])) {
+                prev = [dataFragment[curr], false];
+            }
+            if (idx == arr.length - 1) return prev[0];
+            return prev;
+        }, null);
+        if (i18n.exists(key)) return t(key);
+        for (var i = 0; i < langs.length; i++) {
+            var lang = langs[i];
+            i18n.addResource(lang, 'translation', key, dataFragment[lang]);
+        }
+        return t(key);
     };
 
     ol.source.HistMap.createAsync = function(options, commonOptions) {
@@ -139,11 +150,11 @@ define(['ol-custom', 'aigle'], function(ol, Promise) {
         options = Object.assign(options, commonOptions);
         if (!options.maptype) options.maptype = 'maplat';
         if (!options.algorythm) options.algorythm = 'tin';
-        options.label = t(options.label || options.year);
+        options.label = ol.source.HistMap.translate(options.label || options.year);
         if (options.attr) {
             options.attributions = [
                 new ol.Attribution({
-                    html: t(options.attr)
+                    html: ol.source.HistMap.translate(options.attr)
                 })
             ];
         }

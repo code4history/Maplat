@@ -510,12 +510,12 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                 function showInfo(data) {
                     app.dispatchEvent(new CustomEvent('clickPoi', data));
                     if (!app.mobileIF) {
-                        app.mapDivDocument.querySelector('#poi_name').innerText = data.name;
+                        app.mapDivDocument.querySelector('#poi_name').innerText = app.translate(data.name);
                         if (data.url) {
                             app.mapDivDocument.querySelector('#poi_web').classList.remove('hide');
                             app.mapDivDocument.querySelector('#poi_data').classList.add('hide');
 
-                            app.mapDivDocument.querySelector('#poi_iframe').setAttribute('src', data.url);
+                            app.mapDivDocument.querySelector('#poi_iframe').setAttribute('src', app.translate(data.url));
                         } else {
                             app.mapDivDocument.querySelector('#poi_data').classList.remove('hide');
                             app.mapDivDocument.querySelector('#poi_web').classList.add('hide');
@@ -526,8 +526,8 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                             } else {
                                 app.mapDivDocument.querySelector('#poi_img').setAttribute('src', 'parts/no_image.png');
                             }
-                            app.mapDivDocument.querySelector('#poi_address').innerText = data.address;
-                            app.mapDivDocument.querySelector('#poi_desc').innerHTML = data.desc.replace(/\n/g, '<br>');
+                            app.mapDivDocument.querySelector('#poi_address').innerText = app.translate(data.address);
+                            app.mapDivDocument.querySelector('#poi_desc').innerHTML = app.translate(data.desc).replace(/\n/g, '<br>');
                         }
                         var piModalElm = app.mapDivDocument.querySelector('#poi_info');
                         var piModal = new bsn.Modal(piModalElm);
@@ -842,7 +842,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
 
     MaplatApp.prototype.translate = function(dataFragment) {
         var app = this;
-        if (typeof dataFragment == 'string') return dataFragment;
+        if (!dataFragment || typeof dataFragment != 'object') return dataFragment;
         var langs = Object.keys(dataFragment);
         var key = langs.reduce(function(prev, curr, idx, arr) {
             if (curr == app.appLang) {

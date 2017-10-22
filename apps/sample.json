@@ -14,7 +14,10 @@
     "default_zoom" : 17,
     "sources" : [
         {
-            "attr" : "正保城絵図 南部領盛岡平城絵図 (正保元年) 国立公文書館",
+            "attr" : {
+                "ja" : "正保城絵図 南部領盛岡平城絵図 (正保元年) 国立公文書館",
+                "en" : "Japan National Archives"
+            },
             "label" : "1644 (TMS)",
             "mapID" : "morioka_ndl_affine",
             "maptype" : "overlay",
@@ -32,7 +35,10 @@
     ], 
     "pois" :[
         {
-            "name" : "盛岡城",
+            "name" : {
+                "ja" : "盛岡城",
+                "en" : "Morioka Castle"
+            },
             "address" : "岩手県盛岡市内丸1-37",
             "lat" : 39.69994722,
             "lng" : 141.1501111,
