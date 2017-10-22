@@ -1,7 +1,14 @@
 {
-    "app_name" : "盛岡市古地図アプリ",
+    "app_name" : {
+        "ja" : "盛岡市古地図アプリ",
+        "en" : "Historical Map Application of Morioka"
+    },
+    "lang" : "ja",
     "fake_gps" : true,
-    "fake_center" : "盛岡市",
+    "fake_center" : {
+        "ja" : "盛岡市",
+        "en" : "Morioka"
+    },
     "fake_radius" : 10,
     "home_position" : [141.149989,39.699952],
     "default_zoom" : 17,
