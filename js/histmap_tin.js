@@ -31,13 +31,15 @@ define(['histmap', 'tin', 'aigle'], function(ol, Tin, Promise) {
                 if (this.status == 200 || this.status == 0 ) { // 0 for UIWebView
                     try {
                         var resp = this.response;
-                        options.title = options.title || resp.title;
+                        for (var i = 0; i < ol.source.HistMap.META_KEYS.length; i++) {
+                            var key = ol.source.HistMap.META_KEYS[i];
+                            options[key] = options[key] || resp[key];
+                        }
                         options.width = options.width || resp.width;
                         options.height = options.height || resp.height;
-                        options.label = options.label || resp.label || resp.year;
-                        options.attr = options.attr || resp.attr;
                         options.urls = options.urls || resp.urls;
                         options.url = options.url || resp.url;
+                        options.label = options.label || resp.label || resp.year;
                         if (options.attr && !options.attributions) {
                             options.attributions = [
                                 new ol.Attribution({

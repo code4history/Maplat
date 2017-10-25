@@ -89,9 +89,12 @@ define(['ol-custom', 'aigle'], function(ol, Promise) {
                     ol.TileUrlFunction.expandUrl(options.url));
         }
 
+        for (var i = 0; i < ol.source.HistMap.META_KEYS.length; i++) {
+            var key = ol.source.HistMap.META_KEYS[i];
+            this[key] = options[key];
+        }
         this.width = options.width;
         this.height = options.height;
-        this.title = options.title;
         var zW = Math.log2(this.width/tileSize);
         var zH = Math.log2(this.height/tileSize);
         this.maxZoom = options.maxZoom = Math.ceil(Math.max(zW, zH));
@@ -277,6 +280,10 @@ define(['ol-custom', 'aigle'], function(ol, Promise) {
     ol.source.HistMap.prototype.insideCheckHistMapCoords = function(histCoords) {
         return this.insideCheckXy(this.histMapCoords2Xy(histCoords));
     };
+
+    ol.source.HistMap.META_KEYS = ['title', 'officialTitle', 'author', 'createdAt', 'era',
+        'contributor', 'mapper', 'license', 'dataLicense', 'attr', 'dataAttr',
+        'reference', 'description'];
 
     return ol;
 });

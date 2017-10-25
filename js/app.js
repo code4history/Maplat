@@ -215,6 +215,36 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
             '</div>' +
             '</div>' +
             '</div>' +
+
+            '<div class="modal" id="map_info" tabindex="-1" role="dialog" ' +
+            'aria-labelledby="staticModalLabel" aria-hidden="true" data-show="true" data-keyboard="false" ' +
+            'data-backdrop="static">' +
+            '<div class="modal-dialog">' +
+            '<div class="modal-content">' +
+            '<div class="modal-header">' +
+            '<button type="button" class="close" data-dismiss="modal">' +
+            '<span aria-hidden="true">&#215;</span><span class="sr-only" data-i18n="html.close"></span>' +
+            '</button>' +
+            '<h4 class="modal-title" id="map_name"></h4>' +
+            '</div>' +
+            '<div class="modal-body">' +
+            '<div id="map_data">' +
+
+            ol.source.HistMap.META_KEYS.map(function(key) {
+                if (key == 'title' || key == 'officialTitle') return '';
+
+                return '<div class="recipients" id="' + key + '_div"><dl class="dl-horizontal">' +
+                '<dt data-i18n="html.' + key + '"></dt>' +
+                '<dd id="' + key + '"></dd>' +
+                '</dl></div>';
+            }).join('') +
+
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+
             '<div class="modal" id="loadWait" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel" ' +
             'aria-hidden="true" data-show="true" data-keyboard="false" data-backdrop="static">' +
             '<div class="modal-dialog">' +
@@ -361,6 +391,31 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                         app.changeMap(slide.getAttribute('data'));
                         sw.setSlideIndexAsSelected(slide.getAttribute('data-swiper-slide-index'));
                     }
+                });
+                app.mapDivDocument.querySelector('.map-title').addEventListener('click', function() {
+                    var from = app.mapObject.getSource();
+
+                    if (!ol.source.HistMap.META_KEYS.reduce(function(prev, curr) {
+                        if (curr == 'title') return prev;
+                        return from[curr] || prev;
+                    }, false)) return;
+
+                    app.mapDivDocument.querySelector('#map_name').innerText = from.officialTitle || from.title;
+                    ol.source.HistMap.META_KEYS.map(function(key) {
+                        if (key == 'title' || key == 'officialTitle') return;
+                        if (!from[key] || from[key] == '') {
+                            app.mapDivDocument.querySelector('#' + key + '_div').classList.add('hide');
+                        } else {
+                            app.mapDivDocument.querySelector('#' + key + '_div').classList.remove('hide');
+                            app.mapDivDocument.querySelector('#' + key).innerHTML =
+                                (key == 'license' || key == 'dataLicense') ?
+                                    '<img src="parts/' + from[key].toLowerCase().replace(/ /g, '_') + '.png">' :
+                                    from[key];
+                        }
+                    });
+                    var mapInfoModalElm = app.mapDivDocument.querySelector('#map_info');
+                    var mapInfoModal = new bsn.Modal(mapInfoModalElm);
+                    mapInfoModal.show();
                 });
             }
 
