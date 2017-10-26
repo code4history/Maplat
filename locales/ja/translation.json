@@ -3,7 +3,18 @@
         "close": "閉じる",
         "app_loading_body": "アプリロード中です...",
         "app_loading_title": "アプリロード中",
-        "acquiring_gps": "GPS取得中"
+        "acquiring_gps": "GPS取得中",
+        "author": "製作者",
+        "createdAt": "作成時期",
+        "era": "対象時期",
+        "contributor": "所蔵者等",
+        "mapper": "マッパー",
+        "license": "地図画像ライセンス",
+        "dataLicense": "マッピングデータライセンス",
+        "attr": "地図画像コピーライト",
+        "dataAttr": "マッピングデータコピーライト",
+        "reference": "典拠",
+        "description": "説明"
     },
     "app": {
         "fake_explanation": "※%1$s中心より%2$dkm以上離れている場合は、%1$s中心周辺の疑似経緯度を発行します。",

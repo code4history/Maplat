@@ -3,7 +3,18 @@
         "close": "Close",
         "app_loading_body": "Now loading application...",
         "app_loading_title": "Loading application",
-        "acquiring_gps": "Acquiring GPS"
+        "acquiring_gps": "Acquiring GPS",
+        "author": "Author",
+        "createdAt": "Created at",
+        "era": "Era",
+        "contributor": "Contributor",
+        "mapper": "Mapper",
+        "license": "Map license",
+        "dataLicense": "Data license",
+        "attr": "Map attribution",
+        "dataAttr": "Data attribution",
+        "reference": "Reference",
+        "description": "Description"
     },
     "app" : {
         "fake_explanation": "NOTE: If GPS result is more than %2$f km away from %1$s, the system issue a pseudo-coordinate around %1$s.",
