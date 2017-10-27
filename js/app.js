@@ -907,7 +907,8 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
             }
             if (idx == arr.length - 1) return prev[0];
             return prev;
-        }, null).replace(/:/g, ';');
+        }, null);
+        key = (typeof key == 'string') ? key.replace(/:/g, ';') : key + '';
         if (app.i18n.exists(key)) return app.t(key);
         for (var i = 0; i < langs.length; i++) {
             var lang = langs[i];

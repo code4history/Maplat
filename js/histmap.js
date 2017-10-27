@@ -137,7 +137,8 @@ define(['ol-custom', 'aigle'], function(ol, Promise) {
             }
             if (idx == arr.length - 1) return prev[0];
             return prev;
-        }, null).replace(/:/g, ';');
+        }, null);
+        key = (typeof key == 'string') ? key.replace(/:/g, ';') : key + '';
         if (i18n.exists(key)) return t(key);
         for (var i = 0; i < langs.length; i++) {
             var lang = langs[i];
