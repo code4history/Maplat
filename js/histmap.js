@@ -138,13 +138,14 @@ define(['ol-custom', 'aigle'], function(ol, Promise) {
             if (idx == arr.length - 1) return prev[0];
             return prev;
         }, null);
-        key = (typeof key == 'string') ? key.replace(/:/g, ';') : key + '';
-        if (i18n.exists(key)) return t(key);
+        key = (typeof key == 'string') ? key : key + '';
+        if (i18n.exists(key, {ns: 'translation', nsSeparator: '__X__yX__X__'}))
+            return t(key, {ns: 'translation', nsSeparator: '__X__yX__X__'});
         for (var i = 0; i < langs.length; i++) {
             var lang = langs[i];
             i18n.addResource(lang, 'translation', key, dataFragment[lang]);
         }
-        return t(key);
+        return t(key, {ns: 'translation', nsSeparator: '__X__yX__X__'});
     };
 
     ol.source.HistMap.createAsync = function(options, commonOptions) {
