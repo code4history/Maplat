@@ -128,6 +128,7 @@ define(['ol-custom', 'aigle'], function(ol, Promise) {
 
     ol.source.HistMap.translate = function(dataFragment, defLang) {
         if (!dataFragment || typeof dataFragment != 'object') return dataFragment;
+        if (!i18n) return dataFragment; // For MaplatEditor
         var langs = Object.keys(dataFragment);
         var key = langs.reduce(function(prev, curr, idx, arr) {
             if (curr == defLang) {
