@@ -908,13 +908,14 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
             if (idx == arr.length - 1) return prev[0];
             return prev;
         }, null);
-        key = (typeof key == 'string') ? key.replace(/:/g, ';') : key + '';
-        if (app.i18n.exists(key)) return app.t(key);
+        key = (typeof key == 'string') ? key : key + '';
+        if (app.i18n.exists(key, {ns: 'translation', nsSeparator: '__X__yX__X__'}))
+            return app.t(key, {ns: 'translation', nsSeparator: '__X__yX__X__'});
         for (var i = 0; i < langs.length; i++) {
             var lang = langs[i];
             app.i18n.addResource(lang, 'translation', key, dataFragment[lang]);
         }
-        return app.t(key);
+        return app.t(key, {ns: 'translation', nsSeparator: '__X__yX__X__'});
     };
 
     MaplatApp.prototype.ellips = function() {
