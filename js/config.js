@@ -6,7 +6,7 @@ require.config({
         'ol-custom': 'ol-custom',
         'tps': 'thinplatespline',
         'i18n': 'i18next.min', //8.4.2
-        'turf': 'turf.min', //4.7.3
+        'turf': 'turf_maplat.min', //4.7.3
         'swiper': 'swiper.min', //3.4.2
         'bootstrap': 'bootstrap-native',
         'aigle': 'aigle-es5.min'

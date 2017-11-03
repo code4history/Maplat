@@ -1,4 +1,5 @@
 define(['ol3', 'aigle'], function(ol, Promise) {
+//define(['ol3'], function(ol) {
     // Direct transforamation between 2 projection
     ol.proj.transformDirect = function(xy, src, dist) {
         if (!dist) {
@@ -747,7 +748,7 @@ define(['ol3', 'aigle'], function(ol, Promise) {
     ol.source.NowMap.prototype.xy2MercAsync = function(xy) {
         return new Promise(function(resolve, reject) {
             resolve(xy);
-        });
+        }).catch(function(err) { throw err; });
     };
     ol.source.NowMap.prototype.merc2XyAsync = function(merc) {
         return new Promise(function(resolve, reject) {

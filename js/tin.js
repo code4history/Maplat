@@ -1,5 +1,15 @@
 (function(loader) {
     loader(function _commonDefine(turf, mapshaper) {
+        if (!turf.point) {
+            var helpers = Object.keys(turf.helpers);
+            helpers.map(function(key) {
+                turf[key] = turf.helpers[key];
+            });
+            var invariant = Object.keys(turf.invariant);
+            invariant.map(function(key) {
+                turf[key] = turf.invariant[key];
+            });
+        }
         var isClockwise = turf.booleanClockwise;
         var internal = mapshaper.internal;
         var Tin = function(options) {

@@ -1,5 +1,7 @@
 define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
     function(Promise, ol, sprintf, i18n, i18nxhr, swiper, bsn) {
+//define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
+//    function(ol, sprintf, i18n, i18nxhr, swiper, bsn) {
     var preventDoubleClick = function(mapDivId) {
         var mapDiv = document.getElementById(mapDivId);
         var lastTouch = 0;
@@ -891,7 +893,11 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                 app.logger.debug('To: ' + to.sourceID);
                 app.mercBuffer.buffer[to.sourceID] = ol.MathEx.recursiveRound(size, 10);
                 callback(size);
+            }).catch(function(err) {
+                throw err;
             });
+        }).catch(function(err) {
+            throw err;
         });
     };
 
