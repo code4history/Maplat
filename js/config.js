@@ -9,7 +9,8 @@ require.config({
         'turf': 'turf_maplat.min', //4.7.3
         'swiper': 'swiper.min', //3.4.2
         'bootstrap': 'bootstrap-native',
-        'aigle': 'aigle-es5.min'
+        'aigle': 'aigle-es5.min',
+        'mapshaper': 'mapshaper_maplat'
     },
     shim: {
         'i18nxhr': {
