@@ -365,6 +365,7 @@ define(['ol3', 'aigle'], function(ol, Promise) {
         button.appendChild(span);
 
         button.addEventListener('click', options.callback, false);
+        button.addEventListener('dblclick', function(e) { e.preventDefault(); }, false);
 
         var element = document.createElement('div');
         element.className = options.cls + ' ol-unselectable ol-control';
