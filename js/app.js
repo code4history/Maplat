@@ -3,7 +3,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
 //define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
 //    function(ol, sprintf, i18n, i18nxhr, swiper, bsn) {
     var preventDoubleClick = function(mapDivId) {
-        var mapDiv = document.getElementById(mapDivId);
+        /*var mapDiv = document.getElementById(mapDivId);
         var lastTouch = 0;
         function preventZoom(e) {
             var t2 = e.timeStamp;
@@ -24,7 +24,7 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
         }
 
         mapDiv.addEventListener('touchstart', preventZoom, false);
-        mapDiv.addEventListener('touchmove', resetPreventZoom, false);
+        mapDiv.addEventListener('touchmove', resetPreventZoom, false);*/
     };
 
     var browserLanguage = function() {
@@ -173,21 +173,28 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
         }
 
         // Add UI HTML Element
-        var newElems = createElement('<div class="ol-control map-title"><span></span></div>' +
-            '<img id="center_circle" style="position:absolute;top:50%;left:50%;margin-top:-10px;' +
+        var newElems = createElement('<div class="ol-control map-title prevent-default"><span></span></div>' +
+            '<img id="center_circle" class="prevent-default" style="position:absolute;top:50%;left:50%;margin-top:-10px;' +
             'margin-left:-10px;" src="./parts/redcircle.png">' +
-            '<div class="swiper-container ol-control base-swiper">' +
+            '<div class="swiper-container ol-control base-swiper prevent-default">' +
             '<i class="fa fa-chevron-left swiper-left-icon" aria-hidden="true"></i>' +
             '<i class="fa fa-chevron-right swiper-right-icon" aria-hidden="true"></i>' +
             '<div class="swiper-wrapper"></div>' +
             '</div>' +
-            '<div class="swiper-container ol-control overlay-swiper">' +
+            '<div class="swiper-container ol-control overlay-swiper prevent-default">' +
             '<i class="fa fa-chevron-left swiper-left-icon" aria-hidden="true"></i>' +
             '<i class="fa fa-chevron-right swiper-right-icon" aria-hidden="true"></i>' +
             '<div class="swiper-wrapper"></div>' +
             '</div>');
         for (var i=newElems.length - 1; i >= 0; i--) {
             app.mapDivDocument.insertBefore(newElems[i], app.mapDivDocument.firstChild);
+        }
+        var prevDefs = app.mapDivDocument.querySelectorAll('.prevent-default');
+        for (var i=0; i<prevDefs.length; i++) {
+            var target = prevDefs[i];
+            target.addEventListener('touchstart', function(evt) {
+                evt.preventDefault();
+            });
         }
 
         var newElems = createElement('<div class="modal" id="poi_info" tabindex="-1" role="dialog" ' +
