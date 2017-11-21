@@ -2,31 +2,6 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
     function(Promise, ol, sprintf, i18n, i18nxhr, swiper, bsn) {
 //define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
 //    function(ol, sprintf, i18n, i18nxhr, swiper, bsn) {
-    var preventDoubleClick = function(mapDivId) {
-        /*var mapDiv = document.getElementById(mapDivId);
-        var lastTouch = 0;
-        function preventZoom(e) {
-            var t2 = e.timeStamp;
-            var t1 = lastTouch || t2;
-            var dt = t2 - t1;
-            var fingers = e.touches.length;
-            lastTouch = t2;
-
-            if (!dt || dt >= 300 || fingers > 1) {
-                return;
-            }
-            resetPreventZoom();
-            e.preventDefault();
-            e.target.click();
-        }
-        function resetPreventZoom() {
-            lastTouch = 0;
-        }
-
-        mapDiv.addEventListener('touchstart', preventZoom, false);
-        mapDiv.addEventListener('touchmove', resetPreventZoom, false);*/
-    };
-
     var browserLanguage = function() {
         var ua = window.navigator.userAgent.toLowerCase();
         try {
@@ -158,7 +133,6 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
         var appid = appOption.appid || (mapType ? appOption[mapType] : 'sample');
         app.mobileIF = false;
         app.mapDiv = appOption.div || 'map_div';
-        preventDoubleClick(app.mapDiv);
         app.mapDivDocument = document.querySelector('#' + app.mapDiv);
         var noUI = appOption.no_ui || false;
         if (appOption.mobile_if) {
