@@ -364,7 +364,10 @@ define(['ol3', 'aigle'], function(ol, Promise) {
         span.innerHTML = options.character;
         button.appendChild(span);
 
-        button.addEventListener('click', options.callback, false);
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            options.callback();
+        }, false);
         button.addEventListener('dblclick', function(e) { e.preventDefault(); }, false);
 
         var element = document.createElement('div');
