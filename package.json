@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "build": "r.js -o rjs_config.js"
+  },
   "dependencies": {
     "@turf/turf": "^4.5.2",
     "argv": "0.0.2",
