@@ -347,9 +347,26 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                 lwModal.show();
                 var slidesPerView = 1.4;
                 baseSwiper = new Swiper('.base-swiper', {
-                    slidesPerView: slidesPerView,
+                    slidesPerView: 3.2,
                     centeredSlides: true,
-                    spaceBetween: 10,
+                    spaceBetween: 16,
+                    breakpoints: {
+                        // when window width is <= 150px
+                        300: {
+                            slidesPerView: 1.4,
+                            spaceBetween: 10
+                        },
+                        // when window width is <= 200px
+                        600: {
+                            slidesPerView: 2,
+                            spaceBetween: 12
+                        },
+                        // when window width is <= 250px
+                        1200: {
+                            slidesPerView: 2.6,
+                            spaceBetween: 14
+                        }
+                    },
                     loop: true,
                     onClick: function(sw, e) {
                         e.preventDefault();
@@ -363,6 +380,23 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                     slidesPerView: slidesPerView,
                     centeredSlides: true,
                     spaceBetween: 10,
+                    breakpoints: {
+                        // when window width is <= 150px
+                        300: {
+                            slidesPerView: 1.4,
+                            spaceBetween: 10
+                        },
+                        // when window width is <= 200px
+                        600: {
+                            slidesPerView: 2,
+                            spaceBetween: 12
+                        },
+                        // when window width is <= 250px
+                        1200: {
+                            slidesPerView: 2.6,
+                            spaceBetween: 14
+                        }
+                    },
                     loop: true,
                     onClick: function(sw, e) {
                         e.preventDefault();
