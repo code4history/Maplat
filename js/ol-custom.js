@@ -1,4 +1,4 @@
-define(['ol3', 'aigle'], function(ol, Promise) {
+define(['ol3', 'aigle', 'resize'], function(ol, Promise, addResizeListener) {
 //define(['ol3'], function(ol) {
     // Direct transforamation between 2 projection
     ol.proj.transformDirect = function(xy, src, dist) {
@@ -69,17 +69,7 @@ define(['ol3', 'aigle'], function(ol, Promise) {
          */
         this.dragging_;
 
-        /**
-         * @type {number}
-         * @private
-         */
-        this.heightLimit_ = 0;
-
-        /**
-         * @type {number}
-         * @private
-         */
-        this.widthLimit_ = 0;
+        this.value_;
 
         /**
          * @type {number|undefined}
@@ -211,15 +201,26 @@ define(['ol3', 'aigle'], function(ol, Promise) {
 
         if (containerSize.width > containerSize.height) {
             this.direction_ = ol.control.SliderCommon.Direction_.HORIZONTAL;
-            this.widthLimit_ = containerSize.width - thumbWidth;
         } else {
             this.direction_ = ol.control.SliderCommon.Direction_.VERTICAL;
-            this.heightLimit_ = containerSize.height - thumbHeight;
         }
         this.setValue(0);
+        var self = this;
+        addResizeListener(container, function() {
+            self.setValue(self.value_);
+        });
+
         this.sliderInitialized_ = true;
     };
 
+    ol.control.SliderCommon.prototype.widthLimit_ = function(event) {
+        var container = this.element;
+        return container.offsetWidth - this.thumbSize_[0];
+    };
+    ol.control.SliderCommon.prototype.heightLimit_ = function(event) {
+        var container = this.element;
+        return container.offsetHeight - this.thumbSize_[1];
+    };
 
     /**
      * Update the SliderCommon element.
@@ -314,11 +315,12 @@ define(['ol3', 'aigle'], function(ol, Promise) {
         var thumb = this.element.firstElementChild;
 
         if (this.direction_ == ol.control.SliderCommon.Direction_.HORIZONTAL) {
-            thumb.style.left = this.widthLimit_ * res + 'px';
+            thumb.style.left = this.widthLimit_() * res + 'px';
         } else {
-            thumb.style.top = this.heightLimit_ * res + 'px';
+            thumb.style.top = this.heightLimit_() * res + 'px';
         }
-        this.set('slidervalue', this.reverse_ ? 1 - res : res);
+        this.value_ = this.reverse_ ? 1 - res : res;
+        this.set('slidervalue', this.value_);
     };
 
     /**
@@ -334,9 +336,9 @@ define(['ol3', 'aigle'], function(ol, Promise) {
     ol.control.SliderCommon.prototype.getRelativePosition_ = function(x, y) {
         var amount;
         if (this.direction_ === ol.control.SliderCommon.Direction_.HORIZONTAL) {
-            amount = x / this.widthLimit_;
+            amount = x / this.widthLimit_();
         } else {
-            amount = y / this.heightLimit_;
+            amount = y / this.heightLimit_();
         }
         return ol.math.clamp(amount, 0, 1);
     };

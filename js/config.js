@@ -10,7 +10,8 @@ require.config({
         'swiper': 'swiper.min', //3.4.2
         'bootstrap': 'bootstrap-native',
         'aigle': 'aigle-es5.min',
-        'mapshaper': 'mapshaper_maplat'
+        'mapshaper': 'mapshaper_maplat',
+        'resize': 'detect-element-resize'
     },
     shim: {
         'i18nxhr': {
@@ -24,6 +25,9 @@ require.config({
         },
         'tps': {
             exports: 'ThinPlateSpline'
+        },
+        'resize': {
+            exports: 'addResizeListener'
         }
     }
 });

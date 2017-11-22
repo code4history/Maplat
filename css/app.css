@@ -123,20 +123,20 @@ html,body {
 .swiper-container {
     position: absolute;
     bottom: .5em;
-    width: 115px;
+    width: 20%;
     background-color: rgba(32,32,32,0.5);
     height: 60px;
 }
 
 .base-swiper {
-    left: calc(50% - 60px - .5em - 115px);
+    left: calc(30% - 60px - .5em);
 }
 
 .overlay-swiper {
     left: calc(50% + 60px + .5em);
 }
 
-.ol-touch .base-swiper {
+/*.ol-touch .base-swiper {
     left: .5em;
     width: 110px;
 }
@@ -145,7 +145,7 @@ html,body {
     left: auto;
     right: .5em;
     width: 110px;
-}
+}*/
 
 .swiper-slide {
     text-align: center;
@@ -274,16 +274,16 @@ html,body {
 .with-opacity .ol-slidercommon {
     display: block;
     bottom: .5em;
-    left: calc(50% - 60px);
-    width: 120px;
+    left: 45%;
+    width: 10%;
     height: 25px;
     padding: 0;
     border: 1px solid #dddddd;
 }
 
 .ol-touch.with-opacity .ol-slidercommon {
-    left: calc(50% - 38px);
-    width: 76px;
+    left: 45%;
+    width: 10%;
 }
 
 .with-opacity .ol-slidercommon button {
