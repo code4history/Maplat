@@ -12,11 +12,21 @@
         'ol-custom': 'ol-custom',
         'bootstrap': 'bootstrap-native',
         'aigle': 'aigle-es5.min',
-        'mapshaper': 'mapshaper_maplat'
+        'mapshaper': 'mapshaper_maplat',
+        'resize': 'detect-element-resize'
     },
     shim: {
+        'i18nxhr': {
+            deps: ['i18n']
+        },
+        'turf': {
+            exports: 'turf'
+        },
         'aigle': {
             exports: 'Promise'
+        },
+        'resize': {
+            exports: 'addResizeListener'
         },
         'app': {
             deps: ['histmap', 'histmap_tin']
