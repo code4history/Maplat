@@ -1,7 +1,7 @@
 define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
     function(Promise, ol, sprintf, i18n, i18nxhr, Swiper, bsn) {
 //define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
-//    function(ol, sprintf, i18n, i18nxhr, swiper, bsn) {
+//    function(ol, sprintf, i18n, i18nxhr, Swiper, bsn) {
     var browserLanguage = function() {
         var ua = window.navigator.userAgent.toLowerCase();
         try {
@@ -345,25 +345,17 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                 var lwModalElm = app.mapDivDocument.querySelector('#loadWait');
                 var lwModal = new bsn.Modal(lwModalElm);
                 lwModal.show();
-                var slidesPerView = 1.4;
                 baseSwiper = new Swiper('.base-swiper', {
-                    // slidesPerView: 2.6,
-                    slidesPerView: 1.8,
-                    centeredSlides: true,
-                    // spaceBetween: 14,
-                    spaceBetween: 7,
-                    /* breakpoints: {
-                        // when window width is <= 320px
-                        320: {
+                    slidesPerView: 2,
+                    spaceBetween: 15,
+                    breakpoints: {
+                        // when window width is <= 480px
+                        480: {
                             slidesPerView: 1.4,
                             spaceBetween: 10
-                        },
-                        // when window width is <= 640px
-                        640: {
-                            slidesPerView: 2,
-                            spaceBetween: 12
                         }
-                    },*/
+                    },
+                    centeredSlides: true,
                     loop: true,
                     onClick: function(sw, e) {
                         e.preventDefault();
@@ -374,23 +366,16 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                     }
                 });
                 overlaySwiper = new Swiper('.overlay-swiper', {
-                    // slidesPerView: 2.6,
-                    slidesPerView: 1.8,
-                    centeredSlides: true,
-                    // spaceBetween: 14,
-                    spaceBetween: 7,
-                    /* breakpoints: {
-                        // when window width is <= 150px
-                        320: {
+                    slidesPerView: 2,
+                    spaceBetween: 15,
+                    breakpoints: {
+                        // when window width is <= 480px
+                        480: {
                             slidesPerView: 1.4,
                             spaceBetween: 10
-                        },
-                        // when window width is <= 200px
-                        640: {
-                            slidesPerView: 2,
-                            spaceBetween: 12
                         }
-                    },*/
+                    },
+                    centeredSlides: true,
                     loop: true,
                     onClick: function(sw, e) {
                         e.preventDefault();
