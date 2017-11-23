@@ -123,29 +123,46 @@ html,body {
 .swiper-container {
     position: absolute;
     bottom: .5em;
-    width: 20%;
+    width: 224px;
     background-color: rgba(32,32,32,0.5);
     height: 60px;
 }
 
 .base-swiper {
-    left: calc(30% - 60px - .5em);
+    left: calc(50% - 312px);
 }
 
 .overlay-swiper {
-    left: calc(50% + 60px + .5em);
+    left: calc(50% + 88px)
 }
 
-/*.ol-touch .base-swiper {
-    left: .5em;
-    width: 110px;
+@media screen and (max-width: 640px) {
+    .swiper-container {
+        width: 35%;
+    }
+
+    .base-swiper {
+        left: 1.25%;
+    }
+
+    .overlay-swiper {
+        left: 63.75%;
+    }
 }
 
-.ol-touch .overlay-swiper {
-    left: auto;
-    right: .5em;
-    width: 110px;
-}*/
+@media screen and (max-width: 320px) {
+    .swiper-container {
+        width: 112px;
+    }
+
+    .base-swiper {
+        left: 4px;
+    }
+
+    .overlay-swiper {
+        left: 204px;
+    }
+}
 
 .swiper-slide {
     text-align: center;
@@ -205,6 +222,7 @@ html,body {
     width:10px;
     height:10px;
     color:#ffffff;
+    z-index: 10;
 }
 
 .swiper-right-icon {
@@ -214,13 +232,16 @@ html,body {
     width:10px;
     height:10px;
     color:#ffffff;
+    z-index: 10;
 }
 
-.ol-touch .swiper-slide div {
-    font-size: .8em;
-}
-.ol-touch .swiper-slide div.minimize {
-    font-size: .6em;
+@media screen and (max-width: 480px) {
+    .ol-touch .swiper-slide div {
+        font-size: .8em;
+    }
+    .ol-touch .swiper-slide div.minimize {
+        font-size: .6em;
+    }
 }
 
 .ol-attribution {
@@ -274,16 +295,25 @@ html,body {
 .with-opacity .ol-slidercommon {
     display: block;
     bottom: .5em;
-    left: 45%;
-    width: 10%;
+    left: calc(50% - 80px);
+    width: 160px;
     height: 25px;
     padding: 0;
     border: 1px solid #dddddd;
 }
 
-.ol-touch.with-opacity .ol-slidercommon {
-    left: 45%;
-    width: 10%;
+@media screen and (max-width: 640px) {
+    .with-opacity .ol-slidercommon {
+        left: 37.5%;
+        width: 25%;
+    }
+}
+
+@media screen and (max-width: 320px) {
+    .with-opacity .ol-slidercommon {
+        left: 120px;
+        width: 80px;
+    }
 }
 
 .with-opacity .ol-slidercommon button {
