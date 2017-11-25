@@ -18,25 +18,25 @@ Please use [MaplatEditor](https://github.com/code4nara/MaplatEditor/) for data c
 
 # Latest result
 Latest result is shown below:
-* https://code4nara.github.io/Maplat/?lang=en&overlay=true (Function showcase)
-* https://code4nara.github.io/Maplat/?appid=ueda&lang=en&overlay=true (Ueda city)
-* https://code4nara.github.io/Maplat/?appid=iwate&lang=en&overlay=true (Morioka city)
-* https://code4nara.github.io/Maplat/?appid=sabae&lang=en&overlay=true (Sabae city)
-* https://code4nara.github.io/Maplat/?appid=nara&lang=en&overlay=true (Nara city)
-* https://code4nara.github.io/Maplat/?appid=aizu_en&lang=en&overlay=true (Aizuwakamatsu city for SotM 2017)
+* https://bit.ly/aizumap (Aizuwakamatsu city for SotM 2017)
+* https://bit.ly/iwakimap (Iwaki city)
+* https://bit.ly/uedamap (Ueda city)
+* https://bit.ly/moriokamap (Morioka city)
+* https://bit.ly/sabaemap (Sabae city)
+* https://bit.ly/naramap (Nara city)
 
 Documentation is undergoing.
 
 最新の成果物は以下で確認できます。
-* https://code4nara.github.io/Maplat/?overlay=true (盛岡市版をベースにした機能ショーケース)
-* https://code4nara.github.io/Maplat/?appid=ueda&overlay=true (上田市版)
-* https://code4nara.github.io/Maplat/?appid=iwate&overlay=true (盛岡市版)
-* https://code4nara.github.io/Maplat/?appid=sabae&overlay=true (鯖江市版)
-* https://code4nara.github.io/Maplat/?appid=nara&overlay=true (奈良市版)
-* https://code4nara.github.io/Maplat/?appid=aizu&overlay=true (SotM 2017 向け会津若松市版)
+* https://bit.ly/aizumap (SotM 2017 向け会津若松市版)
+* https://bit.ly/iwakimap (いわき市版)
+* https://bit.ly/uedamap (上田市版)
+* https://bit.ly/moriokamap (盛岡市版)
+* https://bit.ly/sabaemap (鯖江市版)
+* https://bit.ly/naramap (奈良市版)
 
 成果物を他人がコンテンツ作れる形でまとめられていないですが、おいおい整理します。
 
 # Collaboration demo with Jizo project
 Code 4 NaraからUrban data challenge 2016に応募中のMaplatと[地蔵プロジェクト](https://github.com/code4nara/JizoProject/wiki)をコラボレーションさせたデモを作りました。
-* https://code4nara.github.io/Maplat/?appid=jizoapp&overlay=true
+* https://bit.ly/narajizomap
