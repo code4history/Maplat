@@ -1,7 +1,7 @@
-define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
-    function(Promise, ol, sprintf, i18n, i18nxhr, Swiper, bsn) {
-//define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
-//    function(ol, sprintf, i18n, i18nxhr, Swiper, bsn) {
+//define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
+//    function(Promise, ol, sprintf, i18n, i18nxhr, Swiper, bsn) {
+define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
+    function(ol, sprintf, i18n, i18nxhr, Swiper, bsn) {
     var browserLanguage = function() {
         var ua = window.navigator.userAgent.toLowerCase();
         try {
@@ -304,11 +304,14 @@ define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap']
                 xhr.responseType = 'json';
 
                 xhr.onload = function(e) {
-                    if (this.status == 200) {
+                    var value = this.response;
+                    if (typeof value != 'object') value = JSON.parse(value);
+                    resolve(value);
+                    /* if (this.status == 200) {
                         resolve(this.response);
                     } else {
                         resolve(this.response);
-                    }
+                    }*/
                 };
                 xhr.send();
             });

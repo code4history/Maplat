@@ -2,7 +2,7 @@
     baseUrl: 'js',
     name: 'config',
     out: 'js/maplat.js',
-    include: ['require.min'],
+    include: ['require.min','aigle-es5.min'],
     paths: {
         'i18n': 'i18next.min',
         'i18nxhr': 'i18nextXHRBackend.min',

@@ -1,5 +1,5 @@
-define(['histmap', 'tin', 'aigle'], function(ol, Tin, Promise) {
-//define(['histmap', 'tin'], function(ol, Tin) {
+//define(['histmap', 'tin', 'aigle'], function(ol, Tin, Promise) {
+define(['histmap', 'tin'], function(ol, Tin) {
     ol.source.HistMap_tin = function(optOptions) {
         var options = optOptions || {};
 
@@ -34,6 +34,7 @@ define(['histmap', 'tin', 'aigle'], function(ol, Tin, Promise) {
                 if (this.status == 200 || this.status == 0 ) { // 0 for UIWebView
                     try {
                         var resp = this.response;
+                        if (typeof resp != 'object') resp = JSON.parse(resp);
                         for (var i = 0; i < ol.source.HistMap.META_KEYS.length; i++) {
                             var key = ol.source.HistMap.META_KEYS[i];
                             options[key] = ol.source.HistMap.translate(options[key] || resp[key]);

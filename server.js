@@ -15,6 +15,19 @@ http.createServer(function(request, response) {
                 "Pragma": "no-cache",
                 "Cache-Control" : "no-cache"       
             }
+            if (extname == '.jpg') {
+                header["Content-Type"] = 'image/jpeg';
+            } else if (extname == '.png') {
+                header["Content-Type"] = 'image/png';
+            } else if (extname == '.css') {
+                header["Content-Type"] = 'text/css';
+            } else if (extname == '.js') {
+                header["Content-Type"] = 'text/javascript';
+            } else if (extname == '.json') {
+                header["Content-Type"] = 'application/json';
+            } else {
+                header["Content-Type"] = 'text/html';
+            }
 
             response.writeHead(200, header);
             response.write(file, "binary");
