@@ -1,4 +1,3 @@
-//define(['ol-custom', 'aigle'], function(ol, Promise) {
 define(['ol-custom'], function(ol) {
     for (var z = 0; z < 9; z++) {
         var key = 'ZOOM:' + z;

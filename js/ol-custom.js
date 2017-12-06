@@ -1,4 +1,3 @@
-//define(['ol3', 'aigle', 'resize'], function(ol, Promise, addResizeListener) {
 define(['ol3', 'resize'], function(ol, addResizeListener) {
     // Direct transforamation between 2 projection
     ol.proj.transformDirect = function(xy, src, dist) {

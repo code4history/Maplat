@@ -1,5 +1,3 @@
-//define(['aigle', 'histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
-//    function(Promise, ol, sprintf, i18n, i18nxhr, Swiper, bsn) {
 define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
     function(ol, sprintf, i18n, i18nxhr, Swiper, bsn) {
     var browserLanguage = function() {
