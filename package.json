@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "build": "gulp build",
-    "server": "node server.js"
+    "server": "gulp server"
   },
   "dependencies": {
     "@turf/turf": "^4.5.2",

@@ -14,7 +14,12 @@ var banner = ['/**',
   ' * @license <%= pkg.license %>',
   ' */',
   ''].join('\n');
-var cmd = os.type().toString().match('Windows') !== null  ? 'r.js.cmd' : 'r.js';
+var isWin = os.type().toString().match('Windows') !== null;
+
+gulp.task('server', function(){
+	var cmd = (isWin ? 'start ' : '') + 'node server.js' + (isWin ? '' : ' &');
+    execSync(cmd);
+});
 
 gulp.task('build', ['concat_promise'], function(){
     fs.unlinkSync('./js/maplat_withoutpromise.js');
@@ -33,5 +38,6 @@ gulp.task('concat_promise', ['build_withoutpromise'], function() {
 });
 
 gulp.task('build_withoutpromise', function() {
-    execSync(cmd + ' -o rjs_config.js')
+	var cmd = isWin ? 'r.js.cmd' : 'r.js';
+    execSync(cmd + ' -o rjs_config.js');
 });
