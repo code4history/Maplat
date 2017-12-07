@@ -1,7 +1,7 @@
 var gulp = require('gulp'),
     execSync = require('child_process').execSync,
+	spawn = require('child_process').spawn,
     concat = require('gulp-concat'),
-	uglify = require('gulp-uglify'),
 	header = require('gulp-header'),
     os = require('os'),
     fs = require('fs');
@@ -17,8 +17,10 @@ var banner = ['/**',
 var isWin = os.type().toString().match('Windows') !== null;
 
 gulp.task('server', function(){
-	var cmd = (isWin ? 'start ' : '') + 'node server.js' + (isWin ? '' : ' &');
-    execSync(cmd);
+	return spawn('node', ['server.js'], {
+		stdio: 'ignore',
+    	detached: true
+	}).unref();
 });
 
 gulp.task('build', ['concat_promise'], function(){
@@ -28,11 +30,6 @@ gulp.task('build', ['concat_promise'], function(){
 gulp.task('concat_promise', ['build_withoutpromise'], function() {
 	return gulp.src(['./js/aigle-es5.min.js', 'js/maplat_withoutpromise.js'])
     	.pipe(concat('maplat.js'))
-	    .pipe(uglify({ 
-        	output:{
-          		comments: /^[! \*]/
-        	}
-	    }))
     	.pipe(header(banner, {pkg: pkg}))
     	.pipe(gulp.dest('./js/'));
 });
