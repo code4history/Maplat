@@ -1,8 +1,10 @@
 var gulp = require('gulp'),
-    rjs = require('gulp-requirejs'),
+    execSync = require('child_process').execSync,
     concat = require('gulp-concat'),
 	uglify = require('gulp-uglify'),
-	header = require('gulp-header');
+	header = require('gulp-header'),
+    os = require('os'),
+    fs = require('fs');
 
 var pkg = require('./package.json');
 var banner = ['/**',
@@ -12,53 +14,24 @@ var banner = ['/**',
   ' * @license <%= pkg.license %>',
   ' */',
   ''].join('\n');
+var cmd = os.type().toString().match('Windows') !== null  ? 'r.js.cmd' : 'r.js';
 
-gulp.task('build', ['concat_promise']);
+gulp.task('build', ['concat_promise'], function(){
+    fs.unlinkSync('./js/maplat_withoutpromise.js');
+});
 
 gulp.task('concat_promise', ['build_withoutpromise'], function() {
 	return gulp.src(['./js/aigle-es5.min.js', 'js/maplat_withoutpromise.js'])
     	.pipe(concat('maplat.js'))
 	    .pipe(uglify({ 
         	output:{
-          		comments: /^!/
+          		comments: /^[! \*]/
         	}
-	    }))//{preserveComments: 'some'}))
+	    }))
     	.pipe(header(banner, {pkg: pkg}))
     	.pipe(gulp.dest('./js/'));
 });
 
 gulp.task('build_withoutpromise', function() {
-    return rjs({
-        baseUrl: 'js',
-    	name: 'config',
-	    out: 'js/maplat_withoutpromise.js',
-	    optimize: '',
-    	include: ['require.min'],
-	    paths: {
-    	    'i18n': 'i18next.min',
-        	'i18nxhr': 'i18nextXHRBackend.min',
-	        'turf': 'turf_maplat.min',
-    	    'swiper': 'swiper.min',
-        	'ol3': 'ol-debug',
-	        'ol-custom': 'ol-custom',
-    	    'bootstrap': 'bootstrap-native',
-	        'mapshaper': 'mapshaper_maplat',
-        	'resize': 'detect-element-resize'
-    	},
-	    shim: {
-    	    'i18nxhr': {
-        	    deps: ['i18n']
-	        },
-    	    'turf': {
-        	    exports: 'turf'
-	        },
-    	    'resize': {
-        	    exports: 'addResizeListener'
-	        },
-    	    'app': {
-        	    deps: ['histmap', 'histmap_tin']
-	        }
-    	}
-    })
-    .pipe(gulp.dest('./')); // pipe it to the output DIR
+    execSync(cmd + ' -o rjs_config.js')
 });
