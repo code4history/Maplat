@@ -181,8 +181,8 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
             '<h4 class="modal-title" id="poi_name"></h4>' +
             '</div>' +
             '<div class="modal-body">' +
-            '<div id="poi_web" class="embed-responsive embed-responsive-4by3" style="overflow-y: scroll;">' +
-            '<iframe id="poi_iframe" width="99.6%" frameborder="0" src=""></iframe>' +
+            '<div id="poi_web" class="embed-responsive embed-responsive-60vh">' +
+            '<iframe id="poi_iframe" class="iframe_poi" frameborder="0" src=""></iframe>' +
             '</div>' +
             '<div id="poi_data" class="hide">' +
             '<p class="col-xs-12 poi_img"><img id="poi_img" src=""></img></p>' +

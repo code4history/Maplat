@@ -94,6 +94,18 @@ html,body {
     vertical-align: middle;/*IE7*/
 }
 
+.embed-responsive-60vh {
+    padding-bottom: 60vh;
+}
+
+#poi_web {
+    overflow-y: scroll;
+}
+
+.iframe_poi {
+    width: 99.6% !important;
+}
+
 .map-title {
     top: .5em;
     width: 500px;
