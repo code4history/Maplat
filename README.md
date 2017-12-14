@@ -24,6 +24,7 @@ Latest result is shown below:
 * https://s.maplat.jp/r/moriokamap (Morioka city)
 * https://s.maplat.jp/r/sabaemap (Sabae city)
 * https://s.maplat.jp/r/naramap (Nara city)
+* https://s.maplat.jp/r/nobeokamap (Nobeoka city)
 
 Documentation is undergoing.
 
@@ -34,6 +35,7 @@ Documentation is undergoing.
 * https://s.maplat.jp/r/moriokamap (盛岡市版)
 * https://s.maplat.jp/r/sabaemap (鯖江市版)
 * https://s.maplat.jp/r/naramap (奈良市版)
+* https://s.maplat.jp/r/nobeokamap (延岡市版)
 
 成果物を他人がコンテンツ作れる形でまとめられていないですが、おいおい整理します。
 
