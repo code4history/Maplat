@@ -18,25 +18,27 @@ Please use [MaplatEditor](https://github.com/code4nara/MaplatEditor/) for data c
 
 # Latest result
 Latest result is shown below:
-* https://bit.ly/aizumap (Aizuwakamatsu city for SotM 2017)
-* https://bit.ly/iwakimap (Iwaki city)
-* https://bit.ly/uedamap (Ueda city)
-* https://bit.ly/moriokamap (Morioka city)
-* https://bit.ly/sabaemap (Sabae city)
-* https://bit.ly/naramap (Nara city)
+* https://s.maplat.jp/r/aizumap (Aizuwakamatsu city for SotM 2017)
+* https://s.maplat.jp/r/iwakimap (Iwaki city)
+* https://s.maplat.jp/r/uedamap (Ueda city)
+* https://s.maplat.jp/r/moriokamap (Morioka city)
+* https://s.maplat.jp/r/sabaemap (Sabae city)
+* https://s.maplat.jp/r/naramap (Nara city)
+* https://s.maplat.jp/r/nobeokamap (Nobeoka city)
 
 Documentation is undergoing.
 
 最新の成果物は以下で確認できます。
-* https://bit.ly/aizumap (SotM 2017 向け会津若松市版)
-* https://bit.ly/iwakimap (いわき市版)
-* https://bit.ly/uedamap (上田市版)
-* https://bit.ly/moriokamap (盛岡市版)
-* https://bit.ly/sabaemap (鯖江市版)
-* https://bit.ly/naramap (奈良市版)
+* https://s.maplat.jp/r/aizumap (SotM 2017 向け会津若松市版)
+* https://s.maplat.jp/r/iwakimap (いわき市版)
+* https://s.maplat.jp/r/uedamap (上田市版)
+* https://s.maplat.jp/r/moriokamap (盛岡市版)
+* https://s.maplat.jp/r/sabaemap (鯖江市版)
+* https://s.maplat.jp/r/naramap (奈良市版)
+* https://s.maplat.jp/r/nobeokamap (延岡市版)
 
 成果物を他人がコンテンツ作れる形でまとめられていないですが、おいおい整理します。
 
 # Collaboration demo with Jizo project
 Code 4 NaraからUrban data challenge 2016に応募中のMaplatと[地蔵プロジェクト](https://github.com/code4nara/JizoProject/wiki)をコラボレーションさせたデモを作りました。
-* https://bit.ly/narajizomap
+* https://s.maplat.jp/r/narajizomap
