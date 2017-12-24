@@ -288,12 +288,15 @@
                 var expandConvex = Object.keys(convexBuf).reduce(function(prev, key, index, array) {
                     var forVertex = convexBuf[key].forw;
                     var bakVertex = convexBuf[key].bakw;
+                    // Convexhullの各頂点に対し、重心からの差分を取る
                     var vertexDelta = {forw: [forVertex[0] - centroid.forw[0], forVertex[1] - centroid.forw[1]]};
                     vertexDelta.bakw = [bakVertex[0] - centroid.bakw[0], bakVertex[1] - centroid.bakw[1]];
+                    // X軸方向、Y軸方向それぞれに対し、地図外郭XY座標との重心との比を取る
                     var xRate = vertexDelta.forw[0] == 0 ? Infinity :
-                        ((vertexDelta.forw[0] < 0 ? 0 : self.wh[0]) - centroid.forw[0]) / vertexDelta.forw[0];
+                        ((vertexDelta.forw[0] < 0 ? self.wh[0] * -0.05 : self.wh[0] * 1.05) - centroid.forw[0]) / vertexDelta.forw[0];
                     var yRate = vertexDelta.forw[1] == 0 ? Infinity :
-                        ((vertexDelta.forw[1] < 0 ? 0 : self.wh[1]) - centroid.forw[1]) / vertexDelta.forw[1];
+                        ((vertexDelta.forw[1] < 0 ? self.wh[1] * -0.05 : self.wh[1] * 1.05) - centroid.forw[1]) / vertexDelta.forw[1];
+                    // xRate, yRateが同じ値であれば重心と地図頂点を結ぶ線上に乗る
                     if (Math.abs(xRate) / Math.abs(yRate) < 1.1 ) {
                         var point = {forw: [vertexDelta.forw[0] * xRate + centroid.forw[0], vertexDelta.forw[1] * xRate + centroid.forw[1]],
                             bakw: [vertexDelta.bakw[0] * xRate + centroid.bakw[0], vertexDelta.bakw[1] * xRate + centroid.bakw[1]]};
@@ -381,15 +384,17 @@
                 verticesSet[2] = verticesSet[3];
                 verticesSet[3] = swap;
 
+                // Bounding Boxの頂点を、全てのgcpが内部に入るように引き延ばす
                 var expandRate = [1, 1, 1, 1];
-                for(var i = 0; i < 4; i++) {
+                for (var i = 0; i < 4; i++) {
                     var j = (i + 1) % 4;
                     var side = turf.lineString([verticesSet[i].bakw, verticesSet[j].bakw]);
                     var expands = expandConvex[i];
-                    expands.map(function(expand) {
+                    expands.map(function (expand) {
                         var expandLine = turf.lineString([centroid.bakw, expand.bakw]);
-                        var intersect = turf.intersect(side, expandLine);
-                        if (intersect && intersect.geometry) {
+                        var intersect = turf.lineIntersect(side, expandLine);
+                        if (intersect.features.length > 0 && intersect.features[0].geometry) {
+                            var intersect = intersect.features[0];
                             var expandDist = Math.sqrt(Math.pow(expand.bakw[0] - centroid.bakw[0], 2) +
                                 Math.pow(expand.bakw[1] - centroid.bakw[1], 2));
                             var onSideDist = Math.sqrt(Math.pow(intersect.geometry.coordinates[0] - centroid.bakw[0], 2) +
