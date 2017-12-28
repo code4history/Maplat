@@ -15,6 +15,7 @@
         var Tin = function(options) {
             this.points = options.points;
             this.wh = options.wh;
+            this.vertexMode = options.vertexMode || 'birdeye';
 
             // for turf inside patch
 
@@ -105,6 +106,11 @@
 
         Tin.prototype.setWh = function(wh) {
             this.wh = wh;
+            this.tins = undefined;
+        };
+
+        Tin.prototype.setVertexMode = function(mode) {
+            this.vertexMode = mode;
             this.tins = undefined;
         };
 
@@ -328,7 +334,7 @@
                         // If some orthants have no Convex full polygon's vertices, use same average factor to every orthants
                         return (prev.length == prev.filter(function(val) {
                             return val.length > 0;
-                        }).length) ? prev : prev.reduce(function(pre, cur) {
+                        }).length && self.vertexMode == 'birdeye') ? prev : prev.reduce(function(pre, cur) {
                                 var ret = [pre[0].concat(cur)];
                                 return ret;
                             }, [[]]);
