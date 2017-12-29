@@ -16,7 +16,7 @@
             this.points = options.points;
             this.wh = options.wh;
             this.vertexMode = options.vertexMode || 'plain';
-            this.strictMode = options.strictMode || 'strict';
+            this.strictMode = options.strictMode || 'auto';
 
             // for turf inside patch
 
