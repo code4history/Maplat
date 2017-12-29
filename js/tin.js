@@ -15,7 +15,8 @@
         var Tin = function(options) {
             this.points = options.points;
             this.wh = options.wh;
-            this.vertexMode = options.vertexMode || 'birdeye';
+            this.vertexMode = options.vertexMode || 'plain';
+            this.strictMode = options.strictMode || 'strict';
 
             // for turf inside patch
 
@@ -114,6 +115,11 @@
             this.tins = undefined;
         };
 
+        Tin.prototype.setStrictMode = function(mode) {
+            this.strictMode = mode;
+            this.tins = undefined;
+        };
+
         Tin.prototype.calcurateStrictTinAsync = function() {
             var self = this;
             return Promise.all(self.tins.forw.features.map(function(tri) {
@@ -209,8 +215,9 @@
             });
         };
 
-        Tin.prototype.updateTinAsync = function(strict) {
+        Tin.prototype.updateTinAsync = function() {
             var self = this;
+            var strict = this.strictMode;
             return new Promise(function(resolve, reject) {
                 if (strict != 'strict' && strict != 'loose') strict = 'auto';
 
