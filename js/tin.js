@@ -264,6 +264,7 @@
                 var forCentroidFt = prevResults[2];
                 var pointsSetBbox = prevResults[3];
                 var pointsSet = pointsSetBbox[0];
+                if (tinForCentroid.features.length == 0 || tinBakCentroid.features.length == 0) throw 'TOO LINEAR1';
 
                 // Calcurating Forward/Backward Centroid
                 var centroid = {forw: forCentroidFt.geometry.coordinates};
@@ -275,15 +276,25 @@
                 return Promise.all([
                     new Promise(function(resolve) {
                         var forConvex = turf.convex(pointsSet.forw).geometry.coordinates[0];
-                        var convex = forConvex.map(function(forw) {return {forw: forw,
-                            bakw: transformArr(turf.point(forw), tinForCentroid)}; });
+                        var convex;
+                        try {
+                            convex = forConvex.map(function(forw) {return {forw: forw,
+                                bakw: transformArr(turf.point(forw), tinForCentroid)}; });
+                        } catch(e) {
+                            throw 'TOO LINEAR2';
+                        }
                         convex.map(function(vertex) { convexBuf[vertex.forw[0] + ':' + vertex.forw[1]] = vertex; });
                         resolve();
                     }),
                     new Promise(function(resolve) {
                         var bakConvex = turf.convex(pointsSet.bakw).geometry.coordinates[0];
-                        var convex = bakConvex.map(function(bakw) {return {bakw: bakw,
-                            forw: transformArr(turf.point(bakw), tinBakCentroid)}; });
+                        var convex;
+                        try {
+                            convex = bakConvex.map(function(bakw) {return {bakw: bakw,
+                                forw: transformArr(turf.point(bakw), tinBakCentroid)}; });
+                        } catch(e) {
+                            throw 'TOO LINEAR2';
+                        }
                         convex.map(function(vertex) { convexBuf[vertex.forw[0] + ':' + vertex.forw[1]] = vertex; });
                         resolve();
                     })
@@ -367,6 +378,7 @@
                         return [distanceSum, sumThetaX, sumThetaY];
                     }, null);
                 });
+
                 // "Using same average factor to every orthants" case
                 if (orthant.length == 1) orthant = [orthant[0], orthant[0], orthant[0], orthant[0]];
 
