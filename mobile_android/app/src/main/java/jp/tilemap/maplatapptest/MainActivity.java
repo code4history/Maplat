@@ -1,30 +1,45 @@
 package jp.tilemap.maplatapptest;
 
 //import android.support.v7.app.AppCompatActivity;
+
+import android.Manifest;
 import android.app.Activity;
+import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 import android.webkit.ConsoleMessage;
-import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-import android.util.Log;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.Toast;
+
 import java.io.BufferedReader;
-import android.content.res.AssetManager;
+import java.io.InputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainActivity extends Activity {
+
+    private static final int REQUEST_PERMISSION = 10;
+
     //@SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (Build.VERSION.SDK_INT >= 23){
+            checkLocationPermission();
+        }
+
         setContentView(R.layout.activity_main);
+
         //レイアウトで指定したWebViewのIDを指定する。
         WebView myWebView = (WebView)findViewById(R.id.webView1);
         myWebView.setWebContentsDebuggingEnabled(true);
@@ -127,4 +142,29 @@ public class MainActivity extends Activity {
 
         return super.onOptionsItemSelected(item);
     }*/
+
+    // 位置情報許可の確認
+    public void checkLocationPermission() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            return; // 既に許可している
+        }
+
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSION);
+        } else {
+            Toast toast = Toast.makeText(this,"許可しないとアプリが実行できません", Toast.LENGTH_SHORT);
+            toast.show();
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION,}, REQUEST_PERMISSION);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_PERMISSION) {
+            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                Toast toast = Toast.makeText(this,"アプリを実行できません", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        }
+    }
 }
