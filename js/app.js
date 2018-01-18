@@ -145,7 +145,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
         }
 
         // Add UI HTML Element
-        var newElems = createElement('<div class="ol-control map-title prevent-default"><span></span></div>' +
+        var newElems = createElement('<div class="ol-control map-title"><span></span></div>' +
             '<img id="center_circle" class="prevent-default" style="position:absolute;top:50%;left:50%;margin-top:-10px;' +
             'margin-left:-10px;" src="./parts/redcircle.png">' +
             '<div class="swiper-container ol-control base-swiper prevent-default">' +

@@ -5,7 +5,9 @@ define(['histmap', 'tin'], function(ol, Tin) {
         ol.source.HistMap.call(this, options);
 
         this.tin = new Tin({
-            wh: [this.width, this.height]
+            wh: [this.width, this.height],
+            strictMode: options.strictMode,
+            vertexMode: options.vertexMode
         });
     };
     ol.inherits(ol.source.HistMap_tin, ol.source.HistMap);
@@ -42,6 +44,8 @@ define(['histmap', 'tin'], function(ol, Tin) {
                         options.height = options.height || resp.height;
                         options.urls = options.urls || resp.urls;
                         options.url = options.url || resp.url;
+                        options.strictMode = options.strictMode || resp.strictMode;
+                        options.vertexMode = options.vertexMode || resp.vertexMode;
                         options.label = ol.source.HistMap.translate(options.label || resp.label || resp.year);
                         if (options.attr && !options.attributions) {
                             options.attributions = [
