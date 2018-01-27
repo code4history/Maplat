@@ -736,7 +736,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
            data = JSON.parse(data);
        }
         var lnglat = [data.longitude, data.latitude];
-        var acc = 15.0;
+        var acc = data.accuracy;
         var gpsVal = {lnglat: lnglat, acc: acc};
        
         var app = this;

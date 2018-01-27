@@ -99,7 +99,9 @@ public class JsBridge extends Object {
                 super.onLocationResult(locationResult);
                 mCurrentLocation = locationResult.getLastLocation();
 
-                String value = "{\"latitude\":" + mCurrentLocation.getLatitude() + ",\"longitude\":" + mCurrentLocation.getLongitude() + "}";
+                String value = "{\"latitude\":" + mCurrentLocation.getLatitude()
+                        + ",\"longitude\":" + mCurrentLocation.getLongitude()
+                        + ",\"accuracy\":" + mCurrentLocation.getAccuracy() + "}";
                 JsBridge.this.callApp2Web("setGPSMarker", value);
             }
         };

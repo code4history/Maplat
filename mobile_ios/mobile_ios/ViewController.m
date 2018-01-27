@@ -76,7 +76,7 @@
     
     NSLog(@"location updated. newLocation:%@", newLocation);
     
-    NSString *value = [NSString stringWithFormat:@"{\"latitude\":%f,\"longitude\":%f}", newLocation.coordinate.latitude, newLocation.coordinate.longitude];
+    NSString *value = [NSString stringWithFormat:@"{\"latitude\":%f,\"longitude\":%f,\"accuracy\":%f}", newLocation.coordinate.latitude, newLocation.coordinate.longitude, newLocation.horizontalAccuracy];
     [self callApp2WebWithKey:@"setGPSMarker" value:value];
 }
 
