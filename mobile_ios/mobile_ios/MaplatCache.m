@@ -90,6 +90,10 @@
             });
         }
         
+        if (_delegate) {
+            [_delegate maplatCache:self didReceiveKey:key value:value];
+        }
+        
         return NO;
     }
     

@@ -565,6 +565,7 @@ define(['ol3', 'resize'], function(ol, addResizeListener) {
         };
 
         target.prototype.setGPSMarkerAsync = function(position, ignoreMove) {
+            //alert("target.prototype.setGPSMarkerAsync");
             var self = this;
             var map = self.getMap();
             var view = map.getView();
@@ -961,6 +962,12 @@ define(['ol3', 'resize'], function(ol, addResizeListener) {
         }
     };
 
+    ol.MaplatMap.prototype.setGPSMarker = function(position, ignoreMove) {
+       //alert("ol.MaplatMap.prototype.setGPSMarker");
+        var source = this.getLayers().item(0).getSource();
+        source.setGPSMarker(position, ignoreMove);
+    };
+       
     ol.MaplatMap.prototype.handleGPS = function(launch, avoidEventForOff) {
         if (launch) {
             this.dispatchEvent('gps_request');
