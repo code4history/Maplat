@@ -45,6 +45,7 @@ gulp.task('create_example', ['concat_promise'], function() {
     fs.copySync('./css', './example/css');
     fs.copySync('./locales', './example/locales');
     fs.copySync('./parts', './example/parts');
+    fs.copySync('./fonts', './example/fonts');
     fs.copySync('./apps/example_sample.json', './example/apps/sample.json');
     fs.copySync('./maps/morioka.json', './example/maps/morioka.json');
     fs.copySync('./maps/morioka_ndl.json', './example/maps/morioka_ndl.json');
