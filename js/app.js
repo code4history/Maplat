@@ -232,6 +232,8 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
             '</div>' +
             '<div class="modal-body">' +
             '<p class="recipient"><img src="parts/loading.gif"><span data-i18n="html.app_loading_body"></span></p>' +
+            '<div id="splash_div" class="hide"><p class="col-xs-12 poi_img"><img id="splash_img" src=""></p>' +
+            '<p class="recipient">　</p></div>' +
             '</div>' +
             '</div>' +
             '</div>' +
@@ -342,9 +344,17 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
             var baseSwiper, overlaySwiper;
             ol.source.HistMap.setI18n(app.i18n, app.t);
 
+            // Check Splash data
+            var splash = false;
+            if (app.appData.splash) splash = true;
+
             if (!noUI) {
                 var lwModalElm = app.mapDivDocument.querySelector('#loadWait');
                 var lwModal = new bsn.Modal(lwModalElm);
+                if (splash) {
+                    app.mapDivDocument.querySelector('#splash_img').setAttribute('src', 'img/' + app.appData.splash);
+                    app.mapDivDocument.querySelector('#splash_div').classList.remove('hide');
+                }
                 lwModal.show();
                 baseSwiper = new Swiper('.base-swiper', {
                     slidesPerView: 2,
@@ -496,7 +506,13 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
 
             var dataSource = app.appData.sources;
 
-            var sourcePromise = [];
+            var sourcePromise = splash ? [
+                new Promise(function(resolve) {
+                    setTimeout(function() {
+                        resolve();
+                    }, 1000);
+                })
+            ] :[];
             var commonOption = {
                 home_position: homePos,
                 merc_zoom: defZoom,
@@ -508,6 +524,10 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
             }
 
             return Promise.all(sourcePromise).then(function(sources) {
+                if (splash) {
+                    sources.shift();
+                }
+
                 if (!noUI) {
                     var lwModalElm = app.mapDivDocument.querySelector('#loadWait');
                     var lwModal = new bsn.Modal(lwModalElm);
