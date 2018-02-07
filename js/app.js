@@ -853,6 +853,20 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                         });
                     })(app.pois[i]);
                 }
+                if (to.pois) {
+                    for (var i = 0; i < to.pois.length; i++) {
+                        (function(datum) {
+                            var lngLat = [datum.lng, datum.lat];
+                            var merc = ol.proj.transform(lngLat, 'EPSG:4326', 'EPSG:3857');
+
+                            to.merc2XyAsync(merc).then(function(xy) {
+                                if (to.insideCheckHistMapCoords(xy)) {
+                                    app.mapObject.setMarker(xy, {'datum': datum}, datum.icon);
+                                }
+                            });
+                        })(to.pois[i]);
+                    }
+                }
                 app.mapObject.updateSize();
                 app.mapObject.renderSync();
 
