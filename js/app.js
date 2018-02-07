@@ -583,11 +583,14 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                     app.dispatchEvent(new CustomEvent('clickPoi', data));
                     if (!app.mobileIF) {
                         app.mapDivDocument.querySelector('#poi_name').innerText = app.translate(data.name);
-                        if (data.url) {
+                        if (data.url || data.html) {
                             app.mapDivDocument.querySelector('#poi_web').classList.remove('hide');
                             app.mapDivDocument.querySelector('#poi_data').classList.add('hide');
-
-                            app.mapDivDocument.querySelector('#poi_iframe').setAttribute('src', app.translate(data.url));
+                            if (data.html) {
+                                app.mapDivDocument.querySelector('#poi_iframe').setAttribute('srcdoc', app.translate(data.html));
+                            } else {
+                                app.mapDivDocument.querySelector('#poi_iframe').setAttribute('src', app.translate(data.url));
+                            }
                         } else {
                             app.mapDivDocument.querySelector('#poi_data').classList.remove('hide');
                             app.mapDivDocument.querySelector('#poi_web').classList.add('hide');
