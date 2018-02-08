@@ -75,6 +75,13 @@
         };
 
         Tin.prototype.setCompiled = function(compiled) {
+            /*if (!compiled.tins && compiled.points && compiled.triParams) {
+
+            } else {
+
+            }*/
+
+
             this.tins = compiled.tins;
             this.strict_status = compiled.strict_status;
             this.pointsWeightBuffer = compiled.weight_buffer;
@@ -91,17 +98,31 @@
                     points[pIdx] = [forw, bakw];
                 });
             }
+            console.log(JSON.stringify(compiled.centroid, null, 1));
+            console.log("######");
+            console.log(JSON.stringify(compiled.vertices_params, null, 1));
             this.points = points;
         };
 
         Tin.prototype.getCompiled = function() {
             var compiled = {};
+            /* old logic
             compiled.tins = this.tins;
             compiled.strict_status = this.strict_status;
             compiled.weight_buffer = this.pointsWeightBuffer;
             compiled.vertices_params = this.vertices_params;
             compiled.centroid = this.centroid;
-            compiled.kinks = this.kinks;
+            compiled.kinks = this.kinks;*/
+            compiled.points = this.points;
+            compiled.centroid_point = [this.centroid.forw.geometry.coordinates,
+                this.centroid.forw.properties.target.geom];
+            compiled.vertices_params = [this.vertices_params.forw[0], this.vertices_params.bakw[0]];
+            compiled.vertices_points = [];
+
+
+
+
+
             return compiled;
         };
 
