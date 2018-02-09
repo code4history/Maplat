@@ -100,7 +100,7 @@
             }
             console.log(JSON.stringify(compiled.centroid, null, 1));
             console.log("######");
-            console.log(JSON.stringify(compiled.vertices_params, null, 1));
+            console.log(JSON.stringify(compiled.tins, null, 1));
             this.points = points;
         };
 
@@ -113,15 +113,43 @@
             compiled.vertices_params = this.vertices_params;
             compiled.centroid = this.centroid;
             compiled.kinks = this.kinks;*/
+
+            // 新compileロジック
+            // pointsはそのまま保存
             compiled.points = this.points;
+            // centroidは座標の対応のみ保存
             compiled.centroid_point = [this.centroid.forw.geometry.coordinates,
                 this.centroid.forw.properties.target.geom];
+            // vertices_paramsの最初の値はそのまま保存
             compiled.vertices_params = [this.vertices_params.forw[0], this.vertices_params.bakw[0]];
+            // vertices_paramsの2番目の値（セントロイドと地図頂点の三角形ポリゴン）は、地図頂点座標のみ記録
             compiled.vertices_points = [];
-
-
-
-
+            var vertices = this.vertices_params.forw[1];
+            [0, 1, 2, 3].map(function(i) {
+                var vertex_data = vertices[i];
+                var forw = vertex_data.geometry.coordinates[0][1];
+                var bakw = vertex_data.properties.b.geom;
+                compiled.vertices_points[i] = [forw, bakw];
+            });
+            // tinは座標インデックスのみ記録
+            compiled.tins_points_list = [[]];
+            this.tins.forw.map(function(tin){
+                compiled.tins_points_list[0].push(['a','b','c'].map(function(idx){
+                    return tin.properties[idx].index;
+                }));
+            });
+            // 自動モードでエラーがある時（loose）は、逆方向のtinも記録。
+            // 厳格モードでエラーがある時（strict_error）は、交差点情報を記録。
+            if (this.strict_status == 'loose') {
+                compiled.tins_points_list[1] = [];
+                this.tins.bakw.map(function(tin){
+                    compiled.tins_points_list[1].push(['a','b','c'].map(function(idx){
+                        return tin.properties[idx].index;
+                    }));
+                });
+            } else if (this.strict_status == 'strict_error') {
+                compiled.kinks = this.kinks;
+            }
 
             return compiled;
         };
@@ -192,10 +220,7 @@
                     removeSearchIndex(searchIndex, trises[1], self.tins);
                     sharedVtx.map(function(sVtx) {
                         var newTriCoords = [sVtx.geom, nonSharedVtx[0].geom, nonSharedVtx[1].geom, sVtx.geom];
-                        var cwCheck = isClockwise(newTriCoords);
-                        if (cwCheck) newTriCoords = [sVtx.geom, nonSharedVtx[1].geom, nonSharedVtx[0].geom, sVtx.geom];
-                        var newTriProp = !cwCheck ? {a: sVtx.prop, b: nonSharedVtx[0].prop, c: nonSharedVtx[1].prop} :
-                            {a: sVtx.prop, b: nonSharedVtx[1].prop, c: nonSharedVtx[0].prop};
+                        var newTriProp = {a: sVtx.prop, b: nonSharedVtx[0].prop, c: nonSharedVtx[1].prop};
                         var newBakTri = turf.polygon([newTriCoords], newTriProp);
                         var newForTri = counterTri(newBakTri);
                         insertSearchIndex(searchIndex, {forw: newForTri, bakw: newBakTri}, self.tins);
@@ -653,18 +678,10 @@
                 var coordinates = [centroid, itemi, itemj, centroid].map(function(point) {
                     return point.geometry.coordinates;
                 });
-                var cwCheck = isClockwise(coordinates);
-                if (cwCheck) coordinates = [centroid, itemj, itemi, centroid].map(function(point) {
-                    return point.geometry.coordinates;
-                });
-                var properties = !cwCheck ? {
+                var properties = {
                     a: {geom: centroid.properties.target.geom, index: centroid.properties.target.index},
                     b: {geom: itemi.properties.target.geom, index: itemi.properties.target.index},
                     c: {geom: itemj.properties.target.geom, index: itemj.properties.target.index}
-                } : {
-                    a: {geom: centroid.properties.target.geom, index: centroid.properties.target.index},
-                    b: {geom: itemj.properties.target.geom, index: itemj.properties.target.index},
-                    c: {geom: itemi.properties.target.geom, index: itemi.properties.target.index}
                 };
                 var tin = turf.featureCollection([turf.polygon([coordinates], properties)]);
 
@@ -790,17 +807,9 @@
             var coordinates = ['a', 'b', 'c', 'a'].map(function(key) {
                 return tri.properties[key].geom;
             });
-            var cwCheck = isClockwise(coordinates);
-            if (cwCheck) coordinates = ['a', 'c', 'b', 'a'].map(function(key) {
-                return tri.properties[key].geom;
-            });
             var geoms = tri.geometry.coordinates[0];
             var props = tri.properties;
-            var properties = !cwCheck ? {
-                a: {geom: geoms[0], index: props['a'].index},
-                b: {geom: geoms[1], index: props['b'].index},
-                c: {geom: geoms[2], index: props['c'].index}
-            } : {
+            var properties = {
                 a: {geom: geoms[0], index: props['a'].index},
                 b: {geom: geoms[2], index: props['c'].index},
                 c: {geom: geoms[1], index: props['b'].index}
