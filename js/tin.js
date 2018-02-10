@@ -93,20 +93,41 @@
                     'forw' : [ compiled.vertices_params[0] ],
                     'bakw' : [ compiled.vertices_params[1] ]
                 };
-
-
-
+                this.vertices_params.forw[1] = [0, 1, 2, 3].map(function(idx){
+                    var idxNxt = (idx + 1) % 4;
+                    var tri = indexesToTri(['cent', 'bbox' + idx, 'bbox' + idxNxt], compiled.points,
+                        compiled.centroid_point, compiled.vertices_points, false);
+                    return turf.featureCollection([tri]);
+                });
+                this.vertices_params.bakw[1] = [0, 1, 2, 3].map(function(idx){
+                    var idxNxt = (idx + 1) % 4;
+                    var tri = indexesToTri(['cent', 'bbox' + idx, 'bbox' + idxNxt], compiled.points,
+                        compiled.centroid_point, compiled.vertices_points, true);
+                    return turf.featureCollection([tri]);
+                });
+                // centroidを復元
                 this.centroid = {
                     'forw' : turf.point(compiled.centroid_point[0], {'target': {'geom': compiled.centroid_point[1], 'index': 'cent'}}),
                     'bakw' : turf.point(compiled.centroid_point[1], {'target': {'geom': compiled.centroid_point[0], 'index': 'cent'}})
                 };
-                var fs = require('fs');
-                fs.writeFileSync('./setCompiledCheck.json', JSON.stringify(this, null, 2));
-
-
-
-
-
+                // tinsを復元
+                var bakwI = compiled.tins_points.length == 1 ? 0 : 1;
+                this.tins = {
+                    'forw': turf.featureCollection(compiled.tins_points[0].map(function(idxes){
+                        return indexesToTri(idxes, compiled.points, compiled.centroid_point, compiled.vertices_points, false)
+                    })),
+                    'bakw': turf.featureCollection(compiled.tins_points[bakwI].map(function(idxes){
+                        return indexesToTri(idxes, compiled.points, compiled.centroid_point, compiled.vertices_points, true)
+                    }))
+                }
+                // kinksを復元
+                if (compiled.kinks_points) {
+                    this.kinks = {
+                        'bakw': turf.featureCollection(compiled.kinks_points.map(function(coord) {
+                            return turf.point(coord)
+                        }))
+                    };
+                }
             } else {
                 // 旧コンパイルロジック
                 this.tins = compiled.tins;
@@ -127,6 +148,16 @@
                 }
                 this.points = points;
             }
+
+            // 翻訳したオブジェクトを返す
+            return {
+                'tins' : this.tins,
+                'strict_status' : this.strict_status,
+                'weight_buffer' : this.pointsWeightBuffer,
+                'vertices_params' : this.vertices_params,
+                'centroid' : this.centroid,
+                'kinks' : this.kinks
+            };
         };
 
         Tin.prototype.getCompiled = function() {
