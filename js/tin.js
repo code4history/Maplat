@@ -75,33 +75,58 @@
         };
 
         Tin.prototype.setCompiled = function(compiled) {
-            /*if (!compiled.tins && compiled.points && compiled.triParams) {
+            if (!compiled.tins && compiled.points && compiled.tins_points) {
+                // 新コンパイルロジック
+                // pointsはそのままpoints, weightBufferも
+                this.points = compiled.points;
+                this.pointsWeightBuffer = compiled.weight_buffer;
+                // kinksやtinsの存在状況でstrict_statusを判定
+                if (compiled.kinks_points) {
+                    this.strict_status = 'strict_error';
+                } else if (compiled.tins_points.length == 2) {
+                    this.strict_status = 'loose';
+                } else {
+                    this.strict_status = 'strict';
+                }
+                // vertices_paramsを復元
+                this.vertices_params = {
+                    'forw' : [ compiled.vertices_params[0] ],
+                    'bakw' : [ compiled.vertices_params[1] ]
+                };
+
+
+
+                this.centroid = {
+                    'forw' : turf.point(compiled.centroid_point[0], {'target': {'geom': compiled.centroid_point[1], 'index': 'cent'}}),
+                    'bakw' : turf.point(compiled.centroid_point[1], {'target': {'geom': compiled.centroid_point[0], 'index': 'cent'}})
+                };
+                var fs = require('fs');
+                fs.writeFileSync('./setCompiledCheck.json', JSON.stringify(this, null, 2));
+
+
+
+
 
             } else {
-
-            }*/
-
-
-            this.tins = compiled.tins;
-            this.strict_status = compiled.strict_status;
-            this.pointsWeightBuffer = compiled.weight_buffer;
-            this.vertices_params = compiled.vertices_params;
-            this.centroid = compiled.centroid;
-            this.kinks = compiled.kinks;
-            var points = [];
-            for (var i = 0; i < this.tins.forw.features.length; i++) {
-                var tri = this.tins.forw.features[i];
-                ['a', 'b', 'c'].map(function(key, idx) {
-                    var forw = tri.geometry.coordinates[0][idx];
-                    var bakw = tri.properties[key].geom;
-                    var pIdx = tri.properties[key].index;
-                    points[pIdx] = [forw, bakw];
-                });
+                // 旧コンパイルロジック
+                this.tins = compiled.tins;
+                this.strict_status = compiled.strict_status;
+                this.pointsWeightBuffer = compiled.weight_buffer;
+                this.vertices_params = compiled.vertices_params;
+                this.centroid = compiled.centroid;
+                this.kinks = compiled.kinks;
+                var points = [];
+                for (var i = 0; i < this.tins.forw.features.length; i++) {
+                    var tri = this.tins.forw.features[i];
+                    ['a', 'b', 'c'].map(function(key, idx) {
+                        var forw = tri.geometry.coordinates[0][idx];
+                        var bakw = tri.properties[key].geom;
+                        var pIdx = tri.properties[key].index;
+                        points[pIdx] = [forw, bakw];
+                    });
+                }
+                this.points = points;
             }
-            console.log(JSON.stringify(compiled.centroid, null, 1));
-            console.log("######");
-            console.log(JSON.stringify(compiled.tins, null, 1));
-            this.points = points;
         };
 
         Tin.prototype.getCompiled = function() {
@@ -115,8 +140,9 @@
             compiled.kinks = this.kinks;*/
 
             // 新compileロジック
-            // pointsはそのまま保存
+            // points, weightBufferはそのまま保存
             compiled.points = this.points;
+            compiled.weight_buffer = this.pointsWeightBuffer;
             // centroidは座標の対応のみ保存
             compiled.centroid_point = [this.centroid.forw.geometry.coordinates,
                 this.centroid.forw.properties.target.geom];
@@ -126,29 +152,31 @@
             compiled.vertices_points = [];
             var vertices = this.vertices_params.forw[1];
             [0, 1, 2, 3].map(function(i) {
-                var vertex_data = vertices[i];
+                var vertex_data = vertices[i].features[0];
                 var forw = vertex_data.geometry.coordinates[0][1];
                 var bakw = vertex_data.properties.b.geom;
                 compiled.vertices_points[i] = [forw, bakw];
             });
             // tinは座標インデックスのみ記録
-            compiled.tins_points_list = [[]];
-            this.tins.forw.map(function(tin){
-                compiled.tins_points_list[0].push(['a','b','c'].map(function(idx){
+            compiled.tins_points = [[]];
+            this.tins.forw.features.map(function(tin){
+                compiled.tins_points[0].push(['a','b','c'].map(function(idx){
                     return tin.properties[idx].index;
                 }));
             });
             // 自動モードでエラーがある時（loose）は、逆方向のtinも記録。
-            // 厳格モードでエラーがある時（strict_error）は、交差点情報を記録。
+            // 厳格モードでエラーがある時（strict_error）は、エラー点情報(kinks)を記録。
             if (this.strict_status == 'loose') {
-                compiled.tins_points_list[1] = [];
-                this.tins.bakw.map(function(tin){
-                    compiled.tins_points_list[1].push(['a','b','c'].map(function(idx){
+                compiled.tins_points[1] = [];
+                this.tins.bakw.features.map(function(tin){
+                    compiled.tins_points[1].push(['a','b','c'].map(function(idx){
                         return tin.properties[idx].index;
                     }));
                 });
             } else if (this.strict_status == 'strict_error') {
-                compiled.kinks = this.kinks;
+                compiled.kinks_points = this.kinks.bakw.features.map(function(kink) {
+                    return kink.geometry.coordinates;
+                });
             }
 
             return compiled;
@@ -815,6 +843,31 @@
                 c: {geom: geoms[1], index: props['b'].index}
             };
             return turf.polygon([coordinates], properties);
+        }
+
+        function buildTri(points) {
+            var coordinates = [0, 1, 2, 0].map(function(i) {
+                return points[i][0][0];
+            });
+            var properties = {
+                a: {geom: points[0][0][1], index: points[0][1]},
+                b: {geom: points[1][0][1], index: points[1][1]},
+                c: {geom: points[2][0][1], index: points[2][1]}
+            };
+            return turf.polygon([coordinates], properties);
+        }
+
+        function indexesToTri(indexes, points, cent, bboxes, bakw) {
+            var points = indexes.map(function(index) {
+                var point_base = isFinite(index) ? points[index] :
+                        index == 'cent' ? cent :
+                            index == 'bbox0' ? bboxes[0] :
+                                index == 'bbox1' ? bboxes[1] :
+                                    index == 'bbox2' ? bboxes[2] : bboxes[3];
+                return bakw ? [[point_base[1], point_base[0]], index] :
+                    [[point_base[0], point_base[1]], index];
+            });
+            return buildTri(points);
         }
 
         function overlapCheckAsync(searchIndex) {
