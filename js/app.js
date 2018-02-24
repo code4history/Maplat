@@ -42,13 +42,13 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                 if(Function.bind) {
                     Logger.prototype[key]=(
                         function(k) {
-                            return console[k].bind(console);
+                            return console.log.bind(console);
                         }
                     )(key);
                 }else{
                     Logger.prototype[key]=(
                         function(k) {
-                            return console[k].apply(console, arguments);
+                            return console.log.apply(console, arguments);
                         }
                     )(key);
                 }
