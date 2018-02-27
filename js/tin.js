@@ -192,19 +192,22 @@
             });
             compiled.strict_status = this.strict_status;
             // tinは座標インデックスのみ記録
-            compiled.tins_points = [[], []];
+            compiled.tins_points = [[]];
             this.tins.forw.features.map(function(tin){
                 compiled.tins_points[0].push(['a','b','c'].map(function(idx){
                     return tin.properties[idx].index;
                 }));
             });
-            this.tins.bakw.features.map(function(tin){
-                compiled.tins_points[1].push(['a','b','c'].map(function(idx){
-                    return tin.properties[idx].index;
-                }));
-            });
+            // 自動モードでエラーがある時（loose）は、逆方向のtinも記録。
             // 厳格モードでエラーがある時（strict_error）は、エラー点情報(kinks)を記録。
-            if (this.strict_status == 'strict_error') {
+            if (this.strict_status == 'loose') {
+                compiled.tins_points[1] = [];
+                this.tins.bakw.features.map(function(tin){
+                    compiled.tins_points[1].push(['a','b','c'].map(function(idx){
+                        return tin.properties[idx].index;
+                    }));
+                });
+            } else if (this.strict_status == 'strict_error') {
                 compiled.kinks_points = this.kinks.bakw.features.map(function(kink) {
                     return kink.geometry.coordinates;
                 });
@@ -279,10 +282,7 @@
                     removeSearchIndex(searchIndex, trises[1], self.tins);
                     sharedVtx.map(function(sVtx) {
                         var newTriCoords = [sVtx.geom, nonSharedVtx[0].geom, nonSharedVtx[1].geom, sVtx.geom];
-                        var cwCheck = isClockwise(newTriCoords);
-                        if (cwCheck) newTriCoords = [sVtx.geom, nonSharedVtx[1].geom, nonSharedVtx[0].geom, sVtx.geom];
-                        var newTriProp = !cwCheck ? {a: sVtx.prop, b: nonSharedVtx[0].prop, c: nonSharedVtx[1].prop} :
-                            {a: sVtx.prop, b: nonSharedVtx[1].prop, c: nonSharedVtx[0].prop};
+                        var newTriProp = {a: sVtx.prop, b: nonSharedVtx[0].prop, c: nonSharedVtx[1].prop};
                         var newBakTri = turf.polygon([newTriCoords], newTriProp);
                         var newForTri = counterTri(newBakTri);
                         insertSearchIndex(searchIndex, {forw: newForTri, bakw: newBakTri}, self.tins);
@@ -740,18 +740,10 @@
                 var coordinates = [centroid, itemi, itemj, centroid].map(function(point) {
                     return point.geometry.coordinates;
                 });
-                var cwCheck = isClockwise(coordinates);
-                if (cwCheck) coordinates = [centroid, itemj, itemi, centroid].map(function(point) {
-                    return point.geometry.coordinates;
-                });
-                var properties = !cwCheck ? {
+                var properties = {
                     a: {geom: centroid.properties.target.geom, index: centroid.properties.target.index},
                     b: {geom: itemi.properties.target.geom, index: itemi.properties.target.index},
                     c: {geom: itemj.properties.target.geom, index: itemj.properties.target.index}
-                } : {
-                    a: {geom: centroid.properties.target.geom, index: centroid.properties.target.index},
-                    b: {geom: itemj.properties.target.geom, index: itemj.properties.target.index},
-                    c: {geom: itemi.properties.target.geom, index: itemi.properties.target.index}
                 };
                 var tin = turf.featureCollection([turf.polygon([coordinates], properties)]);
 
@@ -877,20 +869,12 @@
             var coordinates = ['a', 'b', 'c', 'a'].map(function(key) {
                 return tri.properties[key].geom;
             });
-            var cwCheck = isClockwise(coordinates);
-            if (cwCheck) coordinates = ['a', 'c', 'b', 'a'].map(function(key) {
-                return tri.properties[key].geom;
-            });
             var geoms = tri.geometry.coordinates[0];
             var props = tri.properties;
-            var properties = !cwCheck ? {
+            var properties = {
                 a: {geom: geoms[0], index: props['a'].index},
                 b: {geom: geoms[1], index: props['b'].index},
                 c: {geom: geoms[2], index: props['c'].index}
-            } : {
-                a: {geom: geoms[0], index: props['a'].index},
-                b: {geom: geoms[2], index: props['c'].index},
-                c: {geom: geoms[1], index: props['b'].index}
             };
             return turf.polygon([coordinates], properties);
         }
