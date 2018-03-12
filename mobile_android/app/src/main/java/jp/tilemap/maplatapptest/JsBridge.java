@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
@@ -28,6 +29,13 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 public class JsBridge extends Object {
+
+    public interface JsBridgeListener {
+        void onCallWeb2App(String key, String data);
+    }
+
+    JsBridgeListener mListener;
+
     Context mContext;
     WebView mWebView;
     Handler mHandler;
@@ -44,9 +52,14 @@ public class JsBridge extends Object {
     private Location mCurrentLocation;
 
     public JsBridge(Context c, WebView w, Handler h) {
+        this(c, w, h, null);
+    }
+
+    public JsBridge(Context c, WebView w, Handler h, JsBridgeListener l) {
         mContext = c;
         mWebView = w;
         mHandler = h;
+        mListener = l;
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(c);
         mSettingsClient = LocationServices.getSettingsClient(c);
@@ -56,20 +69,37 @@ public class JsBridge extends Object {
     }
 
     @JavascriptInterface
-    public void callWeb2App(String key, String data) {
-        if (key.equals("callApp2Web") && data.equals("ready")) {
-            this.callApp2Web("setMarker", "{\"latitude\":39.69994722,\"longitude\":141.1501111,\"data\":{\"id\":1,\"data\":1}}");
-            this.callApp2Web("setMarker", "{\"latitude\":39.7006006,\"longitude\":141.1529555,\"data\":{\"id\":5,\"data\":5}}");
-            this.callApp2Web("setMarker", "{\"latitude\":39.701599,\"longitude\":141.151995,\"data\":{\"id\":6,\"data\":6}}");
-            this.callApp2Web("setMarker", "{\"latitude\":39.703736,\"longitude\":141.151137,\"data\":{\"id\":7,\"data\":7}}");
-            this.callApp2Web("setMarker", "{\"latitude\":39.7090232,\"longitude\":141.1521671,\"data\":{\"id\":9,\"data\":9}}");
-
-            this.callApp2Web("setMarker", "{\"latitude\":35.661787,\"longitude\":139.700032,\"data\":{\"id\":10,\"data\":\"Dots\"}}");
-
-            startLocationUpdates();
-        } else {
-            Toast.makeText(mContext, key + ":" + data, Toast.LENGTH_LONG).show();
+    public void callWeb2App(final String key, final String data) {
+        if (mListener != null) {
+            //mListener.onCallWeb2App(key, data);
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mListener.onCallWeb2App(key, data);
+                }
+            });
         }
+    }
+
+    public void setMarker(double latitude, double longitude, int markerId, String markerData) {
+        setMarker(latitude, longitude, markerId, markerData, null);
+    }
+
+    public void setMarker(double latitude, double longitude, int markerId, String markerData, String iconUrl) {
+        String iconStr;
+        if (TextUtils.isEmpty(iconUrl)) {
+            iconStr = "";
+        } else {
+            iconStr = ",\"icon\":\"" + iconUrl + "\"";
+        }
+        String value = "{\"latitude\":" + latitude + ",\"longitude\":" + longitude
+                + ",\"data\": {\"id\":" + markerId + ",\"data\":\"" + markerData + "\"" + iconStr + "}}";
+        callApp2Web("setMarker", value);
+    }
+
+    public void setGPSMarker(double latitude, double longitude, double accuracy) {
+        String value = "{\"latitude\":" + latitude + ",\"longitude\":" + longitude + ",\"accuracy\":" + accuracy + "}";
+        callApp2Web("setGPSMarker", value);
     }
 
     private void callApp2Web(final String key, final String data) {
@@ -80,7 +110,6 @@ public class JsBridge extends Object {
             }
         });
     }
-
 
     private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
     private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = UPDATE_INTERVAL_IN_MILLISECONDS / 2;
@@ -98,11 +127,7 @@ public class JsBridge extends Object {
             public void onLocationResult(LocationResult locationResult) {
                 super.onLocationResult(locationResult);
                 mCurrentLocation = locationResult.getLastLocation();
-
-                String value = "{\"latitude\":" + mCurrentLocation.getLatitude()
-                        + ",\"longitude\":" + mCurrentLocation.getLongitude()
-                        + ",\"accuracy\":" + mCurrentLocation.getAccuracy() + "}";
-                JsBridge.this.callApp2Web("setGPSMarker", value);
+                setGPSMarker(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), mCurrentLocation.getAccuracy());
             }
         };
     }
@@ -113,7 +138,7 @@ public class JsBridge extends Object {
         mLocationSettingsRequest = builder.build();
     }
 
-    private void startLocationUpdates() {
+    public void startLocationUpdates() {
         mSettingsClient.checkLocationSettings(mLocationSettingsRequest)
                 .addOnSuccessListener((Activity) mContext, new OnSuccessListener<LocationSettingsResponse>() {
                     @Override
