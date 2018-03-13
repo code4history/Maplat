@@ -71,7 +71,6 @@ public class JsBridge extends Object {
     @JavascriptInterface
     public void callWeb2App(final String key, final String data) {
         if (mListener != null) {
-            //mListener.onCallWeb2App(key, data);
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
