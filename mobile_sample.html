@@ -78,7 +78,9 @@
     </div>
   </div>
 </body>
-<script src="js/maplat.js"></script>
+<script src="js/aigle-es5.min.js"></script>
+<script src="js/require.min.js"></script>
+<script src="js/config.js"></script>
 <script>
     var jsBridge = jsBridge || {};
     jsBridge.callWeb2App = jsBridge.callWeb2App || function (key, data) {
@@ -86,8 +88,7 @@
     };
     var option = {
         appid: 'mobile_sample',
-        mobile_if: true,
-        no_rotate: true
+        mobile_if: true
     };
 
     Maplat.createObject(option).then(function(app) {

@@ -155,7 +155,6 @@ define(['ol-custom'], function(ol) {
         }
         options = Object.assign(options, commonOptions);
         if (!options.maptype) options.maptype = 'maplat';
-        if (!options.algorythm) options.algorythm = 'tin';
         options.label = ol.source.HistMap.translate(options.label || options.year);
         if (options.attr) {
             options.attributions = [
@@ -176,18 +175,16 @@ define(['ol-custom'], function(ol) {
             });
         }
 
-        var algorythm = options.algorythm || 'tin';
         return new Promise(function(resolve, reject) {
-            requirejs(['histmap_' + algorythm], resolve);
+            requirejs(['histmap_tin'], resolve);
         }).then(function() {
-            return ol.source['HistMap_' + algorythm].createAsync(Object.assign({
+            return ol.source.HistMap_tin.createAsync(Object.assign({
                 title: options.title || options.era,
                 mapID: options.mapID,
                 width: options.width,
                 height: options.height,
                 maptype: options.maptype,
-                algorythm: options.algorythm,
-                sourceID: options.sourceID || options.mapID + ':' + options.maptype + ':' + options.algorythm,
+                sourceID: options.sourceID || options.mapID,
                 label: options.label
             }, options))
                 .then(function(obj) {

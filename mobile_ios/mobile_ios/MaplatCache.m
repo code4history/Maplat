@@ -68,30 +68,8 @@
             if ([lkey isEqualToString:@"value"]) value = [lval stringByRemovingPercentEncoding];
         }
         
-        if ([key isEqualToString:@"callApp2Web"] && [value isEqualToString:@"ready"]) {
-            [self webView:webView callApp2WebWithKey:@"setMarker" value:@"{\"latitude\":39.69994722,\"longitude\":141.1501111,\"data\":{\"id\":1,\"data\":1}}"];
-            [self webView:webView callApp2WebWithKey:@"setMarker" value:@"{\"latitude\":39.7006006,\"longitude\":141.1529555,\"data\":{\"id\":5,\"data\":5}}"];
-            [self webView:webView callApp2WebWithKey:@"setMarker" value:@"{\"latitude\":39.701599,\"longitude\":141.151995,\"data\":{\"id\":6,\"data\":6}}"];
-            [self webView:webView callApp2WebWithKey:@"setMarker" value:@"{\"latitude\":39.703736,\"longitude\":141.151137,\"data\":{\"id\":7,\"data\":7}}"];
-            [self webView:webView callApp2WebWithKey:@"setMarker" value:@"{\"latitude\":39.7090232,\"longitude\":141.1521671,\"data\":{\"id\":9,\"data\":9}}"];
-        } else {
-            NSString *message = [NSString stringWithFormat:@"%@:%@", key, value];
-            
-            UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
-                                                                           message:message
-                                                                    preferredStyle:UIAlertControllerStyleAlert];
-            UIViewController *controller = [webView firstAvailableUIViewController];
-            [controller presentViewController:alert animated:YES completion:nil];
-            
-            int duration = 1; // duration in seconds
-            
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, duration * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                [alert dismissViewControllerAnimated:YES completion:nil];
-            });
-        }
-        
         if (_delegate) {
-            [_delegate maplatCache:self didReceiveKey:key value:value];
+            [_delegate onCallWeb2AppWithKey:key value:value];
         }
         
         return NO;

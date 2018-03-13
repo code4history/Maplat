@@ -15,6 +15,8 @@
 
 @property (nonatomic, strong) CLLocationManager *locationManager;
 
+@property (nonatomic, strong) MaplatCache *cache;
+
 @end
 
 @implementation ViewController : UIViewController
@@ -33,10 +35,10 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     [NSThread sleepForTimeInterval:10]; //Safariのデバッガを繋ぐための時間。本番では不要。
-    MaplatCache *cache = (MaplatCache *)[NSURLCache sharedURLCache];
-    cache.delegate = self;
+    _cache = (MaplatCache *)[NSURLCache sharedURLCache];
+    _cache.delegate = self;
     
-    self.webView.delegate = cache;
+    self.webView.delegate = _cache;
     [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://localresource/mobile_sample.html"]]];
     
     _locationManager = [[CLLocationManager alloc] init];
@@ -56,13 +58,29 @@
 
 #pragma mark - MaplatCacheDelegate
 
-- (void)maplatCache:(MaplatCache *)maplatCache didReceiveKey:(NSString *)key value:(NSString *)value {
-    NSLog(@"didReceiveKey:%@ value:%@", key, value);
-    
-    if ([key isEqualToString:@"callApp2Web"]) {
-        if ([value isEqualToString:@"ready"]) {
-            [_locationManager startUpdatingLocation];
-        }
+- (void)onCallWeb2AppWithKey:(NSString *)key value:(NSString *)value {
+    NSLog(@"onCallWeb2AppWithKey:%@ value:%@", key, value);
+    if ([key isEqualToString:@"callApp2Web"] && [value isEqualToString:@"ready"]) {
+        [_locationManager startUpdatingLocation];
+        [_cache webView:_webView callApp2WebWithKey:@"setMarker" value:@"{\"latitude\":39.69994722,\"longitude\":141.1501111,\"data\":{\"id\":1,\"data\":1}}"];
+        [_cache webView:_webView callApp2WebWithKey:@"setMarker" value:@"{\"latitude\":39.7006006,\"longitude\":141.1529555,\"data\":{\"id\":5,\"data\":5}}"];
+        [_cache webView:_webView callApp2WebWithKey:@"setMarker" value:@"{\"latitude\":39.701599,\"longitude\":141.151995,\"data\":{\"id\":6,\"data\":6}}"];
+        [_cache webView:_webView callApp2WebWithKey:@"setMarker" value:@"{\"latitude\":39.703736,\"longitude\":141.151137,\"data\":{\"id\":7,\"data\":7}}"];
+        [_cache webView:_webView callApp2WebWithKey:@"setMarker" value:@"{\"latitude\":39.7090232,\"longitude\":141.1521671,\"data\":{\"id\":9,\"data\":9}}"];
+    } else {
+        NSString *message = [NSString stringWithFormat:@"%@:%@", key, value];
+        
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+                                                                       message:message
+                                                                preferredStyle:UIAlertControllerStyleAlert];
+        UIViewController *controller = [_webView firstAvailableUIViewController];
+        [controller presentViewController:alert animated:YES completion:nil];
+        
+        int duration = 1; // duration in seconds
+        
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, duration * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            [alert dismissViewControllerAnimated:YES completion:nil];
+        });
     }
 }
 

@@ -21,7 +21,7 @@
 
 @protocol MaplatCacheDelegate <NSObject>
 @optional
-- (void)maplatCache:(MaplatCache *)maplatCache didReceiveKey:(NSString *)key value:(NSString *)value;
+- (void)onCallWeb2AppWithKey:(NSString *)key value:(NSString *)value;
 @end
 
 @interface UIView (FindUIViewController)
