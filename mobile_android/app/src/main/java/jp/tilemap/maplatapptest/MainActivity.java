@@ -25,9 +25,11 @@ import java.io.InputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements JsBridge.JsBridgeListener {
 
     private static final int REQUEST_PERMISSION = 10;
+
+    private JsBridge mJsBridge;
 
     //@SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -116,9 +118,10 @@ public class MainActivity extends Activity {
             }
         });
         myWebView.loadUrl("http://localresource/mobile_sample.html");
-
         myWebView.getSettings().setJavaScriptEnabled(true);
-        myWebView.addJavascriptInterface(new JsBridge(this, myWebView, new Handler()),"jsBridge");
+
+        mJsBridge = new JsBridge(this, myWebView, new Handler(), this);
+        myWebView.addJavascriptInterface(mJsBridge,"jsBridge");
     }
 
     /*@Override
@@ -165,6 +168,21 @@ public class MainActivity extends Activity {
                 Toast toast = Toast.makeText(this,"アプリを実行できません", Toast.LENGTH_SHORT);
                 toast.show();
             }
+        }
+    }
+
+    @Override
+    public void onCallWeb2App(String key, String data) {
+        if (key.equals("callApp2Web") && data.equals("ready")) {
+            mJsBridge.setMarker(39.69994722, 141.1501111, 1, "001");
+            mJsBridge.setMarker(39.7006006, 141.1529555, 5, "005");
+            mJsBridge.setMarker(39.701599, 141.151995, 6, "006");
+            mJsBridge.setMarker(39.703736, 141.151137, 7, "007");
+            mJsBridge.setMarker(39.7090232, 141.1521671, 9, "009");
+            
+            mJsBridge.startLocationUpdates();
+        } else {
+            Toast.makeText(this, key + ":" + data, Toast.LENGTH_SHORT).show();
         }
     }
 }
