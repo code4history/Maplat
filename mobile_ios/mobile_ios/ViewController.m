@@ -9,13 +9,13 @@
 #import "ViewController.h"
 #import <UIKit/UIKit.h>
 #import <CoreLocation/CoreLocation.h>
-#import "MaplatCache.h"
+#import "JsBridge.h"
 
-@interface ViewController () <CLLocationManagerDelegate, MaplatCacheDelegate>
+@interface ViewController () <CLLocationManagerDelegate, JsBridgeDelegate>
 
 @property (nonatomic, strong) CLLocationManager *locationManager;
 
-@property (nonatomic, strong) MaplatCache *cache;
+@property (nonatomic, strong) JsBridge *jsBridge;
 
 @end
 
@@ -35,11 +35,11 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     [NSThread sleepForTimeInterval:10]; //Safariのデバッガを繋ぐための時間。本番では不要。
-    _cache = (MaplatCache *)[NSURLCache sharedURLCache];
-    _cache.delegate = self;
-    
-    self.webView.delegate = _cache;
+
     [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://localresource/mobile_sample.html"]]];
+    
+    _jsBridge = [[JsBridge alloc] initWithWebView:self.webView];
+    _jsBridge.delegate = self;
     
     _locationManager = [[CLLocationManager alloc] init];
     _locationManager.delegate = self;
@@ -56,32 +56,33 @@
     // Dispose of any resources that can be recreated.
 }
 
-#pragma mark - MaplatCacheDelegate
+#pragma mark - JsBridgeDelegate
 
-- (void)onCallWeb2AppWithKey:(NSString *)key value:(NSString *)value {
-    NSLog(@"onCallWeb2AppWithKey:%@ value:%@", key, value);
-    if ([key isEqualToString:@"callApp2Web"] && [value isEqualToString:@"ready"]) {
-        [_locationManager startUpdatingLocation];
-        [_cache webView:_webView callApp2WebWithKey:@"setMarker" value:@"{\"latitude\":39.69994722,\"longitude\":141.1501111,\"data\":{\"id\":1,\"data\":1}}"];
-        [_cache webView:_webView callApp2WebWithKey:@"setMarker" value:@"{\"latitude\":39.7006006,\"longitude\":141.1529555,\"data\":{\"id\":5,\"data\":5}}"];
-        [_cache webView:_webView callApp2WebWithKey:@"setMarker" value:@"{\"latitude\":39.701599,\"longitude\":141.151995,\"data\":{\"id\":6,\"data\":6}}"];
-        [_cache webView:_webView callApp2WebWithKey:@"setMarker" value:@"{\"latitude\":39.703736,\"longitude\":141.151137,\"data\":{\"id\":7,\"data\":7}}"];
-        [_cache webView:_webView callApp2WebWithKey:@"setMarker" value:@"{\"latitude\":39.7090232,\"longitude\":141.1521671,\"data\":{\"id\":9,\"data\":9}}"];
-    } else {
-        NSString *message = [NSString stringWithFormat:@"%@:%@", key, value];
-        
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
-                                                                       message:message
-                                                                preferredStyle:UIAlertControllerStyleAlert];
-        UIViewController *controller = [_webView firstAvailableUIViewController];
-        [controller presentViewController:alert animated:YES completion:nil];
-        
-        int duration = 1; // duration in seconds
-        
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, duration * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            [alert dismissViewControllerAnimated:YES completion:nil];
-        });
-    }
+- (void)onReady
+{
+    [_locationManager startUpdatingLocation];
+    [_jsBridge setMarkerWithLatitude:39.69994722 longitude:141.1501111 markerId:1 markerData:@"001"];
+    [_jsBridge setMarkerWithLatitude:39.7006006 longitude:141.1529555 markerId:5 markerData:@"005"];
+    [_jsBridge setMarkerWithLatitude:39.701599 longitude:141.151995 markerId:6 markerData:@"006"];
+    [_jsBridge setMarkerWithLatitude:39.703736 longitude:141.151137 markerId:7 markerData:@"007"];
+    [_jsBridge setMarkerWithLatitude:39.7090232 longitude:141.1521671 markerId:9 markerData:@"009"];
+}
+
+- (void)onClickPoi:(NSString *)value
+{
+    NSString *message = [NSString stringWithFormat:@"cliclPoi:%@", value];
+    
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+                                                                   message:message
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    UIViewController *controller = [_webView firstAvailableUIViewController];
+    [controller presentViewController:alert animated:YES completion:nil];
+    
+    int duration = 1; // duration in seconds
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, duration * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [alert dismissViewControllerAnimated:YES completion:nil];
+    });
 }
 
 #pragma mark - Location Manager
@@ -94,8 +95,7 @@
     
     NSLog(@"location updated. newLocation:%@", newLocation);
     
-    NSString *value = [NSString stringWithFormat:@"{\"latitude\":%f,\"longitude\":%f,\"accuracy\":%f}", newLocation.coordinate.latitude, newLocation.coordinate.longitude, newLocation.horizontalAccuracy];
-    [self callApp2WebWithKey:@"setGPSMarker" value:value];
+    [_jsBridge setGPSMarkerWithLatitude:newLocation.coordinate.latitude longitude:newLocation.coordinate.longitude accuracy:newLocation.horizontalAccuracy];
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
@@ -114,4 +114,22 @@
 }
 
 
+@end
+
+@implementation UIView (FindUIViewController)
+- (UIViewController *) firstAvailableUIViewController {
+    // convenience function for casting and to "mask" the recursive function
+    return (UIViewController *)[self traverseResponderChainForUIViewController];
+}
+
+- (id) traverseResponderChainForUIViewController {
+    id nextResponder = [self nextResponder];
+    if ([nextResponder isKindOfClass:[UIViewController class]]) {
+        return nextResponder;
+    } else if ([nextResponder isKindOfClass:[UIView class]]) {
+        return [nextResponder traverseResponderChainForUIViewController];
+    } else {
+        return nil;
+    }
+}
 @end

@@ -78,35 +78,10 @@
     return YES;
 }
 
-- (void)webView:(UIWebView *)webView callApp2WebWithKey:(NSString *)key value:(NSString *)value
-{
-    [webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"javascript:jsBridge.callApp2Web('%@','%@');", key, value]];
-}
-
 //- (BOOL)webView:(UIWebView*)webView shouldStartLoadWithRequest:(NSURLRequest*)request navigationType:(UIWebViewNavigationType)navigationType {
 //    NSURL *URL = [request URL];
 //    if ([[URL scheme] isEqualToString:@"yourscheme"]) {
 //        // parse the rest of the URL object and execute functions
 //    }
 //}
-
-
-@end
-
-@implementation UIView (FindUIViewController)
-- (UIViewController *) firstAvailableUIViewController {
-    // convenience function for casting and to "mask" the recursive function
-    return (UIViewController *)[self traverseResponderChainForUIViewController];
-}
-
-- (id) traverseResponderChainForUIViewController {
-    id nextResponder = [self nextResponder];
-    if ([nextResponder isKindOfClass:[UIViewController class]]) {
-        return nextResponder;
-    } else if ([nextResponder isKindOfClass:[UIView class]]) {
-        return [nextResponder traverseResponderChainForUIViewController];
-    } else {
-        return nil;
-    }
-}
 @end

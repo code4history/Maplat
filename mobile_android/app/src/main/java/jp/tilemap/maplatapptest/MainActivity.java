@@ -172,17 +172,18 @@ public class MainActivity extends Activity implements JsBridge.JsBridgeListener 
     }
 
     @Override
-    public void onCallWeb2App(String key, String data) {
-        if (key.equals("callApp2Web") && data.equals("ready")) {
-            mJsBridge.setMarker(39.69994722, 141.1501111, 1, "001");
-            mJsBridge.setMarker(39.7006006, 141.1529555, 5, "005");
-            mJsBridge.setMarker(39.701599, 141.151995, 6, "006");
-            mJsBridge.setMarker(39.703736, 141.151137, 7, "007");
-            mJsBridge.setMarker(39.7090232, 141.1521671, 9, "009");
-            
-            mJsBridge.startLocationUpdates();
-        } else {
-            Toast.makeText(this, key + ":" + data, Toast.LENGTH_SHORT).show();
-        }
+    public void onReady() {
+        mJsBridge.setMarker(39.69994722, 141.1501111, 1, "001");
+        mJsBridge.setMarker(39.7006006, 141.1529555, 5, "005");
+        mJsBridge.setMarker(39.701599, 141.151995, 6, "006");
+        mJsBridge.setMarker(39.703736, 141.151137, 7, "007");
+        mJsBridge.setMarker(39.7090232, 141.1521671, 9, "009");
+
+        mJsBridge.startLocationUpdates();
+    }
+
+    @Override
+    public void onClickPoi(String data) {
+        Toast.makeText(this, "clickPoi:" + data, Toast.LENGTH_SHORT).show();
     }
 }

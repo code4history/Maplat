@@ -31,7 +31,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 public class JsBridge extends Object {
 
     public interface JsBridgeListener {
-        void onCallWeb2App(String key, String data);
+        void onReady();
+        void onClickPoi(String data);
     }
 
     JsBridgeListener mListener;
@@ -70,11 +71,19 @@ public class JsBridge extends Object {
 
     @JavascriptInterface
     public void callWeb2App(final String key, final String data) {
-        if (mListener != null) {
+        if (mListener == null) return;
+        if (key.equals("callApp2Web") && data.equals("ready")) {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    mListener.onCallWeb2App(key, data);
+                    mListener.onReady();
+                }
+            });
+        } else if (key.equals("clickPoi")) {
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mListener.onClickPoi(data);
                 }
             });
         }
