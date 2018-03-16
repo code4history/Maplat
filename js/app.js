@@ -750,9 +750,22 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
         });
     };
 
-    MaplatApp.prototype.resetMarker = function(data) {
+    MaplatApp.prototype.resetMarker = function() {
         this.mapObject.resetMarker();
     };
+    
+    MaplatApp.prototype.addMarker = function(data) {
+        if (typeof data == 'string') {
+            data = JSON.parse(data);
+        }
+        this.pois.push(data);
+        this.setMarker(data);
+    };
+
+    MaplatApp.prototype.clearMarker = function() {
+       this.pois = [];
+       this.resetMarker();
+    }
        
     MaplatApp.prototype.setGPSMarker = function(data) {
        if (typeof data == 'string') {
@@ -846,12 +859,12 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                 app.mapObject.resetMarker();
                 for (var i = 0; i < app.pois.length; i++) {
                     (function(datum) {
-                        var lngLat = [datum.lng, datum.lat];
+                        var lngLat = [datum.lng || datum.longitude, datum.lat || datum.latitude];
                         var merc = ol.proj.transform(lngLat, 'EPSG:4326', 'EPSG:3857');
 
                         to.merc2XyAsync(merc).then(function(xy) {
                             if (to.insideCheckHistMapCoords(xy)) {
-                                app.mapObject.setMarker(xy, {'datum': datum}, datum.icon);
+                                app.mapObject.setMarker(xy, {'datum': datum.data}, datum.icon);
                             }
                         });
                     })(app.pois[i]);
@@ -864,7 +877,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
 
                             to.merc2XyAsync(merc).then(function(xy) {
                                 if (to.insideCheckHistMapCoords(xy)) {
-                                    app.mapObject.setMarker(xy, {'datum': datum}, datum.icon);
+                                    app.mapObject.setMarker(xy, {'datum': datum.data}, datum.icon);
                                 }
                             });
                         })(to.pois[i]);

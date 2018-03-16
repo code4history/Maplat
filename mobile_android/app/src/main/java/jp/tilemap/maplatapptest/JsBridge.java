@@ -89,11 +89,11 @@ public class JsBridge extends Object {
         }
     }
 
-    public void setMarker(double latitude, double longitude, int markerId, String markerData) {
-        setMarker(latitude, longitude, markerId, markerData, null);
+    public void addMarker(double latitude, double longitude, int markerId, String markerData) {
+        addMarker(latitude, longitude, markerId, markerData, null);
     }
 
-    public void setMarker(double latitude, double longitude, int markerId, String markerData, String iconUrl) {
+    public void addMarker(double latitude, double longitude, int markerId, String markerData, String iconUrl) {
         String iconStr;
         if (TextUtils.isEmpty(iconUrl)) {
             iconStr = "";
@@ -102,11 +102,11 @@ public class JsBridge extends Object {
         }
         String value = "{\"latitude\":" + latitude + ",\"longitude\":" + longitude
                 + ",\"data\": {\"id\":" + markerId + ",\"data\":\"" + markerData + "\"" + iconStr + "}}";
-        callApp2Web("setMarker", value);
+        callApp2Web("addMarker", value);
     }
 
-    public void resetMarker() {
-        callApp2Web("resetMarker", null);
+    public void clearMarker() {
+        callApp2Web("clearMarker", null);
     }
 
     public void setGPSMarker(double latitude, double longitude, double accuracy) {

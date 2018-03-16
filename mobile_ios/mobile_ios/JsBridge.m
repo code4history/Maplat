@@ -49,12 +49,12 @@
     [_webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"javascript:jsBridge.callApp2Web('%@','%@');", key, value]];
 }
 
-- (void)setMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId markerData:(NSString *)markerData
+- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId markerData:(NSString *)markerData
 {
-    [self setMarkerWithLatitude:latitude longitude:longitude markerId:markerId markerData:markerData iconUrl:nil];
+    [self addMarkerWithLatitude:latitude longitude:longitude markerId:markerId markerData:markerData iconUrl:nil];
 }
 
-- (void)setMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId markerData:(NSString *)markerData iconUrl:(NSString *)iconUrl
+- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId markerData:(NSString *)markerData iconUrl:(NSString *)iconUrl
 {
     NSString *iconStr;
     if ([iconUrl length] == 0) {
@@ -63,12 +63,12 @@
         iconStr = [NSString stringWithFormat:@",\"icon\":\"%@\"", iconUrl];
     }
     NSString *value = [NSString stringWithFormat:@"{\"latitude\":%f,\"longitude\":%f,\"data\": {\"id\":%d,\"data\":\"%@\"%@}}", latitude, longitude, markerId, markerData, iconStr];
-    [self callApp2WebWithKey:@"setMarker" value:value];
+    [self callApp2WebWithKey:@"addMarker" value:value];
 }
 
-- (void)resetMarker
+- (void)clearMarker
 {
-    [self callApp2WebWithKey:@"resetMarker" value:nil];
+    [self callApp2WebWithKey:@"clearMarker" value:nil];
 }
 
 - (void)setGPSMarkerWithLatitude:(double)latitude longitude:(double)longitude accuracy:(double)accuracy
