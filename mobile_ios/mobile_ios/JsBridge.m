@@ -66,6 +66,11 @@
     [self callApp2WebWithKey:@"setMarker" value:value];
 }
 
+- (void)resetMarker
+{
+    [self callApp2WebWithKey:@"resetMarker" value:nil];
+}
+
 - (void)setGPSMarkerWithLatitude:(double)latitude longitude:(double)longitude accuracy:(double)accuracy
 {
     NSString *value = [NSString stringWithFormat:@"{\"latitude\":%f,\"longitude\":%f,\"accuracy\":%f}", latitude, longitude, accuracy];

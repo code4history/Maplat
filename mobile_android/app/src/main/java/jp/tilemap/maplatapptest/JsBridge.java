@@ -105,6 +105,10 @@ public class JsBridge extends Object {
         callApp2Web("setMarker", value);
     }
 
+    public void resetMarker() {
+        callApp2Web("resetMarker", null);
+    }
+
     public void setGPSMarker(double latitude, double longitude, double accuracy) {
         String value = "{\"latitude\":" + latitude + ",\"longitude\":" + longitude + ",\"accuracy\":" + accuracy + "}";
         callApp2Web("setGPSMarker", value);

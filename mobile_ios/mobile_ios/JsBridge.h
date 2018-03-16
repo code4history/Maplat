@@ -19,6 +19,7 @@
 
 - (void)setMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId markerData:(NSString *)markerData;
 - (void)setMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId markerData:(NSString *)markerData iconUrl:(NSString *) iconUrl;
+- (void)resetMarker;
 - (void)setGPSMarkerWithLatitude:(double)latitude longitude:(double)longitude accuracy:(double)accuracy;
 
 @end
