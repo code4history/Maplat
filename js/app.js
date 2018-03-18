@@ -744,16 +744,15 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                 var merc = ol.proj.transform([long, lat], 'EPSG:4326', 'EPSG:3857');
                 return src.merc2XyAsync(merc);
             })();
-        var datum = data.data;
         promise.then(function(xy) {
-            app.mapObject.setMarker(xy, {'datum': datum}, datum.icon);
+            app.mapObject.setMarker(xy, {'datum': data}, datum.icon);
         });
     };
 
     MaplatApp.prototype.resetMarker = function() {
         this.mapObject.resetMarker();
     };
-    
+
     MaplatApp.prototype.addMarker = function(data) {
         if (typeof data == 'string') {
             data = JSON.parse(data);
@@ -763,23 +762,23 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
     };
 
     MaplatApp.prototype.clearMarker = function() {
-       this.pois = [];
-       this.resetMarker();
+        this.pois = [];
+        this.resetMarker();
     }
-       
+
     MaplatApp.prototype.setGPSMarker = function(data) {
-       if (typeof data == 'string') {
-           data = JSON.parse(data);
-       }
+        if (typeof data == 'string') {
+            data = JSON.parse(data);
+        }
         var lnglat = [data.longitude, data.latitude];
         var acc = data.accuracy;
         var gpsVal = {lnglat: lnglat, acc: acc};
-       
+
         var app = this;
-       
-       //alert("app:" + app + " mapObject:" + app.mapObject );
-       
-       app.mapObject.setGPSMarker(gpsVal, true);
+
+        // alert("app:" + app + " mapObject:" + app.mapObject );
+
+        app.mapObject.setGPSMarker(gpsVal, true);
     };
 
     MaplatApp.prototype.changeMap = function(sourceID) {
@@ -864,7 +863,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
 
                         to.merc2XyAsync(merc).then(function(xy) {
                             if (to.insideCheckHistMapCoords(xy)) {
-                                app.mapObject.setMarker(xy, {'datum': datum.data}, datum.icon);
+                                app.mapObject.setMarker(xy, {'datum': datum}, datum.icon);
                             }
                         });
                     })(app.pois[i]);
@@ -877,7 +876,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
 
                             to.merc2XyAsync(merc).then(function(xy) {
                                 if (to.insideCheckHistMapCoords(xy)) {
-                                    app.mapObject.setMarker(xy, {'datum': datum.data}, datum.icon);
+                                    app.mapObject.setMarker(xy, {'datum': datum}, datum.icon);
                                 }
                             });
                         })(to.pois[i]);
