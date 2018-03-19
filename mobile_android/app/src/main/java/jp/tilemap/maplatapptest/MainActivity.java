@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -183,7 +184,8 @@ public class MainActivity extends Activity implements JsBridge.JsBridgeListener 
     }
 
     @Override
-    public void onClickPoi(String data) {
-        Toast.makeText(this, "clickPoi:" + data, Toast.LENGTH_SHORT).show();
+    public void onClickPoi(int markerId, Object markerData) {
+        String value = String.format(Locale.US, "ID: %d DATA: %s", markerId, markerData);
+        Toast.makeText(this, value, Toast.LENGTH_SHORT).show();
     }
 }

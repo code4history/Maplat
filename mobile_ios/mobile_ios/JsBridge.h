@@ -27,5 +27,5 @@
 @protocol JsBridgeDelegate <NSObject>
 @optional
 - (void)onReady;
-- (void)onClickPoi:(NSString *)value;
+- (void)onClickPoiWithMarkerId:(int)markerId markerData:(id)markerData;
 @end

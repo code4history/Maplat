@@ -40,7 +40,13 @@
     if ([key isEqualToString:@"callApp2Web"] && [value isEqualToString:@"ready"]) {
         [_delegate onReady];
     } else if ([key isEqualToString:@"clickPoi"]) {
-        [_delegate onClickPoi:value];
+        NSData *jsonData = [value dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:jsonData
+                                                        options:kNilOptions
+                                                          error:nil];
+        int markerId = [(NSNumber *)jsonObject[@"id"] intValue];
+        id markerData = jsonObject[@"data"];
+        [_delegate onClickPoiWithMarkerId:markerId markerData:markerData];
     }
 }
 
@@ -56,13 +62,17 @@
 
 - (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId markerData:(NSString *)markerData iconUrl:(NSString *)iconUrl
 {
-    NSString *iconStr;
-    if ([iconUrl length] == 0) {
-        iconStr = @"";
-    } else {
-        iconStr = [NSString stringWithFormat:@",\"icon\":\"%@\"", iconUrl];
+    NSMutableDictionary *jsonObj = [NSMutableDictionary new];
+    [jsonObj setValue:[NSNumber numberWithDouble:longitude] forKey:@"longitude"];
+    [jsonObj setValue:[NSNumber numberWithDouble:latitude] forKey:@"latitude"];
+    [jsonObj setValue:[NSNumber numberWithInt:markerId] forKey:@"id"];
+    [jsonObj setValue:markerData forKey:@"data"];
+    if ([iconUrl length] > 0) {
+        [jsonObj setValue:iconUrl forKey:@"icon"];
     }
-    NSString *value = [NSString stringWithFormat:@"{\"latitude\":%f,\"longitude\":%f,\"data\": {\"id\":%d,\"data\":\"%@\"%@}}", latitude, longitude, markerId, markerData, iconStr];
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonObj options:0 error:nil];
+    NSString *value = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+
     [self callApp2WebWithKey:@"addMarker" value:value];
 }
 
@@ -73,7 +83,12 @@
 
 - (void)setGPSMarkerWithLatitude:(double)latitude longitude:(double)longitude accuracy:(double)accuracy
 {
-    NSString *value = [NSString stringWithFormat:@"{\"latitude\":%f,\"longitude\":%f,\"accuracy\":%f}", latitude, longitude, accuracy];
+    NSMutableDictionary *jsonObj = [NSMutableDictionary new];
+    [jsonObj setValue:[NSNumber numberWithDouble:longitude] forKey:@"longitude"];
+    [jsonObj setValue:[NSNumber numberWithDouble:latitude] forKey:@"latitude"];
+    [jsonObj setValue:[NSNumber numberWithDouble:accuracy] forKey:@"accuracy"];
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonObj options:0 error:nil];
+    NSString *value = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     [self callApp2WebWithKey:@"setGPSMarker" value:value];
 }
 

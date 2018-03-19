@@ -68,9 +68,9 @@
     [_jsBridge addMarkerWithLatitude:39.7090232 longitude:141.1521671 markerId:9 markerData:@"009"];
 }
 
-- (void)onClickPoi:(NSString *)value
+- (void)onClickPoiWithMarkerId:(int)markerId markerData:(id)markerData
 {
-    NSString *message = [NSString stringWithFormat:@"clickPoi:%@", value];
+    NSString *message = [NSString stringWithFormat:@"clickPoi ID:%d DATA:%@", markerId, markerData];
     
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
                                                                    message:message

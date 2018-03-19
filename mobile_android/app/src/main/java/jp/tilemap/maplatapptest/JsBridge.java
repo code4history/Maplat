@@ -28,11 +28,13 @@ import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import org.json.JSONObject;
+
 public class JsBridge extends Object {
 
     public interface JsBridgeListener {
         void onReady();
-        void onClickPoi(String data);
+        void onClickPoi(int markerId, Object markerData);
     }
 
     JsBridgeListener mListener;
@@ -83,7 +85,16 @@ public class JsBridge extends Object {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    mListener.onClickPoi(data);
+                int markerId = 0;
+                Object markerData = null;
+                try {
+                    JSONObject jsonObj = new JSONObject(data);
+                    markerId = jsonObj.getInt("id");
+                    markerData = jsonObj.get("data");
+                } catch (org.json.JSONException e) {
+                    e.printStackTrace();
+                }
+                mListener.onClickPoi(markerId, markerData);
                 }
             });
         }
@@ -94,14 +105,19 @@ public class JsBridge extends Object {
     }
 
     public void addMarker(double latitude, double longitude, int markerId, String markerData, String iconUrl) {
-        String iconStr;
-        if (TextUtils.isEmpty(iconUrl)) {
-            iconStr = "";
-        } else {
-            iconStr = ",\"icon\":\"" + iconUrl + "\"";
+        JSONObject jsonObj = new JSONObject();
+        try {
+            jsonObj.put("longitude", longitude);
+            jsonObj.put("latitude", latitude);
+            jsonObj.put("id", markerId);
+            jsonObj.put("data", markerData);
+            if (!TextUtils.isEmpty(iconUrl)) {
+                jsonObj.put("icon", iconUrl);
+            }
+        } catch (org.json.JSONException e) {
+            e.printStackTrace();
         }
-        String value = "{\"latitude\":" + latitude + ",\"longitude\":" + longitude
-                + ",\"data\": {\"id\":" + markerId + ",\"data\":\"" + markerData + "\"" + iconStr + "}}";
+        String value = jsonObj.toString();
         callApp2Web("addMarker", value);
     }
 
@@ -110,7 +126,15 @@ public class JsBridge extends Object {
     }
 
     public void setGPSMarker(double latitude, double longitude, double accuracy) {
-        String value = "{\"latitude\":" + latitude + ",\"longitude\":" + longitude + ",\"accuracy\":" + accuracy + "}";
+        JSONObject jsonObj = new JSONObject();
+        try {
+            jsonObj.put("longitude", longitude);
+            jsonObj.put("latitude", latitude);
+            jsonObj.put("accuracy", accuracy);
+        } catch (org.json.JSONException e) {
+            e.printStackTrace();
+        }
+        String value = jsonObj.toString();
         callApp2Web("setGPSMarker", value);
     }
 
