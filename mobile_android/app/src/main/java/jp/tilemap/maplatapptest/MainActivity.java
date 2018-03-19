@@ -173,11 +173,11 @@ public class MainActivity extends Activity implements JsBridge.JsBridgeListener 
 
     @Override
     public void onReady() {
-        mJsBridge.setMarker(39.69994722, 141.1501111, 1, "001");
-        mJsBridge.setMarker(39.7006006, 141.1529555, 5, "005");
-        mJsBridge.setMarker(39.701599, 141.151995, 6, "006");
-        mJsBridge.setMarker(39.703736, 141.151137, 7, "007");
-        mJsBridge.setMarker(39.7090232, 141.1521671, 9, "009");
+        mJsBridge.addMarker(39.69994722, 141.1501111, 1, "001");
+        mJsBridge.addMarker(39.7006006, 141.1529555, 5, "005");
+        mJsBridge.addMarker(39.701599, 141.151995, 6, "006");
+        mJsBridge.addMarker(39.703736, 141.151137, 7, "007");
+        mJsBridge.addMarker(39.7090232, 141.1521671, 9, "009");
 
         mJsBridge.startLocationUpdates();
     }

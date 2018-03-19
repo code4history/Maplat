@@ -745,7 +745,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                 return src.merc2XyAsync(merc);
             })();
         promise.then(function(xy) {
-            app.mapObject.setMarker(xy, {'datum': data}, datum.icon);
+            app.mapObject.setMarker(xy, {'datum': data}, data.icon);
         });
     };
 
@@ -764,7 +764,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
     MaplatApp.prototype.clearMarker = function() {
         this.pois = [];
         this.resetMarker();
-    }
+    };
 
     MaplatApp.prototype.setGPSMarker = function(data) {
         if (typeof data == 'string') {
