@@ -17,8 +17,17 @@
 
 - (id) initWithWebView:(UIWebView *)webView;
 
-- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId markerData:(NSString *)markerData;
-- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId markerData:(NSString *)markerData iconUrl:(NSString *) iconUrl;
+- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId stringData:(NSString *)markerData;
+- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId stringData:(NSString *)markerData iconUrl:(NSString *) iconUrl;
+- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId intData:(int)markerData;
+- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId intData:(int)markerData iconUrl:(NSString *) iconUrl;
+- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId doubleData:(double)markerData;
+- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId doubleData:(double)markerData iconUrl:(NSString *) iconUrl;
+- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId arrayData:(NSArray *)markerData;
+- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId arrayData:(NSArray *)markerData iconUrl:(NSString *) iconUrl;
+- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId dictData:(NSDictionary *)markerData;
+- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId dictData:(NSDictionary *)markerData iconUrl:(NSString *) iconUrl;
+
 - (void)clearMarker;
 - (void)setGPSMarkerWithLatitude:(double)latitude longitude:(double)longitude accuracy:(double)accuracy;
 

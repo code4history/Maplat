@@ -28,6 +28,7 @@ import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class JsBridge extends Object {
@@ -100,17 +101,72 @@ public class JsBridge extends Object {
         }
     }
 
+    public void addMarker(double latitude, double longitude, int markerId, int markerData) {
+        addMarker(latitude, longitude, markerId, markerData, null);
+    }
+    public void addMarker(double latitude, double longitude, int markerId, int markerData, String iconUrl) {
+        JSONObject jsonObj = new JSONObject();
+        try {
+            jsonObj.put("data", markerData);
+        } catch (org.json.JSONException e) {
+            e.printStackTrace();
+        }
+        addMarkerInternal(latitude, longitude, markerId, jsonObj, iconUrl);
+    }
+    public void addMarker(double latitude, double longitude, int markerId, double markerData) {
+        addMarker(latitude, longitude, markerId, markerData, null);
+    }
+    public void addMarker(double latitude, double longitude, int markerId, double markerData, String iconUrl) {
+        JSONObject jsonObj = new JSONObject();
+        try {
+            jsonObj.put("data", markerData);
+        } catch (org.json.JSONException e) {
+            e.printStackTrace();
+        }
+        addMarkerInternal(latitude, longitude, markerId, jsonObj, iconUrl);
+    }
     public void addMarker(double latitude, double longitude, int markerId, String markerData) {
         addMarker(latitude, longitude, markerId, markerData, null);
     }
-
     public void addMarker(double latitude, double longitude, int markerId, String markerData, String iconUrl) {
         JSONObject jsonObj = new JSONObject();
+        try {
+            jsonObj.put("data", markerData);
+        } catch (org.json.JSONException e) {
+            e.printStackTrace();
+        }
+        addMarkerInternal(latitude, longitude, markerId, jsonObj, iconUrl);
+    }
+    public void addMarker(double latitude, double longitude, int markerId, JSONArray markerData) {
+        addMarker(latitude, longitude, markerId, markerData, null);
+    }
+    public void addMarker(double latitude, double longitude, int markerId, JSONArray markerData, String iconUrl) {
+        JSONObject jsonObj = new JSONObject();
+        try {
+            jsonObj.put("data", markerData);
+        } catch (org.json.JSONException e) {
+            e.printStackTrace();
+        }
+        addMarkerInternal(latitude, longitude, markerId, jsonObj, iconUrl);
+    }
+    public void addMarker(double latitude, double longitude, int markerId, JSONObject markerData) {
+        addMarker(latitude, longitude, markerId, markerData, null);
+    }
+    public void addMarker(double latitude, double longitude, int markerId, JSONObject markerData, String iconUrl) {
+        JSONObject jsonObj = new JSONObject();
+        try {
+            jsonObj.put("data", markerData);
+        } catch (org.json.JSONException e) {
+            e.printStackTrace();
+        }
+        addMarkerInternal(latitude, longitude, markerId, jsonObj, iconUrl);
+    }
+
+    private void addMarkerInternal(double latitude, double longitude, int markerId, JSONObject jsonObj, String iconUrl) {
         try {
             jsonObj.put("longitude", longitude);
             jsonObj.put("latitude", latitude);
             jsonObj.put("id", markerId);
-            jsonObj.put("data", markerData);
             if (!TextUtils.isEmpty(iconUrl)) {
                 jsonObj.put("icon", iconUrl);
             }

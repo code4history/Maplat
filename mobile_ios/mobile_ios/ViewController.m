@@ -61,11 +61,11 @@
 - (void)onReady
 {
     [_locationManager startUpdatingLocation];
-    [_jsBridge addMarkerWithLatitude:39.69994722 longitude:141.1501111 markerId:1 markerData:@"001"];
-    [_jsBridge addMarkerWithLatitude:39.7006006 longitude:141.1529555 markerId:5 markerData:@"005"];
-    [_jsBridge addMarkerWithLatitude:39.701599 longitude:141.151995 markerId:6 markerData:@"006"];
-    [_jsBridge addMarkerWithLatitude:39.703736 longitude:141.151137 markerId:7 markerData:@"007"];
-    [_jsBridge addMarkerWithLatitude:39.7090232 longitude:141.1521671 markerId:9 markerData:@"009"];
+    [_jsBridge addMarkerWithLatitude:39.69994722 longitude:141.1501111 markerId:1 stringData:@"001"];
+    [_jsBridge addMarkerWithLatitude:39.7006006 longitude:141.1529555 markerId:5 stringData:@"005"];
+    [_jsBridge addMarkerWithLatitude:39.701599 longitude:141.151995 markerId:6 stringData:@"006"];
+    [_jsBridge addMarkerWithLatitude:39.703736 longitude:141.151137 markerId:7 stringData:@"007"];
+    [_jsBridge addMarkerWithLatitude:39.7090232 longitude:141.1521671 markerId:9 stringData:@"009"];
 }
 
 - (void)onClickPoiWithMarkerId:(int)markerId markerData:(id)markerData
