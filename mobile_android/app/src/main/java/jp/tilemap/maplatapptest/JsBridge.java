@@ -35,7 +35,7 @@ public class JsBridge extends Object {
 
     public interface JsBridgeListener {
         void onReady();
-        void onClickPoi(int markerId, Object markerData);
+        void onClickMarker(int markerId, Object markerData);
     }
 
     JsBridgeListener mListener;
@@ -82,7 +82,7 @@ public class JsBridge extends Object {
                     mListener.onReady();
                 }
             });
-        } else if (key.equals("clickPoi")) {
+        } else if (key.equals("clickMarker")) {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -95,7 +95,7 @@ public class JsBridge extends Object {
                 } catch (org.json.JSONException e) {
                     e.printStackTrace();
                 }
-                mListener.onClickPoi(markerId, markerData);
+                mListener.onClickMarker(markerId, markerData);
                 }
             });
         }

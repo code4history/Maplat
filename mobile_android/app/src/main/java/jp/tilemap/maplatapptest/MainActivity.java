@@ -184,8 +184,8 @@ public class MainActivity extends Activity implements JsBridge.JsBridgeListener 
     }
 
     @Override
-    public void onClickPoi(int markerId, Object markerData) {
-        String value = String.format(Locale.US, "ID: %d DATA: %s", markerId, markerData);
+    public void onClickMarker(int markerId, Object markerData) {
+        String value = String.format(Locale.US, "clickMarker ID: %d DATA: %s", markerId, markerData);
         Toast.makeText(this, value, Toast.LENGTH_SHORT).show();
     }
 }

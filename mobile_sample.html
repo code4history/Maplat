@@ -98,8 +98,8 @@
                 func.call(app, data);
             }
         };
-        app.addEventListener('clickPoi', function(evt) {
-            jsBridge.callWeb2App('clickPoi', JSON.stringify(evt.detail));
+        app.addEventListener('clickMarker', function(evt) {
+            jsBridge.callWeb2App('clickMarker', JSON.stringify(evt.detail));
         });
         jsBridge.callWeb2App('callApp2Web', 'ready');
     });

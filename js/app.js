@@ -580,7 +580,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                 app.changeMap(initial.sourceID);
 
                 function showInfo(data) {
-                    app.dispatchEvent(new CustomEvent('clickPoi', data));
+                    app.dispatchEvent(new CustomEvent('clickMarker', data));
                     if (!app.mobileIF) {
                         app.mapDivDocument.querySelector('#poi_name').innerText = app.translate(data.name);
                         if (data.url || data.html) {

@@ -39,14 +39,14 @@
     NSLog(@"onCallWeb2AppWithKey:%@ value:%@", key, value);
     if ([key isEqualToString:@"callApp2Web"] && [value isEqualToString:@"ready"]) {
         [_delegate onReady];
-    } else if ([key isEqualToString:@"clickPoi"]) {
+    } else if ([key isEqualToString:@"clickMarker"]) {
         NSData *jsonData = [value dataUsingEncoding:NSUTF8StringEncoding];
         NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:jsonData
                                                         options:kNilOptions
                                                           error:nil];
         int markerId = [(NSNumber *)jsonObject[@"id"] intValue];
         id markerData = jsonObject[@"data"];
-        [_delegate onClickPoiWithMarkerId:markerId markerData:markerData];
+        [_delegate onClickMarkerWithMarkerId:markerId markerData:markerData];
     }
 }
 
