@@ -13,7 +13,6 @@
 - (NSCachedURLResponse*)cachedResponseForRequest:(NSURLRequest*)request
 {
     NSURL *url = [request URL];
-    NSString *urlString = [url absoluteString];
     NSString *ext = url.pathExtension;
     NSString *path = url.path;
     NSString *host = url.host;
@@ -44,10 +43,6 @@
             NSCachedURLResponse *cached = [[NSCachedURLResponse alloc] initWithResponse:res data:data];
             return cached;
         }
-        
-        NSFileManager *fs = [NSFileManager defaultManager];
-        NSArray *list = [fs contentsOfDirectoryAtPath:assetDirectory error:nil];
-        //NSLog(newUrl);
     }
     
     return [super cachedResponseForRequest:request];
@@ -56,7 +51,7 @@
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
     NSURL *URL = [request URL];
-    if ([[URL scheme] isEqualToString:@"jsbridge"]) {
+    if ([[URL scheme] isEqualToString:@"maplatbridge"]) {
         NSString *key = @"";
         NSString *value = @"";
         for (NSString *param in [[URL query] componentsSeparatedByString:@"&"]) {
@@ -77,11 +72,4 @@
     
     return YES;
 }
-
-//- (BOOL)webView:(UIWebView*)webView shouldStartLoadWithRequest:(NSURLRequest*)request navigationType:(UIWebViewNavigationType)navigationType {
-//    NSURL *URL = [request URL];
-//    if ([[URL scheme] isEqualToString:@"yourscheme"]) {
-//        // parse the rest of the URL object and execute functions
-//    }
-//}
 @end

@@ -552,15 +552,47 @@ define(['ol3', 'resize'], function(ol, addResizeListener) {
             return this._map;
         };
 
-        target.prototype.goHome = function() {
-            var merc = ol.proj.transform(this.home_position, 'EPSG:4326', 'EPSG:3857');
+        // 経緯度lnglat、メルカトルズームmercZoom、地図ズームzoom、方角direction、地図回転rotation等を指定し地図移動
+        target.prototype.moveTo = function(cond) {
+            var self = this;
+            var merc;
+            var mercZoom = cond.mercZoom;
+            var zoom = cond.zoom;
+            var direction = cond.direction;
+            var rotate = cond.rotate;
             var map = this._map;
             var view = map.getView();
-            var mercs = this.mercsFromGivenZoom(merc, this.merc_zoom);
-            this.mercs2SizeAsync(mercs).then(function(size) {
-                view.setCenter(size[0]);
-                view.setZoom(size[1]);
-                view.setRotation(0);
+            if (cond.latitude != null && cond.longitude != null) {
+                merc = ol.proj.transform([cond.longitude, cond.latitude], 'EPSG:4326', 'EPSG:3857');
+            }
+            self.size2MercsAsync().then(function(mercs){
+                return self.mercs2MercSizeAsync(mercs);
+            }).then(function(mercSize){
+                var mercs = self.mercsFromGivenMercZoom(merc || mercSize[0], mercZoom || mercSize[1], direction || mercSize[2]);
+                self.mercs2SizeAsync(mercs).then(function(size) {
+                    if (merc != null) {
+                        view.setCenter(size[0]);
+                    }
+                    if (mercZoom != null) {
+                        view.setZoom(size[1]);
+                    } else if (zoom != null) {
+                        view.setZoom(zoom);
+                    }
+                    if (direction != null) {
+                        view.setRotation(size[2]);
+                    } else if (rotate != null) {
+                        view.setRotation(rotate);
+                    }
+                });
+            });
+        };
+       
+        target.prototype.goHome = function() {
+            this.moveTo({
+                longitude: this.home_position[0],
+                latitude: this.home_position[1],
+                mercZoom: this.merc_zoom,
+                rotate: 0
             });
         };
 
@@ -599,18 +631,26 @@ define(['ol3', 'resize'], function(ol, addResizeListener) {
             this.setGPSMarkerAsync(position, ignoreMove).then(function() {});
         };
 
-        target.prototype.getRadius = function(size) {
+        // size(画面サイズ)とズームから、地図面座標上での半径を得る。zoom無指定の場合は自動取得
+        target.prototype.getRadius = function(size, zoom) {
             var radius = Math.floor(Math.min(size[0], size[1]) / 4);
-            var zoom = this._map.getView().getDecimalZoom();
+            if (zoom == null) {
+                zoom = this._map.getView().getDecimalZoom();
+            }
             return radius * ol.const.MERC_MAX / 128 / Math.pow(2, zoom);
         };
 
-        target.prototype.mercsFromGivenZoom = function(center, zoom) {
+        // メルカトルの中心座標とメルカトルズームから、メルカトル5座標値に変換
+        target.prototype.mercsFromGivenMercZoom = function(center, mercZoom, direction) {
+            if (mercZoom == null) {
+                mercZoom = 17;
+            }
             var size = this._map.getSize();
             var pixel = Math.floor(Math.min(size[0], size[1]) / 4);
 
-            var delta = pixel * ol.const.MERC_MAX / 128 / Math.pow(2, zoom);
-            return ol.const.MERC_CROSSMATRIX.map(function(xy) {
+            var delta = pixel * ol.const.MERC_MAX / 128 / Math.pow(2, mercZoom);
+            var crossDelta = this.rotateMatrix(ol.const.MERC_CROSSMATRIX, direction);
+            return crossDelta.map(function(xy) {
                 return [xy[0]*delta+center[0], xy[1]*delta+center[1]];
             });
         };
@@ -624,8 +664,11 @@ define(['ol3', 'resize'], function(ol, addResizeListener) {
             });
         };
 
-        target.prototype.rotateMatrix = function(xys) {
-            var theta = 1.0 * this._map.getView().getRotation();
+        // 与えられた差分行列を回転。theta無指定の場合は自動取得
+        target.prototype.rotateMatrix = function(xys, theta) {
+            if (theta == null) {
+                theta = 1.0 * this._map.getView().getRotation();
+            }
             var result = [];
             for (var i=0; i<xys.length; i++) {
                 var xy = xys[i];
@@ -636,13 +679,14 @@ define(['ol3', 'resize'], function(ol, addResizeListener) {
             return result;
         };
 
-        target.prototype.size2Xys = function(center) {
+        // 画面サイズと地図ズームから、地図面座標上での5座標を取得する。zoom, rotate無指定の場合は自動取得
+        target.prototype.size2Xys = function(center, zoom, rotate) {
             if (!center) {
                 center = this._map.getView().getCenter();
             }
             var size = this._map.getSize();
-            var radius = this.getRadius(size);
-            var crossDelta = this.rotateMatrix(ol.const.MERC_CROSSMATRIX);
+            var radius = this.getRadius(size, zoom);
+            var crossDelta = this.rotateMatrix(ol.const.MERC_CROSSMATRIX, rotate);
             var cross = crossDelta.map(function(xy) {
                 return [xy[0]*radius+center[0], xy[1]*radius+center[1]];
             });
@@ -650,8 +694,9 @@ define(['ol3', 'resize'], function(ol, addResizeListener) {
             return cross;
         };
 
-        target.prototype.size2MercsAsync = function(center) {
-            var cross = this.size2Xys(center);
+        // 画面サイズと地図ズームから、メルカトル座標上での5座標を取得する。zoom, rotate無指定の場合は自動取得
+        target.prototype.size2MercsAsync = function(center, zoom, rotate) {
+            var cross = this.size2Xys(center, zoom, rotate);
             var self = this;
             var promises = cross.map(function(val, index) {
                 if (index == 5) return val;
@@ -660,17 +705,25 @@ define(['ol3', 'resize'], function(ol, addResizeListener) {
             return Promise.all(promises).catch(function(err) { throw err; });
         };
 
-        target.prototype.mercs2SizeAsync = function(mercs) {
+        // メルカトル5地点情報から地図サイズ情報（中心座標、サイズ、回転）を得る
+        target.prototype.mercs2SizeAsync = function(mercs, asMerc) {
             var self = this;
-            var promises = mercs.map(function(merc, index) {
-                if (index == 5) return merc;
-                return self.merc2XyAsync(merc);
-            });
-            return Promise.all(promises).then(function(xys) {
+            var promises = asMerc ? Promise.resolve(mercs) :
+                Promise.all(mercs.map(function(merc, index) {
+                    if (index == 5) return merc;
+                    return self.merc2XyAsync(merc);
+                }));
+            return promises.then(function(xys) {
                 return self.xys2Size(xys);
             }).catch(function(err) { throw err; });
         };
 
+        // メルカトル5地点情報からメルカトル地図でのサイズ情報（中心座標、サイズ、回転）を得る
+        target.prototype.mercs2MercSizeAsync = function(mercs) {
+            return this.mercs2SizeAsync(mercs, true);
+        };
+
+        // 地図座標5地点情報から地図サイズ情報（中心座標、サイズ、回転）を得る
         target.prototype.xys2Size = function(xys) {
             var center = xys[0];
             var size = xys[5];
@@ -799,6 +852,13 @@ define(['ol3', 'resize'], function(ol, addResizeListener) {
         });
         markerLayer.set('name', 'marker');
 
+        var featureLayer = new ol.layer.Vector({
+            source: new ol.source.Vector({
+                wrapX: false
+            })
+        });
+        featureLayer.set('name', 'feature');
+
         var baseLayer = optOptions.baseLayer ? optOptions.baseLayer :
             new ol.layer.Tile({
                 source: optOptions.source
@@ -826,6 +886,7 @@ define(['ol3', 'resize'], function(ol, addResizeListener) {
             layers: [
                 baseLayer,
                 overlayLayer,
+                featureLayer,
                 vectorLayer,
                 markerLayer
             ],
@@ -922,13 +983,24 @@ define(['ol3', 'resize'], function(ol, addResizeListener) {
         src.addFeature(iconFeature);
     };
 
-    ol.MaplatMap.prototype.setLine = function(xys) {
-        var src = this.getSource('marker');
+    ol.MaplatMap.prototype.setLine = function(xys, stroke) {
+        var src = this.getSource('feature');
         var lineFeature = new ol.Feature({
             geometry: new ol.geom.LineString(xys),
             name: 'Line'
         });
+        if (stroke != null) {
+            lineFeature.setStyle(new ol.style.Style({
+                stroke: new ol.style.Stroke(stroke)
+            }));
+        }
+
         src.addFeature(lineFeature);
+    };
+
+    ol.MaplatMap.prototype.resetLine = function() {
+        var src = this.getSource('feature');
+        src.clear();
     };
 
     ol.MaplatMap.prototype.exchangeSource = function(source) {
@@ -963,11 +1035,11 @@ define(['ol3', 'resize'], function(ol, addResizeListener) {
     };
 
     ol.MaplatMap.prototype.setGPSMarker = function(position, ignoreMove) {
-       //alert("ol.MaplatMap.prototype.setGPSMarker");
+       // alert("ol.MaplatMap.prototype.setGPSMarker");
         var source = this.getLayers().item(0).getSource();
         source.setGPSMarker(position, ignoreMove);
     };
-       
+
     ol.MaplatMap.prototype.handleGPS = function(launch, avoidEventForOff) {
         if (launch) {
             this.dispatchEvent('gps_request');

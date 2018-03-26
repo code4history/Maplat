@@ -12,10 +12,10 @@
 		6642D2A41E5DC88E00555CB7 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6642D2A31E5DC88E00555CB7 /* ViewController.m */; };
 		6642D2A91E5DC88E00555CB7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6642D2A81E5DC88E00555CB7 /* Assets.xcassets */; };
 		6642D2AC1E5DC88E00555CB7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6642D2AA1E5DC88E00555CB7 /* LaunchScreen.storyboard */; };
+		6655002720691996001B5014 /* mobile.html in Resources */ = {isa = PBXBuildFile; fileRef = 6655002620691996001B5014 /* mobile.html */; };
 		668706F61F99D41C0040BA89 /* apps in Resources */ = {isa = PBXBuildFile; fileRef = 668706F51F99D41C0040BA89 /* apps */; };
 		668706F81F99D4550040BA89 /* maps in Resources */ = {isa = PBXBuildFile; fileRef = 668706F71F99D4550040BA89 /* maps */; };
-		66930F161EF007F500E7D152 /* mobile_sample.html in Resources */ = {isa = PBXBuildFile; fileRef = 66930F151EF007F400E7D152 /* mobile_sample.html */; };
-		66C2D5B0205B3D0500D6714F /* JsBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 66C2D5AF205B3D0500D6714F /* JsBridge.m */; };
+		66C2D5B0205B3D0500D6714F /* MaplatBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 66C2D5AF205B3D0500D6714F /* MaplatBridge.m */; };
 		66DEFC8D1E5DDD09000684B6 /* MaplatCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 66DEFC8C1E5DDD09000684B6 /* MaplatCache.m */; };
 		66DEFC941E5DE390000684B6 /* css in Resources */ = {isa = PBXBuildFile; fileRef = 66DEFC8F1E5DE390000684B6 /* css */; };
 		66DEFC951E5DE390000684B6 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 66DEFC901E5DE390000684B6 /* fonts */; };
@@ -36,11 +36,11 @@
 		6642D2A81E5DC88E00555CB7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6642D2AB1E5DC88E00555CB7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		6642D2AD1E5DC88E00555CB7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6655002620691996001B5014 /* mobile.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = mobile.html; path = ../../mobile.html; sourceTree = "<group>"; };
 		668706F51F99D41C0040BA89 /* apps */ = {isa = PBXFileReference; lastKnownFileType = folder; name = apps; path = ../../apps; sourceTree = "<group>"; };
 		668706F71F99D4550040BA89 /* maps */ = {isa = PBXFileReference; lastKnownFileType = folder; name = maps; path = ../../maps; sourceTree = "<group>"; };
-		66930F151EF007F400E7D152 /* mobile_sample.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = mobile_sample.html; path = ../../mobile_sample.html; sourceTree = "<group>"; };
-		66C2D5AE205B3D0500D6714F /* JsBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JsBridge.h; sourceTree = "<group>"; };
-		66C2D5AF205B3D0500D6714F /* JsBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JsBridge.m; sourceTree = "<group>"; };
+		66C2D5AE205B3D0500D6714F /* MaplatBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MaplatBridge.h; sourceTree = "<group>"; };
+		66C2D5AF205B3D0500D6714F /* MaplatBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MaplatBridge.m; sourceTree = "<group>"; };
 		66DEFC8B1E5DDD09000684B6 /* MaplatCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaplatCache.h; sourceTree = "<group>"; };
 		66DEFC8C1E5DDD09000684B6 /* MaplatCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MaplatCache.m; sourceTree = "<group>"; };
 		66DEFC8F1E5DE390000684B6 /* css */ = {isa = PBXFileReference; lastKnownFileType = folder; name = css; path = ../../css; sourceTree = "<group>"; };
@@ -93,8 +93,8 @@
 				6642D29C1E5DC88E00555CB7 /* Supporting Files */,
 				66DEFC8B1E5DDD09000684B6 /* MaplatCache.h */,
 				66DEFC8C1E5DDD09000684B6 /* MaplatCache.m */,
-				66C2D5AE205B3D0500D6714F /* JsBridge.h */,
-				66C2D5AF205B3D0500D6714F /* JsBridge.m */,
+				66C2D5AE205B3D0500D6714F /* MaplatBridge.h */,
+				66C2D5AF205B3D0500D6714F /* MaplatBridge.m */,
 			);
 			path = mobile_ios;
 			sourceTree = "<group>";
@@ -110,9 +110,9 @@
 		66DEFC8E1E5DE359000684B6 /* content */ = {
 			isa = PBXGroup;
 			children = (
+				6655002620691996001B5014 /* mobile.html */,
 				668706F71F99D4550040BA89 /* maps */,
 				668706F51F99D41C0040BA89 /* apps */,
-				66930F151EF007F400E7D152 /* mobile_sample.html */,
 				66DEFCA11E5E4A92000684B6 /* locales */,
 				66DEFCA21E5E4A92000684B6 /* parts */,
 				66DEFC9F1E5E4939000684B6 /* img */,
@@ -191,8 +191,8 @@
 				6642D2A91E5DC88E00555CB7 /* Assets.xcassets in Resources */,
 				668706F61F99D41C0040BA89 /* apps in Resources */,
 				66DEFCA31E5E4A92000684B6 /* locales in Resources */,
-				66930F161EF007F500E7D152 /* mobile_sample.html in Resources */,
 				668706F81F99D4550040BA89 /* maps in Resources */,
+				6655002720691996001B5014 /* mobile.html in Resources */,
 				66DEFCA01E5E4939000684B6 /* img in Resources */,
 				66DEFC951E5DE390000684B6 /* fonts in Resources */,
 			);
@@ -208,7 +208,7 @@
 				6642D2A41E5DC88E00555CB7 /* ViewController.m in Sources */,
 				6642D2A11E5DC88E00555CB7 /* AppDelegate.m in Sources */,
 				6642D29E1E5DC88E00555CB7 /* main.m in Sources */,
-				66C2D5B0205B3D0500D6714F /* JsBridge.m in Sources */,
+				66C2D5B0205B3D0500D6714F /* MaplatBridge.m in Sources */,
 				66DEFC8D1E5DDD09000684B6 /* MaplatCache.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

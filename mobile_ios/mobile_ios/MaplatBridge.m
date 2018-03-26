@@ -1,25 +1,25 @@
 //
-//  JsBridge.m
+//  MaplatBridge.m
 //  mobile_ios
 //
 //  Created by 大塚 恒平 on 2018/03/16.
 //  Copyright © 2018年 TileMapJp. All rights reserved.
 //
 
-#import "JsBridge.h"
+#import "MaplatBridge.h"
 #import "MaplatCache.h"
 
-@interface JsBridge () <MaplatCacheDelegate>
+@interface MaplatBridge () <MaplatCacheDelegate>
 
 @property (nonatomic, strong) MaplatCache *cache;
-
 @property (nonatomic, strong) UIWebView *webView;
+@property (nonatomic, strong) NSString *initializeValue;
 
 @end
 
-@implementation JsBridge
+@implementation MaplatBridge
 
-- (id) initWithWebView:(UIWebView *)webView {
+- (id) initWithWebView:(UIWebView *)webView appID:(NSString *)appID setting:(NSDictionary *)setting {
     if (self = [super init]) {
         self.webView = webView;
 
@@ -27,6 +27,18 @@
         _cache.delegate = self;
         
         self.webView.delegate = _cache;
+        [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://localresource/mobile.html"]]];
+        
+        if (!appID) {
+            appID = @"mobile";
+        }
+        NSMutableDictionary *jsonObj = [NSMutableDictionary new];
+        [jsonObj setValue:appID forKey:@"appid"];
+        if (setting) {
+            [jsonObj setValue:setting forKey:@"setting"];
+        }
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonObj options:0 error:nil];
+        _initializeValue = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     }
     return self;
 }
@@ -37,22 +49,48 @@
     if (!_delegate) return;
     
     NSLog(@"onCallWeb2AppWithKey:%@ value:%@", key, value);
-    if ([key isEqualToString:@"callApp2Web"] && [value isEqualToString:@"ready"]) {
-        [_delegate onReady];
+    if ([key isEqualToString:@"ready"]) {
+        if ([value isEqualToString:@"callApp2Web"]) {
+            [self callApp2WebWithKey:@"maplatInitialize" value:_initializeValue];
+        } else if ([value isEqualToString:@"maplatObject"]) {
+            [_delegate onReady];
+        }
     } else if ([key isEqualToString:@"clickMarker"]) {
         NSData *jsonData = [value dataUsingEncoding:NSUTF8StringEncoding];
         NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:jsonData
-                                                        options:kNilOptions
-                                                          error:nil];
+                                                                   options:kNilOptions
+                                                                     error:nil];
         int markerId = [(NSNumber *)jsonObject[@"id"] intValue];
         id markerData = jsonObject[@"data"];
         [_delegate onClickMarkerWithMarkerId:markerId markerData:markerData];
+    } else if ([key isEqualToString:@"changeViewpoint"]) {
+        NSData *jsonData = [value dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:jsonData
+                                                                   options:kNilOptions
+                                                                     error:nil];
+        double longitude = [(NSNumber *)jsonObject[@"longitude"] doubleValue];
+        double latitude = [(NSNumber *)jsonObject[@"latitude"] doubleValue];
+        double zoom = [(NSNumber *)jsonObject[@"zoom"] doubleValue];
+        double direction = [(NSNumber *)jsonObject[@"direction"] doubleValue];
+        double rotation = [(NSNumber *)jsonObject[@"rotation"] doubleValue];
+        
+        [_delegate onChangeViewpointWithLatitude:latitude longitude:longitude zoom:zoom direction:direction rotation:rotation];
+    } else if([key isEqualToString:@"outOfMap"]) {
+        [_delegate onOutOfMap];
+    } else if ([key isEqualToString:@"clickMap"]) {
+        NSData *jsonData = [value dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:jsonData
+                                                                   options:kNilOptions
+                                                                     error:nil];
+        double longitude = [(NSNumber *)jsonObject[@"longitude"] doubleValue];
+        double latitude = [(NSNumber *)jsonObject[@"latitude"] doubleValue];
+        [_delegate onClickMapWithLatitude:latitude longitude:longitude];
     }
 }
 
 - (void)callApp2WebWithKey:(NSString *)key value:(NSString *)value
 {
-    [_webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"javascript:jsBridge.callApp2Web('%@','%@');", key, value]];
+    [_webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"javascript:maplatBridge.callApp2Web('%@','%@');", key, value]];
 }
 
 - (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId stringData:(NSString *)markerData
@@ -126,6 +164,58 @@
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonObj options:0 error:nil];
     NSString *value = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     [self callApp2WebWithKey:@"setGPSMarker" value:value];
+}
+
+- (void)changeMap:(NSString *)mapID
+{
+    [self callApp2WebWithKey:@"changeMap" value:mapID];
+}
+
+- (void)setViewpointWithLatitude:(double)latitude longitude:(double)longitude
+{
+    NSMutableDictionary *jsonObj = [NSMutableDictionary new];
+    [jsonObj setValue:[NSNumber numberWithDouble:longitude] forKey:@"longitude"];
+    [jsonObj setValue:[NSNumber numberWithDouble:latitude] forKey:@"latitude"];
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonObj options:0 error:nil];
+    NSString *value = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    [self callApp2WebWithKey:@"moveTo" value:value];
+}
+
+- (void)setDirection:(double)direction
+{
+    double dirRad = direction * M_PI / 180.0;
+    NSMutableDictionary *jsonObj = [NSMutableDictionary new];
+    [jsonObj setValue:[NSNumber numberWithDouble:dirRad] forKey:@"direction"];
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonObj options:0 error:nil];
+    NSString *value = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    [self callApp2WebWithKey:@"moveTo" value:value];
+}
+
+- (void)setRotation:(double)rotate
+{
+    double rotRad = rotate * M_PI / 180.0;
+    NSMutableDictionary *jsonObj = [NSMutableDictionary new];
+    [jsonObj setValue:[NSNumber numberWithDouble:rotRad] forKey:@"rotate"];
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonObj options:0 error:nil];
+    NSString *value = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    [self callApp2WebWithKey:@"moveTo" value:value];
+}
+
+- (void)addLineWithLngLat:(NSArray *)lnglats stroke:(NSDictionary *)stroke
+{
+    NSMutableDictionary *jsonObj = [NSMutableDictionary new];
+    [jsonObj setValue:lnglats forKey:@"lnglats"];
+    if (stroke) {
+        [jsonObj setValue:stroke forKey:@"stroke"];
+    }
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonObj options:0 error:nil];
+    NSString *value = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    [self callApp2WebWithKey:@"addLine" value:value];
+}
+
+- (void)clearLine
+{
+    [self callApp2WebWithKey:@"clearLine" value:nil];
 }
 
 @end

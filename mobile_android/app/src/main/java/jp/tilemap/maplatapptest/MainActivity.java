@@ -5,34 +5,35 @@ package jp.tilemap.maplatapptest;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
-import android.content.res.AssetManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
-import android.webkit.ConsoleMessage;
-import android.webkit.WebChromeClient;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebResourceResponse;
+import android.view.View;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.Toast;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-public class MainActivity extends Activity implements JsBridge.JsBridgeListener {
+import java.util.Locale;
+
+public class MainActivity extends Activity implements MaplatBridge.MaplatBridgeListener {
 
     private static final int REQUEST_PERMISSION = 10;
 
-    private JsBridge mJsBridge;
+    public static Button button1 = null;
+    public static Button button2 = null;
+    public static Button button3 = null;
+    public static Button button4 = null;
+    public static Button button5 = null;
+    public static Button button6 = null;
+    private MaplatBridge mMaplatBridge;
+    private String nowMap;
 
-    //@SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,106 +47,77 @@ public class MainActivity extends Activity implements JsBridge.JsBridgeListener 
         //レイアウトで指定したWebViewのIDを指定する。
         WebView myWebView = (WebView)findViewById(R.id.webView1);
         myWebView.setWebContentsDebuggingEnabled(true);
-        AssetManager am = this.getAssets();
 
-        //リンクをタップしたときに標準ブラウザを起動させない
-        myWebView.setWebViewClient(new WebViewClient() {
-            @Override
-            public WebResourceResponse shouldInterceptRequest(final WebView view, WebResourceRequest request) {
-                String url = request.getUrl().toString();
-                String regex = "https?://localresource/";
-                Pattern p = Pattern.compile(regex);
-                Matcher m = p.matcher(url);
-                WebResourceResponse ret = null;
-                if (m.find()) {
-                    String fileName = m.replaceFirst("");
-                    int point = fileName.lastIndexOf("?");
-                    if (point != -1) {
-                        fileName = fileName.substring(0, point - 1);
-                    }
-                    String ext = fileName;
-                    point = fileName.lastIndexOf(".");
-                    if (point != -1) {
-                        ext = fileName.substring(point + 1);
-                    }
-                    Log.d(ext,ext);
-                    String mime = ext.equals("html") ? "text/html" :
-                            ext.equals("js") ? "application/javascript" :
-                            ext.equals("json") ? "application/json" :
-                            ext.equals("jpg") ? "image/jpeg" :
-                            ext.equals("png") ? "image/png" :
-                            ext.equals("css") ? "text/css" :
-                            ext.equals("gif") ? "image/gif" :
-                            ext.equals("woff") ? "application/font-woff" :
-                            ext.equals("woff2") ? "application/font-woff2" :
-                            ext.equals("ttf") ? "application/font-ttf" :
-                            ext.equals("eot") ? "application/vnd.ms-fontobject" :
-                            ext.equals("otf") ? "application/font-otf" :
-                            ext.equals("svg") ? "image/svg+xml" :
-                            "text/plain";
-                    InputStream is = null;
-                    BufferedReader br = null;
-                    String text = "";
+        nowMap = "morioka_ndl";
 
-                    try {
-                        try {
-                            is = view.getContext().getAssets().open(fileName);
-                            ret = new WebResourceResponse(mime, "UTF-8", is);
-                            //br = new BufferedReader(new InputStreamReader(is));
-
-                            // １行ずつ読み込み、改行を付加する
-                            //String str;
-                            //while ((str = br.readLine()) != null) {
-                            //    text += str + "\n";
-                            //}
-                        } finally {
-                            //if (is != null) is.close();
-                            //if (br != null) br.close();
-                        }
-                    } catch (Exception e){
-                        // エラー発生時の処理
-                    }
-                }
-                return ret;
-            }
-        });
-        myWebView.setWebChromeClient(new WebChromeClient() {
-            @Override
-            public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
-                Log.d("MyApplication", consoleMessage.message() + " -- From line "
-                        + consoleMessage.lineNumber() + " of "
-                        + consoleMessage.sourceId());
-                return true;
-            }
-        });
-        myWebView.loadUrl("http://localresource/mobile_sample.html");
-        myWebView.getSettings().setJavaScriptEnabled(true);
-
-        mJsBridge = new JsBridge(this, myWebView, new Handler(), this);
-        myWebView.addJavascriptInterface(mJsBridge,"jsBridge");
-    }
-
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        try {
+            mMaplatBridge = new MaplatBridge(this, myWebView, new Handler(), this, "mobile_sample",
+                    new JSONObject("{\n" +
+                            "        \"app_name\" : \"モバイルアプリ\",\n" +
+                            "        \"sources\" : [\n" +
+                            "            \"gsi\",\n" +
+                            "            \"osm\",\n" +
+                            "            {\n" +
+                            "                \"mapID\" : \"morioka_ndl\"\n" +
+                            "            }\n" +
+                            "        ],\n" +
+                            "        \"pois\" : []\n" +
+                            "    }"));
+        } catch (org.json.JSONException e) {
+            e.printStackTrace();
         }
 
-        return super.onOptionsItemSelected(item);
-    }*/
+        button1 = (Button)findViewById(R.id.button1);
+        button1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String nextMap = nowMap.equals("morioka_ndl") ? "gsi" : "morioka_ndl";
+                mMaplatBridge.changeMap(nextMap);
+                nowMap = nextMap;
+            }
+        });
+
+        button2 = (Button)findViewById(R.id.button2);
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addMarkers();
+            }
+        });
+
+        button3 = (Button)findViewById(R.id.button3);
+        button3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mMaplatBridge.clearLine();
+                mMaplatBridge.clearMarker();
+            }
+        });
+
+        button4 = (Button)findViewById(R.id.button4);
+        button4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mMaplatBridge.setViewpoint(39.69994722, 141.1501111);
+            }
+        });
+
+        button5 = (Button)findViewById(R.id.button5);
+        button5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mMaplatBridge.setDirection(-90);
+            }
+        });
+
+        button6 = (Button)findViewById(R.id.button6);
+        button6.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mMaplatBridge.setRotation(-90);
+            }
+        });
+    }
 
     // 位置情報許可の確認
     public void checkLocationPermission() {
@@ -174,18 +146,44 @@ public class MainActivity extends Activity implements JsBridge.JsBridgeListener 
 
     @Override
     public void onReady() {
-        mJsBridge.addMarker(39.69994722, 141.1501111, 1, "001");
-        mJsBridge.addMarker(39.7006006, 141.1529555, 5, "005");
-        mJsBridge.addMarker(39.701599, 141.151995, 6, "006");
-        mJsBridge.addMarker(39.703736, 141.151137, 7, "007");
-        mJsBridge.addMarker(39.7090232, 141.1521671, 9, "009");
-
-        mJsBridge.startLocationUpdates();
+        addMarkers();
+        mMaplatBridge.startLocationUpdates();
     }
 
     @Override
     public void onClickMarker(int markerId, Object markerData) {
         String value = String.format(Locale.US, "clickMarker ID: %d DATA: %s", markerId, markerData);
         Toast.makeText(this, value, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onChangeViewpoint(double latitude, double longitude, double zoom, double direction, double rotation) {
+        Log.d("changeViewpoint", String.format("LatLong: (%f, %f) zoom: %f direction: %f rotation %f", latitude, longitude, zoom, direction, rotation));
+    }
+
+    @Override
+    public void onOutOfMap() {
+        Toast.makeText(this, "地図範囲外です", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onClickMap(double latitude, double longitude) {
+        String value = String.format(Locale.US, "clickMap latitude: %f longitude: %f", latitude, longitude);
+        Toast.makeText(this, value, Toast.LENGTH_SHORT).show();
+    }
+
+    private void addMarkers() {
+        try {
+            mMaplatBridge.addLine(new JSONArray("[[141.1501111,39.69994722],[141.1529555,39.7006006]]"), null);
+            mMaplatBridge.addLine(new JSONArray("[[141.151995,39.701599],[141.151137,39.703736],[141.1521671,39.7090232]]"),
+                    new JSONObject("{\"color\":\"#ffcc33\", \"width\":2}"));
+        } catch (org.json.JSONException e) {
+            e.printStackTrace();
+        }
+        mMaplatBridge.addMarker(39.69994722, 141.1501111, 1, "001");
+        mMaplatBridge.addMarker(39.7006006, 141.1529555, 5, "005");
+        mMaplatBridge.addMarker(39.701599, 141.151995, 6, "006");
+        mMaplatBridge.addMarker(39.703736, 141.151137, 7, "007");
+        mMaplatBridge.addMarker(39.7090232, 141.1521671, 9, "009");
     }
 }
