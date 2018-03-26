@@ -74,7 +74,7 @@
     // Do any additional setup after loading the view, typically from a nib.
     [NSThread sleepForTimeInterval:10]; //Safariのデバッガを繋ぐための時間。本番では不要。
     
-    _maplatBridge = [[MaplatBridge alloc] initWithWebView:self.webView appID:@"mobile_sample" setting:@{
+    _maplatBridge = [[MaplatBridge alloc] initWithWebView:self.webView appID:@"mobile" setting:@{
         @"app_name" : @"モバイルアプリ",
         @"sources" : @[
             @"gsi",

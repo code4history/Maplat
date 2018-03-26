@@ -16,9 +16,8 @@ import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.Toast;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 
 public class MainActivity extends Activity implements MaplatBridge.MaplatBridgeListener {
@@ -51,19 +50,19 @@ public class MainActivity extends Activity implements MaplatBridge.MaplatBridgeL
         nowMap = "morioka_ndl";
 
         try {
-            mMaplatBridge = new MaplatBridge(this, myWebView, new Handler(), this, "mobile_sample",
-                    new JSONObject("{\n" +
-                            "        \"app_name\" : \"モバイルアプリ\",\n" +
-                            "        \"sources\" : [\n" +
-                            "            \"gsi\",\n" +
-                            "            \"osm\",\n" +
-                            "            {\n" +
-                            "                \"mapID\" : \"morioka_ndl\"\n" +
-                            "            }\n" +
-                            "        ],\n" +
-                            "        \"pois\" : []\n" +
-                            "    }"));
-        } catch (org.json.JSONException e) {
+            mMaplatBridge = new MaplatBridge(this, myWebView, this, "mobile",
+                    new HashMap<String, Object>() {{
+                        put("app_name", "モバイルアプリ");
+                        put("sources", new ArrayList<Object>(){{
+                            add("gsi");
+                            add("osm");
+                            add(new HashMap<String, String>(){{
+                                put("mapID", "morioka_ndl");
+                            }});
+                        }});
+                        put("pois", new ArrayList<Object>());
+                    }});
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -174,10 +173,29 @@ public class MainActivity extends Activity implements MaplatBridge.MaplatBridgeL
 
     private void addMarkers() {
         try {
-            mMaplatBridge.addLine(new JSONArray("[[141.1501111,39.69994722],[141.1529555,39.7006006]]"), null);
-            mMaplatBridge.addLine(new JSONArray("[[141.151995,39.701599],[141.151137,39.703736],[141.1521671,39.7090232]]"),
-                    new JSONObject("{\"color\":\"#ffcc33\", \"width\":2}"));
-        } catch (org.json.JSONException e) {
+            mMaplatBridge.addLine(new ArrayList<ArrayList<Double>>(){{
+                add(new ArrayList<Double>(){{
+                    add(141.1501111); add(39.69994722);
+                }});
+                add(new ArrayList<Double>(){{
+                    add(141.1529555); add(39.7006006);
+                }});
+            }}, null);
+            mMaplatBridge.addLine(new ArrayList<ArrayList<Double>>(){{
+                add(new ArrayList<Double>(){{
+                    add(141.151995); add(39.701599);
+                }});
+                add(new ArrayList<Double>(){{
+                    add(141.151137); add(39.703736);
+                }});
+                add(new ArrayList<Double>(){{
+                    add(141.1521671); add(39.7090232);
+                }});
+            }}, new HashMap<String, Object>() {{
+                put("color", "#ffcc33");
+                put("width", 2);
+            }});
+        } catch (Exception e) {
             e.printStackTrace();
         }
         mMaplatBridge.addMarker(39.69994722, 141.1501111, 1, "001");

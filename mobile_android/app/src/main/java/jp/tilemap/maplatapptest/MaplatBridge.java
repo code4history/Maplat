@@ -32,12 +32,14 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.google.gson.Gson;
+import com.google.gson.internal.LinkedTreeMap;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -56,7 +58,8 @@ public class MaplatBridge extends Object {
     Context mContext;
     WebView mWebView;
     Handler mHandler;
-    String initializeValue;
+    String mInitializeValue;
+    Gson mGson;
 
     private FusedLocationProviderClient mFusedLocationClient;
     private SettingsClient mSettingsClient;
@@ -69,15 +72,16 @@ public class MaplatBridge extends Object {
      */
     private Location mCurrentLocation;
 
-    public MaplatBridge(Context c, WebView w, Handler h, String appID, JSONObject setting) {
-        this(c, w, h, null, appID, setting);
+    public MaplatBridge(Context c, WebView w, String appID, HashMap<String, Object> setting) {
+        this(c, w, null, appID, setting);
     }
 
-    public MaplatBridge(Context c, WebView w, Handler h, MaplatBridgeListener l, String appID, JSONObject setting) {
+    public MaplatBridge(Context c, WebView w, MaplatBridgeListener l, String appID, HashMap<String, Object> setting) {
         mContext = c;
         mWebView = w;
-        mHandler = h;
+        mHandler = new Handler();
         mListener = l;
+        mGson = new Gson();
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(c);
         mSettingsClient = LocationServices.getSettingsClient(c);
@@ -154,16 +158,48 @@ public class MaplatBridge extends Object {
         if (appID == null) {
             appID = "mobile";
         }
-        JSONObject jsonObj = new JSONObject();
-        try {
-            jsonObj.put("appid", appID);
-            if (setting != null) {
-                jsonObj.put("setting", setting);
-            }
-        } catch (org.json.JSONException e) {
-            e.printStackTrace();
+        Map<String, Object> obj = new HashMap<String, Object>();
+        obj.put("appid", appID);
+        if (setting != null) {
+            obj.put("setting", setting);
         }
-        initializeValue = jsonObj.toString();
+        mInitializeValue = objectToJson(obj);
+    }
+
+    private Object normalizeObject(Object root) {
+        if (root instanceof HashMap) {
+            HashMap<String, Object> hashRoot = (HashMap<String, Object>) root;
+            for (Map.Entry<String, Object> entry : hashRoot.entrySet()) {
+                hashRoot.put(entry.getKey(), normalizeObject(entry.getValue()));
+            }
+            if (root.getClass().getName().contains("$")) {
+                root = new HashMap<String, Object>(hashRoot);
+            }
+        } else if (root instanceof LinkedTreeMap) {
+            HashMap<String, Object> hashRoot = new HashMap<String, Object>();
+            LinkedTreeMap<String, Object> treeRoot = (LinkedTreeMap<String, Object>) root;
+            for (Map.Entry<String, Object> entry : treeRoot.entrySet()) {
+                hashRoot.put(entry.getKey(), normalizeObject(entry.getValue()));
+            }
+            root = hashRoot;
+        } else if (root instanceof ArrayList) {
+            ArrayList<Object> arrayRoot = (ArrayList<Object>)root;
+            for(int i = 0; i < arrayRoot.size(); ++i){
+                arrayRoot.set(i, normalizeObject(arrayRoot.get(i)));
+            }
+            if (root.getClass().getName().contains("$")) {
+                root = new ArrayList<Object>(arrayRoot);
+            }
+        }
+        return root;
+    }
+
+    private Object jsonToObject(String json) {
+        return normalizeObject(mGson.fromJson(json, Object.class));
+    }
+
+    private String objectToJson(Object obj) {
+        return mGson.toJson(normalizeObject(obj));
     }
 
     @JavascriptInterface
@@ -171,7 +207,7 @@ public class MaplatBridge extends Object {
         if (mListener == null) return;
         if (key.equals("ready")){
             if (data.equals("callApp2Web")) {
-                callApp2Web("maplatInitialize", initializeValue);
+                callApp2Web("maplatInitialize", mInitializeValue);
             } else if (data.equals("maplatObject")) {
                 mHandler.post(new Runnable() {
                     @Override
@@ -187,10 +223,10 @@ public class MaplatBridge extends Object {
                     int markerId = 0;
                     Object markerData = null;
                     try {
-                        JSONObject jsonObj = new JSONObject(data);
-                        markerId = jsonObj.getInt("id");
-                        markerData = jsonObj.get("data");
-                    } catch (org.json.JSONException e) {
+                        Map<String, Object> obj = (Map<String, Object>)jsonToObject(data);
+                        markerId = ((Double)obj.get("id")).intValue();
+                        markerData = obj.get("data");
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                     mListener.onClickMarker(markerId, markerData);
@@ -206,13 +242,13 @@ public class MaplatBridge extends Object {
                     double direction = 0;
                     double rotation = 0;
                     try {
-                        JSONObject jsonObj = new JSONObject(data);
-                        latitude = jsonObj.getDouble("latitude");
-                        longitude = jsonObj.getDouble("longitude");
-                        zoom = jsonObj.getDouble("zoom");
-                        direction = jsonObj.getDouble("direction");
-                        rotation = jsonObj.getDouble("rotation");
-                    } catch (org.json.JSONException e) {
+                        Map<String, Double> obj = (Map<String, Double>)jsonToObject(data);
+                        latitude = obj.get("latitude");
+                        longitude = obj.get("longitude");
+                        zoom = obj.get("zoom");
+                        direction = obj.get("direction");
+                        rotation = obj.get("rotation");
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                     mListener.onChangeViewpoint(latitude, longitude, zoom, direction, rotation);
@@ -232,10 +268,10 @@ public class MaplatBridge extends Object {
                     double latitude = 0;
                     double longitude = 0;
                     try {
-                        JSONObject jsonObj = new JSONObject(data);
-                        latitude = jsonObj.getDouble("latitude");
-                        longitude = jsonObj.getDouble("longitude");
-                    } catch (org.json.JSONException e) {
+                        Map<String, Double> obj = (Map<String, Double>)jsonToObject(data);
+                        latitude = obj.get("latitude");
+                        longitude = obj.get("longitude");
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                     mListener.onClickMap(latitude, longitude);
@@ -248,75 +284,47 @@ public class MaplatBridge extends Object {
         addMarker(latitude, longitude, markerId, markerData, null);
     }
     public void addMarker(double latitude, double longitude, int markerId, int markerData, String iconUrl) {
-        JSONObject jsonObj = new JSONObject();
-        try {
-            jsonObj.put("data", markerData);
-        } catch (org.json.JSONException e) {
-            e.printStackTrace();
-        }
-        addMarkerInternal(latitude, longitude, markerId, jsonObj, iconUrl);
+        addMarkerInternal(latitude, longitude, markerId, markerData, iconUrl);
     }
     public void addMarker(double latitude, double longitude, int markerId, double markerData) {
         addMarker(latitude, longitude, markerId, markerData, null);
     }
     public void addMarker(double latitude, double longitude, int markerId, double markerData, String iconUrl) {
-        JSONObject jsonObj = new JSONObject();
-        try {
-            jsonObj.put("data", markerData);
-        } catch (org.json.JSONException e) {
-            e.printStackTrace();
-        }
-        addMarkerInternal(latitude, longitude, markerId, jsonObj, iconUrl);
+        addMarkerInternal(latitude, longitude, markerId, markerData, iconUrl);
     }
     public void addMarker(double latitude, double longitude, int markerId, String markerData) {
         addMarker(latitude, longitude, markerId, markerData, null);
     }
     public void addMarker(double latitude, double longitude, int markerId, String markerData, String iconUrl) {
-        JSONObject jsonObj = new JSONObject();
-        try {
-            jsonObj.put("data", markerData);
-        } catch (org.json.JSONException e) {
-            e.printStackTrace();
-        }
-        addMarkerInternal(latitude, longitude, markerId, jsonObj, iconUrl);
+        addMarkerInternal(latitude, longitude, markerId, markerData, iconUrl);
     }
-    public void addMarker(double latitude, double longitude, int markerId, JSONArray markerData) {
+    public void addMarker(double latitude, double longitude, int markerId, ArrayList<Object> markerData) {
         addMarker(latitude, longitude, markerId, markerData, null);
     }
-    public void addMarker(double latitude, double longitude, int markerId, JSONArray markerData, String iconUrl) {
-        JSONObject jsonObj = new JSONObject();
-        try {
-            jsonObj.put("data", markerData);
-        } catch (org.json.JSONException e) {
-            e.printStackTrace();
-        }
-        addMarkerInternal(latitude, longitude, markerId, jsonObj, iconUrl);
+    public void addMarker(double latitude, double longitude, int markerId, ArrayList<Object> markerData, String iconUrl) {
+        addMarkerInternal(latitude, longitude, markerId, markerData, iconUrl);
     }
-    public void addMarker(double latitude, double longitude, int markerId, JSONObject markerData) {
+    public void addMarker(double latitude, double longitude, int markerId, HashMap<String, Object> markerData) {
         addMarker(latitude, longitude, markerId, markerData, null);
     }
-    public void addMarker(double latitude, double longitude, int markerId, JSONObject markerData, String iconUrl) {
-        JSONObject jsonObj = new JSONObject();
-        try {
-            jsonObj.put("data", markerData);
-        } catch (org.json.JSONException e) {
-            e.printStackTrace();
-        }
-        addMarkerInternal(latitude, longitude, markerId, jsonObj, iconUrl);
+    public void addMarker(double latitude, double longitude, int markerId, HashMap<String, Object> markerData, String iconUrl) {
+        addMarkerInternal(latitude, longitude, markerId, markerData, iconUrl);
     }
 
-    private void addMarkerInternal(double latitude, double longitude, int markerId, JSONObject jsonObj, String iconUrl) {
+    private void addMarkerInternal(double latitude, double longitude, int markerId, Object markerData, String iconUrl) {
+        Map<String, Object> obj = new HashMap<String, Object>();
         try {
-            jsonObj.put("longitude", longitude);
-            jsonObj.put("latitude", latitude);
-            jsonObj.put("id", markerId);
+            obj.put("data", markerData);
+            obj.put("longitude", longitude);
+            obj.put("latitude", latitude);
+            obj.put("id", markerId);
             if (!TextUtils.isEmpty(iconUrl)) {
-                jsonObj.put("icon", iconUrl);
+                obj.put("icon", iconUrl);
             }
-        } catch (org.json.JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        String value = jsonObj.toString();
+        String value = objectToJson(obj);
         callApp2Web("addMarker", value);
     }
 
@@ -325,15 +333,15 @@ public class MaplatBridge extends Object {
     }
 
     public void setGPSMarker(double latitude, double longitude, double accuracy) {
-        JSONObject jsonObj = new JSONObject();
+        Map<String, Object> obj = new HashMap<String, Object>();
         try {
-            jsonObj.put("longitude", longitude);
-            jsonObj.put("latitude", latitude);
-            jsonObj.put("accuracy", accuracy);
-        } catch (org.json.JSONException e) {
+            obj.put("longitude", longitude);
+            obj.put("latitude", latitude);
+            obj.put("accuracy", accuracy);
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        String value = jsonObj.toString();
+        String value = objectToJson(obj);
         callApp2Web("setGPSMarker", value);
     }
 
@@ -342,52 +350,52 @@ public class MaplatBridge extends Object {
     }
 
     public void setViewpoint(double latitude, double longitude) {
-        JSONObject jsonObj = new JSONObject();
+        Map<String, Object> obj = new HashMap<String, Object>();
         try {
-            jsonObj.put("longitude", longitude);
-            jsonObj.put("latitude", latitude);
-        } catch (org.json.JSONException e) {
+            obj.put("longitude", longitude);
+            obj.put("latitude", latitude);
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        String value = jsonObj.toString();
+        String value = objectToJson(obj);
         callApp2Web("moveTo", value);
     }
 
     public void setDirection(double direction) {
         double dirRad = direction * Math.PI / 180.0;
-        JSONObject jsonObj = new JSONObject();
+        Map<String, Object> obj = new HashMap<String, Object>();
         try {
-            jsonObj.put("direction", dirRad);
-        } catch (org.json.JSONException e) {
+            obj.put("direction", dirRad);
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        String value = jsonObj.toString();
+        String value = objectToJson(obj);
         callApp2Web("moveTo", value);
     }
 
     public void setRotation(double rotate) {
         double rotRad = rotate * Math.PI / 180.0;
-        JSONObject jsonObj = new JSONObject();
+        Map<String, Object> obj = new HashMap<String, Object>();
         try {
-            jsonObj.put("rotate", rotRad);
-        } catch (org.json.JSONException e) {
+            obj.put("rotate", rotRad);
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        String value = jsonObj.toString();
+        String value = objectToJson(obj);
         callApp2Web("moveTo", value);
     }
 
-    public void addLine(JSONArray lnglats, JSONObject stroke) {
-        JSONObject jsonObj = new JSONObject();
+    public void addLine(ArrayList<ArrayList<Double>> lnglats, HashMap<String, Object> stroke) {
+        Map<String, Object> obj = new HashMap<String, Object>();
         try {
-            jsonObj.put("lnglats", lnglats);
+            obj.put("lnglats", lnglats);
             if (stroke != null) {
-                jsonObj.put("stroke", stroke);
+                obj.put("stroke", stroke);
             }
-        } catch (org.json.JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        String value = jsonObj.toString();
+        String value = objectToJson(obj);
         callApp2Web("addLine", value);
     }
 
