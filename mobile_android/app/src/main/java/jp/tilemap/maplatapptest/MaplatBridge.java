@@ -208,6 +208,14 @@ public class MaplatBridge extends Object {
         return root;
     }
 
+    private Object jsonToObject(String json, Class type) {
+        if (type == null) {
+            return jsonToObject(json);
+        } else {
+            return mGson.fromJson(json, type);
+        }
+    }
+
     private Object jsonToObject(String json) {
         Object ret;
         try {
@@ -255,7 +263,7 @@ public class MaplatBridge extends Object {
                     long markerId = 0;
                     Object markerData = null;
                     try {
-                        Map<String, Object> obj = (Map<String, Object>)jsonToObject(data);
+                        Map<String, Object> obj = (Map<String, Object>)jsonToObject(data, Map.class);
                         markerId = (Long)obj.get("id");
                         markerData = obj.get("data");
                     } catch (Exception e) {
@@ -274,7 +282,7 @@ public class MaplatBridge extends Object {
                     double direction = 0;
                     double rotation = 0;
                     try {
-                        Map<String, Double> obj = (Map<String, Double>)jsonToObject(data);
+                        Map<String, Double> obj = (Map<String, Double>)jsonToObject(data, Map.class);
                         latitude = obj.get("latitude");
                         longitude = obj.get("longitude");
                         zoom = obj.get("zoom");
@@ -300,7 +308,7 @@ public class MaplatBridge extends Object {
                     double latitude = 0;
                     double longitude = 0;
                     try {
-                        Map<String, Double> obj = (Map<String, Double>)jsonToObject(data);
+                        Map<String, Double> obj = (Map<String, Double>)jsonToObject(data, Map.class);
                         latitude = obj.get("latitude");
                         longitude = obj.get("longitude");
                     } catch (Exception e) {
