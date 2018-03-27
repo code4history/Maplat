@@ -17,16 +17,16 @@
 
 - (id)initWithWebView:(UIWebView *)webView appID:(NSString *)appID setting:(NSDictionary *)setting;
 
-- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId stringData:(NSString *)markerData;
-- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId stringData:(NSString *)markerData iconUrl:(NSString *) iconUrl;
-- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId intData:(int)markerData;
-- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId intData:(int)markerData iconUrl:(NSString *) iconUrl;
-- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId doubleData:(double)markerData;
-- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId doubleData:(double)markerData iconUrl:(NSString *) iconUrl;
-- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId arrayData:(NSArray *)markerData;
-- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId arrayData:(NSArray *)markerData iconUrl:(NSString *) iconUrl;
-- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId dictData:(NSDictionary *)markerData;
-- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId dictData:(NSDictionary *)markerData iconUrl:(NSString *) iconUrl;
+- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(long)markerId stringData:(NSString *)markerData;
+- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(long)markerId stringData:(NSString *)markerData iconUrl:(NSString *) iconUrl;
+- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(long)markerId longData:(long)markerData;
+- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(long)markerId longData:(long)markerData iconUrl:(NSString *) iconUrl;
+- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(long)markerId doubleData:(double)markerData;
+- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(long)markerId doubleData:(double)markerData iconUrl:(NSString *) iconUrl;
+- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(long)markerId arrayData:(NSArray *)markerData;
+- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(long)markerId arrayData:(NSArray *)markerData iconUrl:(NSString *) iconUrl;
+- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(long)markerId dictData:(NSDictionary *)markerData;
+- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(long)markerId dictData:(NSDictionary *)markerData iconUrl:(NSString *) iconUrl;
 
 - (void)clearMarker;
 - (void)setGPSMarkerWithLatitude:(double)latitude longitude:(double)longitude accuracy:(double)accuracy;
@@ -44,7 +44,7 @@
 @protocol MaplatBridgeDelegate <NSObject>
 @optional
 - (void)onReady;
-- (void)onClickMarkerWithMarkerId:(int)markerId markerData:(id)markerData;
+- (void)onClickMarkerWithMarkerId:(long)markerId markerData:(id)markerData;
 - (void)onChangeViewpointWithLatitude:(double)latitude longitude:(double)longitude zoom:(double)zoom direction:(double)direction rotation:(double)rotation;
 - (void)onOutOfMap;
 - (void)onClickMapWithLatitude:(double)latitude longitude:(double)longitude;

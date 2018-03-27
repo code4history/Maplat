@@ -60,7 +60,7 @@
         NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:jsonData
                                                                    options:kNilOptions
                                                                      error:nil];
-        int markerId = [(NSNumber *)jsonObject[@"id"] intValue];
+        long markerId = [(NSNumber *)jsonObject[@"id"] longValue];
         id markerData = jsonObject[@"data"];
         [_delegate onClickMarkerWithMarkerId:markerId markerData:markerData];
     } else if ([key isEqualToString:@"changeViewpoint"]) {
@@ -93,53 +93,53 @@
     [_webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"javascript:maplatBridge.callApp2Web('%@','%@');", key, value]];
 }
 
-- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId stringData:(NSString *)markerData
+- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(long)markerId stringData:(NSString *)markerData
 {
     [self addMarkerWithLatitude:latitude longitude:longitude markerId:markerId stringData:markerData iconUrl:nil];
 }
-- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId stringData:(NSString *)markerData iconUrl:(NSString *) iconUrl
+- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(long)markerId stringData:(NSString *)markerData iconUrl:(NSString *) iconUrl
 {
     [self addMarkerWithLatitude:latitude longitude:longitude markerId:markerId markerData:markerData iconUrl:iconUrl];
 }
-- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId intData:(int)markerData
+- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(long)markerId longData:(long)markerData
 {
-    [self addMarkerWithLatitude:latitude longitude:longitude markerId:markerId intData:markerData iconUrl:nil];
+    [self addMarkerWithLatitude:latitude longitude:longitude markerId:markerId longData:markerData iconUrl:nil];
 }
-- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId intData:(int)markerData iconUrl:(NSString *) iconUrl
+- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(long)markerId longData:(long)markerData iconUrl:(NSString *) iconUrl
 {
-    [self addMarkerWithLatitude:latitude longitude:longitude markerId:markerId markerData:[NSNumber numberWithInt:markerData] iconUrl:iconUrl];
+    [self addMarkerWithLatitude:latitude longitude:longitude markerId:markerId markerData:[NSNumber numberWithLong:markerData] iconUrl:iconUrl];
 }
-- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId doubleData:(double)markerData
+- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(long)markerId doubleData:(double)markerData
 {
     [self addMarkerWithLatitude:latitude longitude:longitude markerId:markerId doubleData:markerData iconUrl:nil];
 }
-- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId doubleData:(double)markerData iconUrl:(NSString *) iconUrl
+- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(long)markerId doubleData:(double)markerData iconUrl:(NSString *) iconUrl
 {
     [self addMarkerWithLatitude:latitude longitude:longitude markerId:markerId markerData:[NSNumber numberWithDouble:markerData] iconUrl:iconUrl];
 }
-- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId arrayData:(NSArray *)markerData
+- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(long)markerId arrayData:(NSArray *)markerData
 {
     [self addMarkerWithLatitude:latitude longitude:longitude markerId:markerId arrayData:markerData iconUrl:nil];
 }
-- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId arrayData:(NSArray *)markerData iconUrl:(NSString *) iconUrl
+- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(long)markerId arrayData:(NSArray *)markerData iconUrl:(NSString *) iconUrl
 {
     [self addMarkerWithLatitude:latitude longitude:longitude markerId:markerId markerData:markerData iconUrl:iconUrl];
 }
-- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId dictData:(NSDictionary *)markerData
+- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(long)markerId dictData:(NSDictionary *)markerData
 {
     [self addMarkerWithLatitude:latitude longitude:longitude markerId:markerId dictData:markerData iconUrl:nil];
 }
-- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId dictData:(NSDictionary *)markerData iconUrl:(NSString *) iconUrl
+- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(long)markerId dictData:(NSDictionary *)markerData iconUrl:(NSString *) iconUrl
 {
     [self addMarkerWithLatitude:latitude longitude:longitude markerId:markerId markerData:markerData iconUrl:iconUrl];
 }
 
-- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(int)markerId markerData:(id)markerData iconUrl:(NSString *)iconUrl
+- (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(long)markerId markerData:(id)markerData iconUrl:(NSString *)iconUrl
 {
     NSMutableDictionary *jsonObj = [NSMutableDictionary new];
     [jsonObj setValue:[NSNumber numberWithDouble:longitude] forKey:@"longitude"];
     [jsonObj setValue:[NSNumber numberWithDouble:latitude] forKey:@"latitude"];
-    [jsonObj setValue:[NSNumber numberWithInt:markerId] forKey:@"id"];
+    [jsonObj setValue:[NSNumber numberWithLong:markerId] forKey:@"id"];
     [jsonObj setValue:markerData forKey:@"data"];
     if ([iconUrl length] > 0) {
         [jsonObj setValue:iconUrl forKey:@"icon"];

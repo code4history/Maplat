@@ -320,10 +320,10 @@ public class MaplatBridge extends Object {
         }
     }
 
-    public void addMarker(double latitude, double longitude, long markerId, int markerData) {
+    public void addMarker(double latitude, double longitude, long markerId, long markerData) {
         addMarker(latitude, longitude, markerId, markerData, null);
     }
-    public void addMarker(double latitude, double longitude, long markerId, int markerData, String iconUrl) {
+    public void addMarker(double latitude, double longitude, long markerId, long markerData, String iconUrl) {
         addMarkerInternal(latitude, longitude, markerId, markerData, iconUrl);
     }
     public void addMarker(double latitude, double longitude, long markerId, double markerData) {
@@ -511,6 +511,7 @@ public class MaplatBridge extends Object {
                 });
     }
 }
+
 class CustomizedObjectTypeAdapter extends TypeAdapter<Object> {
     private final TypeAdapter<Object> delegate = new Gson().getAdapter(Object.class);
 

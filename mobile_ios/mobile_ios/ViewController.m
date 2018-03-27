@@ -110,9 +110,9 @@
     [_locationManager startUpdatingLocation];
 }
 
-- (void)onClickMarkerWithMarkerId:(int)markerId markerData:(id)markerData
+- (void)onClickMarkerWithMarkerId:(long)markerId markerData:(id)markerData
 {
-    NSString *message = [NSString stringWithFormat:@"clickMarker ID:%d DATA:%@", markerId, markerData];
+    NSString *message = [NSString stringWithFormat:@"clickMarker ID:%ld DATA:%@", markerId, markerData];
     [self toast:message];
 }
 
