@@ -50,7 +50,7 @@ public class MainActivity extends Activity implements MaplatBridge.MaplatBridgeL
         nowMap = "morioka_ndl";
 
         try {
-            mMaplatBridge = new MaplatBridge(this, myWebView, this, "mobile",
+            mMaplatBridge = new MaplatBridge(this, myWebView, new Handler(), this, "mobile",
                     new HashMap<String, Object>() {{
                         put("app_name", "モバイルアプリ");
                         put("sources", new ArrayList<Object>(){{
@@ -150,7 +150,7 @@ public class MainActivity extends Activity implements MaplatBridge.MaplatBridgeL
     }
 
     @Override
-    public void onClickMarker(int markerId, Object markerData) {
+    public void onClickMarker(long markerId, Object markerData) {
         String value = String.format(Locale.US, "clickMarker ID: %d DATA: %s", markerId, markerData);
         Toast.makeText(this, value, Toast.LENGTH_SHORT).show();
     }

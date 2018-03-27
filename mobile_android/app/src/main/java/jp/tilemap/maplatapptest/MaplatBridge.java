@@ -33,12 +33,19 @@ import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
 import com.google.gson.internal.LinkedTreeMap;
+import com.google.gson.stream.JsonWriter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -47,7 +54,7 @@ public class MaplatBridge extends Object {
 
     public interface MaplatBridgeListener {
         void onReady();
-        void onClickMarker(int markerId, Object markerData);
+        void onClickMarker(long markerId, Object markerData);
         void onChangeViewpoint(double latitude, double longitude, double zoom, double direction, double rotation);
         void onOutOfMap();
         void onClickMap(double latitude, double longitude);
@@ -72,16 +79,23 @@ public class MaplatBridge extends Object {
      */
     private Location mCurrentLocation;
 
-    public MaplatBridge(Context c, WebView w, String appID, HashMap<String, Object> setting) {
-        this(c, w, null, appID, setting);
+    public MaplatBridge(Context c, WebView w, Handler h, String appID, HashMap<String, Object> setting) {
+        this(c, w, h, null, appID, setting);
     }
 
-    public MaplatBridge(Context c, WebView w, MaplatBridgeListener l, String appID, HashMap<String, Object> setting) {
+    public MaplatBridge(Context c, WebView w, Handler h, MaplatBridgeListener l, String appID, HashMap<String, Object> setting) {
         mContext = c;
         mWebView = w;
-        mHandler = new Handler();
+        mHandler = h;
         mListener = l;
-        mGson = new Gson();
+        CustomizedObjectTypeAdapter adapter = new CustomizedObjectTypeAdapter();
+        mGson = new GsonBuilder()
+                .registerTypeHierarchyAdapter(Map.class, adapter)
+                .registerTypeHierarchyAdapter(List.class, adapter)
+                .registerTypeHierarchyAdapter(Double.class, adapter)
+                .registerTypeHierarchyAdapter(Long.class, adapter)
+                .registerTypeHierarchyAdapter(String.class, adapter)
+                .create();
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(c);
         mSettingsClient = LocationServices.getSettingsClient(c);
@@ -195,7 +209,25 @@ public class MaplatBridge extends Object {
     }
 
     private Object jsonToObject(String json) {
-        return normalizeObject(mGson.fromJson(json, Object.class));
+        Object ret;
+        try {
+            ret = mGson.fromJson(json, Map.class);
+        } catch (Exception e1) {
+            try {
+                ret = mGson.fromJson(json, List.class);
+            } catch (Exception e2) {
+                try {
+                    ret = mGson.fromJson(json, Double.class);
+                } catch (Exception e3) {
+                    try {
+                        ret = mGson.fromJson(json, Long.class);
+                    } catch (Exception e4) {
+                        ret = mGson.fromJson(json, String.class);
+                    }
+                }
+            }
+        }
+        return ret;
     }
 
     private String objectToJson(Object obj) {
@@ -220,11 +252,11 @@ public class MaplatBridge extends Object {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    int markerId = 0;
+                    long markerId = 0;
                     Object markerData = null;
                     try {
                         Map<String, Object> obj = (Map<String, Object>)jsonToObject(data);
-                        markerId = ((Double)obj.get("id")).intValue();
+                        markerId = (Long)obj.get("id");
                         markerData = obj.get("data");
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -280,38 +312,38 @@ public class MaplatBridge extends Object {
         }
     }
 
-    public void addMarker(double latitude, double longitude, int markerId, int markerData) {
+    public void addMarker(double latitude, double longitude, long markerId, int markerData) {
         addMarker(latitude, longitude, markerId, markerData, null);
     }
-    public void addMarker(double latitude, double longitude, int markerId, int markerData, String iconUrl) {
+    public void addMarker(double latitude, double longitude, long markerId, int markerData, String iconUrl) {
         addMarkerInternal(latitude, longitude, markerId, markerData, iconUrl);
     }
-    public void addMarker(double latitude, double longitude, int markerId, double markerData) {
+    public void addMarker(double latitude, double longitude, long markerId, double markerData) {
         addMarker(latitude, longitude, markerId, markerData, null);
     }
-    public void addMarker(double latitude, double longitude, int markerId, double markerData, String iconUrl) {
+    public void addMarker(double latitude, double longitude, long markerId, double markerData, String iconUrl) {
         addMarkerInternal(latitude, longitude, markerId, markerData, iconUrl);
     }
-    public void addMarker(double latitude, double longitude, int markerId, String markerData) {
+    public void addMarker(double latitude, double longitude, long markerId, String markerData) {
         addMarker(latitude, longitude, markerId, markerData, null);
     }
-    public void addMarker(double latitude, double longitude, int markerId, String markerData, String iconUrl) {
+    public void addMarker(double latitude, double longitude, long markerId, String markerData, String iconUrl) {
         addMarkerInternal(latitude, longitude, markerId, markerData, iconUrl);
     }
-    public void addMarker(double latitude, double longitude, int markerId, ArrayList<Object> markerData) {
+    public void addMarker(double latitude, double longitude, long markerId, ArrayList<Object> markerData) {
         addMarker(latitude, longitude, markerId, markerData, null);
     }
-    public void addMarker(double latitude, double longitude, int markerId, ArrayList<Object> markerData, String iconUrl) {
+    public void addMarker(double latitude, double longitude, long markerId, ArrayList<Object> markerData, String iconUrl) {
         addMarkerInternal(latitude, longitude, markerId, markerData, iconUrl);
     }
-    public void addMarker(double latitude, double longitude, int markerId, HashMap<String, Object> markerData) {
+    public void addMarker(double latitude, double longitude, long markerId, HashMap<String, Object> markerData) {
         addMarker(latitude, longitude, markerId, markerData, null);
     }
-    public void addMarker(double latitude, double longitude, int markerId, HashMap<String, Object> markerData, String iconUrl) {
+    public void addMarker(double latitude, double longitude, long markerId, HashMap<String, Object> markerData, String iconUrl) {
         addMarkerInternal(latitude, longitude, markerId, markerData, iconUrl);
     }
 
-    private void addMarkerInternal(double latitude, double longitude, int markerId, Object markerData, String iconUrl) {
+    private void addMarkerInternal(double latitude, double longitude, long markerId, Object markerData, String iconUrl) {
         Map<String, Object> obj = new HashMap<String, Object>();
         try {
             obj.put("data", markerData);
@@ -470,6 +502,57 @@ public class MaplatBridge extends Object {
                     }
                 });
     }
+}
+class CustomizedObjectTypeAdapter extends TypeAdapter<Object> {
+    private final TypeAdapter<Object> delegate = new Gson().getAdapter(Object.class);
 
+    @Override
+    public void write(JsonWriter out, Object value) throws IOException {
+        delegate.write(out, value);
+    }
 
+    @Override
+    public Object read(JsonReader in) throws IOException {
+        JsonToken token = in.peek();
+        switch (token) {
+            case BEGIN_ARRAY:
+                List<Object> list = new ArrayList<Object>();
+                in.beginArray();
+                while (in.hasNext()) {
+                    list.add(read(in));
+                }
+                in.endArray();
+                return list;
+
+            case BEGIN_OBJECT:
+                Map<String, Object> map = new HashMap<String, Object>();
+                in.beginObject();
+                while (in.hasNext()) {
+                    map.put(in.nextName(), read(in));
+                }
+                in.endObject();
+                return map;
+
+            case STRING:
+                return in.nextString();
+
+            case NUMBER:
+                //return in.nextDouble();
+                String n = in.nextString();
+                if (n.indexOf('.') != -1) {
+                    return Double.parseDouble(n);
+                }
+                return Long.parseLong(n);
+
+            case BOOLEAN:
+                return in.nextBoolean();
+
+            case NULL:
+                in.nextNull();
+                return null;
+
+            default:
+                throw new IllegalStateException();
+        }
+    }
 }
