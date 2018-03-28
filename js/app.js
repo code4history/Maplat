@@ -782,21 +782,22 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
     MaplatApp.prototype.setMarker = function(data) {
         var app = this;
         app.logger.debug(data);
-        var lat = data.latitude;
-        var long = data.longitude;
+        var lnglat = data.lnglat || [data.lng || data.longitude, data.lat || data.latitude];
         var x = data.x;
         var y = data.y;
-        var src = app.mapObject.getSource();
+        var src = app.from;
         var promise = (x && y) ?
             new Promise(function(resolve) {
                 resolve(src.xy2HistMapCoords([x, y]));
             }):
             (function() {
-                var merc = ol.proj.transform([long, lat], 'EPSG:4326', 'EPSG:3857');
+                var merc = ol.proj.transform(lnglat, 'EPSG:4326', 'EPSG:3857');
                 return src.merc2XyAsync(merc);
             })();
         promise.then(function(xy) {
-            app.mapObject.setMarker(xy, {'datum': data}, data.icon);
+            if (src.insideCheckHistMapCoords(xy)) {
+                app.mapObject.setMarker(xy, {'datum': data}, data.icon);
+            }
         });
     };
 
@@ -924,30 +925,16 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                     to.goHome();
                 }
                 to.setGPSMarker(app.currentPosition, true);
-                app.mapObject.resetMarker();
+                app.resetMarker();
                 for (var i = 0; i < app.pois.length; i++) {
-                    (function(datum) {
-                        var lngLat = [datum.lng || datum.longitude, datum.lat || datum.latitude];
-                        var merc = ol.proj.transform(lngLat, 'EPSG:4326', 'EPSG:3857');
-
-                        to.merc2XyAsync(merc).then(function(xy) {
-                            if (to.insideCheckHistMapCoords(xy)) {
-                                app.mapObject.setMarker(xy, {'datum': datum}, datum.icon);
-                            }
-                        });
+                    (function(data) {
+                        app.setMarker(data);
                     })(app.pois[i]);
                 }
                 if (to.pois) {
                     for (var i = 0; i < to.pois.length; i++) {
-                        (function(datum) {
-                            var lngLat = [datum.lng, datum.lat];
-                            var merc = ol.proj.transform(lngLat, 'EPSG:4326', 'EPSG:3857');
-
-                            to.merc2XyAsync(merc).then(function(xy) {
-                                if (to.insideCheckHistMapCoords(xy)) {
-                                    app.mapObject.setMarker(xy, {'datum': datum}, datum.icon);
-                                }
-                            });
+                        (function(data) {
+                            app.setMarker(data);
                         })(to.pois[i]);
                     }
                 }
