@@ -45,7 +45,7 @@ public class MaplatBridge extends Object {
     Context mContext;
     WebView mWebView;
     Handler mHandler;
-    String mInitializeValue;
+    Map<String, Object> mInitializeValue;
     Gson mGson;
 
     public MaplatBridge(Context c, WebView w, Handler h, String appID, HashMap<String, Object> setting) {
@@ -140,7 +140,7 @@ public class MaplatBridge extends Object {
         if (setting != null) {
             obj.put("setting", setting);
         }
-        mInitializeValue = objectToJson(obj);
+        mInitializeValue = obj;
     }
 
     private Object normalizeObject(Object root) {
@@ -329,8 +329,7 @@ public class MaplatBridge extends Object {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        String value = objectToJson(obj);
-        callApp2Web("addMarker", value);
+        callApp2Web("addMarker", obj);
     }
 
     public void clearMarker() {
@@ -348,8 +347,7 @@ public class MaplatBridge extends Object {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        String value = objectToJson(obj);
-        callApp2Web("setGPSMarker", value);
+        callApp2Web("setGPSMarker", obj);
     }
 
     public void changeMap(String mapID) {
@@ -364,8 +362,7 @@ public class MaplatBridge extends Object {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        String value = objectToJson(obj);
-        callApp2Web("moveTo", value);
+        callApp2Web("moveTo", obj);
     }
 
     public void setDirection(double direction) {
@@ -376,8 +373,7 @@ public class MaplatBridge extends Object {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        String value = objectToJson(obj);
-        callApp2Web("moveTo", value);
+        callApp2Web("moveTo", obj);
     }
 
     public void setRotation(double rotate) {
@@ -388,8 +384,7 @@ public class MaplatBridge extends Object {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        String value = objectToJson(obj);
-        callApp2Web("moveTo", value);
+        callApp2Web("moveTo", obj);
     }
 
     public void addLine(ArrayList<ArrayList<Double>> lnglats, HashMap<String, Object> stroke) {
@@ -402,19 +397,19 @@ public class MaplatBridge extends Object {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        String value = objectToJson(obj);
-        callApp2Web("addLine", value);
+        callApp2Web("addLine", obj);
     }
 
     public void clearLine() {
         callApp2Web("clearLine", null);
     }
 
-    private void callApp2Web(final String key, final String data) {
+    private void callApp2Web(final String key, Object data) {
+        final String jsonStr = objectToJson(data);
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                mWebView.loadUrl("javascript:maplatBridge.callApp2Web('" + key + "','" + data + "');");
+                mWebView.loadUrl("javascript:maplatBridge.callApp2Web('" + key + "','" + jsonStr + "');");
             }
         });
     }

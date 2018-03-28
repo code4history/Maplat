@@ -13,7 +13,7 @@
 
 @property (nonatomic, strong) MaplatCache *cache;
 @property (nonatomic, strong) UIWebView *webView;
-@property (nonatomic, strong) NSString *initializeValue;
+@property (nonatomic, strong) NSDictionary *initializeValue;
 
 @end
 
@@ -37,8 +37,7 @@
         if (setting) {
             [jsonObj setValue:setting forKey:@"setting"];
         }
-        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonObj options:0 error:nil];
-        _initializeValue = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        _initializeValue = jsonObj;
     }
     return self;
 }
@@ -88,9 +87,20 @@
     }
 }
 
-- (void)callApp2WebWithKey:(NSString *)key value:(NSString *)value
+- (void)callApp2WebWithKey:(NSString *)key value:(id)value
 {
-    [_webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"javascript:maplatBridge.callApp2Web('%@','%@');", key, value]];
+    NSString* jsonStr;
+    if (value == nil) {
+        jsonStr = nil;
+    } else if ([value isKindOfClass:[NSString class]]) {
+        jsonStr = value;
+    } else if ([value isKindOfClass:[NSNumber class]]) {
+        jsonStr = [value stringValue];
+    } else {
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:value options:0 error:nil];
+        jsonStr = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    }
+    [_webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"javascript:maplatBridge.callApp2Web('%@','%@');", key, jsonStr]];
 }
 
 - (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(long)markerId stringData:(NSString *)markerData
@@ -144,10 +154,7 @@
     if ([iconUrl length] > 0) {
         [jsonObj setValue:iconUrl forKey:@"icon"];
     }
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonObj options:0 error:nil];
-    NSString *value = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-
-    [self callApp2WebWithKey:@"addMarker" value:value];
+    [self callApp2WebWithKey:@"addMarker" value:jsonObj];
 }
 
 - (void)clearMarker
@@ -161,9 +168,7 @@
     NSArray *Lnglat = @[[NSNumber numberWithDouble:longitude], [NSNumber numberWithDouble:latitude]];
     [jsonObj setValue:Lnglat forKey:@"lnglat"];
     [jsonObj setValue:[NSNumber numberWithDouble:accuracy] forKey:@"acc"];
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonObj options:0 error:nil];
-    NSString *value = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    [self callApp2WebWithKey:@"setGPSMarker" value:value];
+    [self callApp2WebWithKey:@"setGPSMarker" value:jsonObj];
 }
 
 - (void)changeMap:(NSString *)mapID
@@ -176,9 +181,7 @@
     NSMutableDictionary *jsonObj = [NSMutableDictionary new];
     [jsonObj setValue:[NSNumber numberWithDouble:longitude] forKey:@"longitude"];
     [jsonObj setValue:[NSNumber numberWithDouble:latitude] forKey:@"latitude"];
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonObj options:0 error:nil];
-    NSString *value = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    [self callApp2WebWithKey:@"moveTo" value:value];
+    [self callApp2WebWithKey:@"moveTo" value:jsonObj];
 }
 
 - (void)setDirection:(double)direction
@@ -186,9 +189,7 @@
     double dirRad = direction * M_PI / 180.0;
     NSMutableDictionary *jsonObj = [NSMutableDictionary new];
     [jsonObj setValue:[NSNumber numberWithDouble:dirRad] forKey:@"direction"];
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonObj options:0 error:nil];
-    NSString *value = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    [self callApp2WebWithKey:@"moveTo" value:value];
+    [self callApp2WebWithKey:@"moveTo" value:jsonObj];
 }
 
 - (void)setRotation:(double)rotate
@@ -196,9 +197,7 @@
     double rotRad = rotate * M_PI / 180.0;
     NSMutableDictionary *jsonObj = [NSMutableDictionary new];
     [jsonObj setValue:[NSNumber numberWithDouble:rotRad] forKey:@"rotate"];
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonObj options:0 error:nil];
-    NSString *value = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    [self callApp2WebWithKey:@"moveTo" value:value];
+    [self callApp2WebWithKey:@"moveTo" value:jsonObj];
 }
 
 - (void)addLineWithLngLat:(NSArray *)lnglats stroke:(NSDictionary *)stroke
@@ -208,9 +207,7 @@
     if (stroke) {
         [jsonObj setValue:stroke forKey:@"stroke"];
     }
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonObj options:0 error:nil];
-    NSString *value = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    [self callApp2WebWithKey:@"addLine" value:value];
+    [self callApp2WebWithKey:@"addLine" value:jsonObj];
 }
 
 - (void)clearLine
