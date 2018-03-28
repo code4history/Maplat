@@ -4,10 +4,13 @@ package jp.tilemap.maplatapptest;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
@@ -15,6 +18,19 @@ import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.Toast;
+
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,6 +48,22 @@ public class MainActivity extends Activity implements MaplatBridge.MaplatBridgeL
     public static Button button6 = null;
     private MaplatBridge mMaplatBridge;
     private String nowMap;
+
+    private FusedLocationProviderClient mFusedLocationClient;
+    private SettingsClient mSettingsClient;
+    private LocationRequest mLocationRequest;
+    private LocationSettingsRequest mLocationSettingsRequest;
+    private LocationCallback mLocationCallback;
+
+    /**
+     * Represents a geographical location.
+     */
+    private Location mCurrentLocation;
+
+    private double defaultLongitude = 0;
+    private double defaultLatitude = 0;
+    static private double baseLongitude = 141.1529555;
+    static private double baseLatitude = 39.7006006;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +97,11 @@ public class MainActivity extends Activity implements MaplatBridge.MaplatBridgeL
         } catch (Exception e) {
             e.printStackTrace();
         }
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        mSettingsClient = LocationServices.getSettingsClient(this);
+        createLocationCallback();
+        createLocationRequest();
+        buildLocationSettingsRequest();
 
         button1 = (Button)findViewById(R.id.button1);
         button1.setOnClickListener(new View.OnClickListener() {
@@ -133,6 +170,77 @@ public class MainActivity extends Activity implements MaplatBridge.MaplatBridgeL
         }
     }
 
+    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
+    private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = UPDATE_INTERVAL_IN_MILLISECONDS / 2;
+
+    private void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
+        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+    private void createLocationCallback() {
+        mLocationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                super.onLocationResult(locationResult);
+                mCurrentLocation = locationResult.getLastLocation();
+                double latitude;
+                double longitude;
+                if (defaultLatitude == 0 || defaultLongitude == 0) {
+                    defaultLatitude = mCurrentLocation.getLatitude();
+                    defaultLongitude = mCurrentLocation.getLongitude();
+                    latitude = baseLatitude;
+                    longitude = baseLongitude;
+                } else {
+                    latitude = baseLatitude - defaultLatitude + mCurrentLocation.getLatitude();
+                    longitude = baseLongitude - defaultLongitude + mCurrentLocation.getLongitude();
+                }
+                mMaplatBridge.setGPSMarker(latitude, longitude, mCurrentLocation.getAccuracy());
+            }
+        };
+    }
+
+    private void buildLocationSettingsRequest() {
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
+        builder.addLocationRequest(mLocationRequest);
+        mLocationSettingsRequest = builder.build();
+    }
+
+    public void startLocationUpdates() {
+        final Context mContext = this;
+        mSettingsClient.checkLocationSettings(mLocationSettingsRequest)
+                .addOnSuccessListener(this, new OnSuccessListener<LocationSettingsResponse>() {
+                    @Override
+                    public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+                        Log.i("MaplatBridge", "All location settings are satisfied.");
+
+                        //noinspection MissingPermission
+                        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            return;
+                        }
+                        mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
+                    }
+                })
+                .addOnFailureListener(this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        int statusCode = ((ApiException) e).getStatusCode();
+                        switch (statusCode) {
+                            case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                                Log.i("MaplatBridge", "Location settings are not satisfied. Attempting to upgrade location settings.");
+                                break;
+                            case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                                String errorMessage = "Location settings are inadequate, and cannot be fixed here. Fix in Settings.";
+                                Log.e("MaplatBridge", errorMessage);
+                                Toast.makeText(mContext, errorMessage, Toast.LENGTH_LONG).show();
+                                break;
+                        }
+                    }
+                });
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_PERMISSION) {
@@ -146,7 +254,7 @@ public class MainActivity extends Activity implements MaplatBridge.MaplatBridgeL
     @Override
     public void onReady() {
         addMarkers();
-        mMaplatBridge.startLocationUpdates();
+        startLocationUpdates();
     }
 
     @Override

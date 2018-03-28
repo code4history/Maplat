@@ -11,12 +11,18 @@
 #import <CoreLocation/CoreLocation.h>
 #import "MaplatBridge.h"
 
+const double BaseLongitude = 141.1529555;
+const double BaseLatitude = 39.7006006;
+
 @interface ViewController () <CLLocationManagerDelegate, MaplatBridgeDelegate>
 
 @property (nonatomic, strong) CLLocationManager *locationManager;
 @property (retain, nonatomic) NSString *nowMap;
 
 @property (nonatomic, strong) MaplatBridge *maplatBridge;
+
+@property (nonatomic) double defaultLongitude;
+@property (nonatomic) double defaultLatitude;
 
 @end
 
@@ -73,6 +79,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     [NSThread sleepForTimeInterval:10]; //Safariのデバッガを繋ぐための時間。本番では不要。
+    _defaultLongitude = 0;
+    _defaultLatitude = 0;
     
     _maplatBridge = [[MaplatBridge alloc] initWithWebView:self.webView appID:@"mobile" setting:@{
         @"app_name" : @"モバイルアプリ",
@@ -153,8 +161,20 @@
     if (locationAge > 5.0) return;
     
     NSLog(@"location updated. newLocation:%@", newLocation);
+
+    double latitude;
+    double longitude;
+    if (_defaultLatitude == 0 || _defaultLongitude == 0) {
+        _defaultLatitude = newLocation.coordinate.latitude;
+        _defaultLongitude = newLocation.coordinate.longitude;
+        latitude = BaseLatitude;
+        longitude = BaseLongitude;
+    } else {
+        latitude = BaseLatitude - _defaultLatitude + newLocation.coordinate.latitude;
+        longitude = BaseLongitude - _defaultLongitude + newLocation.coordinate.longitude;
+    }
     
-    [_maplatBridge setGPSMarkerWithLatitude:newLocation.coordinate.latitude longitude:newLocation.coordinate.longitude accuracy:newLocation.horizontalAccuracy];
+    [_maplatBridge setGPSMarkerWithLatitude:latitude longitude:longitude accuracy:newLocation.horizontalAccuracy];
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {

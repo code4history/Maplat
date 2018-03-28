@@ -26,29 +26,35 @@ maplatBridge.callApp2Web = function (key, data) {
     try {
         data = JSON.parse(data);
     } catch (e) {}
-    if (key == 'maplatInitialize') {
-        data.mobile_if = true;
-        Maplat.createObject(data).then(function(app_) {
-            app = app_;
-            maplatBridge.callWeb2App('ready', 'maplatObject');
-            app.addEventListener('clickMarker', function(evt) {
-                maplatBridge.callWeb2App('clickMarker', JSON.stringify(evt.detail));
+    switch (key) {
+        case 'maplatInitialize':
+            data.mobile_if = true;
+            Maplat.createObject(data).then(function(app_) {
+                app = app_;
+                maplatBridge.callWeb2App('ready', 'maplatObject');
+                app.addEventListener('clickMarker', function(evt) {
+                    maplatBridge.callWeb2App('clickMarker', JSON.stringify(evt.detail));
+                });
+                app.addEventListener('changeViewpoint', function(evt) {
+                    maplatBridge.callWeb2App('changeViewpoint', JSON.stringify(evt.detail));
+                });
+                app.addEventListener('outOfMap', function(evt) {
+                    maplatBridge.callWeb2App('outOfMap', JSON.stringify(evt.detail));
+                });
+                app.addEventListener('clickMap', function(evt) {
+                    maplatBridge.callWeb2App('clickMap', JSON.stringify(evt.detail));
+                });
             });
-            app.addEventListener('changeViewpoint', function(evt) {
-                maplatBridge.callWeb2App('changeViewpoint', JSON.stringify(evt.detail));
-            });
-            app.addEventListener('outOfMap', function(evt) {
-                maplatBridge.callWeb2App('outOfMap', JSON.stringify(evt.detail));
-            });
-            app.addEventListener('clickMap', function(evt) {
-                maplatBridge.callWeb2App('clickMap', JSON.stringify(evt.detail));
-            });
-        });
-    } else if (app) {
-        var func = app[key];
-        if (func) {
-            func.call(app, data);
-        }
+            break;
+        case 'setGPSMarker':
+        default:
+            if (app) {
+                var func = app[key];
+                if (func) {
+                    func.call(app, data);
+                }
+            }
+            break;
     }
 };
 maplatBridge.callWeb2App('ready', 'callApp2Web');

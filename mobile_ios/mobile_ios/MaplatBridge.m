@@ -158,9 +158,9 @@
 - (void)setGPSMarkerWithLatitude:(double)latitude longitude:(double)longitude accuracy:(double)accuracy
 {
     NSMutableDictionary *jsonObj = [NSMutableDictionary new];
-    [jsonObj setValue:[NSNumber numberWithDouble:longitude] forKey:@"longitude"];
-    [jsonObj setValue:[NSNumber numberWithDouble:latitude] forKey:@"latitude"];
-    [jsonObj setValue:[NSNumber numberWithDouble:accuracy] forKey:@"accuracy"];
+    NSArray *Lnglat = @[[NSNumber numberWithDouble:longitude], [NSNumber numberWithDouble:latitude]];
+    [jsonObj setValue:Lnglat forKey:@"lnglat"];
+    [jsonObj setValue:[NSNumber numberWithDouble:accuracy] forKey:@"acc"];
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonObj options:0 error:nil];
     NSString *value = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     [self callApp2WebWithKey:@"setGPSMarker" value:value];

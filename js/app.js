@@ -841,16 +841,9 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
         this.resetLine();
     };
 
-    MaplatApp.prototype.setGPSMarker = function(data) {
-        var lnglat = [data.longitude, data.latitude];
-        var acc = data.accuracy;
-        var gpsVal = {lnglat: lnglat, acc: acc};
-
-        var app = this;
-
-        // alert("app:" + app + " mapObject:" + app.mapObject );
-
-        app.mapObject.setGPSMarker(gpsVal, true);
+    MaplatApp.prototype.setGPSMarker = function(position) {
+        this.currentPosition = position;
+        this.mapObject.setGPSMarker(position, true);
     };
 
     MaplatApp.prototype.changeMap = function(sourceID) {

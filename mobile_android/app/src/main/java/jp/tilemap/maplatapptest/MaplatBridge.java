@@ -1,14 +1,7 @@
 package jp.tilemap.maplatapptest;
 
-import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Handler;
-import android.os.Looper;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.ConsoleMessage;
@@ -18,20 +11,7 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Toast;
 
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResponse;
-import com.google.android.gms.location.LocationSettingsStatusCodes;
-import com.google.android.gms.location.SettingsClient;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
@@ -68,17 +48,6 @@ public class MaplatBridge extends Object {
     String mInitializeValue;
     Gson mGson;
 
-    private FusedLocationProviderClient mFusedLocationClient;
-    private SettingsClient mSettingsClient;
-    private LocationRequest mLocationRequest;
-    private LocationSettingsRequest mLocationSettingsRequest;
-    private LocationCallback mLocationCallback;
-
-    /**
-     * Represents a geographical location.
-     */
-    private Location mCurrentLocation;
-
     public MaplatBridge(Context c, WebView w, Handler h, String appID, HashMap<String, Object> setting) {
         this(c, w, h, null, appID, setting);
     }
@@ -96,12 +65,6 @@ public class MaplatBridge extends Object {
                 .registerTypeHierarchyAdapter(Long.class, adapter)
                 .registerTypeHierarchyAdapter(String.class, adapter)
                 .create();
-
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(c);
-        mSettingsClient = LocationServices.getSettingsClient(c);
-        createLocationCallback();
-        createLocationRequest();
-        buildLocationSettingsRequest();
 
         //リンクをタップしたときに標準ブラウザを起動させない
         mWebView.setWebViewClient(new WebViewClient() {
@@ -374,10 +337,12 @@ public class MaplatBridge extends Object {
 
     public void setGPSMarker(double latitude, double longitude, double accuracy) {
         Map<String, Object> obj = new HashMap<String, Object>();
+        List<Double> lnglat = new ArrayList<Double>();
         try {
-            obj.put("longitude", longitude);
-            obj.put("latitude", latitude);
-            obj.put("accuracy", accuracy);
+            lnglat.add(longitude);
+            lnglat.add(latitude);
+            obj.put("lnglat", lnglat);
+            obj.put("acc", accuracy);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -450,65 +415,6 @@ public class MaplatBridge extends Object {
                 mWebView.loadUrl("javascript:maplatBridge.callApp2Web('" + key + "','" + data + "');");
             }
         });
-    }
-
-    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
-    private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = UPDATE_INTERVAL_IN_MILLISECONDS / 2;
-
-    private void createLocationRequest() {
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
-        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-    }
-
-    private void createLocationCallback() {
-        mLocationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                super.onLocationResult(locationResult);
-                mCurrentLocation = locationResult.getLastLocation();
-                setGPSMarker(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), mCurrentLocation.getAccuracy());
-            }
-        };
-    }
-
-    private void buildLocationSettingsRequest() {
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
-        builder.addLocationRequest(mLocationRequest);
-        mLocationSettingsRequest = builder.build();
-    }
-
-    public void startLocationUpdates() {
-        mSettingsClient.checkLocationSettings(mLocationSettingsRequest)
-                .addOnSuccessListener((Activity) mContext, new OnSuccessListener<LocationSettingsResponse>() {
-                    @Override
-                    public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-                        Log.i("MaplatBridge", "All location settings are satisfied.");
-
-                        //noinspection MissingPermission
-                        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                            return;
-                        }
-                        mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
-                    }
-                })
-                .addOnFailureListener((Activity)mContext, new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        int statusCode = ((ApiException) e).getStatusCode();
-                        switch (statusCode) {
-                            case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                                Log.i("MaplatBridge", "Location settings are not satisfied. Attempting to upgrade location settings.");
-                                break;
-                            case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                                String errorMessage = "Location settings are inadequate, and cannot be fixed here. Fix in Settings.";
-                                Log.e("MaplatBridge", errorMessage);
-                                Toast.makeText(mContext, errorMessage, Toast.LENGTH_LONG).show();
-                                break;
-                        }
-                    }
-                });
     }
 }
 
