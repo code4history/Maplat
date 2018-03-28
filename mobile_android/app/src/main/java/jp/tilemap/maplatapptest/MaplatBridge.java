@@ -316,10 +316,12 @@ public class MaplatBridge extends Object {
 
     private void addMarkerInternal(double latitude, double longitude, long markerId, Object markerData, String iconUrl) {
         Map<String, Object> obj = new HashMap<String, Object>();
+        List<Double> lnglat = new ArrayList<Double>();
         try {
+            lnglat.add(longitude);
+            lnglat.add(latitude);
+            obj.put("lnglat", lnglat);
             obj.put("data", markerData);
-            obj.put("longitude", longitude);
-            obj.put("latitude", latitude);
             obj.put("id", markerId);
             if (!TextUtils.isEmpty(iconUrl)) {
                 obj.put("icon", iconUrl);

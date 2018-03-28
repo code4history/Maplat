@@ -137,8 +137,8 @@
 - (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(long)markerId markerData:(id)markerData iconUrl:(NSString *)iconUrl
 {
     NSMutableDictionary *jsonObj = [NSMutableDictionary new];
-    [jsonObj setValue:[NSNumber numberWithDouble:longitude] forKey:@"longitude"];
-    [jsonObj setValue:[NSNumber numberWithDouble:latitude] forKey:@"latitude"];
+    NSArray *Lnglat = @[[NSNumber numberWithDouble:longitude], [NSNumber numberWithDouble:latitude]];
+    [jsonObj setValue:Lnglat forKey:@"lnglat"];
     [jsonObj setValue:[NSNumber numberWithLong:markerId] forKey:@"id"];
     [jsonObj setValue:markerData forKey:@"data"];
     if ([iconUrl length] > 0) {
