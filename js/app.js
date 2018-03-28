@@ -938,16 +938,10 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                         })(to.pois[i]);
                     }
                 }
-                app.mapObject.resetLine();
+                app.resetLine();
                 for (var i = 0; i < app.lines.length; i++) {
-                    (function(datum) {
-                        var xyPromises = datum.lnglats.map(function(lnglat){
-                            var merc = ol.proj.transform(lnglat, 'EPSG:4326', 'EPSG:3857');
-                            return to.merc2XyAsync(merc);
-                        });
-                        Promise.all(xyPromises).then(function(xys){
-                            app.mapObject.setLine(xys, datum.stroke);
-                        });
+                    (function(data) {
+                        app.setLine(data);
                     })(app.lines[i]);
                 }
 
