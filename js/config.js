@@ -63,7 +63,7 @@ require.config({
         'i18n': 'i18next.min', //10.6.0
         'turf': 'turf_maplat.min', //4.7.3
         'swiper': 'swiper.min', //4.2.0
-        'bootstrap': 'bootstrap-native',
+        'bootstrap': 'bootstrap-native.min', //2.0.22
         'mapshaper': 'mapshaper_maplat',
         'resize': 'detect-element-resize'
     },
