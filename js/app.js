@@ -152,6 +152,12 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
             lang = browserLanguage();
         }
         var setting = appOption.setting;
+        var pwa_manifest = appOption.pwa_manifest || "./pwa/" + appid +"_manifest.json";
+        var pwa_worker = appOption.pwa_worker || "./service-worker.js";
+        var pwa_appleicon = appOption.pwa_appleicon || {default: "./pwa/" + appid + "_icon.png"};
+        if (pwa_appleicon instanceof String) {
+            pwa_appleicon = {default: pwa_appleicon};
+        }
 
         // Add UI HTML Element
         var newElems = createElement('<div class="ol-control map-title"><span></span></div>' +
@@ -346,6 +352,29 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
         });
 
         var promises = Promise.all([i18nPromise, appPromise]);
+
+        // PWA対応: 非同期処理
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', pwa_manifest, true);
+
+        xhr.onload = function(e) {
+            // 有無をチェックしているだけなのでデータは使わない
+            var head = document.querySelector('head');
+            head.appendChild((createElement('<link rel="manifest" href="' + pwa_manifest + '">'))[0]);
+            // service workerが有効なら、service-worker.js を登録します
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register(pwa_worker).then(function() {
+                    console.log('Service Worker Registered');
+                });
+            }
+            Object.keys(pwa_appleicon).forEach(function(key) {
+                var value = pwa_appleicon[key];
+                var sizes = key == 'default' ? '' : ' sizes="' + key + '"';
+                var tag = '<link rel="apple-touch-icon"' + sizes + ' href="' + value + '">';
+                head.appendChild((createElement(tag))[0]);
+            });
+        };
+        xhr.send();
 
         app.waitReady = promises.then(function(result) {
             app.appData = result[1];

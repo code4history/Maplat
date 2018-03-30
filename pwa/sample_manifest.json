@@ -3,22 +3,22 @@
   "short_name": "Maplat PWA",
   "background_color": "#fc980c",
   "icons": [{
-    "src": "/Maplat/pwa/icon-96.png",
+    "src": "./sample_icon-96.png",
     "sizes": "96x96",
     "type": "image/png"
   },{
-    "src": "/Maplat/pwa/icon-144.png",
+    "src": "./sample_icon-144.png",
     "sizes": "144x144",
     "type": "image/png"
   },{
-    "src": "/Maplat/pwa/icon-192.png",
+    "src": "./sample_icon-192.png",
     "sizes": "192x192",
     "type": "image/png"
   },{
-    "src": "/Maplat/pwa/icon-256.png",
+    "src": "./sample_icon.png",
     "sizes": "256x256",
     "type": "image/png"
   }],
-  "start_url": "/Maplat/debug.html?overlay=true",
+  "start_url": "../debug.html?overlay=true",
   "display": "standalone"
 }
