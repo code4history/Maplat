@@ -16,7 +16,6 @@
     </div>
   </div>
 </body>
-<!--script src="https://www.promisejs.org/polyfills/promise-6.1.0.min.js"></script-->
 <script src="js/aigle-es5.min.js"></script>
 <script src="js/require.min.js"></script>
 <script src="js/config.js"></script>
@@ -32,5 +31,16 @@
             console.log(evt);
         });
     });
+</script>
+<script>
+    var tmp = document.createDocumentFragment().appendChild( document.createElement('div'));
+    tmp.innerHTML = "<link rel=\"manifest\" href=\"./pwa/manifest.json\">";
+    document.querySelector('head').appendChild(tmp.childNodes[0]);
+    tmp.innerHTML = "<link rel=\"apple-touch-icon\" href=\"/Maplat/pwa/icon-144.png\">";
+    document.querySelector('head').appendChild(tmp.childNodes[0]);
+    // service workerが有効なら、service-worker.js を登録します
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./service-worker.js').then(function() { console.log('Service Worker Registered'); });
+    }
 </script>
 </html>

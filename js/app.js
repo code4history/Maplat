@@ -469,14 +469,8 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
             }
             if (!noUI) {
                 var shown = false;
-                app.mapObject.on('gps_request', function() {
-                    shown = true;
-                    var gwModalElm = app.mapDivDocument.querySelector('#gpsWait');
-                    var gwModal = new bsn.Modal(gwModalElm);
-                    gwModal.show();
-                });
-                app.mapObject.on('gps_result', function(evt) {
-                    var result = evt.frameState;
+                var gpsWaitPromise = null;
+                function showGPSresult(result) {
                     if (result && result.error) {
                         app.currentPosition = null;
                         if (result.error == 'gps_out' && shown) {
@@ -499,6 +493,37 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                         var gwModal = new bsn.Modal(gwModalElm);
                         gwModal.hide();
                     }
+                }
+                app.mapObject.on('gps_request', function() {
+                    gpsWaitPromise = 'gps_request';
+                    var promises = [
+                        new Promise(function(resolve) {
+                            if (gpsWaitPromise != 'gps_request') {
+                                resolve(gpsWaitPromise);
+                            } else gpsWaitPromise = resolve;
+                        })
+                    ];
+                    shown = true;
+                    var gwModalElm = app.mapDivDocument.querySelector('#gpsWait');
+                    var gwModal = new bsn.Modal(gwModalElm);
+                    gwModal.show();
+                    // 200m秒以上最低待たないと、Modalがうまく動かない場合がある
+                    promises.push(new Promise(function(resolve) {
+                        setTimeout(resolve, 200);
+                    }));
+                    Promise.all(promises).then(function(results) {
+                        showGPSresult(results[0]);
+                    });
+                });
+                app.mapObject.on('gps_result', function(evt) {
+                    if (gpsWaitPromise == 'gps_request') {
+                        gpsWaitPromise = evt.frameState;
+                    } else if (gpsWaitPromise) {
+                        gpsWaitPromise(evt.frameState);
+                        gpsWaitPromise = null;
+                    } else if (!shown) {
+                        showGPSresult(evt.frameState);
+                    }
                 });
                 if (fakeGps) {
                     var newElem = createElement(sprintf(app.t('app.fake_explanation'), app.translate(fakeCenter), fakeRadius))[0];
@@ -517,13 +542,14 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
 
             var dataSource = app.appData.sources;
 
-            var sourcePromise = splash ? [
+            var fadeTime = splash ? 1000 : 200;
+            var sourcePromise = noUI ? [] : [
                 new Promise(function(resolve) {
                     setTimeout(function() {
                         resolve();
-                    }, 1000);
+                    }, fadeTime);
                 })
-            ] :[];
+            ];
             var commonOption = {
                 home_position: homePos,
                 merc_zoom: defZoom,
@@ -535,16 +561,13 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
             }
 
             return Promise.all(sourcePromise).then(function(sources) {
-                if (splash) {
-                    sources.shift();
-                }
-
                 app.mercSrc = sources.reduce(function(prev, curr) {
                     if (prev) return prev;
                     if (curr instanceof ol.source.NowMap) return curr;
                 }, null);
 
                 if (!noUI) {
+                    sources.shift();
                     var lwModalElm = app.mapDivDocument.querySelector('#loadWait');
                     var lwModal = new bsn.Modal(lwModalElm);
                     lwModal.hide();

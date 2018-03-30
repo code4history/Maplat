@@ -154,6 +154,15 @@ html,body {
     left: calc(50% + 88px)
 }
 
+@media screen and (display-mode: standalone) and (width: 375px) and (height: 768px),
+  screen and (display-mode: standalone) and (width: 724px) and (height: 375px),
+  screen and (display-mode: fullscreen) and (width: 375px) and (height: 768px),
+  screen and (display-mode: fullscreen) and (width: 724px) and (height: 375px) {
+    .swiper-container {
+        bottom: calc(.5em + 21px);
+    }
+}
+
 @media screen and (max-width: 640px) {
     .swiper-container {
         width: 35%;
@@ -271,6 +280,19 @@ html,body {
     bottom: calc(65px + .5em);
 }
 
+@media screen and (display-mode: standalone) and (width: 375px) and (height: 768px),
+  screen and (display-mode: standalone) and (width: 724px) and (height: 375px),
+  screen and (display-mode: fullscreen) and (width: 375px) and (height: 768px),
+  screen and (display-mode: fullscreen) and (width: 724px) and (height: 375px) {
+    .ol-attribution {
+        bottom: calc(.5em + 86px);
+    }
+
+    .ol-maplat {
+        bottom: calc(.5em + 86px);
+    }
+}
+
 .ol-compass-fa {
     -webkit-transform: rotate(-33deg);
     -o-transform: rotate(-33deg);
@@ -318,6 +340,15 @@ html,body {
     height: 25px;
     padding: 0;
     border: 1px solid #dddddd;
+}
+
+@media screen and (display-mode: standalone) and (width: 375px) and (height: 768px),
+  screen and (display-mode: standalone) and (width: 724px) and (height: 375px),
+  screen and (display-mode: fullscreen) and (width: 375px) and (height: 768px),
+  screen and (display-mode: fullscreen) and (width: 724px) and (height: 375px) {
+    .with-opacity .ol-slidercommon {
+        bottom: calc(.5em + 21px);
+    }
 }
 
 @media screen and (max-width: 640px) {
