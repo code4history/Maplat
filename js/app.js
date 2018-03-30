@@ -377,14 +377,14 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                         }
                     },
                     centeredSlides: true,
-                    loop: true,
-                    onClick: function(sw, e) {
-                        e.preventDefault();
-                        if (!sw.clickedSlide) return;
-                        var slide = sw.clickedSlide;
-                        app.changeMap(slide.getAttribute('data'));
-                        sw.setSlideIndexAsSelected(slide.getAttribute('data-swiper-slide-index'));
-                    }
+                    loop: true
+                });
+                baseSwiper.on('click', function(e) {
+                    e.preventDefault();
+                    if (!baseSwiper.clickedSlide) return;
+                    var slide = baseSwiper.clickedSlide;
+                    app.changeMap(slide.getAttribute('data'));
+                    baseSwiper.setSlideIndexAsSelected(slide.getAttribute('data-swiper-slide-index'));
                 });
                 overlaySwiper = new Swiper('.overlay-swiper', {
                     slidesPerView: 2,
@@ -397,14 +397,14 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                         }
                     },
                     centeredSlides: true,
-                    loop: true,
-                    onClick: function(sw, e) {
-                        e.preventDefault();
-                        if (!sw.clickedSlide) return;
-                        var slide = sw.clickedSlide;
-                        app.changeMap(slide.getAttribute('data'));
-                        sw.setSlideIndexAsSelected(slide.getAttribute('data-swiper-slide-index'));
-                    }
+                    loop: true
+                });
+                overlaySwiper.on('click', function(e) {
+                    e.preventDefault();
+                    if (!overlaySwiper.clickedSlide) return;
+                    var slide = overlaySwiper.clickedSlide;
+                    app.changeMap(slide.getAttribute('data'));
+                    overlaySwiper.setSlideIndexAsSelected(slide.getAttribute('data-swiper-slide-index'));
                 });
                 app.mapDivDocument.querySelector('.map-title').addEventListener('click', function() {
                     var from = app.mapObject.getSource();

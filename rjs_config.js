@@ -10,7 +10,7 @@
         'swiper': 'swiper.min',
         'ol3': 'ol-debug',
         'ol-custom': 'ol-custom',
-        'bootstrap': 'bootstrap-native',
+        'bootstrap': 'bootstrap-native.min',
         'mapshaper': 'mapshaper_maplat',
         'resize': 'detect-element-resize'
     },
