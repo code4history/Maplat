@@ -7,27 +7,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
   <link rel="stylesheet" href="css/app.css">
   <style>
-    .h80p {
-      padding-top: 10%;
-      padding-bottom: 10%;
-      height:80%;
-    }
-
-    .w80p {
-      padding-right: 10%;
-      padding-left: 10%;
-      width:80%;
+    .mainview {
+        position: absolute;
+        top: 5%;
+        bottom: 5%;
+        left: 5%;
+        right: 5%;
     }
   </style>
 </head>
 <body>
-  <div class="container-fluid h100p w100p">
-    <div id="all" class="row-fluid h100p">
-      <div class="row-fluid mainview">
-        <div id="map_div" class="h80p w80p"></div>
-      </div>
+    <div class="mainview">
+        <div id="map_div"></div>
     </div>
-  </div>
 </body>
 <script src="js/require.min.js"></script>
 <script src="js/config.js"></script>
