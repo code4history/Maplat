@@ -6,15 +6,20 @@
   <meta content="yes" name="apple-mobile-web-app-capable">
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
   <link rel="stylesheet" href="css/app.css">
+  <style>
+    .mainview {
+        position: absolute;
+        top: 0px;
+        bottom: 0px;
+        left: 0px;
+        right: 0px;
+    }
+  </style>
 </head>
 <body>
-  <div class="container-fluid h100p w100p">
-    <div id="all" class="row-fluid h100p">
-      <div class="row-fluid mainview">
-        <div id="map_div" class="h100p w100p"></div>
-      </div>
-    </div> 
-  </div>
+    <div class="mainview">
+        <div id="map_div"></div>
+    </div>
 </body>
 <script src="js/maplat.js"></script>
 <script>
