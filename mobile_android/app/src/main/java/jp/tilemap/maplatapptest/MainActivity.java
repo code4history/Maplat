@@ -48,6 +48,8 @@ public class MainActivity extends Activity implements MaplatBridge.MaplatBridgeL
     public static Button button6 = null;
     private MaplatBridge mMaplatBridge;
     private String nowMap;
+    private double nowDirection;
+    private double nowRotation;
 
     private FusedLocationProviderClient mFusedLocationClient;
     private SettingsClient mSettingsClient;
@@ -80,6 +82,8 @@ public class MainActivity extends Activity implements MaplatBridge.MaplatBridgeL
         myWebView.setWebContentsDebuggingEnabled(true);
 
         nowMap = "morioka_ndl";
+        nowDirection = 0;
+        nowRotation = 0;
 
         try {
             mMaplatBridge = new MaplatBridge(this, myWebView, new Handler(), this, "mobile",
@@ -142,7 +146,22 @@ public class MainActivity extends Activity implements MaplatBridge.MaplatBridgeL
         button5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mMaplatBridge.setDirection(-90);
+                double nextDirection;
+                if (nowDirection == 0) {
+                    nextDirection = -90;
+                    button5.setText("南を上");
+                } else if (nowDirection == -90) {
+                    nextDirection = 180;
+                    button5.setText("西を上");
+                } else if (nowDirection == 180) {
+                    nextDirection = 90;
+                    button5.setText("北を上");
+                } else {
+                    nextDirection = 0;
+                    button5.setText("東を上");
+                }
+                mMaplatBridge.setDirection(nextDirection);
+                nowDirection = nextDirection;
             }
         });
 
@@ -150,7 +169,22 @@ public class MainActivity extends Activity implements MaplatBridge.MaplatBridgeL
         button6.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mMaplatBridge.setRotation(-90);
+                double nextRotation;
+                if (nowRotation == 0) {
+                    nextRotation = -90;
+                    button6.setText("下を上");
+                } else if (nowRotation == -90) {
+                    nextRotation = 180;
+                    button6.setText("左を上");
+                } else if (nowRotation == 180) {
+                    nextRotation = 90;
+                    button6.setText("上を上");
+                } else {
+                    nextRotation = 0;
+                    button6.setText("右を上");
+                }
+                mMaplatBridge.setRotation(nextRotation);
+                nowRotation = nextRotation;
             }
         });
     }

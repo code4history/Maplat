@@ -18,6 +18,8 @@ const double BaseLatitude = 39.7006006;
 
 @property (nonatomic, strong) CLLocationManager *locationManager;
 @property (retain, nonatomic) NSString *nowMap;
+@property (nonatomic) double nowDirection;
+@property (nonatomic) double nowRotation;
 
 @property (nonatomic, strong) MaplatBridge *maplatBridge;
 
@@ -38,6 +40,8 @@ const double BaseLatitude = 39.7006006;
     self.view = self.webView;
     
     self.nowMap = @"morioka_ndl";
+    self.nowDirection = 0;
+    self.nowRotation = 0;
     
     // テストボタンの生成
     for (int i=1; i<=6; i++) {
@@ -189,6 +193,8 @@ const double BaseLatitude = 39.7006006;
 // テストボタン　アクション
 - (void)testButton:(UIButton *) button {
     NSString *nextMap;
+    double nextDirection;
+    double nextRotation;
     switch((int)button.tag) {
         case 1:
             nextMap = [self.nowMap isEqualToString:@"morioka_ndl"] ? @"gsi" : @"morioka_ndl";
@@ -206,10 +212,38 @@ const double BaseLatitude = 39.7006006;
             [_maplatBridge setViewpointWithLatitude:39.69994722 longitude:141.1501111];
             break;
         case 5:
-            [_maplatBridge setDirection:-90];
+            if (_nowDirection == 0) {
+                nextDirection = -90;
+                [button setTitle:@"南を上" forState:UIControlStateNormal];
+            } else if (_nowDirection == -90) {
+                nextDirection = 180;
+                [button setTitle:@"西を上" forState:UIControlStateNormal];
+            } else if (_nowDirection == 180) {
+                nextDirection = 90;
+                [button setTitle:@"北を上" forState:UIControlStateNormal];
+            } else {
+                nextDirection = 0;
+                [button setTitle:@"東を上" forState:UIControlStateNormal];
+            }
+            [_maplatBridge setDirection:nextDirection];
+            _nowDirection = nextDirection;
             break;
         case 6:
-            [_maplatBridge setRotation:-90];
+            if (_nowRotation == 0) {
+                nextRotation = -90;
+                [button setTitle:@"下を上" forState:UIControlStateNormal];
+            } else if (_nowRotation == -90) {
+                nextRotation = 180;
+                [button setTitle:@"左を上" forState:UIControlStateNormal];
+            } else if (_nowRotation == 180) {
+                nextRotation = 90;
+                [button setTitle:@"上を上" forState:UIControlStateNormal];
+            } else {
+                nextRotation = 0;
+                [button setTitle:@"右を上" forState:UIControlStateNormal];
+            }
+            [_maplatBridge setRotation:nextRotation];
+            _nowRotation = nextRotation;
             break;
     }
 }

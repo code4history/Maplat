@@ -568,7 +568,7 @@ define(['ol3', 'resize'], function(ol, addResizeListener) {
             self.size2MercsAsync().then(function(mercs){
                 return self.mercs2MercSizeAsync(mercs);
             }).then(function(mercSize){
-                var mercs = self.mercsFromGivenMercZoom(merc || mercSize[0], mercZoom || mercSize[1], direction || mercSize[2]);
+                var mercs = self.mercsFromGivenMercZoom(merc || mercSize[0], mercZoom || mercSize[1], direction != null ? direction : mercSize[2]);
                 self.mercs2SizeAsync(mercs).then(function(size) {
                     if (merc != null) {
                         view.setCenter(size[0]);
