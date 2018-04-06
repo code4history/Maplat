@@ -24,7 +24,7 @@ gulp.task('server', function(){
     }).unref();
 });
 
-gulp.task('build', ['create_example'], function() {
+gulp.task('build', ['create_example', 'css_build'], function() {
     fs.removeSync('./example');
 });
 
@@ -78,4 +78,16 @@ gulp.task('concat_promise', ['build_withoutpromise'], function() {
 gulp.task('build_withoutpromise', function() {
     var cmd = isWin ? 'r.js.cmd' : 'r.js';
     execSync(cmd + ' -o rjs_config.js');
+});
+
+gulp.task('less', function() {
+    var lesses = ['ol', 'font-awesome', 'bootstrap', 'swiper', 'app'];
+    lesses.map(function(less) {
+        execSync('lessc -x css/' + less + '.less > css/' + less + '.css');
+    });
+});
+
+gulp.task('css_build', ['less'], function() {
+    var cmd = isWin ? 'r.js.cmd' : 'r.js';
+    execSync(cmd + ' -o cssIn=css/app.css out=css/maplat.css');
 });
