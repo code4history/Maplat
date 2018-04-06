@@ -140,6 +140,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
         app.mobileIF = false;
         app.mapDiv = appOption.div || 'map_div';
         app.mapDivDocument = document.querySelector('#' + app.mapDiv);
+        app.mapDivDocument.classList.add('maplat');
         var noUI = appOption.no_ui || false;
         if (appOption.mobile_if) {
             app.mobileIF = true;
