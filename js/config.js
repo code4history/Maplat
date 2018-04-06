@@ -63,7 +63,7 @@ require.config({
         'i18n': 'i18next.min', //10.6.0
         'turf': 'turf_maplat.min', //4.7.3
         'swiper': 'swiper.min', //4.2.0
-        'bootstrap': 'modal-native', //2.0.23
+        'bootstrap': 'bootstrap-native', //2.0.23
         'mapshaper': 'mapshaper_maplat',
         'resize': 'detect-element-resize'
     },
@@ -76,10 +76,6 @@ require.config({
         },
         'resize': {
             exports: 'addResizeListener'
-        },
-        'bootstrap': {
-            deps: ['utils'],
-            exports: 'Modal'
         }
     }
 });
