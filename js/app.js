@@ -68,7 +68,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
         this.setSlideIndexAsSelected(index);
     };
     Swiper.prototype.setSlideIndexAsSelected = function(index) {
-        var sliders = this.container[0].querySelectorAll('.swiper-slide');
+        var sliders = this.$el[0].querySelectorAll('.swiper-slide');
         for (var i=0; i<sliders.length; i++) {
             var slider = sliders[i];
             if (slider.getAttribute('data-swiper-slide-index') == index) {
