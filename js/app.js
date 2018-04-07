@@ -390,7 +390,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
 
             if (!noUI) {
                 var lwModalElm = app.mapDivDocument.querySelector('#loadWait');
-                var lwModal = new bsn.Modal(lwModalElm);
+                var lwModal = new bsn.Modal(lwModalElm, {'root': app.mapDivDocument});
                 if (splash) {
                     app.mapDivDocument.querySelector('#splash_img').setAttribute('src', 'img/' + app.appData.splash);
                     app.mapDivDocument.querySelector('#splash_div').classList.remove('hide');
@@ -458,7 +458,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                         }
                     });
                     var mapInfoModalElm = app.mapDivDocument.querySelector('#map_info');
-                    var mapInfoModal = new bsn.Modal(mapInfoModalElm);
+                    var mapInfoModal = new bsn.Modal(mapInfoModalElm, {'root': app.mapDivDocument});
                     mapInfoModal.show();
                 });
             }
@@ -506,12 +506,12 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                         if (result.error == 'gps_out' && shown) {
                             shown = false;
                             var gwModalElm = app.mapDivDocument.querySelector('#gpsWait');
-                            var gwModal = new bsn.Modal(gwModalElm);
+                            var gwModal = new bsn.Modal(gwModalElm, {'root': app.mapDivDocument});
                             gwModal.hide();
                             app.mapDivDocument.querySelector('#gpsDialogTitle').innerText = app.t('app.out_of_map');
                             app.mapDivDocument.querySelector('#gpsDialogBody').innerText = app.t('app.out_of_map_desc');
                             var gdModalElm = app.mapDivDocument.querySelector('#gpsDialog');
-                            var gdModal = new bsn.Modal(gdModalElm);
+                            var gdModal = new bsn.Modal(gdModalElm, {'root': app.mapDivDocument});
                             gdModal.show();
                         }
                     } else {
@@ -520,7 +520,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                     if (shown) {
                         shown = false;
                         var gwModalElm = app.mapDivDocument.querySelector('#gpsWait');
-                        var gwModal = new bsn.Modal(gwModalElm);
+                        var gwModal = new bsn.Modal(gwModalElm, {'root': app.mapDivDocument});
                         gwModal.hide();
                     }
                 }
@@ -535,7 +535,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                     ];
                     shown = true;
                     var gwModalElm = app.mapDivDocument.querySelector('#gpsWait');
-                    var gwModal = new bsn.Modal(gwModalElm);
+                    var gwModal = new bsn.Modal(gwModalElm, {'root': app.mapDivDocument});
                     gwModal.show();
                     // 200m秒以上最低待たないと、Modalがうまく動かない場合がある
                     promises.push(new Promise(function(resolve) {
@@ -599,7 +599,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                 if (!noUI) {
                     sources.shift();
                     var lwModalElm = app.mapDivDocument.querySelector('#loadWait');
-                    var lwModal = new bsn.Modal(lwModalElm);
+                    var lwModal = new bsn.Modal(lwModalElm, {'root': app.mapDivDocument});
                     lwModal.hide();
                 }
 
@@ -674,7 +674,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                             app.mapDivDocument.querySelector('#poi_desc').innerHTML = app.translate(data.desc).replace(/\n/g, '<br>');
                         }
                         var piModalElm = app.mapDivDocument.querySelector('#poi_info');
-                        var piModal = new bsn.Modal(piModalElm);
+                        var piModal = new bsn.Modal(piModalElm, {'root': app.mapDivDocument});
                         piModal.show();
                     }
                 }
@@ -972,7 +972,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                         app.mapDivDocument.querySelector('#gpsDialogTitle').innerText = app.t('app.out_of_map');
                         app.mapDivDocument.querySelector('#gpsDialogBody').innerText = app.t('app.out_of_map_area');
                         var gdModalElm = app.mapDivDocument.querySelector('#gpsDialog');
-                        var gdModal = new bsn.Modal(gdModalElm);
+                        var gdModal = new bsn.Modal(gdModalElm, {'root': app.mapDivDocument});
                         gdModal.show();
                     }
                     to.goHome();

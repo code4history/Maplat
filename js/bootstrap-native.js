@@ -77,7 +77,7 @@
     backdrop = 'backdrop', keyboard = 'keyboard', delay = 'delay',
     content = 'content', target = 'target', 
     interval = 'interval', pause = 'pause', animation = 'animation',
-    placement = 'placement', container = 'container', 
+    placement = 'placement', container = 'container', root = 'root',
   
     // box model
     offsetTop    = 'offsetTop',      offsetBottom   = 'offsetBottom',
@@ -1106,6 +1106,7 @@
     this[backdrop] = options[backdrop] === staticString || modal[getAttribute](databackdrop) === staticString ? staticString : true;
     this[backdrop] = options[backdrop] === false || modal[getAttribute](databackdrop) === 'false' ? false : this[backdrop];
     this[content]  = options[content]; // JavaScript only
+    this[root]     = options[root] || DOC[body];
   
     // bind, constants, event targets and other vars
     var self = this, relatedTarget = null,
@@ -1120,10 +1121,10 @@
         return globalObject[innerWidth] || (htmlRect[right] - Math.abs(htmlRect[left]));
       },
       setScrollbar = function () {
-        var bodyStyle = DOC[body].currentStyle || globalObject.getComputedStyle(DOC[body]),
+        var bodyStyle = self[root].currentStyle || globalObject.getComputedStyle(self[root]),
             bodyPad = parseInt((bodyStyle[paddingRight]), 10), itemPad;
         if (bodyIsOverflowing) {
-          DOC[body][style][paddingRight] = (bodyPad + scrollbarWidth) + 'px';
+          self[root][style][paddingRight] = (bodyPad + scrollbarWidth) + 'px';
           if (fixedItems[length]){
             for (var i = 0; i < fixedItems[length]; i++) {
               itemPad = (fixedItems[i].currentStyle || globalObject.getComputedStyle(fixedItems[i]))[paddingRight];
@@ -1133,7 +1134,7 @@
         }
       },
       resetScrollbar = function () {
-        DOC[body][style][paddingRight] = '';
+        self[root][style][paddingRight] = '';
         if (fixedItems[length]){
           for (var i = 0; i < fixedItems[length]; i++) {
             fixedItems[i][style][paddingRight] = '';
@@ -1143,13 +1144,13 @@
       measureScrollbar = function () { // thx walsh
         var scrollDiv = DOC[createElement]('div'), scrollBarWidth;
         scrollDiv.className = component+'-scrollbar-measure'; // this is here to stay
-        DOC[body][appendChild](scrollDiv);
+        self[root][appendChild](scrollDiv);
         scrollBarWidth = scrollDiv[offsetWidth] - scrollDiv[clientWidth];
-        DOC[body].removeChild(scrollDiv);
+        self[root].removeChild(scrollDiv);
       return scrollBarWidth;
       },
       checkScrollbar = function () {
-        bodyIsOverflowing = DOC[body][clientWidth] < getWindowWidth();
+        bodyIsOverflowing = self[root][clientWidth] < getWindowWidth();
         modalIsOverflowing = modal[scrollHeight] > HTML[clientHeight];
         scrollbarWidth = measureScrollbar();
       },
@@ -1170,16 +1171,16 @@
         if ( overlay === null ) {
           newOverlay[setAttribute]('class',modalBackdropString+' fade');
           overlay = newOverlay;
-          DOC[body][appendChild](overlay);
+          self[root][appendChild](overlay);
         }
       },
       removeOverlay = function() {
         overlay = queryElement('.'+modalBackdropString);
         if ( overlay && overlay !== null && typeof overlay === 'object' ) {
           modalOverlay = 0;
-          DOC[body].removeChild(overlay); overlay = null;
+          self[root].removeChild(overlay); overlay = null;
         }
-        bootstrapCustomEvent.call(modal, hiddenEvent, component);      
+        bootstrapCustomEvent.call(modal, hiddenEvent, component);
       },
       keydownHandlerToggle = function() {
         if (hasClass(modal,inClass)) {
@@ -1215,7 +1216,7 @@
           if (!getElementsByClassName(DOC,component+' '+inClass)[0]) {
             resetAdjustments();
             resetScrollbar();
-            removeClass(DOC[body],component+'-open');
+            removeClass(self[root],component+'-open');
             overlay && hasClass(overlay,'fade') ? (removeClass(overlay,inClass), emulateTransitionEnd(overlay,removeOverlay)) 
             : removeOverlay();
   
@@ -1279,7 +1280,7 @@
         setScrollbar();
         adjustDialog();
   
-        addClass(DOC[body],component+'-open');
+        addClass(self[root],component+'-open');
         addClass(modal,inClass);
         modal[setAttribute](ariaHidden, false);
         
