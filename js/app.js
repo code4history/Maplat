@@ -122,7 +122,6 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
     }
     CustomEvent.prototype = window.Event.prototype;
 
-    // Maplat App Class
     var normalizeDegree = function(degree) {
         while (1) {
             if (degree <= 180 && degree > -180) break;
@@ -132,6 +131,23 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
         return degree;
     }
 
+    var absoluteUrl = function(base, relative) {
+        var stack = base.split('/');
+        var parts = relative.split('/');
+        stack.pop(); // remove current file name (or empty string)
+        // (omit if "base" is the current folder without trailing slash)
+        for (var i=0; i<parts.length; i++) {
+            if (parts[i] == '.')
+                continue;
+            if (parts[i] == '..')
+                stack.pop();
+            else
+                stack.push(parts[i]);
+        }
+        return stack.join('/');
+    }
+
+    // Maplat App Class
     var MaplatApp = function(appOption) {
         var app = this;
         ol.events.EventTarget.call(app);
@@ -155,10 +171,6 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
         var setting = appOption.setting;
         var pwa_manifest = appOption.pwa_manifest || "./pwa/" + appid +"_manifest.json";
         var pwa_worker = appOption.pwa_worker || "./service-worker.js";
-        var pwa_appleicon = appOption.pwa_appleicon || {default: "./pwa/" + appid + "_icon.png"};
-        if (pwa_appleicon instanceof String) {
-            pwa_appleicon = {default: pwa_appleicon};
-        }
 
         // Add UI HTML Element
         var newElems = createElement('<div class="ol-control map-title"><span></span></div>' +
@@ -357,9 +369,12 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
         // PWA対応: 非同期処理
         var xhr = new XMLHttpRequest();
         xhr.open('GET', pwa_manifest, true);
+        xhr.responseType = 'json';
 
         xhr.onload = function(e) {
-            // 有無をチェックしているだけなのでデータは使わない
+            var value = this.response;
+            if (typeof value != 'object') value = JSON.parse(value);
+
             var head = document.querySelector('head');
             head.appendChild((createElement('<link rel="manifest" href="' + pwa_manifest + '">'))[0]);
             // service workerが有効なら、service-worker.js を登録します
@@ -368,12 +383,14 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                     console.log('Service Worker Registered');
                 });
             }
-            Object.keys(pwa_appleicon).forEach(function(key) {
-                var value = pwa_appleicon[key];
-                var sizes = key == 'default' ? '' : ' sizes="' + key + '"';
-                var tag = '<link rel="apple-touch-icon"' + sizes + ' href="' + value + '">';
-                head.appendChild((createElement(tag))[0]);
-            });
+            if (value.icons) {
+                for (var i=0; i<value.icons.length; i++) {
+                    var src = absoluteUrl(pwa_manifest, value.icons[i].src);
+                    var sizes = value.icons[i].sizes;
+                    var tag = '<link rel="apple-touch-icon" sizes="' + sizes + '" href="' + src + '">';
+                    head.appendChild((createElement(tag))[0]);
+                }
+            }
         };
         xhr.send();
 
