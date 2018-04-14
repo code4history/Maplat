@@ -302,7 +302,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
         var overlay = appOption.overlay || false;
         var noRotate = appOption.no_rotate || false;
         if (overlay) {
-            document.querySelector('body').classList.add('with-opacity');
+            app.mapDivDocument.classList.add('with-opacity');
         }
         if (noUI) {
             app.mapDivDocument.querySelector('.base-swiper').style.display = 'none';

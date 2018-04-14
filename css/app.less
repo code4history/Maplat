@@ -279,7 +279,7 @@
         display: none;
     }
 
-    .with-opacity .ol-slidercommon {
+    &.with-opacity .ol-slidercommon {
         display: block;
         bottom: .5em;
         left: calc(50% - 80px);
@@ -290,39 +290,39 @@
     }
 
     @media screen and (display-mode: standalone) and (width: 375px) and (height: 768px), screen and (display-mode: standalone) and (width: 724px) and (height: 375px), screen and (display-mode: fullscreen) and (width: 375px) and (height: 768px), screen and (display-mode: fullscreen) and (width: 724px) and (height: 375px) {
-        .with-opacity .ol-slidercommon {
+        &.with-opacity .ol-slidercommon {
             bottom: calc(.5em + 21px);
         }
     }
 
     @media screen and (max-width: 640px) {
-        .with-opacity .ol-slidercommon {
+        &.with-opacity .ol-slidercommon {
             left: 37.5%;
             width: 25%;
         }
     }
 
     @media screen and (max-width: 320px) {
-        .with-opacity .ol-slidercommon {
+        &.with-opacity .ol-slidercommon {
             left: 120px;
             width: 80px;
         }
     }
 
-    .with-opacity .ol-slidercommon button {
+    &.with-opacity .ol-slidercommon button {
         position: relative;
         width: 20px;
         height: 25px;
     }
 
-    .with-opacity .ol-slidercommon-thumb {
+    &.with-opacity .ol-slidercommon-thumb {
         height: 15px;
         width: 15px;
         margin: 0;
         filter: none;
     }
 
-    .with-opacity .ol-slidercommon.disable button {
+    &.with-opacity .ol-slidercommon.disable button {
         color: rgba(255, 255, 255, .7);
         background-color: rgba(120, 5, 8, .2);
     }
