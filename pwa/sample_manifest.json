@@ -1,7 +1,7 @@
 {
   "name": "Maplat PWA Sample",
   "short_name": "Maplat PWA",
-  "background_color": "#fc980c",
+  "background_color": "#780508",
   "icons": [{
     "src": "./sample_icon-96.png",
     "sizes": "96x96",
