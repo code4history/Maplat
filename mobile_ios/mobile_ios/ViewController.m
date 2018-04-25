@@ -82,7 +82,7 @@ const double BaseLatitude = 39.7006006;
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-    [NSThread sleepForTimeInterval:10]; //Safariのデバッガを繋ぐための時間。本番では不要。
+    //[NSThread sleepForTimeInterval:10]; //Safariのデバッガを繋ぐための時間。本番では不要。
     _defaultLongitude = 0;
     _defaultLatitude = 0;
     

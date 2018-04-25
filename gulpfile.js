@@ -122,7 +122,12 @@ var mobileCopy = [
     'js/maplat.js'
 ];
 var mobileBaseCopy = [
-    'js/maplatBridge.js'
+    'js/maplatBridge.js',
+    'locales/en/translation.json',
+    'locales/ja/translation.json',
+    'parts/bluedot.png',
+    'parts/defaultpin.png',
+    'parts/redcircle.png'
 ];
 
 function removeResource() {
