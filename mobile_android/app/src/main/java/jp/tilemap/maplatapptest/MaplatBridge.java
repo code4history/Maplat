@@ -1,6 +1,7 @@
 package jp.tilemap.maplatapptest;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
@@ -77,6 +78,10 @@ public class MaplatBridge extends Object {
                 WebResourceResponse ret = null;
                 if (m.find()) {
                     String fileName = m.replaceFirst("");
+                    String resFileName = fileName.replaceAll("/", "_")
+                            .replaceAll("\\.", "_")
+                            .replaceAll("\\-", "_")
+                            .toLowerCase();
                     int point = fileName.lastIndexOf("?");
                     if (point != -1) {
                         fileName = fileName.substring(0, point - 1);
@@ -106,11 +111,15 @@ public class MaplatBridge extends Object {
                     String text = "";
 
                     try {
-                        try {
+                        Resources res = view.getContext().getResources();
+                        int resId = res.getIdentifier(resFileName, "raw", view.getContext().getPackageName());
+
+                        if (resId != 0) {
+                            is = res.openRawResource(resId);
+                        } else {
                             is = view.getContext().getAssets().open(fileName);
-                            ret = new WebResourceResponse(mime, "UTF-8", is);
-                        } finally {
                         }
+                        ret = new WebResourceResponse(mime, "UTF-8", is);
                     } catch (Exception e){
                         // エラー発生時の処理
                     }

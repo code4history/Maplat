@@ -5,7 +5,8 @@ var gulp = require('gulp'),
     header = require('gulp-header'),
     zip = require('gulp-zip'),
     os = require('os'),
-    fs = require('fs-extra');
+    fs = require('fs-extra'),
+    glob = require('glob');
 
 var pkg = require('./package.json');
 var banner = ['/**',
@@ -90,4 +91,75 @@ gulp.task('less', function() {
 gulp.task('css_build', ['less'], function() {
     var cmd = isWin ? 'r.js.cmd' : 'r.js';
     execSync(cmd + ' -o cssIn=css/app.css out=css/maplat.css');
+});
+
+var mobileTestCopy = [
+    'css/app.css',
+    'css/bootstrap.css',
+    'css/swiper.css',
+    'css/font-awesome.css',
+    'css/ol.css',
+    'js/aigle-es5.min.js',
+    'js/require.min.js',
+    'js/config.js',
+    'js/i18nextXHRBackend.min.js',
+    'js/ol-debug.js',
+    'js/ol-custom.js',
+    'js/i18next.min.js',
+    'js/turf_maplat.min.js',
+    'js/swiper.min.js',
+    'js/bootstrap-native.js',
+    'js/mapshaper_maplat.js',
+    'js/detect-element-resize.js',
+    'js/app.js',
+    'js/histmap.js',
+    'js/histmap_tin.js',
+    'js/sprintf.js',
+    'js/tin.js'
+];
+var mobileCopy = [
+    'css/maplat.css',
+    'js/maplat.js'
+];
+var mobileBaseCopy = [
+    'js/maplatBridge.js'
+];
+
+function removeResource() {
+    var files = [
+        './mobile_android/app/src/main/res/raw',
+        './mobile_ios/mobile_ios/Maplat.bundle'
+    ];
+    for (var i=0; i<files.length; i++) {
+        var file = files[i];
+        try {
+            fs.removeSync(file);
+        } catch (e) {
+        }
+    }
+}
+
+function copyResource(files) {
+    for (var i=0; i<files.length; i++) {
+        var copy = files[i];
+        var copyTo = copy.replace(/[\/\.\-]/g, '_').toLowerCase();
+        fs.copySync(copy, './mobile_android/app/src/main/res/raw/' + copyTo);
+        fs.copySync(copy, './mobile_ios/mobile_ios/Maplat.bundle/' + copy);
+    }
+}
+
+gulp.task('mobile_build_test', function() {
+    removeResource();
+    copyResource(mobileTestCopy);
+    copyResource(mobileBaseCopy);
+    fs.copySync('mobile_test.html', './mobile_android/app/src/main/res/raw/mobile_html');
+    fs.copySync('mobile_test.html', './mobile_ios/mobile_ios/Maplat.bundle/mobile.html');
+});
+
+gulp.task('mobile_build', function() {
+    removeResource();
+    copyResource(mobileCopy);
+    copyResource(mobileBaseCopy);
+    fs.copySync('mobile.html', './mobile_android/app/src/main/res/raw/mobile_html');
+    fs.copySync('mobile.html', './mobile_ios/mobile_ios/Maplat.bundle/mobile.html');
 });

@@ -18,26 +18,33 @@
     NSString *host = url.host;
     NSBundle *bundle = [NSBundle mainBundle];
     NSString *assetDirectory = [bundle bundlePath];
+    NSString *resDirectory = [bundle pathForResource:@"Maplat" ofType:@"bundle"];
 
     if ([host isEqualToString:@"localresource"]) {
         NSString *file = [assetDirectory stringByAppendingString:path];
+        NSString *resFile = [resDirectory stringByAppendingString:path];
         NSFileManager *fm = [NSFileManager defaultManager];
-        if ([fm fileExistsAtPath:file]) {
-            NSString *mime = [ext isEqualToString:@"html"] ? @"text/html" :
-                [ext isEqualToString:@"js"] ? @"application/javascript" :
-                 [ext isEqualToString:@"json"] ? @"application/json" :
-                  [ext isEqualToString:@"jpg"] ? @"image/jpeg" :
-                   [ext isEqualToString:@"png"] ? @"image/png" :
-                    [ext isEqualToString:@"css"] ? @"text/css" :
-                     [ext isEqualToString:@"gif"] ? @"image/gif" :
-                      [ext isEqualToString:@"woff"] ? @"application/font-woff" :
-                       [ext isEqualToString:@"woff2"] ? @"application/font-woff2" :
-                        [ext isEqualToString:@"ttf"] ? @"application/font-ttf" :
-                         [ext isEqualToString:@"eot"] ? @"application/vnd.ms-fontobject" :
-                          [ext isEqualToString:@"otf"] ? @"application/font-otf" :
-                           [ext isEqualToString:@"svg"] ? @"image/svg+xml" :
-                            @"text/plain";
-            NSData *data = [NSData dataWithContentsOfFile:file];
+        NSString *mime = [ext isEqualToString:@"html"] ? @"text/html" :
+         [ext isEqualToString:@"js"] ? @"application/javascript" :
+          [ext isEqualToString:@"json"] ? @"application/json" :
+           [ext isEqualToString:@"jpg"] ? @"image/jpeg" :
+            [ext isEqualToString:@"png"] ? @"image/png" :
+             [ext isEqualToString:@"css"] ? @"text/css" :
+              [ext isEqualToString:@"gif"] ? @"image/gif" :
+               [ext isEqualToString:@"woff"] ? @"application/font-woff" :
+                [ext isEqualToString:@"woff2"] ? @"application/font-woff2" :
+                 [ext isEqualToString:@"ttf"] ? @"application/font-ttf" :
+                  [ext isEqualToString:@"eot"] ? @"application/vnd.ms-fontobject" :
+                   [ext isEqualToString:@"otf"] ? @"application/font-otf" :
+                    [ext isEqualToString:@"svg"] ? @"image/svg+xml" :
+                     @"text/plain";
+        NSData *data = nil;
+        if ([fm fileExistsAtPath:resFile]) {
+            data = [NSData dataWithContentsOfFile:resFile];
+        } else if ([fm fileExistsAtPath:file]) {
+            data = [NSData dataWithContentsOfFile:file];
+        }
+        if (data) {
             NSURLResponse *res = [[NSURLResponse alloc] initWithURL:url MIMEType:mime expectedContentLength:data.length textEncodingName:@"UTF-8"];
 
             NSCachedURLResponse *cached = [[NSCachedURLResponse alloc] initWithResponse:res data:data];
