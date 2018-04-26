@@ -7,21 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		660C00C8209201C6004B885B /* tiles in Resources */ = {isa = PBXBuildFile; fileRef = 660C00C7209201C6004B885B /* tiles */; };
+		660C00CA209201D4004B885B /* maps in Resources */ = {isa = PBXBuildFile; fileRef = 660C00C9209201D4004B885B /* maps */; };
 		6642D29E1E5DC88E00555CB7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6642D29D1E5DC88E00555CB7 /* main.m */; };
 		6642D2A11E5DC88E00555CB7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6642D2A01E5DC88E00555CB7 /* AppDelegate.m */; };
 		6642D2A41E5DC88E00555CB7 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6642D2A31E5DC88E00555CB7 /* ViewController.m */; };
 		6642D2A91E5DC88E00555CB7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6642D2A81E5DC88E00555CB7 /* Assets.xcassets */; };
 		6642D2AC1E5DC88E00555CB7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6642D2AA1E5DC88E00555CB7 /* LaunchScreen.storyboard */; };
-		668706F61F99D41C0040BA89 /* apps in Resources */ = {isa = PBXBuildFile; fileRef = 668706F51F99D41C0040BA89 /* apps */; };
-		668706F81F99D4550040BA89 /* maps in Resources */ = {isa = PBXBuildFile; fileRef = 668706F71F99D4550040BA89 /* maps */; };
 		669730FC20911EFB0088B0FB /* Maplat.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 669730FB20911EFA0088B0FB /* Maplat.bundle */; };
 		66C2D5B0205B3D0500D6714F /* MaplatBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 66C2D5AF205B3D0500D6714F /* MaplatBridge.m */; };
 		66DEFC8D1E5DDD09000684B6 /* MaplatCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 66DEFC8C1E5DDD09000684B6 /* MaplatCache.m */; };
-		66DEFC981E5DE390000684B6 /* tiles in Resources */ = {isa = PBXBuildFile; fileRef = 66DEFC931E5DE390000684B6 /* tiles */; };
-		66DEFCA01E5E4939000684B6 /* img in Resources */ = {isa = PBXBuildFile; fileRef = 66DEFC9F1E5E4939000684B6 /* img */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		660C00C7209201C6004B885B /* tiles */ = {isa = PBXFileReference; lastKnownFileType = folder; path = tiles; sourceTree = "<group>"; };
+		660C00C9209201D4004B885B /* maps */ = {isa = PBXFileReference; lastKnownFileType = folder; path = maps; sourceTree = "<group>"; };
 		6642D2991E5DC88E00555CB7 /* mobile_ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mobile_ios.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6642D29D1E5DC88E00555CB7 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		6642D29F1E5DC88E00555CB7 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -31,15 +31,11 @@
 		6642D2A81E5DC88E00555CB7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6642D2AB1E5DC88E00555CB7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		6642D2AD1E5DC88E00555CB7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		668706F51F99D41C0040BA89 /* apps */ = {isa = PBXFileReference; lastKnownFileType = folder; name = apps; path = ../../apps; sourceTree = "<group>"; };
-		668706F71F99D4550040BA89 /* maps */ = {isa = PBXFileReference; lastKnownFileType = folder; name = maps; path = ../../maps; sourceTree = "<group>"; };
 		669730FB20911EFA0088B0FB /* Maplat.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Maplat.bundle; sourceTree = "<group>"; };
 		66C2D5AE205B3D0500D6714F /* MaplatBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MaplatBridge.h; sourceTree = "<group>"; };
 		66C2D5AF205B3D0500D6714F /* MaplatBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MaplatBridge.m; sourceTree = "<group>"; };
 		66DEFC8B1E5DDD09000684B6 /* MaplatCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaplatCache.h; sourceTree = "<group>"; };
 		66DEFC8C1E5DDD09000684B6 /* MaplatCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MaplatCache.m; sourceTree = "<group>"; };
-		66DEFC931E5DE390000684B6 /* tiles */ = {isa = PBXFileReference; lastKnownFileType = folder; name = tiles; path = ../../tiles; sourceTree = "<group>"; };
-		66DEFC9F1E5E4939000684B6 /* img */ = {isa = PBXFileReference; lastKnownFileType = folder; name = img; path = ../../img; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,11 +96,9 @@
 		66DEFC8E1E5DE359000684B6 /* content */ = {
 			isa = PBXGroup;
 			children = (
+				660C00C9209201D4004B885B /* maps */,
+				660C00C7209201C6004B885B /* tiles */,
 				669730FB20911EFA0088B0FB /* Maplat.bundle */,
-				668706F71F99D4550040BA89 /* maps */,
-				668706F51F99D41C0040BA89 /* apps */,
-				66DEFC9F1E5E4939000684B6 /* img */,
-				66DEFC931E5DE390000684B6 /* tiles */,
 			);
 			name = content;
 			sourceTree = "<group>";
@@ -170,11 +164,9 @@
 			files = (
 				6642D2AC1E5DC88E00555CB7 /* LaunchScreen.storyboard in Resources */,
 				669730FC20911EFB0088B0FB /* Maplat.bundle in Resources */,
-				66DEFC981E5DE390000684B6 /* tiles in Resources */,
+				660C00C8209201C6004B885B /* tiles in Resources */,
+				660C00CA209201D4004B885B /* maps in Resources */,
 				6642D2A91E5DC88E00555CB7 /* Assets.xcassets in Resources */,
-				668706F61F99D41C0040BA89 /* apps in Resources */,
-				668706F81F99D4550040BA89 /* maps in Resources */,
-				66DEFCA01E5E4939000684B6 /* img in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

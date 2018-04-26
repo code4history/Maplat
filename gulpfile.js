@@ -129,11 +129,19 @@ var mobileBaseCopy = [
     'parts/defaultpin.png',
     'parts/redcircle.png'
 ];
+var assetsCopy = [
+    'maps/morioka_ndl.json',
+    'tiles/morioka_ndl'
+];
 
 function removeResource() {
     var files = [
         './mobile_android/app/src/main/res/raw',
-        './mobile_ios/mobile_ios/Maplat.bundle'
+        './mobile_ios/mobile_ios/Maplat.bundle',
+        './mobile_android/app/src/main/assets/maps',
+        './mobile_android/app/src/main/assets/tiles',
+        './mobile_ios/mobile_ios/maps',
+        './mobile_ios/mobile_ios/tiles'
     ];
     for (var i=0; i<files.length; i++) {
         var file = files[i];
@@ -153,12 +161,21 @@ function copyResource(files) {
     }
 }
 
+function copyAssets() {
+    for (var i=0; i<assetsCopy.length; i++) {
+        var copy = assetsCopy[i];
+        fs.copySync(copy, './mobile_android/app/src/main/assets/' + copy);
+        fs.copySync(copy, './mobile_ios/mobile_ios/' + copy);
+    }
+}
+
 gulp.task('mobile_build_test', function() {
     removeResource();
     copyResource(mobileTestCopy);
     copyResource(mobileBaseCopy);
     fs.copySync('mobile_test.html', './mobile_android/app/src/main/res/raw/mobile_html');
     fs.copySync('mobile_test.html', './mobile_ios/mobile_ios/Maplat.bundle/mobile.html');
+    copyAssets();
 });
 
 gulp.task('mobile_build', function() {
@@ -167,4 +184,5 @@ gulp.task('mobile_build', function() {
     copyResource(mobileBaseCopy);
     fs.copySync('mobile.html', './mobile_android/app/src/main/res/raw/mobile_html');
     fs.copySync('mobile.html', './mobile_ios/mobile_ios/Maplat.bundle/mobile.html');
+    copyAssets();
 });
