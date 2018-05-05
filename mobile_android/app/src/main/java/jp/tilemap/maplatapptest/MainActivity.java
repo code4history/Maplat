@@ -36,6 +36,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 
+import jp.tilemap.maplat.MaplatBridge;
+import jp.tilemap.maplat.MaplatView;
+
 public class MainActivity extends Activity implements MaplatBridge.MaplatBridgeListener {
 
     private static final int REQUEST_PERMISSION = 10;
@@ -78,29 +81,14 @@ public class MainActivity extends Activity implements MaplatBridge.MaplatBridgeL
         setContentView(R.layout.activity_main);
 
         //レイアウトで指定したWebViewのIDを指定する。
-        WebView myWebView = (WebView)findViewById(R.id.webView1);
-        myWebView.setWebContentsDebuggingEnabled(true);
-
+        MaplatView maplatView = (MaplatView)findViewById(R.id.webView1);
         nowMap = "morioka_ndl";
         nowDirection = 0;
         nowRotation = 0;
 
-        try {
-            mMaplatBridge = new MaplatBridge(this, myWebView, new Handler(), this, "mobile",
-                    new HashMap<String, Object>() {{
-                        put("app_name", "モバイルアプリ");
-                        put("sources", new ArrayList<Object>(){{
-                            add("gsi");
-                            add("osm");
-                            add(new HashMap<String, String>(){{
-                                put("mapID", "morioka_ndl");
-                            }});
-                        }});
-                        put("pois", new ArrayList<Object>());
-                    }});
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        mMaplatBridge = maplatView.getMaplatBridge();
+        mMaplatBridge.setMaplatBridgeListener(this);
+
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         mSettingsClient = LocationServices.getSettingsClient(this);
         createLocationCallback();

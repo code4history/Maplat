@@ -1,0 +1,98 @@
+apply plugin: 'com.android.library'
+apply plugin: 'maven'
+
+android {
+    compileSdkVersion 26
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0.0"
+        version = android.defaultConfig.versionName
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    /* AARの生成 */
+    libraryVariants.all { variant ->
+        variant.outputs.all { output ->
+            output.packageLibrary.exclude("libs/*")
+            if (variant.name == android.buildTypes.release.name) {
+                outputFileName = output.outputFile.name.replace(("-release.aar"), "-${version}.aar")
+            } else if (variant.name == android.buildTypes.debug.name) {
+                outputFileName = output.outputFile.name.replace((".aar"), "-${version}.aar")
+            }
+        }
+    }
+}
+/** ビルド前にルートディレクトリからassetsファイルをプロジェクト内にコピーするタスク */
+task copyFiles(type: Copy) {
+//    copy {
+//        from '../../apps'
+//        into 'src/main/assets/apps'
+//    }
+//    copy {
+//        from '../../css'
+//        into 'src/main/assets/css'
+//    }
+//    copy {
+//        from '../../fonts'
+//        into 'src/main/assets/fonts'
+//    }
+//    copy {
+//        from '../../js'
+//        into 'src/main/assets/js'
+//    }
+//    copy {
+//        from '../../locales'
+//        into 'src/main/assets/locales'
+//    }
+//    copy {
+//        from '../../maps'
+//        into 'src/main/assets/maps'
+//    }
+//    copy {
+//        from '../../parts'
+//        into 'src/main/assets/parts'
+//    }
+//    copy {
+//        from '../../tiles'
+//        into 'src/main/assets/tiles'
+//    }
+//    copy {
+//        from '../../mobile.html'
+//        into 'src/main/assets/'
+//    }
+}
+
+project.afterEvaluate {
+    preBuild.dependsOn copyFiles
+}
+
+clean.dependsOn copyFiles
+clean.mustRunAfter copyFiles
+
+repositories {
+    maven {
+        url 'https://maven.google.com/'
+        name 'Google'
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+    implementation 'com.google.code.gson:gson:2.8.2'
+}
