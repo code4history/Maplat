@@ -30,46 +30,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import android.content.Context;
 import android.content.res.Resources;
-import android.os.Handler;
-import android.text.TextUtils;
-import android.util.Log;
-import android.webkit.ConsoleMessage;
-import android.webkit.JavascriptInterface;
-import android.webkit.WebChromeClient;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebResourceResponse;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.TypeAdapter;
-import com.google.gson.internal.LinkedTreeMap;
-import com.google.gson.stream.JsonWriter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class MaplatBridge extends Object {
-
-    public interface MaplatBridgeListener {
-        void onReady();
-        void onClickMarker(long markerId, Object markerData);
-        void onChangeViewpoint(double latitude, double longitude, double zoom, double direction, double rotation);
-        void onOutOfMap();
-        void onClickMap(double latitude, double longitude);
-    }
 
     MaplatBridgeListener mListener;
 
