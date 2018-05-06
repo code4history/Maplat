@@ -1,14 +1,14 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
-def VERSION_NAME = "1.0.0"
+def VERSION_NAME = "0.1.1"
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 1
         versionName VERSION_NAME
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
