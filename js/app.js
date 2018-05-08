@@ -59,10 +59,6 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
         }
     };
 
-    if ('ontouchstart' in window) {
-        document.querySelector('body').classList.add('ol-touch');
-    }
-
     Swiper.prototype.setSlideIndex = function(index) {
         this.slideTo(index + this.params.slidesPerView); // <= Maybe bug of swiper;
         this.setSlideIndexAsSelected(index);
@@ -173,6 +169,9 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
         app.mapDiv = appOption.div || 'map_div';
         app.mapDivDocument = document.querySelector('#' + app.mapDiv);
         app.mapDivDocument.classList.add('maplat');
+        if ('ontouchstart' in window) {
+            app.mapDivDocument.classList.add('ol-touch');
+        }
         var noUI = appOption.no_ui || false;
         if (appOption.mobile_if) {
             app.mobileIF = true;
