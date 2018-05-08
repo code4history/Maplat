@@ -4,6 +4,28 @@
 @import url('ol.css');
 
 .maplat {
+    .modal_load .close, .modal_gpsW .close {
+        display: none;
+    }
+
+    #modal_poi_content, #modal_map_content, #modal_load_content, #modal_gpsW_content, #modal_gpsD_content,
+    #modal_title, #modal_load_title, #modal_gpsW_title {
+        display: none;
+    }
+
+    .modal_poi #modal_poi_content,
+    .modal_map #modal_map_content,
+    .modal_load #modal_load_content,
+    .modal_gpsW #modal_gpsW_content, .modal_gpsD #modal_gpsD_content {
+        display: block;
+    }
+
+    .modal_poi #modal_title, .modal_map #modal_title, .modal_gpsD #modal_title,
+    .modal_load #modal_load_title,
+    .modal_gpsW #modal_gpsW_title {
+        display: inline;
+    }
+
     .ol-touch .ol-zoom {
         display: none;
     }
