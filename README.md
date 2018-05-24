@@ -9,7 +9,7 @@ Maplatは古地図/絵地図を歪める事なくGPSや正確な地図と連携�
 他のソリューションにない特徴として、各地図の座標変換において非線形かつ全単射な投影変換が定義可能という点が挙げられます。
 
 # Introduction slide (In Japanese)
-<a href="https://www.slideshare.net/kokogiko/maplat-historical-maps-viewer-guarantees-nonlinear-bijective-projection">![Introduction of Maplat](https://code4nara.github.io/Maplat/page_imgs/maplat_slide.png)</a>
+<a href="https://www.slideshare.net/kokogiko/maplat">![Introduction of Maplat](https://code4nara.github.io/Maplat/page_imgs/maplat_slide.png)</a>
 
 # Data Editor
 Please use [MaplatEditor](https://github.com/code4nara/MaplatEditor/) for data creation.
