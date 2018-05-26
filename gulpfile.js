@@ -48,7 +48,7 @@ gulp.task('build', ['create_example', 'css_build'], function() {
 });
 
 gulp.task('create_example', ['concat_promise'], function() {
-    fs.unlinkSync('./js/maplat_withoutpromise.js');
+    fs.unlinkSync('./dist/maplat_withoutpromise.js');
 
     try {
         fs.removeSync('./example.zip');
@@ -60,8 +60,7 @@ gulp.task('create_example', ['concat_promise'], function() {
     }
 
     fs.ensureDirSync('./example');
-    fs.copySync('./js/maplat.js', './example/js/maplat.js');
-    fs.copySync('./css', './example/css');
+    fs.copySync('./dist', './example/dist');
     fs.copySync('./locales', './example/locales');
     fs.copySync('./parts', './example/parts');
     fs.copySync('./fonts', './example/fonts');
@@ -88,10 +87,10 @@ gulp.task('create_example', ['concat_promise'], function() {
 });
 
 gulp.task('concat_promise', ['build_withoutpromise'], function() {
-    return gulp.src(['./js/aigle-es5.min.js', 'js/maplat_withoutpromise.js'])
+    return gulp.src(['./js/aigle-es5.min.js', 'dist/maplat_withoutpromise.js'])
         .pipe(concat('maplat.js'))
         .pipe(header(banner, {pkg: pkg}))
-        .pipe(gulp.dest('./js/'));
+        .pipe(gulp.dest('./dist/'));
 });
 
 gulp.task('build_withoutpromise', function() {
@@ -102,11 +101,11 @@ gulp.task('build_withoutpromise', function() {
 gulp.task('less', function() {
     var lesses = ['ol', 'font-awesome', 'bootstrap', 'swiper', 'app'];
     lesses.map(function(less) {
-        execSync('lessc -x css/' + less + '.less > css/' + less + '.css');
+        execSync('lessc -x less/' + less + '.less > css/' + less + '.css');
     });
 });
 
 gulp.task('css_build', ['less'], function() {
     var cmd = isWin ? 'r.js.cmd' : 'r.js';
-    execSync(cmd + ' -o cssIn=css/app.css out=css/maplat.css');
+    execSync(cmd + ' -o cssIn=css/app.css out=dist/maplat.css');
 });

@@ -1,7 +1,7 @@
 ({
     baseUrl: 'js',
     name: 'config',
-    out: 'js/maplat_withoutpromise.js',
+    out: 'dist/maplat_withoutpromise.js',
     include: ['require.min'],
     paths: {
         'i18n': 'i18next.min',
