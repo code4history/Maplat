@@ -14,6 +14,7 @@
     "default_zoom" : 17,
     "sources" : [
         {
+            "title" : "正保城絵図 南部領盛岡平城絵図 (正保元年) (TMS版)",
             "attr" : {
                 "ja" : "正保城絵図 南部領盛岡平城絵図 (正保元年) 国立公文書館",
                 "en" : "Japan National Archives"
@@ -34,6 +35,7 @@
             "mapID"     : "morioka"
         },
         "gsi",
+        "gsi_ortho",
         "osm"
     ], 
     "pois" :[

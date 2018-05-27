@@ -511,6 +511,20 @@ define(['ol3', 'resize'], function(ol, addResizeListener) {
     };
     ol.inherits(ol.control.Maplat, ol.control.CustomControl);
 
+    ol.control.Copyright = function(optOptions) {
+        var options = optOptions || {};
+        options.character = '<i class="fa fa-info-circle fa-lg"></i>';
+        options.cls = 'ol-copyright';
+        var self = this;
+        options.callback = function() {
+            var map = self.getMap();
+            map.dispatchEvent(new ol.MapEvent('click_control', map, {control: 'copyright'}));
+        };
+
+        ol.control.CustomControl.call(this, options);
+    };
+    ol.inherits(ol.control.Copyright, ol.control.CustomControl);
+
     ol.const = ol.const ? ol.const : {};
     ol.const.MERC_MAX = 20037508.342789244;
     ol.const.MERC_CROSSMATRIX = [
@@ -546,6 +560,8 @@ define(['ol3', 'resize'], function(ol, addResizeListener) {
             src: 'parts/defaultpin.png'
         }))
     });
+    var i18n;
+    var t = function(arg) { return arg; };
 
     ol.source.setCustomFunction = function(target) {
         target.prototype.getMap = function() {
@@ -567,8 +583,9 @@ define(['ol3', 'resize'], function(ol, addResizeListener) {
             }
             self.size2MercsAsync().then(function(mercs){
                 return self.mercs2MercSizeAsync(mercs);
-            }).then(function(mercSize){
-                var mercs = self.mercsFromGivenMercZoom(merc || mercSize[0], mercZoom || mercSize[1], direction != null ? direction : mercSize[2]);
+            }).then(function(mercSize) {
+                var mercs = self.mercsFromGivenMercZoom(merc || mercSize[0], mercZoom || mercSize[1],
+                    direction != null ? direction : mercSize[2]);
                 self.mercs2SizeAsync(mercs).then(function(size) {
                     if (merc != null) {
                         view.setCenter(size[0]);
@@ -586,7 +603,7 @@ define(['ol3', 'resize'], function(ol, addResizeListener) {
                 });
             });
         };
-       
+
         target.prototype.goHome = function() {
             this.moveTo({
                 longitude: this.home_position[0],
@@ -597,7 +614,6 @@ define(['ol3', 'resize'], function(ol, addResizeListener) {
         };
 
         target.prototype.setGPSMarkerAsync = function(position, ignoreMove) {
-            //alert("target.prototype.setGPSMarkerAsync");
             var self = this;
             var map = self.getMap();
             var view = map.getView();
@@ -781,6 +797,10 @@ define(['ol3', 'resize'], function(ol, addResizeListener) {
             return Math.atan2(sinx, cosx);
         };
     };
+    ol.source.META_KEYS = ['title', 'officialTitle', 'author', 'createdAt', 'era',
+        'contributor', 'mapper', 'license', 'dataLicense', 'attr', 'dataAttr',
+        'reference', 'description'];
+
     ol.source.setCustomInitialize = function(self, options) {
         self.sourceID = options.sourceID;
         self.map_option = options.map_option || {};
@@ -789,6 +809,39 @@ define(['ol3', 'resize'], function(ol, addResizeListener) {
         self.fake_gps = options.fake_gps || false;
         self.thumbnail = options.thumbnail || './tmbs/' + (options.mapID || options.sourceID) + '_menu.jpg';
         self.label = options.label;
+
+        for (var i = 0; i < ol.source.META_KEYS.length; i++) {
+            var key = ol.source.META_KEYS[i];
+            self[key] = ol.source.translate(options[key]);
+        }
+    };
+
+    ol.source.setI18n = function(i18n_, t_) {
+        i18n = i18n_;
+        t = t_;
+    };
+
+    ol.source.translate = function(dataFragment, defLang) {
+        if (!dataFragment || typeof dataFragment != 'object') return dataFragment;
+        if (!i18n) return dataFragment; // For MaplatEditor
+        var langs = Object.keys(dataFragment);
+        var key = langs.reduce(function(prev, curr, idx, arr) {
+            if (curr == defLang) {
+                prev = [dataFragment[curr], true];
+            } else if (!prev || (curr == 'en' && !prev[1])) {
+                prev = [dataFragment[curr], false];
+            }
+            if (idx == arr.length - 1) return prev[0];
+            return prev;
+        }, null);
+        key = (typeof key == 'string') ? key : key + '';
+        if (i18n.exists(key, {ns: 'translation', nsSeparator: '__X__yX__X__'}))
+            return t(key, {ns: 'translation', nsSeparator: '__X__yX__X__'});
+        for (var i = 0; i < langs.length; i++) {
+            var lang = langs[i];
+            i18n.addResource(lang, 'translation', key, dataFragment[lang]);
+        }
+        return t(key, {ns: 'translation', nsSeparator: '__X__yX__X__'});
     };
 
     ol.source.NowMap = function(optOptions) {
@@ -872,7 +925,7 @@ define(['ol3', 'resize'], function(ol, addResizeListener) {
         var controls = optOptions.controls ? optOptions.controls :
             optOptions.off_control ? [] :
             [
-                new ol.control.Attribution(),
+                new ol.control.Copyright(),
                 new ol.control.CompassRotate(),
                 new ol.control.Zoom(),
                 new ol.control.SetGPS(),

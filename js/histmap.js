@@ -39,21 +39,28 @@ define(['ol-custom'], function(ol) {
         'AAAAAAAAAAAAABgBDwABHHIJwwAAAABJRU5ErkJggg==';
     // タイル画像サイズ
     var tileSize = 256;
-    var i18n;
-    var t = function(arg) { return arg; };
     // canvasのテンプレート
     var canvBase = '<canvas width="' + tileSize + '" height="' + tileSize + '" src="' + transPng + '"></canvas>';
     var baseDict = {
         osm: {
             mapID: 'osm',
+            title: {
+                ja: 'オープンストリートマップ',
+                en: 'OpenStreetMap'
+            },
             label: {
                 ja: 'OSM(現在)',
                 en: 'OSM(Now)'
             },
+            attr: '©︎ OpenStreetMap contributors',
             maptype: 'base'
         },
         gsi: {
             mapID: 'gsi',
+            title: {
+                ja: '地理院地図',
+                en: 'Geospatial Information Authority of Japan Map'
+            },
             label: {
                 ja: '地理院地図',
                 en: 'GSI Map'
@@ -65,7 +72,25 @@ define(['ol-custom'], function(ol) {
             maptype: 'base',
             url: 'https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png',
             maxZoom: 18
-        }
+        },
+        gsi_ortho: {
+            mapID: 'gsi_ortho',
+            title: {
+                ja: '地理院地図オルソ航空写真',
+                en: 'Geospatial Information Authority of Japan Ortho aerial photo'
+            },
+            label: {
+                ja: '地理院オルソ',
+                en: 'GSI Ortho'
+            },
+            attr: {
+                ja: '国土地理院',
+                en: 'The Geospatial Information Authority of Japan'
+            },
+            maptype: 'base',
+            url: 'https://cyberjapandata.gsi.go.jp/xyz/ort/{z}/{x}/{y}.jpg',
+            maxZoom: 18
+    },
     };
 
     ol.source.HistMap = function(optOptions) {
@@ -87,10 +112,6 @@ define(['ol-custom'], function(ol) {
                     ol.TileUrlFunction.expandUrl(options.url));
         }
 
-        for (var i = 0; i < ol.source.HistMap.META_KEYS.length; i++) {
-            var key = ol.source.HistMap.META_KEYS[i];
-            this[key] = options[key];
-        }
         this.width = options.width;
         this.height = options.height;
         var zW = Math.log2(this.width/tileSize);
@@ -121,45 +142,17 @@ define(['ol-custom'], function(ol) {
         return transPng;
     };
 
-    ol.source.HistMap.setI18n = function(i18n_, t_) {
-        i18n = i18n_;
-        t = t_;
-    };
-
-    ol.source.HistMap.translate = function(dataFragment, defLang) {
-        if (!dataFragment || typeof dataFragment != 'object') return dataFragment;
-        if (!i18n) return dataFragment; // For MaplatEditor
-        var langs = Object.keys(dataFragment);
-        var key = langs.reduce(function(prev, curr, idx, arr) {
-            if (curr == defLang) {
-                prev = [dataFragment[curr], true];
-            } else if (!prev || (curr == 'en' && !prev[1])) {
-                prev = [dataFragment[curr], false];
-            }
-            if (idx == arr.length - 1) return prev[0];
-            return prev;
-        }, null);
-        key = (typeof key == 'string') ? key : key + '';
-        if (i18n.exists(key, {ns: 'translation', nsSeparator: '__X__yX__X__'}))
-            return t(key, {ns: 'translation', nsSeparator: '__X__yX__X__'});
-        for (var i = 0; i < langs.length; i++) {
-            var lang = langs[i];
-            i18n.addResource(lang, 'translation', key, dataFragment[lang]);
-        }
-        return t(key, {ns: 'translation', nsSeparator: '__X__yX__X__'});
-    };
-
     ol.source.HistMap.createAsync = function(options, commonOptions) {
         if (typeof options === 'string') {
             options = baseDict[options];
         }
         options = Object.assign(options, commonOptions);
         if (!options.maptype) options.maptype = 'maplat';
-        options.label = ol.source.HistMap.translate(options.label || options.year);
+        options.label = ol.source.translate(options.label || options.year);
         if (options.attr) {
             options.attributions = [
                 new ol.Attribution({
-                    html: ol.source.HistMap.translate(options.attr)
+                    html: ol.source.translate(options.attr)
                 })
             ];
         }
@@ -291,10 +284,6 @@ define(['ol-custom'], function(ol) {
     ol.source.HistMap.prototype.insideCheckHistMapCoords = function(histCoords) {
         return this.insideCheckXy(this.histMapCoords2Xy(histCoords));
     };
-
-    ol.source.HistMap.META_KEYS = ['title', 'officialTitle', 'author', 'createdAt', 'era',
-        'contributor', 'mapper', 'license', 'dataLicense', 'attr', 'dataAttr',
-        'reference', 'description'];
 
     return ol;
 });
