@@ -14,7 +14,11 @@
         "attr": "Map attribution",
         "dataAttr": "Data attribution",
         "reference": "Reference",
-        "description": "Description"
+        "description": "Description",
+        "help_title": "Maplat Help",
+        "help_using_maplat": "This site is built with open source historical map viewer <a href='https://github.com/code4nara/Maplat/wiki' target='_blank'>Maplat</a>.",
+        "help_operation_title": "How to operate the map",
+        "help_operation_content": "Move the map by dragging the mouse in case of PC, swiping action with finger in case of smartphone.<br>Scaling the map can be done with the upper left <img src='parts/plus.png'> <img src='parts/minus.png'> buttons in case of PC, with pinch in/out actions with two fingers in case of smartphone.<br>On smartphone, you can rotate the map by twisting with two fingers.<br>By Using the <img src='parts/home.png'> button at the upper left, you can move to the home position of the map being displayed."
     },
     "app" : {
         "fake_explanation": "NOTE: If GPS result is more than %2$f km away from %1$s, the system issue a pseudo-coordinate around %1$s.",

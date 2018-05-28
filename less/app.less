@@ -9,7 +9,7 @@
     }
 
     #modal_poi_content, #modal_map_content, #modal_load_content, #modal_gpsW_content, #modal_gpsD_content,
-    #modal_help_content, #modal_title, #modal_load_title, #modal_gpsW_title {
+    #modal_help_content, #modal_title, #modal_load_title, #modal_gpsW_title, #modal_help_title {
         display: none;
     }
 
@@ -22,7 +22,7 @@
     }
 
     .modal_poi #modal_title, .modal_map #modal_title,
-    .modal_gpsD #modal_title, .modal_help #modal_title,
+    .modal_gpsD #modal_title, .modal_help #modal_help_title,
     .modal_load #modal_load_title,
     .modal_gpsW #modal_gpsW_title {
         display: inline;
@@ -58,6 +58,26 @@
     }
 
     .poi_img img {
+        width: 100%;
+        height: auto;
+        max-width: 600px;
+        max-height: 600px;
+        top: 0px;
+        bottom: 0px;
+        left: 0px;
+        right: 0px;
+        margin: auto;
+        vertical-align: middle; /*IE7*/
+    }
+
+    .help_img {
+        position: relative;
+        display: table-cell;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .help_img imgs {
         width: 100%;
         height: auto;
         max-width: 600px;

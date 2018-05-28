@@ -227,6 +227,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
             '<span id="modal_title"></span>' +
             '<span id="modal_load_title" data-i18n="html.app_loading_title"></span>' +
             '<span id="modal_gpsW_title" data-i18n="html.acquiring_gps"></span>' +
+            '<span id="modal_help_title" data-i18n="html.help_title"></span>' +
 
             '</h4>' +
             '</div>' +
@@ -234,8 +235,10 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
 
             '<div id="modal_help_content">' +
             '<div id="help_content">' +
-            '<h1>ふがふが</h1>' +
-            '<p class="recipient">ほげほげ</p>' +
+            '<span data-i18n-html="html.help_using_maplat"></span>' +
+            '<p class="col-xs-12 help_img"><img src="parts/fullscreen.png"></p>' +
+            '<h4 data-i18n="html.help_operation_title"></h4>' +
+            '<p data-i18n-html="html.help_operation_content" class="recipient"></p>' +
             '</div>' +
             '</div>' +
 
@@ -244,7 +247,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
             '<iframe id="poi_iframe" class="iframe_poi" frameborder="0" src=""></iframe>' +
             '</div>' +
             '<div id="poi_data" class="hide">' +
-            '<p class="col-xs-12 poi_img"><img id="poi_img" src=""></img></p>' +
+            '<p class="col-xs-12 poi_img"><img id="poi_img" src=""></p>' +
             '<p class="recipient" id="poi_address"></p>' +
             '<p class="recipient" id="poi_desc"></p>' +
             '</div>' +
@@ -340,7 +343,12 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                     var key = target.getAttribute('data-i18n');
                     target.innerText = t(key);
                 }
-
+                var i18nTargets = app.mapDivDocument.querySelectorAll('[data-i18n-html]');
+                for (var i=0; i<i18nTargets.length; i++) {
+                    var target = i18nTargets[i];
+                    var key = target.getAttribute('data-i18n-html');
+                    target.innerHTML = t(key);
+                }
                 resolve([t, i18n]);
             });
         });

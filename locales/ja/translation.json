@@ -14,7 +14,11 @@
         "attr": "地図画像コピーライト",
         "dataAttr": "マッピングデータコピーライト",
         "reference": "典拠",
-        "description": "説明"
+        "description": "説明",
+        "help_title": "Maplat ヘルプ",
+        "help_using_maplat": "このサイトはオープンソース古地図ビューア<a href='https://github.com/code4nara/Maplat/wiki' target='_blank'>Maplat</a>を使って構築されています。",
+        "help_operation_title": "地図の操作方法",
+        "help_operation_content": "地図の移動はPCの場合はマウスのドラッグ、スマートフォンの場合は指でのスワイプ動作で行います。<br>地図の拡大縮小は、PCでは左上の<img src='parts/plus.png'> <img src='parts/minus.png'>ボタン、スマートフォンでは2本指でのピンチインアウトで行います。<br>スマートフォンでは2本指でのひねる操作により、地図の回転も行えます。<br>左上の<img src='parts/home.png'>ボタンを使うと、表示中の地図のホームポジションに移動できます。"
     },
     "app": {
         "fake_explanation": "※%1$s中心より%2$dkm以上離れている場合は、%1$s中心周辺の疑似経緯度を発行します。",
