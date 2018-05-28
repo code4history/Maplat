@@ -504,7 +504,9 @@ define(['ol3', 'resize'], function(ol, addResizeListener) {
         options.cls = 'ol-maplat';
         var self = this;
         options.callback = function() {
-            window.open('https://github.com/code4nara/Maplat/wiki');
+            // window.open('https://github.com/code4nara/Maplat/wiki');
+            var map = self.getMap();
+            map.dispatchEvent(new ol.MapEvent('click_control', map, {control: 'help'}));
         };
 
         ol.control.CustomControl.call(this, options);

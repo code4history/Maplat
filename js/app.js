@@ -153,7 +153,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
         // Modal記述の動作を調整する関数
         modalSetting = function(target) {
             var modalElm = app.mapDivDocument.querySelector('#modalBase');
-            ['poi', 'map', 'load', 'gpsW', 'gpsD'].map(function(target_) {
+            ['poi', 'map', 'load', 'gpsW', 'gpsD', 'help'].map(function(target_) {
                 var className = 'modal_' + target_;
                 if (target == target_) {
                     modalElm.classList.add(className);
@@ -547,6 +547,11 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                         var modalElm = app.mapDivDocument.querySelector('#modalBase');
                         var modal = new bsn.Modal(modalElm, {'root': app.mapDivDocument});
                         modalSetting('map');
+                        modal.show();
+                    } else {
+                        var modalElm = app.mapDivDocument.querySelector('#modalBase');
+                        var modal = new bsn.Modal(modalElm, {'root': app.mapDivDocument});
+                        modalSetting('help');
                         modal.show();
                     }
                 });
