@@ -232,6 +232,13 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
             '</div>' +
             '<div class="modal-body">' +
 
+            '<div id="modal_help_content">' +
+            '<div id="help_content">' +
+            '<h1>ふがふが</h1>' +
+            '<p class="recipient">ほげほげ</p>' +
+            '</div>' +
+            '</div>' +
+
             '<div id="modal_poi_content">' +
             '<div id="poi_web" class="embed-responsive embed-responsive-60vh">' +
             '<iframe id="poi_iframe" class="iframe_poi" frameborder="0" src=""></iframe>' +
