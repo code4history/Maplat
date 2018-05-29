@@ -251,6 +251,8 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
             '<li data-i18n-html="html.help_etc_help" class="recipient"></li>' +
             '<li data-i18n-html="html.help_etc_slider" class="recipient"></li>' +
             '</ul>' +
+            '<p><a href="https://github.com/code4nara/Maplat/wiki" target="_blank">Maplat</a>' +
+            ' © 2015- Kohei Otsuka, Code for Nara, RekishiKokudo project</p>' +
             '</div>' +
             '</div>' +
 
