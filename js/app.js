@@ -376,6 +376,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
 
         xhr.onload = function(e) {
             var value = this.response;
+            if (!value) return;
             if (typeof value != 'object') value = JSON.parse(value);
 
             var head = document.querySelector('head');
