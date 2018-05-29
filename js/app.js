@@ -239,6 +239,18 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
             '<p class="col-xs-12 help_img"><img src="parts/fullscreen.png"></p>' +
             '<h4 data-i18n="html.help_operation_title"></h4>' +
             '<p data-i18n-html="html.help_operation_content" class="recipient"></p>' +
+            '<h4 data-i18n="html.help_selection_title"></h4>' +
+            '<p data-i18n-html="html.help_selection_content" class="recipient"></p>' +
+            '<h4 data-i18n="html.help_gps_title"></h4>' +
+            '<p data-i18n-html="html.help_gps_content" class="recipient"></p>' +
+            '<h4 data-i18n="html.help_poi_title"></h4>' +
+            '<p data-i18n-html="html.help_poi_content" class="recipient"></p>' +
+            '<h4 data-i18n="html.help_etc_title"></h4>' +
+            '<ul>' +
+            '<li data-i18n-html="html.help_etc_attr" class="recipient"></li>' +
+            '<li data-i18n-html="html.help_etc_help" class="recipient"></li>' +
+            '<li data-i18n-html="html.help_etc_slider" class="recipient"></li>' +
+            '</ul>' +
             '</div>' +
             '</div>' +
 
