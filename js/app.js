@@ -665,8 +665,8 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                 if (!noUI) {
                     baseSwiper.on;
                     overlaySwiper.on;
-                    // baseSwiper.setSlideIndex(baseSwiper.slides.length - 1);
-                    // overlaySwiper.setSlideIndex(overlaySwiper.slides.length - 1);
+                    baseSwiper.slideToLoop(0);
+                    overlaySwiper.slideToLoop(0);
                     app.ellips();
                 }
 
