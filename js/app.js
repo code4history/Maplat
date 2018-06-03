@@ -59,16 +59,53 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
         }
     };
 
-    Swiper.prototype.setSlideIndex = function(index) {
-        // this.slideTo(index + this.params.slidesPerView); // <= Maybe bug of swiper;
+    Swiper.prototype.slideToMapID = function(mapID) {
+        var slide = this.$el[0].querySelector('.swiper-slide-active');
+        if (slide.getAttribute('data') == mapID) return;
+
+        var sliders = this.$el[0].querySelectorAll('.swiper-slide');
+        for (var i=0; i<sliders.length; i++) {
+            var slider = sliders[i];
+            if (slider.getAttribute('data') == mapID) {
+                return this.slideToLoop(parseInt(slider.getAttribute('data-swiper-slide-index')));
+            }
+        }
+    };
+
+    Swiper.prototype.slideToIndex = function(index) {
+        var slide = this.$el[0].querySelector('.swiper-slide-active');
+        if (parseInt(slide.getAttribute('data-swiper-slide-index')) == index) return;
+
         this.slideToLoop(index);
+    };
+
+    Swiper.prototype.setSlideMapID = function(mapID) {
+        this.slideToMapID(mapID);
+        this.setSlideMapIDAsSelected(mapID);
+    };
+
+    Swiper.prototype.setSlideIndex = function(index) {
+        this.slideToIndex(index);
         this.setSlideIndexAsSelected(index);
     };
+
     Swiper.prototype.setSlideIndexAsSelected = function(index) {
         var sliders = this.$el[0].querySelectorAll('.swiper-slide');
         for (var i=0; i<sliders.length; i++) {
             var slider = sliders[i];
             if (slider.getAttribute('data-swiper-slide-index') == index) {
+                slider.classList.add('selected');
+            } else {
+                slider.classList.remove('selected');
+            }
+        }
+    };
+
+    Swiper.prototype.setSlideMapIDAsSelected = function(mapID) {
+        var sliders = this.$el[0].querySelectorAll('.swiper-slide');
+        for (var i=0; i<sliders.length; i++) {
+            var slider = sliders[i];
+            if (slider.getAttribute('data') == mapID) {
                 slider.classList.add('selected');
             } else {
                 slider.classList.remove('selected');
@@ -179,6 +216,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
             noUI = true;
             appOption.debug = true;
         }
+        app.noUI = noUI;
         app.logger = new Logger(appOption.debug ? LoggerLevel.ALL : LoggerLevel.INFO);
         var lang = appOption.lang;
         if (!lang) {
@@ -418,7 +456,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                 }
                 modalSetting('load');
                 modal.show();
-                baseSwiper = new Swiper('.base-swiper', {
+                baseSwiper = app.baseSwiper = new Swiper('.base-swiper', {
                     slidesPerView: 2,
                     spaceBetween: 15,
                     breakpoints: {
@@ -438,7 +476,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                     app.changeMap(slide.getAttribute('data'));
                     baseSwiper.setSlideIndexAsSelected(slide.getAttribute('data-swiper-slide-index'));
                 });
-                overlaySwiper = new Swiper('.overlay-swiper', {
+                overlaySwiper = app.overlaySwiper = new Swiper('.overlay-swiper', {
                     slidesPerView: 2,
                     spaceBetween: 15,
                     breakpoints: {
@@ -962,9 +1000,15 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                             // If current background source is set, use it again
                             backTo = backSrc;
                         }
+                        if (!app.noUI) {
+                            app.baseSwiper.setSlideMapID(backTo.sourceID);
+                        }
                     } else if (to instanceof ol.source.NowMap) {
                         // If new foreground source is basemap or TMS overlay, remove source from background map
                         app.backMap.exchangeSource();
+                        if (!app.noUI) {
+                            app.baseSwiper.setSlideMapIDAsSelected();
+                        }
                     }
                     if (!(to instanceof ol.source.NowMap) || to instanceof ol.source.TmsMap) {
                         // If new foreground is nonlinear map or TMS overlay, enable opacity slider
@@ -978,13 +1022,26 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                 if (to instanceof ol.source.TmsMap) {
                     // Foreground is TMS overlay case: set TMS as Layer
                     app.mapObject.setLayer(to);
+                    if (!app.noUI) {
+                        app.overlaySwiper.setSlideMapID(to.sourceID);
+                        app.baseSwiper.setSlideMapID();
+                    }
                     // If current foreground is basemap then set it as basemap layer
-                    if (!(app.from instanceof ol.source.NowMap)) app.mapObject.exchangeSource(backSrc || now);
+                    if (!(app.from instanceof ol.source.NowMap)) {
+                        var backToLocal = backSrc || now;
+                        app.mapObject.exchangeSource(backToLocal);
+                    }
                     app.sliderCommon.setEnable(true);
                 } else {
                     // Remove overlay from foreground and set current source to foreground
                     app.mapObject.setLayer();
                     app.mapObject.exchangeSource(to);
+                    if (!app.noUI) {
+                        var targetSwiper = to instanceof ol.source.NowMap ? app.baseSwiper : app.overlaySwiper;
+                        var otherSwiper = to instanceof ol.source.NowMap ? app.overlaySwiper : app.baseSwiper;
+                        targetSwiper.setSlideMapID(to.sourceID);
+                        otherSwiper.setSlideMapIDAsSelected();
+                    }
                 }
 
                 // This must be here: Because, render process works after view.setCenter,
