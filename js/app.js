@@ -467,6 +467,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                         }
                     },
                     centeredSlides: true,
+                    threshold: 2,
                     loop: true
                 });
                 baseSwiper.on('click', function(e) {
@@ -487,6 +488,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                         }
                     },
                     centeredSlides: true,
+                    threshold: 2,
                     loop: true
                 });
                 overlaySwiper.on('click', function(e) {
