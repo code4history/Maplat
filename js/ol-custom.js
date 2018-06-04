@@ -500,7 +500,7 @@ define(['ol3', 'resize'], function(ol, addResizeListener) {
 
     ol.control.Maplat = function(optOptions) {
         var options = optOptions || {};
-        options.character = '<img src="parts/Maplat.png">';
+        options.character = '<i class="fa fa-question-circle fa-lg"></i>';
         options.cls = 'ol-maplat';
         var self = this;
         options.callback = function() {
