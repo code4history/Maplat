@@ -636,6 +636,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                 }
             }
             app.pois = app.appData.pois;
+            app.startFrom = app.appData.start_from;
             app.lines = [];
 
             document.querySelector('title').innerHTML = app.translate(appName);
@@ -710,15 +711,15 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                     app.ellips();
                 }
 
-                var initial = cache[cache.length - 1];
+                var initial = app.startFrom || cache[cache.length - 1].sourceID;
                 app.from = cache.reduce(function(prev, curr) {
                     if (prev) {
-                        return !(prev instanceof ol.source.HistMap) && curr !== initial ? curr : prev;
+                        return !(prev instanceof ol.source.HistMap) && curr.sourceID != initial ? curr : prev;
                     }
-                    if (curr !== initial) return curr;
+                    if (curr.sourceID != initial) return curr;
                     return prev;
                 }, null);
-                app.changeMap(initial.sourceID);
+                app.changeMap(initial);
 
                 function showInfo(data) {
                     app.dispatchEvent(new CustomEvent('clickMarker', data));

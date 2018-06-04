@@ -12,6 +12,7 @@
     "fake_radius" : 10,
     "home_position" : [141.149989,39.699952],
     "default_zoom" : 17,
+    "start_from" : "morioka_ndl2",
     "sources" : [
         {
             "title" : "正保城絵図 南部領盛岡平城絵図 (正保元年) (TMS版)",
