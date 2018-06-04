@@ -5,6 +5,7 @@
   <title>Maplat</title>
   <meta content="yes" name="apple-mobile-web-app-capable">
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+  <link rel="icon" type="image/png" href="parts/favicon.png">
   <link rel="stylesheet" href="dist/maplat.css">
   <style>
     .mainview {
@@ -17,9 +18,9 @@
   </style>
 </head>
 <body>
-    <div class="mainview">
-        <div id="map_div"></div>
-    </div>
+  <div class="mainview">
+    <div id="map_div"></div>
+  </div>
 </body>
 <script src="dist/maplat.js"></script>
 <script>
@@ -31,7 +32,7 @@
     }
     option['overlay'] = true;
     Maplat.createObject(option).then(function(app){
-        app.addEventListener('clickPoi', function(evt) {
+        app.addEventListener('clickMarker', function(evt) {
             console.log(evt);
         });
     });
