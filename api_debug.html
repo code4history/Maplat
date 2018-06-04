@@ -5,6 +5,7 @@
   <title>Maplat</title>
   <meta content="yes" name="apple-mobile-web-app-capable">
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+  <link rel="icon" type="image/png" href="parts/favicon.png">
   <link rel="stylesheet" href="css/app.css">
   <style>
     .mainview {
@@ -17,10 +18,11 @@
   </style>
 </head>
 <body>
-    <div class="mainview">
-        <div id="map_div"></div>
-    </div>
+  <div class="mainview">
+    <div id="map_div"></div>
+  </div>
 </body>
+<script src="js/aigle-es5.min.js"></script>
 <script src="js/require.min.js"></script>
 <script src="js/config.js"></script>
 <script>
@@ -31,7 +33,7 @@
         option[hash[0]] = hash[1];
     }
     Maplat.createObject(option).then(function(app){
-        app.addEventListener('clickPoi', function(evt) {
+        app.addEventListener('clickMarker', function(evt) {
             console.log(evt);
         });
     });
