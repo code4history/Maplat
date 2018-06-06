@@ -43,4 +43,4 @@ Documentation is undergoing.
 Code 4 NaraからUrban data challenge 2016に応募中のMaplatと[地蔵プロジェクト](https://github.com/code4nara/JizoProject/wiki)をコラボレーションさせたデモを作りました。
 * https://s.maplat.jp/r/narajizomap/
 
-Maplat is suppoted by <img src="https://code4nara.github.io/Maplat/img/jetbrains-variant-4.png" width="150">
+Maplat is supported by <img src="https://code4nara.github.io/Maplat/img/jetbrains-variant-4.png" width="150">
