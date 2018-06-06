@@ -263,7 +263,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
             '<h4 class="modal-title">' +
 
             '<span id="modal_title"></span>' +
-            '<span id="modal_load_title" data-i18n="html.app_loading_title"></span>' +
+            '<span id="modal_load_title"></span>' +
             '<span id="modal_gpsW_title" data-i18n="html.acquiring_gps"></span>' +
             '<span id="modal_help_title" data-i18n="html.help_title"></span>' +
 
@@ -450,6 +450,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
             if (!noUI) {
                 var modalElm = app.mapDivDocument.querySelector('#modalBase');
                 var modal = new bsn.Modal(modalElm, {'root': app.mapDivDocument});
+                app.mapDivDocument.querySelector('#modal_load_title').innerText = app.translate(app.appData.app_name);
                 if (splash) {
                     app.mapDivDocument.querySelector('#splash_img').setAttribute('src', 'img/' + app.appData.splash);
                     app.mapDivDocument.querySelector('#splash_div').classList.remove('hide');

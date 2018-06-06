@@ -11,7 +11,6 @@
     "html": {
         "close": "閉じる",
         "app_loading_body": "アプリロード中です...",
-        "app_loading_title": "アプリロード中",
         "acquiring_gps": "GPS取得中",
         "author": "製作者",
         "createdAt": "作成時期",

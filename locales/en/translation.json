@@ -11,7 +11,6 @@
     "html": {
         "close": "Close",
         "app_loading_body": "Now loading application...",
-        "app_loading_title": "Loading application",
         "acquiring_gps": "Acquiring GPS",
         "author": "Author",
         "createdAt": "Created at",

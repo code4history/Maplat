@@ -4,6 +4,19 @@
 @import url('ol.css');
 
 .maplat {
+    @font-face{
+	    font-family: 'Clarendon';
+	    src: url('../fonts/clarenbd-webfont.eot');
+	    src: url('../fonts/clarenbd-webfont.eot?#iefix') format('embedded-opentype'),
+            url('../fonts/clarenbd-webfont.woff') format('woff'),
+	        url('../fonts/clarenbd-webfont.ttf') format('truetype'),
+	        url('../fonts/clarenbd-webfont.svg#webfont') format('svg');
+    }
+
+    #modal_load_title {
+        font-family: 'Clarendon';
+    }
+
     .modal_load .close, .modal_gpsW .close {
         display: none;
     }
