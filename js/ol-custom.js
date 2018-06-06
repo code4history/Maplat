@@ -114,6 +114,7 @@ define(['ol3', 'resize'], function(ol, addResizeListener) {
         thumbElement.setAttribute('type', 'button');
         thumbElement.className = className + '-thumb ' + ol.css.CLASS_UNSELECTABLE;
         var containerElement = document.createElement('div');
+        containerElement.title = options.tipLabel;
         containerElement.className = className + ' ' + ol.css.CLASS_UNSELECTABLE + ' ' + ol.css.CLASS_CONTROL;
         containerElement.appendChild(thumbElement);
         /**
@@ -361,6 +362,7 @@ define(['ol3', 'resize'], function(ol, addResizeListener) {
 
         var button = document.createElement('button');
         button.setAttribute('type', 'button');
+        button.title = options.tipLabel;
         var span = document.createElement('span');
         span.innerHTML = options.character;
         button.appendChild(span);
@@ -923,17 +925,17 @@ define(['ol3', 'resize'], function(ol, addResizeListener) {
         var overlayLayer = this._overlay_group = new ol.layer.Group();
         overlayLayer.set('name', 'overlay');
 
-        this.sliderCommon = new ol.control.SliderCommon({reverse: true});
+        this.sliderCommon = new ol.control.SliderCommon({reverse: true, tipLabel: t('control.trans', {ns: 'translation'})});
         var controls = optOptions.controls ? optOptions.controls :
             optOptions.off_control ? [] :
             [
-                new ol.control.Copyright(),
-                new ol.control.CompassRotate(),
-                new ol.control.Zoom(),
-                new ol.control.SetGPS(),
-                new ol.control.GoHome(),
+                new ol.control.Copyright({tipLabel: t('control.info', {ns: 'translation'})}),
+                new ol.control.CompassRotate({tipLabel: t('control.compass', {ns: 'translation'})}),
+                new ol.control.Zoom({tipLabel: t('control.zoom', {ns: 'translation'})}),
+                new ol.control.SetGPS({tipLabel: t('control.gps', {ns: 'translation'})}),
+                new ol.control.GoHome({tipLabel: t('control.home', {ns: 'translation'})}),
                 this.sliderCommon,
-                new ol.control.Maplat()
+                new ol.control.Maplat({tipLabel: t('control.help', {ns: 'translation'})})
             ];
 
         var options = {

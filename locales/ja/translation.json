@@ -1,4 +1,13 @@
 {
+    "control": {
+        "compass": "回転解除",
+        "info": "地図情報表示",
+        "zoom": "地図ズーム変更",
+        "gps": "GPS位置取得",
+        "home": "ホーム位置復帰",
+        "help": "ヘルプ表示",
+        "trans": "地図透明度変更"
+    },
     "html": {
         "close": "閉じる",
         "app_loading_body": "アプリロード中です...",

@@ -1,4 +1,13 @@
 {
+    "control": {
+        "compass": "Reset Rotation",
+        "info": "Show Map Information",
+        "zoom": "Change Map Zoom",
+        "gps": "Acquire GPS Position",
+        "home": "Go Home Position",
+        "help": "Show Help",
+        "trans": "Change Map Transparency"
+    },
     "html": {
         "close": "Close",
         "app_loading_body": "Now loading application...",
