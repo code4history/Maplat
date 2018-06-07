@@ -7,7 +7,7 @@
         'i18n': 'i18next.min',
         'i18nxhr': 'i18nextXHRBackend.min',
         'turf': 'turf_maplat.min',
-        'swiper': 'swiper.min',
+        'swiper': 'swiper',
         'ol3': 'ol-debug',
         'ol-custom': 'ol-custom',
         'bootstrap': 'bootstrap-native',
