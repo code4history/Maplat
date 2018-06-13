@@ -862,32 +862,30 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                 };
                 app.mapObject.on('postrender', backMapMove);
 
-                if (app.mobileIF) {
-                    app.mapObject.on('postrender', function(evt) {
-                        var view = app.mapObject.getView();
-                        var rotation = normalizeDegree(view.getRotation() * 180 / Math.PI);
-                        app.from.size2MercsAsync().then(function(mercs) {
-                            return app.mercSrc.mercs2SizeAsync(mercs);
-                        }).then(function(size) {
-                            if (app.mobileMapMoveBuffer && app.mobileMapMoveBuffer[0][0] == size[0][0] &&
-                                app.mobileMapMoveBuffer[0][1] == size[0][1] &&
-                                app.mobileMapMoveBuffer[1] == size[1] &&
-                                app.mobileMapMoveBuffer[2] == size[2]) {
-                                return;
-                            }
-                            app.mobileMapMoveBuffer = size;
-                            var ll = ol.proj.transform(size[0], 'EPSG:3857', 'EPSG:4326');
-                            app.dispatchEvent(new CustomEvent('changeViewpoint', {
-                                longitude: ll[0],
-                                latitude: ll[1],
-                                mercator: size[0],
-                                zoom: size[1],
-                                direction: normalizeDegree(size[2] * 180 / Math.PI),
-                                rotation: rotation
-                            }));
-                        });
+                app.mapObject.on('postrender', function(evt) {
+                    var view = app.mapObject.getView();
+                    var rotation = normalizeDegree(view.getRotation() * 180 / Math.PI);
+                    app.from.size2MercsAsync().then(function(mercs) {
+                        return app.mercSrc.mercs2SizeAsync(mercs);
+                    }).then(function(size) {
+                        if (app.mobileMapMoveBuffer && app.mobileMapMoveBuffer[0][0] == size[0][0] &&
+                            app.mobileMapMoveBuffer[0][1] == size[0][1] &&
+                            app.mobileMapMoveBuffer[1] == size[1] &&
+                            app.mobileMapMoveBuffer[2] == size[2]) {
+                            return;
+                        }
+                        app.mobileMapMoveBuffer = size;
+                        var ll = ol.proj.transform(size[0], 'EPSG:3857', 'EPSG:4326');
+                        app.dispatchEvent(new CustomEvent('changeViewpoint', {
+                            longitude: ll[0],
+                            latitude: ll[1],
+                            mercator: size[0],
+                            zoom: size[1],
+                            direction: normalizeDegree(size[2] * 180 / Math.PI),
+                            rotation: rotation
+                        }));
                     });
-                }
+                });
 
                 app.sliderCommon.on('propertychange', function(evt) {
                     if (evt.key === 'slidervalue') {
@@ -1053,9 +1051,8 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                     view.setZoom(size[1]);
                     view.setRotation(size[2]);
                 } else if (!app.__init) {
-                    if (app.mobileIF) {
-                        app.dispatchEvent(new CustomEvent('outOfMap', {}));
-                    } else {
+                    app.dispatchEvent(new CustomEvent('outOfMap', {}));
+                    if (!app.mobileIF) {
                         app.mapDivDocument.querySelector('#modal_title').innerText = app.t('app.out_of_map');
                         app.mapDivDocument.querySelector('#modal_gpsD_content').innerText = app.t('app.out_of_map_area');
                         var modalElm = app.mapDivDocument.querySelector('#modalBase');
