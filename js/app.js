@@ -833,7 +833,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
 
                 var mapOutHandler = function(evt) {
                     var histCoord = evt.frameState.viewState.center;
-                    var source = this.getSource();
+                    var source = app.from;
                     if (!source.insideCheckHistMapCoords(histCoord)) {
                         histCoord = source.modulateHistMapCoordsInside(histCoord);
                         this.getView().setCenter(histCoord);

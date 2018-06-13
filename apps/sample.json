@@ -23,7 +23,8 @@
             "label" : "1644 (TMS)",
             "mapID" : "morioka_ndl_affine",
             "maptype" : "overlay",
-            "url" : "./tiles/morioka_ndl_affine/{z}/{x}/{-y}.png"
+            "url" : "./tiles/morioka_ndl_affine/{z}/{x}/{-y}.png",
+            "envelopLngLats" : [[141.148301, 39.702719], [141.148301, 39.698298], [141.153234, 39.698298], [141.153234, 39.702719]]
         },
         {
             "mapID"     : "morioka_ndl2",

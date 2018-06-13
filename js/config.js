@@ -58,12 +58,12 @@ require.config({
     baseUrl: 'js',
     paths: {
         'i18nxhr': 'i18nextXHRBackend.min',
-        'ol3': 'ol-debug', //4.6.5
+        'ol3': 'ol-debug', // 4.6.5
         'ol-custom': 'ol-custom',
-        'i18n': 'i18next.min', //10.6.0
-        'turf': 'turf_maplat.min', //4.7.3
-        'swiper': 'swiper', //4.3.2
-        'bootstrap': 'bootstrap-native', //2.0.23
+        'i18n': 'i18next.min', // 10.6.0
+        'turf': 'turf_maplat.min', // 5.1.6
+        'swiper': 'swiper', // 4.3.2
+        'bootstrap': 'bootstrap-native', // 2.0.23
         'mapshaper': 'mapshaper_maplat',
         'resize': 'detect-element-resize'
     },

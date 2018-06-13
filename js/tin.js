@@ -18,32 +18,6 @@
             this.vertexMode = options.vertexMode || 'plain';
             this.strictMode = options.strictMode || 'auto';
 
-            // for turf inside patch
-
-            turf.inside = function input(point, polygon) {
-                var pt = turf.getCoord(point);
-                var polys = polygon.geometry.coordinates;
-                // normalize to multipolygon
-                if (polygon.geometry.type === 'Polygon') polys = [polys];
-
-                for (var i = 0, insidePoly = false; i < polys.length && !insidePoly; i++) {
-                    // check if it is in the outer ring first
-                    if (turf.inRing(pt, polys[i][0])) {
-                        var inHole = false;
-                        var k = 1;
-                        // check for the point in any of the holes
-                        while (k < polys[i].length && !inHole) {
-                            if (turf.inRing(pt, polys[i][k], true)) {
-                                inHole = true;
-                            }
-                            k++;
-                        }
-                        if (!inHole) insidePoly = true;
-                    }
-                }
-                return insidePoly;
-            };
-
             // pt is [x,y] and ring is [[x,y], [x,y],..]
             turf.inRing = function(pt, ring, ignoreBoundary) {
                 var isInside = false;
@@ -850,7 +824,7 @@
 
         function hit(point, tins) {
             for (var i=0; i< tins.features.length; i++) {
-                var inside = turf.inside(point, tins.features[i]);
+                var inside = turf.booleanPointInPolygon(point, tins.features[i]);
                 if (inside) {
                     return tins.features[i];
                 }
