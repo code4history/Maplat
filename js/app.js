@@ -764,16 +764,14 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                     if (feature) {
                         showInfo(feature.get('datum'));
                     } else {
-                        if (app.mobileIF) {
-                            var xy = evt.coordinate;
-                            app.from.xy2MercAsync(xy).then(function(merc){
-                                var lnglat = ol.proj.transform(merc, 'EPSG:3857', 'EPSG:4326');
-                                app.dispatchEvent(new CustomEvent('clickMap', {
-                                    longitude: lnglat[0],
-                                    latitude: lnglat[1]
-                                }));
-                            });
-                        }
+                        var xy = evt.coordinate;
+                        app.from.xy2MercAsync(xy).then(function(merc){
+                            var lnglat = ol.proj.transform(merc, 'EPSG:3857', 'EPSG:4326');
+                            app.dispatchEvent(new CustomEvent('clickMap', {
+                                longitude: lnglat[0],
+                                latitude: lnglat[1]
+                            }));
+                        });
                     }
                 };
                 app.mapObject.on('click', clickHandler);
