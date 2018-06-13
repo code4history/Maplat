@@ -835,12 +835,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                     var histCoord = evt.frameState.viewState.center;
                     var source = this.getSource();
                     if (!source.insideCheckHistMapCoords(histCoord)) {
-                        var xy = source.histMapCoords2Xy(histCoord);
-                        var dx = xy[0] / (source.width / 2) - 1;
-                        var dy = xy[1] / (source.height / 2) - 1;
-                        var da = Math.max(Math.abs(dx), Math.abs(dy));
-                        xy = [(dx / da + 1) * source.width / 2, (dy / da + 1) * source.height / 2];
-                        histCoord = source.xy2HistMapCoords(xy);
+                        histCoord = source.modulateHistMapCoordsInside(histCoord);
                         this.getView().setCenter(histCoord);
                     }
                 };

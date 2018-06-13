@@ -285,5 +285,18 @@ define(['ol-custom'], function(ol) {
         return this.insideCheckXy(this.histMapCoords2Xy(histCoords));
     };
 
+    ol.source.HistMap.prototype.modulateXyInside = function(xy) {
+        var dx = xy[0] / (this.width / 2) - 1;
+        var dy = xy[1] / (this.height / 2) - 1;
+        var da = Math.max(Math.abs(dx), Math.abs(dy));
+        return [(dx / da + 1) * this.width / 2, (dy / da + 1) * this.height / 2];
+    };
+
+    ol.source.HistMap.prototype.modulateHistMapCoordsInside = function(histCoords) {
+        var xy = this.histMapCoords2Xy(histCoords);
+        var ret = this.modulateXyInside(xy);
+        return this.xy2HistMapCoords(ret);
+    };
+
     return ol;
 });

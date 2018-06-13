@@ -1,4 +1,4 @@
-define(['ol3', 'resize'], function(ol, addResizeListener) {
+define(['ol3', 'resize', 'turf'], function(ol, addResizeListener, turf) {
     // Direct transforamation between 2 projection
     ol.proj.transformDirect = function(xy, src, dist) {
         if (!dist) {
@@ -813,6 +813,14 @@ define(['ol3', 'resize'], function(ol, addResizeListener) {
         self.fake_gps = options.fake_gps || false;
         self.thumbnail = options.thumbnail || './tmbs/' + (options.mapID || options.sourceID) + '_menu.jpg';
         self.label = options.label;
+        if (option.envelopLngLats) {
+            var mercs = options.envelopLngLats.map(function(lnglat){
+                return ol.proj.transform(lnglat, 'EPSG:4326', 'EPSG:3857');
+            });
+            mercs.push(mercs[0]);
+            self.envelop = turf.helpers.polygon(mercs);
+            self.centroid = turf.centroid(turf.envelop);
+        }
 
         for (var i = 0; i < ol.source.META_KEYS.length; i++) {
             var key = ol.source.META_KEYS[i];
@@ -873,11 +881,28 @@ define(['ol3', 'resize'], function(ol, addResizeListener) {
     };
 
     ol.source.NowMap.prototype.insideCheckXy = function(xy) {
-        return true;
+        if (!this.envelop) return true;
+        var point = turf.helpers.point(xy);
+        return turf.booleanPointInPolygon(point, this.envelop);
     };
 
     ol.source.NowMap.prototype.insideCheckHistMapCoords = function(histCoords) {
-        return true;
+        return this.insideCheckXy(histCoords);
+    };
+
+    ol.source.NowMap.prototype.modulateXyInside = function(xy) {
+        if (!this.centroid) return xy;
+        var expandLine = turf.lineString([xy, this.centroid]);
+        var intersect = turf.lineIntersect(this.envelop, expandLine);
+        if (intersect.features.length > 0 && intersect.features[0].geometry) {
+            return intersect.geometry.coordinates;
+        } else {
+            return xy;
+        }
+    };
+
+    ol.source.NowMap.prototype.modulateHistMapCoordsInside = function(histCoords) {
+        return modulateXyInside(histCoords);
     };
 
     ol.source.TmsMap = function(optOptions) {
