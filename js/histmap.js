@@ -182,7 +182,11 @@ define(['ol-custom'], function(ol) {
             }, options))
                 .then(function(obj) {
                     return new Promise(function(resolve, reject) {
-                        if (!options.gcps || options.gcps.length < 3) resolve(obj);
+                        if (options.noload) {
+                            /* MaplatEditor用 なくさない */
+                            resolve(obj);
+                            return;
+                        }
                         obj.mapSize2MercSize(resolve);
                     });
                 }).catch(function(err) {
