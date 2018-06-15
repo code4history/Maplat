@@ -182,9 +182,11 @@ define(['ol-custom', 'turf'], function(ol, turf) {
             }, options))
                 .then(function(obj) {
                     return new Promise(function(resolve, reject) {
-                        /* if (!options.gcps || options.gcps.length < 3) {
+                        if (options.noload) {
+                            /* MaplatEditor用 なくさない */
                             resolve(obj);
-                        } 問題なければ 0.1.7で削除*/
+                            return;
+                        }
                         obj.mapSize2MercSize(resolve);
                     });
                 }).catch(function(err) {
