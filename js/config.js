@@ -62,7 +62,7 @@ require.config({
         'ol-custom': 'ol-custom',
         'i18n': 'i18next.min', // 10.6.0
         'turf': 'turf_maplat.min', // 5.1.6
-        'swiper': 'swiper', // 4.3.2
+        'swiper': 'swiper', // 4.3.3 forMaplat
         'bootstrap': 'bootstrap-native', // 2.0.23
         'mapshaper': 'mapshaper_maplat',
         'resize': 'detect-element-resize'
