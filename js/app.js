@@ -504,6 +504,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
             app.mercBuffer = null;
             var homePos = app.appData.home_position;
             var defZoom = app.appData.default_zoom;
+            var zoomRestriction = app.appData.zoom_restriction;
             var mercMinZoom = app.appData.min_zoom;
             var mercMaxZoom = app.appData.max_zoom;
             var appName = app.appData.app_name;
@@ -657,6 +658,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
             var commonOption = {
                 home_position: homePos,
                 merc_zoom: defZoom,
+                zoom_restriction: zoomRestriction,
                 merc_min_zoom: mercMinZoom,
                 merc_max_zoom: mercMaxZoom,
                 fake_gps: fakeGps ? fakeRadius : false

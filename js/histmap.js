@@ -159,6 +159,11 @@ define(['ol-custom'], function(ol) {
         if (options.maptype == 'base' || options.maptype == 'overlay') {
             options.sourceID = options.mapID;
             var targetSrc = options.maptype == 'base' ? ol.source.NowMap : ol.source.TmsMap;
+            if (options.zoom_restriction) {
+                options.maxZoom = options.merc_max_zoom;
+                options.minZoom = options.merc_min_zoom;
+            }
+            options.zoom_restriction = options.merc_max_zoom = options.merc_min_zoom = undefined;
             return targetSrc.createAsync(Object.assign({
                 url: options.url,
                 sourceID: options.sourceID,
@@ -171,6 +176,7 @@ define(['ol-custom'], function(ol) {
         return new Promise(function(resolve, reject) {
             requirejs(['histmap_tin'], resolve);
         }).then(function() {
+            options.merc_max_zoom = options.merc_min_zoom = undefined;
             return ol.source.HistMap_tin.createAsync(Object.assign({
                 title: options.title || options.era,
                 mapID: options.mapID,
