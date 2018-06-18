@@ -863,6 +863,12 @@ define(['ol3', 'resize', 'turf'], function(ol, addResizeListener, turf) {
     };
     ol.inherits(ol.source.NowMap, ol.source.OSM);
     ol.source.NowMap.createAsync = function(options) {
+        if (options.merc_min_zoom) {
+            options.minZoom = options.merc_min_zoom;
+        }
+        if (options.merc_max_zoom) {
+            options.maxZoom = options.merc_max_zoom;
+        }
         return new Promise(function(resolve, reject) {
             var obj = new ol.source.NowMap(options);
             resolve(obj);
