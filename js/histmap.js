@@ -160,8 +160,8 @@ define(['ol-custom'], function(ol) {
             options.sourceID = options.mapID;
             var targetSrc = options.maptype == 'base' ? ol.source.NowMap : ol.source.TmsMap;
             if (options.zoom_restriction) {
-                options.maxZoom = options.merc_max_zoom;
-                options.minZoom = options.merc_min_zoom;
+                options.maxZoom = options.maxZoom || options.merc_max_zoom;
+                options.minZoom = options.minZoom || options.merc_min_zoom;
             }
             options.zoom_restriction = options.merc_max_zoom = options.merc_min_zoom = undefined;
             return targetSrc.createAsync(Object.assign({

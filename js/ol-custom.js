@@ -813,6 +813,8 @@ define(['ol3', 'resize', 'turf'], function(ol, addResizeListener, turf) {
         self.fake_gps = options.fake_gps || false;
         self.thumbnail = options.thumbnail || './tmbs/' + (options.mapID || options.sourceID) + '_menu.jpg';
         self.label = options.label;
+        self.maxZoom = options.maxZoom;
+        self.minZoom = options.minZoom;
         if (options.envelopLngLats) {
             var mercs = options.envelopLngLats.map(function(lnglat){
                 return ol.proj.transform(lnglat, 'EPSG:4326', 'EPSG:3857');
@@ -863,12 +865,6 @@ define(['ol3', 'resize', 'turf'], function(ol, addResizeListener, turf) {
     };
     ol.inherits(ol.source.NowMap, ol.source.OSM);
     ol.source.NowMap.createAsync = function(options) {
-        if (options.merc_min_zoom) {
-            options.minZoom = options.merc_min_zoom;
-        }
-        if (options.merc_max_zoom) {
-            options.maxZoom = options.merc_max_zoom;
-        }
         return new Promise(function(resolve, reject) {
             var obj = new ol.source.NowMap(options);
             resolve(obj);

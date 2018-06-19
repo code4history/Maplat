@@ -1052,6 +1052,10 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                 var opacity = app.sliderCommon.get('slidervalue') * 100;
                 app.mapObject.setOpacity(opacity);
                 var view = app.mapObject.getView();
+                if (app.appData.zoom_restriction) {
+                    view.setMaxZoom(to.maxZoom);
+                    view.setMinZoom(to.minZoom || 0);
+                }
                 if (to.insideCheckHistMapCoords(size[0])) {
                     view.setCenter(size[0]);
                     view.setZoom(size[1]);
