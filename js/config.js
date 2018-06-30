@@ -71,6 +71,9 @@ require.config({
         'i18nxhr': {
             deps: ['i18n']
         },
+        'ol3': {
+            exports: 'ol'
+        },
         'turf': {
             exports: 'turf'
         },
