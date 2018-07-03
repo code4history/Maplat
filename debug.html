@@ -32,12 +32,19 @@
         hash = hashes[i].split('=');
         option[hash[0]] = hash[1];
     }
-    Maplat.createObject(option).then(function(app){
-        app.addEventListener('clickMarker', function(evt) {
+    Maplat.createObject(option).then(function(app) {
+        app.addEventListener('clickMarker', function (evt) {
             console.log(evt);
         });
-        app.addEventListener('clickMap', function(evt) {
+        app.addEventListener('clickMap', function (evt) {
             console.log(evt);
+        });
+        app.addLine({
+            lnglats: [[141.151995, 39.701599], [141.151137, 39.703736], [141.1521671, 39.7090232]],
+            stroke: {
+                color: '#ffcc33',
+                width: 2
+            }
         });
     });
 </script>
