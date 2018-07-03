@@ -231,6 +231,8 @@ define(['ol-custom'], function(ol) {
                             image.crossOrigin='Anonymous';
                             tileLoadFn(tile, src);
                         }
+                    } else {
+                        tile.handleImageError_();
                     }
                     --numLoadingTiles;
                     if (numLoadingTiles === 0) {
