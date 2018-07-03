@@ -8,7 +8,7 @@
         'i18nxhr': 'i18nextXHRBackend.min',
         'turf': 'turf_maplat.min',
         'swiper': 'swiper',
-        'ol3': 'ol-debug',
+        'ol3': 'ol-maplat',
         'ol-custom': 'ol-custom',
         'bootstrap': 'bootstrap-native',
         'mapshaper': 'mapshaper_maplat',
@@ -17,6 +17,9 @@
     shim: {
         'i18nxhr': {
             deps: ['i18n']
+        },
+        'ol3': {
+            exports: 'ol'
         },
         'turf': {
             exports: 'turf'
