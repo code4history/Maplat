@@ -58,7 +58,7 @@ require.config({
     baseUrl: 'js',
     paths: {
         'i18nxhr': 'i18nextXHRBackend.min',
-        'ol3': 'ol-debug', // 4.6.5
+        'ol3': 'ol-maplat', // 5.0.0 forMaplat
         'ol-custom': 'ol-custom',
         'i18n': 'i18next.min', // 10.6.0
         'turf': 'turf_maplat.min', // 5.1.6
@@ -70,6 +70,9 @@ require.config({
     shim: {
         'i18nxhr': {
             deps: ['i18n']
+        },
+        'ol3': {
+            exports: 'ol'
         },
         'turf': {
             exports: 'turf'

@@ -17,13 +17,6 @@ define(['histmap', 'tin'], function(ol, Tin) {
     ol.source.HistMap_tin.createAsync = function(options) {
         // MaplatEditorでjson経由でなく地図設定を読み込むための処理。なくさないこと。
         if (options.noload) {
-            if (options.attr && !options.attributions) {
-                options.attributions = [
-                    new ol.Attribution({
-                        html: options.attr
-                    })
-                ];
-            }
             return Promise.resolve(new ol.source.HistMap_tin(options));
         }
 
@@ -50,13 +43,6 @@ define(['histmap', 'tin'], function(ol, Tin) {
                         options.vertexMode = options.vertexMode || resp.vertexMode;
                         options.pois = options.pois || resp.pois;
                         options.label = ol.source.translate(options.label || resp.label || resp.year);
-                        if (options.attr && !options.attributions) {
-                            options.attributions = [
-                                new ol.Attribution({
-                                    html: options.attr
-                                })
-                            ];
-                        }
                         var obj = new ol.source.HistMap_tin(options);
                         var proj = new ol.proj.Projection({
                             code: 'Illst:' + obj.mapID,

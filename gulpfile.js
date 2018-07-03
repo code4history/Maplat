@@ -99,7 +99,7 @@ gulp.task('build_withoutpromise', function() {
 });
 
 gulp.task('less', function() {
-    var lesses = ['ol', 'font-awesome', 'bootstrap', 'swiper', 'app'];
+    var lesses = ['ol-maplat', 'font-awesome', 'bootstrap', 'swiper', 'app'];
     lesses.map(function(less) {
         execSync('lessc -x less/' + less + '.less > css/' + less + '.css');
     });
