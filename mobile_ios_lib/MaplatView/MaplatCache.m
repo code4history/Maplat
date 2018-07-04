@@ -16,13 +16,16 @@
     NSString *ext = url.pathExtension;
     NSString *path = url.path;
     NSString *host = url.host;
-    NSBundle *bundle = [NSBundle mainBundle];
-    NSString *assetDirectory = [bundle bundlePath];
-    NSString *resDirectory = [bundle pathForResource:@"Maplat" ofType:@"bundle"];
-
+    
+    NSBundle *mainBundle = [NSBundle mainBundle];
+    NSString *mainAssetDirectory = [mainBundle bundlePath];
+    
+    NSBundle *maplatBundle = [NSBundle bundleForClass:[self class]];
+    NSString *maplatResDirectory = [maplatBundle pathForResource:@"Maplat" ofType:@"bundle"];
+    
     if ([host isEqualToString:@"localresource"]) {
-        NSString *file = [assetDirectory stringByAppendingString:path];
-        NSString *resFile = [resDirectory stringByAppendingString:path];
+        NSString *file = [mainAssetDirectory stringByAppendingString:path];
+        NSString *resFile = [maplatResDirectory stringByAppendingString:path];
         NSFileManager *fm = [NSFileManager defaultManager];
         NSString *mime = [ext isEqualToString:@"html"] ? @"text/html" :
          [ext isEqualToString:@"js"] ? @"application/javascript" :
