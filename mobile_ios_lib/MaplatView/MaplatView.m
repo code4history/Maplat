@@ -1,44 +1,58 @@
 //
-//  MaplatBridge.m
-//  mobile_ios
+//  MaplatView.m
+//  MaplatView
 //
-//  Created by 大塚 恒平 on 2018/03/16.
-//  Copyright © 2018年 TileMapJp. All rights reserved.
+//  Created by Takashi Irie on 2018/07/03.
+//  Copyright © 2018 TileMapJp. All rights reserved.
 //
 
-#import "MaplatBridge.h"
+#import "MaplatView.h"
 #import "MaplatCache.h"
 
-@interface MaplatBridge () <MaplatCacheDelegate>
+@interface MaplatView () <MaplatCacheDelegate>
 
 @property (nonatomic, strong) MaplatCache *cache;
-@property (nonatomic, strong) UIWebView *webView;
 @property (nonatomic, strong) NSDictionary *initializeValue;
 
 @end
 
-@implementation MaplatBridge
+@implementation MaplatView
 
-- (id) initWithWebView:(UIWebView *)webView appID:(NSString *)appID setting:(NSDictionary *)setting {
-    if (self = [super init]) {
-        self.webView = webView;
++ (void)configure {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *path = [[paths objectAtIndex:0] stringByAppendingString:@"/webCache"];
+    
+    NSURLCache *defaultCache = [NSURLCache sharedURLCache];
+    NSURLCache *maplatCache = [[MaplatCache alloc] initWithMemoryCapacity:defaultCache.memoryCapacity
+                                                             diskCapacity:defaultCache.diskCapacity
+                                                                 diskPath:path];
+    [NSURLCache setSharedURLCache:maplatCache];
+}
 
-        _cache = (MaplatCache *)[NSURLCache sharedURLCache];
-        _cache.delegate = self;
-        
-        self.webView.delegate = _cache;
-        [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://localresource/mobile.html"]]];
-        
-        if (!appID) {
-            appID = @"mobile";
-        }
-        NSMutableDictionary *jsonObj = [NSMutableDictionary new];
-        [jsonObj setValue:appID forKey:@"appid"];
-        if (setting) {
-            [jsonObj setValue:setting forKey:@"setting"];
-        }
-        _initializeValue = jsonObj;
+- (instancetype)initWithFrame:(CGRect)frame appID:(NSString *)appID setting:(NSDictionary *)setting {
+    self = [super initWithFrame:frame];
+    if (!self) return nil;
+    
+    _cache = (MaplatCache *)[NSURLCache sharedURLCache];
+    _cache.delegate = self;
+    
+    _webView = [[UIWebView alloc] initWithFrame:self.bounds];
+    _webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    _webView.delegate = _cache;
+    [self addSubview:_webView];
+    
+    [_webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://localresource/mobile.html"]]];
+    
+    if (!appID) {
+        appID = @"mobile";
     }
+    NSMutableDictionary *jsonObj = [NSMutableDictionary new];
+    [jsonObj setValue:appID forKey:@"appid"];
+    if (setting) {
+        [jsonObj setValue:setting forKey:@"setting"];
+    }
+    _initializeValue = jsonObj;
+    
     return self;
 }
 
@@ -216,3 +230,4 @@
 }
 
 @end
+

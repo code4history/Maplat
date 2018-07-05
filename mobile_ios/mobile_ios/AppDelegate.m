@@ -8,7 +8,8 @@
 
 #import "AppDelegate.h"
 #import "ViewController.h"
-#import "MaplatCache.h"
+
+@import MaplatView;
 
 @interface AppDelegate ()
 
@@ -18,15 +19,11 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    
     // Override point for customization after application launch.
     self.window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
     
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *path = [[paths objectAtIndex:0] stringByAppendingString:@"/webCache"];
-    
-    NSURLCache *defaultCache = [NSURLCache sharedURLCache];
-    [NSURLCache setSharedURLCache:[[MaplatCache alloc] initWithMemoryCapacity:[defaultCache memoryCapacity]
-                                                                diskCapacity:[defaultCache diskCapacity] diskPath:path]];
+    [MaplatView configure];
     
     UIViewController *viewController = [ViewController new];
     self.window.rootViewController = viewController;

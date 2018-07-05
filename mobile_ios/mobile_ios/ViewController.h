@@ -6,11 +6,13 @@
 //  Copyright © 2017年 TileMapJp. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+@import UIKit;
+
+@class MaplatView;
 
 @interface ViewController : UIViewController
 
-@property (retain, nonatomic) UIWebView *webView;
+@property (retain, nonatomic) MaplatView *maplatView;
 
 @end
 
