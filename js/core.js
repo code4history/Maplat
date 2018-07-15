@@ -1,5 +1,5 @@
-define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
-    function(ol, sprintf, i18n, i18nxhr, Swiper, bsn) {
+define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'bootstrap'],
+    function(ol, sprintf, i18n, i18nxhr, bsn) {
     var browserLanguage = function() {
         var ua = window.navigator.userAgent.toLowerCase();
         try {
@@ -175,17 +175,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
         // Add UI HTML Element
         var newElems = createElement('<div class="ol-control map-title"><span></span></div>' +
             '<img id="center_circle" class="prevent-default" style="position:absolute;top:50%;left:50%;margin-top:-10px;' +
-            'margin-left:-10px;" src="./parts/redcircle.png">' +
-            '<div class="swiper-container ol-control base-swiper prevent-default">' +
-            '<i class="fa fa-chevron-left swiper-left-icon" aria-hidden="true"></i>' +
-            '<i class="fa fa-chevron-right swiper-right-icon" aria-hidden="true"></i>' +
-            '<div class="swiper-wrapper"></div>' +
-            '</div>' +
-            '<div class="swiper-container ol-control overlay-swiper prevent-default">' +
-            '<i class="fa fa-chevron-left swiper-left-icon" aria-hidden="true"></i>' +
-            '<i class="fa fa-chevron-right swiper-right-icon" aria-hidden="true"></i>' +
-            '<div class="swiper-wrapper"></div>' +
-            '</div>');
+            'margin-left:-10px;" src="./parts/redcircle.png">');
         for (var i=newElems.length - 1; i >= 0; i--) {
             app.mapDivDocument.insertBefore(newElems[i], app.mapDivDocument.firstChild);
         }
@@ -287,8 +277,6 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
             app.mapDivDocument.classList.add('with-opacity');
         }
         if (noUI) {
-            app.mapDivDocument.querySelector('.base-swiper').style.display = 'none';
-            app.mapDivDocument.querySelector('.overlay-swiper').style.display = 'none';
             app.mapDivDocument.querySelector('.map-title').style.display = 'none';
         }
         var appPromise = mapType ?
@@ -386,7 +374,6 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
             app.appData = result[1];
             app.i18n = result[0][1];
             app.t = result[0][0];
-            var baseSwiper, overlaySwiper;
             ol.source.setI18n(app.i18n, app.t);
 
             // Check Splash data
@@ -403,49 +390,9 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                 }
                 modalSetting('load');
                 modal.show();
-                baseSwiper = app.baseSwiper = new Swiper('.base-swiper', {
-                    slidesPerView: 2,
-                    spaceBetween: 15,
-                    breakpoints: {
-                        // when window width is <= 480px
-                        480: {
-                            slidesPerView: 1.4,
-                            spaceBetween: 10
-                        }
-                    },
-                    centeredSlides: true,
-                    threshold: 2,
-                    loop: true
-                });
-                baseSwiper.on('click', function(e) {
-                    e.preventDefault();
-                    if (!baseSwiper.clickedSlide) return;
-                    var slide = baseSwiper.clickedSlide;
-                    app.changeMap(slide.getAttribute('data'));
-                    baseSwiper.setSlideIndexAsSelected(slide.getAttribute('data-swiper-slide-index'));
-                });
-                overlaySwiper = app.overlaySwiper = new Swiper('.overlay-swiper', {
-                    slidesPerView: 2,
-                    spaceBetween: 15,
-                    breakpoints: {
-                        // when window width is <= 480px
-                        480: {
-                            slidesPerView: 1.4,
-                            spaceBetween: 10
-                        }
-                    },
-                    centeredSlides: true,
-                    threshold: 2,
-                    loop: true
-                });
-                overlaySwiper.on('click', function(e) {
-                    e.preventDefault();
-                    if (!overlaySwiper.clickedSlide) return;
-                    var slide = overlaySwiper.clickedSlide;
-                    app.changeMap(slide.getAttribute('data'));
-                    overlaySwiper.setSlideIndexAsSelected(slide.getAttribute('data-swiper-slide-index'));
-                });
             }
+
+            app.dispatchEvent(new CustomEvent('uiPrepare'));
 
             app.mercBuffer = null;
             var homePos = app.appData.home_position;
@@ -622,6 +569,8 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                     modal.hide();
                 }
 
+                app.dispatchEvent(new CustomEvent('sourceLoaded', sources));
+
                 if (mapType) {
                     var index = sources.length - 1;
                     homePos = sources[index].home_position;
@@ -633,15 +582,6 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                 app.cacheHash = {};
                 for (var i=0; i<sources.length; i++) {
                     var source = sources[i];
-                    if (!noUI) {
-                        if (source instanceof ol.source.NowMap && !(source instanceof ol.source.TmsMap)) {
-                            baseSwiper.appendSlide('<div class="swiper-slide" data="' + source.sourceID + '">' +
-                                '<img crossorigin="anonymous" src="' + source.thumbnail + '"><div>' + source.label + '</div></div>');
-                        } else {
-                            overlaySwiper.appendSlide('<div class="swiper-slide" data="' + source.sourceID + '">' +
-                                '<img crossorigin="anonymous" src="' + source.thumbnail + '"><div>' + source.label + '</div></div>');
-                        }
-                    }
                     if (mapType) {
                         source.home_position = homePos;
                         source.merc_zoom = defZoom;
@@ -649,13 +589,6 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                     source._map = app.mapObject;
                     cache.push(source);
                     app.cacheHash[source.sourceID] = source;
-                }
-                if (!noUI) {
-                    baseSwiper.on;
-                    overlaySwiper.on;
-                    baseSwiper.slideToLoop(0);
-                    overlaySwiper.slideToLoop(0);
-                    app.ellips();
                 }
 
                 var initial = app.startFrom || cache[cache.length - 1].sourceID;
@@ -943,15 +876,9 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                             // If current background source is set, use it again
                             backTo = backSrc;
                         }
-                        if (!app.noUI) {
-                            app.baseSwiper.setSlideMapID(backTo.sourceID);
-                        }
                     } else if (to instanceof ol.source.NowMap) {
                         // If new foreground source is basemap or TMS overlay, remove source from background map
                         app.backMap.exchangeSource();
-                        if (!app.noUI) {
-                            app.baseSwiper.setSlideMapIDAsSelected();
-                        }
                     }
                     if (!(to instanceof ol.source.NowMap) || to instanceof ol.source.TmsMap) {
                         // If new foreground is nonlinear map or TMS overlay, enable opacity slider
@@ -965,10 +892,6 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                 if (to instanceof ol.source.TmsMap) {
                     // Foreground is TMS overlay case: set TMS as Layer
                     app.mapObject.setLayer(to);
-                    if (!app.noUI) {
-                        app.overlaySwiper.setSlideMapID(to.sourceID);
-                        app.baseSwiper.setSlideMapID();
-                    }
                     // If current foreground is basemap then set it as basemap layer
                     if (!(app.from instanceof ol.source.NowMap)) {
                         var backToLocal = backSrc || now;
@@ -979,13 +902,8 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
                     // Remove overlay from foreground and set current source to foreground
                     app.mapObject.setLayer();
                     app.mapObject.exchangeSource(to);
-                    if (!app.noUI) {
-                        var targetSwiper = to instanceof ol.source.NowMap ? app.baseSwiper : app.overlaySwiper;
-                        var otherSwiper = to instanceof ol.source.NowMap ? app.overlaySwiper : app.baseSwiper;
-                        targetSwiper.setSlideMapID(to.sourceID);
-                        otherSwiper.setSlideMapIDAsSelected();
-                    }
                 }
+                app.dispatchEvent(new CustomEvent('mapChanged', to.sourceID));
 
                 // This must be here: Because, render process works after view.setCenter,
                 // and Changing "from" content must be finished before "postrender" event
@@ -1134,68 +1052,6 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'swiper', 'bootstrap'],
             app.i18n.addResource(lang, 'translation', key, dataFragment[lang]);
         }
         return app.t(key, {ns: 'translation', nsSeparator: '__X__yX__X__'});
-    };
-
-    MaplatApp.prototype.ellips = function() {
-        var app = this;
-        var omitMark = '…';
-        var omitLine = 2;
-        var stringSplit = function(element) {
-            var splitArr = element.innerText.split('');
-            var joinString = '';
-            for (var i = 0; i < splitArr.length; i++) {
-                joinString += '<span>' + splitArr[i] + '</span>';
-            }
-            joinString += '<span class="omit-mark">' + omitMark + '</span>';
-            element.innerHTML = joinString;
-        };
-        var omitCheck = function(element) {
-            var thisSpan = element.querySelectorAll('span');
-            var omitSpan = element.querySelector('.omit-mark');
-            var lineCount = 0;
-            var omitCount;
-
-            if(omitLine <= 0) {
-                return;
-            }
-
-            thisSpan[0].style.display = '';
-            for (var i=1; i < thisSpan.length; i++) {
-                thisSpan[i].style.display = 'none';
-            }
-            omitSpan.style.display = '';
-            var divHeight = element.offsetHeight;
-            var minimizeFont = false;
-            for (var i = 1; i < thisSpan.length - 1; i++) {
-                thisSpan[i].style.display = '';
-                if(element.offsetHeight > divHeight) {
-                    if (!minimizeFont) {
-                        minimizeFont = true;
-                        element.classList.add('minimize');
-                    } else {
-                        divHeight = element.offsetHeight;
-                        lineCount++;
-                    }
-                }
-                if(lineCount >= omitLine) {
-                    omitCount = i - 2;
-                    break;
-                }
-                if(i >= thisSpan.length - 2) {
-                    omitSpan.style.display ='none';
-                    return;
-                }
-            }
-            for (var i = omitCount; i < thisSpan.length - 1; i++) {
-                thisSpan[i].style.display = 'none';
-            }
-        };
-        var swiperItems = app.mapDivDocument.querySelectorAll('.swiper-slide div');
-        for (var i = 0; i < swiperItems.length; i++) {
-            var swiperItem = swiperItems[i];
-            stringSplit(swiperItem);
-            omitCheck(swiperItem);
-        }
     };
 
     return MaplatApp;
