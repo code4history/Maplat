@@ -1,5 +1,5 @@
-define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'bootstrap'],
-    function(ol, sprintf, i18n, i18nxhr, bsn) {
+define(['histmap', 'i18n', 'i18nxhr'],
+    function(ol, i18n, i18nxhr) {
     var browserLanguage = function() {
         var ua = window.navigator.userAgent.toLowerCase();
         try {
@@ -134,20 +134,15 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'bootstrap'],
         ol.events.EventTarget.call(app);
         var mapType = appOption.stroly ? 'stroly' : appOption.drumsey ? 'drumsey' : appOption.warper ? 'warper' : null;
         var appid = appOption.appid || (mapType ? appOption[mapType] : 'sample');
-        app.mobileIF = false;
         app.mapDiv = appOption.div || 'map_div';
         app.mapDivDocument = document.querySelector('#' + app.mapDiv);
         app.mapDivDocument.classList.add('maplat');
         if ('ontouchstart' in window) {
             app.mapDivDocument.classList.add('ol-touch');
         }
-        var noUI = appOption.no_ui || false;
         if (appOption.mobile_if) {
-            app.mobileIF = true;
-            noUI = true;
             appOption.debug = true;
         }
-        app.noUI = noUI;
         app.logger = new Logger(appOption.debug ? LoggerLevel.ALL : LoggerLevel.INFO);
         var lang = appOption.lang;
         if (!lang) {
@@ -176,9 +171,6 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'bootstrap'],
         var noRotate = appOption.no_rotate || false;
         if (overlay) {
             app.mapDivDocument.classList.add('with-opacity');
-        }
-        if (noUI) {
-            app.mapDivDocument.querySelector('.map-title').style.display = 'none';
         }
         var appPromise = mapType ?
             new Promise(function(resolve, reject) {
@@ -309,9 +301,6 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'bootstrap'],
                     off_control: true,
                     div: backDiv
                 });
-            }
-            if (!noUI) {
-
             }
             app.pois = app.appData.pois;
             app.startFrom = app.appData.start_from;

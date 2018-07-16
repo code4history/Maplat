@@ -296,7 +296,7 @@ define(['core', 'sprintf', 'swiper', 'ol3', 'bootstrap'], function(Core, sprintf
             ui.overlaySwiper.setSlideMapID(map.sourceID);
 
             var title = map.officialTitle || map.title || map.label;
-            ui.core.mapDivDocument.querySelector('.map-title span').innerText = title;
+            ui.core.mapDivDocument.querySelector('.map-title span').innerText = ui.core.translate(title);
 
             if (ui.checkOverlayID(map.sourceID)) {
                 ui.sliderCommon.setEnable(true);
@@ -410,14 +410,14 @@ define(['core', 'sprintf', 'swiper', 'ol3', 'bootstrap'], function(Core, sprintf
             ui.core.mapObject.on('click_control', function(evt) {
                 var control = evt.frameState.control;
                 if (control == 'copyright') {
-                    var from = ui.core.from; // app.mapObject.getSource();
+                    var from = ui.core.getMapMeta();
 
                     if (!ol.source.META_KEYS.reduce(function(prev, curr) {
                         if (curr == 'title') return prev;
                         return from[curr] || prev;
                     }, false)) return;
 
-                    ui.core.mapDivDocument.querySelector('#modal_title').innerText = from.officialTitle || from.title;
+                    ui.core.mapDivDocument.querySelector('#modal_title').innerText = ui.core.translate(from.officialTitle || from.title);
                     ol.source.META_KEYS.map(function(key) {
                         if (key == 'title' || key == 'officialTitle') return;
                         if (!from[key] || from[key] == '') {
@@ -427,7 +427,7 @@ define(['core', 'sprintf', 'swiper', 'ol3', 'bootstrap'], function(Core, sprintf
                             ui.core.mapDivDocument.querySelector('#' + key).innerHTML =
                                 (key == 'license' || key == 'dataLicense') ?
                                     '<img src="parts/' + from[key].toLowerCase().replace(/ /g, '_') + '.png">' :
-                                    from[key];
+                                    ui.core.translate(from[key]);
                         }
                     });
                     var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
@@ -450,13 +450,7 @@ define(['core', 'sprintf', 'swiper', 'ol3', 'bootstrap'], function(Core, sprintf
                 var elem = ui.core.mapDivDocument.querySelector('#modal_gpsW_content');
                 elem.appendChild(newElem);
             }
-
-
-
         });
-
-
-
     };
 
     ol.inherits(MaplatUi, ol.events.EventTarget);

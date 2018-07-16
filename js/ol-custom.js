@@ -824,7 +824,7 @@ define(['ol3', 'resize', 'turf'], function(ol, addResizeListener, turf) {
 
         for (var i = 0; i < ol.source.META_KEYS.length; i++) {
             var key = ol.source.META_KEYS[i];
-            self[key] = ol.source.translate(options[key]);
+            self[key] = options[key];
         }
     };
 
