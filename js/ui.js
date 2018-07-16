@@ -94,7 +94,108 @@ define(['core', 'sprintf', 'swiper', 'ol3', 'bootstrap'], function(Core, sprintf
             });
         }
 
+        var newElems = Core.createElement('<div class="modal" id="modalBase" tabindex="-1" role="dialog" ' +
+            'aria-labelledby="staticModalLabel" aria-hidden="true" data-show="true" data-keyboard="false" ' +
+            'data-backdrop="static">' +
+            '<div class="modal-dialog">' +
+            '<div class="modal-content">' +
+            '<div class="modal-header">' +
+            '<button type="button" class="close" data-dismiss="modal">' +
+            '<span aria-hidden="true">&#215;</span><span class="sr-only" data-i18n="html.close"></span>' +
+            '</button>' +
+            '<h4 class="modal-title">' +
+
+            '<span id="modal_title"></span>' +
+            '<span id="modal_load_title"></span>' +
+            '<span id="modal_gpsW_title" data-i18n="html.acquiring_gps"></span>' +
+            '<span id="modal_help_title" data-i18n="html.help_title"></span>' +
+
+            '</h4>' +
+            '</div>' +
+            '<div class="modal-body">' +
+
+            '<div id="modal_help_content">' +
+            '<div id="help_content">' +
+            '<span data-i18n-html="html.help_using_maplat"></span>' +
+            '<p class="col-xs-12 help_img"><img src="parts/fullscreen.png"></p>' +
+            '<h4 data-i18n="html.help_operation_title"></h4>' +
+            '<p data-i18n-html="html.help_operation_content" class="recipient"></p>' +
+            '<h4 data-i18n="html.help_selection_title"></h4>' +
+            '<p data-i18n-html="html.help_selection_content" class="recipient"></p>' +
+            '<h4 data-i18n="html.help_gps_title"></h4>' +
+            '<p data-i18n-html="html.help_gps_content" class="recipient"></p>' +
+            '<h4 data-i18n="html.help_poi_title"></h4>' +
+            '<p data-i18n-html="html.help_poi_content" class="recipient"></p>' +
+            '<h4 data-i18n="html.help_etc_title"></h4>' +
+            '<ul>' +
+            '<li data-i18n-html="html.help_etc_attr" class="recipient"></li>' +
+            '<li data-i18n-html="html.help_etc_help" class="recipient"></li>' +
+            '<li data-i18n-html="html.help_etc_slider" class="recipient"></li>' +
+            '</ul>' +
+            '<p><a href="https://github.com/code4nara/Maplat/wiki" target="_blank">Maplat</a>' +
+            ' © 2015- Kohei Otsuka, Code for Nara, RekishiKokudo project</p>' +
+            '</div>' +
+            '</div>' +
+
+            '<div id="modal_poi_content">' +
+            '<div id="poi_web" class="embed-responsive embed-responsive-60vh">' +
+            '<iframe id="poi_iframe" class="iframe_poi" frameborder="0" src=""></iframe>' +
+            '</div>' +
+            '<div id="poi_data" class="hide">' +
+            '<p class="col-xs-12 poi_img"><img id="poi_img" src=""></p>' +
+            '<p class="recipient" id="poi_address"></p>' +
+            '<p class="recipient" id="poi_desc"></p>' +
+            '</div>' +
+            '</div>' +
+
+            '<div id="modal_map_content">' +
+
+            ol.source.META_KEYS.map(function(key) {
+                if (key == 'title' || key == 'officialTitle') return '';
+
+                return '<div class="recipients" id="' + key + '_div"><dl class="dl-horizontal">' +
+                    '<dt data-i18n="html.' + key + '"></dt>' +
+                    '<dd id="' + key + '"></dd>' +
+                    '</dl></div>';
+            }).join('') +
+
+            '</div>' +
+
+            '<div id="modal_load_content">' +
+            '<p class="recipient"><img src="parts/loading.gif"><span data-i18n="html.app_loading_body"></span></p>' +
+            '<div id="splash_div" class="hide"><p class="col-xs-12 poi_img"><img id="splash_img" src=""></p>' +
+            '<p class="recipient">　</p></div>' +
+            '</div>' +
+
+            '<p id="modal_gpsD_content" class="recipient"></p>' +
+            '<p id="modal_gpsW_content" class="recipient"></p>' +
+
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '</div>');
+        for (var i=newElems.length - 1; i >= 0; i--) {
+            ui.core.mapDivDocument.insertBefore(newElems[i], ui.core.mapDivDocument.firstChild);
+        }
+
         ui.core.addEventListener('uiPrepare', function(evt) {
+            ui.sliderCommon = new ol.control.SliderCommon({reverse: true, tipLabel: ui.core.t('control.trans', {ns: 'translation'})});
+            ui.core.appData.controls = [
+                new ol.control.Copyright({tipLabel: ui.core.t('control.info', {ns: 'translation'})}),
+                new ol.control.CompassRotate({tipLabel: ui.core.t('control.compass', {ns: 'translation'})}),
+                new ol.control.Zoom({tipLabel: ui.core.t('control.zoom', {ns: 'translation'})}),
+                new ol.control.SetGPS({tipLabel: ui.core.t('control.gps', {ns: 'translation'})}),
+                new ol.control.GoHome({tipLabel: ui.core.t('control.home', {ns: 'translation'})}),
+                ui.sliderCommon,
+                new ol.control.Maplat({tipLabel: ui.core.t('control.help', {ns: 'translation'})})
+            ];
+
+            ui.sliderCommon.on('propertychange', function(evt) {
+                if (evt.key === 'slidervalue') {
+                    ui.core.mapObject.setOpacity(ui.sliderCommon.get(evt.key) * 100);
+                }
+            });
+
             // Check Splash data
             var splash = false;
             if (ui.core.appData.splash) splash = true;
@@ -196,6 +297,53 @@ define(['core', 'sprintf', 'swiper', 'ol3', 'bootstrap'], function(Core, sprintf
 
             var title = map.officialTitle || map.title || map.label;
             ui.core.mapDivDocument.querySelector('.map-title span').innerText = title;
+
+            if (ui.checkOverlayID(map.sourceID)) {
+                ui.sliderCommon.setEnable(true);
+            } else {
+                ui.sliderCommon.setEnable(false);
+            }
+            var opacity = ui.sliderCommon.get('slidervalue') * 100;
+            ui.core.mapObject.setOpacity(opacity);
+        });
+
+        ui.core.addEventListener('outOfMap', function(evt) {
+            ui.core.mapDivDocument.querySelector('#modal_title').innerText = ui.core.t('app.out_of_map');
+            ui.core.mapDivDocument.querySelector('#modal_gpsD_content').innerText = ui.core.t('app.out_of_map_area');
+            var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
+            var modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
+            modalSetting('gpsD');
+            modal.show();
+        });
+
+        ui.core.addEventListener('clickMarker', function(evt) {
+            var data = evt.detail;
+            ui.core.mapDivDocument.querySelector('#modal_title').innerText = ui.core.translate(data.name);
+            if (data.url || data.html) {
+                ui.core.mapDivDocument.querySelector('#poi_web').classList.remove('hide');
+                ui.core.mapDivDocument.querySelector('#poi_data').classList.add('hide');
+                if (data.html) {
+                    ui.core.mapDivDocument.querySelector('#poi_iframe').setAttribute('srcdoc', ui.core.translate(data.html));
+                } else {
+                    ui.core.mapDivDocument.querySelector('#poi_iframe').setAttribute('src', ui.core.translate(data.url));
+                }
+            } else {
+                ui.core.mapDivDocument.querySelector('#poi_data').classList.remove('hide');
+                ui.core.mapDivDocument.querySelector('#poi_web').classList.add('hide');
+
+                if (data.image && data.image != '') {
+                    ui.core.mapDivDocument.querySelector('#poi_img').setAttribute('src',
+                        data.image.match(/^http/) ? data.image : 'img/' + data.image);
+                } else {
+                    ui.core.mapDivDocument.querySelector('#poi_img').setAttribute('src', 'parts/no_image.png');
+                }
+                ui.core.mapDivDocument.querySelector('#poi_address').innerText = ui.core.translate(data.address);
+                ui.core.mapDivDocument.querySelector('#poi_desc').innerHTML = ui.core.translate(data.desc).replace(/\n/g, '<br>');
+            }
+            var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
+            var modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
+            modalSetting('poi');
+            modal.show();
         });
 
         ui.waitReady = ui.core.waitReady.then(function(){
@@ -312,6 +460,19 @@ define(['core', 'sprintf', 'swiper', 'ol3', 'bootstrap'], function(Core, sprintf
     };
 
     ol.inherits(MaplatUi, ol.events.EventTarget);
+
+    MaplatUi.prototype.checkOverlayID = function(mapID) {
+        var ui = this;
+        var swiper = ui.overlaySwiper;
+        var sliders = swiper.$el[0].querySelectorAll('.swiper-slide');
+        for (var i=0; i<sliders.length; i++) {
+            var slider = sliders[i];
+            if (slider.getAttribute('data') == mapID) {
+                return true;
+            }
+        }
+        return false;
+    };
 
     MaplatUi.prototype.ellips = function() {
         var ui = this;

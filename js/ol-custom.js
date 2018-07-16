@@ -950,18 +950,7 @@ define(['ol3', 'resize', 'turf'], function(ol, addResizeListener, turf) {
         var overlayLayer = this._overlay_group = new ol.layer.Group();
         overlayLayer.set('name', 'overlay');
 
-        this.sliderCommon = new ol.control.SliderCommon({reverse: true, tipLabel: t('control.trans', {ns: 'translation'})});
-        var controls = optOptions.controls ? optOptions.controls :
-            optOptions.off_control ? [] :
-            [
-                new ol.control.Copyright({tipLabel: t('control.info', {ns: 'translation'})}),
-                new ol.control.CompassRotate({tipLabel: t('control.compass', {ns: 'translation'})}),
-                new ol.control.Zoom({tipLabel: t('control.zoom', {ns: 'translation'})}),
-                new ol.control.SetGPS({tipLabel: t('control.gps', {ns: 'translation'})}),
-                new ol.control.GoHome({tipLabel: t('control.home', {ns: 'translation'})}),
-                this.sliderCommon,
-                new ol.control.Maplat({tipLabel: t('control.help', {ns: 'translation'})})
-            ];
+        var controls = optOptions.controls ? optOptions.controls : [];
 
         var options = {
             controls: controls,

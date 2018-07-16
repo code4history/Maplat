@@ -127,24 +127,9 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'bootstrap'],
         return stack.join('/');
     };
 
-    var modalSetting;
-
     // Maplat App Class
     var MaplatApp = function(appOption) {
         var app = this;
-
-        // Modal記述の動作を調整する関数
-        modalSetting = function(target) {
-            var modalElm = app.mapDivDocument.querySelector('#modalBase');
-            ['poi', 'map', 'load', 'gpsW', 'gpsD', 'help'].map(function(target_) {
-                var className = 'modal_' + target_;
-                if (target == target_) {
-                    modalElm.classList.add(className);
-                } else {
-                    modalElm.classList.remove(className);
-                }
-            });
-        };
 
         ol.events.EventTarget.call(app);
         var mapType = appOption.stroly ? 'stroly' : appOption.drumsey ? 'drumsey' : appOption.warper ? 'warper' : null;
@@ -185,90 +170,6 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'bootstrap'],
             target.addEventListener('touchstart', function(evt) {
                 evt.preventDefault();
             });
-        }
-
-        var newElems = createElement('<div class="modal" id="modalBase" tabindex="-1" role="dialog" ' +
-            'aria-labelledby="staticModalLabel" aria-hidden="true" data-show="true" data-keyboard="false" ' +
-            'data-backdrop="static">' +
-            '<div class="modal-dialog">' +
-            '<div class="modal-content">' +
-            '<div class="modal-header">' +
-            '<button type="button" class="close" data-dismiss="modal">' +
-            '<span aria-hidden="true">&#215;</span><span class="sr-only" data-i18n="html.close"></span>' +
-            '</button>' +
-            '<h4 class="modal-title">' +
-
-            '<span id="modal_title"></span>' +
-            '<span id="modal_load_title"></span>' +
-            '<span id="modal_gpsW_title" data-i18n="html.acquiring_gps"></span>' +
-            '<span id="modal_help_title" data-i18n="html.help_title"></span>' +
-
-            '</h4>' +
-            '</div>' +
-            '<div class="modal-body">' +
-
-            '<div id="modal_help_content">' +
-            '<div id="help_content">' +
-            '<span data-i18n-html="html.help_using_maplat"></span>' +
-            '<p class="col-xs-12 help_img"><img src="parts/fullscreen.png"></p>' +
-            '<h4 data-i18n="html.help_operation_title"></h4>' +
-            '<p data-i18n-html="html.help_operation_content" class="recipient"></p>' +
-            '<h4 data-i18n="html.help_selection_title"></h4>' +
-            '<p data-i18n-html="html.help_selection_content" class="recipient"></p>' +
-            '<h4 data-i18n="html.help_gps_title"></h4>' +
-            '<p data-i18n-html="html.help_gps_content" class="recipient"></p>' +
-            '<h4 data-i18n="html.help_poi_title"></h4>' +
-            '<p data-i18n-html="html.help_poi_content" class="recipient"></p>' +
-            '<h4 data-i18n="html.help_etc_title"></h4>' +
-            '<ul>' +
-            '<li data-i18n-html="html.help_etc_attr" class="recipient"></li>' +
-            '<li data-i18n-html="html.help_etc_help" class="recipient"></li>' +
-            '<li data-i18n-html="html.help_etc_slider" class="recipient"></li>' +
-            '</ul>' +
-            '<p><a href="https://github.com/code4nara/Maplat/wiki" target="_blank">Maplat</a>' +
-            ' © 2015- Kohei Otsuka, Code for Nara, RekishiKokudo project</p>' +
-            '</div>' +
-            '</div>' +
-
-            '<div id="modal_poi_content">' +
-            '<div id="poi_web" class="embed-responsive embed-responsive-60vh">' +
-            '<iframe id="poi_iframe" class="iframe_poi" frameborder="0" src=""></iframe>' +
-            '</div>' +
-            '<div id="poi_data" class="hide">' +
-            '<p class="col-xs-12 poi_img"><img id="poi_img" src=""></p>' +
-            '<p class="recipient" id="poi_address"></p>' +
-            '<p class="recipient" id="poi_desc"></p>' +
-            '</div>' +
-            '</div>' +
-
-            '<div id="modal_map_content">' +
-
-            ol.source.META_KEYS.map(function(key) {
-                if (key == 'title' || key == 'officialTitle') return '';
-
-                return '<div class="recipients" id="' + key + '_div"><dl class="dl-horizontal">' +
-                    '<dt data-i18n="html.' + key + '"></dt>' +
-                    '<dd id="' + key + '"></dd>' +
-                    '</dl></div>';
-            }).join('') +
-
-            '</div>' +
-
-            '<div id="modal_load_content">' +
-            '<p class="recipient"><img src="parts/loading.gif"><span data-i18n="html.app_loading_body"></span></p>' +
-            '<div id="splash_div" class="hide"><p class="col-xs-12 poi_img"><img id="splash_img" src=""></p>' +
-            '<p class="recipient">　</p></div>' +
-            '</div>' +
-
-            '<p id="modal_gpsD_content" class="recipient"></p>' +
-            '<p id="modal_gpsW_content" class="recipient"></p>' +
-
-            '</div>' +
-            '</div>' +
-            '</div>' +
-            '</div>');
-        for (var i=newElems.length - 1; i >= 0; i--) {
-            app.mapDivDocument.insertBefore(newElems[i], app.mapDivDocument.firstChild);
         }
 
         var overlay = appOption.overlay || false;
@@ -394,11 +295,9 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'bootstrap'],
             app.mapDivDocument.insertBefore(newElem, app.mapDivDocument.firstChild);
             app.mapObject = new ol.MaplatMap({
                 div: frontDiv,
-                off_control: noUI ? true : false,
+                controls: app.appData.controls || [],
                 off_rotation: noRotate ? true : false
             });
-            app.sliderCommon = app.mapObject.sliderCommon;
-            app.sliderCommon.setEnable(false);
 
             var backDiv = null;
             if (overlay) {
@@ -472,34 +371,6 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'bootstrap'],
 
                 function showInfo(data) {
                     app.dispatchEvent(new CustomEvent('clickMarker', data));
-                    if (!app.mobileIF) {
-                        app.mapDivDocument.querySelector('#modal_title').innerText = app.translate(data.name);
-                        if (data.url || data.html) {
-                            app.mapDivDocument.querySelector('#poi_web').classList.remove('hide');
-                            app.mapDivDocument.querySelector('#poi_data').classList.add('hide');
-                            if (data.html) {
-                                app.mapDivDocument.querySelector('#poi_iframe').setAttribute('srcdoc', app.translate(data.html));
-                            } else {
-                                app.mapDivDocument.querySelector('#poi_iframe').setAttribute('src', app.translate(data.url));
-                            }
-                        } else {
-                            app.mapDivDocument.querySelector('#poi_data').classList.remove('hide');
-                            app.mapDivDocument.querySelector('#poi_web').classList.add('hide');
-
-                            if (data.image && data.image != '') {
-                                app.mapDivDocument.querySelector('#poi_img').setAttribute('src',
-                                    data.image.match(/^http/) ? data.image : 'img/' + data.image);
-                            } else {
-                                app.mapDivDocument.querySelector('#poi_img').setAttribute('src', 'parts/no_image.png');
-                            }
-                            app.mapDivDocument.querySelector('#poi_address').innerText = app.translate(data.address);
-                            app.mapDivDocument.querySelector('#poi_desc').innerHTML = app.translate(data.desc).replace(/\n/g, '<br>');
-                        }
-                        var modalElm = app.mapDivDocument.querySelector('#modalBase');
-                        var modal = new bsn.Modal(modalElm, {'root': app.mapDivDocument});
-                        modalSetting('poi');
-                        modal.show();
-                    }
                 }
 
                 var clickHandler = function(evt) {
@@ -634,12 +505,6 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'bootstrap'],
                         }));
                     });
                 });
-
-                app.sliderCommon.on('propertychange', function(evt) {
-                    if (evt.key === 'slidervalue') {
-                        app.mapObject.setOpacity(app.sliderCommon.get(evt.key) * 100);
-                    }
-                });
             });
         });
     };
@@ -749,13 +614,6 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'bootstrap'],
                         // If new foreground source is basemap or TMS overlay, remove source from background map
                         app.backMap.exchangeSource();
                     }
-                    if (!(to instanceof ol.source.NowMap) || to instanceof ol.source.TmsMap) {
-                        // If new foreground is nonlinear map or TMS overlay, enable opacity slider
-                        app.sliderCommon.setEnable(true);
-                    } else {
-                        // If new foreground is basemap, disable opacity slider
-                        app.sliderCommon.setEnable(false);
-                    }
                     // Overlay = true case: end
                 }
                 if (to instanceof ol.source.TmsMap) {
@@ -766,7 +624,6 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'bootstrap'],
                         var backToLocal = backSrc || now;
                         app.mapObject.exchangeSource(backToLocal);
                     }
-                    app.sliderCommon.setEnable(true);
                 } else {
                     // Remove overlay from foreground and set current source to foreground
                     app.mapObject.setLayer();
@@ -778,8 +635,6 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'bootstrap'],
                 // and Changing "from" content must be finished before "postrender" event
                 app.from = to;
 
-                var opacity = app.sliderCommon.get('slidervalue') * 100;
-                app.mapObject.setOpacity(opacity);
                 var view = app.mapObject.getView();
                 if (to.insideCheckHistMapCoords(size[0])) {
                     view.setCenter(size[0]);
@@ -787,14 +642,6 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'bootstrap'],
                     view.setRotation(size[2]);
                 } else if (!app.__init) {
                     app.dispatchEvent(new CustomEvent('outOfMap', {}));
-                    if (!app.mobileIF) {
-                        app.mapDivDocument.querySelector('#modal_title').innerText = app.t('app.out_of_map');
-                        app.mapDivDocument.querySelector('#modal_gpsD_content').innerText = app.t('app.out_of_map_area');
-                        var modalElm = app.mapDivDocument.querySelector('#modalBase');
-                        var modal = new bsn.Modal(modalElm, {'root': app.mapDivDocument});
-                        modalSetting('gpsD');
-                        modal.show();
-                    }
                     to.goHome();
                 }
                 to.setGPSMarker(app.currentPosition, true);
