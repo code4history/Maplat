@@ -173,8 +173,8 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'bootstrap'],
         var pwaWorker = appOption.pwa_worker || './service-worker.js';
 
         // Add UI HTML Element
-        var newElems = createElement('<div class="ol-control map-title"><span></span></div>' +
-            '<img id="center_circle" class="prevent-default" style="position:absolute;top:50%;left:50%;margin-top:-10px;' +
+        var newElems = createElement('<img id="center_circle" class="prevent-default" ' +
+            'style="position:absolute;top:50%;left:50%;margin-top:-10px;' +
             'margin-left:-10px;" src="./parts/redcircle.png">');
         for (var i=newElems.length - 1; i >= 0; i--) {
             app.mapDivDocument.insertBefore(newElems[i], app.mapDivDocument.firstChild);
@@ -376,22 +376,6 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'bootstrap'],
             app.t = result[0][0];
             ol.source.setI18n(app.i18n, app.t);
 
-            // Check Splash data
-            var splash = false;
-            if (app.appData.splash) splash = true;
-
-            if (!noUI) {
-                var modalElm = app.mapDivDocument.querySelector('#modalBase');
-                var modal = new bsn.Modal(modalElm, {'root': app.mapDivDocument});
-                app.mapDivDocument.querySelector('#modal_load_title').innerText = app.translate(app.appData.app_name);
-                if (splash) {
-                    app.mapDivDocument.querySelector('#splash_img').setAttribute('src', 'img/' + app.appData.splash);
-                    app.mapDivDocument.querySelector('#splash_div').classList.remove('hide');
-                }
-                modalSetting('load');
-                modal.show();
-            }
-
             app.dispatchEvent(new CustomEvent('uiPrepare'));
 
             app.mercBuffer = null;
@@ -399,7 +383,6 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'bootstrap'],
             var defZoom = app.appData.default_zoom;
             var appName = app.appData.app_name;
             var fakeGps = appOption.fake ? app.appData.fake_gps : false;
-            var fakeCenter = appOption.fake ? app.appData.fake_center : false;
             var fakeRadius = appOption.fake ? app.appData.fake_radius : false;
             app.appLang = app.appData.lang || 'ja';
             app.currentPosition = null;
@@ -429,105 +412,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'bootstrap'],
                 });
             }
             if (!noUI) {
-                var shown = false;
-                var gpsWaitPromise = null;
-                function showGPSresult(result) {
-                    if (result && result.error) {
-                        app.currentPosition = null;
-                        if (result.error == 'gps_out' && shown) {
-                            shown = false;
-                            var modalElm = app.mapDivDocument.querySelector('#modalBase');
-                            var modal = new bsn.Modal(modalElm, {'root': app.mapDivDocument});
-                            app.mapDivDocument.querySelector('#modal_title').innerText = app.t('app.out_of_map');
-                            app.mapDivDocument.querySelector('#modal_gpsD_content').innerText = app.t('app.out_of_map_desc');
-                            modalSetting('gpsD');
-                            modal.show();
-                        }
-                    } else {
-                        app.currentPosition = result;
-                    }
-                    if (shown) {
-                        shown = false;
-                        var modalElm = app.mapDivDocument.querySelector('#modalBase');
-                        var modal = new bsn.Modal(modalElm, {'root': app.mapDivDocument});
-                        modal.hide();
-                    }
-                }
-                app.mapObject.on('gps_request', function() {
-                    gpsWaitPromise = 'gps_request';
-                    var promises = [
-                        new Promise(function(resolve) {
-                            if (gpsWaitPromise != 'gps_request') {
-                                resolve(gpsWaitPromise);
-                            } else gpsWaitPromise = resolve;
-                        })
-                    ];
-                    shown = true;
-                    var modalElm = app.mapDivDocument.querySelector('#modalBase');
-                    var modal = new bsn.Modal(modalElm, {'root': app.mapDivDocument});
-                    modalSetting('gpsW');
-                    modal.show();
-                    // 200m秒以上最低待たないと、Modalがうまく動かない場合がある
-                    promises.push(new Promise(function(resolve) {
-                        setTimeout(resolve, 200);
-                    }));
-                    Promise.all(promises).then(function(results) {
-                        showGPSresult(results[0]);
-                    });
-                });
-                app.mapObject.on('gps_result', function(evt) {
-                    if (gpsWaitPromise == 'gps_request') {
-                        gpsWaitPromise = evt.frameState;
-                    } else if (gpsWaitPromise) {
-                        gpsWaitPromise(evt.frameState);
-                        gpsWaitPromise = null;
-                    } else if (!shown) {
-                        showGPSresult(evt.frameState);
-                    }
-                });
-                app.mapObject.on('click_control', function(evt) {
-                    var control = evt.frameState.control;
-                    if (control == 'copyright') {
-                        var from = app.from; // app.mapObject.getSource();
 
-                        if (!ol.source.META_KEYS.reduce(function(prev, curr) {
-                                if (curr == 'title') return prev;
-                                return from[curr] || prev;
-                            }, false)) return;
-
-                        app.mapDivDocument.querySelector('#modal_title').innerText = from.officialTitle || from.title;
-                        ol.source.META_KEYS.map(function(key) {
-                            if (key == 'title' || key == 'officialTitle') return;
-                            if (!from[key] || from[key] == '') {
-                                app.mapDivDocument.querySelector('#' + key + '_div').classList.add('hide');
-                            } else {
-                                app.mapDivDocument.querySelector('#' + key + '_div').classList.remove('hide');
-                                app.mapDivDocument.querySelector('#' + key).innerHTML =
-                                    (key == 'license' || key == 'dataLicense') ?
-                                        '<img src="parts/' + from[key].toLowerCase().replace(/ /g, '_') + '.png">' :
-                                        from[key];
-                            }
-                        });
-                        var modalElm = app.mapDivDocument.querySelector('#modalBase');
-                        var modal = new bsn.Modal(modalElm, {'root': app.mapDivDocument});
-                        modalSetting('map');
-                        modal.show();
-                    } else {
-                        var modalElm = app.mapDivDocument.querySelector('#modalBase');
-                        var modal = new bsn.Modal(modalElm, {'root': app.mapDivDocument});
-                        modalSetting('help');
-                        modal.show();
-                    }
-                });
-                if (fakeGps) {
-                    var newElem = createElement(sprintf(app.t('app.fake_explanation'), app.translate(fakeCenter), fakeRadius))[0];
-                    var elem = app.mapDivDocument.querySelector('#modal_gpsW_content');
-                    elem.appendChild(newElem);
-                } else {
-                    var newElem = createElement(app.t('app.acquiring_gps_desc'))[0];
-                    var elem = app.mapDivDocument.querySelector('#modal_gpsW_content');
-                    elem.appendChild(newElem);
-                }
             }
             app.pois = app.appData.pois;
             app.startFrom = app.appData.start_from;
@@ -536,15 +421,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'bootstrap'],
             document.querySelector('title').innerHTML = app.translate(appName);
 
             var dataSource = app.appData.sources;
-
-            var fadeTime = splash ? 1000 : 200;
-            var sourcePromise = noUI ? [] : [
-                new Promise(function(resolve) {
-                    setTimeout(function() {
-                        resolve();
-                    }, fadeTime);
-                })
-            ];
+            var sourcePromise = [];
             var commonOption = {
                 home_position: homePos,
                 merc_zoom: defZoom,
@@ -560,14 +437,6 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'bootstrap'],
                     if (prev) return prev;
                     if (curr instanceof ol.source.NowMap) return curr;
                 }, null);
-
-                if (!noUI) {
-                    sources.shift();
-                    var modalElm = app.mapDivDocument.querySelector('#modalBase');
-                    var modal = new bsn.Modal(modalElm, {'root': app.mapDivDocument});
-                    modalSetting('load');
-                    modal.hide();
-                }
 
                 app.dispatchEvent(new CustomEvent('sourceLoaded', sources));
 
@@ -903,7 +772,7 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'bootstrap'],
                     app.mapObject.setLayer();
                     app.mapObject.exchangeSource(to);
                 }
-                app.dispatchEvent(new CustomEvent('mapChanged', to.sourceID));
+                app.dispatchEvent(new CustomEvent('mapChanged', app.getMapMeta(to.sourceID)));
 
                 // This must be here: Because, render process works after view.setCenter,
                 // and Changing "from" content must be finished before "postrender" event
@@ -952,9 +821,6 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'bootstrap'],
                 app.mapObject.updateSize();
                 app.mapObject.renderSync();
 
-                var title = to.officialTitle || to.title || to.label;
-                app.mapDivDocument.querySelector('.map-title span').innerText = title;
-
                 if (app.__init == true) {
                     app.__init = false;
                     to.goHome();
@@ -974,6 +840,25 @@ define(['histmap', 'sprintf', 'i18n', 'i18nxhr', 'bootstrap'],
 
     MaplatApp.prototype.moveTo = function(cond) {
         this.from.moveTo(cond);
+    };
+
+    MaplatApp.prototype.getMapMeta = function(sourceID) {
+        var app = this;
+        var source;
+        if (!sourceID) {
+            source = app.from;
+        } else {
+            source = app.cacheHash[sourceID];
+        }
+        if (!source) return;
+
+        return ol.source.META_KEYS.reduce(function(prev, curr) {
+            prev[curr] = source[curr];
+            return prev;
+        }, {
+            sourceID: source.sourceID,
+            label: source.label
+        });
     };
 
     MaplatApp.prototype.convertParametersFromCurrent = function(to, callback) {

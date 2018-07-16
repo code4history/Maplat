@@ -22,9 +22,9 @@
     <div id="map_div"></div>
   </div>
 </body>
-<script src="js/aigle-es5.min.js"></script>
-<script src="js/require.min.js"></script>
-<script src="js/config.js"></script>
+<!--script src="lib/aigle-es5.min.js"></script-->
+<script src="lib/require.min.js"></script>
+<script src="js/config_core.js"></script>
 <script>
     var option = {};
     var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
@@ -35,6 +35,16 @@
     Maplat.createObject(option).then(function(app){
         app.addEventListener('clickMarker', function(evt) {
             console.log(evt);
+        });
+        app.addEventListener('clickMap', function (evt) {
+            console.log(evt);
+        });
+        app.addLine({
+            lnglats: [[141.151995, 39.701599], [141.151137, 39.703736], [141.1521671, 39.7090232]],
+            stroke: {
+                color: '#ffcc33',
+                width: 2
+            }
         });
     });
 </script>
