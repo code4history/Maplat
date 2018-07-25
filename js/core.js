@@ -1,22 +1,4 @@
-define(['histmap', 'i18n', 'i18nxhr'],
-    function(ol, i18n, i18nxhr) {
-    var browserLanguage = function() {
-        var ua = window.navigator.userAgent.toLowerCase();
-        try {
-            // Chrome
-            if( ua.indexOf( 'chrome' ) != -1 ) {
-                return ( navigator.languages[0] || navigator.browserLanguage || navigator.language || navigator.userLanguage).substr(0, 2);
-            }
-            // Other
-            else {
-                return ( navigator.browserLanguage || navigator.language || navigator.userLanguage).substr(0, 2);
-            }
-        }
-        catch( e ) {
-            return undefined;
-        }
-    };
-
+define(['histmap'], function(ol) {
     var LoggerLevel={
         ALL: -99,
         DEBUG: -1,
@@ -111,46 +93,18 @@ define(['histmap', 'i18n', 'i18nxhr'],
         return degree;
     };
 
-    var absoluteUrl = function(base, relative) {
-        var stack = base.split('/');
-        var parts = relative.split('/');
-        stack.pop(); // remove current file name (or empty string)
-        // (omit if "base" is the current folder without trailing slash)
-        for (var i=0; i<parts.length; i++) {
-            if (parts[i] == '.')
-                continue;
-            if (parts[i] == '..')
-                stack.pop();
-            else
-                stack.push(parts[i]);
-        }
-        return stack.join('/');
-    };
-
     // Maplat App Class
     var MaplatApp = function(appOption) {
         var app = this;
 
         ol.events.EventTarget.call(app);
         var mapType = appOption.stroly ? 'stroly' : appOption.drumsey ? 'drumsey' : appOption.warper ? 'warper' : null;
-        var appid = appOption.appid || (mapType ? appOption[mapType] : 'sample');
+        var appid = app.appid = appOption.appid || (mapType ? appOption[mapType] : 'sample');
         app.mapDiv = appOption.div || 'map_div';
         app.mapDivDocument = document.querySelector('#' + app.mapDiv);
         app.mapDivDocument.classList.add('maplat');
-        if ('ontouchstart' in window) {
-            app.mapDivDocument.classList.add('ol-touch');
-        }
-        if (appOption.mobile_if) {
-            appOption.debug = true;
-        }
         app.logger = new Logger(appOption.debug ? LoggerLevel.ALL : LoggerLevel.INFO);
-        var lang = appOption.lang;
-        if (!lang) {
-            lang = browserLanguage();
-        }
         var setting = appOption.setting;
-        var pwaManifest = appOption.pwa_manifest || './pwa/' + appid + '_manifest.json';
-        var pwaWorker = appOption.pwa_worker || './service-worker.js';
 
         // Add UI HTML Element
         var newElems = createElement('<img id="center_circle" class="prevent-default" ' +
@@ -208,73 +162,15 @@ define(['histmap', 'i18n', 'i18nxhr'],
                 xhr.send();
             });
 
-        var i18nPromise = new Promise(function(resolve, reject) {
-            i18n.use(i18nxhr).init({
-                lng: lang,
-                fallbackLng: ['en'],
-                backend: {
-                    loadPath: 'locales/{{lng}}/{{ns}}.json'
-                }
-            }, function(err, t) {
-                var i18nTargets = app.mapDivDocument.querySelectorAll('[data-i18n]');
-                for (var i=0; i<i18nTargets.length; i++) {
-                    var target = i18nTargets[i];
-                    var key = target.getAttribute('data-i18n');
-                    target.innerText = t(key);
-                }
-                var i18nTargets = app.mapDivDocument.querySelectorAll('[data-i18n-html]');
-                for (var i=0; i<i18nTargets.length; i++) {
-                    var target = i18nTargets[i];
-                    var key = target.getAttribute('data-i18n-html');
-                    target.innerHTML = t(key);
-                }
-                resolve([t, i18n]);
-            });
-        });
-
-        var promises = Promise.all([i18nPromise, appPromise]);
-
-        // PWA対応: 非同期処理
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', pwaManifest, true);
-        xhr.responseType = 'json';
-
-        xhr.onload = function(e) {
-            var value = this.response;
-            if (!value) return;
-            if (typeof value != 'object') value = JSON.parse(value);
-
-            var head = document.querySelector('head');
-            head.appendChild((createElement('<link rel="manifest" href="' + pwaManifest + '">'))[0]);
-            // service workerが有効なら、service-worker.js を登録します
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register(pwaWorker).then(function() {
-                    console.log('Service Worker Registered');
-                });
-            }
-            if (value.icons) {
-                for (var i=0; i<value.icons.length; i++) {
-                    var src = absoluteUrl(pwaManifest, value.icons[i].src);
-                    var sizes = value.icons[i].sizes;
-                    var tag = '<link rel="apple-touch-icon" sizes="' + sizes + '" href="' + src + '">';
-                    head.appendChild((createElement(tag))[0]);
-                }
-            }
-        };
-        xhr.send();
-
-        app.waitReady = promises.then(function(result) {
-            app.appData = result[1];
-            app.i18n = result[0][1];
-            app.t = result[0][0];
-            ol.source.setI18n(app.i18n, app.t);
+        app.waitReady = appPromise.then(function(result) {
+            app.appData = result;
 
             app.dispatchEvent(new CustomEvent('uiPrepare'));
 
             app.mercBuffer = null;
             var homePos = app.appData.home_position;
             var defZoom = app.appData.default_zoom;
-            var appName = app.appData.app_name;
+            app.appName = app.appData.app_name;
             var fakeGps = appOption.fake ? app.appData.fake_gps : false;
             var fakeRadius = appOption.fake ? app.appData.fake_radius : false;
             app.appLang = app.appData.lang || 'ja';
@@ -305,8 +201,6 @@ define(['histmap', 'i18n', 'i18nxhr'],
             app.pois = app.appData.pois;
             app.startFrom = app.appData.start_from;
             app.lines = [];
-
-            document.querySelector('title').innerHTML = app.translate(appName);
 
             var dataSource = app.appData.sources;
             var sourcePromise = [];
@@ -358,9 +252,9 @@ define(['histmap', 'i18n', 'i18nxhr'],
                 }, null);
                 app.changeMap(initial);
 
-                function showInfo(data) {
+                var showInfo = function(data) {
                     app.dispatchEvent(new CustomEvent('clickMarker', data));
-                }
+                };
 
                 var clickHandler = function(evt) {
                     app.logger.debug(evt.pixel);
@@ -373,7 +267,7 @@ define(['histmap', 'i18n', 'i18nxhr'],
                         showInfo(feature.get('datum'));
                     } else {
                         var xy = evt.coordinate;
-                        app.from.xy2MercAsync(xy).then(function(merc){
+                        app.from.xy2MercAsync(xy).then(function(merc) {
                             var lnglat = ol.proj.transform(merc, 'EPSG:3857', 'EPSG:4326');
                             app.dispatchEvent(new CustomEvent('clickMap', {
                                 longitude: lnglat[0],
@@ -532,11 +426,11 @@ define(['histmap', 'i18n', 'i18nxhr'],
         var app = this;
         app.logger.debug(data);
 
-        var xyPromises = data.lnglats.map(function(lnglat){
+        var xyPromises = data.lnglats.map(function(lnglat) {
             var merc = ol.proj.transform(lnglat, 'EPSG:4326', 'EPSG:3857');
             return app.from.merc2XyAsync(merc);
         });
-        Promise.all(xyPromises).then(function(xys){
+        Promise.all(xyPromises).then(function(xys) {
             app.mapObject.setLine(xys, data.stroke);
         });
     };
@@ -750,29 +644,6 @@ define(['histmap', 'i18n', 'i18nxhr'],
         }).catch(function(err) {
             throw err;
         });
-    };
-
-    MaplatApp.prototype.translate = function(dataFragment) {
-        var app = this;
-        if (!dataFragment || typeof dataFragment != 'object') return dataFragment;
-        var langs = Object.keys(dataFragment);
-        var key = langs.reduce(function(prev, curr, idx, arr) {
-            if (curr == app.appLang) {
-                prev = [dataFragment[curr], true];
-            } else if (!prev || (curr == 'en' && !prev[1])) {
-                prev = [dataFragment[curr], false];
-            }
-            if (idx == arr.length - 1) return prev[0];
-            return prev;
-        }, null);
-        key = (typeof key == 'string') ? key : key + '';
-        if (app.i18n.exists(key, {ns: 'translation', nsSeparator: '__X__yX__X__'}))
-            return app.t(key, {ns: 'translation', nsSeparator: '__X__yX__X__'});
-        for (var i = 0; i < langs.length; i++) {
-            var lang = langs[i];
-            app.i18n.addResource(lang, 'translation', key, dataFragment[lang]);
-        }
-        return app.t(key, {ns: 'translation', nsSeparator: '__X__yX__X__'});
     };
 
     return MaplatApp;

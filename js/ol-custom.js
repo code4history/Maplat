@@ -564,7 +564,6 @@ define(['ol3', 'resize', 'turf'], function(ol, addResizeListener, turf) {
             src: 'parts/defaultpin.png'
         }))
     });
-    var i18n;
     var t = function(arg) { return arg; };
 
     ol.source.setCustomFunction = function(target) {
@@ -826,34 +825,6 @@ define(['ol3', 'resize', 'turf'], function(ol, addResizeListener, turf) {
             var key = ol.source.META_KEYS[i];
             self[key] = options[key];
         }
-    };
-
-    ol.source.setI18n = function(i18n_, t_) {
-        i18n = i18n_;
-        t = t_;
-    };
-
-    ol.source.translate = function(dataFragment, defLang) {
-        if (!dataFragment || typeof dataFragment != 'object') return dataFragment;
-        if (!i18n) return dataFragment; // For MaplatEditor
-        var langs = Object.keys(dataFragment);
-        var key = langs.reduce(function(prev, curr, idx, arr) {
-            if (curr == defLang) {
-                prev = [dataFragment[curr], true];
-            } else if (!prev || (curr == 'en' && !prev[1])) {
-                prev = [dataFragment[curr], false];
-            }
-            if (idx == arr.length - 1) return prev[0];
-            return prev;
-        }, null);
-        key = (typeof key == 'string') ? key : key + '';
-        if (i18n.exists(key, {ns: 'translation', nsSeparator: '__X__yX__X__'}))
-            return t(key, {ns: 'translation', nsSeparator: '__X__yX__X__'});
-        for (var i = 0; i < langs.length; i++) {
-            var lang = langs[i];
-            i18n.addResource(lang, 'translation', key, dataFragment[lang]);
-        }
-        return t(key, {ns: 'translation', nsSeparator: '__X__yX__X__'});
     };
 
     ol.source.NowMap = function(optOptions) {

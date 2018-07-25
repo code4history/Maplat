@@ -1,4 +1,39 @@
-define(['core', 'sprintf', 'swiper', 'ol3', 'bootstrap'], function(Core, sprintf, Swiper, ol, bsn) {
+define(['core', 'sprintf', 'swiper', 'ol3', 'bootstrap', 'i18n', 'i18nxhr'],
+    function(Core, sprintf, Swiper, ol, bsn, i18n, i18nxhr) {
+
+    var browserLanguage = function() {
+        var ua = window.navigator.userAgent.toLowerCase();
+        try {
+            // Chrome
+            if( ua.indexOf( 'chrome' ) != -1 ) {
+                return ( navigator.languages[0] || navigator.browserLanguage || navigator.language || navigator.userLanguage).substr(0, 2);
+            }
+            // Other
+            else {
+                return ( navigator.browserLanguage || navigator.language || navigator.userLanguage).substr(0, 2);
+            }
+        }
+        catch( e ) {
+            return undefined;
+        }
+    };
+
+    var absoluteUrl = function(base, relative) {
+        var stack = base.split('/');
+        var parts = relative.split('/');
+        stack.pop(); // remove current file name (or empty string)
+        // (omit if "base" is the current folder without trailing slash)
+        for (var i=0; i<parts.length; i++) {
+            if (parts[i] == '.')
+                continue;
+            if (parts[i] == '..')
+                stack.pop();
+            else
+                stack.push(parts[i]);
+        }
+        return stack.join('/');
+    };
+
     Swiper.prototype.slideToMapID = function(mapID) {
         var slide = this.$el[0].querySelector('.swiper-slide-active');
         if (slide.getAttribute('data') == mapID) return;
@@ -70,6 +105,19 @@ define(['core', 'sprintf', 'swiper', 'ol3', 'bootstrap'], function(Core, sprintf
                 }
             });
         };
+
+        if ('ontouchstart' in window) {
+            ui.core.mapDivDocument.classList.add('ol-touch');
+        }
+        if (appOption.mobile_if) {
+            appOption.debug = true;
+        }
+        var lang = appOption.lang;
+        if (!lang) {
+            lang = browserLanguage();
+        }
+        var pwaManifest = appOption.pwa_manifest || './pwa/' + ui.core.appid + '_manifest.json';
+        var pwaWorker = appOption.pwa_worker || './service-worker.js';
 
         // Add UI HTML Element
         var newElems = Core.createElement('<div class="ol-control map-title"><span></span></div>' +
@@ -178,94 +226,159 @@ define(['core', 'sprintf', 'swiper', 'ol3', 'bootstrap'], function(Core, sprintf
             ui.core.mapDivDocument.insertBefore(newElems[i], ui.core.mapDivDocument.firstChild);
         }
 
-        ui.core.addEventListener('uiPrepare', function(evt) {
-            ui.sliderCommon = new ol.control.SliderCommon({reverse: true, tipLabel: ui.core.t('control.trans', {ns: 'translation'})});
-            ui.core.appData.controls = [
-                new ol.control.Copyright({tipLabel: ui.core.t('control.info', {ns: 'translation'})}),
-                new ol.control.CompassRotate({tipLabel: ui.core.t('control.compass', {ns: 'translation'})}),
-                new ol.control.Zoom({tipLabel: ui.core.t('control.zoom', {ns: 'translation'})}),
-                new ol.control.SetGPS({tipLabel: ui.core.t('control.gps', {ns: 'translation'})}),
-                new ol.control.GoHome({tipLabel: ui.core.t('control.home', {ns: 'translation'})}),
-                ui.sliderCommon,
-                new ol.control.Maplat({tipLabel: ui.core.t('control.help', {ns: 'translation'})})
-            ];
-
-            ui.sliderCommon.on('propertychange', function(evt) {
-                if (evt.key === 'slidervalue') {
-                    ui.core.mapObject.setOpacity(ui.sliderCommon.get(evt.key) * 100);
+        var i18nPromise = new Promise(function(resolve, reject) {
+            i18n.use(i18nxhr).init({
+                lng: lang,
+                fallbackLng: ['en'],
+                backend: {
+                    loadPath: 'locales/{{lng}}/{{ns}}.json'
                 }
+            }, function(err, t) {
+                var i18nTargets = ui.core.mapDivDocument.querySelectorAll('[data-i18n]');
+                for (var i=0; i<i18nTargets.length; i++) {
+                    var target = i18nTargets[i];
+                    var key = target.getAttribute('data-i18n');
+                    target.innerText = t(key);
+                }
+                var i18nTargets = ui.core.mapDivDocument.querySelectorAll('[data-i18n-html]');
+                for (var i=0; i<i18nTargets.length; i++) {
+                    var target = i18nTargets[i];
+                    var key = target.getAttribute('data-i18n-html');
+                    target.innerHTML = t(key);
+                }
+                resolve([t, i18n]);
             });
+        });
 
-            // Check Splash data
-            var splash = false;
-            if (ui.core.appData.splash) splash = true;
+        // PWA対応: 非同期処理
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', pwaManifest, true);
+        xhr.responseType = 'json';
 
-            var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
-            var modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
-            ui.core.mapDivDocument.querySelector('#modal_load_title').innerText = ui.core.translate(ui.core.appData.app_name);
-            if (splash) {
-                ui.core.mapDivDocument.querySelector('#splash_img').setAttribute('src', 'img/' + ui.core.appData.splash);
-                ui.core.mapDivDocument.querySelector('#splash_div').classList.remove('hide');
+        xhr.onload = function(e) {
+            var value = this.response;
+            if (!value) return;
+            if (typeof value != 'object') value = JSON.parse(value);
+
+            var head = document.querySelector('head');
+            head.appendChild((Core.createElement('<link rel="manifest" href="' + pwaManifest + '">'))[0]);
+            // service workerが有効なら、service-worker.js を登録します
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register(pwaWorker).then(function() {
+                    console.log('Service Worker Registered');
+                });
             }
-            modalSetting('load');
-            modal.show();
+            if (value.icons) {
+                for (var i=0; i<value.icons.length; i++) {
+                    var src = absoluteUrl(pwaManifest, value.icons[i].src);
+                    var sizes = value.icons[i].sizes;
+                    var tag = '<link rel="apple-touch-icon" sizes="' + sizes + '" href="' + src + '">';
+                    head.appendChild((Core.createElement(tag))[0]);
+                }
+            }
+        };
+        xhr.send();
 
-            var fadeTime = splash ? 1000 : 200;
-            ui.splashPromise = new Promise(function(resolve) {
-                setTimeout(function() {
-                    resolve();
-                }, fadeTime);
-            });
+        ui.core.addEventListener('uiPrepare', function(evt) {
+            i18nPromise.then(function(result){
+                ui.i18n = result[1];
+                ui.t = result[0];
 
-            var baseSwiper, overlaySwiper;
-            baseSwiper = ui.baseSwiper = new Swiper('.base-swiper', {
-                slidesPerView: 2,
-                spaceBetween: 15,
-                breakpoints: {
-                    // when window width is <= 480px
-                    480: {
-                        slidesPerView: 1.4,
-                        spaceBetween: 10
+                ui.sliderCommon = new ol.control.SliderCommon({reverse: true, tipLabel: ui.t('control.trans', {ns: 'translation'})});
+                ui.core.appData.controls = [
+                    new ol.control.Copyright({tipLabel: ui.t('control.info', {ns: 'translation'})}),
+                    new ol.control.CompassRotate({tipLabel: ui.t('control.compass', {ns: 'translation'})}),
+                    new ol.control.Zoom({tipLabel: ui.t('control.zoom', {ns: 'translation'})}),
+                    new ol.control.SetGPS({tipLabel: ui.t('control.gps', {ns: 'translation'})}),
+                    new ol.control.GoHome({tipLabel: ui.t('control.home', {ns: 'translation'})}),
+                    ui.sliderCommon,
+                    new ol.control.Maplat({tipLabel: ui.t('control.help', {ns: 'translation'})})
+                ];
+                if (ui.core.mapObject) {
+                    ui.core.appData.controls.map(function(control) {
+                        ui.core.mapObject.addControl(control);
+                    });
+                }
+
+                ui.sliderCommon.on('propertychange', function(evt) {
+                    if (evt.key === 'slidervalue') {
+                        ui.core.mapObject.setOpacity(ui.sliderCommon.get(evt.key) * 100);
                     }
-                },
-                centeredSlides: true,
-                threshold: 2,
-                loop: true
-            });
-            baseSwiper.on('click', function(e) {
-                e.preventDefault();
-                if (!baseSwiper.clickedSlide) return;
-                var slide = baseSwiper.clickedSlide;
-                ui.core.changeMap(slide.getAttribute('data'));
-                baseSwiper.setSlideIndexAsSelected(slide.getAttribute('data-swiper-slide-index'));
-            });
-            overlaySwiper = ui.overlaySwiper = new Swiper('.overlay-swiper', {
-                slidesPerView: 2,
-                spaceBetween: 15,
-                breakpoints: {
-                    // when window width is <= 480px
-                    480: {
-                        slidesPerView: 1.4,
-                        spaceBetween: 10
-                    }
-                },
-                centeredSlides: true,
-                threshold: 2,
-                loop: true
-            });
-            overlaySwiper.on('click', function(e) {
-                e.preventDefault();
-                if (!overlaySwiper.clickedSlide) return;
-                var slide = overlaySwiper.clickedSlide;
-                ui.core.changeMap(slide.getAttribute('data'));
-                overlaySwiper.setSlideIndexAsSelected(slide.getAttribute('data-swiper-slide-index'));
+                });
+
+                // Check Splash data
+                var splash = false;
+                if (ui.core.appData.splash) splash = true;
+
+                var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
+                var modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
+                ui.core.mapDivDocument.querySelector('#modal_load_title').innerText = ui.translate(ui.core.appData.app_name);
+                if (splash) {
+                    ui.core.mapDivDocument.querySelector('#splash_img').setAttribute('src', 'img/' + ui.core.appData.splash);
+                    ui.core.mapDivDocument.querySelector('#splash_div').classList.remove('hide');
+                }
+                modalSetting('load');
+                modal.show();
+
+                var fadeTime = splash ? 1000 : 200;
+                ui.splashPromise = new Promise(function(resolve) {
+                    setTimeout(function() {
+                        resolve();
+                    }, fadeTime);
+                });
+
+                var baseSwiper, overlaySwiper;
+                baseSwiper = ui.baseSwiper = new Swiper('.base-swiper', {
+                    slidesPerView: 2,
+                    spaceBetween: 15,
+                    breakpoints: {
+                        // when window width is <= 480px
+                        480: {
+                            slidesPerView: 1.4,
+                            spaceBetween: 10
+                        }
+                    },
+                    centeredSlides: true,
+                    threshold: 2,
+                    loop: true
+                });
+                baseSwiper.on('click', function(e) {
+                    e.preventDefault();
+                    if (!baseSwiper.clickedSlide) return;
+                    var slide = baseSwiper.clickedSlide;
+                    ui.core.changeMap(slide.getAttribute('data'));
+                    baseSwiper.setSlideIndexAsSelected(slide.getAttribute('data-swiper-slide-index'));
+                });
+                overlaySwiper = ui.overlaySwiper = new Swiper('.overlay-swiper', {
+                    slidesPerView: 2,
+                    spaceBetween: 15,
+                    breakpoints: {
+                        // when window width is <= 480px
+                        480: {
+                            slidesPerView: 1.4,
+                            spaceBetween: 10
+                        }
+                    },
+                    centeredSlides: true,
+                    threshold: 2,
+                    loop: true
+                });
+                overlaySwiper.on('click', function(e) {
+                    e.preventDefault();
+                    if (!overlaySwiper.clickedSlide) return;
+                    var slide = overlaySwiper.clickedSlide;
+                    ui.core.changeMap(slide.getAttribute('data'));
+                    overlaySwiper.setSlideIndexAsSelected(slide.getAttribute('data-swiper-slide-index'));
+                });
+
+                document.querySelector('title').innerHTML = ui.translate(ui.core.appName);
             });
         });
 
         ui.core.addEventListener('sourceLoaded', function(evt) {
             var sources = evt.detail;
 
-            ui.splashPromise.then(function(){
+            ui.splashPromise.then(function() {
                 var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
                 var modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
                 modalSetting('load');
@@ -276,10 +389,10 @@ define(['core', 'sprintf', 'swiper', 'ol3', 'bootstrap'], function(Core, sprintf
                 var source = sources[i];
                 if (source instanceof ol.source.NowMap && !(source instanceof ol.source.TmsMap)) {
                     ui.baseSwiper.appendSlide('<div class="swiper-slide" data="' + source.sourceID + '">' +
-                        '<img crossorigin="anonymous" src="' + source.thumbnail + '"><div>' + source.label + '</div></div>');
+                        '<img crossorigin="anonymous" src="' + source.thumbnail + '"><div>' + ui.translate(source.label) + '</div></div>');
                 } else {
                     ui.overlaySwiper.appendSlide('<div class="swiper-slide" data="' + source.sourceID + '">' +
-                        '<img crossorigin="anonymous" src="' + source.thumbnail + '"><div>' + source.label + '</div></div>');
+                        '<img crossorigin="anonymous" src="' + source.thumbnail + '"><div>' + ui.translate(source.label) + '</div></div>');
                 }
             }
             ui.baseSwiper.on;
@@ -296,7 +409,7 @@ define(['core', 'sprintf', 'swiper', 'ol3', 'bootstrap'], function(Core, sprintf
             ui.overlaySwiper.setSlideMapID(map.sourceID);
 
             var title = map.officialTitle || map.title || map.label;
-            ui.core.mapDivDocument.querySelector('.map-title span').innerText = ui.core.translate(title);
+            ui.core.mapDivDocument.querySelector('.map-title span').innerText = ui.translate(title);
 
             if (ui.checkOverlayID(map.sourceID)) {
                 ui.sliderCommon.setEnable(true);
@@ -308,8 +421,8 @@ define(['core', 'sprintf', 'swiper', 'ol3', 'bootstrap'], function(Core, sprintf
         });
 
         ui.core.addEventListener('outOfMap', function(evt) {
-            ui.core.mapDivDocument.querySelector('#modal_title').innerText = ui.core.t('app.out_of_map');
-            ui.core.mapDivDocument.querySelector('#modal_gpsD_content').innerText = ui.core.t('app.out_of_map_area');
+            ui.core.mapDivDocument.querySelector('#modal_title').innerText = ui.t('app.out_of_map');
+            ui.core.mapDivDocument.querySelector('#modal_gpsD_content').innerText = ui.t('app.out_of_map_area');
             var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
             var modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
             modalSetting('gpsD');
@@ -318,14 +431,14 @@ define(['core', 'sprintf', 'swiper', 'ol3', 'bootstrap'], function(Core, sprintf
 
         ui.core.addEventListener('clickMarker', function(evt) {
             var data = evt.detail;
-            ui.core.mapDivDocument.querySelector('#modal_title').innerText = ui.core.translate(data.name);
+            ui.core.mapDivDocument.querySelector('#modal_title').innerText = ui.translate(data.name);
             if (data.url || data.html) {
                 ui.core.mapDivDocument.querySelector('#poi_web').classList.remove('hide');
                 ui.core.mapDivDocument.querySelector('#poi_data').classList.add('hide');
                 if (data.html) {
-                    ui.core.mapDivDocument.querySelector('#poi_iframe').setAttribute('srcdoc', ui.core.translate(data.html));
+                    ui.core.mapDivDocument.querySelector('#poi_iframe').setAttribute('srcdoc', ui.translate(data.html));
                 } else {
-                    ui.core.mapDivDocument.querySelector('#poi_iframe').setAttribute('src', ui.core.translate(data.url));
+                    ui.core.mapDivDocument.querySelector('#poi_iframe').setAttribute('src', ui.translate(data.url));
                 }
             } else {
                 ui.core.mapDivDocument.querySelector('#poi_data').classList.remove('hide');
@@ -337,8 +450,8 @@ define(['core', 'sprintf', 'swiper', 'ol3', 'bootstrap'], function(Core, sprintf
                 } else {
                     ui.core.mapDivDocument.querySelector('#poi_img').setAttribute('src', 'parts/no_image.png');
                 }
-                ui.core.mapDivDocument.querySelector('#poi_address').innerText = ui.core.translate(data.address);
-                ui.core.mapDivDocument.querySelector('#poi_desc').innerHTML = ui.core.translate(data.desc).replace(/\n/g, '<br>');
+                ui.core.mapDivDocument.querySelector('#poi_address').innerText = ui.translate(data.address);
+                ui.core.mapDivDocument.querySelector('#poi_desc').innerHTML = ui.translate(data.desc).replace(/\n/g, '<br>');
             }
             var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
             var modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
@@ -360,8 +473,8 @@ define(['core', 'sprintf', 'swiper', 'ol3', 'bootstrap'], function(Core, sprintf
                         shown = false;
                         var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
                         var modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
-                        ui.core.mapDivDocument.querySelector('#modal_title').innerText = ui.core.t('app.out_of_map');
-                        ui.core.mapDivDocument.querySelector('#modal_gpsD_content').innerText = ui.core.t('app.out_of_map_desc');
+                        ui.core.mapDivDocument.querySelector('#modal_title').innerText = ui.t('app.out_of_map');
+                        ui.core.mapDivDocument.querySelector('#modal_gpsD_content').innerText = ui.t('app.out_of_map_desc');
                         modalSetting('gpsD');
                         modal.show();
                     }
@@ -417,7 +530,7 @@ define(['core', 'sprintf', 'swiper', 'ol3', 'bootstrap'], function(Core, sprintf
                         return from[curr] || prev;
                     }, false)) return;
 
-                    ui.core.mapDivDocument.querySelector('#modal_title').innerText = ui.core.translate(from.officialTitle || from.title);
+                    ui.core.mapDivDocument.querySelector('#modal_title').innerText = ui.translate(from.officialTitle || from.title);
                     ol.source.META_KEYS.map(function(key) {
                         if (key == 'title' || key == 'officialTitle') return;
                         if (!from[key] || from[key] == '') {
@@ -427,7 +540,7 @@ define(['core', 'sprintf', 'swiper', 'ol3', 'bootstrap'], function(Core, sprintf
                             ui.core.mapDivDocument.querySelector('#' + key).innerHTML =
                                 (key == 'license' || key == 'dataLicense') ?
                                     '<img src="parts/' + from[key].toLowerCase().replace(/ /g, '_') + '.png">' :
-                                    ui.core.translate(from[key]);
+                                    ui.translate(from[key]);
                         }
                     });
                     var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
@@ -442,11 +555,11 @@ define(['core', 'sprintf', 'swiper', 'ol3', 'bootstrap'], function(Core, sprintf
                 }
             });
             if (fakeGps) {
-                var newElem = Core.createElement(sprintf(ui.core.t('app.fake_explanation'), ui.core.translate(fakeCenter), fakeRadius))[0];
+                var newElem = Core.createElement(sprintf(ui.t('app.fake_explanation'), ui.translate(fakeCenter), fakeRadius))[0];
                 var elem = ui.core.mapDivDocument.querySelector('#modal_gpsW_content');
                 elem.appendChild(newElem);
             } else {
-                var newElem = Core.createElement(ui.core.t('app.acquiring_gps_desc'))[0];
+                var newElem = Core.createElement(ui.t('app.acquiring_gps_desc'))[0];
                 var elem = ui.core.mapDivDocument.querySelector('#modal_gpsW_content');
                 elem.appendChild(newElem);
             }
@@ -528,6 +641,29 @@ define(['core', 'sprintf', 'swiper', 'ol3', 'bootstrap'], function(Core, sprintf
             stringSplit(swiperItem);
             omitCheck(swiperItem);
         }
+    };
+
+    MaplatUi.prototype.translate = function(dataFragment) {
+        var ui = this;
+        if (!dataFragment || typeof dataFragment != 'object') return dataFragment;
+        var langs = Object.keys(dataFragment);
+        var key = langs.reduce(function(prev, curr, idx, arr) {
+            if (curr == ui.core.appLang) {
+                prev = [dataFragment[curr], true];
+            } else if (!prev || (curr == 'en' && !prev[1])) {
+                prev = [dataFragment[curr], false];
+            }
+            if (idx == arr.length - 1) return prev[0];
+            return prev;
+        }, null);
+        key = (typeof key == 'string') ? key : key + '';
+        if (ui.i18n.exists(key, {ns: 'translation', nsSeparator: '__X__yX__X__'}))
+            return ui.t(key, {ns: 'translation', nsSeparator: '__X__yX__X__'});
+        for (var i = 0; i < langs.length; i++) {
+            var lang = langs[i];
+            ui.i18n.addResource(lang, 'translation', key, dataFragment[lang]);
+        }
+        return ui.t(key, {ns: 'translation', nsSeparator: '__X__yX__X__'});
     };
 
     return MaplatUi;

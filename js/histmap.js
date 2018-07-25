@@ -148,7 +148,7 @@ define(['ol-custom'], function(ol) {
         }
         options = Object.assign(options, commonOptions);
         if (!options.maptype) options.maptype = 'maplat';
-        options.label = ol.source.translate(options.label || options.year);
+        options.label = options.label || options.year;
         if (options.maptype == 'base' || options.maptype == 'overlay') {
             options.sourceID = options.mapID;
             var targetSrc = options.maptype == 'base' ? ol.source.NowMap : ol.source.TmsMap;

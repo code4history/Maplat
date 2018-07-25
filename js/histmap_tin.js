@@ -33,7 +33,7 @@ define(['histmap', 'tin'], function(ol, Tin) {
                         if (typeof resp != 'object') resp = JSON.parse(resp);
                         for (var i = 0; i < ol.source.META_KEYS.length; i++) {
                             var key = ol.source.META_KEYS[i];
-                            options[key] = ol.source.translate(options[key] || resp[key]);
+                            options[key] = options[key] || resp[key];
                         }
                         options.width = options.width || resp.width;
                         options.height = options.height || resp.height;
@@ -42,7 +42,7 @@ define(['histmap', 'tin'], function(ol, Tin) {
                         options.strictMode = options.strictMode || resp.strictMode;
                         options.vertexMode = options.vertexMode || resp.vertexMode;
                         options.pois = options.pois || resp.pois;
-                        options.label = ol.source.translate(options.label || resp.label || resp.year);
+                        options.label = options.label || resp.label || resp.year;
                         var obj = new ol.source.HistMap_tin(options);
                         var proj = new ol.proj.Projection({
                             code: 'Illst:' + obj.mapID,
