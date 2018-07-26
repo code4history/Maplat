@@ -13,6 +13,7 @@
 		6642D2A91E5DC88E00555CB7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6642D2A81E5DC88E00555CB7 /* Assets.xcassets */; };
 		6642D2AC1E5DC88E00555CB7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6642D2AA1E5DC88E00555CB7 /* LaunchScreen.storyboard */; };
 		6655002720691996001B5014 /* mobile.html in Resources */ = {isa = PBXBuildFile; fileRef = 6655002620691996001B5014 /* mobile.html */; };
+		66830BA22109C5D20092B893 /* lib in Resources */ = {isa = PBXBuildFile; fileRef = 66830BA12109C5D20092B893 /* lib */; };
 		668706F61F99D41C0040BA89 /* apps in Resources */ = {isa = PBXBuildFile; fileRef = 668706F51F99D41C0040BA89 /* apps */; };
 		668706F81F99D4550040BA89 /* maps in Resources */ = {isa = PBXBuildFile; fileRef = 668706F71F99D4550040BA89 /* maps */; };
 		66C2D5B0205B3D0500D6714F /* MaplatBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 66C2D5AF205B3D0500D6714F /* MaplatBridge.m */; };
@@ -37,6 +38,7 @@
 		6642D2AB1E5DC88E00555CB7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		6642D2AD1E5DC88E00555CB7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6655002620691996001B5014 /* mobile.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = mobile.html; path = ../../mobile.html; sourceTree = "<group>"; };
+		66830BA12109C5D20092B893 /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = lib; path = ../../lib; sourceTree = "<group>"; };
 		668706F51F99D41C0040BA89 /* apps */ = {isa = PBXFileReference; lastKnownFileType = folder; name = apps; path = ../../apps; sourceTree = "<group>"; };
 		668706F71F99D4550040BA89 /* maps */ = {isa = PBXFileReference; lastKnownFileType = folder; name = maps; path = ../../maps; sourceTree = "<group>"; };
 		66C2D5AE205B3D0500D6714F /* MaplatBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MaplatBridge.h; sourceTree = "<group>"; };
@@ -110,6 +112,7 @@
 		66DEFC8E1E5DE359000684B6 /* content */ = {
 			isa = PBXGroup;
 			children = (
+				66830BA12109C5D20092B893 /* lib */,
 				6655002620691996001B5014 /* mobile.html */,
 				668706F71F99D4550040BA89 /* maps */,
 				668706F51F99D41C0040BA89 /* apps */,
@@ -191,6 +194,7 @@
 				6642D2A91E5DC88E00555CB7 /* Assets.xcassets in Resources */,
 				668706F61F99D41C0040BA89 /* apps in Resources */,
 				66DEFCA31E5E4A92000684B6 /* locales in Resources */,
+				66830BA22109C5D20092B893 /* lib in Resources */,
 				668706F81F99D4550040BA89 /* maps in Resources */,
 				6655002720691996001B5014 /* mobile.html in Resources */,
 				66DEFCA01E5E4939000684B6 /* img in Resources */,
