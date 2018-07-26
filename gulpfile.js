@@ -37,7 +37,7 @@ var banner = ['/**',
   ''].join('\n');
 var isWin = os.type().toString().match('Windows') !== null;
 
-gulp.task('server', function(){
+gulp.task('server', function() {
     return spawn('node', ['server.js'], {
         stdio: 'ignore',
         detached: true
@@ -106,7 +106,7 @@ gulp.task('build_withoutpromise', ['config'], function() {
 });
 
 gulp.task('less', function() {
-    var lesses = ['ol-maplat', 'font-awesome', 'bootstrap', 'swiper', 'app'];
+    var lesses = ['ol-maplat', 'font-awesome', 'bootstrap', 'swiper', 'core', 'ui'];
     lesses.map(function(less) {
         execSync('lessc -x less/' + less + '.less > css/' + less + '.css');
     });
@@ -114,21 +114,22 @@ gulp.task('less', function() {
 
 gulp.task('css_build', ['less'], function() {
     var cmd = isWin ? 'r.js.cmd' : 'r.js';
-    execSync(cmd + ' -o cssIn=css/app.css out=dist/maplat.css');
+    execSync(cmd + ' -o cssIn=css/core.css out=dist/maplat_core.css');
+    execSync(cmd + ' -o cssIn=css/ui.css out=dist/maplat.css');
 });
 
 gulp.task('config', ['config_core', 'config_ui'], function() {
 });
 
 gulp.task('config_core', function() {
-    config_maker('core');
+    configMaker('core');
 });
 
 gulp.task('config_ui', function() {
-    config_maker('ui');
+    configMaker('ui');
 });
 
-function config_maker(name) {
+var configMaker = function(name) {
     var out = name == 'ui' ? '' : name + '_';
     gulp.src(['./js/polyfill.js', './js/config.js', './js/loader.js'])
         .pipe(concat('config_' + name + '.js'))
@@ -140,4 +141,4 @@ function config_maker(name) {
         .pipe(replace(/\{name\}/, name))
         .pipe(replace(/\{out\}/, out))
         .pipe(gulp.dest('./'));
-}
+};
