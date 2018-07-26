@@ -135,10 +135,11 @@ var configMaker = function(name) {
         .pipe(concat('config_' + name + '.js'))
         .pipe(replace(/\s+name:[^\n]+,\n\s+out:[^\n]+,\n\s+include:[^\n]+,/, ''))
         .pipe(replace(/\{app\}/, name))
+        .pipe(replace(/\{name\}/, name))
         .pipe(gulp.dest('./js/'));
     return gulp.src(['./js/config.js'])
         .pipe(concat('rjs_config_' + name + '.js'))
-        .pipe(replace(/\{name\}/, name))
+        .pipe(replace(/\{name\}/g, name))
         .pipe(replace(/\{out\}/, out))
         .pipe(gulp.dest('./'));
 };
