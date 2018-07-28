@@ -46,7 +46,6 @@ maplatBridge.callApp2Web = function (key, data) {
                 });
             });
             break;
-        case 'setGPSMarker':
         default:
             if (app) {
                 var func = app[key];

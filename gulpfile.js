@@ -4,6 +4,7 @@ var gulp = require('gulp'),
     concat = require('gulp-concat'),
     header = require('gulp-header'),
     zip = require('gulp-zip'),
+    replace = require('gulp-replace'),
     os = require('os'),
     fs = require('fs-extra'),
     glob = require('glob');
@@ -14,24 +15,37 @@ var banner = ['/**',
   ' * @version v<%= pkg.version %>',
   ' * @link <%= pkg.homepage %>',
   ' * @license <%= pkg.license %>',
+  ' * Copyright (c) 2015- Kohei Otsuka, Code for Nara, RekishiKokudo project',
+  ' *',
+  ' * Permission is hereby granted, free of charge, to any person obtaining a copy',
+  ' * of this software and associated documentation files (the "Software"), to deal',
+  ' * in the Software without restriction, including without limitation the rights',
+  ' * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell',
+  ' * copies of the Software, and to permit persons to whom the Software is',
+  ' * furnished to do so, subject to the following conditions:',
+  ' *',
+  ' * The above copyright notice and this permission notice shall be included in all',
+  ' * copies or substantial portions of the Software.',
+  ' *',
+  ' * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR',
+  ' * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,',
+  ' * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE',
+  ' * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER',
+  ' * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,',
+  ' * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE',
+  ' * SOFTWARE.',
   ' */',
   ''].join('\n');
 var isWin = os.type().toString().match('Windows') !== null;
 
-gulp.task('server', function(){
+gulp.task('server', function() {
     return spawn('node', ['server.js'], {
         stdio: 'ignore',
         detached: true
     }).unref();
 });
 
-gulp.task('build', ['create_example', 'css_build'], function() {
-    fs.removeSync('./example');
-});
-
-gulp.task('create_example', ['concat_promise'], function() {
-    fs.unlinkSync('./js/maplat_withoutpromise.js');
-
+gulp.task('build', ['js_build', 'css_build'], function() {
     try {
         fs.removeSync('./example.zip');
     } catch (e) {
@@ -42,8 +56,7 @@ gulp.task('create_example', ['concat_promise'], function() {
     }
 
     fs.ensureDirSync('./example');
-    fs.copySync('./js/maplat.js', './example/js/maplat.js');
-    fs.copySync('./css', './example/css');
+    fs.copySync('./dist', './example/dist');
     fs.copySync('./locales', './example/locales');
     fs.copySync('./parts', './example/parts');
     fs.copySync('./fonts', './example/fonts');
@@ -64,67 +77,119 @@ gulp.task('create_example', ['concat_promise'], function() {
     fs.copySync('./img/sakurayama_jinja.jpg', './example/img/sakurayama_jinja.jpg');
     fs.copySync('./example.html', './example/index.html');
 
-    return gulp.src(['./example/*', './example/*/*', './example/*/*/*', './example/*/*/*/*', './example/*/*/*/*/*'])
-        .pipe(zip('example.zip'))
-        .pipe(gulp.dest('./'));
+    return new Promise(function(resolve, reject) {
+        gulp.src(['./example/*', './example/*/*', './example/*/*/*', './example/*/*/*/*', './example/*/*/*/*/*'])
+            .pipe(zip('example.zip'))
+            .on('error', reject)
+            .pipe(gulp.dest('./'))
+            .on('end', resolve);
+    }).then(function() {
+        fs.removeSync('./example');
+    });
 });
 
-gulp.task('concat_promise', ['build_withoutpromise'], function() {
-    return gulp.src(['./js/aigle-es5.min.js', 'js/maplat_withoutpromise.js'])
-        .pipe(concat('maplat.js'))
-        .pipe(header(banner, {pkg: pkg}))
-        .pipe(gulp.dest('./js/'));
-});
-
-gulp.task('build_withoutpromise', function() {
+gulp.task('js_build', function() {
     var cmd = isWin ? 'r.js.cmd' : 'r.js';
-    execSync(cmd + ' -o rjs_config.js');
+    execSync(cmd + ' -o rjs_config_core.js');
+    execSync(cmd + ' -o rjs_config_ui.js');
+    return Promise.all([
+        new Promise(function(resolve, reject) {
+            gulp.src(['./lib/aigle-es5.min.js', 'dist/maplat_core_withoutpromise.js'])
+                .pipe(concat('maplat_core.js'))
+                .pipe(header(banner, {pkg: pkg}))
+                .on('error', reject)
+                .pipe(gulp.dest('./dist/'))
+                .on('end', resolve);
+        }),
+        new Promise(function(resolve, reject) {
+            gulp.src(['./lib/aigle-es5.min.js', 'dist/maplat_withoutpromise.js'])
+                .pipe(concat('maplat.js'))
+                .pipe(header(banner, {pkg: pkg}))
+                .on('error', reject)
+                .pipe(gulp.dest('./dist/'))
+                .on('end', resolve);
+        })
+    ]).then(function() {
+        fs.unlinkSync('./dist/maplat_withoutpromise.js');
+        fs.unlinkSync('./dist/maplat_core_withoutpromise.js');
+    });
 });
 
 gulp.task('less', function() {
-    var lesses = ['ol', 'font-awesome', 'bootstrap', 'swiper', 'app'];
+    var lesses = ['ol-maplat', 'font-awesome', 'bootstrap', 'swiper', 'core', 'ui'];
     lesses.map(function(less) {
-        execSync('lessc -x css/' + less + '.less > css/' + less + '.css');
+        execSync('lessc -x less/' + less + '.less > css/' + less + '.css');
     });
 });
 
 gulp.task('css_build', ['less'], function() {
     var cmd = isWin ? 'r.js.cmd' : 'r.js';
-    execSync(cmd + ' -o cssIn=css/app.css out=css/maplat.css');
+    execSync(cmd + ' -o cssIn=css/core.css out=dist/maplat_core.css');
+    execSync(cmd + ' -o cssIn=css/ui.css out=dist/maplat.css');
 });
 
+gulp.task('config', function() {
+    return Promise.all([
+        configMaker('core'),
+        configMaker('ui')
+    ]);
+});
+
+var configMaker = function(name) {
+    var out = name == 'ui' ? '' : name + '_';
+    return Promise.all([
+        new Promise(function(resolve, reject){
+            gulp.src(['./js/polyfill.js', './js/config.js', './js/loader.js'])
+                .pipe(concat('config_' + name + '.js'))
+                .pipe(replace(/\s+name:[^\n]+,\n\s+out:[^\n]+,\n\s+include:[^\n]+,/, ''))
+                .pipe(replace(/\{app\}/, name))
+                .pipe(replace(/\{name\}/, name))
+                .on('error', reject)
+                .pipe(gulp.dest('./js/'))
+                .on('end', resolve);
+        }),
+        new Promise(function(resolve, reject){
+            gulp.src(['./js/config.js'])
+                .pipe(concat('rjs_config_' + name + '.js'))
+                .pipe(replace(/\{name\}/g, name))
+                .pipe(replace(/\{out\}/, out))
+                .on('error', reject)
+                .pipe(gulp.dest('./'))
+                .on('end', resolve);
+        })
+    ]);
+};
+
 var mobileTestCopy = [
-    'css/app.css',
+    'css/core.css',
     'css/bootstrap.css',
     'css/swiper.css',
     'css/font-awesome.css',
-    'css/ol.css',
-    'js/aigle-es5.min.js',
-    'js/require.min.js',
-    'js/config.js',
-    'js/i18nextXHRBackend.min.js',
-    'js/ol-debug.js',
+    'css/ol-maplat.css',
+    'lib/aigle-es5.min.js',
+    'lib/require.min.js',
+    'js/config_core.js',
+    'lib/i18nextXHRBackend.min.js',
+    'lib/ol-maplat.js',
     'js/ol-custom.js',
-    'js/i18next.min.js',
-    'js/turf_maplat.min.js',
-    'js/swiper.min.js',
-    'js/bootstrap-native.js',
-    'js/mapshaper_maplat.js',
-    'js/detect-element-resize.js',
-    'js/app.js',
+    'lib/i18next.min.js',
+    'lib/turf_maplat.min.js',
+    'lib/swiper.js',
+    'lib/bootstrap-native.js',
+    'lib/mapshaper_maplat.js',
+    'lib/detect-element-resize.js',
+    'js/core.js',
     'js/histmap.js',
     'js/histmap_tin.js',
-    'js/sprintf.js',
+    'lib/sprintf.js',
     'js/tin.js'
 ];
 var mobileCopy = [
-    'css/maplat.css',
-    'js/maplat.js'
+    'css/maplat_core.css',
+    'js/maplat_core.js'
 ];
 var mobileBaseCopy = [
     'js/maplatBridge.js',
-    'locales/en/translation.json',
-    'locales/ja/translation.json',
     'parts/bluedot.png',
     'parts/defaultpin.png',
     'parts/redcircle.png'
@@ -137,7 +202,7 @@ var assetsCopy = [
 function removeResource() {
     var files = [
         './mobile_android/app/src/main/res/raw',
-        './mobile_ios/mobile_ios/Maplat.bundle',
+        './mobile_ios_lib/MaplatView/Maplat.bundle',
         './mobile_android/app/src/main/assets/maps',
         './mobile_android/app/src/main/assets/tiles',
         './mobile_ios/mobile_ios/maps',
@@ -157,7 +222,7 @@ function copyResource(files) {
         var copy = files[i];
         var copyTo = copy.replace(/[\/\.\-]/g, '_').toLowerCase();
         fs.copySync(copy, './mobile_android/app/src/main/res/raw/' + copyTo);
-        fs.copySync(copy, './mobile_ios/mobile_ios/Maplat.bundle/' + copy);
+        fs.copySync(copy, './mobile_ios_lib/MaplatView/Maplat.bundle/' + copy);
     }
 }
 
@@ -169,20 +234,20 @@ function copyAssets() {
     }
 }
 
-gulp.task('mobile_build_test', function() {
+gulp.task('mobile_build_test', ['config'], function() {
     removeResource();
     copyResource(mobileTestCopy);
     copyResource(mobileBaseCopy);
     fs.copySync('mobile_test.html', './mobile_android/app/src/main/res/raw/mobile_html');
-    fs.copySync('mobile_test.html', './mobile_ios/mobile_ios/Maplat.bundle/mobile.html');
+    fs.copySync('mobile_test.html', './mobile_ios_lib/MaplatView/Maplat.bundle/mobile.html');
     copyAssets();
 });
 
-gulp.task('mobile_build', function() {
+gulp.task('mobile_build', ['config'], function() {
     removeResource();
     copyResource(mobileCopy);
     copyResource(mobileBaseCopy);
     fs.copySync('mobile.html', './mobile_android/app/src/main/res/raw/mobile_html');
-    fs.copySync('mobile.html', './mobile_ios/mobile_ios/Maplat.bundle/mobile.html');
+    fs.copySync('mobile.html', './mobile_ios_lib/MaplatView/Maplat.bundle/mobile.html');
     copyAssets();
 });
