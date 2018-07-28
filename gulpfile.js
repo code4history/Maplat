@@ -45,7 +45,7 @@ gulp.task('server', function() {
     }).unref();
 });
 
-gulp.task('build', ['js_build', 'css_build'], function() {
+gulp.task('build', ['mobile_build'], function() {
     try {
         fs.removeSync('./example.zip');
     } catch (e) {
