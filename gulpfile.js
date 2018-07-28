@@ -179,7 +179,7 @@ gulp.task('sw-build-workbox', function() {
             },
         },
         {
-            urlPattern: /^https?:.+\/[0-9]+\/[0-9]+\/[0-9]\.(?:jpg|png)$/,
+            urlPattern: /^https?:.+\/[0-9]+\/[0-9]+\/[0-9]+\.(?:jpg|png)$/,
             handler: 'staleWhileRevalidate',
             options: {
                 cacheName: 'tileCache',

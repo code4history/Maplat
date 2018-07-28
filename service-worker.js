@@ -203,4 +203,4 @@ workbox.precaching.suppressWarnings();
 workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
 
 workbox.routing.registerRoute(/(?:maps\/.+\.json|apps\/.+\.json|tmbs\/.+_menu\.jpg|img\/.+\.(?:png|jpg))$/, workbox.strategies.networkFirst({ cacheName: "resourcesCache", plugins: [new workbox.expiration.Plugin({"maxAgeSeconds":86400,"purgeOnQuotaError":false})] }), 'GET');
-workbox.routing.registerRoute(/^https?:.+\/[0-9]+\/[0-9]+\/[0-9]\.(?:jpg|png)$/, workbox.strategies.staleWhileRevalidate({ cacheName: "tileCache", plugins: [new workbox.expiration.Plugin({"maxAgeSeconds":2592000,"purgeOnQuotaError":false})] }), 'GET');
+workbox.routing.registerRoute(/^https?:.+\/[0-9]+\/[0-9]+\/[0-9]+\.(?:jpg|png)$/, workbox.strategies.staleWhileRevalidate({ cacheName: "tileCache", plugins: [new workbox.expiration.Plugin({"maxAgeSeconds":2592000,"purgeOnQuotaError":false})] }), 'GET');
