@@ -1,6 +1,0 @@
-framework module MaplatView {
-  umbrella header "MaplatView.h"
-
-  export *
-  module * { export * }
-}
