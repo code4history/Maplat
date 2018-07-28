@@ -9,7 +9,8 @@
     "server": "gulp server",
     "less": "gulp less",
     "css_build": "gulp css_build",
-    "config": "gulp config"
+    "config": "gulp config",
+    "sw-build": "gulp sw-build"
   },
   "dependencies": {
     "@turf/turf": "^4.7.3",
@@ -33,6 +34,7 @@
     "gulp-concat": "^2.6.1",
     "gulp-header": "^1.8.12",
     "gulp-replace": "^1.0.0",
-    "gulp-zip": "^4.1.0"
+    "gulp-zip": "^4.1.0",
+    "workbox-build": "^3.4.1"
   }
 }

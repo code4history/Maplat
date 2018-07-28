@@ -1,13 +1,39 @@
-// service-worker.js
-self.addEventListener('install', function(e) {
-    console.log('[ServiceWorker] Install');
-});
+/**
+ * Welcome to your Workbox-powered service worker!
+ *
+ * You'll need to register this file in your web app and you should
+ * disable HTTP caching for this file too.
+ * See https://goo.gl/nhQhGp
+ *
+ * The rest of the code is auto-generated. Please don't update this file
+ * directly; instead, make changes to your Workbox build configuration
+ * and re-run your build process.
+ * See https://goo.gl/2aRDsh
+ */
 
-self.addEventListener('activate', function(e) {
-    console.log('[ServiceWorker] Activate');
-});
+importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.4.1/workbox-sw.js");
 
-// 現状では、この処理を書かないとService Workerが有効と判定されないようです
-self.addEventListener('fetch', function(event) {
-    console.log(event);
-});
+/**
+ * The workboxSW.precacheAndRoute() method efficiently caches and responds to
+ * requests for URLs in the manifest.
+ * See https://goo.gl/S9QRab
+ */
+self.__precacheManifest = [
+  {
+    "url": ".",
+    "revision": "ffcf6b182993e50c30ef9355256cb7c7"
+  },
+  {
+    "url": "dist/maplat.js",
+    "revision": "ffcf6b182993e50c30ef9355256cb7c7"
+  },
+  {
+    "url": "dist/maplat.css",
+    "revision": "42a12630138c672a32b045cafc0588f2"
+  }
+].concat(self.__precacheManifest || []);
+workbox.precaching.suppressWarnings();
+workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
+
+workbox.routing.registerRoute(/\.(?:png|jpg|jpeg|svg|css|json)$/, workbox.strategies.cacheFirst({ cacheName: "maplatCache", plugins: [] }), 'GET');
+workbox.routing.registerRoute(/^https?:/, workbox.strategies.cacheFirst({ cacheName: "externalCache", plugins: [] }), 'GET');

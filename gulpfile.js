@@ -6,7 +6,8 @@ var gulp = require('gulp'),
     zip = require('gulp-zip'),
     replace = require('gulp-replace'),
     os = require('os'),
-    fs = require('fs-extra');
+    fs = require('fs-extra'),
+    wbBuild = require('workbox-build');
 
 var pkg = require('./package.json');
 var banner = ['/**',
@@ -143,3 +144,48 @@ var configMaker = function(name) {
         .pipe(replace(/\{out\}/, out))
         .pipe(gulp.dest('./'));
 };
+
+gulp.task('sw-build', function() {
+    return wbBuild.generateSW({
+        globDirectory: '.',
+        globPatterns: [
+            '.',
+            'dist/maplat.js',
+            'dist/maplat.css',
+        ],
+        swDest: 'service-worker.js',
+        runtimeCaching: [{
+            // Match any request ends with .png, .jpg, .jpeg or .svg.
+            urlPattern: /\.(?:png|jpg|jpeg|svg|css|json)$/,
+
+            // Apply a cache-first strategy.
+            handler: 'cacheFirst',
+
+            options: {
+                // Use a custom cache name.
+                cacheName: 'maplatCache',
+
+                // Only cache 10 images.
+                //expiration: {
+                //    maxEntries: 10,
+                //},
+            },
+        },{
+            // Match any request ends with .png, .jpg, .jpeg or .svg.
+            urlPattern: /^https?:/,
+
+            // Apply a cache-first strategy.
+            handler: 'cacheFirst',
+
+            options: {
+                // Use a custom cache name.
+                cacheName: 'externalCache',
+
+                // Only cache 10 images.
+                //expiration: {
+                //    maxEntries: 10,
+                //},
+            },
+        }],
+    });
+});
