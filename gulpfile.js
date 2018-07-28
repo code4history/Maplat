@@ -145,46 +145,47 @@ var configMaker = function(name) {
         .pipe(gulp.dest('./'));
 };
 
-gulp.task('sw-build', function() {
+gulp.task('sw-build', ['sw-build-replace'], function() {
+    fs.unlinkSync('./service-worker_.js');
+});
+
+gulp.task('sw-build-replace', ['sw-build-workbox'], function() {
+    return gulp.src(['./service-worker_.js'])
+        .pipe(concat('service-worker.js'))
+        .pipe(replace(/self\.__precacheManifest = \[/, "self.__precacheManifest = [\n  {\n    \"url\": \".\"\n  },"))
+        .pipe(gulp.dest('./'));
+});
+
+gulp.task('sw-build-workbox', function() {
     return wbBuild.generateSW({
         globDirectory: '.',
         globPatterns: [
             '.',
             'dist/maplat.js',
             'dist/maplat.css',
+            'parts/*',
+            'locales/*/*',
+            'fonts/*'
         ],
-        swDest: 'service-worker.js',
+        swDest: 'service-worker_.js',
         runtimeCaching: [{
-            // Match any request ends with .png, .jpg, .jpeg or .svg.
-            urlPattern: /\.(?:png|jpg|jpeg|svg|css|json)$/,
-
-            // Apply a cache-first strategy.
-            handler: 'cacheFirst',
-
+            urlPattern: /(?:maps\/.+\.json|apps\/.+\.json|tmbs\/.+_menu\.jpg|img\/.+\.(?:png|jpg))$/,
+            handler: 'networkFirst',
             options: {
-                // Use a custom cache name.
-                cacheName: 'maplatCache',
-
-                // Only cache 10 images.
-                //expiration: {
-                //    maxEntries: 10,
-                //},
+                cacheName: 'resourcesCache',
+                expiration: {
+                    maxAgeSeconds: 60 * 60 * 24,
+                },
             },
-        },{
-            // Match any request ends with .png, .jpg, .jpeg or .svg.
-            urlPattern: /^https?:/,
-
-            // Apply a cache-first strategy.
-            handler: 'cacheFirst',
-
+        },
+        {
+            urlPattern: /^https?:.+\/[0-9]+\/[0-9]+\/[0-9]\.(?:jpg|png)$/,
+            handler: 'staleWhileRevalidate',
             options: {
-                // Use a custom cache name.
-                cacheName: 'externalCache',
-
-                // Only cache 10 images.
-                //expiration: {
-                //    maxEntries: 10,
-                //},
+                cacheName: 'tileCache',
+                expiration: {
+                    maxAgeSeconds: 60 * 60 * 24 * 30,
+                },
             },
         }],
     });
