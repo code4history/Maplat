@@ -44,14 +44,7 @@ gulp.task('server', function() {
     }).unref();
 });
 
-gulp.task('build', ['create_example'], function() {
-    fs.removeSync('./example');
-});
-
-gulp.task('create_example', ['concat_promise', 'css_build'], function() {
-    fs.unlinkSync('./dist/maplat_withoutpromise.js');
-    fs.unlinkSync('./dist/maplat_core_withoutpromise.js');
-
+gulp.task('build', ['js_build', 'css_build'], function() {
     try {
         fs.removeSync('./example.zip');
     } catch (e) {
@@ -83,26 +76,42 @@ gulp.task('create_example', ['concat_promise', 'css_build'], function() {
     fs.copySync('./img/sakurayama_jinja.jpg', './example/img/sakurayama_jinja.jpg');
     fs.copySync('./example.html', './example/index.html');
 
-    return gulp.src(['./example/*', './example/*/*', './example/*/*/*', './example/*/*/*/*', './example/*/*/*/*/*'])
-        .pipe(zip('example.zip'))
-        .pipe(gulp.dest('./'));
+    return new Promise(function(resolve, reject) {
+        gulp.src(['./example/*', './example/*/*', './example/*/*/*', './example/*/*/*/*', './example/*/*/*/*/*'])
+            .pipe(zip('example.zip'))
+            .on('error', reject)
+            .pipe(gulp.dest('./'))
+            .on('end', resolve);
+    }).then(function() {
+        fs.removeSync('./example');
+    });
 });
 
-gulp.task('concat_promise', ['build_withoutpromise'], function() {
-    gulp.src(['./lib/aigle-es5.min.js', 'dist/maplat_core_withoutpromise.js'])
-        .pipe(concat('maplat_core.js'))
-        .pipe(header(banner, {pkg: pkg}))
-        .pipe(gulp.dest('./dist/'));
-    return gulp.src(['./lib/aigle-es5.min.js', 'dist/maplat_withoutpromise.js'])
-        .pipe(concat('maplat.js'))
-        .pipe(header(banner, {pkg: pkg}))
-        .pipe(gulp.dest('./dist/'));
-});
-
-gulp.task('build_withoutpromise', ['config'], function() {
+gulp.task('js_build', function() {
     var cmd = isWin ? 'r.js.cmd' : 'r.js';
     execSync(cmd + ' -o rjs_config_core.js');
     execSync(cmd + ' -o rjs_config_ui.js');
+    return Promise.all([
+        new Promise(function(resolve, reject) {
+            gulp.src(['./lib/aigle-es5.min.js', 'dist/maplat_core_withoutpromise.js'])
+                .pipe(concat('maplat_core.js'))
+                .pipe(header(banner, {pkg: pkg}))
+                .on('error', reject)
+                .pipe(gulp.dest('./dist/'))
+                .on('end', resolve);
+        }),
+        new Promise(function(resolve, reject) {
+            gulp.src(['./lib/aigle-es5.min.js', 'dist/maplat_withoutpromise.js'])
+                .pipe(concat('maplat.js'))
+                .pipe(header(banner, {pkg: pkg}))
+                .on('error', reject)
+                .pipe(gulp.dest('./dist/'))
+                .on('end', resolve);
+        })
+    ]).then(function() {
+        fs.unlinkSync('./dist/maplat_withoutpromise.js');
+        fs.unlinkSync('./dist/maplat_core_withoutpromise.js');
+    });
 });
 
 gulp.task('less', function() {
@@ -118,28 +127,34 @@ gulp.task('css_build', ['less'], function() {
     execSync(cmd + ' -o cssIn=css/ui.css out=dist/maplat.css');
 });
 
-gulp.task('config', ['config_core', 'config_ui'], function() {
-});
-
-gulp.task('config_core', function() {
-    configMaker('core');
-});
-
-gulp.task('config_ui', function() {
-    configMaker('ui');
+gulp.task('config', function() {
+    return Promise.all([
+        configMaker('core'),
+        configMaker('ui')
+    ]);
 });
 
 var configMaker = function(name) {
     var out = name == 'ui' ? '' : name + '_';
-    gulp.src(['./js/polyfill.js', './js/config.js', './js/loader.js'])
-        .pipe(concat('config_' + name + '.js'))
-        .pipe(replace(/\s+name:[^\n]+,\n\s+out:[^\n]+,\n\s+include:[^\n]+,/, ''))
-        .pipe(replace(/\{app\}/, name))
-        .pipe(replace(/\{name\}/, name))
-        .pipe(gulp.dest('./js/'));
-    return gulp.src(['./js/config.js'])
-        .pipe(concat('rjs_config_' + name + '.js'))
-        .pipe(replace(/\{name\}/g, name))
-        .pipe(replace(/\{out\}/, out))
-        .pipe(gulp.dest('./'));
+    return Promise.all([
+        new Promise(function(resolve, reject){
+            gulp.src(['./js/polyfill.js', './js/config.js', './js/loader.js'])
+                .pipe(concat('config_' + name + '.js'))
+                .pipe(replace(/\s+name:[^\n]+,\n\s+out:[^\n]+,\n\s+include:[^\n]+,/, ''))
+                .pipe(replace(/\{app\}/, name))
+                .pipe(replace(/\{name\}/, name))
+                .on('error', reject)
+                .pipe(gulp.dest('./js/'))
+                .on('end', resolve);
+        }),
+        new Promise(function(resolve, reject){
+            gulp.src(['./js/config.js'])
+                .pipe(concat('rjs_config_' + name + '.js'))
+                .pipe(replace(/\{name\}/g, name))
+                .pipe(replace(/\{out\}/, out))
+                .on('error', reject)
+                .pipe(gulp.dest('./'))
+                .on('end', resolve);
+        })
+    ]);
 };
