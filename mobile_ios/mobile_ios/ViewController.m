@@ -7,21 +7,20 @@
 //
 
 #import "ViewController.h"
-#import <UIKit/UIKit.h>
-#import <CoreLocation/CoreLocation.h>
-#import "MaplatBridge.h"
+
+@import UIKit;
+@import CoreLocation;
+@import MaplatView;
 
 const double BaseLongitude = 141.1529555;
 const double BaseLatitude = 39.7006006;
 
-@interface ViewController () <CLLocationManagerDelegate, MaplatBridgeDelegate>
+@interface ViewController () <CLLocationManagerDelegate, MaplatViewDelegate>
 
 @property (nonatomic, strong) CLLocationManager *locationManager;
 @property (retain, nonatomic) NSString *nowMap;
 @property (nonatomic) double nowDirection;
 @property (nonatomic) double nowRotation;
-
-@property (nonatomic, strong) MaplatBridge *maplatBridge;
 
 @property (nonatomic) double defaultLongitude;
 @property (nonatomic) double defaultLatitude;
@@ -33,11 +32,21 @@ const double BaseLatitude = 39.7006006;
 - (void)loadView
 {
     [super loadView];
-    
-    // WKWebView インスタンスの生成
-    self.webView = [UIWebView new];
-    
-    self.view = self.webView;
+
+    NSDictionary *setting = @{ @"app_name" : @"モバイルアプリ",
+                               @"sources" : @[
+                                       @"gsi",
+                                       @"osm",
+                                       @{
+                                           @"mapID" : @"morioka_ndl"
+                                           }
+                                       ],
+                               @"pois" : @[]
+                               };
+    _maplatView = [[MaplatView alloc] initWithFrame:[UIScreen mainScreen].bounds appID:@"mobile" setting:setting];
+    _maplatView.delegate = self;
+
+    self.view = self.maplatView;
     
     self.nowMap = @"morioka_ndl";
     self.nowDirection = 0;
@@ -82,22 +91,9 @@ const double BaseLatitude = 39.7006006;
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-    [NSThread sleepForTimeInterval:10]; //Safariのデバッガを繋ぐための時間。本番では不要。
+    //[NSThread sleepForTimeInterval:10]; //Safariのデバッガを繋ぐための時間。本番では不要。
     _defaultLongitude = 0;
     _defaultLatitude = 0;
-    
-    _maplatBridge = [[MaplatBridge alloc] initWithWebView:self.webView appID:@"mobile" setting:@{
-        @"app_name" : @"モバイルアプリ",
-        @"sources" : @[
-            @"gsi",
-            @"osm",
-            @{
-                @"mapID" : @"morioka_ndl"
-            }
-        ],
-        @"pois" : @[]
-    }];
-    _maplatBridge.delegate = self;
     
     _locationManager = [[CLLocationManager alloc] init];
     _locationManager.delegate = self;
@@ -107,7 +103,6 @@ const double BaseLatitude = 39.7006006;
         [_locationManager requestWhenInUseAuthorization];
     }
 }
-
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -146,14 +141,14 @@ const double BaseLatitude = 39.7006006;
 
 - (void)addMarkers
 {
-    [_maplatBridge addLineWithLngLat:@[@[@141.1501111, @39.69994722], @[@141.1529555, @39.7006006]] stroke:nil];
-    [_maplatBridge addLineWithLngLat:@[@[@141.151995, @39.701599], @[@141.151137, @39.703736], @[@141.1521671, @39.7090232]]
+    [_maplatView addLineWithLngLat:@[@[@141.1501111, @39.69994722], @[@141.1529555, @39.7006006]] stroke:nil];
+    [_maplatView addLineWithLngLat:@[@[@141.151995, @39.701599], @[@141.151137, @39.703736], @[@141.1521671, @39.7090232]]
                                 stroke:@{@"color":@"#ffcc33", @"width":@2}];
-    [_maplatBridge addMarkerWithLatitude:39.69994722 longitude:141.1501111 markerId:1 stringData:@"001"];
-    [_maplatBridge addMarkerWithLatitude:39.7006006 longitude:141.1529555 markerId:5 stringData:@"005"];
-    [_maplatBridge addMarkerWithLatitude:39.701599 longitude:141.151995 markerId:6 stringData:@"006"];
-    [_maplatBridge addMarkerWithLatitude:39.703736 longitude:141.151137 markerId:7 stringData:@"007"];
-    [_maplatBridge addMarkerWithLatitude:39.7090232 longitude:141.1521671 markerId:9 stringData:@"009"];
+    [_maplatView addMarkerWithLatitude:39.69994722 longitude:141.1501111 markerId:1 stringData:@"001"];
+    [_maplatView addMarkerWithLatitude:39.7006006 longitude:141.1529555 markerId:5 stringData:@"005"];
+    [_maplatView addMarkerWithLatitude:39.701599 longitude:141.151995 markerId:6 stringData:@"006"];
+    [_maplatView addMarkerWithLatitude:39.703736 longitude:141.151137 markerId:7 stringData:@"007"];
+    [_maplatView addMarkerWithLatitude:39.7090232 longitude:141.1521671 markerId:9 stringData:@"009"];
 }
 
 #pragma mark - Location Manager
@@ -178,7 +173,7 @@ const double BaseLatitude = 39.7006006;
         longitude = BaseLongitude - _defaultLongitude + newLocation.coordinate.longitude;
     }
     
-    [_maplatBridge setGPSMarkerWithLatitude:latitude longitude:longitude accuracy:newLocation.horizontalAccuracy];
+    [_maplatView setGPSMarkerWithLatitude:latitude longitude:longitude accuracy:newLocation.horizontalAccuracy];
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
@@ -198,18 +193,18 @@ const double BaseLatitude = 39.7006006;
     switch((int)button.tag) {
         case 1:
             nextMap = [self.nowMap isEqualToString:@"morioka_ndl"] ? @"gsi" : @"morioka_ndl";
-            [_maplatBridge changeMap:nextMap];
+            [_maplatView changeMap:nextMap];
             self.nowMap = nextMap;
             break;
         case 2:
             [self addMarkers];
             break;
         case 3:
-            [_maplatBridge clearLine];
-            [_maplatBridge clearMarker];
+            [_maplatView clearLine];
+            [_maplatView clearMarker];
             break;
         case 4:
-            [_maplatBridge setViewpointWithLatitude:39.69994722 longitude:141.1501111];
+            [_maplatView setViewpointWithLatitude:39.69994722 longitude:141.1501111];
             break;
         case 5:
             if (_nowDirection == 0) {
@@ -225,7 +220,7 @@ const double BaseLatitude = 39.7006006;
                 nextDirection = 0;
                 [button setTitle:@"東を上" forState:UIControlStateNormal];
             }
-            [_maplatBridge setDirection:nextDirection];
+            [_maplatView setDirection:nextDirection];
             _nowDirection = nextDirection;
             break;
         case 6:
@@ -242,7 +237,7 @@ const double BaseLatitude = 39.7006006;
                 nextRotation = 0;
                 [button setTitle:@"右を上" forState:UIControlStateNormal];
             }
-            [_maplatBridge setRotation:nextRotation];
+            [_maplatView setRotation:nextRotation];
             _nowRotation = nextRotation;
             break;
     }

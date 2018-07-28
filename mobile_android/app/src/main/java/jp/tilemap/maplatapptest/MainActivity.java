@@ -15,7 +15,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -36,7 +35,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 
-public class MainActivity extends Activity implements MaplatBridge.MaplatBridgeListener {
+import jp.tilemap.maplat.MaplatView;
+import jp.tilemap.maplat.MaplatBridgeListener;
+
+public class MainActivity extends Activity implements MaplatBridgeListener {
 
     private static final int REQUEST_PERMISSION = 10;
 
@@ -46,7 +48,7 @@ public class MainActivity extends Activity implements MaplatBridge.MaplatBridgeL
     public static Button button4 = null;
     public static Button button5 = null;
     public static Button button6 = null;
-    private MaplatBridge mMaplatBridge;
+    private MaplatView mMaplatView;
     private String nowMap;
     private double nowDirection;
     private double nowRotation;
@@ -78,29 +80,23 @@ public class MainActivity extends Activity implements MaplatBridge.MaplatBridgeL
         setContentView(R.layout.activity_main);
 
         //レイアウトで指定したWebViewのIDを指定する。
-        WebView myWebView = (WebView)findViewById(R.id.webView1);
-        myWebView.setWebContentsDebuggingEnabled(true);
-
+        mMaplatView = (MaplatView)findViewById(R.id.webView1);
         nowMap = "morioka_ndl";
         nowDirection = 0;
         nowRotation = 0;
 
-        try {
-            mMaplatBridge = new MaplatBridge(this, myWebView, new Handler(), this, "mobile",
-                    new HashMap<String, Object>() {{
-                        put("app_name", "モバイルアプリ");
-                        put("sources", new ArrayList<Object>(){{
-                            add("gsi");
-                            add("osm");
-                            add(new HashMap<String, String>(){{
-                                put("mapID", "morioka_ndl");
-                            }});
-                        }});
-                        put("pois", new ArrayList<Object>());
-                    }});
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        mMaplatView.initSetting(this, "mobile", new HashMap<String, Object>() {{
+            put("app_name", "モバイルアプリ");
+            put("sources", new ArrayList<Object>(){{
+                add("gsi");
+                add("osm");
+                add(new HashMap<String, String>(){{
+                    put("mapID", "morioka_ndl");
+                }});
+            }});
+            put("pois", new ArrayList<Object>());
+        }});
+
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         mSettingsClient = LocationServices.getSettingsClient(this);
         createLocationCallback();
@@ -112,7 +108,7 @@ public class MainActivity extends Activity implements MaplatBridge.MaplatBridgeL
             @Override
             public void onClick(View v) {
                 String nextMap = nowMap.equals("morioka_ndl") ? "gsi" : "morioka_ndl";
-                mMaplatBridge.changeMap(nextMap);
+                mMaplatView.changeMap(nextMap);
                 nowMap = nextMap;
             }
         });
@@ -129,8 +125,8 @@ public class MainActivity extends Activity implements MaplatBridge.MaplatBridgeL
         button3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mMaplatBridge.clearLine();
-                mMaplatBridge.clearMarker();
+                mMaplatView.clearLine();
+                mMaplatView.clearMarker();
             }
         });
 
@@ -138,7 +134,7 @@ public class MainActivity extends Activity implements MaplatBridge.MaplatBridgeL
         button4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mMaplatBridge.setViewpoint(39.69994722, 141.1501111);
+                mMaplatView.setViewpoint(39.69994722, 141.1501111);
             }
         });
 
@@ -160,7 +156,7 @@ public class MainActivity extends Activity implements MaplatBridge.MaplatBridgeL
                     nextDirection = 0;
                     button5.setText("東を上");
                 }
-                mMaplatBridge.setDirection(nextDirection);
+                mMaplatView.setDirection(nextDirection);
                 nowDirection = nextDirection;
             }
         });
@@ -183,7 +179,7 @@ public class MainActivity extends Activity implements MaplatBridge.MaplatBridgeL
                     nextRotation = 0;
                     button6.setText("右を上");
                 }
-                mMaplatBridge.setRotation(nextRotation);
+                mMaplatView.setRotation(nextRotation);
                 nowRotation = nextRotation;
             }
         });
@@ -231,7 +227,7 @@ public class MainActivity extends Activity implements MaplatBridge.MaplatBridgeL
                     latitude = baseLatitude - defaultLatitude + mCurrentLocation.getLatitude();
                     longitude = baseLongitude - defaultLongitude + mCurrentLocation.getLongitude();
                 }
-                mMaplatBridge.setGPSMarker(latitude, longitude, mCurrentLocation.getAccuracy());
+                mMaplatView.setGPSMarker(latitude, longitude, mCurrentLocation.getAccuracy());
             }
         };
     }
@@ -315,7 +311,7 @@ public class MainActivity extends Activity implements MaplatBridge.MaplatBridgeL
 
     private void addMarkers() {
         try {
-            mMaplatBridge.addLine(new ArrayList<ArrayList<Double>>(){{
+            mMaplatView.addLine(new ArrayList<ArrayList<Double>>(){{
                 add(new ArrayList<Double>(){{
                     add(141.1501111); add(39.69994722);
                 }});
@@ -323,7 +319,7 @@ public class MainActivity extends Activity implements MaplatBridge.MaplatBridgeL
                     add(141.1529555); add(39.7006006);
                 }});
             }}, null);
-            mMaplatBridge.addLine(new ArrayList<ArrayList<Double>>(){{
+            mMaplatView.addLine(new ArrayList<ArrayList<Double>>(){{
                 add(new ArrayList<Double>(){{
                     add(141.151995); add(39.701599);
                 }});
@@ -340,10 +336,10 @@ public class MainActivity extends Activity implements MaplatBridge.MaplatBridgeL
         } catch (Exception e) {
             e.printStackTrace();
         }
-        mMaplatBridge.addMarker(39.69994722, 141.1501111, 1, "001");
-        mMaplatBridge.addMarker(39.7006006, 141.1529555, 5, "005");
-        mMaplatBridge.addMarker(39.701599, 141.151995, 6, "006");
-        mMaplatBridge.addMarker(39.703736, 141.151137, 7, "007");
-        mMaplatBridge.addMarker(39.7090232, 141.1521671, 9, "009");
+        mMaplatView.addMarker(39.69994722, 141.1501111, 1, "001");
+        mMaplatView.addMarker(39.7006006, 141.1529555, 5, "005");
+        mMaplatView.addMarker(39.701599, 141.151995, 6, "006");
+        mMaplatView.addMarker(39.703736, 141.151137, 7, "007");
+        mMaplatView.addMarker(39.7090232, 141.1521671, 9, "009");
     }
 }

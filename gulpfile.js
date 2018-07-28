@@ -7,7 +7,8 @@ var gulp = require('gulp'),
     replace = require('gulp-replace'),
     os = require('os'),
     fs = require('fs-extra'),
-    wbBuild = require('workbox-build');
+    wbBuild = require('workbox-build'),
+    glob = require('glob');
 
 var pkg = require('./package.json');
 var banner = ['/**',
@@ -45,7 +46,7 @@ gulp.task('server', function() {
     }).unref();
 });
 
-gulp.task('build', ['js_build', 'css_build'], function() {
+gulp.task('build', ['mobile_build'], function() {
     try {
         fs.removeSync('./example.zip');
     } catch (e) {
@@ -88,7 +89,7 @@ gulp.task('build', ['js_build', 'css_build'], function() {
     });
 });
 
-gulp.task('js_build', function() {
+gulp.task('js_build', ['config'], function() {
     var cmd = isWin ? 'r.js.cmd' : 'r.js';
     execSync(cmd + ' -o rjs_config_core.js');
     execSync(cmd + ' -o rjs_config_ui.js');
@@ -138,7 +139,7 @@ gulp.task('config', function() {
 var configMaker = function(name) {
     var out = name == 'ui' ? '' : name + '_';
     return Promise.all([
-        new Promise(function(resolve, reject){
+        new Promise(function(resolve, reject) {
             gulp.src(['./js/polyfill.js', './js/config.js', './js/loader.js'])
                 .pipe(concat('config_' + name + '.js'))
                 .pipe(replace(/\s+name:[^\n]+,\n\s+out:[^\n]+,\n\s+include:[^\n]+,/, ''))
@@ -148,7 +149,7 @@ var configMaker = function(name) {
                 .pipe(gulp.dest('./js/'))
                 .on('end', resolve);
         }),
-        new Promise(function(resolve, reject){
+        new Promise(function(resolve, reject) {
             gulp.src(['./js/config.js'])
                 .pipe(concat('rjs_config_' + name + '.js'))
                 .pipe(replace(/\{name\}/g, name))
@@ -193,7 +194,7 @@ gulp.task('sw_build', function() {
             },
         }],
     }).then(function() {
-        return new Promise(function(resolve, reject){
+        return new Promise(function(resolve, reject) {
             gulp.src(['./service-worker_.js'])
                 .pipe(concat('service-worker.js'))
                 .pipe(replace(/self\.__precacheManifest = \[/, "self.__precacheManifest = [\n  {\n    \"url\": \".\"\n  },"))
@@ -204,4 +205,96 @@ gulp.task('sw_build', function() {
     }).then(function() {
         fs.unlinkSync('./service-worker_.js');
     });
+});
+
+var mobileTestCopy = [
+    'css/core.css',
+    'css/bootstrap.css',
+    'css/swiper.css',
+    'css/font-awesome.css',
+    'css/ol-maplat.css',
+    'lib/aigle-es5.min.js',
+    'lib/require.min.js',
+    'js/config_core.js',
+    'lib/i18nextXHRBackend.min.js',
+    'lib/ol-maplat.js',
+    'js/ol-custom.js',
+    'lib/i18next.min.js',
+    'lib/turf_maplat.min.js',
+    'lib/swiper.js',
+    'lib/bootstrap-native.js',
+    'lib/mapshaper_maplat.js',
+    'lib/detect-element-resize.js',
+    'js/core.js',
+    'js/histmap.js',
+    'js/histmap_tin.js',
+    'lib/sprintf.js',
+    'js/tin.js'
+];
+var mobileCopy = [
+    'dist/maplat_core.css',
+    'dist/maplat_core.js'
+];
+var mobileBaseCopy = [
+    'js/maplatBridge.js',
+    'parts/bluedot.png',
+    'parts/defaultpin.png',
+    'parts/redcircle.png'
+];
+var assetsCopy = [
+    'maps/morioka_ndl.json',
+    'tiles/morioka_ndl'
+];
+
+function removeResource() {
+    var files = [
+        './mobile_android/lib-maplat/src/main/res/raw',
+        './mobile_ios_lib/MaplatView/Maplat.bundle',
+        './mobile_android/app/src/main/assets/maps',
+        './mobile_android/app/src/main/assets/tiles',
+        './mobile_ios/mobile_ios/maps',
+        './mobile_ios/mobile_ios/tiles'
+    ];
+    for (var i=0; i<files.length; i++) {
+        var file = files[i];
+        try {
+            fs.removeSync(file);
+        } catch (e) {
+        }
+    }
+}
+
+function copyResource(files) {
+    for (var i=0; i<files.length; i++) {
+        var copy = files[i];
+        var copyTo = copy.replace(/[\/\.\-]/g, '_').toLowerCase();
+        fs.copySync(copy, './mobile_android/lib-maplat/src/main/res/raw/' + copyTo);
+        fs.copySync(copy, './mobile_ios_lib/MaplatView/Maplat.bundle/' + copy);
+    }
+}
+
+function copyAssets() {
+    for (var i=0; i<assetsCopy.length; i++) {
+        var copy = assetsCopy[i];
+        fs.copySync(copy, './mobile_android/app/src/main/assets/' + copy);
+        fs.copySync(copy, './mobile_ios/mobile_ios/' + copy);
+    }
+}
+
+gulp.task('mobile_build_test', ['config', 'less'], function() {
+    removeResource();
+    copyResource(mobileTestCopy);
+    copyResource(mobileBaseCopy);
+    fs.copySync('mobile_test.html', './mobile_android/lib-maplat/src/main/res/raw/mobile_html');
+    fs.copySync('mobile_test.html', './mobile_ios_lib/MaplatView/Maplat.bundle/mobile.html');
+    copyAssets();
+});
+
+gulp.task('mobile_build', ['js_build', 'css_build'], function() {
+    removeResource();
+    copyResource(mobileCopy);
+    copyResource(mobileBaseCopy);
+    fs.copySync('mobile.html', './mobile_android/lib-maplat/src/main/res/raw/mobile_html');
+    fs.copySync('mobile.html', './mobile_ios_lib/MaplatView/Maplat.bundle/mobile.html');
+    copyAssets();
 });
