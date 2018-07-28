@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		164AF04020EC6C6F00648AD9 /* MaplatView.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 164AF03D20EB644B00648AD9 /* MaplatView.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		164AF06920ED2B5600648AD9 /* MaplatView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 164AF03D20EB644B00648AD9 /* MaplatView.framework */; };
+		165C93D6210C30B400D984D0 /* MaplatView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 165C93D5210C307900D984D0 /* MaplatView.framework */; };
+		165C93D7210C30B400D984D0 /* MaplatView.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 165C93D5210C307900D984D0 /* MaplatView.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		660C00C8209201C6004B885B /* tiles in Resources */ = {isa = PBXBuildFile; fileRef = 660C00C7209201C6004B885B /* tiles */; };
 		660C00CA209201D4004B885B /* maps in Resources */ = {isa = PBXBuildFile; fileRef = 660C00C9209201D4004B885B /* maps */; };
 		6642D29E1E5DC88E00555CB7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6642D29D1E5DC88E00555CB7 /* main.m */; };
@@ -18,6 +18,23 @@
 		6642D2AC1E5DC88E00555CB7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6642D2AA1E5DC88E00555CB7 /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		165C93D4210C307900D984D0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 165C93CF210C307900D984D0 /* MaplatView.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 164AF02C20EB5DFC00648AD9;
+			remoteInfo = MaplatView;
+		};
+		165C93D8210C30B400D984D0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 165C93CF210C307900D984D0 /* MaplatView.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 164AF02B20EB5DFC00648AD9;
+			remoteInfo = MaplatView;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		164AF04120EC6C7000648AD9 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -25,7 +42,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				164AF04020EC6C6F00648AD9 /* MaplatView.framework in Embed Frameworks */,
+				165C93D7210C30B400D984D0 /* MaplatView.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -33,7 +50,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		164AF03D20EB644B00648AD9 /* MaplatView.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MaplatView.framework; path = mobile_ios/MaplatView.framework; sourceTree = SOURCE_ROOT; };
+		165C93CF210C307900D984D0 /* MaplatView.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MaplatView.xcodeproj; path = ../mobile_ios_lib/MaplatView.xcodeproj; sourceTree = "<group>"; };
 		660C00C7209201C6004B885B /* tiles */ = {isa = PBXFileReference; lastKnownFileType = folder; path = tiles; sourceTree = "<group>"; };
 		660C00C9209201D4004B885B /* maps */ = {isa = PBXFileReference; lastKnownFileType = folder; path = maps; sourceTree = "<group>"; };
 		6642D2991E5DC88E00555CB7 /* mobile_ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mobile_ios.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -52,26 +69,26 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				164AF06920ED2B5600648AD9 /* MaplatView.framework in Frameworks */,
+				165C93D6210C30B400D984D0 /* MaplatView.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		164AF03C20EB638E00648AD9 /* Frameworks */ = {
+		165C93D0210C307900D984D0 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				164AF03D20EB644B00648AD9 /* MaplatView.framework */,
+				165C93D5210C307900D984D0 /* MaplatView.framework */,
 			);
-			path = Frameworks;
+			name = Products;
 			sourceTree = "<group>";
 		};
 		6642D2901E5DC88D00555CB7 = {
 			isa = PBXGroup;
 			children = (
+				165C93CF210C307900D984D0 /* MaplatView.xcodeproj */,
 				6642D29B1E5DC88E00555CB7 /* mobile_ios */,
-				164AF03C20EB638E00648AD9 /* Frameworks */,
 				6642D29A1E5DC88E00555CB7 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -132,6 +149,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				165C93D9210C30B400D984D0 /* PBXTargetDependency */,
 			);
 			name = mobile_ios;
 			productName = mobile_ios;
@@ -149,7 +167,7 @@
 				TargetAttributes = {
 					6642D2981E5DC88D00555CB7 = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = ZAD4S7J7P3;
+						DevelopmentTeam = FZ4GR2B97X;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -165,12 +183,28 @@
 			mainGroup = 6642D2901E5DC88D00555CB7;
 			productRefGroup = 6642D29A1E5DC88E00555CB7 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 165C93D0210C307900D984D0 /* Products */;
+					ProjectRef = 165C93CF210C307900D984D0 /* MaplatView.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				6642D2981E5DC88D00555CB7 /* mobile_ios */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		165C93D5210C307900D984D0 /* MaplatView.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = MaplatView.framework;
+			remoteRef = 165C93D4210C307900D984D0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		6642D2971E5DC88D00555CB7 /* Resources */ = {
@@ -198,6 +232,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		165C93D9210C30B400D984D0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MaplatView;
+			targetProxy = 165C93D8210C30B400D984D0 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		6642D2AA1E5DC88E00555CB7 /* LaunchScreen.storyboard */ = {
@@ -303,7 +345,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = ZAD4S7J7P3;
+				DEVELOPMENT_TEAM = FZ4GR2B97X;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/mobile_ios",
@@ -319,7 +361,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = ZAD4S7J7P3;
+				DEVELOPMENT_TEAM = FZ4GR2B97X;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/mobile_ios",
