@@ -1,21 +1,23 @@
 //
-//  MaplatBridge.h
-//  mobile_ios
+//  MaplatView.h
+//  MaplatView
 //
-//  Created by 大塚 恒平 on 2018/03/16.
-//  Copyright © 2018年 TileMapJp. All rights reserved.
+//  Created by Takashi Irie on 2018/07/03.
+//  Copyright © 2018 TileMapJp. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-@protocol MaplatBridgeDelegate;
+@protocol MaplatViewDelegate;
 
-@interface MaplatBridge : NSObject
+@interface MaplatView : UIView
 
-@property (nonatomic, assign) id <MaplatBridgeDelegate> delegate;
+@property (nonatomic, readonly) UIWebView *webView;
+@property (nonatomic, assign) id <MaplatViewDelegate> delegate;
 
-- (id)initWithWebView:(UIWebView *)webView appID:(NSString *)appID setting:(NSDictionary *)setting;
++ (void)configure;
+
+- (instancetype)initWithFrame:(CGRect)frame appID:(NSString *)appID setting:(NSDictionary *)setting;
 
 - (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(long)markerId stringData:(NSString *)markerData;
 - (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(long)markerId stringData:(NSString *)markerData iconUrl:(NSString *) iconUrl;
@@ -41,7 +43,7 @@
 
 @end
 
-@protocol MaplatBridgeDelegate <NSObject>
+@protocol MaplatViewDelegate <NSObject>
 @optional
 - (void)onReady;
 - (void)onClickMarkerWithMarkerId:(long)markerId markerData:(id)markerData;
@@ -49,3 +51,4 @@
 - (void)onOutOfMap;
 - (void)onClickMapWithLatitude:(double)latitude longitude:(double)longitude;
 @end
+
