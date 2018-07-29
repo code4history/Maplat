@@ -103,6 +103,11 @@
 
 - (void)callApp2WebWithKey:(NSString *)key value:(id)value
 {
+    [self callApp2WebWithKey:key value:value callback:nil];
+}
+
+- (void)callApp2WebWithKey:(NSString *)key value:(id)value callback:(void (^)(NSString *))callback
+{
     NSString* jsonStr;
     if (value == nil) {
         jsonStr = nil;
@@ -114,7 +119,10 @@
         NSData *jsonData = [NSJSONSerialization dataWithJSONObject:value options:0 error:nil];
         jsonStr = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     }
-    [_webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"javascript:maplatBridge.callApp2Web('%@','%@');", key, jsonStr]];
+    NSString *retVal = [_webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"maplatBridge.callApp2Web('%@','%@');", key, jsonStr]];
+    if (callback != nil) {
+        callback(retVal);
+    }
 }
 
 - (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(long)markerId stringData:(NSString *)markerData

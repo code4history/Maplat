@@ -22,7 +22,7 @@ maplatBridge.callWeb2App = maplatBridge.callWeb2App || function (key, data) {
     runQueue(queue);
 };
 var app;
-maplatBridge.callApp2Web = function (key, data) {
+maplatBridge.callApp2Web = function(key, data, callbackKey) {
     try {
         data = JSON.parse(data);
     } catch (e) {}
@@ -50,7 +50,15 @@ maplatBridge.callApp2Web = function (key, data) {
             if (app) {
                 var func = app[key];
                 if (func) {
-                    func.call(app, data);
+                    var ret = func.call(app, data);
+                    if (callbackKey) {
+                        maplatBridge.callWeb2App('methodCallback', JSON.stringify({
+                            key: callbackKey,
+                            value: ret
+                        }));
+                    } else {
+                        return ret;
+                    }
                 }
             }
             break;
