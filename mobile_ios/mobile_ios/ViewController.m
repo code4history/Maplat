@@ -53,7 +53,7 @@ const double BaseLatitude = 39.7006006;
     self.nowRotation = 0;
     
     // テストボタンの生成
-    for (int i=1; i<=6; i++) {
+    for (int i=1; i<=7; i++) {
         UIButton *button = [UIButton new];
         button.tag = i;
         button.frame = CGRectMake(10, i*60, 100, 40);
@@ -77,6 +77,9 @@ const double BaseLatitude = 39.7006006;
                 break;
             case 6:
                 [button setTitle:@"右を上" forState:UIControlStateNormal];
+                break;
+            case 7:
+                [button setTitle:@"地図ID表示" forState:UIControlStateNormal];
                 break;
             default:
                 [button setTitle:[NSString stringWithFormat:@"button %d", i] forState:UIControlStateNormal];
@@ -239,6 +242,11 @@ const double BaseLatitude = 39.7006006;
             }
             [_maplatView setRotation:nextRotation];
             _nowRotation = nextRotation;
+            break;
+        case 7:
+            [_maplatView currentMapID:^(NSString *value){
+                [self toast:value];
+            }];
             break;
     }
 }

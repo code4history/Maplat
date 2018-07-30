@@ -41,6 +41,8 @@
 - (void)addLineWithLngLat:(NSArray *)lnglats stroke:(NSDictionary *)stroke;
 - (void)clearLine;
 
+- (void)currentMapID:(void (^)(NSString *))callback;
+
 @end
 
 @protocol MaplatViewDelegate <NSObject>

@@ -237,5 +237,10 @@
     [self callApp2WebWithKey:@"clearLine" value:nil];
 }
 
+- (void)currentMapID:(void (^)(NSString *))callback
+{
+    [self callApp2WebWithKey:@"currentMapID" value:nil callback:callback];
+}
+
 @end
 
