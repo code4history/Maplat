@@ -396,6 +396,30 @@ define(['histmap'], function(ol) {
     MaplatApp.customEvent = CustomEvent;
     ol.inherits(MaplatApp, ol.events.EventTarget);
 
+    var createMapInfo = function(source) {
+        if (!source) return;
+        var ret = {
+            sourceID: source.sourceID
+        };
+        for (var i = 0; i < ol.source.META_KEYS.length; i++) {
+            var key = ol.source.META_KEYS[i];
+            if (source[key]) {
+                ret[key] = source[key];
+            }
+        }
+        return ret;
+    }
+
+    MaplatApp.prototype.currentMapInfo = function() {
+        var app = this;
+        return createMapInfo(app.from);
+    };
+
+    MaplatApp.prototype.mapInfo = function(sourceID) {
+        var app = this;
+        return createMapInfo(app.cacheHash[sourceID]);
+    };
+
     MaplatApp.prototype.setMarker = function(data) {
         var app = this;
         app.logger.debug(data);

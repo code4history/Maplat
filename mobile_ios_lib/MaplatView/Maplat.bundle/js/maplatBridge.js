@@ -6,8 +6,8 @@ var queue = [];
 var running = false;
 function runQueue(queue) {
     var args = queue.shift();
-    window.location = "maplatBridge://call?key=" + encodeURIComponent(args[0]) + "&value=" + encodeURIComponent(args[1]);
-    setTimeout(function(){
+    window.location = 'maplatBridge://call?key=' + encodeURIComponent(args[0]) + '&value=' + encodeURIComponent(args[1]);
+    setTimeout(function() {
         if (queue.length == 0) {
             running = false;
         } else {
@@ -15,14 +15,14 @@ function runQueue(queue) {
         }
     }, 1);
 }
-maplatBridge.callWeb2App = maplatBridge.callWeb2App || function (key, data) {
+maplatBridge.callWeb2App = maplatBridge.callWeb2App || function(key, data) {
     queue.push([key, data]);
     if (running) return;
     running = true;
     runQueue(queue);
 };
 var app;
-maplatBridge.callApp2Web = function (key, data) {
+maplatBridge.callApp2Web = function(key, data, callbackKey) {
     try {
         data = JSON.parse(data);
     } catch (e) {}
@@ -50,7 +50,18 @@ maplatBridge.callApp2Web = function (key, data) {
             if (app) {
                 var func = app[key];
                 if (func) {
-                    func.call(app, data);
+                    var ret = func.call(app, data);
+                    if (ret instanceof Object) {
+                        ret = JSON.stringify(ret);
+                    }
+                    if (callbackKey) {
+                        maplatBridge.callWeb2App('methodCallback', JSON.stringify({
+                            key: callbackKey,
+                            value: ret
+                        }));
+                    } else {
+                        return ret;
+                    }
                 }
             }
             break;

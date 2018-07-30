@@ -33,6 +33,8 @@
         option[hash[0]] = hash[1];
     }
     Maplat.createObject(option).then(function(app){
+        console.log(app.currentMapInfo());
+        console.log(app.mapInfo('gsi'));
         app.addEventListener('clickMarker', function(evt) {
             console.log(evt);
         });

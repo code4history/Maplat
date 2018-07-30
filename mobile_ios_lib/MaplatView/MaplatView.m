@@ -103,6 +103,11 @@
 
 - (void)callApp2WebWithKey:(NSString *)key value:(id)value
 {
+    [self callApp2WebWithKey:key value:value callback:nil];
+}
+
+- (void)callApp2WebWithKey:(NSString *)key value:(id)value callback:(void (^)(NSString *))callback
+{
     NSString* jsonStr;
     if (value == nil) {
         jsonStr = nil;
@@ -114,7 +119,10 @@
         NSData *jsonData = [NSJSONSerialization dataWithJSONObject:value options:0 error:nil];
         jsonStr = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     }
-    [_webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"javascript:maplatBridge.callApp2Web('%@','%@');", key, jsonStr]];
+    NSString *retVal = [_webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"maplatBridge.callApp2Web('%@','%@');", key, jsonStr]];
+    if (callback != nil) {
+        callback(retVal);
+    }
 }
 
 - (void)addMarkerWithLatitude:(double)latitude longitude:(double)longitude markerId:(long)markerId stringData:(NSString *)markerData
@@ -227,6 +235,41 @@
 - (void)clearLine
 {
     [self callApp2WebWithKey:@"clearLine" value:nil];
+}
+
+- (void)currentMapID:(void (^)(NSString *))callback
+{
+    [self callApp2WebWithKey:@"currentMapID" value:nil callback:callback];
+}
+
+- (void)currentMapInfo:(void (^)(NSDictionary *))callback
+{
+    [self callApp2WebWithKey:@"currentMapInfo" value:nil callback:^(NSString *value){
+        if ([value isEqualToString:@""]) {
+            callback(nil);
+            return;
+        }
+        NSData *jsonData = [value dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:jsonData
+                                                                   options:kNilOptions
+                                                                     error:nil];
+        callback(jsonObject);
+    }];
+}
+
+- (void)mapInfo:(NSString *)sourceID callback:(void (^)(NSDictionary *))callback
+{
+    [self callApp2WebWithKey:@"mapInfo" value:sourceID callback:^(NSString *value){
+        if ([value isEqualToString:@""]) {
+            callback(nil);
+            return;
+        }
+        NSData *jsonData = [value dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:jsonData
+                                                                   options:kNilOptions
+                                                                     error:nil];
+        callback(jsonObject);
+    }];
 }
 
 @end

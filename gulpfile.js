@@ -209,26 +209,18 @@ gulp.task('sw_build', function() {
 
 var mobileTestCopy = [
     'css/core.css',
-    'css/bootstrap.css',
-    'css/swiper.css',
-    'css/font-awesome.css',
     'css/ol-maplat.css',
     'lib/aigle-es5.min.js',
     'lib/require.min.js',
     'js/config_core.js',
-    'lib/i18nextXHRBackend.min.js',
     'lib/ol-maplat.js',
     'js/ol-custom.js',
-    'lib/i18next.min.js',
     'lib/turf_maplat.min.js',
-    'lib/swiper.js',
-    'lib/bootstrap-native.js',
     'lib/mapshaper_maplat.js',
     'lib/detect-element-resize.js',
     'js/core.js',
     'js/histmap.js',
     'js/histmap_tin.js',
-    'lib/sprintf.js',
     'js/tin.js'
 ];
 var mobileCopy = [

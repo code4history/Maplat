@@ -53,10 +53,10 @@ const double BaseLatitude = 39.7006006;
     self.nowRotation = 0;
     
     // テストボタンの生成
-    for (int i=1; i<=6; i++) {
+    for (int i=1; i<=7; i++) {
         UIButton *button = [UIButton new];
         button.tag = i;
-        button.frame = CGRectMake(10, i*60, 100, 40);
+        button.frame = CGRectMake(10, i*60, 120, 40);
         button.alpha = 0.8;
         button.backgroundColor = [UIColor lightGrayColor];
         switch (i) {
@@ -77,6 +77,9 @@ const double BaseLatitude = 39.7006006;
                 break;
             case 6:
                 [button setTitle:@"右を上" forState:UIControlStateNormal];
+                break;
+            case 7:
+                [button setTitle:@"表示地図情報" forState:UIControlStateNormal];
                 break;
             default:
                 [button setTitle:[NSString stringWithFormat:@"button %d", i] forState:UIControlStateNormal];
@@ -239,6 +242,13 @@ const double BaseLatitude = 39.7006006;
             }
             [_maplatView setRotation:nextRotation];
             _nowRotation = nextRotation;
+            break;
+        case 7:
+            [_maplatView currentMapInfo:^(NSDictionary *value){
+                NSData *jsonData = [NSJSONSerialization dataWithJSONObject:value options:0 error:nil];
+                NSString *text = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                [self toast:text];
+            }];
             break;
     }
 }

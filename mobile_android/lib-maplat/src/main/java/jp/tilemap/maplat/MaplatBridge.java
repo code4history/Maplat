@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.UUID;
 
 import android.content.res.Resources;
 
@@ -41,6 +42,7 @@ public class MaplatBridge extends Object {
     Handler mHandler;
     Map<String, Object> mInitializeValue;
     Gson mGson;
+    Map<String, IMaplatStringCallbackHandler> callbackStore;
 
     public MaplatBridge(Context c, WebView w, Handler h, String appID, HashMap<String, Object> setting) {
         this(c, w, h, null, appID, setting);
@@ -51,6 +53,7 @@ public class MaplatBridge extends Object {
         mWebView = w;
         mHandler = h;
         mListener = l;
+        callbackStore = new HashMap<String, IMaplatStringCallbackHandler>();
         CustomizedObjectTypeAdapter adapter = new CustomizedObjectTypeAdapter();
         mGson = new GsonBuilder()
                 .registerTypeHierarchyAdapter(Map.class, adapter)
@@ -286,6 +289,24 @@ public class MaplatBridge extends Object {
                     mListener.onClickMap(latitude, longitude);
                 }
             });
+        } else if (key.equals("methodCallback")) {
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    String callbackKey = "";
+                    String value = "";
+                    try {
+                        Map<String, String> obj = (Map<String, String>)jsonToObject(data, Map.class);
+                        callbackKey = obj.get("key");
+                        value = obj.get("value");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    IMaplatStringCallbackHandler callback = callbackStore.get(callbackKey);
+                    callbackStore.remove(callbackKey);
+                    callback.callback(value);
+                }
+            });
         }
     }
 
@@ -410,12 +431,50 @@ public class MaplatBridge extends Object {
         callApp2Web("clearLine", null);
     }
 
+    public void currentMapInfo(final IMaplatMapCallbackHandler callback) {
+        callApp2Web("currentMapInfo", null, new IMaplatStringCallbackHandler() {
+            @Override
+            public void callback(String value) {
+                if (value.equals("")) {
+                    callback.callback(null);
+                    return;
+                }
+                Map<String, Object> obj = (Map<String, Object>)jsonToObject(value, Map.class);
+                callback.callback(obj);
+            }
+        });
+    }
+
+    public void mapInfo(String sourceID, final IMaplatMapCallbackHandler callback) {
+        callApp2Web("mapInfo", sourceID, new IMaplatStringCallbackHandler() {
+            @Override
+            public void callback(String value) {
+                if (value.equals("")) {
+                    callback.callback(null);
+                    return;
+                }
+                Map<String, Object> obj = (Map<String, Object>)jsonToObject(value, Map.class);
+                callback.callback(obj);
+            }
+        });
+    }
     private void callApp2Web(final String key, Object data) {
+        callApp2Web(key, data, null);
+    }
+
+    private void callApp2Web(final String key, Object data, IMaplatStringCallbackHandler callback) {
         final String jsonStr = objectToJson(data);
+        String callbackKey = "";
+        if (callback != null) {
+            UUID u1 = UUID.randomUUID();
+            callbackKey = u1.toString();
+            callbackStore.put(callbackKey, callback);
+        }
+        final String callbackKey_ = callbackKey;
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                mWebView.loadUrl("javascript:maplatBridge.callApp2Web('" + key + "','" + jsonStr + "');");
+                mWebView.loadUrl("javascript:maplatBridge.callApp2Web('" + key + "','" + jsonStr + "','" + callbackKey_ + "');");
             }
         });
     }
