@@ -396,6 +396,11 @@ define(['histmap'], function(ol) {
     MaplatApp.customEvent = CustomEvent;
     ol.inherits(MaplatApp, ol.events.EventTarget);
 
+    MaplatApp.prototype.currentMapID = function() {
+        var app = this;
+        return app.from.sourceID;
+    };
+
     MaplatApp.prototype.setMarker = function(data) {
         var app = this;
         app.logger.debug(data);

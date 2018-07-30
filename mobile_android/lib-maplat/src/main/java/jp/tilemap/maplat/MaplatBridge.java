@@ -431,6 +431,10 @@ public class MaplatBridge extends Object {
         callApp2Web("clearLine", null);
     }
 
+    public void currentMapID(IMaplatStringCallbackHandler callback) {
+        callApp2Web("currentMapID", null, callback);
+    }
+
     private void callApp2Web(final String key, Object data) {
         callApp2Web(key, data, null);
     }

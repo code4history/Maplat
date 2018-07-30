@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 
+import jp.tilemap.maplat.IMaplatStringCallbackHandler;
 import jp.tilemap.maplat.MaplatView;
 import jp.tilemap.maplat.MaplatBridgeListener;
 
@@ -48,6 +49,7 @@ public class MainActivity extends Activity implements MaplatBridgeListener {
     public static Button button4 = null;
     public static Button button5 = null;
     public static Button button6 = null;
+    public static Button button7 = null;
     private MaplatView mMaplatView;
     private String nowMap;
     private double nowDirection;
@@ -71,6 +73,7 @@ public class MainActivity extends Activity implements MaplatBridgeListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        final Context self = this;
         super.onCreate(savedInstanceState);
 
         if (Build.VERSION.SDK_INT >= 23){
@@ -181,6 +184,19 @@ public class MainActivity extends Activity implements MaplatBridgeListener {
                 }
                 mMaplatView.setRotation(nextRotation);
                 nowRotation = nextRotation;
+            }
+        });
+
+        button7 = (Button)findViewById(R.id.button7);
+        button7.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mMaplatView.currentMapID(new IMaplatStringCallbackHandler() {
+                    @Override
+                    public void callback(String value) {
+                        Toast.makeText(self, value, Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
     }

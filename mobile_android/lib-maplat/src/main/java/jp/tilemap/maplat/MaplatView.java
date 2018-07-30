@@ -128,4 +128,8 @@ public class MaplatView extends RelativeLayout {
     public void addLine(ArrayList<ArrayList<Double>> lnglats, HashMap<String, Object> stroke) {
         mMaplatBridge.addLine(lnglats, stroke);
     }
+
+    public void currentMapID(IMaplatStringCallbackHandler callback) {
+        mMaplatBridge.currentMapID(callback);
+    }
 }
