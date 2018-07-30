@@ -6,8 +6,8 @@ var queue = [];
 var running = false;
 function runQueue(queue) {
     var args = queue.shift();
-    window.location = "maplatBridge://call?key=" + encodeURIComponent(args[0]) + "&value=" + encodeURIComponent(args[1]);
-    setTimeout(function(){
+    window.location = 'maplatBridge://call?key=' + encodeURIComponent(args[0]) + '&value=' + encodeURIComponent(args[1]);
+    setTimeout(function() {
         if (queue.length == 0) {
             running = false;
         } else {
@@ -15,7 +15,7 @@ function runQueue(queue) {
         }
     }, 1);
 }
-maplatBridge.callWeb2App = maplatBridge.callWeb2App || function (key, data) {
+maplatBridge.callWeb2App = maplatBridge.callWeb2App || function(key, data) {
     queue.push([key, data]);
     if (running) return;
     running = true;
