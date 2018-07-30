@@ -129,7 +129,11 @@ public class MaplatView extends RelativeLayout {
         mMaplatBridge.addLine(lnglats, stroke);
     }
 
-    public void currentMapID(IMaplatStringCallbackHandler callback) {
-        mMaplatBridge.currentMapID(callback);
+    public void currentMapInfo(IMaplatMapCallbackHandler callback) {
+        mMaplatBridge.currentMapInfo(callback);
+    }
+
+    public void mapInfo(String sourceID, IMaplatMapCallbackHandler callback) {
+        mMaplatBridge.mapInfo(sourceID, callback);
     }
 }

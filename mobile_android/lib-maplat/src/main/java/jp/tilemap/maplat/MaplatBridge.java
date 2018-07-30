@@ -431,10 +431,33 @@ public class MaplatBridge extends Object {
         callApp2Web("clearLine", null);
     }
 
-    public void currentMapID(IMaplatStringCallbackHandler callback) {
-        callApp2Web("currentMapID", null, callback);
+    public void currentMapInfo(final IMaplatMapCallbackHandler callback) {
+        callApp2Web("currentMapInfo", null, new IMaplatStringCallbackHandler() {
+            @Override
+            public void callback(String value) {
+                if (value.equals("")) {
+                    callback.callback(null);
+                    return;
+                }
+                Map<String, Object> obj = (Map<String, Object>)jsonToObject(value, Map.class);
+                callback.callback(obj);
+            }
+        });
     }
 
+    public void mapInfo(String sourceID, final IMaplatMapCallbackHandler callback) {
+        callApp2Web("mapInfo", sourceID, new IMaplatStringCallbackHandler() {
+            @Override
+            public void callback(String value) {
+                if (value.equals("")) {
+                    callback.callback(null);
+                    return;
+                }
+                Map<String, Object> obj = (Map<String, Object>)jsonToObject(value, Map.class);
+                callback.callback(obj);
+            }
+        });
+    }
     private void callApp2Web(final String key, Object data) {
         callApp2Web(key, data, null);
     }

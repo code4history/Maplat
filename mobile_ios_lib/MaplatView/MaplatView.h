@@ -41,7 +41,8 @@
 - (void)addLineWithLngLat:(NSArray *)lnglats stroke:(NSDictionary *)stroke;
 - (void)clearLine;
 
-- (void)currentMapID:(void (^)(NSString *))callback;
+- (void)currentMapInfo:(void (^)(NSDictionary *))callback;
+- (void)mapInfo:(NSString *)sourceID callback:(void (^)(NSDictionary *))callback;
 
 @end
 

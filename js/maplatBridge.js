@@ -51,6 +51,9 @@ maplatBridge.callApp2Web = function(key, data, callbackKey) {
                 var func = app[key];
                 if (func) {
                     var ret = func.call(app, data);
+                    if (ret instanceof Object) {
+                        ret = JSON.stringify(ret);
+                    }
                     if (callbackKey) {
                         maplatBridge.callWeb2App('methodCallback', JSON.stringify({
                             key: callbackKey,

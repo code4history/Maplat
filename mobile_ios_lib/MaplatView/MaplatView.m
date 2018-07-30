@@ -242,5 +242,35 @@
     [self callApp2WebWithKey:@"currentMapID" value:nil callback:callback];
 }
 
+- (void)currentMapInfo:(void (^)(NSDictionary *))callback
+{
+    [self callApp2WebWithKey:@"currentMapInfo" value:nil callback:^(NSString *value){
+        if ([value isEqualToString:@""]) {
+            callback(nil);
+            return;
+        }
+        NSData *jsonData = [value dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:jsonData
+                                                                   options:kNilOptions
+                                                                     error:nil];
+        callback(jsonObject);
+    }];
+}
+
+- (void)mapInfo:(NSString *)sourceID callback:(void (^)(NSDictionary *))callback
+{
+    [self callApp2WebWithKey:@"mapInfo" value:sourceID callback:^(NSString *value){
+        if ([value isEqualToString:@""]) {
+            callback(nil);
+            return;
+        }
+        NSData *jsonData = [value dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:jsonData
+                                                                   options:kNilOptions
+                                                                     error:nil];
+        callback(jsonObject);
+    }];
+}
+
 @end
 

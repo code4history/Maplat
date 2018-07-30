@@ -30,12 +30,16 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
-import jp.tilemap.maplat.IMaplatStringCallbackHandler;
+import jp.tilemap.maplat.IMaplatMapCallbackHandler;
 import jp.tilemap.maplat.MaplatView;
 import jp.tilemap.maplat.MaplatBridgeListener;
 
@@ -70,10 +74,13 @@ public class MainActivity extends Activity implements MaplatBridgeListener {
     private double defaultLatitude = 0;
     static private double baseLongitude = 141.1529555;
     static private double baseLatitude = 39.7006006;
+    private Gson mGson;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         final Context self = this;
+        mGson = new GsonBuilder()
+                .create();
         super.onCreate(savedInstanceState);
 
         if (Build.VERSION.SDK_INT >= 23){
@@ -191,10 +198,11 @@ public class MainActivity extends Activity implements MaplatBridgeListener {
         button7.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mMaplatView.currentMapID(new IMaplatStringCallbackHandler() {
+                mMaplatView.currentMapInfo(new IMaplatMapCallbackHandler() {
                     @Override
-                    public void callback(String value) {
-                        Toast.makeText(self, value, Toast.LENGTH_SHORT).show();
+                    public void callback(Map<String, Object> value) {
+                        String text = mGson.toJson(value);
+                        Toast.makeText(self, text, Toast.LENGTH_SHORT).show();
                     }
                 });
             }
