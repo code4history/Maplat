@@ -332,6 +332,26 @@ define(['ol3', 'turf'], function(ol, turf) {
             var key = ol.source.META_KEYS[i];
             self[key] = options[key];
         }
+
+        if (!options.cache_enable) {
+            //console.log('setcache');
+            var openDB;
+            self.cacheWait = new Promise(function(resolve, reject) {
+                openDB = indexedDB.open('MaplatDB_' + self.sourceID);
+                openDB.onupgradeneeded = function(event) {
+                    var db = event.target.result;
+                    db.createObjectStore('tileCache', {keyPath : 'z_x_y'});
+                };
+                openDB.onsuccess = function(event) {
+                    var db = event.target.result;
+                    self.cache_db = db;
+                    resolve();
+                };
+                openDB.onerror = function (event) {
+                    resolve();
+                };
+            });
+        }
     };
 
     ol.source.NowMap = function(optOptions) {

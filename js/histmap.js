@@ -180,7 +180,13 @@ define(['ol-custom'], function(ol) {
                             resolve(obj);
                             return;
                         }
-                        obj.mapSize2MercSize(resolve);
+                        if (obj.cacheWait) {
+                            obj.cacheWait.then(function() {
+                                obj.mapSize2MercSize(resolve);
+                            });
+                        } else {
+                            obj.mapSize2MercSize(resolve);
+                        }
                     });
                 }).catch(function(err) {
                     throw err;
@@ -191,17 +197,12 @@ define(['ol-custom'], function(ol) {
     };
     ol.source.setCustomFunction(ol.source.HistMap);
 
-    ol.source.HistMap.prototype.setupTileLoadFunction = function(xy) {
+    ol.source.HistMap.prototype.setupTileLoadFunction = function() {
         var self = this;
         this.setTileLoadFunction((function() {
             var numLoadingTiles = 0;
             var tileLoadFn = self.getTileLoadFunction();
-            return function(tile, src) {
-                if (numLoadingTiles === 0) {
-                    // console.log('loading');
-                }
-                ++numLoadingTiles;
-                var image = tile.getImage();
+            var tImageLoader = function(image, tile, src) {
                 var tImage = tile.tImage;
                 if (!tImage) {
                     tImage = document.createElement('img');
@@ -210,7 +211,7 @@ define(['ol-custom'], function(ol) {
                 }
                 tImage.onload = tImage.onerror = function() {
                     if (tImage.width && tImage.height) {
-                        if (tImage.width != tileSize || tImage.height != tileSize) {
+                        //if (tImage.width != tileSize || tImage.height != tileSize) {
                             var tmp = document.createElement('div');
                             tmp.innerHTML = canvBase;
                             var tCanv = tmp.childNodes[0];
@@ -220,10 +221,10 @@ define(['ol-custom'], function(ol) {
                             image.crossOrigin=null;
                             tileLoadFn(tile, dataUrl);
                             tCanv = tImage = ctx = null;
-                        } else {
+                        /*} else {
                             image.crossOrigin='Anonymous';
                             tileLoadFn(tile, src);
-                        }
+                        }*/
                     } else {
                         tile.handleImageError_();
                     }
@@ -233,6 +234,19 @@ define(['ol-custom'], function(ol) {
                     }
                 };
                 tImage.src = src;
+            };
+            return function(tile, src) {
+                if (numLoadingTiles === 0) {
+                    // console.log('loading');
+                }
+                ++numLoadingTiles;
+                var image = tile.getImage();
+                console.log('checkcache');
+                if (!self.cache_db) {
+
+                } else {
+                    tImageLoader(image, tile, src);
+                }
             };
         })());
     };
