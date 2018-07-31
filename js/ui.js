@@ -1,4 +1,4 @@
-define(['core', 'sprintf', 'swiper', 'ol3', 'bootstrap', 'i18n', 'i18nxhr'],
+define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nxhr'],
     function(Core, sprintf, Swiper, ol, bsn, i18n, i18nxhr) {
 
     var browserLanguage = function() {
