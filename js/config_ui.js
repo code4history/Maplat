@@ -63,7 +63,6 @@ require.config
         'turf': '../lib/turf_maplat.min',
         'swiper': '../lib/swiper',
         'ol3': '../lib/ol-maplat',
-        'ol-custom': 'ol-custom',
         'bootstrap': '../lib/bootstrap-native',
         'mapshaper': '../lib/mapshaper_maplat',
         'resize': '../lib/detect-element-resize',
