@@ -74,6 +74,79 @@ define(['ol3', 'turf'], function(ol, turf) {
     var t = function(arg) { return arg; };
 
     ol.source.setCustomFunction = function(target) {
+        target.prototype.clearTileCacheAsync = function() {
+            var self = this;
+            return new Promise(function(resolve, reject) {
+                if (!self.cache_db) {
+                    resolve();
+                    return;
+                }
+                var db = self.cache_db;
+                self.cache_db = undefined;
+                var dbName = 'MaplatDB_' + self.sourceID;
+                db.close();
+
+                var deleteReq = indexedDB.deleteDatabase(dbName);
+
+                deleteReq.onsuccess = function(event) {
+                    var openDB = indexedDB.open(dbName);
+                    openDB.onupgradeneeded = function(event) {
+                        var db = event.target.result;
+                        db.createObjectStore('tileCache', {keyPath : 'z_x_y'});
+                    };
+                    openDB.onsuccess = function(event) {
+                        var db = event.target.result;
+                        self.cache_db = db;
+                        resolve();
+                    };
+                    openDB.onerror = function (error) {
+                        reject(error);
+                    };
+                };
+                deleteReq.onerror = function(error){
+                    reject(error);
+                };
+            });
+        };
+
+        target.prototype.getTileCacheSizeAsync = function() {
+            var self = this;
+            var toSize = function(items) {
+                var size = 0;
+                for (var i = 0; i < items.length; i++) {
+                    var objectSize = JSON.stringify(items[i]).length;
+                    size += objectSize;
+                }
+                return size;
+            };
+
+            return new Promise(function(resolve, reject) {
+                if (!self.cache_db) {
+                    resolve(0);
+                    return;
+                }
+                var db = self.cache_db;
+                var tx = db.transaction('tileCache', 'readonly');
+                var store = tx.objectStore('tileCache');
+                var items = [];
+                tx.oncomplete = function(evt) {
+                    var szBytes = toSize(items);
+                    resolve(szBytes);
+                };
+                var cursorRequest = store.openCursor();
+                cursorRequest.onerror = function(error) {
+                    reject(error);
+                };
+                cursorRequest.onsuccess = function(evt) {
+                    var cursor = evt.target.result;
+                    if (cursor) {
+                        items.push(cursor.value);
+                        cursor.continue();
+                    }
+                };
+            });
+        };
+
         target.prototype.getMap = function() {
             return this._map;
         };
@@ -334,7 +407,6 @@ define(['ol3', 'turf'], function(ol, turf) {
         }
 
         if (!options.cache_enable) {
-            //console.log('setcache');
             var openDB;
             self.cacheWait = new Promise(function(resolve, reject) {
                 openDB = indexedDB.open('MaplatDB_' + self.sourceID);
@@ -347,8 +419,8 @@ define(['ol3', 'turf'], function(ol, turf) {
                     self.cache_db = db;
                     resolve();
                 };
-                openDB.onerror = function (event) {
-                    resolve();
+                openDB.onerror = function (error) {
+                    reject(error);
                 };
             });
         }
