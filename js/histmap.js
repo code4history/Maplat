@@ -211,20 +211,29 @@ define(['ol-custom'], function(ol) {
                 }
                 tImage.onload = tImage.onerror = function() {
                     if (tImage.width && tImage.height) {
-                        //if (tImage.width != tileSize || tImage.height != tileSize) {
-                            var tmp = document.createElement('div');
-                            tmp.innerHTML = canvBase;
-                            var tCanv = tmp.childNodes[0];
-                            var ctx = tCanv.getContext('2d');
-                            ctx.drawImage(tImage, 0, 0);
-                            var dataUrl = tCanv.toDataURL();
-                            image.crossOrigin=null;
-                            tileLoadFn(tile, dataUrl);
-                            tCanv = tImage = ctx = null;
-                        /*} else {
-                            image.crossOrigin='Anonymous';
-                            tileLoadFn(tile, src);
-                        }*/
+                        var tmp = document.createElement('div');
+                        tmp.innerHTML = canvBase;
+                        var tCanv = tmp.childNodes[0];
+                        var ctx = tCanv.getContext('2d');
+                        ctx.drawImage(tImage, 0, 0);
+                        var dataUrl = tCanv.toDataURL();
+                        image.crossOrigin=null;
+                        tileLoadFn(tile, dataUrl);
+                        tCanv = tImage = ctx = null;
+                        if (self.cache_db) {
+                            var db = self.cache_db;
+                            var tx = db.transaction(['tileCache'],'readwrite');
+                            var store = tx.objectStore('tileCache');
+                            var key = tile.tileCoord[0] + '-' + tile.tileCoord[1] + '-' + tile.tileCoord[2];
+                            var putReq = store.put({
+                                'z_x_y': key,
+                                'data': dataUrl
+                            });
+                            putReq.onsuccess = function(){
+                            };
+                            tx.oncomplete = function(){
+                            };
+                        }
                     } else {
                         tile.handleImageError_();
                     }
@@ -241,9 +250,25 @@ define(['ol-custom'], function(ol) {
                 }
                 ++numLoadingTiles;
                 var image = tile.getImage();
-                console.log('checkcache');
-                if (!self.cache_db) {
-
+                if (self.cache_db) {
+                    var db = self.cache_db;
+                    var tx = db.transaction(['tileCache'],'readonly');
+                    var store = tx.objectStore('tileCache');
+                    var key = tile.tileCoord[0] + '-' + tile.tileCoord[1] + '-' + tile.tileCoord[2];
+                    var getReq = store.get(key);
+                    getReq.onsuccess = function(event){
+                        var obj = event.target.result;
+                        if (!obj) {
+                            tImageLoader(image, tile, src);
+                        } else {
+                            var dataUrl = obj.data;
+                            image.crossOrigin=null;
+                            tileLoadFn(tile, dataUrl);
+                        }
+                    };
+                    getReq.onerror = function(event){
+                        tImageLoader(image, tile, src);
+                    };
                 } else {
                     tImageLoader(image, tile, src);
                 }
