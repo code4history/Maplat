@@ -207,7 +207,8 @@ define(['histmap'], function(ol) {
             var commonOption = {
                 home_position: homePos,
                 merc_zoom: defZoom,
-                fake_gps: fakeGps ? fakeRadius : false
+                fake_gps: fakeGps ? fakeRadius : false,
+                cache_enable: true
             };
             for (var i = 0; i < dataSource.length; i++) {
                 var option = dataSource[i];

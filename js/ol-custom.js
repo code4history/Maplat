@@ -82,14 +82,40 @@ define(['ol3', 'turf'], function(ol, turf) {
             src: 'parts/defaultpin.png'
         }))
     });
-    var t = function(arg) { return arg; };
 
     ol.source.setCustomFunction = function(target) {
-        target.prototype.clearTileCacheAsync = function() {
+        target.prototype.setupTileCacheAsnyc = function() {
+            var self = this;
+            return new Promise(function(resolve, reject) {
+                var openDB = indexedDB.open('MaplatDB_' + self.sourceID);
+                openDB.onupgradeneeded = function(event) {
+                    var db = event.target.result;
+                    db.createObjectStore('tileCache', {keyPath: 'z_x_y'});
+                };
+                openDB.onsuccess = function(event) {
+                    var db = event.target.result;
+                    self.cache_db = db;
+                    resolve();
+                };
+                openDB.onerror = function(error) {
+                    reject(error);
+                };
+            });
+        };
+
+        target.prototype.clearTileCacheAsync = function(reopen) {
             var self = this;
             return new Promise(function(resolve, reject) {
                 if (!self.cache_db) {
-                    resolve();
+                    if (reopen) {
+                        self.setupTileCacheAsnyc().then(function() {
+                            resolve();
+                        }).catch(function(error) {
+                            reject(error);
+                        });
+                    } else {
+                        resolve();
+                    }
                     return;
                 }
                 var db = self.cache_db;
@@ -100,19 +126,15 @@ define(['ol3', 'turf'], function(ol, turf) {
                 var deleteReq = indexedDB.deleteDatabase(dbName);
 
                 deleteReq.onsuccess = function(event) {
-                    var openDB = indexedDB.open(dbName);
-                    openDB.onupgradeneeded = function(event) {
-                        var db = event.target.result;
-                        db.createObjectStore('tileCache', {keyPath : 'z_x_y'});
-                    };
-                    openDB.onsuccess = function(event) {
-                        var db = event.target.result;
-                        self.cache_db = db;
+                    if (reopen) {
+                        self.setupTileCacheAsnyc().then(function() {
+                            resolve();
+                        }).catch(function(error) {
+                            reject(error);
+                        });
+                    } else {
                         resolve();
-                    };
-                    openDB.onerror = function (error) {
-                        reject(error);
-                    };
+                    }
                 };
                 deleteReq.onerror = function(error){
                     reject(error);
@@ -417,23 +439,8 @@ define(['ol3', 'turf'], function(ol, turf) {
             self[key] = options[key];
         }
 
-        if (!options.cache_enable) {
-            var openDB;
-            self.cacheWait = new Promise(function(resolve, reject) {
-                openDB = indexedDB.open('MaplatDB_' + self.sourceID);
-                openDB.onupgradeneeded = function(event) {
-                    var db = event.target.result;
-                    db.createObjectStore('tileCache', {keyPath : 'z_x_y'});
-                };
-                openDB.onsuccess = function(event) {
-                    var db = event.target.result;
-                    self.cache_db = db;
-                    resolve();
-                };
-                openDB.onerror = function (error) {
-                    reject(error);
-                };
-            });
+        if (options.cache_enable) {
+            self.cacheWait = self.setupTileCacheAsnyc();
         }
     };
 
