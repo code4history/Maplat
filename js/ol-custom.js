@@ -1,4 +1,15 @@
 define(['ol3', 'turf'], function(ol, turf) {
+    // 透明PNG定義
+    ol.transPng = 'data:image/png;base64,'+
+        'iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAMAAABrrFhUAAAAB3RJTUUH3QgIBToaSbAjlwAAABd0'+
+        'RVh0U29mdHdhcmUAR0xEUE5HIHZlciAzLjRxhaThAAAACHRwTkdHTEQzAAAAAEqAKR8AAAAEZ0FN'+
+        'QQAAsY8L/GEFAAAAA1BMVEX///+nxBvIAAAAAXRSTlMAQObYZgAAAFRJREFUeNrtwQEBAAAAgJD+'+
+        'r+4ICgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'+
+        'AAAAAAAAAAAAABgBDwABHHIJwwAAAABJRU5ErkJggg==';
+    // タイル画像サイズ
+    ol.tileSize = 256;
+    // canvasのテンプレート
+    ol.canvBase = '<canvas width="' + ol.tileSize + '" height="' + ol.tileSize + '" src="' + ol.transPng + '"></canvas>';
     // Direct transforamation between 2 projection
     ol.proj.transformDirect = function(xy, src, dist) {
         if (!dist) {
@@ -430,6 +441,7 @@ define(['ol3', 'turf'], function(ol, turf) {
         var options = optOptions || {};
         ol.source.OSM.call(this, options);
         ol.source.setCustomInitialize(this, options);
+        ol.source.setupTileLoadFunction(this);
     };
     ol.inherits(ol.source.NowMap, ol.source.OSM);
     ol.source.NowMap.createAsync = function(options) {
@@ -735,6 +747,85 @@ define(['ol3', 'turf'], function(ol, turf) {
             source.setGPSMarker();
             if (!avoidEventForOff) this.dispatchEvent(new ol.MapEvent('gps_result', map, {error: 'gps_off'}));
         }
+    };
+
+    ol.source.setupTileLoadFunction = function(target) {
+        var self = target;
+        target.setTileLoadFunction((function() {
+            var numLoadingTiles = 0;
+            var tileLoadFn = self.getTileLoadFunction();
+            var tImageLoader = function(image, tile, src) {
+                var tImage = tile.tImage;
+                if (!tImage) {
+                    tImage = document.createElement('img');
+                    tImage.crossOrigin = 'Anonymous';
+                    tile.tImage = tImage;
+                }
+                tImage.onload = tImage.onerror = function() {
+                    if (tImage.width && tImage.height) {
+                        var tmp = document.createElement('div');
+                        tmp.innerHTML = ol.canvBase;
+                        var tCanv = tmp.childNodes[0];
+                        var ctx = tCanv.getContext('2d');
+                        ctx.drawImage(tImage, 0, 0);
+                        var dataUrl = tCanv.toDataURL();
+                        image.crossOrigin=null;
+                        tileLoadFn(tile, dataUrl);
+                        tCanv = tImage = ctx = null;
+                        if (self.cache_db) {
+                            var db = self.cache_db;
+                            var tx = db.transaction(['tileCache'],'readwrite');
+                            var store = tx.objectStore('tileCache');
+                            var key = tile.tileCoord[0] + '-' + tile.tileCoord[1] + '-' + tile.tileCoord[2];
+                            var putReq = store.put({
+                                'z_x_y': key,
+                                'data': dataUrl
+                            });
+                            putReq.onsuccess = function(){
+                            };
+                            tx.oncomplete = function(){
+                            };
+                        }
+                    } else {
+                        tile.handleImageError_();
+                    }
+                    --numLoadingTiles;
+                    if (numLoadingTiles === 0) {
+                        // console.log('idle');
+                    }
+                };
+                tImage.src = src;
+            };
+            return function(tile, src) {
+                if (numLoadingTiles === 0) {
+                    // console.log('loading');
+                }
+                ++numLoadingTiles;
+                var image = tile.getImage();
+                if (self.cache_db) {
+                    var db = self.cache_db;
+                    var tx = db.transaction(['tileCache'],'readonly');
+                    var store = tx.objectStore('tileCache');
+                    var key = tile.tileCoord[0] + '-' + tile.tileCoord[1] + '-' + tile.tileCoord[2];
+                    var getReq = store.get(key);
+                    getReq.onsuccess = function(event){
+                        var obj = event.target.result;
+                        if (!obj) {
+                            tImageLoader(image, tile, src);
+                        } else {
+                            var dataUrl = obj.data;
+                            image.crossOrigin=null;
+                            tileLoadFn(tile, dataUrl);
+                        }
+                    };
+                    getReq.onerror = function(event){
+                        tImageLoader(image, tile, src);
+                    };
+                } else {
+                    tImageLoader(image, tile, src);
+                }
+            };
+        })());
     };
 
     ol.MathEx = {};

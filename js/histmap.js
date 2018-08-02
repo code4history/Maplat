@@ -30,17 +30,6 @@ define(['ol-custom'], function(ol) {
                 });
         })(key, maxxy);
     }
-    // 透明PNG定義
-    var transPng = 'data:image/png;base64,'+
-        'iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAMAAABrrFhUAAAAB3RJTUUH3QgIBToaSbAjlwAAABd0'+
-        'RVh0U29mdHdhcmUAR0xEUE5HIHZlciAzLjRxhaThAAAACHRwTkdHTEQzAAAAAEqAKR8AAAAEZ0FN'+
-        'QQAAsY8L/GEFAAAAA1BMVEX///+nxBvIAAAAAXRSTlMAQObYZgAAAFRJREFUeNrtwQEBAAAAgJD+'+
-        'r+4ICgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'+
-        'AAAAAAAAAAAAABgBDwABHHIJwwAAAABJRU5ErkJggg==';
-    // タイル画像サイズ
-    var tileSize = 256;
-    // canvasのテンプレート
-    var canvBase = '<canvas width="' + tileSize + '" height="' + tileSize + '" src="' + transPng + '"></canvas>';
     var baseDict = {
         osm: {
             mapID: 'osm',
@@ -114,18 +103,18 @@ define(['ol-custom'], function(ol) {
 
         this.width = options.width;
         this.height = options.height;
-        var zW = Math.log2(this.width/tileSize);
-        var zH = Math.log2(this.height/tileSize);
+        var zW = Math.log2(this.width/ol.tileSize);
+        var zH = Math.log2(this.height/ol.tileSize);
         this.maxZoom = options.maxZoom = Math.ceil(Math.max(zW, zH));
-        this._maxxy = Math.pow(2, this.maxZoom) * tileSize;
+        this._maxxy = Math.pow(2, this.maxZoom) * ol.tileSize;
         options.tileUrlFunction = options.tileUrlFunction || function(coord) {
             var z = coord[0];
             var x = coord[1];
             var y = -1 * coord[2] - 1;
-            if (x * tileSize * Math.pow(2, this.maxZoom - z) >= this.width ||
-                y * tileSize * Math.pow(2, this.maxZoom - z) >= this.height ||
+            if (x * ol.tileSize * Math.pow(2, this.maxZoom - z) >= this.width ||
+                y * ol.tileSize * Math.pow(2, this.maxZoom - z) >= this.height ||
                 x < 0 || y < 0 ) {
-                return transPng;
+                return ol.transPng;
             }
             return this._tileUrlFunction(coord);
         };
@@ -133,13 +122,13 @@ define(['ol-custom'], function(ol) {
         ol.source.XYZ.call(this, options);
         ol.source.setCustomInitialize(this, options);
 
-        this.setupTileLoadFunction();
+        ol.source.setupTileLoadFunction(this);
     };
 
     ol.inherits(ol.source.HistMap, ol.source.XYZ);
 
     ol.source.HistMap.getTransPng = function() {
-        return transPng;
+        return ol.transPng;
     };
 
     ol.source.HistMap.createAsync = function(options, commonOptions) {
@@ -196,85 +185,6 @@ define(['ol-custom'], function(ol) {
         });
     };
     ol.source.setCustomFunction(ol.source.HistMap);
-
-    ol.source.HistMap.prototype.setupTileLoadFunction = function() {
-        var self = this;
-        this.setTileLoadFunction((function() {
-            var numLoadingTiles = 0;
-            var tileLoadFn = self.getTileLoadFunction();
-            var tImageLoader = function(image, tile, src) {
-                var tImage = tile.tImage;
-                if (!tImage) {
-                    tImage = document.createElement('img');
-                    tImage.crossOrigin = 'Anonymous';
-                    tile.tImage = tImage;
-                }
-                tImage.onload = tImage.onerror = function() {
-                    if (tImage.width && tImage.height) {
-                        var tmp = document.createElement('div');
-                        tmp.innerHTML = canvBase;
-                        var tCanv = tmp.childNodes[0];
-                        var ctx = tCanv.getContext('2d');
-                        ctx.drawImage(tImage, 0, 0);
-                        var dataUrl = tCanv.toDataURL();
-                        image.crossOrigin=null;
-                        tileLoadFn(tile, dataUrl);
-                        tCanv = tImage = ctx = null;
-                        if (self.cache_db) {
-                            var db = self.cache_db;
-                            var tx = db.transaction(['tileCache'],'readwrite');
-                            var store = tx.objectStore('tileCache');
-                            var key = tile.tileCoord[0] + '-' + tile.tileCoord[1] + '-' + tile.tileCoord[2];
-                            var putReq = store.put({
-                                'z_x_y': key,
-                                'data': dataUrl
-                            });
-                            putReq.onsuccess = function(){
-                            };
-                            tx.oncomplete = function(){
-                            };
-                        }
-                    } else {
-                        tile.handleImageError_();
-                    }
-                    --numLoadingTiles;
-                    if (numLoadingTiles === 0) {
-                        // console.log('idle');
-                    }
-                };
-                tImage.src = src;
-            };
-            return function(tile, src) {
-                if (numLoadingTiles === 0) {
-                    // console.log('loading');
-                }
-                ++numLoadingTiles;
-                var image = tile.getImage();
-                if (self.cache_db) {
-                    var db = self.cache_db;
-                    var tx = db.transaction(['tileCache'],'readonly');
-                    var store = tx.objectStore('tileCache');
-                    var key = tile.tileCoord[0] + '-' + tile.tileCoord[1] + '-' + tile.tileCoord[2];
-                    var getReq = store.get(key);
-                    getReq.onsuccess = function(event){
-                        var obj = event.target.result;
-                        if (!obj) {
-                            tImageLoader(image, tile, src);
-                        } else {
-                            var dataUrl = obj.data;
-                            image.crossOrigin=null;
-                            tileLoadFn(tile, dataUrl);
-                        }
-                    };
-                    getReq.onerror = function(event){
-                        tImageLoader(image, tile, src);
-                    };
-                } else {
-                    tImageLoader(image, tile, src);
-                }
-            };
-        })());
-    };
 
     ol.source.HistMap.prototype.xy2MercAsync = function(xy) {
         var convertXy = this.histMapCoords2Xy(xy);
