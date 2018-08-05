@@ -26,7 +26,9 @@
 <script src="lib/require.min.js"></script>
 <script src="js/config_ui.js"></script>
 <script>
-    var option = {};
+    var option = {
+        cache_enable: true
+    };
     var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
     for (var i = 0; i < hashes.length; i++) {
         hash = hashes[i].split('=');

@@ -98,12 +98,12 @@ define(['histmap'], function(ol) {
         var app = this;
 
         ol.events.EventTarget.call(app);
-        var mapType = appOption.stroly ? 'stroly' : appOption.drumsey ? 'drumsey' : appOption.warper ? 'warper' : null;
-        var appid = app.appid = appOption.appid || (mapType ? appOption[mapType] : 'sample');
+        var appid = app.appid = appOption.appid || 'sample';
         app.mapDiv = appOption.div || 'map_div';
         app.mapDivDocument = document.querySelector('#' + app.mapDiv);
         app.mapDivDocument.classList.add('maplat');
         app.logger = new Logger(appOption.debug ? LoggerLevel.ALL : LoggerLevel.INFO);
+        app.cacheEnable = appOption.cache_enable || false;
         var setting = appOption.setting;
 
         // Add UI HTML Element
@@ -126,24 +126,7 @@ define(['histmap'], function(ol) {
         if (overlay) {
             app.mapDivDocument.classList.add('with-opacity');
         }
-        var appPromise = mapType ?
-            new Promise(function(resolve, reject) {
-                var appData = {
-                    fake_gps: false,
-                    default_zoom: 17,
-                    sources: [
-                        'gsi',
-                        'osm',
-                        {
-                            mapID: appid,
-                            maptype: mapType,
-                            algorythm: 'tin'
-                        }
-                    ],
-                    pois: []
-                };
-                resolve(appData);
-            }) : setting ? Promise.resolve(setting) :
+        var appPromise = setting ? Promise.resolve(setting) :
             new Promise(function(resolve, reject) {
                 var xhr = new XMLHttpRequest();
                 xhr.open('GET', 'apps/' + appid + '.json', true);
@@ -208,7 +191,7 @@ define(['histmap'], function(ol) {
                 home_position: homePos,
                 merc_zoom: defZoom,
                 fake_gps: fakeGps ? fakeRadius : false,
-                cache_enable: true
+                cache_enable: app.cacheEnable
             };
             for (var i = 0; i < dataSource.length; i++) {
                 var option = dataSource[i];
@@ -223,21 +206,10 @@ define(['histmap'], function(ol) {
 
                 app.dispatchEvent(new CustomEvent('sourceLoaded', sources));
 
-                if (mapType) {
-                    var index = sources.length - 1;
-                    homePos = sources[index].home_position;
-                    defZoom = sources[index].merc_zoom;
-                    document.querySelector('title').innerHTML = sources[index].title;
-                }
-
                 var cache = [];
                 app.cacheHash = {};
                 for (var i=0; i<sources.length; i++) {
                     var source = sources[i];
-                    if (mapType) {
-                        source.home_position = homePos;
-                        source.merc_zoom = defZoom;
-                    }
                     source._map = app.mapObject;
                     cache.push(source);
                     app.cacheHash[source.sourceID] = source;
