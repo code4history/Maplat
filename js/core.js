@@ -588,6 +588,32 @@ define(['histmap'], function(ol) {
         });
     };
 
+    MaplatApp.prototype.getMapTileCacheSizeAsync = function(sourceID) {
+        var app = this;
+        var source;
+        if (!sourceID) {
+            source = app.from;
+        } else {
+            source = app.cacheHash[sourceID];
+        }
+        if (!source) return Promise.resolve(0);
+
+        return source.getTileCacheSizeAsync();
+    };
+
+    MaplatApp.prototype.clearMapTileCacheAsync = function(sourceID, reopen) {
+        var app = this;
+        var source;
+        if (!sourceID) {
+            source = app.from;
+        } else {
+            source = app.cacheHash[sourceID];
+        }
+        if (!source) return Promise.resolve();
+
+        return source.clearTileCacheAsync(reopen);
+    };
+
     MaplatApp.prototype.convertParametersFromCurrent = function(to, callback) {
         var app = this;
         var view = app.mapObject.getView();

@@ -23,6 +23,8 @@
         "dataAttr": "Data attribution",
         "reference": "Reference",
         "description": "Description",
+        "cache_handle": "Size of map cache",
+        "cache_delete": "Clear cache",
         "help_title": "Maplat Help",
         "help_using_maplat": "This site is built with open source historical map viewer <a href='https://github.com/code4nara/Maplat/wiki' target='_blank'>Maplat</a>.",
         "help_operation_title": "How to operate the map",

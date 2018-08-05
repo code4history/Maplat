@@ -23,6 +23,8 @@
         "dataAttr": "マッピングデータコピーライト",
         "reference": "典拠",
         "description": "説明",
+        "cache_handle": "地図キャッシュサイズ",
+        "cache_delete": "キャッシュ削除",
         "help_title": "Maplat ヘルプ",
         "help_using_maplat": "このサイトはオープンソース古地図ビューア<a href='https://github.com/code4nara/Maplat/wiki' target='_blank'>Maplat</a>を使って構築されています。",
         "help_operation_title": "地図の操作方法",
