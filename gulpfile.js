@@ -46,7 +46,7 @@ gulp.task('server', function() {
     }).unref();
 });
 
-gulp.task('build', ['mobile_build'], function() {
+gulp.task('build', ['mobile_build', 'sw_build'], function() {
     try {
         fs.removeSync('./example.zip');
     } catch (e) {
@@ -180,16 +180,6 @@ gulp.task('sw_build', function() {
                 cacheName: 'resourcesCache',
                 expiration: {
                     maxAgeSeconds: 60 * 60 * 24,
-                },
-            },
-        },
-        {
-            urlPattern: /^https?:.+\/[0-9]+\/[0-9]+\/[0-9]+\.(?:jpg|png)$/,
-            handler: 'staleWhileRevalidate',
-            options: {
-                cacheName: 'tileCache',
-                expiration: {
-                    maxAgeSeconds: 60 * 60 * 24 * 30,
                 },
             },
         }],
