@@ -7,6 +7,7 @@ var gulp = require('gulp'),
     replace = require('gulp-replace'),
     os = require('os'),
     fs = require('fs-extra'),
+    wbBuild = require('workbox-build'),
     glob = require('glob');
 
 var pkg = require('./package.json');
@@ -138,7 +139,7 @@ gulp.task('config', function() {
 var configMaker = function(name) {
     var out = name == 'ui' ? '' : name + '_';
     return Promise.all([
-        new Promise(function(resolve, reject){
+        new Promise(function(resolve, reject) {
             gulp.src(['./js/polyfill.js', './js/config.js', './js/loader.js'])
                 .pipe(concat('config_' + name + '.js'))
                 .pipe(replace(/\s+name:[^\n]+,\r?\n+\s+out:[^\n]+,\r?\n\s+include:[^\n]+,/, ''))
@@ -148,7 +149,7 @@ var configMaker = function(name) {
                 .pipe(gulp.dest('./js/'))
                 .on('end', resolve);
         }),
-        new Promise(function(resolve, reject){
+        new Promise(function(resolve, reject) {
             gulp.src(['./js/config.js'])
                 .pipe(concat('rjs_config_' + name + '.js'))
                 .pipe(replace(/\{name\}/g, name))
@@ -159,6 +160,52 @@ var configMaker = function(name) {
         })
     ]);
 };
+
+gulp.task('sw_build', function() {
+    return wbBuild.generateSW({
+        globDirectory: '.',
+        globPatterns: [
+            '.',
+            'dist/maplat.js',
+            'dist/maplat.css',
+            'parts/*',
+            'locales/*/*',
+            'fonts/*'
+        ],
+        swDest: 'service-worker_.js',
+        runtimeCaching: [{
+            urlPattern: /(?:maps\/.+\.json|apps\/.+\.json|tmbs\/.+_menu\.jpg|img\/.+\.(?:png|jpg))$/,
+            handler: 'networkFirst',
+            options: {
+                cacheName: 'resourcesCache',
+                expiration: {
+                    maxAgeSeconds: 60 * 60 * 24,
+                },
+            },
+        },
+        {
+            urlPattern: /^https?:.+\/[0-9]+\/[0-9]+\/[0-9]+\.(?:jpg|png)$/,
+            handler: 'staleWhileRevalidate',
+            options: {
+                cacheName: 'tileCache',
+                expiration: {
+                    maxAgeSeconds: 60 * 60 * 24 * 30,
+                },
+            },
+        }],
+    }).then(function() {
+        return new Promise(function(resolve, reject) {
+            gulp.src(['./service-worker_.js'])
+                .pipe(concat('service-worker.js'))
+                .pipe(replace(/self\.__precacheManifest = \[/, "self.__precacheManifest = [\n  {\n    \"url\": \".\"\n  },"))
+                .on('error', reject)
+                .pipe(gulp.dest('./'))
+                .on('end', resolve);
+        });
+    }).then(function() {
+        fs.unlinkSync('./service-worker_.js');
+    });
+});
 
 var mobileTestCopy = [
     'css/core.css',
