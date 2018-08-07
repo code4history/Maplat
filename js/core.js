@@ -101,8 +101,8 @@ define(['histmap'], function(ol) {
         if (appOption.restore_session) {
             app.restoreSession = true;
             var lastEpoch = parseInt(localStorage.getItem('epoch') || 0);
-            var now = Math.floor(new Date().getTime() / 1000);
-            if (lastEpoch && now - lastEpoch < 3600) {
+            var currentTime = Math.floor(new Date().getTime() / 1000);
+            if (lastEpoch && currentTime - lastEpoch < 3600) {
                 app.restoreSourceID = localStorage.getItem('sourceID');
                 app.restorePosition = {
                     longitude: parseFloat(localStorage.getItem('longitude')),
@@ -376,8 +376,8 @@ define(['histmap'], function(ol) {
                             rotation: rotation
                         }));
                         if (app.restoreSession) {
-                            var now = Math.floor(new Date().getTime() / 1000);
-                            localStorage.setItem('epoch', now);
+                            var currentTime = Math.floor(new Date().getTime() / 1000);
+                            localStorage.setItem('epoch', currentTime);
                             localStorage.setItem('longitude', ll[0]);
                             localStorage.setItem('latitude', ll[1]);
                             localStorage.setItem('mercZoom', size[1]);
@@ -535,8 +535,8 @@ define(['histmap'], function(ol) {
                 }
                 app.dispatchEvent(new CustomEvent('mapChanged', app.getMapMeta(to.sourceID)));
                 if (app.restoreSession) {
-                    var now = Math.floor(new Date().getTime() / 1000);
-                    localStorage.setItem('epoch', now);
+                    var currentTime = Math.floor(new Date().getTime() / 1000);
+                    localStorage.setItem('epoch', currentTime);
                     localStorage.setItem('sourceID', to.sourceID);
                 }
 

@@ -36,7 +36,7 @@
 
 - (void)setViewpointWithLatitude:(double)latitude longitude:(double)longitude;
 - (void)setDirection:(double)direction;
-- (void)setRotation:(double)rotate;
+- (void)setRotation:(double)rotation;
 
 - (void)addLineWithLngLat:(NSArray *)lnglats stroke:(NSDictionary *)stroke;
 - (void)clearLine;

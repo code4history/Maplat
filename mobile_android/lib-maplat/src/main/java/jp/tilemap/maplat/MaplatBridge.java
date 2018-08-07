@@ -403,11 +403,11 @@ public class MaplatBridge extends Object {
         callApp2Web("moveTo", obj);
     }
 
-    public void setRotation(double rotate) {
-        double rotRad = rotate * Math.PI / 180.0;
+    public void setRotation(double rotation) {
+        double rotRad = rotation * Math.PI / 180.0;
         Map<String, Object> obj = new HashMap<String, Object>();
         try {
-            obj.put("rotate", rotRad);
+            obj.put("rotation", rotRad);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -214,11 +214,11 @@
     [self callApp2WebWithKey:@"moveTo" value:jsonObj];
 }
 
-- (void)setRotation:(double)rotate
+- (void)setRotation:(double)rotation
 {
-    double rotRad = rotate * M_PI / 180.0;
+    double rotRad = rotation * M_PI / 180.0;
     NSMutableDictionary *jsonObj = [NSMutableDictionary new];
-    [jsonObj setValue:[NSNumber numberWithDouble:rotRad] forKey:@"rotate"];
+    [jsonObj setValue:[NSNumber numberWithDouble:rotRad] forKey:@"rotation"];
     [self callApp2WebWithKey:@"moveTo" value:jsonObj];
 }
 

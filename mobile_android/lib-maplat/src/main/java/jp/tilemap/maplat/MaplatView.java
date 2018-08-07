@@ -118,8 +118,8 @@ public class MaplatView extends RelativeLayout {
     public void setDirection(double direction) {
         mMaplatBridge.setDirection(direction);
     }
-    public void setRotation(double rotate) {
-        mMaplatBridge.setRotation(rotate);
+    public void setRotation(double rotation) {
+        mMaplatBridge.setRotation(rotation);
     }
 
     public void setGPSMarker(double latitude, double longitude, double accuracy) {

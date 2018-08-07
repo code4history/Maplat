@@ -191,7 +191,7 @@ define(['ol3', 'turf'], function(ol, turf) {
             var mercZoom = cond.mercZoom;
             var zoom = cond.zoom;
             var direction = cond.direction;
-            var rotate = cond.rotate;
+            var rotation = cond.rotation;
             var map = this._map;
             var view = map.getView();
             if (cond.latitude != null && cond.longitude != null) {
@@ -213,16 +213,16 @@ define(['ol3', 'turf'], function(ol, turf) {
                     }
                     if (direction != null) {
                         view.setRotation(size[2]);
-                    } else if (rotate != null) {
-                        view.setRotation(rotate);
+                    } else if (rotation != null) {
+                        view.setRotation(rotation);
                     }
                 });
             });
         };
 
         target.prototype.moveToDegree = function(cond) {
-            if (cond.rotate) {
-                cond.rotate = cond.rotate * Math.PI / 180;
+            if (cond.rotation) {
+                cond.rotation = cond.rotation * Math.PI / 180;
             }
             if (cond.direction) {
                 cond.direction = cond.direction * Math.PI / 180;
@@ -235,7 +235,7 @@ define(['ol3', 'turf'], function(ol, turf) {
                 longitude: this.home_position[0],
                 latitude: this.home_position[1],
                 mercZoom: this.merc_zoom,
-                rotate: 0
+                rotation: 0
             });
         };
 
