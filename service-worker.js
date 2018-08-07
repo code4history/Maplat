@@ -24,7 +24,7 @@ self.__precacheManifest = [
   },
   {
     "url": "dist/maplat.js",
-    "revision": "2ea3726c7b66198fefec5e2b0598835e"
+    "revision": "d2f061c4522dec197bbb814beb4bc9d0"
   },
   {
     "url": "dist/maplat.css",

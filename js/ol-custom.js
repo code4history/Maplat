@@ -188,6 +188,7 @@ define(['ol3', 'turf'], function(ol, turf) {
         target.prototype.moveTo = function(cond) {
             var self = this;
             var merc;
+            var xy;
             var mercZoom = cond.mercZoom;
             var zoom = cond.zoom;
             var direction = cond.direction;
@@ -197,6 +198,9 @@ define(['ol3', 'turf'], function(ol, turf) {
             if (cond.latitude != null && cond.longitude != null) {
                 merc = ol.proj.transform([cond.longitude, cond.latitude], 'EPSG:4326', 'EPSG:3857');
             }
+            if (cond.x != null && cond.y != null) {
+                xy = [cond.x, cond.y];
+            }
             self.size2MercsAsync().then(function(mercs){
                 return self.mercs2MercSizeAsync(mercs);
             }).then(function(mercSize) {
@@ -205,6 +209,8 @@ define(['ol3', 'turf'], function(ol, turf) {
                 self.mercs2SizeAsync(mercs).then(function(size) {
                     if (merc != null) {
                         view.setCenter(size[0]);
+                    } else if (xy != null) {
+                        view.setCenter(xy);
                     }
                     if (mercZoom != null) {
                         view.setZoom(size[1]);

@@ -105,10 +105,10 @@ define(['histmap'], function(ol) {
             if (lastEpoch && currentTime - lastEpoch < 3600) {
                 app.restoreSourceID = localStorage.getItem('sourceID');
                 app.restorePosition = {
-                    longitude: parseFloat(localStorage.getItem('longitude')),
-                    latitude: parseFloat(localStorage.getItem('latitude')),
-                    mercZoom: parseFloat(localStorage.getItem('mercZoom')),
-                    direction: parseFloat(localStorage.getItem('direction'))
+                    x: parseFloat(localStorage.getItem('x')),
+                    y: parseFloat(localStorage.getItem('y')),
+                    zoom: parseFloat(localStorage.getItem('zoom')),
+                    rotation: parseFloat(localStorage.getItem('rotation'))
                 };
             }
         }
@@ -354,6 +354,8 @@ define(['histmap'], function(ol) {
 
                 app.mapObject.on('postrender', function(evt) {
                     var view = app.mapObject.getView();
+                    var center = view.getCenter();
+                    var zoom = view.getDecimalZoom();
                     var rotation = normalizeDegree(view.getRotation() * 180 / Math.PI);
                     app.from.size2MercsAsync().then(function(mercs) {
                         return app.mercSrc.mercs2SizeAsync(mercs);
@@ -368,20 +370,24 @@ define(['histmap'], function(ol) {
                         var ll = ol.proj.transform(size[0], 'EPSG:3857', 'EPSG:4326');
                         var direction = normalizeDegree(size[2] * 180 / Math.PI);
                         app.dispatchEvent(new CustomEvent('changeViewpoint', {
+                            x: center[0],
+                            y: center[1],
                             longitude: ll[0],
                             latitude: ll[1],
-                            mercator: size[0],
-                            zoom: size[1],
+                            mercator_x: size[0][0],
+                            mercator_y: size[0][1],
+                            zoom: zoom,
+                            mercZoom: size[1],
                             direction: direction,
                             rotation: rotation
                         }));
                         if (app.restoreSession) {
                             var currentTime = Math.floor(new Date().getTime() / 1000);
                             localStorage.setItem('epoch', currentTime);
-                            localStorage.setItem('longitude', ll[0]);
-                            localStorage.setItem('latitude', ll[1]);
-                            localStorage.setItem('mercZoom', size[1]);
-                            localStorage.setItem('direction', direction);
+                            localStorage.setItem('x', center[0]);
+                            localStorage.setItem('y', center[1]);
+                            localStorage.setItem('zoom', zoom);
+                            localStorage.setItem('rotation', rotation);
                         }
                     });
                 });

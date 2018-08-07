@@ -318,8 +318,9 @@ public class MainActivity extends Activity implements MaplatBridgeListener {
     }
 
     @Override
-    public void onChangeViewpoint(double latitude, double longitude, double zoom, double direction, double rotation) {
-        Log.d("changeViewpoint", String.format("LatLong: (%f, %f) zoom: %f direction: %f rotation %f", latitude, longitude, zoom, direction, rotation));
+    public void onChangeViewpoint(double x, double y, double latitude, double longitude, double mercator_x,
+                                  double mercator_y, double zoom, double merc_zoom, double direction, double rotation) {
+        Log.d("changeViewpoint", String.format("XY: (%f, %f) LatLong: (%f, %f) Mecrator: (%f, %f) zoom: %f mercZoom: %f direction: %f rotation %f", x, y, latitude, longitude, mercator_x, mercator_y, zoom, merc_zoom, direction, rotation));
     }
 
     @Override

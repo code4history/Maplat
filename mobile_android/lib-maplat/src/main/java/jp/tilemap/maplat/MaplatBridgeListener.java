@@ -7,7 +7,8 @@ package jp.tilemap.maplat;
 public interface MaplatBridgeListener {
     void onReady();
     void onClickMarker(long markerId, Object markerData);
-    void onChangeViewpoint(double latitude, double longitude, double zoom, double direction, double rotation);
+    void onChangeViewpoint(double x, double y, double latitude, double longitude, double mercator_x,
+                           double mercator_y, double zoom, double merc_zoom, double direction, double rotation);
     void onOutOfMap();
     void onClickMap(double latitude, double longitude);
 }

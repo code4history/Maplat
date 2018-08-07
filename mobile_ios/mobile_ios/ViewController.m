@@ -126,9 +126,9 @@ const double BaseLatitude = 39.7006006;
     [self toast:message];
 }
 
-- (void)onChangeViewpointWithLatitude:(double)latitude longitude:(double)longitude zoom:(double)zoom direction:(double)direction rotation:(double)rotation
+- (void)onChangeViewpointWithX:(double)x y:(double)y latitude:(double)latitude longitude:(double)longitude mercatorX:(double)mercator_x mercatorY:(double)mercator_y zoom:(double)zoom mercZoom:(double)merc_zoom direction:(double)direction rotation:(double)rotation
 {
-    NSLog(@"LatLong: (%f, %f) zoom: %f direction: %f rotation %f", latitude, longitude, zoom, direction, rotation);
+    NSLog(@"XY: (%f, %f) LatLong: (%f, %f) Mercator (%f, %f) zoom: %f mercZoom: %f direction: %f rotation %f", x, y, latitude, longitude, mercator_x, mercator_y, zoom, merc_zoom, direction, rotation);
 }
 
 - (void)onOutOfMap

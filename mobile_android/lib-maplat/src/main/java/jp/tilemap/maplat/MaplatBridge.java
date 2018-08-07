@@ -248,22 +248,32 @@ public class MaplatBridge extends Object {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
+                    double x = 0;
+                    double y = 0;
                     double latitude = 0;
                     double longitude = 0;
+                    double mercator_x = 0;
+                    double mercator_y = 0;
                     double zoom = 0;
+                    double merc_zoom = 0;
                     double direction = 0;
                     double rotation = 0;
                     try {
                         Map<String, Double> obj = (Map<String, Double>)jsonToObject(data, Map.class);
+                        x = obj.get("x");
+                        y = obj.get("y");
                         latitude = obj.get("latitude");
                         longitude = obj.get("longitude");
+                        mercator_x = obj.get("mercator_x");
+                        mercator_y = obj.get("mercator_y");
                         zoom = obj.get("zoom");
+                        merc_zoom = obj.get("mercZoom");
                         direction = obj.get("direction");
                         rotation = obj.get("rotation");
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    mListener.onChangeViewpoint(latitude, longitude, zoom, direction, rotation);
+                    mListener.onChangeViewpoint(x, y, latitude, longitude, mercator_x, mercator_y, zoom, merc_zoom, direction, rotation);
                 }
             });
         } else if (key.equals("outOfMap")) {

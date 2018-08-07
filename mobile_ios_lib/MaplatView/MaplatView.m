@@ -81,13 +81,18 @@
         NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:jsonData
                                                                    options:kNilOptions
                                                                      error:nil];
+        double x = [(NSNumber *)jsonObject[@"x"] doubleValue];
+        double y = [(NSNumber *)jsonObject[@"y"] doubleValue];
         double longitude = [(NSNumber *)jsonObject[@"longitude"] doubleValue];
         double latitude = [(NSNumber *)jsonObject[@"latitude"] doubleValue];
+        double mercator_x = [(NSNumber *)jsonObject[@"mercator_x"] doubleValue];
+        double mercator_y = [(NSNumber *)jsonObject[@"mercator_y"] doubleValue];
         double zoom = [(NSNumber *)jsonObject[@"zoom"] doubleValue];
+        double merc_zoom = [(NSNumber *)jsonObject[@"merc_zoom"] doubleValue];
         double direction = [(NSNumber *)jsonObject[@"direction"] doubleValue];
         double rotation = [(NSNumber *)jsonObject[@"rotation"] doubleValue];
         
-        [_delegate onChangeViewpointWithLatitude:latitude longitude:longitude zoom:zoom direction:direction rotation:rotation];
+        [_delegate onChangeViewpointWithX:x y:y latitude:latitude longitude:longitude mercatorX:mercator_x mercatorY:mercator_y zoom:zoom mercZoom:merc_zoom direction:direction rotation:rotation];
     } else if([key isEqualToString:@"outOfMap"]) {
         [_delegate onOutOfMap];
     } else if ([key isEqualToString:@"clickMap"]) {
