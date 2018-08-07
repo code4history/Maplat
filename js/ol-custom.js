@@ -220,6 +220,16 @@ define(['ol3', 'turf'], function(ol, turf) {
             });
         };
 
+        target.prototype.moveToDegree = function(cond) {
+            if (cond.rotate) {
+                cond.rotate = cond.rotate * Math.PI / 180;
+            }
+            if (cond.direction) {
+                cond.direction = cond.direction * Math.PI / 180;
+            }
+            this.moveTo(cond);
+        };
+
         target.prototype.goHome = function() {
             this.moveTo({
                 longitude: this.home_position[0],

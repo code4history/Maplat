@@ -108,7 +108,7 @@ define(['histmap'], function(ol) {
                     longitude: parseFloat(localStorage.getItem('longitude')),
                     latitude: parseFloat(localStorage.getItem('latitude')),
                     mercZoom: parseFloat(localStorage.getItem('mercZoom')),
-                    rotate: parseFloat(localStorage.getItem('rotate'))
+                    direction: parseFloat(localStorage.getItem('direction'))
                 };
             }
         }
@@ -381,7 +381,7 @@ define(['histmap'], function(ol) {
                             localStorage.setItem('longitude', ll[0]);
                             localStorage.setItem('latitude', ll[1]);
                             localStorage.setItem('mercZoom', size[1]);
-                            localStorage.setItem('rotate', rotation);
+                            localStorage.setItem('direction', direction);
                         }
                     });
                 });
@@ -579,12 +579,12 @@ define(['histmap'], function(ol) {
 
                 if (app.__init == true) {
                     app.__init = false;
-                    /*if (app.restorePosition) {
-                        to.moveTo(app.restorePosition);
+                    if (app.restorePosition) {
+                        to.moveToDegree(app.restorePosition);
                         app.restorePosition = undefined;
-                    } else {*/
+                    } else {
                         to.goHome();
-                    //}
+                    }
                 } else if (app.backMap && backTo) {
                     app.convertParametersFromCurrent(backTo, function(size) {
                         var view = app.backMap.getView();
