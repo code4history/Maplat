@@ -92,6 +92,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
     var MaplatUi = function(appOption) {
         var ui = this;
         ui.core = new Core(appOption);
+        var enableSplash = ui.core.restoreSourceID ? false : true;
 
         // Modal記述の動作を調整する関数
         var modalSetting = function(target) {
@@ -315,26 +316,28 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
                     }
                 });
 
-                // Check Splash data
-                var splash = false;
-                if (ui.core.appData.splash) splash = true;
+                if (enableSplash) {
+                    // Check Splash data
+                    var splash = false;
+                    if (ui.core.appData.splash) splash = true;
 
-                var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
-                var modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
-                ui.core.mapDivDocument.querySelector('#modal_load_title').innerText = ui.translate(ui.core.appData.app_name);
-                if (splash) {
-                    ui.core.mapDivDocument.querySelector('#splash_img').setAttribute('src', 'img/' + ui.core.appData.splash);
-                    ui.core.mapDivDocument.querySelector('#splash_div').classList.remove('hide');
+                    var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
+                    var modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
+                    ui.core.mapDivDocument.querySelector('#modal_load_title').innerText = ui.translate(ui.core.appData.app_name);
+                    if (splash) {
+                        ui.core.mapDivDocument.querySelector('#splash_img').setAttribute('src', 'img/' + ui.core.appData.splash);
+                        ui.core.mapDivDocument.querySelector('#splash_div').classList.remove('hide');
+                    }
+                    modalSetting('load');
+                    modal.show();
+
+                    var fadeTime = splash ? 1000 : 200;
+                    ui.splashPromise = new Promise(function (resolve) {
+                        setTimeout(function () {
+                            resolve();
+                        }, fadeTime);
+                    });
                 }
-                modalSetting('load');
-                modal.show();
-
-                var fadeTime = splash ? 1000 : 200;
-                ui.splashPromise = new Promise(function(resolve) {
-                    setTimeout(function() {
-                        resolve();
-                    }, fadeTime);
-                });
 
                 var baseSwiper, overlaySwiper;
                 baseSwiper = ui.baseSwiper = new Swiper('.base-swiper', {
@@ -387,12 +390,14 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
         ui.core.addEventListener('sourceLoaded', function(evt) {
             var sources = evt.detail;
 
-            ui.splashPromise.then(function() {
-                var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
-                var modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
-                modalSetting('load');
-                modal.hide();
-            });
+            if (ui.splashPromise) {
+                ui.splashPromise.then(function () {
+                    var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
+                    var modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
+                    modalSetting('load');
+                    modal.hide();
+                });
+            }
 
             for (var i=0; i<sources.length; i++) {
                 var source = sources[i];
