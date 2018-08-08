@@ -399,29 +399,27 @@ public class MaplatBridge extends Object {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        callApp2Web("moveTo", obj);
+        callApp2Web("setViewpoint", obj);
     }
 
     public void setDirection(double direction) {
-        double dirRad = direction * Math.PI / 180.0;
         Map<String, Object> obj = new HashMap<String, Object>();
         try {
-            obj.put("direction", dirRad);
+            obj.put("direction", direction);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        callApp2Web("moveTo", obj);
+        callApp2Web("setViewpoint", obj);
     }
 
     public void setRotation(double rotation) {
-        double rotRad = rotation * Math.PI / 180.0;
         Map<String, Object> obj = new HashMap<String, Object>();
         try {
-            obj.put("rotation", rotRad);
+            obj.put("rotation", rotation);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        callApp2Web("moveTo", obj);
+        callApp2Web("setViewpoint", obj);
     }
 
     public void addLine(ArrayList<ArrayList<Double>> lnglats, HashMap<String, Object> stroke) {

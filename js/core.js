@@ -586,7 +586,7 @@ define(['histmap'], function(ol) {
                 if (app.__init == true) {
                     app.__init = false;
                     if (app.restorePosition) {
-                        to.moveToDegree(app.restorePosition);
+                        to.setViewpoint(app.restorePosition);
                         app.restorePosition = undefined;
                     } else {
                         to.goHome();
@@ -605,8 +605,8 @@ define(['histmap'], function(ol) {
         }
     };
 
-    MaplatApp.prototype.moveTo = function(cond) {
-        this.from.moveTo(cond);
+    MaplatApp.prototype.setViewpoint = function(cond) {
+        this.from.setViewpoint(cond);
     };
 
     MaplatApp.prototype.getMapMeta = function(sourceID) {

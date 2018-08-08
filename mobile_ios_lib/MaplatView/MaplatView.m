@@ -208,23 +208,21 @@
     NSMutableDictionary *jsonObj = [NSMutableDictionary new];
     [jsonObj setValue:[NSNumber numberWithDouble:longitude] forKey:@"longitude"];
     [jsonObj setValue:[NSNumber numberWithDouble:latitude] forKey:@"latitude"];
-    [self callApp2WebWithKey:@"moveTo" value:jsonObj];
+    [self callApp2WebWithKey:@"setViewpoint" value:jsonObj];
 }
 
 - (void)setDirection:(double)direction
 {
-    double dirRad = direction * M_PI / 180.0;
     NSMutableDictionary *jsonObj = [NSMutableDictionary new];
-    [jsonObj setValue:[NSNumber numberWithDouble:dirRad] forKey:@"direction"];
-    [self callApp2WebWithKey:@"moveTo" value:jsonObj];
+    [jsonObj setValue:[NSNumber numberWithDouble:direction] forKey:@"direction"];
+    [self callApp2WebWithKey:@"setViewpoint" value:jsonObj];
 }
 
 - (void)setRotation:(double)rotation
 {
-    double rotRad = rotation * M_PI / 180.0;
     NSMutableDictionary *jsonObj = [NSMutableDictionary new];
-    [jsonObj setValue:[NSNumber numberWithDouble:rotRad] forKey:@"rotation"];
-    [self callApp2WebWithKey:@"moveTo" value:jsonObj];
+    [jsonObj setValue:[NSNumber numberWithDouble:rotation] forKey:@"rotation"];
+    [self callApp2WebWithKey:@"setViewpoint" value:jsonObj];
 }
 
 - (void)addLineWithLngLat:(NSArray *)lnglats stroke:(NSDictionary *)stroke

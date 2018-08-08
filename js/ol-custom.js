@@ -185,7 +185,7 @@ define(['ol3', 'turf'], function(ol, turf) {
         };
 
         // 経緯度lnglat、メルカトルズームmercZoom、地図ズームzoom、方角direction、地図回転rotation等を指定し地図移動
-        target.prototype.moveTo = function(cond) {
+        target.prototype.setViewpointRadian = function(cond) {
             var self = this;
             var merc;
             var xy;
@@ -226,18 +226,18 @@ define(['ol3', 'turf'], function(ol, turf) {
             });
         };
 
-        target.prototype.moveToDegree = function(cond) {
+        target.prototype.setViewpoint = function(cond) {
             if (cond.rotation) {
                 cond.rotation = cond.rotation * Math.PI / 180;
             }
             if (cond.direction) {
                 cond.direction = cond.direction * Math.PI / 180;
             }
-            this.moveTo(cond);
+            this.setViewpointRadian(cond);
         };
 
         target.prototype.goHome = function() {
-            this.moveTo({
+            this.setViewpointRadian({
                 longitude: this.home_position[0],
                 latitude: this.home_position[1],
                 mercZoom: this.merc_zoom,
