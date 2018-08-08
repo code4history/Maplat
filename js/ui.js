@@ -93,6 +93,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
         var ui = this;
         ui.core = new Core(appOption);
         var enableSplash = ui.core.restoreSourceID ? false : true;
+        var restoreTransparency = ui.core.restoreTransparency;
 
         // Modal記述の動作を調整する関数
         var modalSetting = function(target) {
@@ -294,7 +295,11 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
                 ui.i18n = result[1];
                 ui.t = result[0];
 
-                ui.sliderCommon = new ol.control.SliderCommon({reverse: true, tipLabel: ui.t('control.trans', {ns: 'translation'})});
+                var options = {reverse: true, tipLabel: ui.t('control.trans', {ns: 'translation'})};
+                if (restoreTransparency) {
+                    options.initialValue = restoreTransparency / 100;
+                }
+                ui.sliderCommon = new ol.control.SliderCommon(options);
                 ui.core.appData.controls = [
                     new ol.control.Copyright({tipLabel: ui.t('control.info', {ns: 'translation'})}),
                     new ol.control.CompassRotate({tipLabel: ui.t('control.compass', {ns: 'translation'})}),
@@ -312,7 +317,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
 
                 ui.sliderCommon.on('propertychange', function(evt) {
                     if (evt.key === 'slidervalue') {
-                        ui.core.mapObject.setOpacity(ui.sliderCommon.get(evt.key) * 100);
+                        ui.core.setTransparency(ui.sliderCommon.get(evt.key) * 100);
                     }
                 });
 
@@ -430,8 +435,8 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
             } else {
                 ui.sliderCommon.setEnable(false);
             }
-            var opacity = ui.sliderCommon.get('slidervalue') * 100;
-            ui.core.mapObject.setOpacity(opacity);
+            var transparency = ui.sliderCommon.get('slidervalue') * 100;
+            ui.core.mapObject.setTransparency(transparency);
         });
 
         ui.core.addEventListener('outOfMap', function(evt) {

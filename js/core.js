@@ -104,12 +104,14 @@ define(['histmap'], function(ol) {
             var currentTime = Math.floor(new Date().getTime() / 1000);
             if (lastEpoch && currentTime - lastEpoch < 3600) {
                 app.restoreSourceID = localStorage.getItem('sourceID');
+                app.restoreBackID = localStorage.getItem('backID');
                 app.restorePosition = {
                     x: parseFloat(localStorage.getItem('x')),
                     y: parseFloat(localStorage.getItem('y')),
                     zoom: parseFloat(localStorage.getItem('zoom')),
                     rotation: parseFloat(localStorage.getItem('rotation'))
                 };
+                app.restoreTransparency = parseFloat(localStorage.getItem('transparency') || 0);
             }
         }
         var appid = app.appid = appOption.appid || 'sample';
@@ -500,25 +502,39 @@ define(['histmap'], function(ol) {
             app.convertParametersFromCurrent(to, function(size) {
                 var backSrc = null;
                 var backTo = null;
+                var backRestore = app.restoreBackID ? app.cacheHash[app.restoreBackID] : undefined;
+                app.restoreBackID = undefined;
 
                 if (app.backMap) {
                     // Overlay = true case:
                     backSrc = app.backMap.getSource(); // Get current source of background map
                     if (!(to instanceof ol.source.NowMap)) {
                         // If new foreground source is nonlinear map:
-                        if (!backSrc) {
-                            // If current background source is not set, specify it
-                            backTo = now;
-                            if (app.from instanceof ol.source.NowMap) {
-                                backTo = app.from instanceof ol.source.TmsMap ?
-                                    app.mapObject.getSource() :
-                                    // If current foreground is TMS overlay, set current basemap as new background
-                                    app.from; // If current foreground source is basemap, set current foreground as new background
+                        if (backRestore) {
+                            backTo = backRestore;
+                            if (!backSrc) {
+                                app.backMap.exchangeSource(backTo);
                             }
-                            app.backMap.exchangeSource(backTo);
                         } else {
-                            // If current background source is set, use it again
-                            backTo = backSrc;
+                            if (!backSrc) {
+                                // If current background source is not set, specify it
+                                backTo = now;
+                                if (app.from instanceof ol.source.NowMap) {
+                                    backTo = app.from instanceof ol.source.TmsMap ?
+                                        app.mapObject.getSource() :
+                                        // If current foreground is TMS overlay, set current basemap as new background
+                                        app.from; // If current foreground source is basemap, set current foreground as new background
+                                }
+                                app.backMap.exchangeSource(backTo);
+                            } else {
+                                // If current background source is set, use it again
+                                backTo = backSrc;
+                            }
+                        }
+                        if (app.restoreSession) {
+                            var currentTime = Math.floor(new Date().getTime() / 1000);
+                            localStorage.setItem('epoch', currentTime);
+                            localStorage.setItem('backID', backTo.sourceID);
                         }
                     } else if (to instanceof ol.source.NowMap) {
                         // If new foreground source is basemap or TMS overlay, remove source from background map
@@ -530,9 +546,16 @@ define(['histmap'], function(ol) {
                     // Foreground is TMS overlay case: set TMS as Layer
                     app.mapObject.setLayer(to);
                     // If current foreground is basemap then set it as basemap layer
-                    if (!(app.from instanceof ol.source.NowMap)) {
+                    if (backRestore) {
+                        app.mapObject.exchangeSource(backRestore);
+                    } else if (!(app.from instanceof ol.source.NowMap)) {
                         var backToLocal = backSrc || now;
                         app.mapObject.exchangeSource(backToLocal);
+                    }
+                    if (app.restoreSession) {
+                        var currentTime = Math.floor(new Date().getTime() / 1000);
+                        localStorage.setItem('epoch', currentTime);
+                        localStorage.setItem('backID', app.mapObject.getSource().sourceID);
                     }
                 } else {
                     // Remove overlay from foreground and set current source to foreground
@@ -591,6 +614,10 @@ define(['histmap'], function(ol) {
                     } else {
                         to.goHome();
                     }
+                    if (app.restoreTransparency) {
+                        app.setTransparency(app.restoreTransparency);
+                        app.restoreTransparency = undefined;
+                    }
                 } else if (app.backMap && backTo) {
                     app.convertParametersFromCurrent(backTo, function(size) {
                         var view = app.backMap.getView();
@@ -603,6 +630,20 @@ define(['histmap'], function(ol) {
                 }
             });
         }
+    };
+
+    MaplatApp.prototype.setTransparency = function(percentage) {
+        this.transparency_ = percentage;
+        this.mapObject.setTransparency(percentage);
+        if (this.restoreSession) {
+            var currentTime = Math.floor(new Date().getTime() / 1000);
+            localStorage.setItem('epoch', currentTime);
+            localStorage.setItem('transparency', percentage);
+        }
+    };
+
+    MaplatApp.prototype.getTransparency = function() {
+        return this.transparency_ == null ? 0 : this.transparency_;
     };
 
     MaplatApp.prototype.setViewpoint = function(cond) {

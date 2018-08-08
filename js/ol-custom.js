@@ -699,7 +699,7 @@ define(['ol3', 'turf'], function(ol, turf) {
         }
     };
 
-    ol.MaplatMap.prototype.setOpacity = function(percentage) {
+    ol.MaplatMap.prototype.setTransparency = function(percentage) {
         var opacity = (100 - percentage) / 100;
         var source = this.getSource();
         if (source instanceof ol.source.NowMap) {

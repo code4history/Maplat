@@ -72,6 +72,8 @@ define(['ol-custom', 'resize'], function(ol, addResizeListener) {
          */
         this.reverse_ = options.reverse !== undefined ? options.reverse : false;
 
+        this.initialValue = options.initialValue;
+
         var className = options.className !== undefined ? options.className : 'ol-slidercommon';
         var thumbElement = document.createElement('button');
         thumbElement.setAttribute('type', 'button');
@@ -167,7 +169,7 @@ define(['ol-custom', 'resize'], function(ol, addResizeListener) {
         } else {
             this.direction_ = ol.control.SliderCommon.Direction_.VERTICAL;
         }
-        this.setValue(0);
+        this.setValue(this.initialValue || 0);
         var self = this;
         addResizeListener(container, function() {
             self.setValue(self.value_);
