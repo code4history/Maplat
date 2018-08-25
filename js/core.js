@@ -96,6 +96,7 @@ define(['histmap'], function(ol) {
     // Maplat App Class
     var MaplatApp = function(appOption) {
         var app = this;
+        app.initialRestore = {};
 
         ol.events.EventTarget.call(app);
         if (appOption.restore_session) {
@@ -103,15 +104,15 @@ define(['histmap'], function(ol) {
             var lastEpoch = parseInt(localStorage.getItem('epoch') || 0);
             var currentTime = Math.floor(new Date().getTime() / 1000);
             if (lastEpoch && currentTime - lastEpoch < 3600) {
-                app.restoreSourceID = localStorage.getItem('sourceID');
-                app.restoreBackID = localStorage.getItem('backID');
-                app.restorePosition = {
+                app.initialRestore.sourceID = localStorage.getItem('sourceID');
+                app.initialRestore.backgroundID = localStorage.getItem('backgroundID') || localStorage.getItem('backID');
+                app.initialRestore.position = {
                     x: parseFloat(localStorage.getItem('x')),
                     y: parseFloat(localStorage.getItem('y')),
                     zoom: parseFloat(localStorage.getItem('zoom')),
                     rotation: parseFloat(localStorage.getItem('rotation'))
                 };
-                app.restoreTransparency = parseFloat(localStorage.getItem('transparency') || 0);
+                app.initialRestore.transparency = parseFloat(localStorage.getItem('transparency') || 0);
             }
         }
         var appid = app.appid = appOption.appid || 'sample';
@@ -120,6 +121,7 @@ define(['histmap'], function(ol) {
         app.mapDivDocument.classList.add('maplat');
         app.logger = new Logger(appOption.debug ? LoggerLevel.ALL : LoggerLevel.INFO);
         app.cacheEnable = appOption.cache_enable || false;
+        app.stateBuffer = {};
         var setting = appOption.setting;
 
         // Add UI HTML Element
@@ -231,8 +233,7 @@ define(['histmap'], function(ol) {
                     app.cacheHash[source.sourceID] = source;
                 }
 
-                var initial = app.restoreSourceID || app.startFrom || cache[cache.length - 1].sourceID;
-                app.restoreSourceID = undefined;
+                var initial = app.initialRestore.sourceID || app.startFrom || cache[cache.length - 1].sourceID;
                 app.from = cache.reduce(function(prev, curr) {
                     if (prev) {
                         return !(prev instanceof ol.source.HistMap) && curr.sourceID != initial ? curr : prev;
@@ -240,7 +241,7 @@ define(['histmap'], function(ol) {
                     if (curr.sourceID != initial) return curr;
                     return prev;
                 }, null);
-                app.changeMap(initial);
+                app.changeMap(initial, app.initialRestore);
 
                 var showInfo = function(data) {
                     app.dispatchEvent(new CustomEvent('clickMarker', data));
@@ -391,6 +392,14 @@ define(['histmap'], function(ol) {
                             localStorage.setItem('zoom', zoom);
                             localStorage.setItem('rotation', rotation);
                         }
+                        app.requestUpdateState({
+                            position: {
+                                x: center[0],
+                                y: center[1],
+                                zoom: zoom,
+                                rotation: rotation
+                            }
+                        });
                     });
                 });
             });
@@ -493,8 +502,9 @@ define(['histmap'], function(ol) {
         this.mapObject.setGPSMarker(position, true);
     };
 
-    MaplatApp.prototype.changeMap = function(sourceID) {
+    MaplatApp.prototype.changeMap = function(sourceID, restore) {
         var app = this;
+        if (!restore) restore = {};
         var now = app.cacheHash['osm'];
         var to = app.cacheHash[sourceID];
         if ((to == app.from) && (to != now)) return;
@@ -502,8 +512,7 @@ define(['histmap'], function(ol) {
             app.convertParametersFromCurrent(to, function(size) {
                 var backSrc = null;
                 var backTo = null;
-                var backRestore = app.restoreBackID ? app.cacheHash[app.restoreBackID] : undefined;
-                app.restoreBackID = undefined;
+                var backRestore = restore.backgroundID ? app.cacheHash[restore.backgroundID] : undefined;
 
                 if (app.backMap) {
                     // Overlay = true case:
@@ -534,8 +543,9 @@ define(['histmap'], function(ol) {
                         if (app.restoreSession) {
                             var currentTime = Math.floor(new Date().getTime() / 1000);
                             localStorage.setItem('epoch', currentTime);
-                            localStorage.setItem('backID', backTo.sourceID);
+                            localStorage.setItem('backgroundID', backTo.sourceID);
                         }
+                        app.requestUpdateState({backgroundID: backTo.sourceID});
                     } else if (to instanceof ol.source.NowMap) {
                         // If new foreground source is basemap or TMS overlay, remove source from background map
                         app.backMap.exchangeSource();
@@ -555,8 +565,9 @@ define(['histmap'], function(ol) {
                     if (app.restoreSession) {
                         var currentTime = Math.floor(new Date().getTime() / 1000);
                         localStorage.setItem('epoch', currentTime);
-                        localStorage.setItem('backID', app.mapObject.getSource().sourceID);
+                        localStorage.setItem('backgroundID', app.mapObject.getSource().sourceID);
                     }
+                    app.requestUpdateState({backgroundID: app.mapObject.getSource().sourceID});
                 } else {
                     // Remove overlay from foreground and set current source to foreground
                     app.mapObject.setLayer();
@@ -568,6 +579,13 @@ define(['histmap'], function(ol) {
                     localStorage.setItem('epoch', currentTime);
                     localStorage.setItem('sourceID', to.sourceID);
                 }
+                var updateState = {
+                    sourceID: to.sourceID
+                };
+                if (to instanceof ol.source.NowMap && !(to instanceof ol.source.TmsMap)) {
+                    updateState.backgroundID = '____delete____';
+                }
+                app.requestUpdateState(updateState);
 
                 // This must be here: Because, render process works after view.setCenter,
                 // and Changing "from" content must be finished before "postrender" event
@@ -608,15 +626,13 @@ define(['histmap'], function(ol) {
 
                 if (app.__init == true) {
                     app.__init = false;
-                    if (app.restorePosition) {
-                        to.setViewpoint(app.restorePosition);
-                        app.restorePosition = undefined;
+                    if (restore.position) {
+                        to.setViewpoint(restore.position);
                     } else {
                         to.goHome();
                     }
-                    if (app.restoreTransparency) {
-                        app.setTransparency(app.restoreTransparency);
-                        app.restoreTransparency = undefined;
+                    if (restore.transparency) {
+                        app.setTransparency(restore.transparency);
                     }
                 } else if (app.backMap && backTo) {
                     app.convertParametersFromCurrent(backTo, function(size) {
@@ -632,6 +648,19 @@ define(['histmap'], function(ol) {
         }
     };
 
+    MaplatApp.prototype.requestUpdateState = function(data) {
+        var app = this;
+        app.stateBuffer = Object.assign(app.stateBuffer, data);
+        if (app.stateBuffer.backgroundID == '____delete____') {
+            delete app.stateBuffer.backgroundID;
+        }
+        if (app.timer) clearTimeout(app.timer);
+        app.timer = setTimeout(function() {
+            app.timer = undefined;
+            app.dispatchEvent(new CustomEvent('updateState', app.stateBuffer));
+        }, 100);
+    };
+
     MaplatApp.prototype.setTransparency = function(percentage) {
         this.transparency_ = percentage;
         this.mapObject.setTransparency(percentage);
@@ -640,6 +669,7 @@ define(['histmap'], function(ol) {
             localStorage.setItem('epoch', currentTime);
             localStorage.setItem('transparency', percentage);
         }
+        this.requestUpdateState({transparency: percentage});
     };
 
     MaplatApp.prototype.getTransparency = function() {

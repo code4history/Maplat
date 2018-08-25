@@ -92,8 +92,8 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
     var MaplatUi = function(appOption) {
         var ui = this;
         ui.core = new Core(appOption);
-        var enableSplash = ui.core.restoreSourceID ? false : true;
-        var restoreTransparency = ui.core.restoreTransparency;
+        var enableSplash = ui.core.initialRestore.sourceID ? false : true;
+        var restoreTransparency = ui.core.initialRestore.transparency;
 
         // Modal記述の動作を調整する関数
         var modalSetting = function(target) {
@@ -478,7 +478,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
             modal.show();
         });
 
-        ui.waitReady = ui.core.waitReady.then(function(){
+        ui.waitReady = ui.core.waitReady.then(function() {
             var fakeGps = appOption.fake ? ui.core.appData.fake_gps : false;
             var fakeCenter = appOption.fake ? ui.core.appData.fake_center : false;
             var fakeRadius = appOption.fake ? ui.core.appData.fake_radius : false;
