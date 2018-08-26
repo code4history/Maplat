@@ -172,6 +172,8 @@ define(['ol-custom'], function(ol) {
                         if (obj.cacheWait) {
                             obj.cacheWait.then(function() {
                                 obj.mapSize2MercSize(resolve);
+                            }).catch(function() {
+                                obj.mapSize2MercSize(resolve);
                             });
                         } else {
                             obj.mapSize2MercSize(resolve);
