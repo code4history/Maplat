@@ -12,7 +12,8 @@
         'bootstrap': '../lib/bootstrap-native',
         'mapshaper': '../lib/mapshaper_maplat',
         'resize': '../lib/detect-element-resize',
-        'sprintf': '../lib/sprintf'
+        'sprintf': '../lib/sprintf',
+        'page': '../lib/page'
     },
     shim: {
         'i18nxhr': {

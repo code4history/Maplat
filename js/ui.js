@@ -1,5 +1,5 @@
-define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nxhr'],
-    function(Core, sprintf, Swiper, ol, bsn, i18n, i18nxhr) {
+define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nxhr', 'page'],
+    function(Core, sprintf, Swiper, ol, bsn, i18n, i18nxhr, page) {
 
     var browserLanguage = function() {
         var ua = window.navigator.userAgent.toLowerCase();
@@ -94,6 +94,57 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
         ui.core = new Core(appOption);
         var enableSplash = ui.core.initialRestore.sourceID ? false : true;
         var restoreTransparency = ui.core.initialRestore.transparency;
+
+        if (appOption.state_url) {
+            page(function(ctx, next) {
+                var pathes = ctx.canonicalPath.split('#!');
+                var path = pathes.length > 1 ? pathes[1] : pathes[0];
+                pathes = path.split('?');
+                path = pathes[0];
+                if (path == ui.pathThatSet) {
+                    delete ui.pathThatSet;
+                    return;
+                }
+                var sourceID;
+                var restore = {
+                    transparency: 0,
+                    position: {
+                        rotation: 0
+                    }
+                };
+                path.split('/').map(function(state) {
+                    var line = state.split(':');
+                    switch (line[0]) {
+                        case 's':
+                            sourceID = line[1];
+                            break;
+                        case 'b':
+                            restore.backgroundID = line[1];
+                            break;
+                        case 't':
+                            restore.transparency = parseFloat(line[1]);
+                            break;
+                        case 'r':
+                            restore.position.rotation = parseFloat(line[1]);
+                            break;
+                        case 'z':
+                            restore.position.zoom = parseFloat(line[1]);
+                            break;
+                        case 'x':
+                        case 'y':
+                            restore.position[line[0]] = parseFloat(line[1]);
+                            break;
+                    }
+                });
+                ui.core.waitReady.then(function() {
+                    ui.core.changeMap(sourceID, restore);
+                });
+            });
+            page({
+                hashbang: true
+            });
+            page();
+        }
 
         // Modal記述の動作を調整する関数
         var modalSetting = function(target) {
@@ -477,6 +528,22 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
             modalSetting('poi');
             modal.show();
         });
+
+        if (appOption.state_url) {
+            ui.core.addEventListener('updateState', function(evt) {
+                var value = evt.detail;
+                if (!value.position || !value.sourceID) return;
+                var link = 's:' + value.sourceID;
+                if (value.backgroundID) link = link + '/b:' + value.backgroundID;
+                if (value.transparency) link = link + '/t:' + value.transparency;
+                link = link + '/x:' + value.position.x + '/y:' + value.position.y;
+                link = link + '/z:' + value.position.zoom;
+                if (value.position.rotation) link = link + '/r:' + value.position.rotation;
+
+                ui.pathThatSet = link;
+                page(link);
+            });
+        }
 
         ui.waitReady = ui.core.waitReady.then(function() {
             var fakeGps = appOption.fake ? ui.core.appData.fake_gps : false;

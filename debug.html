@@ -22,13 +22,14 @@
     <div id="map_div"></div>
   </div>
 </body>
-<script src="lib/aigle-es5.min.js"></script>
+<!--script src="lib/aigle-es5.min.js"></script-->
 <script src="lib/require.min.js"></script>
 <script src="js/config_ui.js"></script>
 <script>
     var option = {
         cache_enable: true,
-        restore_session: true
+        restore_session: false,
+        state_url: false
     };
     var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
     for (var i = 0; i < hashes.length; i++) {
