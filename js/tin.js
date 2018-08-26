@@ -889,11 +889,11 @@
                         if (!result || result.geometry.type == 'Point' || result.geometry.type == 'LineString') return resolve();
                         var diff1 = turf.difference(searchResult[0][dir], result);
                         var diff2 = turf.difference(searchResult[1][dir], result);
-                        if (!diff1 || !diff2) {
+                        /* if (!diff1 || !diff2) {
                             searchResult[dir][key] = 'Include case';
                         } else {
                             searchResult[dir][key] = 'Not include case';
-                        }
+                        }*/
                         resolve();
                     });
                 });
