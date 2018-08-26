@@ -91,9 +91,6 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
     // Maplat UI Class
     var MaplatUi = function(appOption) {
         var ui = this;
-        ui.core = new Core(appOption);
-        var enableSplash = ui.core.initialRestore.sourceID ? false : true;
-        var restoreTransparency = ui.core.initialRestore.transparency;
 
         if (appOption.state_url) {
             page(function(ctx, next) {
@@ -105,7 +102,6 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
                     delete ui.pathThatSet;
                     return;
                 }
-                var sourceID;
                 var restore = {
                     transparency: 0,
                     position: {
@@ -116,7 +112,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
                     var line = state.split(':');
                     switch (line[0]) {
                         case 's':
-                            sourceID = line[1];
+                            restore.sourceID = line[1];
                             break;
                         case 'b':
                             restore.backgroundID = line[1];
@@ -136,9 +132,12 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
                             break;
                     }
                 });
-                if (sourceID) {
+                if (!ui.core) {
+                    appOption.restore = restore;
+                    ui.initializer(appOption);
+                } else if (sourceID) {
                     ui.core.waitReady.then(function() {
-                        ui.core.changeMap(sourceID, restore);
+                        ui.core.changeMap(restore.sourceID, restore);
                     });
                 }
             });
@@ -147,6 +146,16 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
             });
             page();
         }
+        ui.initializer(appOption);
+    };
+
+    ol.inherits(MaplatUi, ol.events.EventTarget);
+
+    MaplatUi.prototype.initializer = function(appOption) {
+        var ui = this;
+        ui.core = new Core(appOption);
+        var enableSplash = ui.core.initialRestore.sourceID ? false : true;
+        var restoreTransparency = ui.core.initialRestore.transparency;
 
         // Modal記述の動作を調整する関数
         var modalSetting = function(target) {
@@ -681,8 +690,6 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
             }
         });
     };
-
-    ol.inherits(MaplatUi, ol.events.EventTarget);
 
     MaplatUi.prototype.checkOverlayID = function(mapID) {
         var ui = this;
