@@ -136,9 +136,11 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
                             break;
                     }
                 });
-                ui.core.waitReady.then(function() {
-                    ui.core.changeMap(sourceID, restore);
-                });
+                if (sourceID) {
+                    ui.core.waitReady.then(function() {
+                        ui.core.changeMap(sourceID, restore);
+                    });
+                }
             });
             page({
                 hashbang: true
