@@ -188,7 +188,7 @@ gulp.task('sw_build', function() {
         return new Promise(function(resolve, reject) {
             gulp.src(['./service-worker_.js'])
                 .pipe(concat('service-worker.js'))
-                .pipe(replace(/self\.__precacheManifest = \[/, "self.__precacheManifest = [\n  {\n    \"url\": \".\"\n    \"revision\": \"" + unixtime + "\"\n  },"))
+                .pipe(replace(/self\.__precacheManifest = \[/, "self.__precacheManifest = [\n  {\n    \"url\": \".\",\n    \"revision\": \"" + unixtime + "\"\n  },"))
                 .on('error', reject)
                 .pipe(gulp.dest('./'))
                 .on('end', resolve);
