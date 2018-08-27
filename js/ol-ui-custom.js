@@ -465,6 +465,21 @@ define(['ol-custom', 'resize'], function(ol, addResizeListener) {
     };
     ol.inherits(ol.control.GoHome, ol.control.CustomControl);
 
+    ol.control.Share = function(optOptions) {
+        var options = optOptions || {};
+        options.character = '<i class="fa fa-share-alt-square fa-lg"></i>';
+        options.cls = 'ol-share';
+        var self = this;
+        options.callback = function() {
+            // window.open('https://github.com/code4nara/Maplat/wiki');
+            var map = self.getMap();
+            map.dispatchEvent(new ol.MapEvent('click_control', map, {control: 'share'}));
+        };
+
+        ol.control.CustomControl.call(this, options);
+    };
+    ol.inherits(ol.control.Share, ol.control.CustomControl);
+
     ol.control.Maplat = function(optOptions) {
         var options = optOptions || {};
         options.character = '<i class="fa fa-question-circle fa-lg"></i>';

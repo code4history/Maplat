@@ -24,11 +24,11 @@ self.__precacheManifest = [
   },
   {
     "url": "dist/maplat.js",
-    "revision": "b9d4df21ca209feff9f1875a8e1bced1"
+    "revision": "7ca514b650389a7fcee676a863906e96"
   },
   {
     "url": "dist/maplat.css",
-    "revision": "4ef8acd42f3d97d69377bbaf99fd6bf5"
+    "revision": "a8a5b5feb0d9f79f2d8910f83c85f988"
   },
   {
     "url": "parts/all_right_reserved.png",
@@ -140,11 +140,11 @@ self.__precacheManifest = [
   },
   {
     "url": "locales/en/translation.json",
-    "revision": "d805490dcaa897e423054b168fd7f0d9"
+    "revision": "94792f7aed08ff1ab10d2592dbf08b77"
   },
   {
     "url": "locales/ja/translation.json",
-    "revision": "bdd045e9c1f462ef190857146550f5e6"
+    "revision": "78b79c6048d9b3961380c7f77ea498d7"
   },
   {
     "url": "fonts/clarenbd-webfont.eot",
@@ -152,7 +152,7 @@ self.__precacheManifest = [
   },
   {
     "url": "fonts/clarenbd-webfont.svg",
-    "revision": "d2f37e259a79183317d620c38598d0c8"
+    "revision": "877daf82b367b4f2967fa7da9d13d747"
   },
   {
     "url": "fonts/clarenbd-webfont.ttf",

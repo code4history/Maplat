@@ -6,7 +6,8 @@
         "gps": "Acquire GPS Position",
         "home": "Go Home Position",
         "help": "Show Help",
-        "trans": "Change Map Transparency"
+        "trans": "Change Map Transparency",
+        "share": "Share"
     },
     "html": {
         "close": "Close",
@@ -38,7 +39,10 @@
         "help_etc_title": "Others",
         "help_etc_attr": "<img src='parts/attr.png'> Button: Various information (such as creator, contributor or license, etc.) of the currently displayed map are displayed.",
         "help_etc_help": "<img src='parts/help.png'> Button: Showing this help.",
-        "help_etc_slider": "<img src='parts/slider.png'> Slider: Switch the transparency of the displayed map so that the background map can be seen through. <br>It operates only while displaying the historical/illustrated maps, it does not work when displaying the base maps."
+        "help_etc_slider": "<img src='parts/slider.png'> Slider: Switch the transparency of the displayed map so that the background map can be seen through. <br>It operates only while displaying the historical/illustrated maps, it does not work when displaying the base maps.",
+        "share_title": "Share",
+        "share_app_title": "Share this application",
+        "share_state_title": "Share current viewpoint"
     },
     "app" : {
         "fake_explanation": "NOTE: If GPS result is more than %2$f km away from %1$s, the system issue a pseudo-coordinate around %1$s.",

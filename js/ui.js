@@ -166,7 +166,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
         // Modal記述の動作を調整する関数
         var modalSetting = function(target) {
             var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
-            ['poi', 'map', 'load', 'gpsW', 'gpsD', 'help'].map(function(target_) {
+            ['poi', 'map', 'load', 'gpsW', 'gpsD', 'help', 'share'].map(function(target_) {
                 var className = 'modal_' + target_;
                 if (target == target_) {
                     modalElm.classList.add(className);
@@ -176,6 +176,12 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
             });
         };
 
+        if (appOption.share_enable) {
+            ui.shareEnable = true;
+        }
+        if (appOption.state_url) {
+            ui.core.mapDivDocument.classList.add('state_url');
+        }
         if (ui.core.cacheEnable) {
             ui.core.mapDivDocument.classList.add('cache_enable');
         }
@@ -230,6 +236,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
             '<span id="modal_load_title"></span>' +
             '<span id="modal_gpsW_title" data-i18n="html.acquiring_gps"></span>' +
             '<span id="modal_help_title" data-i18n="html.help_title"></span>' +
+            '<span id="modal_share_title" data-i18n="html.share_title"></span>' +
 
             '</h4>' +
             '</div>' +
@@ -269,6 +276,21 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
             '</div>' +
             '</div>' +
 
+            '<div id="modal_share_content">' +
+            '<h4 data-i18n="html.share_app_title"></h4>' +
+            '<p class="recipient row">' +
+            '<button title="Copy to clipboard" class="share btn btn-light col-xs-4" data="cp_app"><i class="fa fa-clipboard fa-lg"></i></button>' +
+            '<button title="Twitter" class="share btn btn-light col-xs-4" data="tw_app"><i class="fa fa-twitter fa-lg"></i></button>' +
+            '<button title="Facebook" class="share btn btn-light col-xs-4" data="fb_app"><i class="fa fa-facebook fa-lg"></i></button></p>' +
+            '<div id="modal_share_state">' +
+            '<h4 data-i18n="html.share_state_title"></h4>' +
+            '<p class="recipient row">' +
+            '<button title="Copy to clipboard" class="share btn btn-light col-xs-4" data="cp_view"><i class="fa fa-clipboard fa-lg"></i></button>' +
+            '<button title="Twitter" class="share btn btn-light col-xs-4" data="tw_view"><i class="fa fa-twitter fa-lg"></i></button>' +
+            '<button title="Facebook" class="share btn btn-light col-xs-4" data="fb_view"><i class="fa fa-facebook fa-lg"></i></button></p>' +
+            '</div>' +
+            '</div>' +
+
             '<div id="modal_map_content">' +
 
             ol.source.META_KEYS.map(function(key) {
@@ -303,6 +325,49 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
             '</div>');
         for (var i=newElems.length - 1; i >= 0; i--) {
             ui.core.mapDivDocument.insertBefore(newElems[i], ui.core.mapDivDocument.firstChild);
+        }
+
+        var shareBtns = ui.core.mapDivDocument.querySelectorAll('.btn.share');
+        for (var i=0; i<shareBtns.length; i++) {
+            var shareBtn = shareBtns[i];
+            shareBtn.addEventListener('click', function(evt) {
+                var btn = evt.target;
+                if (!btn.classList.contains('share')) btn = btn.offsetParent;
+                var cmd = btn.getAttribute('data');
+                var cmds = cmd.split('_');
+                var base = evt.target.baseURI;
+                var div1 = base.split('#!');
+                var path = div1.length > 1 ? (div1[1].split('?'))[0] : '';
+                var div2 = div1[0].split('?');
+                var uri = div2[0];
+                var query = div2.length > 1 ? div2[1].split('&').filter(function(qs) {
+                    return (qs == 'pwa') ? false : true;
+                }).join('&') : '';
+
+                if (query) uri = uri + '?' + query;
+                if (cmds[1] == 'view') {
+                    if (path) uri = uri + '#!' + path;
+                }
+                if (cmds[0] == 'cp') {
+                    var copyFrom = document.createElement('textarea');
+                    copyFrom.textContent = uri;
+
+                    var bodyElm = document.querySelector('body');
+                    bodyElm.appendChild(copyFrom);
+
+                    copyFrom.select();
+                    document.execCommand('copy');
+                    bodyElm.removeChild(copyFrom);
+                } else if (cmds[0] == 'tw') {
+                    var twuri = 'https://twitter.com/share?url=' + encodeURIComponent(uri) + '&hashtags=Maplat';
+                    window.open(twuri, '_blank', 'width=650,height=450,menubar=no,toolbar=no,scrollbars=yes');
+                } else if (cmds[0] == 'fb') {
+                    // https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2Fshare-button%2F&display=popup&ref=plugin&src=like&kid_directed_site=0&app_id=113869198637480
+                    var fburi = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(uri) +
+                        '&display=popup&ref=plugin&src=like&kid_directed_site=0';
+                    window.open(fburi, '_blank', 'width=650,height=450,menubar=no,toolbar=no,scrollbars=yes');
+                }
+            });
         }
 
         var i18nPromise = new Promise(function(resolve, reject) {
@@ -377,6 +442,9 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
                     ui.sliderCommon,
                     new ol.control.Maplat({tipLabel: ui.t('control.help', {ns: 'translation'})})
                 ];
+                if (ui.shareEnable) {
+                    ui.core.appData.controls.push(new ol.control.Share({tipLabel: ui.t('control.share', {ns: 'translation'})}));
+                }
                 if (ui.core.mapObject) {
                     ui.core.appData.controls.map(function(control) {
                         ui.core.mapObject.addControl(control);
@@ -650,6 +718,8 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
 
             ui.core.mapObject.on('click_control', function(evt) {
                 var control = evt.frameState.control;
+                var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
+                var modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
                 if (control == 'copyright') {
                     var from = ui.core.getMapMeta();
 
@@ -674,14 +744,13 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
 
                     ui.core.getMapTileCacheSizeAsync(from.sourceID).then(putTileCacheSize);
 
-                    var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
-                    var modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
                     modalSetting('map');
                     modal.show();
-                } else {
-                    var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
-                    var modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
+                } else if (control == 'help') {
                     modalSetting('help');
+                    modal.show();
+                } else {
+                    modalSetting('share');
                     modal.show();
                 }
             });

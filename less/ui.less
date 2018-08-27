@@ -22,30 +22,30 @@
     }
 
     #modal_poi_content, #modal_map_content, #modal_load_content, #modal_gpsW_content, #modal_gpsD_content,
-    #modal_help_content, #modal_title, #modal_load_title, #modal_gpsW_title, #modal_help_title {
+    #modal_help_content, #modal_title, #modal_load_title, #modal_gpsW_title, #modal_help_title,
+    #modal_share_content, #modal_share_title {
         display: none;
     }
 
-    .modal_poi #modal_poi_content,
-    .modal_map #modal_map_content,
-    .modal_load #modal_load_content,
-    .modal_help #modal_help_content,
-    .modal_gpsW #modal_gpsW_content, .modal_gpsD #modal_gpsD_content {
+    .modal_poi #modal_poi_content, .modal_map #modal_map_content,
+    .modal_load #modal_load_content, .modal_help #modal_help_content,
+    .modal_gpsW #modal_gpsW_content, .modal_gpsD #modal_gpsD_content,
+    .modal_share #modal_share_content {
         display: block;
     }
 
     .modal_poi #modal_title, .modal_map #modal_title,
     .modal_gpsD #modal_title, .modal_help #modal_help_title,
-    .modal_load #modal_load_title,
-    .modal_gpsW #modal_gpsW_title {
+    .modal_load #modal_load_title, .modal_gpsW #modal_gpsW_title,
+    .modal_share #modal_share_title {
         display: inline;
     }
 
-    #modal_cache_content {
+    #modal_cache_content, #modal_share_state {
         display: none;
     }
 
-    &.cache_enable #modal_cache_content {
+    &.cache_enable #modal_cache_content, &.state_url #modal_share_state {
         display: block;
     }
 
@@ -286,6 +286,11 @@
         }
     }
 
+    .ol-share {
+        left: .5em;
+        bottom: calc(105px + .5em);
+    }
+
     .ol-copyright {
         right: .5em;
         bottom: calc(65px + .5em);
@@ -297,6 +302,10 @@
     }
 
     @media screen and (display-mode: standalone) and (width: 375px) and (height: 768px), screen and (display-mode: standalone) and (width: 724px) and (height: 375px), screen and (display-mode: fullscreen) and (width: 375px) and (height: 768px), screen and (display-mode: fullscreen) and (width: 724px) and (height: 375px) {
+        .ol-share {
+            bottom: calc(126px + .5em);
+        }
+
         .ol-copyright {
             bottom: calc(.5em + 86px);
         }
