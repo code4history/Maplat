@@ -355,7 +355,14 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
                     var bodyElm = document.querySelector('body');
                     bodyElm.appendChild(copyFrom);
 
-                    copyFrom.select();
+                    if (/iP(hone|(o|a)d)/.test(navigator.userAgent)) {
+                        var range = document.createRange();
+                        range.selectNode(copyFrom);
+                        window.getSelection().addRange(range);
+                    } else {
+                        copyFrom.select();
+                    }
+
                     document.execCommand('copy');
                     bodyElm.removeChild(copyFrom);
                 } else if (cmds[0] == 'tw') {
