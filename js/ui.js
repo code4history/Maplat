@@ -133,9 +133,11 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
                     }
                 });
                 if (!ui.core) {
-                    appOption.restore = restore;
+                    if (restore.sourceID) {
+                        appOption.restore = restore;
+                    }
                     ui.initializer(appOption);
-                } else if (sourceID) {
+                } else if (restore.sourceID) {
                     ui.core.waitReady.then(function() {
                         ui.core.changeMap(restore.sourceID, restore);
                     });
@@ -145,8 +147,12 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
                 hashbang: true
             });
             page();
+            ui.waitReady = new Promise(function(resolve, reject) {
+                ui.waitReadyBridge = resolve;
+            });
+        } else {
+            ui.initializer(appOption);
         }
-        ui.initializer(appOption);
     };
 
     ol.inherits(MaplatUi, ol.events.EventTarget);
@@ -687,6 +693,10 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
                 var newElem = Core.createElement(ui.t('app.acquiring_gps_desc'))[0];
                 var elem = ui.core.mapDivDocument.querySelector('#modal_gpsW_content');
                 elem.appendChild(newElem);
+            }
+            if (ui.waitReadyBridge) {
+                ui.waitReadyBridge();
+                delete ui.waitReadyBridge;
             }
         });
     };

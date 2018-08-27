@@ -99,7 +99,10 @@ define(['histmap'], function(ol) {
         app.initialRestore = {};
 
         ol.events.EventTarget.call(app);
-        if (appOption.restore_session) {
+        if (appOption.restore) {
+            if (appOption.restore_session) app.restoreSession = true;
+            app.initialRestore = appOption.restore;
+        } else if (appOption.restore_session) {
             app.restoreSession = true;
             var lastEpoch = parseInt(localStorage.getItem('epoch') || 0);
             var currentTime = Math.floor(new Date().getTime() / 1000);
