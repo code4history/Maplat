@@ -24,7 +24,7 @@ self.__precacheManifest = [
   },
   {
     "url": "dist/maplat.js",
-    "revision": "878c24a7c850989ece341789aad12557"
+    "revision": "b9d4df21ca209feff9f1875a8e1bced1"
   },
   {
     "url": "dist/maplat.css",
@@ -140,11 +140,11 @@ self.__precacheManifest = [
   },
   {
     "url": "locales/en/translation.json",
-    "revision": "b46a74ade4ae73eda9fb3950e3496505"
+    "revision": "d805490dcaa897e423054b168fd7f0d9"
   },
   {
     "url": "locales/ja/translation.json",
-    "revision": "9d79f6a451abefd65bd547025aa2f8af"
+    "revision": "bdd045e9c1f462ef190857146550f5e6"
   },
   {
     "url": "fonts/clarenbd-webfont.eot",
@@ -152,7 +152,7 @@ self.__precacheManifest = [
   },
   {
     "url": "fonts/clarenbd-webfont.svg",
-    "revision": "877daf82b367b4f2967fa7da9d13d747"
+    "revision": "d2f37e259a79183317d620c38598d0c8"
   },
   {
     "url": "fonts/clarenbd-webfont.ttf",
