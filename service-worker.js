@@ -21,7 +21,7 @@ importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.4.1/workbox
 self.__precacheManifest = [
   {
     "url": ".",
-    "revision": "Tue Aug 28 2018 08:21:25 GMT+0900 (JST)"
+    "revision": "Tue Aug 28 2018 11:45:20 GMT+0900 (東京 (標準時))"
   },
   {
     "url": "dist/maplat.js",
@@ -29,7 +29,7 @@ self.__precacheManifest = [
   },
   {
     "url": "dist/maplat.css",
-    "revision": "29466674edb71a3b5b1dd5364f0a6ec9"
+    "revision": "9bded5e764328351317764b3ad8ed704"
   },
   {
     "url": "parts/all_right_reserved.png",
@@ -136,16 +136,20 @@ self.__precacheManifest = [
     "revision": "3bb615256d903d1c7f14e169f35ae6f9"
   },
   {
+    "url": "parts/share.png",
+    "revision": "937996de5ce7069a563a075039cbf66c"
+  },
+  {
     "url": "parts/slider.png",
     "revision": "31b399f580e564dca55ede0edfd014d7"
   },
   {
     "url": "locales/en/translation.json",
-    "revision": "94792f7aed08ff1ab10d2592dbf08b77"
+    "revision": "f100e7da351c7a6c91c236ecc27ff79c"
   },
   {
     "url": "locales/ja/translation.json",
-    "revision": "78b79c6048d9b3961380c7f77ea498d7"
+    "revision": "5f6146fec4156dae3a28e8c39c0ecf09"
   },
   {
     "url": "fonts/clarenbd-webfont.eot",
@@ -153,7 +157,7 @@ self.__precacheManifest = [
   },
   {
     "url": "fonts/clarenbd-webfont.svg",
-    "revision": "877daf82b367b4f2967fa7da9d13d747"
+    "revision": "d2f37e259a79183317d620c38598d0c8"
   },
   {
     "url": "fonts/clarenbd-webfont.ttf",

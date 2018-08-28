@@ -39,6 +39,7 @@
         "help_etc_title": "その他",
         "help_etc_attr": "<img src='parts/attr.png'>ボタン: 現在表示中の地図の作成者、所有者、ライセンス等各種情報が表示されます。",
         "help_etc_help": "<img src='parts/help.png'>ボタン: このヘルプが表示されます。",
+        "help_share_help": "<img src='parts/share.png'>ボタン: SNS等へのアプリシェア画面が表示されます。",
         "help_etc_slider": "<img src='parts/slider.png'>スライダ: 表示中の地図の透明度を切り替えて、背景の地図が透けて見えるようにします。<br>絵地図、古地図の表示中にのみ動作し、ベースマップ表示時は動作しません。",
         "share_title": "共有",
         "share_app_title": "このアプリを共有",

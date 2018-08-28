@@ -41,12 +41,16 @@
         display: inline;
     }
 
-    #modal_cache_content, #modal_share_state {
+    #modal_cache_content, #modal_share_state, .share_help {
         display: none;
     }
 
     &.cache_enable #modal_cache_content, &.state_url #modal_share_state {
         display: block;
+    }
+
+    &.share_enable .share_help {
+        display: inline;
     }
 
     .ol-touch .ol-zoom {

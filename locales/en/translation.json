@@ -39,6 +39,7 @@
         "help_etc_title": "Others",
         "help_etc_attr": "<img src='parts/attr.png'> Button: Various information (such as creator, contributor or license, etc.) of the currently displayed map are displayed.",
         "help_etc_help": "<img src='parts/help.png'> Button: Showing this help.",
+        "help_share_help": "<img src='parts/share.png'> Button: You can share this application to SNS etc.",
         "help_etc_slider": "<img src='parts/slider.png'> Slider: Switch the transparency of the displayed map so that the background map can be seen through. <br>It operates only while displaying the historical/illustrated maps, it does not work when displaying the base maps.",
         "share_title": "Share",
         "share_app_title": "Share this application",

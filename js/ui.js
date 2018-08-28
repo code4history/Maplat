@@ -177,6 +177,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
         };
 
         if (appOption.share_enable) {
+            ui.core.mapDivDocument.classList.add('share_enable');
             ui.shareEnable = true;
         }
         if (appOption.state_url) {
@@ -258,6 +259,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
             '<ul>' +
             '<li data-i18n-html="html.help_etc_attr" class="recipient"></li>' +
             '<li data-i18n-html="html.help_etc_help" class="recipient"></li>' +
+            '<span class="share_help"><li data-i18n-html="html.help_share_help" class="recipient"></li></span>' +
             '<li data-i18n-html="html.help_etc_slider" class="recipient"></li>' +
             '</ul>' +
             '<p><a href="https://github.com/code4nara/Maplat/wiki" target="_blank">Maplat</a>' +
