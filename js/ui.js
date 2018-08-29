@@ -281,16 +281,17 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
             '<div id="modal_share_content">' +
             '<h4 data-i18n="html.share_app_title"></h4>' +
             '<p class="recipient row">' +
-            '<button title="Copy to clipboard" class="share btn btn-light col-xs-4" data="cp_app"><i class="fa fa-clipboard fa-lg"></i></button>' +
-            '<button title="Twitter" class="share btn btn-light col-xs-4" data="tw_app"><i class="fa fa-twitter fa-lg"></i></button>' +
-            '<button title="Facebook" class="share btn btn-light col-xs-4" data="fb_app"><i class="fa fa-facebook fa-lg"></i></button></p>' +
+            '<div class="form-group col-xs-4"><button title="Copy to clipboard" class="share btn btn-light" data="cp_app"><i class="fa fa-clipboard fa-lg"></i></button><small data-i18n="html.copy_clipboard"></small></div>' +
+            '<div class="form-group col-xs-4"><button title="Twitter" class="share btn btn-light" data="tw_app"><i class="fa fa-twitter fa-lg"></i></button><small>Twitter</small></div>' +
+            '<div class="form-group col-xs-4"><button title="Facebook" class="share btn btn-light" data="fb_app"><i class="fa fa-facebook fa-lg"></i></button><small>Facebook</small></p></div>' +
             '<div id="modal_share_state">' +
             '<h4 data-i18n="html.share_state_title"></h4>' +
             '<p class="recipient row">' +
-            '<button title="Copy to clipboard" class="share btn btn-light col-xs-4" data="cp_view"><i class="fa fa-clipboard fa-lg"></i></button>' +
-            '<button title="Twitter" class="share btn btn-light col-xs-4" data="tw_view"><i class="fa fa-twitter fa-lg"></i></button>' +
-            '<button title="Facebook" class="share btn btn-light col-xs-4" data="fb_view"><i class="fa fa-facebook fa-lg"></i></button></p>' +
+            '<div class="form-group col-xs-4"><button title="Copy to clipboard" class="share btn btn-light" data="cp_view"><i class="fa fa-clipboard fa-lg"></i></button><small data-i18n="html.copy_clipboard"></small></div>' +
+            '<div class="form-group col-xs-4"><button title="Twitter" class="share btn btn-light" data="tw_view"><i class="fa fa-twitter fa-lg"></i></button><small>Twitter</small></div>' +
+            '<div class="form-group col-xs-4"><button title="Facebook" class="share btn btn-light" data="fb_view"><i class="fa fa-facebook fa-lg"></i></button><small>Facebook</small></div></p>' +
             '</div>' +
+            '<p><img src="" height="0px" width="0px"></p>' +
             '</div>' +
 
             '<div id="modal_map_content">' +
@@ -315,6 +316,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
             '<div id="modal_load_content">' +
             '<p class="recipient"><img src="parts/loading.gif"><span data-i18n="html.app_loading_body"></span></p>' +
             '<div id="splash_div" class="hide"><p class="col-xs-12 poi_img"><img id="splash_img" src=""></p>' +
+            '<p><img src="" height="0px" width="0px"></p>' +
             '<p class="recipient">　</p></div>' +
             '</div>' +
 

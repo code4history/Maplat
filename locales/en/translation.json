@@ -43,7 +43,8 @@
         "help_etc_slider": "<img src='parts/slider.png'> Slider: Switch the transparency of the displayed map so that the background map can be seen through. <br>It operates only while displaying the historical/illustrated maps, it does not work when displaying the base maps.",
         "share_title": "Share",
         "share_app_title": "Share this application",
-        "share_state_title": "Share current viewpoint"
+        "share_state_title": "Share current viewpoint",
+        "copy_clipboard": "Copy to clipboard"
     },
     "app" : {
         "fake_explanation": "NOTE: If GPS result is more than %2$f km away from %1$s, the system issue a pseudo-coordinate around %1$s.",

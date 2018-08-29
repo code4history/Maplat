@@ -43,7 +43,8 @@
         "help_etc_slider": "<img src='parts/slider.png'>スライダ: 表示中の地図の透明度を切り替えて、背景の地図が透けて見えるようにします。<br>絵地図、古地図の表示中にのみ動作し、ベースマップ表示時は動作しません。",
         "share_title": "共有",
         "share_app_title": "このアプリを共有",
-        "share_state_title": "現在の表示場所を共有"
+        "share_state_title": "現在の表示場所を共有",
+        "copy_clipboard": "クリップボードにコピー"
     },
     "app": {
         "fake_explanation": "※%1$s中心より%2$dkm以上離れている場合は、%1$s中心周辺の疑似経緯度を発行します。",
