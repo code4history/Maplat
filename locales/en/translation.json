@@ -51,6 +51,7 @@
         "acquiring_gps_desc": "Now acquiring GPS.",
         "out_of_map": "Out of map",
         "out_of_map_desc": "GPS result is out of map. GPS function turns off.",
-        "out_of_map_area": "Showing area is out of map. The area moves to default position."
+        "out_of_map_area": "Showing area is out of map. The area moves to default position.",
+        "copy_toast": "Copied to clipboard"
     }
 }

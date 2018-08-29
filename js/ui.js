@@ -199,7 +199,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
         var pwaWorker = appOption.pwa_worker || './service-worker.js';
 
         // Add UI HTML Element
-        var newElems = Core.createElement('<div id="toast"></div><div class="ol-control map-title"><span></span></div>' +
+        var newElems = Core.createElement('<div class="ol-control map-title"><span></span></div>' +
             '<div class="swiper-container ol-control base-swiper prevent-default-ui">' +
             '<i class="fa fa-chevron-left swiper-left-icon" aria-hidden="true"></i>' +
             '<i class="fa fa-chevron-right swiper-right-icon" aria-hidden="true"></i>' +
@@ -370,7 +370,9 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
                     var toastParent = '#' + cmds[1] + '_toast';
                     iziToast.show(
                         {
-                            message: 'Copied',
+                            message: ui.t('app.copy_toast', {ns: 'translation'}),
+                            close: false,
+                            pauseOnHover: false,
                             timeout: 1000,
                             target: toastParent
                         }
