@@ -428,8 +428,14 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
             head.appendChild((Core.createElement('<link rel="manifest" href="' + pwaManifest + '">'))[0]);
             // service workerが有効なら、service-worker.js を登録します
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register(pwaWorker).then(function() {
+                navigator.serviceWorker.register(pwaWorker).then(function(reg) {
                     console.log('Service Worker Registered');
+                    reg.onupdatefound = function() {
+                        console.log('Found Service Worker update');
+                        reg.update();
+                    };
+                }).catch(function(err) {
+                    console.log(err);
                 });
             }
             if (value.icons) {
