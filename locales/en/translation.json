@@ -44,7 +44,7 @@
         "share_title": "Share",
         "share_app_title": "Share this application",
         "share_state_title": "Share current viewpoint",
-        "copy_clipboard": "Copy to clipboard"
+        "share_copy": "Copy"
     },
     "app" : {
         "fake_explanation": "NOTE: If GPS result is more than %2$f km away from %1$s, the system issue a pseudo-coordinate around %1$s.",

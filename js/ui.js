@@ -281,13 +281,13 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
             '<div id="modal_share_content">' +
             '<h4 data-i18n="html.share_app_title"></h4>' +
             '<p class="recipient row">' +
-            '<div class="form-group col-xs-4"><button title="Copy to clipboard" class="share btn btn-light" data="cp_app"><i class="fa fa-clipboard fa-lg"></i></button><small data-i18n="html.copy_clipboard"></small></div>' +
+            '<div class="form-group col-xs-4"><button title="Copy to clipboard" class="share btn btn-light" data="cp_app"><i class="fa fa-clipboard fa-lg"></i></button><small data-i18n="html.share_copy"></small></div>' +
             '<div class="form-group col-xs-4"><button title="Twitter" class="share btn btn-light" data="tw_app"><i class="fa fa-twitter fa-lg"></i></button><small>Twitter</small></div>' +
             '<div class="form-group col-xs-4"><button title="Facebook" class="share btn btn-light" data="fb_app"><i class="fa fa-facebook fa-lg"></i></button><small>Facebook</small></p></div>' +
             '<div id="modal_share_state">' +
             '<h4 data-i18n="html.share_state_title"></h4>' +
             '<p class="recipient row">' +
-            '<div class="form-group col-xs-4"><button title="Copy to clipboard" class="share btn btn-light" data="cp_view"><i class="fa fa-clipboard fa-lg"></i></button><small data-i18n="html.copy_clipboard"></small></div>' +
+            '<div class="form-group col-xs-4"><button title="Copy to clipboard" class="share btn btn-light" data="cp_view"><i class="fa fa-clipboard fa-lg"></i></button><small data-i18n="html.share_copy"></small></div>' +
             '<div class="form-group col-xs-4"><button title="Twitter" class="share btn btn-light" data="tw_view"><i class="fa fa-twitter fa-lg"></i></button><small>Twitter</small></div>' +
             '<div class="form-group col-xs-4"><button title="Facebook" class="share btn btn-light" data="fb_view"><i class="fa fa-facebook fa-lg"></i></button><small>Facebook</small></div></p>' +
             '</div>' +

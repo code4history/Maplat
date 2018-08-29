@@ -44,7 +44,7 @@
         "share_title": "共有",
         "share_app_title": "このアプリを共有",
         "share_state_title": "現在の表示場所を共有",
-        "copy_clipboard": "クリップボードにコピー"
+        "share_copy": "コピー"
     },
     "app": {
         "fake_explanation": "※%1$s中心より%2$dkm以上離れている場合は、%1$s中心周辺の疑似経緯度を発行します。",
