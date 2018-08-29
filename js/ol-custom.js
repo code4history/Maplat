@@ -777,7 +777,7 @@ define(['ol3', 'turf'], function(ol, turf) {
         target.setTileLoadFunction((function() {
             var numLoadingTiles = 0;
             var tileLoadFn = self.getTileLoadFunction();
-            var tImageLoader = function(image, tile, src) {
+            var tImageLoader = function(image, tile, src, fallback) {
                 var tImage = tile.tImage;
                 if (!tImage) {
                     tImage = document.createElement('img');
@@ -797,20 +797,25 @@ define(['ol3', 'turf'], function(ol, turf) {
                         tCanv = tImage = ctx = null;
                         if (self.cache_db) {
                             var db = self.cache_db;
-                            var tx = db.transaction(['tileCache'],'readwrite');
+                            var tx = db.transaction(['tileCache'], 'readwrite');
                             var store = tx.objectStore('tileCache');
                             var key = tile.tileCoord[0] + '-' + tile.tileCoord[1] + '-' + tile.tileCoord[2];
                             var putReq = store.put({
                                 'z_x_y': key,
-                                'data': dataUrl
+                                'data': dataUrl,
+                                'epoch': new Date().getTime()
                             });
-                            putReq.onsuccess = function(){
+                            putReq.onsuccess = function() {
                             };
-                            tx.oncomplete = function(){
+                            tx.oncomplete = function() {
                             };
                         }
                     } else {
-                        tile.handleImageError_();
+                        if (fallback) {
+                            tileLoadFn(tile, fallback);
+                        } else {
+                            tile.handleImageError_();
+                        }
                     }
                     --numLoadingTiles;
                     if (numLoadingTiles === 0) {
@@ -827,21 +832,27 @@ define(['ol3', 'turf'], function(ol, turf) {
                 var image = tile.getImage();
                 if (self.cache_db) {
                     var db = self.cache_db;
-                    var tx = db.transaction(['tileCache'],'readonly');
+                    var tx = db.transaction(['tileCache'], 'readonly');
                     var store = tx.objectStore('tileCache');
                     var key = tile.tileCoord[0] + '-' + tile.tileCoord[1] + '-' + tile.tileCoord[2];
                     var getReq = store.get(key);
-                    getReq.onsuccess = function(event){
+                    getReq.onsuccess = function(event) {
                         var obj = event.target.result;
                         if (!obj) {
                             tImageLoader(image, tile, src);
                         } else {
-                            var dataUrl = obj.data;
-                            image.crossOrigin=null;
-                            tileLoadFn(tile, dataUrl);
+                            var cachedEpoch = obj.epoch;
+                            var nowEpoch = new Date().getTime();
+                            if (!cachedEpoch || nowEpoch - cachedEpoch > 86400000) {
+                                tImageLoader(image, tile, src, obj.data);
+                            } else {
+                                var dataUrl = obj.data;
+                                image.crossOrigin=null;
+                                tileLoadFn(tile, dataUrl);
+                            }
                         }
                     };
-                    getReq.onerror = function(event){
+                    getReq.onerror = function(event) {
                         tImageLoader(image, tile, src);
                     };
                 } else {
