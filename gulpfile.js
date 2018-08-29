@@ -117,7 +117,7 @@ gulp.task('js_build', ['config'], function() {
 });
 
 gulp.task('less', function() {
-    var lesses = ['ol-maplat', 'font-awesome', 'bootstrap', 'swiper', 'core', 'ui'];
+    var lesses = ['ol-maplat', 'font-awesome', 'bootstrap', 'swiper', 'core', 'ui', 'iziToast'];
     lesses.map(function(less) {
         execSync('lessc -x less/' + less + '.less > css/' + less + '.css');
     });

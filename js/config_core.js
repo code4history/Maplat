@@ -67,7 +67,8 @@ require.config
         'mapshaper': '../lib/mapshaper_maplat',
         'resize': '../lib/detect-element-resize',
         'sprintf': '../lib/sprintf',
-        'page': '../lib/page'
+        'page': '../lib/page',
+        'iziToast': '../lib/iziToast'
     },
     shim: {
         'i18nxhr': {

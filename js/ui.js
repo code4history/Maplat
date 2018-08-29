@@ -1,6 +1,5 @@
-define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nxhr', 'page'],
-    function(Core, sprintf, Swiper, ol, bsn, i18n, i18nxhr, page) {
-
+define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nxhr', 'page', 'iziToast'],
+    function(Core, sprintf, Swiper, ol, bsn, i18n, i18nxhr, page, iziToast) {
     var browserLanguage = function() {
         var ua = window.navigator.userAgent.toLowerCase();
         try {
@@ -200,7 +199,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
         var pwaWorker = appOption.pwa_worker || './service-worker.js';
 
         // Add UI HTML Element
-        var newElems = Core.createElement('<div class="ol-control map-title"><span></span></div>' +
+        var newElems = Core.createElement('<div id="toast"></div><div class="ol-control map-title"><span></span></div>' +
             '<div class="swiper-container ol-control base-swiper prevent-default-ui">' +
             '<i class="fa fa-chevron-left swiper-left-icon" aria-hidden="true"></i>' +
             '<i class="fa fa-chevron-right swiper-right-icon" aria-hidden="true"></i>' +
@@ -279,13 +278,13 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
             '</div>' +
 
             '<div id="modal_share_content">' +
-            '<h4 data-i18n="html.share_app_title"></h4>' +
+            '<h4 data-i18n="html.share_app_title"></h4><div id="app_toast"></div>' +
             '<p class="recipient row">' +
             '<div class="form-group col-xs-4"><button title="Copy to clipboard" class="share btn btn-light" data="cp_app"><i class="fa fa-clipboard fa-lg"></i></button><small data-i18n="html.share_copy"></small></div>' +
             '<div class="form-group col-xs-4"><button title="Twitter" class="share btn btn-light" data="tw_app"><i class="fa fa-twitter fa-lg"></i></button><small>Twitter</small></div>' +
             '<div class="form-group col-xs-4"><button title="Facebook" class="share btn btn-light" data="fb_app"><i class="fa fa-facebook fa-lg"></i></button><small>Facebook</small></p></div>' +
             '<div id="modal_share_state">' +
-            '<h4 data-i18n="html.share_state_title"></h4>' +
+            '<h4 data-i18n="html.share_state_title"></h4><div id="view_toast"></div>' +
             '<p class="recipient row">' +
             '<div class="form-group col-xs-4"><button title="Copy to clipboard" class="share btn btn-light" data="cp_view"><i class="fa fa-clipboard fa-lg"></i></button><small data-i18n="html.share_copy"></small></div>' +
             '<div class="form-group col-xs-4"><button title="Twitter" class="share btn btn-light" data="tw_view"><i class="fa fa-twitter fa-lg"></i></button><small>Twitter</small></div>' +
@@ -335,7 +334,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
             var shareBtn = shareBtns[i];
             shareBtn.addEventListener('click', function(evt) {
                 var btn = evt.target;
-                if (!btn.classList.contains('share')) btn = btn.offsetParent;
+                if (!btn.classList.contains('share')) btn = btn.parentElement;
                 var cmd = btn.getAttribute('data');
                 var cmds = cmd.split('_');
                 var base = evt.target.baseURI;
@@ -368,6 +367,14 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
 
                     document.execCommand('copy');
                     bodyElm.removeChild(copyFrom);
+                    var toastParent = '#' + cmds[1] + '_toast';
+                    iziToast.show(
+                        {
+                            message: 'Copied',
+                            timeout: 1000,
+                            target: toastParent
+                        }
+                    );
                 } else if (cmds[0] == 'tw') {
                     var twuri = 'https://twitter.com/share?url=' + encodeURIComponent(uri) + '&hashtags=Maplat';
                     window.open(twuri, '_blank', 'width=650,height=450,menubar=no,toolbar=no,scrollbars=yes');
