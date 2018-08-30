@@ -314,7 +314,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
 
             '<div id="modal_load_content">' +
             '<p class="recipient"><img src="parts/loading.gif"><span data-i18n="html.app_loading_body"></span></p>' +
-            '<div id="splash_div" class="hide row"><p class="col-xs-12 poi_img"><img id="splash_img" src=""></p>' +
+            '<div id="splash_div" class="hide row"><p class="col-xs-12 poi_img"><img id="splash_img" src=""></p></div>' +
             '<p><img src="" height="0px" width="0px"></p>' +
             '</div>' +
 
