@@ -626,8 +626,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
                 ui.core.mapDivDocument.querySelector('#poi_web').classList.add('hide');
 
                 if (data.image && data.image != '') {
-                    ui.core.mapDivDocument.querySelector('#poi_img').setAttribute('src',
-                        data.image.match(/^http/) ? data.image : 'img/' + data.image);
+                    ui.core.mapDivDocument.querySelector('#poi_img').setAttribute('src', ui.resolveRelativeLink(data.image, 'img'));
                 } else {
                     ui.core.mapDivDocument.querySelector('#poi_img').setAttribute('src', 'parts/no_image.png');
                 }
@@ -794,6 +793,11 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
                 delete ui.waitReadyBridge;
             }
         });
+    };
+
+    MaplatUi.prototype.resolveRelativeLink = function(file, fallbackPath) {
+        if (!fallbackPath) fallbackPath = '.';
+        return file.match(/\//) ? file : fallbackPath + '/' + file;
     };
 
     MaplatUi.prototype.checkOverlayID = function(mapID) {
