@@ -142,7 +142,7 @@ define(['histmap'], function(ol) {
             });
         }
 
-        var overlay = appOption.overlay || false;
+        var overlay = 'overlay' in appOption ? appOption.overlay : true;
         var noRotate = appOption.no_rotate || false;
         if (overlay) {
             app.mapDivDocument.classList.add('with-opacity');

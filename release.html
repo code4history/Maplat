@@ -27,13 +27,14 @@
     var option = {
         cache_enable: true,
         restore_session: false,
-        state_url: true
+        state_url: true,
+        share_enable: true
     };
     var hashes = (window.location.href.split('#!'))[0];
     hashes = hashes.slice(window.location.href.indexOf('?') + 1).split('&');
     for (var i = 0; i < hashes.length; i++) {
         hash = hashes[i].split('=');
-        option[hash[0]] = hash[1];
+        option[hash[0]] = hash[1] == 'true' ? true : hash[1] == 'false' ? false : hash[1];
     }
     Maplat.createObject(option).then(function(app){
         app.addEventListener('clickMarker', function(evt) {
