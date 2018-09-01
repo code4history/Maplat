@@ -142,7 +142,11 @@ define(['ol-custom'], function(ol) {
         options.title = options.title || options.era;
         if (options.maptype == 'base' || options.maptype == 'overlay') {
             var targetSrc = options.maptype == 'base' ? ol.source.NowMap : ol.source.TmsMap;
-            return targetSrc.createAsync(options);
+            return targetSrc.createAsync(options).then(function(obj) {
+                return obj.initialWait.then(function() {
+                    return obj;
+                });
+            });
         }
 
         return new Promise(function(resolve, reject) {
@@ -177,7 +181,7 @@ define(['ol-custom'], function(ol) {
                         }).then(function() {
                             ol.source.HistMap_tin.createAsync(options)
                                 .then(function(obj) {
-                                    obj.cacheWait.then(function() {
+                                    obj.initialWait.then(function() {
                                         obj.mapSize2MercSize(resolve);
                                     }).catch(function() {
                                         obj.mapSize2MercSize(resolve);
@@ -200,61 +204,6 @@ define(['ol-custom'], function(ol) {
         });
     };
 
-    ol.source.HistMap.createAsync_old = function(options, commonOptions) {
-        if (typeof options === 'string') {
-            options = baseDict[options];
-        }
-        options = Object.assign(options, commonOptions);
-        if (!options.maptype) options.maptype = 'maplat';
-        options.label = options.label || options.year;
-        if (options.maptype == 'base' || options.maptype == 'overlay') {
-            options.sourceID = options.mapID;
-            var targetSrc = options.maptype == 'base' ? ol.source.NowMap : ol.source.TmsMap;
-            return targetSrc.createAsync(Object.assign({
-                url: options.url,
-                sourceID: options.sourceID,
-                label: options.label
-            }, options)).catch(function(err) {
-                throw err;
-            });
-        }
-
-        return new Promise(function(resolve, reject) {
-            requirejs(['histmap_tin'], resolve);
-        }).then(function() {
-            return ol.source.HistMap_tin.createAsync(Object.assign({
-                title: options.title || options.era,
-                mapID: options.mapID,
-                width: options.width,
-                height: options.height,
-                maptype: options.maptype,
-                sourceID: options.sourceID || options.mapID,
-                label: options.label
-            }, options))
-                .then(function(obj) {
-                    return new Promise(function(resolve, reject) {
-                        if (options.noload) {
-                            /* MaplatEditor用 なくさない */
-                            resolve(obj);
-                            return;
-                        }
-                        if (obj.cacheWait) {
-                            obj.cacheWait.then(function() {
-                                obj.mapSize2MercSize(resolve);
-                            }).catch(function() {
-                                obj.mapSize2MercSize(resolve);
-                            });
-                        } else {
-                            obj.mapSize2MercSize(resolve);
-                        }
-                    });
-                }).catch(function(err) {
-                    throw err;
-                });
-        }).catch(function(err) {
-            throw err;
-        });
-    };
     ol.source.setCustomFunction(ol.source.HistMap);
 
     ol.source.HistMap.prototype.xy2MercAsync = function(xy) {

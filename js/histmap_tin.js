@@ -9,8 +9,6 @@ define(['histmap', 'tin'], function(ol, Tin) {
             strictMode: options.strictMode,
             vertexMode: options.vertexMode
         });
-
-        this.pois = options.pois;
     };
     ol.inherits(ol.source.HistMap_tin, ol.source.HistMap);
 

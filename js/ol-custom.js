@@ -428,6 +428,39 @@ define(['ol3', 'turf'], function(ol, turf) {
             // var scale = abss / 4.0;
             return Math.atan2(sinx, cosx);
         };
+
+        target.prototype.resolvePois = function(pois) {
+            var self = this;
+            if (!pois) pois = [];
+            if (pois instanceof String) {
+                return new Promise(function(resolve, reject) {
+                    var url = pois.match(/\//) ? pois : 'pois/' + pois;
+
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('GET', url, true);
+                    xhr.responseType = 'json';
+
+                    xhr.onload = function(e) {
+                        if (this.status == 200 || this.status == 0 ) { // 0 for UIWebView
+                            try {
+                                var resp = this.response;
+                                if (typeof resp != 'object') resp = JSON.parse(resp);
+                                self.pois = resp;
+                                resolve();
+                            } catch(err) {
+                                reject(err);
+                            }
+                        } else {
+                            reject('Fail to load poi json');
+                        }
+                    };
+                    xhr.send();
+                });
+            } else {
+                self.pois = pois;
+                return Promise.resolve();
+            }
+        };
     };
     ol.source.META_KEYS = ['title', 'officialTitle', 'author', 'createdAt', 'era',
         'contributor', 'mapper', 'license', 'dataLicense', 'attr', 'dataAttr',
@@ -455,7 +488,9 @@ define(['ol3', 'turf'], function(ol, turf) {
             self[key] = options[key];
         }
 
-        self.cacheWait = options.cache_enable ? self.setupTileCacheAsnyc() : Promise.resolve();
+        var cacheWait = options.cache_enable ? self.setupTileCacheAsnyc() : Promise.resolve();
+        var poisWait = self.resolvePois(options.pois);
+        self.initialWait = Promise.all([cacheWait, poisWait]);
     };
 
     ol.source.NowMap = function(optOptions) {
