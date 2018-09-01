@@ -15,16 +15,8 @@
     "start_from" : "morioka_ndl2",
     "sources" : [
         {
-            "title" : "正保城絵図 南部領盛岡平城絵図 (正保元年) (TMS版)",
-            "attr" : {
-                "ja" : "正保城絵図 南部領盛岡平城絵図 (正保元年) 国立公文書館",
-                "en" : "Japan National Archives"
-            },
             "label" : "1644 (TMS)",
-            "mapID" : "morioka_ndl_affine",
-            "maptype" : "overlay",
-            "url" : "./tiles/morioka_ndl_affine/{z}/{x}/{-y}.png",
-            "envelopLngLats" : [[141.13849189444682, 39.68371726018171], [141.1290034389491, 39.71485204359416], [141.16446703501967, 39.721264617961566], [141.17394088696722, 39.69010405666194]]
+            "mapID" : "morioka_ndl_affine"
         },
         {
             "mapID"     : "morioka_ndl2",

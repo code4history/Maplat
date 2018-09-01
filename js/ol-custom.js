@@ -460,6 +460,15 @@ define(['ol3', 'turf'], function(ol, turf) {
 
     ol.source.NowMap = function(optOptions) {
         var options = optOptions || {};
+        if (!options.imageExtention) options.imageExtention = 'jpg';
+        if (options.mapID) {
+            this.mapID = options.mapID;
+            if (options.mapID != 'osm') {
+                options.url = options.url ||
+                    (options.tms ? 'tiles/' + options.mapID + '/{z}/{x}/{-y}.' + options.imageExtention :
+                        'tiles/' + options.mapID + '/{z}/{x}/{y}.' + options.imageExtention);
+            }
+        }
         ol.source.OSM.call(this, options);
         ol.source.setCustomInitialize(this, options);
         ol.source.setupTileLoadFunction(this);
