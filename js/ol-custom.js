@@ -767,7 +767,8 @@ define(['ol3', 'turf'], function(ol, turf) {
                 // listen to changes in position
                 var map = this;
                 geolocation.on('change', function(evt) {
-                    var source = map.getLayers().item(0).getSource();
+                    var overlayLayer = map.getLayer('overlay').getLayers().item(0);
+                    var source = overlayLayer ? overlayLayer.getSource() : map.getLayers().item(0).getSource();
                     var lnglat = geolocation.getPosition();
                     var acc = geolocation.getAccuracy();
                     if (source.fake_gps && ol.MathEx.getDistance(source.home_position, lnglat) > source.fake_gps) {

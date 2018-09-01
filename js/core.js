@@ -535,7 +535,7 @@ define(['histmap'], function(ol) {
 
     MaplatApp.prototype.setGPSMarker = function(position) {
         this.currentPosition = position;
-        this.mapObject.setGPSMarker(position, true);
+        this.from.setGPSMarker(position, true);
     };
 
     MaplatApp.prototype.changeMap = function(sourceID, restore) {
