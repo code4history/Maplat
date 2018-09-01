@@ -455,9 +455,7 @@ define(['ol3', 'turf'], function(ol, turf) {
             self[key] = options[key];
         }
 
-        if (options.cache_enable) {
-            self.cacheWait = self.setupTileCacheAsnyc();
-        }
+        self.cacheWait = options.cache_enable ? self.setupTileCacheAsnyc() : Promise.resolve();
     };
 
     ol.source.NowMap = function(optOptions) {

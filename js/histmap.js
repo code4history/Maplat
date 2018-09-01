@@ -1,4 +1,4 @@
-define(['ol-custom'], function(ol) {
+define(['ol-custom', 'histmap_tin'], function(ol) {
     for (var z = 0; z < 9; z++) {
         var key = 'ZOOM:' + z;
         var maxxy = 256 * Math.pow(2, z);
@@ -132,6 +132,68 @@ define(['ol-custom'], function(ol) {
     };
 
     ol.source.HistMap.createAsync = function(options, commonOptions) {
+        if (typeof options === 'string') {
+            options = baseDict[options];
+        }
+
+        options.label = options.label || options.year;
+        options.sourceID = options.sourceID || options.mapID;
+        options.title = options.title || options.era;
+        if (options.maptype == 'base' || options.maptype == 'overlay') {
+            var targetSrc = options.maptype == 'base' ? ol.source.NowMap : ol.source.TmsMap;
+            return targetSrc.createAsync(options);
+        }
+
+        return new Promise(function(resolve, reject) {
+            var url = options.setting_file || 'maps/' + options.mapID + '.json';
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.responseType = 'json';
+
+            xhr.onload = function(e) {
+                if (this.status == 200 || this.status == 0 ) { // 0 for UIWebView
+                    try {
+                        var resp = this.response;
+                        if (typeof resp != 'object') resp = JSON.parse(resp);
+                        options = Object.assign(resp, options);
+                        options.label = options.label || resp.year;
+                        if (!options.maptype) options.maptype = 'maplat';
+
+                        if (options.maptype == 'base' || options.maptype == 'overlay') {
+                            var targetSrc = options.maptype == 'base' ? ol.source.NowMap : ol.source.TmsMap;
+                            targetSrc.createAsync(options).then(function(ret) {
+                                resolve(ret);
+                            });
+                            return;
+                        }
+                        if (options.noload) {
+                            resolve(new ol.source.HistMap_tin(options));
+                            return;
+                        }
+
+                        ol.source.HistMap_tin.createAsync(options)
+                            .then(function(obj) {
+                                obj.cacheWait.then(function() {
+                                    obj.mapSize2MercSize(resolve);
+                                }).catch(function() {
+                                    obj.mapSize2MercSize(resolve);
+                                });
+                            }).catch(function(err) {
+                                reject(err);
+                            });
+                    } catch(err) {
+                        reject(err);
+                    }
+                } else {
+                    reject('Fail to load map json');
+                    // self.postMessage({'event':'cannotLoad'});
+                }
+            };
+            xhr.send();
+        });
+    };
+
+    ol.source.HistMap.createAsync_old = function(options, commonOptions) {
         if (typeof options === 'string') {
             options = baseDict[options];
         }
