@@ -202,206 +202,239 @@ define(['histmap'], function(ol) {
                     div: backDiv
                 });
             }
-            app.pois = app.appData.pois;
+
             app.startFrom = app.appData.start_from;
             app.lines = [];
 
-            var dataSource = app.appData.sources;
-            var sourcePromise = [];
-            var commonOption = {
-                home_position: homePos,
-                merc_zoom: defZoom,
-                fake_gps: fakeGps ? fakeRadius : false,
-                cache_enable: app.cacheEnable
-            };
-            for (var i = 0; i < dataSource.length; i++) {
-                var option = dataSource[i];
-                sourcePromise.push(ol.source.HistMap.createAsync(option, commonOption));
+            var pois = app.appData.pois || [];
+            var poisWait;
+            if (typeof pois == 'string') {
+                poisWait = new Promise(function(resolve, reject) {
+                    var url = pois.match(/\//) ? pois : 'pois/' + pois;
+
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('GET', url, true);
+                    xhr.responseType = 'json';
+
+                    xhr.onload = function(e) {
+                        if (this.status == 200 || this.status == 0 ) { // 0 for UIWebView
+                            try {
+                                var resp = this.response;
+                                if (typeof resp != 'object') resp = JSON.parse(resp);
+                                app.pois = resp;
+                                resolve();
+                            } catch(err) {
+                                reject(err);
+                            }
+                        } else {
+                            reject('Fail to load poi json');
+                        }
+                    };
+                    xhr.send();
+                });
+            } else {
+                app.pois = pois;
+                poisWait = Promise.resolve();
             }
 
-            return Promise.all(sourcePromise).then(function(sources) {
-                app.mercSrc = sources.reduce(function(prev, curr) {
-                    if (prev) return prev;
-                    if (curr instanceof ol.source.NowMap) return curr;
-                }, null);
-
-                app.dispatchEvent(new CustomEvent('sourceLoaded', sources));
-
-                var cache = [];
-                app.cacheHash = {};
-                for (var i=0; i<sources.length; i++) {
-                    var source = sources[i];
-                    source._map = app.mapObject;
-                    cache.push(source);
-                    app.cacheHash[source.sourceID] = source;
+            return poisWait.then(function() {
+                var dataSource = app.appData.sources;
+                var sourcePromise = [];
+                var commonOption = {
+                    home_position: homePos,
+                    merc_zoom: defZoom,
+                    fake_gps: fakeGps ? fakeRadius : false,
+                    cache_enable: app.cacheEnable
+                };
+                for (var i = 0; i < dataSource.length; i++) {
+                    var option = dataSource[i];
+                    sourcePromise.push(ol.source.HistMap.createAsync(option, commonOption));
                 }
 
-                var initial = app.initialRestore.sourceID || app.startFrom || cache[cache.length - 1].sourceID;
-                app.from = cache.reduce(function(prev, curr) {
-                    if (prev) {
-                        return !(prev instanceof ol.source.HistMap) && curr.sourceID != initial ? curr : prev;
-                    }
-                    if (curr.sourceID != initial) return curr;
-                    return prev;
-                }, null);
-                app.changeMap(initial, app.initialRestore);
+                return Promise.all(sourcePromise).then(function(sources) {
+                    app.mercSrc = sources.reduce(function(prev, curr) {
+                        if (prev) return prev;
+                        if (curr instanceof ol.source.NowMap) return curr;
+                    }, null);
 
-                var showInfo = function(data) {
-                    app.dispatchEvent(new CustomEvent('clickMarker', data));
-                };
+                    app.dispatchEvent(new CustomEvent('sourceLoaded', sources));
 
-                var clickHandler = function(evt) {
-                    app.logger.debug(evt.pixel);
-                    var feature = this.forEachFeatureAtPixel(evt.pixel,
-                        function(feature) {
-                            app.logger.debug(evt.pixel);
-                            if (feature.get('datum')) return feature;
-                        });
-                    if (feature) {
-                        showInfo(feature.get('datum'));
-                    } else {
-                        var xy = evt.coordinate;
-                        app.from.xy2MercAsync(xy).then(function(merc) {
-                            var lnglat = ol.proj.transform(merc, 'EPSG:3857', 'EPSG:4326');
-                            app.dispatchEvent(new CustomEvent('clickMap', {
-                                longitude: lnglat[0],
-                                latitude: lnglat[1]
-                            }));
-                        });
+                    var cache = [];
+                    app.cacheHash = {};
+                    for (var i=0; i<sources.length; i++) {
+                        var source = sources[i];
+                        source._map = app.mapObject;
+                        cache.push(source);
+                        app.cacheHash[source.sourceID] = source;
                     }
-                };
-                app.mapObject.on('click', clickHandler);
 
-                // MapUI on off
-                var timer;
-                app.mapObject.on('click', function() {
-                    if (timer) {
-                        clearTimeout(timer);
-                        delete timer;
-                    }
-                    var ctls = app.mapDivDocument.querySelectorAll('.ol-control');
-                    for (var i = 0; i < ctls.length; i++) {
-                        ctls[i].classList.remove('fade');
-                    }
-                });
-                app.mapObject.on('pointerdrag', function() {
-                    if (timer) {
-                        clearTimeout(timer);
-                        delete timer;
-                    }
-                    var ctls = app.mapDivDocument.querySelectorAll('.ol-control');
-                    for (var i = 0; i < ctls.length; i++) {
-                        ctls[i].classList.add('fade');
-                    }
-                });
-                app.mapObject.on('moveend', function() {
-                    if (timer) {
-                        clearTimeout(timer);
-                        delete timer;
-                    }
-                    timer = setTimeout(function() {
-                        delete timer;
+                    var initial = app.initialRestore.sourceID || app.startFrom || cache[cache.length - 1].sourceID;
+                    app.from = cache.reduce(function(prev, curr) {
+                        if (prev) {
+                            return !(prev instanceof ol.source.HistMap) && curr.sourceID != initial ? curr : prev;
+                        }
+                        if (curr.sourceID != initial) return curr;
+                        return prev;
+                    }, null);
+                    app.changeMap(initial, app.initialRestore);
+
+                    var showInfo = function(data) {
+                        app.dispatchEvent(new CustomEvent('clickMarker', data));
+                    };
+
+                    var clickHandler = function(evt) {
+                        app.logger.debug(evt.pixel);
+                        var feature = this.forEachFeatureAtPixel(evt.pixel,
+                            function(feature) {
+                                app.logger.debug(evt.pixel);
+                                if (feature.get('datum')) return feature;
+                            });
+                        if (feature) {
+                            showInfo(feature.get('datum'));
+                        } else {
+                            var xy = evt.coordinate;
+                            app.from.xy2MercAsync(xy).then(function(merc) {
+                                var lnglat = ol.proj.transform(merc, 'EPSG:3857', 'EPSG:4326');
+                                app.dispatchEvent(new CustomEvent('clickMap', {
+                                    longitude: lnglat[0],
+                                    latitude: lnglat[1]
+                                }));
+                            });
+                        }
+                    };
+                    app.mapObject.on('click', clickHandler);
+
+                    // MapUI on off
+                    var timer;
+                    app.mapObject.on('click', function() {
+                        if (timer) {
+                            clearTimeout(timer);
+                            delete timer;
+                        }
                         var ctls = app.mapDivDocument.querySelectorAll('.ol-control');
                         for (var i = 0; i < ctls.length; i++) {
                             ctls[i].classList.remove('fade');
                         }
-                    }, 3000);
-                });
+                    });
+                    app.mapObject.on('pointerdrag', function() {
+                        if (timer) {
+                            clearTimeout(timer);
+                            delete timer;
+                        }
+                        var ctls = app.mapDivDocument.querySelectorAll('.ol-control');
+                        for (var i = 0; i < ctls.length; i++) {
+                            ctls[i].classList.add('fade');
+                        }
+                    });
+                    app.mapObject.on('moveend', function() {
+                        if (timer) {
+                            clearTimeout(timer);
+                            delete timer;
+                        }
+                        timer = setTimeout(function() {
+                            delete timer;
+                            var ctls = app.mapDivDocument.querySelectorAll('.ol-control');
+                            for (var i = 0; i < ctls.length; i++) {
+                                ctls[i].classList.remove('fade');
+                            }
+                        }, 3000);
+                    });
 
-                // change mouse cursor when over marker
-                var moveHandler = function(evt) {
-                    var pixel = this.getEventPixel(evt.originalEvent);
-                    var hit = this.hasFeatureAtPixel(pixel);
-                    var target = this.getTarget();
-                    if (hit) {
-                        var feature = this.forEachFeatureAtPixel(evt.pixel,
-                            function(feature) {
-                                if (feature.get('datum')) return feature;
-                            });
-                        app.mapDivDocument.querySelector('#' + target).style.cursor = feature ? 'pointer' : '';
-                        return;
-                    }
-                    app.mapDivDocument.querySelector('#' + target).style.cursor = '';
-                };
-                app.mapObject.on('pointermove', moveHandler);
-
-                var mapOutHandler = function(evt) {
-                    var histCoord = evt.frameState.viewState.center;
-                    var source = app.from;
-                    if (!source.insideCheckHistMapCoords(histCoord)) {
-                        histCoord = source.modulateHistMapCoordsInside(histCoord);
-                        this.getView().setCenter(histCoord);
-                    }
-                };
-                app.mapObject.on('moveend', mapOutHandler);
-
-                var backMapMove = function(evt) {
-                    if (!app.backMap) return;
-                    if (this._backMapMoving) {
-                        app.logger.debug('Backmap moving skipped');
-                        return;
-                    }
-                    var backSrc = app.backMap.getSource();
-                    if (backSrc) {
-                        this._backMapMoving = true;
-                        app.logger.debug('Backmap moving started');
-                        var self = this;
-                        app.convertParametersFromCurrent(backSrc, function(size) {
-                            var view = app.backMap.getView();
-                            view.setCenter(size[0]);
-                            view.setZoom(size[1]);
-                            view.setRotation(size[2]);
-                            app.logger.debug('Backmap moving ended');
-                            self._backMapMoving = false;
-                        });
-                    }
-                };
-                app.mapObject.on('postrender', backMapMove);
-
-                app.mapObject.on('postrender', function(evt) {
-                    var view = app.mapObject.getView();
-                    var center = view.getCenter();
-                    var zoom = view.getDecimalZoom();
-                    var rotation = normalizeDegree(view.getRotation() * 180 / Math.PI);
-                    app.from.size2MercsAsync().then(function(mercs) {
-                        return app.mercSrc.mercs2SizeAsync(mercs);
-                    }).then(function(size) {
-                        if (app.mobileMapMoveBuffer && app.mobileMapMoveBuffer[0][0] == size[0][0] &&
-                            app.mobileMapMoveBuffer[0][1] == size[0][1] &&
-                            app.mobileMapMoveBuffer[1] == size[1] &&
-                            app.mobileMapMoveBuffer[2] == size[2]) {
+                    // change mouse cursor when over marker
+                    var moveHandler = function(evt) {
+                        var pixel = this.getEventPixel(evt.originalEvent);
+                        var hit = this.hasFeatureAtPixel(pixel);
+                        var target = this.getTarget();
+                        if (hit) {
+                            var feature = this.forEachFeatureAtPixel(evt.pixel,
+                                function(feature) {
+                                    if (feature.get('datum')) return feature;
+                                });
+                            app.mapDivDocument.querySelector('#' + target).style.cursor = feature ? 'pointer' : '';
                             return;
                         }
-                        app.mobileMapMoveBuffer = size;
-                        var ll = ol.proj.transform(size[0], 'EPSG:3857', 'EPSG:4326');
-                        var direction = normalizeDegree(size[2] * 180 / Math.PI);
-                        app.dispatchEvent(new CustomEvent('changeViewpoint', {
-                            x: center[0],
-                            y: center[1],
-                            longitude: ll[0],
-                            latitude: ll[1],
-                            mercator_x: size[0][0],
-                            mercator_y: size[0][1],
-                            zoom: zoom,
-                            mercZoom: size[1],
-                            direction: direction,
-                            rotation: rotation
-                        }));
-                        if (app.restoreSession) {
-                            var currentTime = Math.floor(new Date().getTime() / 1000);
-                            localStorage.setItem('epoch', currentTime);
-                            localStorage.setItem('x', center[0]);
-                            localStorage.setItem('y', center[1]);
-                            localStorage.setItem('zoom', zoom);
-                            localStorage.setItem('rotation', rotation);
+                        app.mapDivDocument.querySelector('#' + target).style.cursor = '';
+                    };
+                    app.mapObject.on('pointermove', moveHandler);
+
+                    var mapOutHandler = function(evt) {
+                        var histCoord = evt.frameState.viewState.center;
+                        var source = app.from;
+                        if (!source.insideCheckHistMapCoords(histCoord)) {
+                            histCoord = source.modulateHistMapCoordsInside(histCoord);
+                            this.getView().setCenter(histCoord);
                         }
-                        app.requestUpdateState({
-                            position: {
+                    };
+                    app.mapObject.on('moveend', mapOutHandler);
+
+                    var backMapMove = function(evt) {
+                        if (!app.backMap) return;
+                        if (this._backMapMoving) {
+                            app.logger.debug('Backmap moving skipped');
+                            return;
+                        }
+                        var backSrc = app.backMap.getSource();
+                        if (backSrc) {
+                            this._backMapMoving = true;
+                            app.logger.debug('Backmap moving started');
+                            var self = this;
+                            app.convertParametersFromCurrent(backSrc, function(size) {
+                                var view = app.backMap.getView();
+                                view.setCenter(size[0]);
+                                view.setZoom(size[1]);
+                                view.setRotation(size[2]);
+                                app.logger.debug('Backmap moving ended');
+                                self._backMapMoving = false;
+                            });
+                        }
+                    };
+                    app.mapObject.on('postrender', backMapMove);
+
+                    app.mapObject.on('postrender', function(evt) {
+                        var view = app.mapObject.getView();
+                        var center = view.getCenter();
+                        var zoom = view.getDecimalZoom();
+                        var rotation = normalizeDegree(view.getRotation() * 180 / Math.PI);
+                        app.from.size2MercsAsync().then(function(mercs) {
+                            return app.mercSrc.mercs2SizeAsync(mercs);
+                        }).then(function(size) {
+                            if (app.mobileMapMoveBuffer && app.mobileMapMoveBuffer[0][0] == size[0][0] &&
+                                app.mobileMapMoveBuffer[0][1] == size[0][1] &&
+                                app.mobileMapMoveBuffer[1] == size[1] &&
+                                app.mobileMapMoveBuffer[2] == size[2]) {
+                                return;
+                            }
+                            app.mobileMapMoveBuffer = size;
+                            var ll = ol.proj.transform(size[0], 'EPSG:3857', 'EPSG:4326');
+                            var direction = normalizeDegree(size[2] * 180 / Math.PI);
+                            app.dispatchEvent(new CustomEvent('changeViewpoint', {
                                 x: center[0],
                                 y: center[1],
+                                longitude: ll[0],
+                                latitude: ll[1],
+                                mercator_x: size[0][0],
+                                mercator_y: size[0][1],
                                 zoom: zoom,
+                                mercZoom: size[1],
+                                direction: direction,
                                 rotation: rotation
+                            }));
+                            if (app.restoreSession) {
+                                var currentTime = Math.floor(new Date().getTime() / 1000);
+                                localStorage.setItem('epoch', currentTime);
+                                localStorage.setItem('x', center[0]);
+                                localStorage.setItem('y', center[1]);
+                                localStorage.setItem('zoom', zoom);
+                                localStorage.setItem('rotation', rotation);
                             }
+                            app.requestUpdateState({
+                                position: {
+                                    x: center[0],
+                                    y: center[1],
+                                    zoom: zoom,
+                                    rotation: rotation
+                                }
+                            });
                         });
                     });
                 });
