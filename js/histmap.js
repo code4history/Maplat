@@ -136,6 +136,7 @@ define(['ol-custom'], function(ol) {
             options = baseDict[options];
         }
 
+        options = Object.assign(options, commonOptions);
         options.label = options.label || options.year;
         options.sourceID = options.sourceID || options.mapID;
         options.title = options.title || options.era;
