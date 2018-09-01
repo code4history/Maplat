@@ -432,7 +432,7 @@ define(['ol3', 'turf'], function(ol, turf) {
         target.prototype.resolvePois = function(pois) {
             var self = this;
             if (!pois) pois = [];
-            if (pois instanceof String) {
+            if (typeof pois == 'string') {
                 return new Promise(function(resolve, reject) {
                     var url = pois.match(/\//) ? pois : 'pois/' + pois;
 
