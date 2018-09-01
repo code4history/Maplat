@@ -1,4 +1,4 @@
-define(['ol-custom', 'histmap_tin'], function(ol) {
+define(['ol-custom'], function(ol) {
     for (var z = 0; z < 9; z++) {
         var key = 'ZOOM:' + z;
         var maxxy = 256 * Math.pow(2, z);
@@ -171,16 +171,22 @@ define(['ol-custom', 'histmap_tin'], function(ol) {
                             return;
                         }
 
-                        ol.source.HistMap_tin.createAsync(options)
-                            .then(function(obj) {
-                                obj.cacheWait.then(function() {
-                                    obj.mapSize2MercSize(resolve);
-                                }).catch(function() {
-                                    obj.mapSize2MercSize(resolve);
+                        new Promise(function(res, rej) {
+                            requirejs(['histmap_tin'], res);
+                        }).then(function() {
+                            ol.source.HistMap_tin.createAsync(options)
+                                .then(function(obj) {
+                                    obj.cacheWait.then(function() {
+                                        obj.mapSize2MercSize(resolve);
+                                    }).catch(function() {
+                                        obj.mapSize2MercSize(resolve);
+                                    });
+                                }).catch(function(err) {
+                                    reject(err);
                                 });
-                            }).catch(function(err) {
-                                reject(err);
-                            });
+                        }).catch(function(err) {
+                            reject(err);
+                        });
                     } catch(err) {
                         reject(err);
                     }

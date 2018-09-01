@@ -29,7 +29,7 @@ define(['histmap', 'tin'], function(ol, Tin) {
                 return obj.tin.transform(merc, true);
             });
             ol.proj.transformDirect('EPSG:4326', proj);
-            if (resp.compiled) {
+            if (options.compiled) {
                 obj.tin.setCompiled(options.compiled);
                 resolve(obj);
             } else {
