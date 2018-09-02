@@ -139,7 +139,6 @@ define(['ol-custom'], function(ol) {
         options = Object.assign(options, commonOptions);
         options.label = options.label || options.year;
         options.sourceID = options.sourceID || options.mapID;
-        options.title = options.title || options.era;
         if (options.maptype == 'base' || options.maptype == 'overlay') {
             var targetSrc = options.maptype == 'base' ? ol.source.NowMap : ol.source.TmsMap;
             return targetSrc.createAsync(options).then(function(obj) {
