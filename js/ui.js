@@ -390,30 +390,6 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
             });
         }
 
-        var i18nPromise = new Promise(function(resolve, reject) {
-            i18n.use(i18nxhr).init({
-                lng: lang,
-                fallbackLng: ['en'],
-                backend: {
-                    loadPath: 'locales/{{lng}}/{{ns}}.json'
-                }
-            }, function(err, t) {
-                var i18nTargets = ui.core.mapDivDocument.querySelectorAll('[data-i18n]');
-                for (var i=0; i<i18nTargets.length; i++) {
-                    var target = i18nTargets[i];
-                    var key = target.getAttribute('data-i18n');
-                    target.innerText = t(key);
-                }
-                var i18nTargets = ui.core.mapDivDocument.querySelectorAll('[data-i18n-html]');
-                for (var i=0; i<i18nTargets.length; i++) {
-                    var target = i18nTargets[i];
-                    var key = target.getAttribute('data-i18n-html');
-                    target.innerHTML = t(key);
-                }
-                resolve([t, i18n]);
-            });
-        });
-
         // PWA対応: 非同期処理
         var xhr = new XMLHttpRequest();
         xhr.open('GET', pwaManifest, true);
@@ -450,6 +426,34 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
         xhr.send();
 
         ui.core.addEventListener('uiPrepare', function(evt) {
+            if (!lang && ui.core.appData.defaultLang) {
+                lang = ui.core.appData.defaultLang;
+            }
+
+            var i18nPromise = new Promise(function(resolve, reject) {
+                i18n.use(i18nxhr).init({
+                    lng: lang,
+                    fallbackLng: ['en'],
+                    backend: {
+                        loadPath: 'locales/{{lng}}/{{ns}}.json'
+                    }
+                }, function(err, t) {
+                    var i18nTargets = ui.core.mapDivDocument.querySelectorAll('[data-i18n]');
+                    for (var i=0; i<i18nTargets.length; i++) {
+                        var target = i18nTargets[i];
+                        var key = target.getAttribute('data-i18n');
+                        target.innerText = t(key);
+                    }
+                    var i18nTargets = ui.core.mapDivDocument.querySelectorAll('[data-i18n-html]');
+                    for (var i=0; i<i18nTargets.length; i++) {
+                        var target = i18nTargets[i];
+                        var key = target.getAttribute('data-i18n-html');
+                        target.innerHTML = t(key);
+                    }
+                    resolve([t, i18n]);
+                });
+            });
+
             i18nPromise.then(function(result){
                 ui.i18n = result[1];
                 ui.t = result[0];
