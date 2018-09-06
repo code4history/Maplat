@@ -426,8 +426,8 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
         xhr.send();
 
         ui.core.addEventListener('uiPrepare', function(evt) {
-            if (!lang && ui.core.appData.defaultLang) {
-                lang = ui.core.appData.defaultLang;
+            if (!lang && ui.core.appData.lang) {
+                lang = ui.core.appData.lang;
             }
 
             var i18nPromise = new Promise(function(resolve, reject) {
