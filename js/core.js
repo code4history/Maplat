@@ -476,11 +476,14 @@ define(['histmap'], function(ol) {
         var lnglat = data.lnglat || [data.lng || data.longitude, data.lat || data.latitude];
         var x = data.x;
         var y = data.y;
+        var coords = data.coordinates;
         var src = app.from;
-        var promise = (x && y) ?
+        var promise = coords ?
+            Promise.resolve(coords) :
+            (x && y) ?
             new Promise(function(resolve) {
                 resolve(src.xy2HistMapCoords([x, y]));
-            }):
+            }) :
             (function() {
                 var merc = ol.proj.transform(lnglat, 'EPSG:4326', 'EPSG:3857');
                 return src.merc2XyAsync(merc);
@@ -500,10 +503,18 @@ define(['histmap'], function(ol) {
         var app = this;
         app.logger.debug(data);
 
-        var xyPromises = data.lnglats.map(function(lnglat) {
-            var merc = ol.proj.transform(lnglat, 'EPSG:4326', 'EPSG:3857');
-            return app.from.merc2XyAsync(merc);
-        });
+        var xyPromises;
+        if (data.coordinates) {
+            xyPromises = data.coordinates.map(function(coord) {
+                return Promise.resolve(coord);
+            });
+        } else {
+            xyPromises = data.lnglats.map(function(lnglat) {
+                var merc = ol.proj.transform(lnglat, 'EPSG:4326', 'EPSG:3857');
+                return app.from.merc2XyAsync(merc);
+            });
+        }
+
         Promise.all(xyPromises).then(function(xys) {
             app.mapObject.setLine(xys, data.stroke);
         });
