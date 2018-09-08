@@ -588,6 +588,13 @@ define(['ol3', 'turf'], function(ol, turf) {
         });
         featureLayer.set('name', 'feature');
 
+        var envelopLayer = new ol.layer.Vector({
+            source: new ol.source.Vector({
+                wrapX: false
+            })
+        });
+        envelopLayer.set('name', 'envelop');
+
         var baseLayer = optOptions.baseLayer ? optOptions.baseLayer :
             new ol.layer.Tile({
                 source: optOptions.source
@@ -604,6 +611,7 @@ define(['ol3', 'turf'], function(ol, turf) {
             layers: [
                 baseLayer,
                 overlayLayer,
+                envelopLayer,
                 featureLayer,
                 vectorLayer,
                 markerLayer
@@ -660,32 +668,35 @@ define(['ol3', 'turf'], function(ol, turf) {
         return layer.getSource();
     };
 
-    ol.MaplatMap.prototype.setGPSPosition = function(pos) {
-        var src = this.getSource('gps');
+    ol.MaplatMap.prototype.setFeature = function(data, style, layer) {
+        var src = this.getSource(layer);
+        var feature = new ol.Feature(data);
+        if (style) {
+            feature.setStyle(style);
+        }
+        src.addFeature(feature);
+    };
+
+    ol.MaplatMap.prototype.resetFeature = function(layer) {
+        var src = this.getSource(layer);
         src.clear();
+    };
+
+    ol.MaplatMap.prototype.setGPSPosition = function(pos) {
+        this.resetFeature('gps');
         if (pos) {
-            var iconFeature = new ol.Feature({
+            this.setFeature({
                 geometry: new ol.geom.Point(pos.xy)
-            });
-            iconFeature.setStyle(gpsStyle);
-            var circle = new ol.Feature({
+            }, gpsStyle, 'gps');
+            this.setFeature({
                 geometry: new ol.geom.Circle(pos.xy, pos.rad)
-            });
-            circle.setStyle(accCircleStyle);
-            src.addFeature(iconFeature);
-            src.addFeature(circle);
+            }, accCircleStyle, 'gps');
         }
     };
 
-    ol.MaplatMap.prototype.resetMarker = function() {
-        var src = this.getSource('marker');
-        src.clear();
-    };
-
-    ol.MaplatMap.prototype.setMarker = function(xy, data, markerStyle) {
-        var src = this.getSource('marker');
+    ol.MaplatMap.prototype.setMarker = function(xy, data, markerStyle, layer) {
+        if (!layer) layer = 'marker';
         data['geometry'] = new ol.geom.Point(xy);
-        var iconFeature = new ol.Feature(data);
         if (!markerStyle) markerStyle = markerDefaultStyle;
         else if (typeof markerStyle == 'string') {
             markerStyle = new ol.style.Style({
@@ -697,28 +708,38 @@ define(['ol3', 'turf'], function(ol, turf) {
                 }))
             });
         }
-        iconFeature.setStyle(markerStyle);
-        src.addFeature(iconFeature);
+        this.setFeature(data, markerStyle, layer);
     };
 
-    ol.MaplatMap.prototype.setLine = function(xys, stroke) {
-        var src = this.getSource('feature');
-        var lineFeature = new ol.Feature({
+    ol.MaplatMap.prototype.resetMarker = function(layer) {
+        if (!layer) layer = 'marker';
+        this.resetFeature(layer);
+    };
+
+    ol.MaplatMap.prototype.setLine = function(xys, stroke, layer) {
+        if (!layer) layer = 'feature';
+        var style = stroke != null ? new ol.style.Style({
+                stroke: new ol.style.Stroke(stroke)
+            }) : null;
+        this.setFeature({
             geometry: new ol.geom.LineString(xys),
             name: 'Line'
-        });
-        if (stroke != null) {
-            lineFeature.setStyle(new ol.style.Style({
-                stroke: new ol.style.Stroke(stroke)
-            }));
-        }
-
-        src.addFeature(lineFeature);
+        }, style, layer);
     };
 
-    ol.MaplatMap.prototype.resetLine = function() {
-        var src = this.getSource('feature');
-        src.clear();
+    ol.MaplatMap.prototype.resetLine = function(layer) {
+        if (!layer) layer = 'feature';
+        this.resetFeature(layer);
+    };
+
+    ol.MaplatMap.prototype.setEnvelop = function(xys, stroke, layer) {
+        if (!layer) layer = 'envelop';
+        this.setLine(xys, stroke, layer);
+    };
+
+    ol.MaplatMap.prototype.resetEnvelop = function(layer) {
+        if (!layer) layer = 'envelop';
+        this.resetFeature(layer);
     };
 
     ol.MaplatMap.prototype.exchangeSource = function(source) {

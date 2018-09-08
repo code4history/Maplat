@@ -129,6 +129,8 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
                         case 'y':
                             restore.position[line[0]] = parseFloat(line[1]);
                             break;
+                        case 'sb':
+                            restore.showBorder = parseInt(line[1]) ? true : false;
                     }
                 });
                 if (!ui.core) {
@@ -259,6 +261,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
             '<li data-i18n-html="html.help_etc_attr" class="recipient"></li>' +
             '<li data-i18n-html="html.help_etc_help" class="recipient"></li>' +
             '<span class="share_help"><li data-i18n-html="html.help_share_help" class="recipient"></li></span>' +
+            '<li data-i18n-html="html.help_etc_border" class="recipient"></li>' +
             '<li data-i18n-html="html.help_etc_slider" class="recipient"></li>' +
             '</ul>' +
             '<p><a href="https://github.com/code4nara/Maplat/wiki" target="_blank">Maplat</a>' +
@@ -470,7 +473,8 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
                     new ol.control.SetGPS({tipLabel: ui.t('control.gps', {ns: 'translation'})}),
                     new ol.control.GoHome({tipLabel: ui.t('control.home', {ns: 'translation'})}),
                     ui.sliderCommon,
-                    new ol.control.Maplat({tipLabel: ui.t('control.help', {ns: 'translation'})})
+                    new ol.control.Maplat({tipLabel: ui.t('control.help', {ns: 'translation'})}),
+                    new ol.control.Border({tipLabel: ui.t('control.border', {ns: 'translation'})})
                 ];
                 if (ui.shareEnable) {
                     ui.core.appData.controls.push(new ol.control.Share({tipLabel: ui.t('control.share', {ns: 'translation'})}));
@@ -572,11 +576,12 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
 
             for (var i=0; i<sources.length; i++) {
                 var source = sources[i];
+                var colorCss = source.envelop ? ' ' + source.envelopColor : '';
                 if (source instanceof ol.source.NowMap && !(source instanceof ol.source.TmsMap)) {
                     ui.baseSwiper.appendSlide('<div class="swiper-slide" data="' + source.sourceID + '">' +
                         '<img crossorigin="anonymous" src="' + source.thumbnail + '"><div>' + ui.translate(source.label) + '</div></div>');
                 } else {
-                    ui.overlaySwiper.appendSlide('<div class="swiper-slide" data="' + source.sourceID + '">' +
+                    ui.overlaySwiper.appendSlide('<div class="swiper-slide' + colorCss + '" data="' + source.sourceID + '">' +
                         '<img crossorigin="anonymous" src="' + source.thumbnail + '"><div>' + ui.translate(source.label) + '</div></div>');
                 }
             }
@@ -653,6 +658,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
                 link = link + '/x:' + value.position.x + '/y:' + value.position.y;
                 link = link + '/z:' + value.position.zoom;
                 if (value.position.rotation) link = link + '/r:' + value.position.rotation;
+                if (value.showBorder) link = link + '/sb:' + value.showBorder;
 
                 ui.pathThatSet = link;
                 page(link);
@@ -778,9 +784,12 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
                 } else if (control == 'help') {
                     modalSetting('help');
                     modal.show();
-                } else {
+                } else if (control == 'share') {
                     modalSetting('share');
                     modal.show();
+                } else if (control == 'border') {
+                    var flag = !ui.core.showBorder;
+                    ui.core.setShowBorder(flag);
                 }
             });
             if (fakeGps) {

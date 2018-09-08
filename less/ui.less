@@ -236,6 +236,80 @@
         background-color: rgba(0, 0, 255, 0.1);
     }
 
+    &.show-border {
+        .swiper-slide.maroon {
+            border-style: dashed;
+            border-color: maroon;
+            border-width: 1px;
+        }
+
+        .swiper-slide.red {
+            border-style: dashed;
+            border-color: red;
+            border-width: 1px;
+        }
+
+        .swiper-slide.purple {
+            border-style: dashed;
+            border-color: purple;
+            border-width: 1px;
+        }
+
+        .swiper-slide.fuchsia {
+            border-style: dashed;
+            border-color: fuchsia;
+            border-width: 1px;
+        }
+
+        .swiper-slide.green {
+            border-style: dashed;
+            border-color: green;
+            border-width: 1px;
+        }
+
+        .swiper-slide.lime {
+            border-style: dashed;
+            border-color: lime;
+            border-width: 1px;
+        }
+
+        .swiper-slide.olive {
+            border-style: dashed;
+            border-color: olive;
+            border-width: 1px;
+        }
+
+        .swiper-slide.yellow {
+            border-style: dashed;
+            border-color: yellow;
+            border-width: 1px;
+        }
+
+        .swiper-slide.navy {
+            border-style: dashed;
+            border-color: navy;
+            border-width: 1px;
+        }
+
+        .swiper-slide.blue {
+            border-style: dashed;
+            border-color: blue;
+            border-width: 1px;
+        }
+
+        .swiper-slide.teal {
+            border-style: dashed;
+            border-color: teal;
+            border-width: 1px;
+        }
+
+        .swiper-slide.aqua {
+            border-style: dashed;
+            border-color: aqua;
+            border-width: 1px;
+        }
+    }
+
     .swiper-slide img {
         position: absolute;
         top: 0;
@@ -300,6 +374,15 @@
         bottom: calc(115px + .5em);
     }
 
+    .ol-border {
+        right: .5em;
+        bottom: calc(105px + .5em);
+    }
+
+    .ol-touch .ol-border {
+        bottom: calc(115px + .5em);
+    }
+
     .ol-copyright {
         right: .5em;
         bottom: calc(65px + .5em);
@@ -311,6 +394,10 @@
     }
 
     @media screen and (display-mode: standalone) and (width: 375px) and (height: 768px), screen and (display-mode: standalone) and (width: 724px) and (height: 375px), screen and (display-mode: fullscreen) and (width: 375px) and (height: 768px), screen and (display-mode: fullscreen) and (width: 724px) and (height: 375px) {
+        .ol-touch .ol-border {
+            bottom: calc(136px + .5em);
+        }
+
         .ol-touch .ol-share {
             bottom: calc(136px + .5em);
         }
@@ -338,17 +425,14 @@
         opacity: 0;
     }
 
-    .ol-control.no_rotation button {
+    .ol-control.disable button,
+    &.show-border .ol-control.ol-border button {
         color: rgba(255, 255, 255, .7);
         background-color: rgba(120, 5, 8, .2);
     }
 
-    .ol-control.receiving_gps button {
-        color: rgba(255, 255, 255, .7);
-        background-color: rgba(120, 5, 8, .2);
-    }
-
-    .ol-control.no_rotation button:focus, .ol-control.no_rotation button:hover {
+    .ol-control.disable button:focus, .ol-control.disable button:hover,
+    &.show-border .ol-control.ol-border button:focus, &.show-border .ol-control.ol-border button:hover {
         color: rgba(255, 255, 255, .7);
         background-color: rgba(120, 5, 8, .2)
     }

@@ -377,23 +377,23 @@ define(['ol-custom', 'resize'], function(ol, addResizeListener) {
             var map = this.getMap();
             if (map.geolocation) {
                 var tracking = map.geolocation.getTracking();
-                var receiving = self.element.classList.contains('receiving_gps');
+                var receiving = self.element.classList.contains('disable');
                 if (receiving && !tracking) {
-                    this.element.classList.remove('receiving_gps');
+                    this.element.classList.remove('disable');
                 } else if (!receiving && tracking) {
-                    this.element.classList.add('receiving_gps');
+                    this.element.classList.add('disable');
                 }
             }
         };
         options.callback = function() {
-            var receiving = self.element.classList.contains('receiving_gps');
+            var receiving = self.element.classList.contains('disable');
             var map = self.getMap();
 
             map.handleGPS(!receiving);
             if (receiving) {
-                self.element.classList.remove('receiving_gps');
+                self.element.classList.remove('disable');
             } else {
-                self.element.classList.add('receiving_gps');
+                self.element.classList.add('disable');
             }
         };
 
@@ -417,11 +417,11 @@ define(['ol-custom', 'resize'], function(ol, addResizeListener) {
             var center = view.getCenter();
             var zoom = view.getDecimalZoom();
             if (rotation != this.rotation_ || center[0] != this.center_[0] || center[1] != this.center_[1] || zoom != this.zoom_) {
-                var contains = this.element.classList.contains('no_rotation');
+                var contains = this.element.classList.contains('disable');
                 if (!contains && rotation === 0) {
-                    this.element.classList.add('no_rotation');
+                    this.element.classList.add('disable');
                 } else if (contains && rotation !== 0) {
-                    this.element.classList.remove('no_rotation');
+                    this.element.classList.remove('disable');
                 }
                 var self = this;
                 var layer = this.getMap().getLayers().item(0);
@@ -471,7 +471,6 @@ define(['ol-custom', 'resize'], function(ol, addResizeListener) {
         options.cls = 'ol-share';
         var self = this;
         options.callback = function() {
-            // window.open('https://github.com/code4nara/Maplat/wiki');
             var map = self.getMap();
             map.dispatchEvent(new ol.MapEvent('click_control', map, {control: 'share'}));
         };
@@ -479,6 +478,20 @@ define(['ol-custom', 'resize'], function(ol, addResizeListener) {
         ol.control.CustomControl.call(this, options);
     };
     ol.inherits(ol.control.Share, ol.control.CustomControl);
+
+    ol.control.Border = function(optOptions) {
+        var options = optOptions || {};
+        options.character = '<i class="fa fa-clone fa-lg"></i>';
+        options.cls = 'ol-border';
+        var self = this;
+        options.callback = function() {
+            var map = self.getMap();
+            map.dispatchEvent(new ol.MapEvent('click_control', map, {control: 'border'}));
+        };
+
+        ol.control.CustomControl.call(this, options);
+    };
+    ol.inherits(ol.control.Border, ol.control.CustomControl);
 
     ol.control.Maplat = function(optOptions) {
         var options = optOptions || {};
