@@ -21,15 +21,15 @@ importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.4.1/workbox
 self.__precacheManifest = [
   {
     "url": ".",
-    "revision": "Fri Sep 07 2018 07:32:43 GMT+0900 (JST)"
+    "revision": "Sat Sep 08 2018 19:19:09 GMT+0900 (JST)"
   },
   {
     "url": "dist/maplat.js",
-    "revision": "35fc1a2b5117668d839f21eaeee9fb16"
+    "revision": "648b85c41dc6893bc27546c95cc74084"
   },
   {
     "url": "dist/maplat.css",
-    "revision": "ac5e635e3f38310be40cc275b162804a"
+    "revision": "549d6fac1dc7b9c9b3912ab7c6774da7"
   },
   {
     "url": "parts/all_right_reserved.png",
@@ -46,6 +46,10 @@ self.__precacheManifest = [
   {
     "url": "parts/bluedot.png",
     "revision": "fa10ac01a2b93a61c78da31c8412752d"
+  },
+  {
+    "url": "parts/border.png",
+    "revision": "0b5a096113128f9c5240ad5d591bde7e"
   },
   {
     "url": "parts/cc_by-nc-nd.png",
@@ -145,11 +149,11 @@ self.__precacheManifest = [
   },
   {
     "url": "locales/en/translation.json",
-    "revision": "e15ea440dc8303ecb2558cc5d34eb460"
+    "revision": "5bce22bfbdb8c3e54ca5a89d2da341eb"
   },
   {
     "url": "locales/ja/translation.json",
-    "revision": "67b5d10cd72bfaf05fb6d53776705cb1"
+    "revision": "583657ffbcf1bc42d2871888892a31f1"
   },
   {
     "url": "fonts/clarenbd-webfont.eot",
