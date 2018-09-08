@@ -68,7 +68,8 @@ require.config
         'resize': '../lib/detect-element-resize',
         'sprintf': '../lib/sprintf',
         'page': '../lib/page',
-        'iziToast': '../lib/iziToast'
+        'iziToast': '../lib/iziToast',
+        'qrcode': '../lib/qrcode'
     },
     shim: {
         'i18nxhr': {
@@ -79,6 +80,9 @@ require.config
         },
         'turf': {
             exports: 'turf'
+        },
+        'qrcode': {
+            exports: 'QRCode'
         },
         'resize': {
             exports: 'addResizeListener'

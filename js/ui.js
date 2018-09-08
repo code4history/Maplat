@@ -1,5 +1,5 @@
-define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nxhr', 'page', 'iziToast'],
-    function(Core, sprintf, Swiper, ol, bsn, i18n, i18nxhr, page, iziToast) {
+define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nxhr', 'page', 'iziToast', 'qrcode'],
+    function(Core, sprintf, Swiper, ol, bsn, i18n, i18nxhr, page, iziToast, QRCode) {
     var browserLanguage = function() {
         var ua = window.navigator.userAgent.toLowerCase();
         try {
@@ -282,16 +282,18 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
 
             '<div id="modal_share_content">' +
             '<h4 data-i18n="html.share_app_title"></h4><div id="app_toast"></div>' +
-            '<p class="recipient row">' +
+            '<div class="recipient row">' +
             '<div class="form-group col-xs-4 text-center"><button title="Copy to clipboard" class="share btn btn-light" data="cp_app"><i class="fa fa-clipboard"></i>&nbsp;<small data-i18n="html.share_copy"></small></button></div>' +
             '<div class="form-group col-xs-4 text-center"><button title="Twitter" class="share btn btn-light" data="tw_app"><i class="fa fa-twitter"></i>&nbsp;<small>Twitter</small></button></div>' +
-            '<div class="form-group col-xs-4 text-center"><button title="Facebook" class="share btn btn-light" data="fb_app"><i class="fa fa-facebook"></i>&nbsp;<small>Facebook</small></button></p></div>' +
+            '<div class="form-group col-xs-4 text-center"><button title="Facebook" class="share btn btn-light" data="fb_app"><i class="fa fa-facebook"></i>&nbsp;<small>Facebook</small></button></div></div>' +
+            '<div id="qr_app" class="center-block" style="width:128px;"></div>' +
             '<div id="modal_share_state">' +
             '<h4 data-i18n="html.share_state_title"></h4><div id="view_toast"></div>' +
-            '<p class="recipient row">' +
+            '<div class="recipient row">' +
             '<div class="form-group col-xs-4 text-center"><button title="Copy to clipboard" class="share btn btn-light" data="cp_view"><i class="fa fa-clipboard"></i>&nbsp;<small data-i18n="html.share_copy"></small></button></div>' +
             '<div class="form-group col-xs-4 text-center"><button title="Twitter" class="share btn btn-light" data="tw_view"><i class="fa fa-twitter"></i>&nbsp;<small>Twitter</small></button></div>' +
-            '<div class="form-group col-xs-4 text-center"><button title="Facebook" class="share btn btn-light" data="fb_view"><i class="fa fa-facebook"></i>&nbsp;<small>Facebook</small></button></div></p>' +
+            '<div class="form-group col-xs-4 text-center"><button title="Facebook" class="share btn btn-light" data="fb_view"><i class="fa fa-facebook"></i>&nbsp;<small>Facebook</small></button></div></div>' +
+            '<div id="qr_view" class="center-block" style="width:128px;"></div>' +
             '</div>' +
             '<p><img src="" height="0px" width="0px"></p>' +
             '</div>' +
@@ -751,6 +753,8 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
                 });
             });
 
+            var qr_app;
+            var qr_view;
             ui.core.mapObject.on('click_control', function(evt) {
                 var control = evt.frameState.control;
                 var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
@@ -786,6 +790,44 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
                     modal.show();
                 } else if (control == 'share') {
                     modalSetting('share');
+
+                    var base = location.href;
+                    var div1 = base.split('#!');
+                    var path = div1.length > 1 ? (div1[1].split('?'))[0] : '';
+                    var div2 = div1[0].split('?');
+                    var uri = div2[0];
+                    var query = div2.length > 1 ? div2[1].split('&').filter(function(qs) {
+                        return (qs == 'pwa') ? false : true;
+                    }).join('&') : '';
+
+                    if (query) uri = uri + '?' + query;
+                    var view = uri;
+                    if (path) view = view + '#!' + path;
+                    if (!qr_app) {
+                        qr_app = new QRCode(document.getElementById('qr_app'), {
+                            text: uri,
+                            width: 128,
+                            height: 128,
+                            colorDark: '#000000',
+                            colorLight: '#ffffff',
+                            correctLevel: QRCode.CorrectLevel.H
+                        });
+                    } else {
+                        qr_app.makeCode(uri);
+                    }
+                    if (!qr_view) {
+                        qr_view = new QRCode(document.getElementById('qr_view'), {
+                            text: view,
+                            width: 128,
+                            height: 128,
+                            colorDark: '#000000',
+                            colorLight: '#ffffff',
+                            correctLevel: QRCode.CorrectLevel.H
+                        });
+                    } else {
+                        qr_view.makeCode(view);
+                    }
+
                     modal.show();
                 } else if (control == 'border') {
                     var flag = !ui.core.showBorder;
