@@ -127,7 +127,7 @@ define(['histmap'], function(ol) {
                     rotation: parseFloat(localStorage.getItem('rotation'))
                 };
                 app.initialRestore.transparency = parseFloat(localStorage.getItem('transparency') || 0);
-                app.setShowBorder(parseInt(localStorage.getItem('tshowBorser') || '0') ? true : false);
+                app.setShowBorder(parseInt(localStorage.getItem('showBorder') || '0') ? true : false);
             }
         } else {
             app.setShowBorder(false);
