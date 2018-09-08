@@ -99,10 +99,20 @@ define(['histmap'], function(ol) {
         app.initialRestore = {};
 
         ol.events.EventTarget.call(app);
+
+        var appid = app.appid = appOption.appid || 'sample';
+        app.mapDiv = appOption.div || 'map_div';
+        app.mapDivDocument = document.querySelector('#' + app.mapDiv);
+        app.mapDivDocument.classList.add('maplat');
+        app.logger = new Logger(appOption.debug ? LoggerLevel.ALL : LoggerLevel.INFO);
+        app.cacheEnable = appOption.cache_enable || false;
+        app.stateBuffer = {};
+        var setting = appOption.setting;
+
         if (appOption.restore) {
             if (appOption.restore_session) app.restoreSession = true;
             app.initialRestore = appOption.restore;
-            app.showBorder = appOption.restore.showBorder || false;
+            app.setShowBorder(appOption.restore.showBorder || false);
         } else if (appOption.restore_session) {
             app.restoreSession = true;
             var lastEpoch = parseInt(localStorage.getItem('epoch') || 0);
@@ -117,19 +127,11 @@ define(['histmap'], function(ol) {
                     rotation: parseFloat(localStorage.getItem('rotation'))
                 };
                 app.initialRestore.transparency = parseFloat(localStorage.getItem('transparency') || 0);
-                app.showBorder = parseInt(localStorage.getItem('tshowBorser') || '0') ? true : false;
+                app.setShowBorder(parseInt(localStorage.getItem('tshowBorser') || '0') ? true : false);
             }
         } else {
-            app.showBorder = false;
+            app.setShowBorder(false);
         }
-        var appid = app.appid = appOption.appid || 'sample';
-        app.mapDiv = appOption.div || 'map_div';
-        app.mapDivDocument = document.querySelector('#' + app.mapDiv);
-        app.mapDivDocument.classList.add('maplat');
-        app.logger = new Logger(appOption.debug ? LoggerLevel.ALL : LoggerLevel.INFO);
-        app.cacheEnable = appOption.cache_enable || false;
-        app.stateBuffer = {};
-        var setting = appOption.setting;
 
         // Add UI HTML Element
         var newElems = createElement('<img id="center_circle" class="prevent-default" ' +
@@ -485,6 +487,11 @@ define(['histmap'], function(ol) {
     MaplatApp.prototype.setShowBorder = function(flag) {
         this.showBorder = flag;
         this.updateEnvelop();
+        if (flag) {
+            this.mapDivDocument.classList.add('show-border');
+        } else {
+            this.mapDivDocument.classList.remove('show-border');
+        }
         if (this.restoreSession) {
             var currentTime = Math.floor(new Date().getTime() / 1000);
             localStorage.setItem('epoch', currentTime);
@@ -576,28 +583,31 @@ define(['histmap'], function(ol) {
 
     MaplatApp.prototype.updateEnvelop = function() {
         var app = this;
+        if (!app.mapObject) return;
+
         app.mapObject.resetEnvelop();
 
         if (app.showBorder) {
-            app.mapDivDocument.classList.add('show-border');
             Object.keys(app.cacheHash).filter(function (key) {
-                return key != app.from.sourceID ? app.cacheHash[key].envelop : null;
-            }).map(function (key) {
+                return app.cacheHash[key].envelop;
+            }).map(function(key) {
                 var source = app.cacheHash[key];
-                var xyPromises = source.envelop.geometry.coordinates[0].map(function (coord) {
-                    return app.from.merc2XyAsync(coord);
-                });
+                var xyPromises = (key == app.from.sourceID) && (source instanceof ol.source.HistMap) ?
+                    [[0, 0], [source.width, 0], [source.width, source.height], [0, source.height], [0, 0]].map(function(xy) {
+                        return Promise.resolve(source.xy2HistMapCoords(xy));
+                    }) :
+                    source.envelop.geometry.coordinates[0].map(function(coord) {
+                        return app.from.merc2XyAsync(coord);
+                    });
 
-                Promise.all(xyPromises).then(function (xys) {
+                Promise.all(xyPromises).then(function(xys) {
                     app.mapObject.setEnvelop(xys, {
                         color: source.envelopColor,
-                        width: 1,
-                        lineDash: [9, 3]
+                        width: 2,
+                        lineDash: [6, 6]
                     });
                 });
             });
-        } else {
-            app.mapDivDocument.classList.remove('show-border');
         }
     };
 
