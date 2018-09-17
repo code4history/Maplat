@@ -146,6 +146,12 @@ define(['ol-custom', 'turf'], function(ol, turf) {
                     return obj;
                 });
             });
+        } else if (options.noload) {
+            return new Promise(function(res, rej) {
+                requirejs(['histmap_tin'], res);
+            }).then(function() {
+                return new ol.source.HistMap_tin(options);
+            });
         }
 
         return new Promise(function(resolve, reject) {
@@ -168,10 +174,6 @@ define(['ol-custom', 'turf'], function(ol, turf) {
                             targetSrc.createAsync(options).then(function(ret) {
                                 resolve(ret);
                             });
-                            return;
-                        }
-                        if (options.noload) {
-                            resolve(new ol.source.HistMap_tin(options));
                             return;
                         }
 
