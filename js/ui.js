@@ -565,6 +565,9 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
                 ui.core.changeMap(slide.getAttribute('data'));
                 baseSwiper.setSlideIndexAsSelected(slide.getAttribute('data-swiper-slide-index'));
             });
+            if (baseSources.length < 2) {
+                ui.core.mapDivDocument.querySelector('.base-swiper').classList.add('single-map');
+            }
             overlaySwiper = ui.overlaySwiper = new Swiper('.overlay-swiper', {
                 slidesPerView: 2,
                 spaceBetween: 15,
@@ -586,6 +589,9 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
                 ui.core.changeMap(slide.getAttribute('data'));
                 overlaySwiper.setSlideIndexAsSelected(slide.getAttribute('data-swiper-slide-index'));
             });
+            if (overlaySources.length < 2) {
+                ui.core.mapDivDocument.querySelector('.overlay-swiper').classList.add('single-map');
+            }
 
             for (var i=0; i<baseSources.length; i++) {
                 var source = baseSources[i];
