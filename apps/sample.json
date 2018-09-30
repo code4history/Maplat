@@ -28,8 +28,6 @@
         {
             "mapID"     : "morioka"
         },
-        "gsi",
-        "gsi_ortho",
         "osm"
     ], 
     "pois" : "morioka_all_poi.json"
