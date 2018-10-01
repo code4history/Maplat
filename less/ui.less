@@ -59,12 +59,14 @@
     }
 
     .ol-rotate {
+        right: .5em;
         right: calc(.5em + constant(safe-area-inset-right));
         right: calc(.5em + env(safe-area-inset-right));
     }
 
     .gps {
         top: 80px;
+        left: .5em;
         left: calc(.5em + constant(safe-area-inset-left));
         left: calc(.5em + env(safe-area-inset-left));
     }
@@ -75,6 +77,7 @@
 
     .home {
         top: 120px;
+        left: .5em;
         left: calc(.5em + constant(safe-area-inset-left));
         left: calc(.5em + env(safe-area-inset-left));
     }
@@ -169,6 +172,7 @@
 
     .swiper-container {
         position: absolute;
+        bottom: .5em;
         bottom: calc(.5em + constant(safe-area-inset-bottom));
         bottom: calc(.5em + env(safe-area-inset-bottom));
         width: 224px;
@@ -343,7 +347,6 @@
         }
     }
 
-
     .swiper-left-icon {
         position: absolute;
         left: 0px;
@@ -375,37 +378,45 @@
     }
 
     .ol-share {
+        left: .5em;
         left: calc(.5em + constant(safe-area-inset-left));
         left: calc(.5em + env(safe-area-inset-left));
         bottom: calc(105px + .5em);
     }
 
     .ol-touch .ol-share {
+        bottom: calc(115px + .5em);
         bottom: calc(115px + .5em + constant(safe-area-inset-bottom));
         bottom: calc(115px + .5em + env(safe-area-inset-bottom));
     }
 
     .ol-border {
+        right: .5em;
         right: calc(.5em + constant(safe-area-inset-right));
         right: calc(.5em + env(safe-area-inset-right));
         bottom: calc(105px + .5em);
     }
 
     .ol-touch .ol-border {
+        bottom: calc(115px + .5em);
         bottom: calc(115px + .5em + constant(safe-area-inset-bottom));
         bottom: calc(115px + .5em + env(safe-area-inset-bottom));
     }
 
     .ol-copyright {
+        right: .5em;
         right: calc(.5em + constant(safe-area-inset-right));
         right: calc(.5em + env(safe-area-inset-right));
+        bottom: calc(65px + .5em);
         bottom: calc(65px + .5em + constant(safe-area-inset-bottom));
         bottom: calc(65px + .5em + env(safe-area-inset-bottom));
     }
 
     .ol-maplat {
+        left: .5em;
         left: calc(.5em + constant(safe-area-inset-left));
         left: calc(.5em + env(safe-area-inset-left));
+        bottom: calc(65px + .5em);
         bottom: calc(65px + .5em + constant(safe-area-inset-bottom));
         bottom: calc(65px + .5em + env(safe-area-inset-bottom));
     }
@@ -448,13 +459,14 @@
 
     &.with-opacity .ol-slidercommon {
         display: block;
-        bottom: calc(.5em + conatant(safe-area-inset-bottom));
+        bottom: .5em;
+        bottom: calc(.5em + constant(safe-area-inset-bottom));
         bottom: calc(.5em + env(safe-area-inset-bottom));
         left: calc(50% - 80px);
         width: 160px;
         height: 25px;
         padding: 0;
-        border: 1px solid #dddddd;
+        border: 2px solid #666666;
     }
 
     @media screen and (max-width: 640px) {
@@ -475,6 +487,9 @@
         position: relative;
         width: 20px;
         height: 25px;
+        margin-left: -2px;
+        margin-right: 2px;
+        margin-top: -2px;
     }
 
     &.with-opacity .ol-slidercommon-thumb {
