@@ -163,6 +163,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
         ui.core = new Core(appOption);
         var enableSplash = ui.core.initialRestore.sourceID ? false : true;
         var restoreTransparency = ui.core.initialRestore.transparency;
+        var enableOutOfMap = appOption.presentation_mode ? false : true;
 
         // Modal記述の動作を調整する関数
         var modalSetting = function(target) {
@@ -632,12 +633,14 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
         });
 
         ui.core.addEventListener('outOfMap', function(evt) {
-            ui.core.mapDivDocument.querySelector('#modal_title').innerText = ui.t('app.out_of_map');
-            ui.core.mapDivDocument.querySelector('#modal_gpsD_content').innerText = ui.t('app.out_of_map_area');
-            var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
-            var modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
-            modalSetting('gpsD');
-            modal.show();
+            if (enableOutOfMap) {
+                ui.core.mapDivDocument.querySelector('#modal_title').innerText = ui.t('app.out_of_map');
+                ui.core.mapDivDocument.querySelector('#modal_gpsD_content').innerText = ui.t('app.out_of_map_area');
+                var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
+                var modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
+                modalSetting('gpsD');
+                modal.show();
+            }
         });
 
         ui.core.addEventListener('clickMarker', function(evt) {
