@@ -194,6 +194,11 @@ define(['histmap'], function(ol) {
             app.mapObject = new ol.MaplatMap({
                 div: frontDiv,
                 controls: app.appData.controls || [],
+                interactions: ol.interaction.defaults().extend([
+                    new ol.interaction.DragRotateAndZoom({
+                        condition: ol.events.condition.altKeyOnly
+                    })
+                ]),
                 off_rotation: noRotate ? true : false
             });
 
