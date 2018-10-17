@@ -141,6 +141,11 @@ define(['ol-custom', 'turf'], function(ol, turf) {
         options.sourceID = options.sourceID || options.mapID;
         if (options.maptype == 'base' || options.maptype == 'overlay') {
             var targetSrc = options.maptype == 'base' ? ol.source.NowMap : ol.source.TmsMap;
+            if (options.zoom_restriction) {
+                options.maxZoom = options.maxZoom || options.merc_max_zoom;
+                options.minZoom = options.minZoom || options.merc_min_zoom;
+            }
+            options.zoom_restriction = options.merc_max_zoom = options.merc_min_zoom = undefined;
             return targetSrc.createAsync(options).then(function(obj) {
                 return obj.initialWait.then(function() {
                     return obj;
@@ -150,6 +155,7 @@ define(['ol-custom', 'turf'], function(ol, turf) {
             return new Promise(function(res, rej) {
                 requirejs(['histmap_tin'], res);
             }).then(function() {
+                options.merc_max_zoom = options.merc_min_zoom = undefined;
                 return new ol.source.HistMap_tin(options);
             });
         }

@@ -180,6 +180,9 @@ define(['histmap'], function(ol) {
             app.mercBuffer = null;
             var homePos = app.appData.home_position;
             var defZoom = app.appData.default_zoom;
+            var zoomRestriction = app.appData.zoom_restriction;
+            var mercMinZoom = app.appData.min_zoom;
+            var mercMaxZoom = app.appData.max_zoom;
             app.appName = app.appData.app_name;
             var fakeGps = appOption.fake ? app.appData.fake_gps : false;
             var fakeRadius = appOption.fake ? app.appData.fake_radius : false;
@@ -254,6 +257,9 @@ define(['histmap'], function(ol) {
                 var commonOption = {
                     home_position: homePos,
                     merc_zoom: defZoom,
+                    zoom_restriction: zoomRestriction,
+                    merc_min_zoom: mercMinZoom,
+                    merc_max_zoom: mercMaxZoom,
                     fake_gps: fakeGps ? fakeRadius : false,
                     cache_enable: app.cacheEnable
                 };
@@ -709,6 +715,10 @@ define(['histmap'], function(ol) {
                     app.from = to;
 
                     var view = app.mapObject.getView();
+                    if (app.appData.zoom_restriction) {
+                        view.setMaxZoom(to.maxZoom);
+                        view.setMinZoom(to.minZoom || 0);
+                    }
                     if (to.insideCheckHistMapCoords(size[0])) {
                         view.setCenter(size[0]);
                         view.setZoom(size[1]);

@@ -12,6 +12,9 @@
     "fake_radius" : 10,
     "home_position" : [141.149989,39.699952],
     "default_zoom" : 17,
+    "zoom_restriction" : true,
+    "min_zoom" : 10,
+    "max_zoom" : 15,
     "start_from" : "morioka_ndl2",
     "sources" : [
         {
