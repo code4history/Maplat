@@ -131,6 +131,13 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
                             break;
                         case 'sb':
                             restore.showBorder = parseInt(line[1]) ? true : false;
+                            break;
+                        case 'c':
+                            if (ui.core) {
+                                var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
+                                var modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
+                                modal.hide();
+                            }
                     }
                 });
                 if (!ui.core) {
