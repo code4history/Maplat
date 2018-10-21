@@ -652,6 +652,24 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
 
         ui.core.addEventListener('clickMarker', function(evt) {
             var data = evt.detail;
+
+            if (data.directgo) {
+                var blank = false;
+                var href = '';
+                if (typeof data.directgo == 'string') {
+                    href = data.directgo;
+                } else {
+                    href = data.directgo.href;
+                    blank = data.directgo.blank || false;
+                }
+                if (blank) {
+                    window.open(href, '_blank');
+                } else {
+                    window.location.href = href;
+                }
+                return;
+            }
+
             ui.core.mapDivDocument.querySelector('#modal_title').innerText = ui.translate(data.name);
             if (data.url || data.html) {
                 ui.core.mapDivDocument.querySelector('#poi_web').classList.remove('hide');
