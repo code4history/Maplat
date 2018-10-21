@@ -709,6 +709,10 @@ define(['ol3', 'turf'], function(ol, turf) {
                     src: markerStyle
                 }))
             });
+        } else {
+            markerStyle = new ol.style.Style({
+                image: new ol.style.Icon((markerStyle))
+            });
         }
         this.setFeature(data, markerStyle, layer);
     };
