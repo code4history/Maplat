@@ -5,6 +5,7 @@ var gulp = require('gulp'),
     header = require('gulp-header'),
     zip = require('gulp-zip'),
     replace = require('gulp-replace'),
+    uglify = require('gulp-uglify'),
     os = require('os'),
     fs = require('fs-extra'),
     wbBuild = require('workbox-build'),
@@ -280,4 +281,11 @@ gulp.task('mobile_build', ['js_build', 'css_build'], function() {
     fs.copySync('mobile.html', './mobile_android/lib-maplat/src/main/res/raw/mobile_html');
     fs.copySync('mobile.html', './mobile_ios_lib/MaplatView/Maplat.bundle/mobile.html');
     copyAssets();
+});
+
+gulp.task('tin', function() {
+    gulp.src(['./lib/turf_maplat.min.js', './lib/mapshaper_maplat.js', './js/tin.js'])
+        .pipe(concat('maplat_tin.js'))
+        .pipe(uglify())
+        .pipe(gulp.dest('./dist/'));
 });

@@ -13,7 +13,8 @@
     "mobile_build_test": "gulp mobile_build_test",
     "mobile_build": "gulp mobile_build",
     "config": "gulp config",
-    "js_build": "gulp js_build"
+    "js_build": "gulp js_build",
+    "tin": "gulp tin"
   },
   "dependencies": {
     "@turf/turf": "^4.7.3",
@@ -39,6 +40,7 @@
     "gulp-concat": "^2.6.1",
     "gulp-header": "^1.8.12",
     "gulp-replace": "^1.0.0",
+    "gulp-uglify": "^3.0.1",
     "gulp-zip": "^4.1.0",
     "lodash": "^4.17.10",
     "sshpk": "^1.14.2",
