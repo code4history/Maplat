@@ -17,6 +17,7 @@
             this.wh = options.wh;
             this.vertexMode = options.vertexMode || 'plain';
             this.strictMode = options.strictMode || 'auto';
+            this.yaxisMode = options.yaxisMode || 'invert';
 
             // pt is [x,y] and ring is [[x,y], [x,y],..]
             turf.inRing = function(pt, ring, ignoreBoundary) {
@@ -44,6 +45,11 @@
         };
 
         Tin.prototype.setPoints = function(points) {
+            if (this.yaxisMode == 'follow') {
+                points = points.map(function(point) {
+                    return [point[0], [point[1][0], -1 * point[1][1]]];
+                });
+            }
             this.points = points;
             this.tins = undefined;
         };
@@ -69,13 +75,13 @@
                     'forw' : [ compiled.vertices_params[0] ],
                     'bakw' : [ compiled.vertices_params[1] ]
                 };
-                this.vertices_params.forw[1] = [0, 1, 2, 3].map(function(idx){
+                this.vertices_params.forw[1] = [0, 1, 2, 3].map(function(idx) {
                     var idxNxt = (idx + 1) % 4;
                     var tri = indexesToTri(['cent', 'bbox' + idx, 'bbox' + idxNxt], compiled.points,
                         compiled.centroid_point, compiled.vertices_points, false);
                     return turf.featureCollection([tri]);
                 });
-                this.vertices_params.bakw[1] = [0, 1, 2, 3].map(function(idx){
+                this.vertices_params.bakw[1] = [0, 1, 2, 3].map(function(idx) {
                     var idxNxt = (idx + 1) % 4;
                     var tri = indexesToTri(['cent', 'bbox' + idx, 'bbox' + idxNxt], compiled.points,
                         compiled.centroid_point, compiled.vertices_points, true);
@@ -83,8 +89,8 @@
                 });
                 // centroidを復元
                 this.centroid = {
-                    'forw' : turf.point(compiled.centroid_point[0], {'target': {'geom': compiled.centroid_point[1], 'index': 'cent'}}),
-                    'bakw' : turf.point(compiled.centroid_point[1], {'target': {'geom': compiled.centroid_point[0], 'index': 'cent'}})
+                    'forw': turf.point(compiled.centroid_point[0], {'target': {'geom': compiled.centroid_point[1], 'index': 'cent'}}),
+                    'bakw': turf.point(compiled.centroid_point[1], {'target': {'geom': compiled.centroid_point[0], 'index': 'cent'}})
                 };
                 // tinsを復元
                 var bakwI = compiled.tins_points.length == 1 ? 0 : 1;
@@ -103,6 +109,12 @@
                             return turf.point(coord)
                         }))
                     };
+                }
+                // yaxisModeを復元
+                if (compiled.yaxisMode) {
+                    this.yaxisMode = compiled.yaxisMode;
+                } else {
+                    this.yaxisMode = 'invert';
                 }
             } else {
                 // 旧コンパイルロジック
@@ -187,6 +199,10 @@
                 });
             }
 
+            // yaxisMode対応
+            if (this.yaxisMode == 'follow') {
+                compiled.yaxisMode = 'follow';
+            }
             return compiled;
         };
 
@@ -564,12 +580,19 @@
 
         Tin.prototype.transform = function(point, backward) {
             // if (!this.tins) this.updateTin();
+            if (this.yaxisMode == 'follow' && backward) {
+                point = [point[0], -1 * point[1]];
+            }
             var tpoint = turf.point(point);
             var tins = backward ? this.tins.bakw : this.tins.forw;
             var verticesParams = backward ? this.vertices_params.bakw : this.vertices_params.forw;
             var centroid = backward ? this.centroid.bakw : this.centroid.forw;
             var weightBuffer = backward ? this.pointsWeightBuffer.bakw : this.pointsWeightBuffer.forw;
-            return transformArr(tpoint, tins, verticesParams, centroid, weightBuffer);
+            var ret = transformArr(tpoint, tins, verticesParams, centroid, weightBuffer);
+            if (this.yaxisMode == 'follow' && !backward) {
+                ret = [ret[0], -1 * ret[1]];
+            }
+            return ret;
         };
 
         Tin.prototype.calculatePointsWeightAsync = function() {
