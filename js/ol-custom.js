@@ -98,7 +98,8 @@ define(['ol3', 'turf'], function(ol, turf) {
                     resolve();
                 };
                 openDB.onerror = function(error) {
-                    reject(error);
+                    self.cache_db = undefined;
+                    resolve();
                 };
             });
         };

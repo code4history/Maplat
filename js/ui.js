@@ -438,12 +438,14 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
         };
         xhr.send();
 
+        var i18nPromise;
+
         ui.core.addEventListener('uiPrepare', function(evt) {
             if (!lang && ui.core.appData.lang) {
                 lang = ui.core.appData.lang;
             }
 
-            var i18nPromise = new Promise(function(resolve, reject) {
+            i18nPromise = new Promise(function(resolve, reject) {
                 i18n.use(i18nxhr).init({
                     lng: lang,
                     fallbackLng: ['en'],
@@ -467,7 +469,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
                 });
             });
 
-            i18nPromise.then(function(result){
+            i18nPromise.then(function(result) {
                 ui.i18n = result[1];
                 ui.t = result[0];
 
@@ -532,7 +534,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
             var sources = evt.detail;
 
             if (ui.splashPromise) {
-                ui.splashPromise.then(function () {
+                ui.splashPromise.then(function() {
                     var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
                     var modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
                     modalSetting('load');
@@ -540,85 +542,87 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
                 });
             }
 
-            var baseSources= [];
-            var overlaySources = [];
-            for (var i=0; i<sources.length; i++) {
-                var source = sources[i];
-                if (source instanceof ol.source.NowMap && !(source instanceof ol.source.TmsMap)) {
-                    baseSources.push(source);
-                } else {
-                    overlaySources.push(source);
+            i18nPromise.then(function() {
+                var baseSources= [];
+                var overlaySources = [];
+                for (var i=0; i<sources.length; i++) {
+                    var source = sources[i];
+                    if (source instanceof ol.source.NowMap && !(source instanceof ol.source.TmsMap)) {
+                        baseSources.push(source);
+                    } else {
+                        overlaySources.push(source);
+                    }
                 }
-            }
 
-            var baseSwiper, overlaySwiper;
-            baseSwiper = ui.baseSwiper = new Swiper('.base-swiper', {
-                slidesPerView: 2,
-                spaceBetween: 15,
-                breakpoints: {
-                    // when window width is <= 480px
-                    480: {
-                        slidesPerView: 1.4,
-                        spaceBetween: 10
-                    }
-                },
-                centeredSlides: true,
-                threshold: 2,
-                loop: baseSources.length < 2 ? false : true
-            });
-            baseSwiper.on('click', function(e) {
-                e.preventDefault();
-                if (!baseSwiper.clickedSlide) return;
-                var slide = baseSwiper.clickedSlide;
-                ui.core.changeMap(slide.getAttribute('data'));
-                baseSwiper.setSlideIndexAsSelected(slide.getAttribute('data-swiper-slide-index'));
-            });
-            if (baseSources.length < 2) {
-                ui.core.mapDivDocument.querySelector('.base-swiper').classList.add('single-map');
-            }
-            overlaySwiper = ui.overlaySwiper = new Swiper('.overlay-swiper', {
-                slidesPerView: 2,
-                spaceBetween: 15,
-                breakpoints: {
-                    // when window width is <= 480px
-                    480: {
-                        slidesPerView: 1.4,
-                        spaceBetween: 10
-                    }
-                },
-                centeredSlides: true,
-                threshold: 2,
-                loop: overlaySources.length < 2 ? false : true
-            });
-            overlaySwiper.on('click', function(e) {
-                e.preventDefault();
-                if (!overlaySwiper.clickedSlide) return;
-                var slide = overlaySwiper.clickedSlide;
-                ui.core.changeMap(slide.getAttribute('data'));
-                overlaySwiper.setSlideIndexAsSelected(slide.getAttribute('data-swiper-slide-index'));
-            });
-            if (overlaySources.length < 2) {
-                ui.core.mapDivDocument.querySelector('.overlay-swiper').classList.add('single-map');
-            }
+                var baseSwiper, overlaySwiper;
+                baseSwiper = ui.baseSwiper = new Swiper('.base-swiper', {
+                    slidesPerView: 2,
+                    spaceBetween: 15,
+                    breakpoints: {
+                        // when window width is <= 480px
+                        480: {
+                            slidesPerView: 1.4,
+                            spaceBetween: 10
+                        }
+                    },
+                    centeredSlides: true,
+                    threshold: 2,
+                    loop: baseSources.length < 2 ? false : true
+                });
+                baseSwiper.on('click', function(e) {
+                    e.preventDefault();
+                    if (!baseSwiper.clickedSlide) return;
+                    var slide = baseSwiper.clickedSlide;
+                    ui.core.changeMap(slide.getAttribute('data'));
+                    baseSwiper.setSlideIndexAsSelected(slide.getAttribute('data-swiper-slide-index'));
+                });
+                if (baseSources.length < 2) {
+                    ui.core.mapDivDocument.querySelector('.base-swiper').classList.add('single-map');
+                }
+                overlaySwiper = ui.overlaySwiper = new Swiper('.overlay-swiper', {
+                    slidesPerView: 2,
+                    spaceBetween: 15,
+                    breakpoints: {
+                        // when window width is <= 480px
+                        480: {
+                            slidesPerView: 1.4,
+                            spaceBetween: 10
+                        }
+                    },
+                    centeredSlides: true,
+                    threshold: 2,
+                    loop: overlaySources.length < 2 ? false : true
+                });
+                overlaySwiper.on('click', function(e) {
+                    e.preventDefault();
+                    if (!overlaySwiper.clickedSlide) return;
+                    var slide = overlaySwiper.clickedSlide;
+                    ui.core.changeMap(slide.getAttribute('data'));
+                    overlaySwiper.setSlideIndexAsSelected(slide.getAttribute('data-swiper-slide-index'));
+                });
+                if (overlaySources.length < 2) {
+                    ui.core.mapDivDocument.querySelector('.overlay-swiper').classList.add('single-map');
+                }
 
-            for (var i=0; i<baseSources.length; i++) {
-                var source = baseSources[i];
-                var colorCss = source.envelop ? ' ' + source.envelopColor : '';
-                baseSwiper.appendSlide('<div class="swiper-slide" data="' + source.sourceID + '">' +
-                    '<img crossorigin="anonymous" src="' + source.thumbnail + '"><div>' + ui.translate(source.label) + '</div></div>');
-            }
-            for (var i=0; i<overlaySources.length; i++) {
-                var source = overlaySources[i];
-                var colorCss = source.envelop ? ' ' + source.envelopColor : '';
-                overlaySwiper.appendSlide('<div class="swiper-slide' + colorCss + '" data="' + source.sourceID + '">' +
-                    '<img crossorigin="anonymous" src="' + source.thumbnail + '"><div>' + ui.translate(source.label) + '</div></div>');
-            }
+                for (var i=0; i<baseSources.length; i++) {
+                    var source = baseSources[i];
+                    var colorCss = source.envelop ? ' ' + source.envelopColor : '';
+                    baseSwiper.appendSlide('<div class="swiper-slide" data="' + source.sourceID + '">' +
+                        '<img crossorigin="anonymous" src="' + source.thumbnail + '"><div>' + ui.translate(source.label) + '</div></div>');
+                }
+                for (var i=0; i<overlaySources.length; i++) {
+                    var source = overlaySources[i];
+                    var colorCss = source.envelop ? ' ' + source.envelopColor : '';
+                    overlaySwiper.appendSlide('<div class="swiper-slide' + colorCss + '" data="' + source.sourceID + '">' +
+                        '<img crossorigin="anonymous" src="' + source.thumbnail + '"><div>' + ui.translate(source.label) + '</div></div>');
+                }
 
-            baseSwiper.on;
-            overlaySwiper.on;
-            baseSwiper.slideToLoop(0);
-            overlaySwiper.slideToLoop(0);
-            ui.ellips();
+                baseSwiper.on;
+                overlaySwiper.on;
+                baseSwiper.slideToLoop(0);
+                overlaySwiper.slideToLoop(0);
+                ui.ellips();
+            });
         });
 
         ui.core.addEventListener('mapChanged', function(evt) {
