@@ -21,11 +21,11 @@ importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.4.1/workbox
 self.__precacheManifest = [
   {
     "url": ".",
-    "revision": "Tue Oct 23 2018 11:54:44 GMT+0900 (東京 (標準時))"
+    "revision": "Fri Oct 26 2018 22:25:36 GMT+0900 (JST)"
   },
   {
     "url": "dist/maplat.js",
-    "revision": "b1f351c731b1ce67364f4ebc850a25bb"
+    "revision": "29eecd6b685454bbd56ff505af29c950"
   },
   {
     "url": "dist/maplat.css",
@@ -149,11 +149,11 @@ self.__precacheManifest = [
   },
   {
     "url": "locales/en/translation.json",
-    "revision": "d3d541c0ec3553e3c8f8a2ca64fc69ed"
+    "revision": "5bce22bfbdb8c3e54ca5a89d2da341eb"
   },
   {
     "url": "locales/ja/translation.json",
-    "revision": "c866d7e73a347636a0f824b22845a764"
+    "revision": "583657ffbcf1bc42d2871888892a31f1"
   },
   {
     "url": "fonts/clarenbd-webfont.eot",
@@ -161,7 +161,7 @@ self.__precacheManifest = [
   },
   {
     "url": "fonts/clarenbd-webfont.svg",
-    "revision": "d2f37e259a79183317d620c38598d0c8"
+    "revision": "877daf82b367b4f2967fa7da9d13d747"
   },
   {
     "url": "fonts/clarenbd-webfont.ttf",
