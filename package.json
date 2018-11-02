@@ -14,10 +14,10 @@
     "mobile_build": "gulp mobile_build",
     "config": "gulp config",
     "js_build": "gulp js_build",
-    "tin": "gulp tin"
+    "tin": "gulp tin",
+    "test": "jasmine"
   },
   "dependencies": {
-    "@turf/turf": "^4.7.3",
     "argv": "0.0.2",
     "csv-parse": "^1.3.3",
     "fs-extra": "^1.0.0",
@@ -31,6 +31,8 @@
     "wellknown": "^0.5.0"
   },
   "devDependencies": {
+    "@turf/boolean-point-in-polygon": "^6.0.1",
+    "@turf/turf": "^5.1.6",
     "child_process": "^1.0.2",
     "cryptiles": "^4.1.2",
     "debug": "^3.1.0",
@@ -42,7 +44,9 @@
     "gulp-replace": "^1.0.0",
     "gulp-uglify": "^3.0.1",
     "gulp-zip": "^4.1.0",
+    "jasmine": "^3.3.0",
     "lodash": "^4.17.10",
+    "mapshaper": "^0.4.31",
     "sshpk": "^1.14.2",
     "workbox-build": "^3.4.1"
   }
