@@ -34,7 +34,9 @@ describe('Tin 動作テスト', function() {
       expect(tin.transform([140, 150])).toEqual([277.25085848926574, -162.19095375292216]);
       expect(tin.transform([277.25085848926574, -162.19095375292216], true)).toEqual([140, 150]);
       expect(tin.transform([200, 130])).toEqual(false);
-      expect(tin.transform([400, -130], true)).toEqual(false);
+      expect(tin.transform([401.98029725204117, -110.95171624700066], true)).toEqual(false);
+      expect(tin.transform([200, 130], false, true)).toEqual([401.98029725204117, -110.95171624700066]);
+      expect(tin.transform([401.98029725204117, -110.95171624700066], true, true)).toEqual([200, 130]);
     }));
   });
 });

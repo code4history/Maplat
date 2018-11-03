@@ -626,13 +626,13 @@
             });
         };
 
-        Tin.prototype.transform = function(point, backward) {
+        Tin.prototype.transform = function(point, backward, ignoreBounds) {
             // if (!this.tins) this.updateTin();
             if (this.yaxisMode == Tin.YAXIS_FOLLOW && backward) {
                 point = [point[0], -1 * point[1]];
             }
             var tpoint = turf.point(point);
-            if (this.bounds && !backward) {
+            if (this.bounds && !backward && !ignoreBounds) {
                 if (!turf.booleanPointInPolygon(tpoint, this.boundsPolygon)) return false;
             }
             var tins = backward ? this.tins.bakw : this.tins.forw;
@@ -640,7 +640,7 @@
             var centroid = backward ? this.centroid.bakw : this.centroid.forw;
             var weightBuffer = backward ? this.pointsWeightBuffer.bakw : this.pointsWeightBuffer.forw;
             var ret = transformArr(tpoint, tins, verticesParams, centroid, weightBuffer);
-            if (this.bounds && backward) {
+            if (this.bounds && backward && !ignoreBounds) {
                 var rpoint = turf.point(ret);
                 if (!turf.booleanPointInPolygon(rpoint, this.boundsPolygon)) return false;
             } else if (this.yaxisMode == Tin.YAXIS_FOLLOW && !backward) {
