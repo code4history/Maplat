@@ -1,6 +1,5 @@
 .idea
 node_modules
-test*
 .serverless
 *.log
 warperpass.json

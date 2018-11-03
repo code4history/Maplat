@@ -13,31 +13,17 @@
         var isClockwise = turf.booleanClockwise;
         var internal = mapshaper.internal;
         var Tin = function(options) {
-            this.points = options.points;
-            this.wh = options.wh;
-            this.vertexMode = options.vertexMode || Tin.VERTEX_PLAIN;
+            if (options.bounds) {
+                this.setBounds(options.bounds);
+            } else {
+                this.setWh(options.wh);
+                this.vertexMode = options.vertexMode || Tin.VERTEX_PLAIN;
+            }
             this.strictMode = options.strictMode || Tin.MODE_AUTO;
             this.yaxisMode = options.yaxisMode || Tin.YAXIS_INVERT;
-
-            // pt is [x,y] and ring is [[x,y], [x,y],..]
-            turf.inRing = function(pt, ring, ignoreBoundary) {
-                var isInside = false;
-                if (ring[0][0] == ring[ring.length-1][0] && ring[0][1] == ring[ring.length-1][1]) ring = ring.slice(0, ring.length-1);
-
-                for (var i = 0, j = ring.length - 1; i < ring.length; j = i++) {
-                    var xi = ring[i][0];
-                    var yi = ring[i][1];
-                    var xj = ring[j][0];
-                    var yj = ring[j][1];
-                    var onBoundary = (pt[1] * (xi - xj) + yi * (xj - pt[0]) + yj * (pt[0] - xi) == 0) &&
-                        ((xi - pt[0]) * (xj - pt[0]) <= 0) && ((yi - pt[1]) * (yj - pt[1]) <= 0);
-                    if (onBoundary) return !ignoreBoundary;
-                    var intersect = ((yi > pt[1]) !== (yj > pt[1])) &&
-                        (pt[0] < (xj - xi) * (pt[1] - yi) / (yj - yi) + xi);
-                    if (intersect) isInside = !isInside;
-                }
-                return isInside;
-            };
+            if (options.points) {
+                this.setPoints(options.points);
+            }
         };
         Tin.VERTEX_PLAIN = 'plain';
         Tin.VERTEX_BIRDEYE = 'birdeye';
@@ -61,6 +47,31 @@
                 });
             }
             this.points = points;
+            this.tins = undefined;
+        };
+
+        Tin.prototype.setBounds = function(bounds) {
+            this.bounds = bounds;
+            var minx, miny, maxx, maxy, coords;
+            for (var i=0; i<bounds.length; i++) {
+                var xy = bounds[i];
+                if (i==0) {
+                    minx = maxx = xy[0];
+                    miny = maxy = xy[1];
+                    coords = [xy];
+                } else {
+                    if (xy[0] < minx) minx = xy[0];
+                    if (xy[0] > maxx) maxx = xy[0];
+                    if (xy[1] < miny) miny = xy[1];
+                    if (xy[1] > maxy) maxy = xy[1];
+                    coords.push(xy);
+                }
+            }
+            coords.push(bounds[0]);
+            this.boundsPolygon = turf.polygon([coords]);
+            this.xy = [minx, miny];
+            this.wh = [maxx - minx, maxy - miny];
+            this.vertexMode = Tin.VERTEX_PLAIN;
             this.tins = undefined;
         };
 
@@ -125,6 +136,18 @@
                     this.yaxisMode = compiled.yaxisMode;
                 } else {
                     this.yaxisMode = Tin.YAXIS_INVERT;
+                }
+                // boundsを復元
+                if (compiled.bounds) {
+                    this.bounds = compiled.bounds;
+                    this.boundsPolygon = compiled.boundsPolygon;
+                    this.xy = compiled.xy;
+                    this.wh = compiled.wh;
+                } else {
+                    this.xy = [0, 0];
+                    if (compiled.xy) this.wh = compiled.wh;
+                    this.bounds = undefined;
+                    this.boundsPolygon = undefined;
                 }
             } else {
                 // 旧コンパイルロジック
@@ -213,11 +236,23 @@
             if (this.yaxisMode == Tin.YAXIS_FOLLOW) {
                 compiled.yaxisMode = Tin.YAXIS_FOLLOW;
             }
+            // bounds対応
+            if (this.bounds) {
+                compiled.bounds = this.bounds;
+                compiled.boundsPolygon = this.boundsPolygon;
+                compiled.xy = this.xy;
+                compiled.wh = this.wh;
+            } else {
+                compiled.wh = this.wh;
+            }
             return compiled;
         };
 
         Tin.prototype.setWh = function(wh) {
             this.wh = wh;
+            this.xy = [0, 0];
+            this.bounds = undefined;
+            this.boundsPolygon = undefined;
             this.tins = undefined;
         };
 
@@ -326,16 +361,19 @@
         Tin.prototype.updateTinAsync = function() {
             var self = this;
             var strict = this.strictMode;
+            var minx = self.xy[0] - 0.05 * self.wh[0];
+            var maxx = self.xy[0] + 1.05 * self.wh[0];
+            var miny = self.xy[1] - 0.05 * self.wh[1];
+            var maxy = self.xy[1] + 1.05 * self.wh[1];
+
             return new Promise(function(resolve, reject) {
                 if (strict != Tin.MODE_STRICT && strict != Tin.MODE_LOOSE) strict = Tin.MODE_AUTO;
 
                 var bbox = [];
                 if (self.wh) {
                     bbox = [
-                        [self.wh[0] * -0.05, self.wh[1] * -0.05], [self.wh[0] * 1.05, self.wh[1] * -0.05],
-                        [self.wh[0] * -0.05, self.wh[1] * 1.05], [self.wh[0] * 1.05, self.wh[1] * 1.05]
-                        //[0, 0], [self.wh[0], 0],
-                        //[0, self.wh[1]], [self.wh[0], self.wh[1]]
+                        [minx, miny], [maxx, miny],
+                        [minx, maxy], [maxx, maxy]
                     ];
                 }
                 var pointsArray = {forw: [], bakw: []};
@@ -425,9 +463,9 @@
                     vertexDelta.bakw = [bakVertex[0] - centroid.bakw[0], bakVertex[1] - centroid.bakw[1]];
                     // X軸方向、Y軸方向それぞれに対し、地図外郭XY座標との重心との比を取る
                     var xRate = vertexDelta.forw[0] == 0 ? Infinity :
-                        ((vertexDelta.forw[0] < 0 ? self.wh[0] * -0.05 : self.wh[0] * 1.05) - centroid.forw[0]) / vertexDelta.forw[0];
+                        ((vertexDelta.forw[0] < 0 ? minx : maxx) - centroid.forw[0]) / vertexDelta.forw[0];
                     var yRate = vertexDelta.forw[1] == 0 ? Infinity :
-                        ((vertexDelta.forw[1] < 0 ? self.wh[1] * -0.05 : self.wh[1] * 1.05) - centroid.forw[1]) / vertexDelta.forw[1];
+                        ((vertexDelta.forw[1] < 0 ? miny : maxy) - centroid.forw[1]) / vertexDelta.forw[1];
                     // xRate, yRateが同じ値であれば重心と地図頂点を結ぶ線上に乗る
                     if (Math.abs(xRate) / Math.abs(yRate) < 1.1 ) {
                         var point = {forw: [vertexDelta.forw[0] * xRate + centroid.forw[0], vertexDelta.forw[1] * xRate + centroid.forw[1]],
@@ -594,12 +632,18 @@
                 point = [point[0], -1 * point[1]];
             }
             var tpoint = turf.point(point);
+            if (this.bounds && !backward) {
+                if (!turf.booleanPointInPolygon(tpoint, this.boundsPolygon)) return false;
+            }
             var tins = backward ? this.tins.bakw : this.tins.forw;
             var verticesParams = backward ? this.vertices_params.bakw : this.vertices_params.forw;
             var centroid = backward ? this.centroid.bakw : this.centroid.forw;
             var weightBuffer = backward ? this.pointsWeightBuffer.bakw : this.pointsWeightBuffer.forw;
             var ret = transformArr(tpoint, tins, verticesParams, centroid, weightBuffer);
-            if (this.yaxisMode == Tin.YAXIS_FOLLOW && !backward) {
+            if (this.bounds && backward) {
+                var rpoint = turf.point(ret);
+                if (!turf.booleanPointInPolygon(rpoint, this.boundsPolygon)) return false;
+            } else if (this.yaxisMode == Tin.YAXIS_FOLLOW && !backward) {
                 ret = [ret[0], -1 * ret[1]];
             }
             return ret;
