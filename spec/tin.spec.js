@@ -27,7 +27,7 @@ describe('Tin 動作テスト', function() {
     });
     tin.setPoints([[[80, 90], [160, -90]], [[120, 120], [240, -120]], [[100, 140], [200, -140]], [[130, 180], [260, -180]], [[70, 150], [140, -150]]]);
 
-    it('実データ比較', testHelper.helperAsync(async function() {
+    it('データコンパイルテスト', testHelper.helperAsync(async function() {
       await tin.updateTinAsync();
       expect(tin.xy).toEqual([50, 50]);
       expect(tin.wh).toEqual([100, 150]);
@@ -37,6 +37,22 @@ describe('Tin 動作テスト', function() {
       expect(tin.transform([401.98029725204117, -110.95171624700066], true)).toEqual(false);
       expect(tin.transform([200, 130], false, true)).toEqual([401.98029725204117, -110.95171624700066]);
       expect(tin.transform([401.98029725204117, -110.95171624700066], true, true)).toEqual([200, 130]);
+    }));
+  });
+
+  describe('boundsケーステスト(エラーあり)', function() {
+    var tin = new Tin({
+      bounds: [[100, 50], [150, 150], [150, 200], [60, 190], [50, 100]],
+      strictMode: Tin.MODE_AUTO
+    });
+    tin.setPoints([[[80, 90], [160, -90]], [[120, 120], [240, 120]], [[100, 140], [200, -140]], [[130, 180], [260, 180]], [[70, 150], [140, -150]]]);
+
+    it('データコンパイルテスト', testHelper.helperAsync(async function() {
+      await tin.updateTinAsync();
+      expect(tin.strict_status).toEqual(Tin.STATUS_LOOSE);
+      tin.setStrictMode(Tin.MODE_STRICT);
+      await tin.updateTinAsync();
+      expect(tin.strict_status).toEqual(Tin.STATUS_ERROR);
     }));
   });
 });
