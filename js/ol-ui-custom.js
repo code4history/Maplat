@@ -239,8 +239,8 @@ define(['ol-custom', 'resize'], function(ol, addResizeListener) {
     ol.control.SliderCommon.prototype.handleDraggerDrag_ = function(event) {
         if (this.dragging_) {
             var element = this.element.firstElementChild;
-            var deltaX = event.clientX - this.previousX_ + (parseInt(element.style.left, 10) || 0);
-            var deltaY = event.clientY - this.previousY_ + (parseInt(element.style.top, 10) || 0);
+            var deltaX = event.clientX - this.previousX_ + (parseFloat(element.style.left, 10) || 0);
+            var deltaY = event.clientY - this.previousY_ + (parseFloat(element.style.top, 10) || 0);
             var relativePosition = this.getRelativePosition_(deltaX, deltaY);
             this.setThumbPosition_(relativePosition);
             this.previousX_ = event.clientX;
