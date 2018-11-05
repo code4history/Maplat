@@ -205,8 +205,8 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
         if (!lang) {
             lang = browserLanguage();
         }
-        var pwaManifest = appOption.pwa_manifest || './pwa/' + ui.core.appid + '_manifest.json';
-        var pwaWorker = appOption.pwa_worker || './service-worker.js';
+        var pwaManifest = appOption.pwa_manifest;
+        var pwaWorker = appOption.pwa_worker;
 
         // Add UI HTML Element
         var newElems = Core.createElement('<div class="ol-control map-title"><span></span></div>' +
@@ -404,17 +404,18 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
         }
 
         // PWA対応: 非同期処理
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', pwaManifest, true);
-        xhr.responseType = 'json';
-
-        xhr.onload = function(e) {
-            var value = this.response;
-            if (!value) return;
-            if (typeof value != 'object') value = JSON.parse(value);
+        if (pwaManifest) {
+            if (pwaManifest === true) {
+                pwaManifest = './pwa/' + ui.core.appid + '_manifest.json';
+            }
+            if (!pwaWorker) {
+                pwaWorker = './service-worker.js';
+            }
 
             var head = document.querySelector('head');
-            head.appendChild((Core.createElement('<link rel="manifest" href="' + pwaManifest + '">'))[0]);
+            if (!head.querySelector('link[rel="manifest"]')) {
+                head.appendChild((Core.createElement('<link rel="manifest" href="' + pwaManifest + '">'))[0]);
+            }
             // service workerが有効なら、service-worker.js を登録します
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register(pwaWorker).then(function(reg) {
@@ -427,16 +428,29 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
                     console.log(err);
                 });
             }
-            if (value.icons) {
-                for (var i=0; i<value.icons.length; i++) {
-                    var src = absoluteUrl(pwaManifest, value.icons[i].src);
-                    var sizes = value.icons[i].sizes;
-                    var tag = '<link rel="apple-touch-icon" sizes="' + sizes + '" href="' + src + '">';
-                    head.appendChild((Core.createElement(tag))[0]);
-                }
+
+            if (!head.querySelector('link[rel="apple-touch-icon"]')) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', pwaManifest, true);
+                xhr.responseType = 'json';
+
+                xhr.onload = function(e) {
+                    var value = this.response;
+                    if (!value) return;
+                    if (typeof value != 'object') value = JSON.parse(value);
+
+                    if (value.icons) {
+                        for (var i = 0; i < value.icons.length; i++) {
+                            var src = absoluteUrl(pwaManifest, value.icons[i].src);
+                            var sizes = value.icons[i].sizes;
+                            var tag = '<link rel="apple-touch-icon" sizes="' + sizes + '" href="' + src + '">';
+                            head.appendChild((Core.createElement(tag))[0]);
+                        }
+                    }
+                };
+                xhr.send();
             }
-        };
-        xhr.send();
+        }
 
         var i18nPromise;
 
