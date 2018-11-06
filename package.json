@@ -47,6 +47,7 @@
     "jasmine": "^3.3.0",
     "lodash": "^4.17.10",
     "mapshaper": "^0.4.31",
+    "randomatic": "^3.1.1",
     "sshpk": "^1.14.2",
     "workbox-build": "^3.4.1"
   }
