@@ -24,7 +24,5 @@
     "@turf/turf": "^5.1.6",
     "mapshaper": "^0.4.99"
   },
-  "devDependencies": {
-    "jasmine": "^3.3.0"
-  }
+  "devDependencies": {}
 }

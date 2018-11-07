@@ -50,9 +50,43 @@ describe('Tin 動作テスト', function() {
     it('データコンパイルテスト', testHelper.helperAsync(async function() {
       await tin.updateTinAsync();
       expect(tin.strict_status).toEqual(Tin.STATUS_LOOSE);
+      var err = '';
+      try {
+        err = tin.transform([240, 120], true);
+      } catch(e) {
+        err = e;
+      }
+      expect(err).not.toEqual('Backward transform is not allowed if strict_status == "strict_error"');
       tin.setStrictMode(Tin.MODE_STRICT);
       await tin.updateTinAsync();
       expect(tin.strict_status).toEqual(Tin.STATUS_ERROR);
+      err = '';
+      try {
+        err = tin.transform([240, 120], true);
+      } catch(e) {
+        err = e;
+      }
+      expect(err).toEqual('Backward transform is not allowed if strict_status == "strict_error"');
+    }));
+  });
+
+  describe('エラーケーステスト', function() {
+    it('コンストラクタ', testHelper.helperAsync(async function() {
+      var tin;
+      var err = '';
+      try {
+        tin = new Tin();
+      } catch (e) {
+        err = 'err';
+      }
+      expect(err).not.toEqual('err');
+      tin.setWh([100,100]);
+      tin.setPoints([[[20, 20], [20, 20]], [[30, 30], [30, 30]], [[40, 40], [40, 40]]]);
+      err = '';
+      await tin.updateTinAsync().catch(function(e) {
+        err = e;
+      });
+      expect(err).toEqual('TOO LINEAR1');
     }));
   });
 });
