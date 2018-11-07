@@ -14,6 +14,7 @@
     "mobile_build": "gulp mobile_build",
     "config": "gulp config",
     "js_build": "gulp js_build",
+    "tin": "gulp tin",
     "www_tin": "gulp www_tin",
     "npm_tin": "gulp npm_tin",
     "test": "jasmine"
