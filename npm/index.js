@@ -13,6 +13,7 @@
         var isClockwise = turf.booleanClockwise;
         var internal = mapshaper.internal;
         var Tin = function(options) {
+            options = options || {};
             if (options.bounds) {
                 this.setBounds(options.bounds);
             } else {
@@ -627,6 +628,7 @@
         };
 
         Tin.prototype.transform = function(point, backward, ignoreBounds) {
+            if (backward && this.strict_status == Tin.STATUS_ERROR) throw 'Backward transform is not allowed if strict_status == "strict_error"';
             // if (!this.tins) this.updateTin();
             if (this.yaxisMode == Tin.YAXIS_FOLLOW && backward) {
                 point = [point[0], -1 * point[1]];

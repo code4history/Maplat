@@ -19,12 +19,10 @@
   "bugs": {
     "url": "https://github.com/code4nara/Maplat/issues"
   },
-  "homepage": "https://github.com/code4nara/Maplat#readme",
+  "homepage": "https://github.com/code4nara/Maplat/wiki/Maplat-Tin-library",
   "dependencies": {
     "@turf/turf": "^5.1.6",
     "mapshaper": "^0.4.99"
   },
-  "devDependencies": {
-    "jasmine": "^3.3.0"
-  }
+  "devDependencies": {}
 }
