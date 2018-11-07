@@ -283,9 +283,16 @@ gulp.task('mobile_build', ['js_build', 'css_build'], function() {
     copyAssets();
 });
 
-gulp.task('tin', function() {
+gulp.task('www_tin', function() {
     gulp.src(['./lib/turf_maplat.min.js', './lib/mapshaper_maplat.js', './js/tin.js'])
         .pipe(concat('maplat_tin.js'))
         .pipe(uglify())
         .pipe(gulp.dest('./dist/'));
+});
+
+gulp.task('npm_tin', function() {
+    gulp.src(['./js/tin.js'])
+        .pipe(concat('index.js'))
+        .pipe(uglify())
+        .pipe(gulp.dest('./npm/'));
 });
