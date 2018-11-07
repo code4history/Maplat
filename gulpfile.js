@@ -293,6 +293,12 @@ gulp.task('www_tin', function() {
 gulp.task('npm_tin', function() {
     gulp.src(['./js/tin.js'])
         .pipe(concat('index.js'))
-        .pipe(uglify())
+        .pipe(gulp.dest('./npm/'));
+    gulp.src(['./npm/tmpl/package.json'])
+        .pipe(concat('package.json'))
+        .pipe(replace(/\{version\}/, pkg.version))
+        .pipe(gulp.dest('./npm/'));
+    gulp.src(['./LICENSE'])
+        .pipe(concat('LICENSE'))
         .pipe(gulp.dest('./npm/'));
 });
