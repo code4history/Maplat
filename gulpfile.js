@@ -289,11 +289,6 @@ gulp.task('tin', ['www_tin', 'npm_tin'], function() {});
 
 gulp.task('www_tin', function() {
     gulp.src(['./lib/turf_maplat.min.js', './lib/mapshaper_maplat.js', './js/tin.js'])
-        .pipe(concat('maplat_tin_allin.js'))
-        .pipe(uglify())
-        .pipe(header(banner, {pkg: pkg_tin}))
-        .pipe(gulp.dest('./dist/'));
-    gulp.src(['./js/tin.js'])
         .pipe(concat('maplat_tin.js'))
         .pipe(uglify())
         .pipe(header(banner, {pkg: pkg_tin}))
