@@ -3,11 +3,11 @@
 
 Maplat is the cool Historical Map/Illustrated Map Viewer.  
 It can transform each map coordinates with nonlinear but bijective projection and makes possible that the maps can collaborate with GPS/accurate maps, without distorting original maps.  
-Data editor of this solution is provided as another project, [MaplatEditor](https://github.com/code4nara/MaplatEditor/).
+Data editor of this solution is provided as another project, [MaplatEditor](https://github.com/code4nara/MaplatEditor/).  
 This project won Grand Prize / Educational Effectiveness Prize / Visitors Selection Prize on Geo-Activity Contest 2018 held by Ministry of Land, Infrastructure, Transport and Tourism.
 
 Maplatは古地図/絵地図を歪める事なくGPSや正確な地図と連携させられるオープンソースプラットフォームです。  
-他のソリューションにない特徴として、各地図の座標変換において非線形かつ全単射な投影変換が定義可能という点が挙げられます。
+他のソリューションにない特徴として、各地図の座標変換において非線形かつ全単射な投影変換が定義可能という点が挙げられます。  
 このプロジェクトは国土交通省主催の2018年ジオアクティビティコンテストにおいて、最優秀賞、教育効果賞、来場者賞をいただきました。
 
 # Introduction slide (In Japanese)
