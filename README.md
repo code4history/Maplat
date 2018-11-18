@@ -4,9 +4,11 @@
 Maplat is the cool Historical Map/Illustrated Map Viewer.  
 It can transform each map coordinates with nonlinear but bijective projection and makes possible that the maps can collaborate with GPS/accurate maps, without distorting original maps.  
 Data editor of this solution is provided as another project, [MaplatEditor](https://github.com/code4nara/MaplatEditor/).
+This project won Grand Prize / Educational Effectiveness Prize / Visitors Selection Prize on Geo-Activity Contest 2018 held by Ministry of Land, Infrastructure, Transport and Tourism.
 
 Maplatは古地図/絵地図を歪める事なくGPSや正確な地図と連携させられるオープンソースプラットフォームです。  
 他のソリューションにない特徴として、各地図の座標変換において非線形かつ全単射な投影変換が定義可能という点が挙げられます。
+このプロジェクトは国土交通省主催の2018年ジオアクティビティコンテストにおいて、最優秀賞、教育効果賞、来場者賞をいただきました。
 
 # Introduction slide (In Japanese)
 <a href="https://www.slideshare.net/kokogiko/maplat">![Introduction of Maplat](https://code4nara.github.io/Maplat/page_imgs/maplat_slide.png)</a>
@@ -21,6 +23,7 @@ Latest result is shown below:
 * https://s.maplat.jp/r/naramap/ (Maplat Nara)
 * https://s.maplat.jp/r/aizumap/ (Maplat Aizuwakamatsu)
 * https://s.maplat.jp/r/iwakimap/ (Maplat Iwaki)
+* https://s.maplat.jp/r/tatebayashimap/ (Maplat Tatebayashi)
 * https://s.maplat.jp/r/uedamap/ (Ueda city)
 * https://s.maplat.jp/r/moriokamap/ (Morioka city)
 * https://s.maplat.jp/r/sabaemap/ (Sabae city)
@@ -32,6 +35,7 @@ Documentation is undergoing.
 * https://s.maplat.jp/r/naramap/ (ぷらっと奈良)
 * https://s.maplat.jp/r/aizumap/ (ぷらっと会津若松)
 * https://s.maplat.jp/r/iwakimap/ (ぷらっといわき)
+* https://s.maplat.jp/r/tatebayashimap/ (ぷらっと館林)
 * https://s.maplat.jp/r/uedamap/ (上田市版)
 * https://s.maplat.jp/r/moriokamap/ (盛岡市版)
 * https://s.maplat.jp/r/sabaemap/ (鯖江市版)
