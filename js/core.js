@@ -291,11 +291,7 @@ define(['histmap'], function(ol) {
                     }, null);
                     app.changeMap(initial, app.initialRestore);
 
-                    var showInfo = function(data) {
-                        app.dispatchEvent(new CustomEvent('clickMarker', data));
-                    };
-
-                    var clickHandler = function(evt) {
+                    app.mapObject.on('click', function(evt) {
                         app.logger.debug(evt.pixel);
                         var feature = this.forEachFeatureAtPixel(evt.pixel,
                             function(feature) {
@@ -303,7 +299,7 @@ define(['histmap'], function(ol) {
                                 if (feature.get('datum')) return feature;
                             });
                         if (feature) {
-                            showInfo(feature.get('datum'));
+                            app.dispatchEvent(new CustomEvent('clickMarker', feature.get('datum')));
                         } else {
                             var xy = evt.coordinate;
                             app.from.xy2MercAsync(xy).then(function(merc) {
@@ -314,8 +310,39 @@ define(['histmap'], function(ol) {
                                 }));
                             });
                         }
-                    };
-                    app.mapObject.on('click', clickHandler);
+                    });
+
+                    var xyBuffer;
+                    var waiting = false;
+                    var dragging = false;
+                    var pointermoveHandler = function(xy) {
+                        app.from.xy2MercAsync(xy).then(function(merc) {
+                            app.dispatchEvent(new CustomEvent('pointerMoveOnMap', merc));
+                            if (xyBuffer) {
+                                var next = xyBuffer;
+                                xyBuffer = false;
+                                pointermoveHandler(next);
+                            } else {
+                                waiting = false;
+                            }
+                        });
+                    }
+
+                    app.mapObject.on('pointermove', function(evt) {
+                        if (dragging) return;
+                        if (waiting) {
+                            xyBuffer = evt.coordinate;
+                        } else {
+                            waiting = true;
+                            pointermoveHandler(evt.coordinate);
+                        }
+                    });
+                    app.mapObject.on('pointerdrag', function(evt) {
+                        dragging = true;
+                    });
+                    app.mapObject.on('pointerup', function(evt) {
+                        dragging = false;
+                    });
 
                     // MapUI on off
                     var timer;

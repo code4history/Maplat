@@ -1,5 +1,5 @@
-define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nxhr', 'page', 'iziToast', 'qrcode'],
-    function(Core, sprintf, Swiper, ol, bsn, i18n, i18nxhr, page, iziToast, QRCode) {
+define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nxhr', 'page', 'iziToast', 'qrcode', 'turf'],
+    function(Core, sprintf, Swiper, ol, bsn, i18n, i18nxhr, page, iziToast, QRCode, turf) {
     var browserLanguage = function() {
         var ua = window.navigator.userAgent.toLowerCase();
         try {
@@ -572,6 +572,15 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
                     source.envelopColor = colors[cIndex];
                     cIndex = cIndex + 1;
                     if (cIndex == colors.length) cIndex = 0;
+
+                    var xys = source.envelop.geometry.coordinates[0];
+                    source.envelopAreaIndex = 0.5 * Math.abs([0, 1, 2, 3].reduce(function(prev, curr, i) {
+                        var xy1 = xys[i];
+                        var xy2 = xys[i+1];
+                        return prev + (xy1[0] - xy2[0]) * (xy1[1] + xy2[1]);
+                    }, 0));
+                    console.log(source.sourceID);
+                    console.log(source.envelopAreaIndex);
                 }
             }
 
@@ -696,6 +705,26 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
                 modalSetting('gpsD');
                 modal.show();
             }
+        });
+
+        ui.core.addEventListener('pointerMoveOnMap', function(evt) {
+            var merc = evt.detail;
+            var point = turf.point(merc);
+            var areaIndex;
+            var sourceID = Object.keys(ui.core.cacheHash).reduce(function(prev, curr, i) {
+                var source = ui.core.cacheHash[curr];
+                if (source.envelop && turf.booleanPointInPolygon(point, source.envelop)) {
+                    if (!areaIndex || source.envelopAreaIndex < areaIndex) {
+                        areaIndex = source.envelopAreaIndex;
+                        return source.sourceID;
+                    } else {
+                        return prev;
+                    }
+                } else {
+                    return prev;
+                }
+            }, null);
+            console.log(sourceID);
         });
 
         ui.core.addEventListener('clickMarker', function(evt) {
