@@ -708,23 +708,44 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
         });
 
         ui.core.addEventListener('pointerMoveOnMap', function(evt) {
+            if (!ui.showBorder) return;
             var merc = evt.detail;
             var point = turf.point(merc);
-            var areaIndex;
-            var sourceID = Object.keys(ui.core.cacheHash).reduce(function(prev, curr, i) {
-                var source = ui.core.cacheHash[curr];
-                if (source.envelop && turf.booleanPointInPolygon(point, source.envelop)) {
-                    if (!areaIndex || source.envelopAreaIndex < areaIndex) {
-                        areaIndex = source.envelopAreaIndex;
-                        return source.sourceID;
-                    } else {
-                        return prev;
+
+            ui.core.from.merc2XyAsync(merc).then(function(mercXy) {
+                var point = turf.point(mercXy);
+                Promise.all(Object.keys(ui.core.cacheHash).filter(function(key) {
+                    return ui.core.cacheHash[key].envelop;
+                }).map(function(key) {
+                    var source = ui.core.cacheHash[key];
+                    return Promise.all([
+                        Promise.resolve(source),
+                        Promise.all(source.envelop.geometry.coordinates[0].map(function(coord) {
+                            return ui.core.from.merc2XyAsync(coord);
+                        }))
+                    ]);
+                })).then(function(sources) {
+                    var areaIndex;
+                    var sourceID = sources.reduce(function(prev, curr) {
+                        var source = curr[0];
+                        var mercXys = curr[1];
+                        var polygon = turf.polygon([mercXys]);
+                        if (turf.booleanPointInPolygon(point, polygon)) {
+                            if (!areaIndex || source.envelopAreaIndex < areaIndex) {
+                                areaIndex = source.envelopAreaIndex;
+                                return source.sourceID;
+                            } else {
+                                return prev;
+                            }
+                        } else {
+                            return prev;
+                        }
+                    }, null);
+                    if (sourceID && sourceID !== ui.core.from.sourceID) {
+                        console.log(sourceID);
                     }
-                } else {
-                    return prev;
-                }
-            }, null);
-            console.log(sourceID);
+                });
+            });
         });
 
         ui.core.addEventListener('clickMarker', function(evt) {
