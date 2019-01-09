@@ -112,7 +112,6 @@ define(['histmap'], function(ol) {
         if (appOption.restore) {
             if (appOption.restore_session) app.restoreSession = true;
             app.initialRestore = appOption.restore;
-            // app.setShow_Border(appOption.restore.show_Border || false);
         } else if (appOption.restore_session) {
             app.restoreSession = true;
             var lastEpoch = parseInt(localStorage.getItem('epoch') || 0);
@@ -127,10 +126,7 @@ define(['histmap'], function(ol) {
                     rotation: parseFloat(localStorage.getItem('rotation'))
                 };
                 app.initialRestore.transparency = parseFloat(localStorage.getItem('transparency') || 0);
-                // app.setShow_Border(parseInt(localStorage.getItem('show_Border') || '0') ? true : false);
             }
-        } else {
-            //app.setShow_Border(false);
         }
 
         // Add UI HTML Element
@@ -276,20 +272,9 @@ define(['histmap'], function(ol) {
 
                     var cache = [];
                     app.cacheHash = {};
-                    var colors = ['maroon', 'deeppink', 'indigo', 'olive', 'royalblue',
-                        'red', 'hotpink', 'green', 'yellow', 'navy',
-                        'saddlebrown', 'fuchsia', 'darkslategray', 'yellowgreen', 'blue',
-                        'mediumvioletred', 'purple', 'lime', 'darkorange', 'teal',
-                        'crimson', 'darkviolet', 'darkolivegreen', 'steelblue', 'aqua'];
-                    var cIndex = 0;
                     for (var i=0; i<sources.length; i++) {
                         var source = sources[i];
                         source._map = app.mapObject;
-                        if (source.envelop) {
-                            source.envelopColor = colors[cIndex];
-                            cIndex = cIndex + 1;
-                            if (cIndex == colors.length) cIndex = 0;
-                        }
                         cache.push(source);
                         app.cacheHash[source.sourceID] = source;
                     }
@@ -653,7 +638,7 @@ define(['histmap'], function(ol) {
                         app.mapObject.setLayer();
                         app.mapObject.exchangeSource(to);
                     }
-                    app.dispatchEvent(new CustomEvent('mapChanged', app.getMapMeta(to.sourceID)));
+                    //app.dispatchEvent(new CustomEvent('mapChanged', app.getMapMeta(to.sourceID)));
                     if (app.restoreSession) {
                         var currentTime = Math.floor(new Date().getTime() / 1000);
                         localStorage.setItem('epoch', currentTime);
@@ -705,6 +690,7 @@ define(['histmap'], function(ol) {
                         })(app.lines[i]);
                     }
                     // app.updateEnvelop();
+                    app.dispatchEvent(new CustomEvent('mapChanged', app.getMapMeta(to.sourceID)));
 
                     app.mapObject.updateSize();
                     app.mapObject.renderSync();

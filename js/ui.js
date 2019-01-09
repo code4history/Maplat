@@ -560,6 +560,21 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
         ui.core.addEventListener('sourceLoaded', function(evt) {
             var sources = evt.detail;
 
+            var colors = ['maroon', 'deeppink', 'indigo', 'olive', 'royalblue',
+                'red', 'hotpink', 'green', 'yellow', 'navy',
+                'saddlebrown', 'fuchsia', 'darkslategray', 'yellowgreen', 'blue',
+                'mediumvioletred', 'purple', 'lime', 'darkorange', 'teal',
+                'crimson', 'darkviolet', 'darkolivegreen', 'steelblue', 'aqua'];
+            var cIndex = 0;
+            for (var i=0; i<sources.length; i++) {
+                var source = sources[i];
+                if (source.envelop) {
+                    source.envelopColor = colors[cIndex];
+                    cIndex = cIndex + 1;
+                    if (cIndex == colors.length) cIndex = 0;
+                }
+            }
+
             if (ui.splashPromise) {
                 ui.splashPromise.then(function() {
                     var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
@@ -910,7 +925,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
 
                     modal.show();
                 } else if (control == 'border') {
-                    var flag = !ui.core.showBorder;
+                    var flag = !ui.showBorder;
                     ui.setShowBorder(flag);
                 }
             });
