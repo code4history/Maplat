@@ -112,7 +112,7 @@ define(['histmap'], function(ol) {
         if (appOption.restore) {
             if (appOption.restore_session) app.restoreSession = true;
             app.initialRestore = appOption.restore;
-            app.setShowBorder(appOption.restore.showBorder || false);
+            // app.setShow_Border(appOption.restore.show_Border || false);
         } else if (appOption.restore_session) {
             app.restoreSession = true;
             var lastEpoch = parseInt(localStorage.getItem('epoch') || 0);
@@ -127,10 +127,10 @@ define(['histmap'], function(ol) {
                     rotation: parseFloat(localStorage.getItem('rotation'))
                 };
                 app.initialRestore.transparency = parseFloat(localStorage.getItem('transparency') || 0);
-                app.setShowBorder(parseInt(localStorage.getItem('showBorder') || '0') ? true : false);
+                // app.setShow_Border(parseInt(localStorage.getItem('show_Border') || '0') ? true : false);
             }
         } else {
-            app.setShowBorder(false);
+            //app.setShow_Border(false);
         }
 
         // Add UI HTML Element
@@ -276,8 +276,11 @@ define(['histmap'], function(ol) {
 
                     var cache = [];
                     app.cacheHash = {};
-                    var colors = ['maroon', 'red', 'purple', 'fuchsia', 'green', 'lime', 'olive',
-                        'yellow', 'navy', 'blue', 'teal', 'aqua'];
+                    var colors = ['maroon', 'deeppink', 'indigo', 'olive', 'royalblue',
+                        'red', 'hotpink', 'green', 'yellow', 'navy',
+                        'saddlebrown', 'fuchsia', 'darkslategray', 'yellowgreen', 'blue',
+                        'mediumvioletred', 'purple', 'lime', 'darkorange', 'teal',
+                        'crimson', 'darkviolet', 'darkolivegreen', 'steelblue', 'aqua'];
                     var cIndex = 0;
                     for (var i=0; i<sources.length; i++) {
                         var source = sources[i];
@@ -495,22 +498,6 @@ define(['histmap'], function(ol) {
         return createMapInfo(app.cacheHash[sourceID]);
     };
 
-    MaplatApp.prototype.setShowBorder = function(flag) {
-        this.showBorder = flag;
-        this.updateEnvelop();
-        if (flag) {
-            this.mapDivDocument.classList.add('show-border');
-        } else {
-            this.mapDivDocument.classList.remove('show-border');
-        }
-        if (this.restoreSession) {
-            var currentTime = Math.floor(new Date().getTime() / 1000);
-            localStorage.setItem('epoch', currentTime);
-            localStorage.setItem('showBorder', this.showBorder ? 1 : 0);
-        }
-        this.requestUpdateState({showBorder: this.showBorder ? 1 : 0});
-    };
-
     MaplatApp.prototype.setMarker = function(data) {
         var app = this;
         app.logger.debug(data);
@@ -590,36 +577,6 @@ define(['histmap'], function(ol) {
     MaplatApp.prototype.setGPSMarker = function(position) {
         this.currentPosition = position;
         this.from.setGPSMarker(position, true);
-    };
-
-    MaplatApp.prototype.updateEnvelop = function() {
-        var app = this;
-        if (!app.mapObject) return;
-
-        app.mapObject.resetEnvelop();
-
-        if (app.showBorder) {
-            Object.keys(app.cacheHash).filter(function (key) {
-                return app.cacheHash[key].envelop;
-            }).map(function(key) {
-                var source = app.cacheHash[key];
-                var xyPromises = (key == app.from.sourceID) && (source instanceof ol.source.HistMap) ?
-                    [[0, 0], [source.width, 0], [source.width, source.height], [0, source.height], [0, 0]].map(function(xy) {
-                        return Promise.resolve(source.xy2HistMapCoords(xy));
-                    }) :
-                    source.envelop.geometry.coordinates[0].map(function(coord) {
-                        return app.from.merc2XyAsync(coord);
-                    });
-
-                Promise.all(xyPromises).then(function(xys) {
-                    app.mapObject.setEnvelop(xys, {
-                        color: source.envelopColor,
-                        width: 2,
-                        lineDash: [6, 6]
-                    });
-                });
-            });
-        }
     };
 
     MaplatApp.prototype.changeMap = function(sourceID, restore) {
@@ -747,7 +704,7 @@ define(['histmap'], function(ol) {
                             app.setLine(data);
                         })(app.lines[i]);
                     }
-                    app.updateEnvelop();
+                    // app.updateEnvelop();
 
                     app.mapObject.updateSize();
                     app.mapObject.renderSync();

@@ -168,6 +168,19 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
     MaplatUi.prototype.initializer = function(appOption) {
         var ui = this;
         ui.core = new Core(appOption);
+
+        if (appOption.restore) {
+            ui.setShowBorder(appOption.restore.showBorder || false);
+        } else if (appOption.restore_session) {
+            var lastEpoch = parseInt(localStorage.getItem('epoch') || 0);
+            var currentTime = Math.floor(new Date().getTime() / 1000);
+            if (lastEpoch && currentTime - lastEpoch < 3600) {
+                ui.setShowBorder(parseInt(localStorage.getItem('showBorder') || '0') ? true : false);
+            }
+        } else {
+            ui.setShowBorder(false);
+        }
+
         var enableSplash = ui.core.initialRestore.sourceID ? false : true;
         var restoreTransparency = ui.core.initialRestore.transparency;
         var enableOutOfMap = appOption.presentation_mode ? false : true;
@@ -655,6 +668,8 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
             }
             var transparency = ui.sliderCommon.get('slidervalue') * 100;
             ui.core.mapObject.setTransparency(transparency);
+
+            ui.updateEnvelop();
         });
 
         ui.core.addEventListener('outOfMap', function(evt) {
@@ -896,7 +911,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
                     modal.show();
                 } else if (control == 'border') {
                     var flag = !ui.core.showBorder;
-                    ui.core.setShowBorder(flag);
+                    ui.setShowBorder(flag);
                 }
             });
             if (fakeGps) {
@@ -913,6 +928,52 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
                 delete ui.waitReadyBridge;
             }
         });
+    };
+
+    MaplatUi.prototype.setShowBorder = function(flag) {
+        this.showBorder = flag;
+        this.updateEnvelop();
+        if (flag) {
+            this.core.mapDivDocument.classList.add('show-border');
+        } else {
+            this.core.mapDivDocument.classList.remove('show-border');
+        }
+        if (this.core.restoreSession) {
+            var currentTime = Math.floor(new Date().getTime() / 1000);
+            localStorage.setItem('epoch', currentTime);
+            localStorage.setItem('showBorder', this.showBorder ? 1 : 0);
+        }
+        this.core.requestUpdateState({showBorder: this.showBorder ? 1 : 0});
+    };
+
+    MaplatUi.prototype.updateEnvelop = function() {
+        var ui = this;
+        if (!ui.core.mapObject) return;
+
+        ui.core.mapObject.resetEnvelop();
+
+        if (ui.showBorder) {
+            Object.keys(ui.core.cacheHash).filter(function (key) {
+                return ui.core.cacheHash[key].envelop;
+            }).map(function(key) {
+                var source = ui.core.cacheHash[key];
+                var xyPromises = (key == ui.core.from.sourceID) && (source instanceof ol.source.HistMap) ?
+                    [[0, 0], [source.width, 0], [source.width, source.height], [0, source.height], [0, 0]].map(function(xy) {
+                        return Promise.resolve(source.xy2HistMapCoords(xy));
+                    }) :
+                    source.envelop.geometry.coordinates[0].map(function(coord) {
+                        return ui.core.from.merc2XyAsync(coord);
+                    });
+
+                Promise.all(xyPromises).then(function(xys) {
+                    ui.core.mapObject.setEnvelop(xys, {
+                        color: source.envelopColor,
+                        width: 2,
+                        lineDash: [6, 6]
+                    });
+                });
+            });
+        }
     };
 
     MaplatUi.prototype.resolveRelativeLink = function(file, fallbackPath) {
