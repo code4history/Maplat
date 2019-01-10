@@ -708,9 +708,11 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
         });
 
         ui.core.addEventListener('pointerMoveOnMap', function(evt) {
-            if (!ui.showBorder) return;
+            if (!ui.showBorder) {
+                delete ui.selectCandidate;
+                return;
+            }
             var merc = evt.detail;
-            var point = turf.point(merc);
 
             ui.core.from.merc2XyAsync(merc).then(function(mercXy) {
                 var point = turf.point(mercXy);
@@ -742,10 +744,18 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'i18n', 'i18nx
                         }
                     }, null);
                     if (sourceID && sourceID !== ui.core.from.sourceID) {
-                        console.log(sourceID);
+                        ui.selectCandidate = sourceID;
+                    } else {
+                        delete ui.selectCandidate;
                     }
                 });
             });
+        });
+
+        ui.core.addEventListener('clickMap', function(evt) {
+            if (ui.selectCandidate) {
+                ui.core.changeMap(ui.selectCandidate);
+            }
         });
 
         ui.core.addEventListener('clickMarker', function(evt) {
