@@ -146,6 +146,9 @@ define(['ol-custom', 'turf'], function(ol, turf) {
                 options.minZoom = options.minZoom || options.merc_min_zoom;
             }
             options.zoom_restriction = options.merc_max_zoom = options.merc_min_zoom = undefined;
+            if (options.translator) {
+                options.url = options.translator(options.url);
+            }
             return targetSrc.createAsync(options).then(function(obj) {
                 return obj.initialWait.then(function() {
                     return obj;
@@ -173,6 +176,9 @@ define(['ol-custom', 'turf'], function(ol, turf) {
                         if (typeof resp != 'object') resp = JSON.parse(resp);
                         options = Object.assign(resp, options);
                         options.label = options.label || resp.year;
+                        if (options.translator) {
+                            options.url = options.translator(options.url);
+                        }
                         if (!options.maptype) options.maptype = 'maplat';
 
                         if (options.maptype == 'base' || options.maptype == 'overlay') {
