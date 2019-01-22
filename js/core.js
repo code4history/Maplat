@@ -216,8 +216,6 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                 app.i18n = result[1];
                 app.t = result[0];
 
-                app.dispatchEvent(new CustomEvent('uiPrepare'));
-
                 app.mercBuffer = null;
                 var homePos = app.appData.home_position;
                 var defZoom = app.appData.default_zoom;
@@ -231,6 +229,9 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                 app.currentPosition = null;
                 app.backMap = null;
                 app.__init = true;
+
+                app.dispatchEvent(new CustomEvent('uiPrepare'));
+
                 var frontDiv = app.mapDiv + '_front';
                 var newElem = createElement('<div id="' + frontDiv + '" class="map" style="top:0; left:0; right:0; bottom:0; ' +
                     'position:absolute;"></div>')[0];
