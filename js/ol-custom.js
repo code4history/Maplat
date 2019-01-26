@@ -678,6 +678,12 @@ define(['ol3', 'turf'], function(ol, turf) {
             feature.setStyle(style);
         }
         src.addFeature(feature);
+        return feature;
+    };
+
+    ol.MaplatMap.prototype.removeFeature = function(feature, layer) {
+        var src = this.getSource(layer);
+        src.removeFeature(feature);
     };
 
     ol.MaplatMap.prototype.resetFeature = function(layer) {
@@ -715,7 +721,7 @@ define(['ol3', 'turf'], function(ol, turf) {
                 image: new ol.style.Icon((markerStyle))
             });
         }
-        this.setFeature(data, markerStyle, layer);
+        return this.setFeature(data, markerStyle, layer);
     };
 
     ol.MaplatMap.prototype.resetMarker = function(layer) {
@@ -728,7 +734,7 @@ define(['ol3', 'turf'], function(ol, turf) {
         var style = stroke != null ? new ol.style.Style({
                 stroke: new ol.style.Stroke(stroke)
             }) : null;
-        this.setFeature({
+        return this.setFeature({
             geometry: new ol.geom.LineString(xys),
             name: 'Line'
         }, style, layer);
@@ -741,12 +747,31 @@ define(['ol3', 'turf'], function(ol, turf) {
 
     ol.MaplatMap.prototype.setEnvelop = function(xys, stroke, layer) {
         if (!layer) layer = 'envelop';
-        this.setLine(xys, stroke, layer);
+        return this.setLine(xys, stroke, layer);
+    };
+
+    ol.MaplatMap.prototype.removeEnvelop = function(feature, layer) {
+        if (!layer) layer = 'envelop';
+        this.removeFeature(feature, layer);
     };
 
     ol.MaplatMap.prototype.resetEnvelop = function(layer) {
         if (!layer) layer = 'envelop';
         this.resetFeature(layer);
+    };
+
+    ol.MaplatMap.prototype.setFillEnvelop = function(xys, stroke, fill, layer) {
+        if (!layer) layer = 'envelop';
+        var style = null;
+        if (stroke != null || fill != null) {
+            var option = {};
+            if (stroke != null) option.stroke = new ol.style.Stroke(stroke);
+            if (fill != null) option.fill = new ol.style.Fill(fill);
+            style = new ol.style.Style(option);
+        }
+        return this.setFeature({
+            geometry: new ol.geom.Polygon([xys]),
+        }, style, layer);
     };
 
     ol.MaplatMap.prototype.exchangeSource = function(source) {

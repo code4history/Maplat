@@ -601,6 +601,8 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                 if (!baseSwiper.clickedSlide) return;
                 var slide = baseSwiper.clickedSlide;
                 ui.core.changeMap(slide.getAttribute('data'));
+                delete ui.selectCandidate;
+                delete ui._selectCandidateSource;
                 baseSwiper.setSlideIndexAsSelected(slide.getAttribute('data-swiper-slide-index'));
             });
             if (baseSources.length < 2) {
@@ -625,6 +627,8 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                 if (!overlaySwiper.clickedSlide) return;
                 var slide = overlaySwiper.clickedSlide;
                 ui.core.changeMap(slide.getAttribute('data'));
+                delete ui.selectCandidate;
+                delete ui._selectCandidateSource;
                 overlaySwiper.setSlideIndexAsSelected(slide.getAttribute('data-swiper-slide-index'));
             });
             if (overlaySources.length < 2) {
@@ -719,8 +723,28 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                         }
                     }, null);
                     if (sourceID && sourceID !== ui.core.from.sourceID) {
+                        if (ui.selectCandidate != sourceID) {
+                            if (ui._selectCandidateSource) {
+                                ui.core.mapObject.removeEnvelop(ui._selectCandidateSource);
+                            }
+                            var source = ui.core.cacheHash[sourceID];
+                            var xyPromises = source.envelop.geometry.coordinates[0].map(function(coord) {
+                                return ui.core.from.merc2XyAsync(coord);
+                            });
+                            var hexColor = source.envelopColor;
+                            var color = ol.color.asArray(hexColor);
+                            color = color.slice();
+                            color[3] = 0.2;
+                            Promise.all(xyPromises).then(function(xys) {
+                                ui._selectCandidateSource = ui.core.mapObject.setFillEnvelop(xys, null, {color: color});
+                            });
+                        }
                         ui.selectCandidate = sourceID;
                     } else {
+                        if (ui._selectCandidateSource) {
+                            ui.core.mapObject.removeEnvelop(ui._selectCandidateSource);
+                            delete ui._selectCandidateSource;
+                        }
                         delete ui.selectCandidate;
                     }
                 });
@@ -730,6 +754,8 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
         ui.core.addEventListener('clickMap', function(evt) {
             if (ui.selectCandidate) {
                 ui.core.changeMap(ui.selectCandidate);
+                delete ui.selectCandidate;
+                delete ui._selectCandidateSource;
             }
         });
 
