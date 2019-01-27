@@ -705,41 +705,24 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
             }
 
             ui.mercToSourceID(evt.detail, function(sourceID) {
-                if (sourceID && sourceID !== ui.core.from.sourceID) {
-                    if (ui.selectCandidate != sourceID) {
-                        if (ui._selectCandidateSource) {
-                            ui.core.mapObject.removeEnvelop(ui._selectCandidateSource);
-                        }
-                        var source = ui.core.cacheHash[sourceID];
-                        var xyPromises = source.envelop.geometry.coordinates[0].map(function(coord) {
-                            return ui.core.from.merc2XyAsync(coord);
-                        });
-                        var hexColor = source.envelopColor;
-                        var color = ol.color.asArray(hexColor);
-                        color = color.slice();
-                        color[3] = 0.2;
-                        Promise.all(xyPromises).then(function(xys) {
-                            ui._selectCandidateSource = ui.core.mapObject.setFillEnvelop(xys, null, {color: color});
-                        });
-                        ui.overlaySwiper.setSlideMapID(sourceID);
-                    }
-                    ui.selectCandidate = sourceID;
-                } else {
-                    if (ui._selectCandidateSource) {
-                        ui.core.mapObject.removeEnvelop(ui._selectCandidateSource);
-                        delete ui._selectCandidateSource;
-                    }
-                    delete ui.selectCandidate;
-                }
+                ui.showFillEnvelop(sourceID);
             });
         });
 
-        ui.core.addEventListener('clickMap', function(evt) {
-            if (ui.selectCandidate) {
-                ui.core.changeMap(ui.selectCandidate);
-                delete ui.selectCandidate;
-                delete ui._selectCandidateSource;
+        ui.core.addEventListener('clickMapMerc', function(evt) {
+            if (!ui.showBorder) {
+                return;
             }
+
+            ui.mercToSourceID(evt.detail, function(sourceID) {
+                if (ui.selectCandidate && ui.selectCandidate == sourceID) {
+                    ui.core.changeMap(ui.selectCandidate);
+                    delete ui.selectCandidate;
+                    delete ui._selectCandidateSource;
+                } else {
+                    ui.showFillEnvelop(sourceID);
+                }
+            });
         });
 
         ui.core.addEventListener('clickMarker', function(evt) {
@@ -987,6 +970,36 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                 delete ui.waitReadyBridge;
             }
         });
+    };
+
+    MaplatUi.prototype.showFillEnvelop = function(sourceID) {
+        var ui = this;
+        if (sourceID && sourceID !== ui.core.from.sourceID) {
+            if (ui.selectCandidate != sourceID) {
+                if (ui._selectCandidateSource) {
+                    ui.core.mapObject.removeEnvelop(ui._selectCandidateSource);
+                }
+                var source = ui.core.cacheHash[sourceID];
+                var xyPromises = source.envelop.geometry.coordinates[0].map(function(coord) {
+                    return ui.core.from.merc2XyAsync(coord);
+                });
+                var hexColor = source.envelopColor;
+                var color = ol.color.asArray(hexColor);
+                color = color.slice();
+                color[3] = 0.2;
+                Promise.all(xyPromises).then(function(xys) {
+                    ui._selectCandidateSource = ui.core.mapObject.setFillEnvelop(xys, null, {color: color});
+                });
+                ui.overlaySwiper.setSlideMapID(sourceID);
+            }
+            ui.selectCandidate = sourceID;
+        } else {
+            if (ui._selectCandidateSource) {
+                ui.core.mapObject.removeEnvelop(ui._selectCandidateSource);
+                delete ui._selectCandidateSource;
+            }
+            delete ui.selectCandidate;
+        }
     };
 
     MaplatUi.prototype.mercToSourceID = function(merc, callback) {
