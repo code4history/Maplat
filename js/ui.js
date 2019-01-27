@@ -750,6 +750,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                             Promise.all(xyPromises).then(function(xys) {
                                 ui._selectCandidateSource = ui.core.mapObject.setFillEnvelop(xys, null, {color: color});
                             });
+                            ui.overlaySwiper.setSlideMapID(sourceID);
                         }
                         ui.selectCandidate = sourceID;
                     } else {
