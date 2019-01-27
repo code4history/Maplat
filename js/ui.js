@@ -703,64 +703,34 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                 }
                 return;
             }
-            var merc = evt.detail;
 
-            ui.core.from.merc2XyAsync(merc).then(function(mercXy) {
-                var point = turf.point(mercXy);
-                Promise.all(Object.keys(ui.core.cacheHash).filter(function(key) {
-                    return ui.core.cacheHash[key].envelop;
-                }).map(function(key) {
-                    var source = ui.core.cacheHash[key];
-                    return Promise.all([
-                        Promise.resolve(source),
-                        Promise.all(source.envelop.geometry.coordinates[0].map(function(coord) {
-                            return ui.core.from.merc2XyAsync(coord);
-                        }))
-                    ]);
-                })).then(function(sources) {
-                    var areaIndex;
-                    var sourceID = sources.reduce(function(prev, curr) {
-                        var source = curr[0];
-                        var mercXys = curr[1];
-                        var polygon = turf.polygon([mercXys]);
-                        if (turf.booleanPointInPolygon(point, polygon)) {
-                            if (!areaIndex || source.envelopAreaIndex < areaIndex) {
-                                areaIndex = source.envelopAreaIndex;
-                                return source.sourceID;
-                            } else {
-                                return prev;
-                            }
-                        } else {
-                            return prev;
-                        }
-                    }, null);
-                    if (sourceID && sourceID !== ui.core.from.sourceID) {
-                        if (ui.selectCandidate != sourceID) {
-                            if (ui._selectCandidateSource) {
-                                ui.core.mapObject.removeEnvelop(ui._selectCandidateSource);
-                            }
-                            var source = ui.core.cacheHash[sourceID];
-                            var xyPromises = source.envelop.geometry.coordinates[0].map(function(coord) {
-                                return ui.core.from.merc2XyAsync(coord);
-                            });
-                            var hexColor = source.envelopColor;
-                            var color = ol.color.asArray(hexColor);
-                            color = color.slice();
-                            color[3] = 0.2;
-                            Promise.all(xyPromises).then(function(xys) {
-                                ui._selectCandidateSource = ui.core.mapObject.setFillEnvelop(xys, null, {color: color});
-                            });
-                            ui.overlaySwiper.setSlideMapID(sourceID);
-                        }
-                        ui.selectCandidate = sourceID;
-                    } else {
+            ui.mercToSourceID(evt.detail, function(sourceID) {
+                if (sourceID && sourceID !== ui.core.from.sourceID) {
+                    if (ui.selectCandidate != sourceID) {
                         if (ui._selectCandidateSource) {
                             ui.core.mapObject.removeEnvelop(ui._selectCandidateSource);
-                            delete ui._selectCandidateSource;
                         }
-                        delete ui.selectCandidate;
+                        var source = ui.core.cacheHash[sourceID];
+                        var xyPromises = source.envelop.geometry.coordinates[0].map(function(coord) {
+                            return ui.core.from.merc2XyAsync(coord);
+                        });
+                        var hexColor = source.envelopColor;
+                        var color = ol.color.asArray(hexColor);
+                        color = color.slice();
+                        color[3] = 0.2;
+                        Promise.all(xyPromises).then(function(xys) {
+                            ui._selectCandidateSource = ui.core.mapObject.setFillEnvelop(xys, null, {color: color});
+                        });
+                        ui.overlaySwiper.setSlideMapID(sourceID);
                     }
-                });
+                    ui.selectCandidate = sourceID;
+                } else {
+                    if (ui._selectCandidateSource) {
+                        ui.core.mapObject.removeEnvelop(ui._selectCandidateSource);
+                        delete ui._selectCandidateSource;
+                    }
+                    delete ui.selectCandidate;
+                }
             });
         });
 
@@ -1016,6 +986,43 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                 ui.waitReadyBridge();
                 delete ui.waitReadyBridge;
             }
+        });
+    };
+
+    MaplatUi.prototype.mercToSourceID = function(merc, callback) {
+        var ui = this;
+
+        ui.core.from.merc2XyAsync(merc).then(function(mercXy) {
+            var point = turf.point(mercXy);
+            Promise.all(Object.keys(ui.core.cacheHash).filter(function(key) {
+                return ui.core.cacheHash[key].envelop;
+            }).map(function(key) {
+                var source = ui.core.cacheHash[key];
+                return Promise.all([
+                    Promise.resolve(source),
+                    Promise.all(source.envelop.geometry.coordinates[0].map(function(coord) {
+                        return ui.core.from.merc2XyAsync(coord);
+                    }))
+                ]);
+            })).then(function(sources) {
+                var areaIndex;
+                var sourceID = sources.reduce(function(prev, curr) {
+                    var source = curr[0];
+                    var mercXys = curr[1];
+                    var polygon = turf.polygon([mercXys]);
+                    if (turf.booleanPointInPolygon(point, polygon)) {
+                        if (!areaIndex || source.envelopAreaIndex < areaIndex) {
+                            areaIndex = source.envelopAreaIndex;
+                            return source.sourceID;
+                        } else {
+                            return prev;
+                        }
+                    } else {
+                        return prev;
+                    }
+                }, null);
+                callback(sourceID);
+            });
         });
     };
 

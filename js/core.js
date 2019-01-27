@@ -348,6 +348,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                             } else {
                                 var xy = evt.coordinate;
                                 app.from.xy2MercAsync(xy).then(function (merc) {
+                                    app.dispatchEvent(new CustomEvent('clickMapMerc', merc));
                                     var lnglat = ol.proj.transform(merc, 'EPSG:3857', 'EPSG:4326');
                                     app.dispatchEvent(new CustomEvent('clickMap', {
                                         longitude: lnglat[0],
