@@ -686,9 +686,21 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
             }
         });
 
+        ui.core.mapDivDocument.addEventListener('pointerout', function(evt){
+            delete ui.selectCandidate;
+            if (ui._selectCandidateSource) {
+                ui.core.mapObject.removeEnvelop(ui._selectCandidateSource);
+                delete ui._selectCandidateSource;
+            }
+        });
+
         ui.core.addEventListener('pointerMoveOnMap', function(evt) {
             if (!ui.showBorder) {
                 delete ui.selectCandidate;
+                if (ui._selectCandidateSource) {
+                    ui.core.mapObject.removeEnvelop(ui._selectCandidateSource);
+                    delete ui._selectCandidateSource;
+                }
                 return;
             }
             var merc = evt.detail;
@@ -1027,6 +1039,8 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
         if (!ui.core.mapObject) return;
 
         ui.core.mapObject.resetEnvelop();
+        delete ui.selectCandidate;
+        delete ui._selectCandidateSource;
 
         if (ui.showBorder) {
             Object.keys(ui.core.cacheHash).filter(function (key) {
