@@ -53,6 +53,20 @@ if (!Math.log2) {
         return Math.log(x) / Math.log(2);
     };
 }
+/* Object.keys */
+if (!Object.keys) {
+    Object.keys = function(obj) {
+        var keys = [];
+
+        for (var i in obj) {
+            if (obj.hasOwnProperty(i)) {
+                keys.push(i);
+            }
+        }
+
+        return keys;
+    };
+}
 
 require.config
 ({
