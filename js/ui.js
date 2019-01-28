@@ -990,7 +990,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                 Promise.all(xyPromises).then(function(xys) {
                     ui._selectCandidateSource = ui.core.mapObject.setFillEnvelop(xys, null, {color: color});
                 });
-                ui.overlaySwiper.setSlideMapID(sourceID);
+                ui.overlaySwiper.slideToMapID(sourceID);
             }
             ui.selectCandidate = sourceID;
         } else {
@@ -1020,6 +1020,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
             var sourceID = sources.reduce(function(prev, curr) {
                 var source = curr[0];
                 var mercXys = curr[1];
+                if (source.sourceID == ui.core.from.sourceID) return prev;
                 var polygon = turf.polygon([mercXys]);
                 if (turf.booleanPointInPolygon(point, polygon)) {
                     if (!areaIndex || source.envelopAreaIndex < areaIndex) {
