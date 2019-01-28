@@ -385,6 +385,9 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                                 pointermoveHandler(evt.coordinate);
                             }
                         });
+                        app.mapObject.on('pointerdown', function(evt) {
+                            dragging = true;
+                        });
                         app.mapObject.on('pointerdrag', function(evt) {
                             dragging = true;
                         });

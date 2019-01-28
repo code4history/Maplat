@@ -1062,7 +1062,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
         delete ui._selectCandidateSource;
 
         if (ui.showBorder) {
-            Object.keys(ui.core.cacheHash).filter(function (key) {
+            Object.keys(ui.core.cacheHash).filter(function(key) {
                 return ui.core.cacheHash[key].envelop;
             }).map(function(key) {
                 var source = ui.core.cacheHash[key];
