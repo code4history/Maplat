@@ -347,6 +347,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                                 app.dispatchEvent(new CustomEvent('clickMarker', feature.get('datum')));
                             } else {
                                 var xy = evt.coordinate;
+                                app.dispatchEvent(new CustomEvent('clickMapXy', xy));
                                 app.from.xy2MercAsync(xy).then(function (merc) {
                                     app.dispatchEvent(new CustomEvent('clickMapMerc', merc));
                                     var lnglat = ol.proj.transform(merc, 'EPSG:3857', 'EPSG:4326');
@@ -362,8 +363,9 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                         var waiting = false;
                         var dragging = false;
                         var pointermoveHandler = function(xy) {
+                            app.dispatchEvent(new CustomEvent('pointerMoveOnMapXy', xy));
                             app.from.xy2MercAsync(xy).then(function(merc) {
-                                app.dispatchEvent(new CustomEvent('pointerMoveOnMap', merc));
+                                app.dispatchEvent(new CustomEvent('pointerMoveOnMapMerc', merc));
                                 if (xyBuffer) {
                                     var next = xyBuffer;
                                     xyBuffer = false;

@@ -694,7 +694,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
             }
         });
 
-        ui.core.addEventListener('pointerMoveOnMap', function(evt) {
+        ui.core.addEventListener('pointerMoveOnMapXy', function(evt) {
             if (!ui.showBorder) {
                 delete ui.selectCandidate;
                 if (ui._selectCandidateSource) {
@@ -704,17 +704,17 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                 return;
             }
 
-            ui.mercToSourceID(evt.detail, function(sourceID) {
+            ui.xyToSourceID(evt.detail, function(sourceID) {
                 ui.showFillEnvelop(sourceID);
             });
         });
 
-        ui.core.addEventListener('clickMapMerc', function(evt) {
+        ui.core.addEventListener('clickMapXy', function(evt) {
             if (!ui.showBorder) {
                 return;
             }
 
-            ui.mercToSourceID(evt.detail, function(sourceID) {
+            ui.xyToSourceID(evt.detail, function(sourceID) {
                 if (ui.selectCandidate && ui.selectCandidate == sourceID) {
                     ui.core.changeMap(ui.selectCandidate);
                     delete ui.selectCandidate;
@@ -1002,40 +1002,37 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
         }
     };
 
-    MaplatUi.prototype.mercToSourceID = function(merc, callback) {
+    MaplatUi.prototype.xyToSourceID = function(xy, callback) {
         var ui = this;
-
-        ui.core.from.merc2XyAsync(merc).then(function(mercXy) {
-            var point = turf.point(mercXy);
-            Promise.all(Object.keys(ui.core.cacheHash).filter(function(key) {
-                return ui.core.cacheHash[key].envelop;
-            }).map(function(key) {
-                var source = ui.core.cacheHash[key];
-                return Promise.all([
-                    Promise.resolve(source),
-                    Promise.all(source.envelop.geometry.coordinates[0].map(function(coord) {
-                        return ui.core.from.merc2XyAsync(coord);
-                    }))
-                ]);
-            })).then(function(sources) {
-                var areaIndex;
-                var sourceID = sources.reduce(function(prev, curr) {
-                    var source = curr[0];
-                    var mercXys = curr[1];
-                    var polygon = turf.polygon([mercXys]);
-                    if (turf.booleanPointInPolygon(point, polygon)) {
-                        if (!areaIndex || source.envelopAreaIndex < areaIndex) {
-                            areaIndex = source.envelopAreaIndex;
-                            return source.sourceID;
-                        } else {
-                            return prev;
-                        }
+        var point = turf.point(xy);
+        Promise.all(Object.keys(ui.core.cacheHash).filter(function(key) {
+            return ui.core.cacheHash[key].envelop;
+        }).map(function(key) {
+            var source = ui.core.cacheHash[key];
+            return Promise.all([
+                Promise.resolve(source),
+                Promise.all(source.envelop.geometry.coordinates[0].map(function(coord) {
+                    return ui.core.from.merc2XyAsync(coord);
+                }))
+            ]);
+        })).then(function(sources) {
+            var areaIndex;
+            var sourceID = sources.reduce(function(prev, curr) {
+                var source = curr[0];
+                var mercXys = curr[1];
+                var polygon = turf.polygon([mercXys]);
+                if (turf.booleanPointInPolygon(point, polygon)) {
+                    if (!areaIndex || source.envelopAreaIndex < areaIndex) {
+                        areaIndex = source.envelopAreaIndex;
+                        return source.sourceID;
                     } else {
                         return prev;
                     }
-                }, null);
-                callback(sourceID);
-            });
+                } else {
+                    return prev;
+                }
+            }, null);
+            callback(sourceID);
         });
     };
 
