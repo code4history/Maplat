@@ -337,6 +337,18 @@ define(['ol-custom', 'resize'], function(ol, addResizeListener) {
             e.preventDefault();
             options.callback();
         }, false);
+        button.addEventListener('mouseup', function(e) {
+            e.stopPropagation();
+        }, false);
+        button.addEventListener('mousemove', function(e) {
+            e.stopPropagation();
+        }, false);
+        button.addEventListener('mousedown', function(e) {
+            e.stopPropagation();
+        }, false);
+        button.addEventListener('mouseout', function(e) {
+            e.stopPropagation();
+        }, false);
         button.addEventListener('dblclick', function(e) {
             e.preventDefault();
         }, false);

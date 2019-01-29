@@ -21,11 +21,11 @@ importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.4.1/workbox
 self.__precacheManifest = [
   {
     "url": ".",
-    "revision": "Tue Jan 29 2019 21:45:14 GMT+0900 (JST)"
+    "revision": "Tue Jan 29 2019 23:57:44 GMT+0900 (JST)"
   },
   {
     "url": "dist/maplat.js",
-    "revision": "cee5e0c2d790a81d21942d48c2314efd"
+    "revision": "0b4ec7f90c4d6ab7f5d9425b4e578d36"
   },
   {
     "url": "dist/maplat.css",
