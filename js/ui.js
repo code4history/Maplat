@@ -686,7 +686,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
             }
         });
 
-        ui.core.mapDivDocument.addEventListener('pointerout', function(evt){
+        ui.core.mapDivDocument.addEventListener('mouseout', function(evt){
             delete ui.selectCandidate;
             if (ui._selectCandidateSource) {
                 ui.core.mapObject.removeEnvelop(ui._selectCandidateSource);

@@ -361,7 +361,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
 
                         var xyBuffer;
                         var waiting = false;
-                        var dragging = false;
+                        // var dragging = false;
                         var pointermoveHandler = function(xy) {
                             app.dispatchEvent(new CustomEvent('pointerMoveOnMapXy', xy));
                             app.from.xy2MercAsync(xy).then(function(merc) {
@@ -377,7 +377,10 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                         }
 
                         app.mapObject.on('pointermove', function(evt) {
-                            if (dragging) return;
+                            if (evt.dragging) console.log('dragging');
+                            else console.log('non-dragging');
+                            console.log(evt);
+                            if (evt.dragging) return;
                             if (waiting) {
                                 xyBuffer = evt.coordinate;
                             } else {
@@ -392,6 +395,8 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                             dragging = true;
                         });
                         app.mapObject.on('pointerup', function(evt) {
+                            console.log('up');
+                            console.log(evt);
                             dragging = false;
                         });
 
