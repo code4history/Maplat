@@ -333,10 +333,13 @@ define(['ol-custom', 'resize'], function(ol, addResizeListener) {
         button.appendChild(span);
 
         button.addEventListener('click', function(e) {
+            e.stopPropagation();
             e.preventDefault();
             options.callback();
         }, false);
-        button.addEventListener('dblclick', function(e) { e.preventDefault(); }, false);
+        button.addEventListener('dblclick', function(e) {
+            e.preventDefault();
+        }, false);
 
         var element = document.createElement('div');
         element.className = options.cls + ' ol-unselectable ol-control';

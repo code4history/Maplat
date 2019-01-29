@@ -556,8 +556,6 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                         var xy2 = xys[i+1];
                         return prev + (xy1[0] - xy2[0]) * (xy1[1] + xy2[1]);
                     }, 0));
-                    console.log(source.sourceID);
-                    console.log(source.envelopAreaIndex);
                 }
             }
 
