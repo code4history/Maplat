@@ -39,7 +39,7 @@
         "help_poi_content": "在地图上显示<img src='parts/defaultpin.png'>这样标记的地方，这个支持拓展信息显示的地方。<br>标记点击时，会显示支持的信息。",
         "help_etc_title": "其它",
         "help_etc_attr": "<img src='parts/attr.png'>按钮 显示中地图的制作者、所有者、许可等各种信息显示。",
-        "help_etc_help": "<img src='parts/help.png'>按钮: 显示这个帮助信息",
+        "help_etc_help": "<img src='parts/help.png'>按钮: 显示这个帮助信息。",
         "help_share_help": "<img src='parts/share.png'>按钮: 显示向SNS等其它应用分享的页面。",
         "help_etc_border": "<img src='parts/border.png'>按钮: 地图的边界显示。<br>在边界内点击也可以切换地图显示。<br>在电脑上操作可以用鼠标在地图上上移动选择后点击进行地图切换显示，手机上在选中地图后，再一次点击后进行地图切换显示。",
         "help_etc_slider": "<img src='parts/slider.png'>侧边栏: 显示中的地图的透明度调整，可以将背景中的地图透明地看到。<br>只支持在手绘地图、历史地图中使用，基本地图显示时不可用。",
