@@ -4,11 +4,13 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
         try {
             // Chrome
             if( ua.indexOf( 'chrome' ) != -1 ) {
-                return ( navigator.languages[0] || navigator.browserLanguage || navigator.language || navigator.userLanguage).substr(0, 2);
+                var lang = (navigator.languages[0] || navigator.browserLanguage || navigator.language || navigator.userLanguage).split(';');
+                return lang[0];
             }
             // Other
             else {
-                return ( navigator.browserLanguage || navigator.language || navigator.userLanguage).substr(0, 2);
+                var lang = (navigator.browserLanguage || navigator.language || navigator.userLanguage).split(';');
+                return lang[0];
             }
         }
         catch( e ) {
@@ -129,6 +131,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
         if (!lang) {
             lang = browserLanguage();
         }
+        if (lang.toLowerCase() == 'zh-hk' || lang.toLowerCase() == 'zh-hant') lang = 'zh-TW';
 
         if (appOption.restore) {
             if (appOption.restore_session) app.restoreSession = true;
