@@ -1,6 +1,6 @@
 /**
  * maplat_tin - JavaScript library which performs bijective conversion mutually between the coordinate systems of two planes based on the control points.
- * @version v0.3.3
+ * @version v0.4.4
  * @link https://github.com/code4nara/Maplat/wiki/Maplat-Tin-library
  * @license MIT
  * Copyright (c) 2015- Kohei Otsuka, Code for Nara, RekishiKokudo project

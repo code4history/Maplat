@@ -1,6 +1,6 @@
 {
   "name": "maplat_tin",
-  "version": "0.3.3",
+  "version": "0.4.4",
   "description": "JavaScript library which performs bijective conversion mutually between the coordinate systems of two planes based on the control points.",
   "main": "index.js",
   "scripts": {

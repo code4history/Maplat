@@ -43,13 +43,116 @@ var banner = ['/**',
 var isWin = os.type().toString().match('Windows') !== null;
 
 gulp.task('server', function() {
-    return spawn('node', ['server.js'], {
+    spawn('node', ['server.js'], {
         stdio: 'ignore',
         detached: true
     }).unref();
+    return Promise.resolve();
 });
 
-gulp.task('build', ['mobile_build', 'sw_build'], function() {
+gulp.task('config', function() {
+    return Promise.all([
+        configMaker('core'),
+        configMaker('ui')
+    ]);
+});
+
+gulp.task('js_build_task', function() {
+    var cmd = isWin ? 'r.js.cmd' : 'r.js';
+    execSync(cmd + ' -o rjs_config_core.js');
+    execSync(cmd + ' -o rjs_config_ui.js');
+    return Promise.all([
+        new Promise(function(resolve, reject) {
+            gulp.src(['./lib/aigle-es5.min.js', 'dist/maplat_core_withoutpromise.js'])
+                .pipe(concat('maplat_core.js'))
+                .pipe(header(banner, {pkg: pkg}))
+                .on('error', reject)
+                .pipe(gulp.dest('./dist/'))
+                .on('end', resolve);
+        }),
+        new Promise(function(resolve, reject) {
+            gulp.src(['./lib/aigle-es5.min.js', 'dist/maplat_withoutpromise.js'])
+                .pipe(concat('maplat.js'))
+                .pipe(header(banner, {pkg: pkg}))
+                .on('error', reject)
+                .pipe(gulp.dest('./dist/'))
+                .on('end', resolve);
+        })
+    ]).then(function() {
+        fs.unlinkSync('./dist/maplat_withoutpromise.js');
+        fs.unlinkSync('./dist/maplat_core_withoutpromise.js');
+    });
+});
+
+gulp.task('js_build', gulp.series('config', 'js_build_task'));
+
+gulp.task('less', function() {
+    var lesses = ['ol-maplat', 'font-awesome', 'bootstrap', 'swiper', 'core', 'ui', 'iziToast'];
+    lesses.map(function(less) {
+        execSync('lessc -x less/' + less + '.less > css/' + less + '.css');
+    });
+    return Promise.resolve();
+});
+
+gulp.task('css_build_task', function() {
+    var cmd = isWin ? 'r.js.cmd' : 'r.js';
+    execSync(cmd + ' -o cssIn=css/core.css out=dist/maplat_core.css');
+    execSync(cmd + ' -o cssIn=css/ui.css out=dist/maplat.css');
+    return Promise.resolve();
+});
+
+gulp.task('css_build', gulp.series('less', 'css_build_task'));
+
+gulp.task('mobile_build_task', function() {
+    removeResource();
+    copyResource(mobileCopy);
+    copyResource(mobileBaseCopy);
+    fs.copySync('mobile.html', './mobile_android/lib-maplat/src/main/res/raw/mobile_html');
+    fs.copySync('mobile.html', './mobile_ios_lib/MaplatView/Maplat.bundle/mobile.html');
+    copyAssets();
+    return Promise.resolve();
+});
+
+gulp.task('mobile_build', gulp.series('js_build', 'css_build', 'mobile_build_task'));
+
+gulp.task('sw_build', function() {
+    return wbBuild.generateSW({
+        globDirectory: '.',
+        globPatterns: [
+            '.',
+            'dist/maplat.js',
+            'dist/maplat.css',
+            'parts/*',
+            'locales/*/*',
+            'fonts/*'
+        ],
+        swDest: 'service-worker_.js',
+        runtimeCaching: [{
+            urlPattern: /(?:maps\/.+\.json|apps\/.+\.json|tmbs\/.+_menu\.jpg|img\/.+\.(?:png|jpg))$/,
+            handler: 'networkFirst',
+            options: {
+                cacheName: 'resourcesCache',
+                expiration: {
+                    maxAgeSeconds: 60 * 60 * 24,
+                },
+            },
+        }],
+    }).then(function() {
+        var unixtime = new Date();
+        return new Promise(function(resolve, reject) {
+            gulp.src(['./service-worker_.js'])
+                .pipe(concat('service-worker.js'))
+                .pipe(replace(/self\.__precacheManifest = \[/, "self.__precacheManifest = [\n  {\n    \"url\": \".\",\n    \"revision\": \"" + unixtime + "\"\n  },"))
+                .on('error', reject)
+                .pipe(gulp.dest('./'))
+                .on('end', resolve);
+        });
+    }).then(function() {
+        fs.unlinkSync('./service-worker_.js');
+    });
+});
+
+gulp.task('build_task', function() {
     try {
         fs.removeSync('./example.zip');
     } catch (e) {
@@ -92,52 +195,7 @@ gulp.task('build', ['mobile_build', 'sw_build'], function() {
     });
 });
 
-gulp.task('js_build', ['config'], function() {
-    var cmd = isWin ? 'r.js.cmd' : 'r.js';
-    execSync(cmd + ' -o rjs_config_core.js');
-    execSync(cmd + ' -o rjs_config_ui.js');
-    return Promise.all([
-        new Promise(function(resolve, reject) {
-            gulp.src(['./lib/aigle-es5.min.js', 'dist/maplat_core_withoutpromise.js'])
-                .pipe(concat('maplat_core.js'))
-                .pipe(header(banner, {pkg: pkg}))
-                .on('error', reject)
-                .pipe(gulp.dest('./dist/'))
-                .on('end', resolve);
-        }),
-        new Promise(function(resolve, reject) {
-            gulp.src(['./lib/aigle-es5.min.js', 'dist/maplat_withoutpromise.js'])
-                .pipe(concat('maplat.js'))
-                .pipe(header(banner, {pkg: pkg}))
-                .on('error', reject)
-                .pipe(gulp.dest('./dist/'))
-                .on('end', resolve);
-        })
-    ]).then(function() {
-        fs.unlinkSync('./dist/maplat_withoutpromise.js');
-        fs.unlinkSync('./dist/maplat_core_withoutpromise.js');
-    });
-});
-
-gulp.task('less', function() {
-    var lesses = ['ol-maplat', 'font-awesome', 'bootstrap', 'swiper', 'core', 'ui', 'iziToast'];
-    lesses.map(function(less) {
-        execSync('lessc -x less/' + less + '.less > css/' + less + '.css');
-    });
-});
-
-gulp.task('css_build', ['less'], function() {
-    var cmd = isWin ? 'r.js.cmd' : 'r.js';
-    execSync(cmd + ' -o cssIn=css/core.css out=dist/maplat_core.css');
-    execSync(cmd + ' -o cssIn=css/ui.css out=dist/maplat.css');
-});
-
-gulp.task('config', function() {
-    return Promise.all([
-        configMaker('core'),
-        configMaker('ui')
-    ]);
-});
+gulp.task('build', gulp.series('mobile_build', 'sw_build', 'build_task'));
 
 var configMaker = function(name) {
     var out = name == 'ui' ? '' : name + '_';
@@ -163,43 +221,6 @@ var configMaker = function(name) {
         })
     ]);
 };
-
-gulp.task('sw_build', function() {
-    return wbBuild.generateSW({
-        globDirectory: '.',
-        globPatterns: [
-            '.',
-            'dist/maplat.js',
-            'dist/maplat.css',
-            'parts/*',
-            'locales/*/*',
-            'fonts/*'
-        ],
-        swDest: 'service-worker_.js',
-        runtimeCaching: [{
-            urlPattern: /(?:maps\/.+\.json|apps\/.+\.json|tmbs\/.+_menu\.jpg|img\/.+\.(?:png|jpg))$/,
-            handler: 'networkFirst',
-            options: {
-                cacheName: 'resourcesCache',
-                expiration: {
-                    maxAgeSeconds: 60 * 60 * 24,
-                },
-            },
-        }],
-    }).then(function() {
-        var unixtime = new Date();
-        return new Promise(function(resolve, reject) {
-            gulp.src(['./service-worker_.js'])
-                .pipe(concat('service-worker.js'))
-                .pipe(replace(/self\.__precacheManifest = \[/, "self.__precacheManifest = [\n  {\n    \"url\": \".\",\n    \"revision\": \"" + unixtime + "\"\n  },"))
-                .on('error', reject)
-                .pipe(gulp.dest('./'))
-                .on('end', resolve);
-        });
-    }).then(function() {
-        fs.unlinkSync('./service-worker_.js');
-    });
-});
 
 var mobileTestCopy = [
     'css/core.css',
@@ -267,28 +288,18 @@ function copyAssets() {
     }
 }
 
-gulp.task('mobile_build_test', ['config', 'less'], function() {
+gulp.task('mobile_build_test', gulp.parallel('config', 'less'), function() {
     removeResource();
     copyResource(mobileTestCopy);
     copyResource(mobileBaseCopy);
     fs.copySync('mobile_test.html', './mobile_android/lib-maplat/src/main/res/raw/mobile_html');
     fs.copySync('mobile_test.html', './mobile_ios_lib/MaplatView/Maplat.bundle/mobile.html');
     copyAssets();
+    return Promise.resolve();
 });
-
-gulp.task('mobile_build', ['js_build', 'css_build'], function() {
-    removeResource();
-    copyResource(mobileCopy);
-    copyResource(mobileBaseCopy);
-    fs.copySync('mobile.html', './mobile_android/lib-maplat/src/main/res/raw/mobile_html');
-    fs.copySync('mobile.html', './mobile_ios_lib/MaplatView/Maplat.bundle/mobile.html');
-    copyAssets();
-});
-
-gulp.task('tin', ['www_tin', 'npm_tin'], function() {});
 
 gulp.task('www_tin', function() {
-    gulp.src(['./lib/turf_maplat.min.js', './lib/mapshaper_maplat.js', './js/tin.js'])
+    return gulp.src(['./lib/turf_maplat.min.js', './lib/mapshaper_maplat.js', './js/tin.js'])
         .pipe(concat('maplat_tin.js'))
         .pipe(uglify())
         .pipe(header(banner, {pkg: pkg_tin}))
@@ -303,7 +314,9 @@ gulp.task('npm_tin', function() {
         .pipe(concat('package.json'))
         .pipe(replace(/\{version\}/, pkg.version))
         .pipe(gulp.dest('./npm/'));
-    gulp.src(['./LICENSE'])
+    return gulp.src(['./LICENSE'])
         .pipe(concat('LICENSE'))
         .pipe(gulp.dest('./npm/'));
 });
+
+gulp.task('tin', gulp.parallel('www_tin', 'npm_tin'));
