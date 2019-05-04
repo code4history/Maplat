@@ -29,6 +29,8 @@
     <div id="map_div"></div>
   </div>
   <div class="button">
+    <button id="show">showLayer(Main)</button>
+    <button id="hide">hideLayer(Main)</button>
     <button id="clear">clearMarker(Main)</button>
     <button id="remove">removeMarker(Main)</button>
     <button id="add2">addMarker(Main2)</button>
@@ -69,6 +71,12 @@
         app.addPoiLayer('morioka_ndl2#main2', {
             icon: 'parts/blue_marker.png',
             selected_icon: 'parts/red_marker.png'
+        });
+        document.getElementById('show').addEventListener('click', function(e) {
+            app.showPoiLayer('main');
+        });
+        document.getElementById('hide').addEventListener('click', function(e) {
+            app.hidePoiLayer('main');
         });
         document.getElementById('clear').addEventListener('click', function(e) {
             app.clearMarker('main');

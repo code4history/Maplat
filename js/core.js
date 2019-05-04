@@ -691,18 +691,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
         app.resetMarker();
         Object.keys(app.pois).map(function(key) {
             var cluster = app.pois[key];
-            cluster.pois.map(function(data) {
-                var dataCopy = Object.assign({}, data);
-                if (!dataCopy.icon) {
-                    dataCopy.icon = cluster.icon;
-                    dataCopy.selected_icon = cluster.selected_icon;
-                }
-                app.setMarker(dataCopy);
-            });
-        });
-        if (source.pois) {
-            Object.keys(source.pois).map(function(key) {
-                var cluster = source.pois[key];
+            if (!cluster.hide) {
                 cluster.pois.map(function(data) {
                     var dataCopy = Object.assign({}, data);
                     if (!dataCopy.icon) {
@@ -711,6 +700,21 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                     }
                     app.setMarker(dataCopy);
                 });
+            }
+        });
+        if (source.pois) {
+            Object.keys(source.pois).map(function(key) {
+                var cluster = source.pois[key];
+                if (!cluster.hide) {
+                    cluster.pois.map(function (data) {
+                        var dataCopy = Object.assign({}, data);
+                        if (!dataCopy.icon) {
+                            dataCopy.icon = cluster.icon;
+                            dataCopy.selected_icon = cluster.selected_icon;
+                        }
+                        app.setMarker(dataCopy);
+                    });
+                }
             });
         }
     };
@@ -817,6 +821,34 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
             if (source) {
                 source.clearPoi(splits[1]);
                 app.redrawMarkers();
+            }
+        }
+    };
+
+    MaplatApp.prototype.showPoiLayer = function(id) {
+        var layer = this.getPoiLayer(id);
+        if (layer) {
+            delete layer.hide;
+            this.redrawMarkers();
+        }
+    };
+
+    MaplatApp.prototype.hidePoiLayer = function(id) {
+        var layer = this.getPoiLayer(id);
+        if (layer) {
+            layer.hide = true;
+            this.redrawMarkers();
+        }
+    };
+
+    MaplatApp.prototype.getPoiLayer = function(id) {
+        if (id.indexOf('#') < 0) {
+            return this.pois[id];
+        } else {
+            var splits = id.split('#');
+            var source = this.cacheHash[splits[0]];
+            if (source) {
+                return source.getPoiLayer(splits[1]);
             }
         }
     };

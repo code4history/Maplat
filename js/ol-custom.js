@@ -559,6 +559,10 @@ define(['ol3', 'turf'], function(ol, turf) {
             }
         };
 
+        target.prototype.getPoiLayer = function(id) {
+            return this.pois[id];
+        };
+
         target.prototype.addPoiLayer = function(id, data) {
             if (id == 'main') return;
             if (this.pois[id]) return;
