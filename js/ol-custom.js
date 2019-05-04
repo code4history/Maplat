@@ -509,6 +509,19 @@ define(['ol3', 'turf'], function(ol, turf) {
             });
         };
 
+        target.prototype.getPoi = function(id) {
+            var self = this;
+            var ret;
+            Object.keys(self.pois).map(function(key) {
+                self.pois[key].pois.map(function(poi, i) {
+                    if (poi.id == id) {
+                        ret = self.pois[key].pois[i];
+                    }
+                });
+            });
+            return ret;
+        };
+
         target.prototype.addPoi = function(data, clusterId) {
             if (!clusterId) {
                 clusterId = 'main';

@@ -634,6 +634,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
         var y = data.y;
         var coords = data.coordinates;
         var src = app.from;
+        var icon = app.__selectedMarker == data.namespace_id && data.selected_icon ? data.selected_icon : data.icon;
         var promise = coords ?
             (function() {
                 return src.merc2XyAsync(coords);
@@ -648,7 +649,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
             })();
         promise.then(function(xy) {
             if (src.insideCheckHistMapCoords(xy)) {
-                app.mapObject.setMarker(xy, {'datum': data}, data.icon);
+                app.mapObject.setMarker(xy, {'datum': data}, icon);
             }
         });
     };
@@ -711,6 +712,44 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                     app.setMarker(dataCopy);
                 });
             });
+        }
+    };
+
+    MaplatApp.prototype.selectMarker = function(id) {
+        var data = this.getMarker(id);
+        if (!data) return;
+        this.__selectedMarker = id;
+        var latlng = {
+            latitude: data.lnglat ? data.lnglat[1] : data.lat ? data.lat : data.latitude,
+            longitude: data.lnglat ? data.lnglat[0] : data.lng ? data.lng : data.longitude
+        };
+        this.setViewpoint(latlng);
+        this.redrawMarkers();
+    };
+
+    MaplatApp.prototype.unselectMarker = function() {
+        delete this.__selectedMarker;
+        this.redrawMarkers();
+    };
+
+    MaplatApp.prototype.getMarker = function(id) {
+        var app = this;
+        if (id.indexOf('#') < 0) {
+            var ret;
+            Object.keys(app.pois).map(function(key) {
+                app.pois[key].pois.map(function(poi, i) {
+                    if (poi.id == id) {
+                        ret = app.pois[key].pois[i];
+                    }
+                });
+            });
+            return ret;
+        } else {
+            var splits = id.split('#');
+            var source = app.cacheHash[splits[0]];
+            if (source) {
+                return source.getPoi(splits[1]);
+            }
         }
     };
 
