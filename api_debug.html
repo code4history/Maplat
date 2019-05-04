@@ -15,14 +15,29 @@
         left: 5%;
         right: 5%;
     }
+    .button {
+      position: absolute;
+      top: 95%;
+      bottom: 0%;
+      left: 5%;
+      right: 5%;
+    }
   </style>
 </head>
 <body>
   <div class="mainview">
     <div id="map_div"></div>
   </div>
+  <div class="button">
+    <button id="clear">clearMarker(Main)</button>
+    <button id="remove">removeMarker(Main)</button>
+    <button id="add2">addMarker(Main2)</button>
+    <button id="clear2">clearMarker(Main2)</button>
+    <button id="addMap">addMarker(Map)</button>
+    <button id="clearMap">clearMarker(Map)</button>
+  </div>
 </body>
-<script src="lib/aigle-es5.min.js"></script>
+<!--script src="lib/aigle-es5.min.js"></script-->
 <script src="lib/require.min.js"></script>
 <script src="js/config_core.js"></script>
 <script>
@@ -47,6 +62,46 @@
                 color: '#ffcc33',
                 width: 2
             }
+        });
+        app.addPoiLayer('main2');
+        app.addPoiLayer('morioka_ndl2#main2');
+        document.getElementById('clear').addEventListener('click', function(e) {
+            app.clearMarker('main');
+        });
+        document.getElementById('remove').addEventListener('click', function(e) {
+            app.removeMarker('main_2');
+        });
+        document.getElementById('add2').addEventListener('click', function(e) {
+            app.addMarker({
+                address: "岩手県盛岡市内丸1-42",
+                desc: "寛延２年創建で当時の藩主南部利視が初代藩主南部信直の功績を称え社殿を建立し御霊を勧請したのが始まりとされている。",
+                icon: undefined,
+                image: "sakurayama_jinja.jpg",
+                lat: 39.701599,
+                lng: 141.151995,
+                name: "桜山神社",
+                selected_icon: undefined,
+                start: 1749
+            }, 'main2');
+        });
+        document.getElementById('clear2').addEventListener('click', function(e) {
+            app.clearMarker('main2');
+        });
+        document.getElementById('addMap').addEventListener('click', function(e) {
+            app.addMarker({
+                address: "岩手県盛岡市内丸1-37",
+                desc: "南部（盛岡）藩南部氏の居城である。西部を流れる北上川と南東部を流れる中津川の合流地、現在の盛岡市中心部にあった花崗岩丘陵に築城された連郭式平山城。",
+                icon: undefined,
+                image: "moriokajo.jpg",
+                lat: 39.69994722,
+                lng: 141.1501111,
+                name: {ja: "盛岡城", en: "Morioka Castle"},
+                selected_icon: undefined,
+                start: 1598
+            }, 'morioka_ndl2#main2');
+        });
+        document.getElementById('clearMap').addEventListener('click', function(e) {
+            app.clearMarker('morioka_ndl2#all');
         });
     });
 </script>

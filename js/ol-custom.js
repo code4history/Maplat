@@ -433,8 +433,9 @@ define(['ol3', 'turf'], function(ol, turf) {
         target.prototype.resolvePois = function(pois) {
             var self = this;
             if (!pois) pois = [];
+            var promise;
             if (typeof pois == 'string') {
-                return new Promise(function(resolve, reject) {
+                promise = new Promise(function(resolve, reject) {
                     var url = pois.match(/\//) ? pois : 'pois/' + pois;
 
                     var xhr = new XMLHttpRequest();
@@ -459,8 +460,115 @@ define(['ol3', 'turf'], function(ol, turf) {
                 });
             } else {
                 self.pois = pois;
-                return Promise.resolve();
+                promise = Promise.resolve();
             }
+
+            return promise.then(function() {
+                if (Array.isArray(self.pois)) {
+                    self.pois = {
+                        main: {
+                            name: self.officialTitle || self.title,
+                            pois: self.pois
+                        }
+                    };
+                    self.addIdToPoi('main');
+                } else {
+                    Object.keys(self.pois).map(function(key) {
+                        if (!self.pois[key].name) {
+                            if (key == 'main') {
+                                self.pois[key].name = self.officialTitle || self.title;
+                            } else {
+                                self.pois[key].name = key;
+                            }
+                        }
+                        if (!self.pois[key].pois) {
+                            self.pois[key].pois = [];
+                        }
+                        self.addIdToPoi(key);
+                    });
+                }
+            });
+        };
+
+        target.prototype.addIdToPoi = function(clusterId) {
+            var self = this;
+            if (!self.pois[clusterId]) return;
+            var cluster = self.pois[clusterId];
+            var pois = cluster.pois;
+            if (!cluster.__nextId) {
+                cluster.__nextId = 0;
+            }
+            pois.map(function(poi) {
+                if (!poi.id) {
+                    poi.id = clusterId + '_' + cluster.__nextId;
+                    cluster.__nextId++;
+                }
+                if (!poi.namespace_id) {
+                    poi.namespace_id = self.sourceID + '#' + poi.id;
+                }
+            });
+        };
+
+        target.prototype.addPoi = function(data, clusterId) {
+            if (!clusterId) {
+                clusterId = 'main';
+            }
+            if (this.pois[clusterId]) {
+                this.pois[clusterId]['pois'].push(data);
+                this.addIdToPoi(clusterId);
+                return data.namespace_id;
+            }
+        };
+
+        target.prototype.removePoi = function(id) {
+            var self = this;
+            Object.keys(self.pois).map(function(key) {
+                self.pois[key].pois.map(function(poi, i) {
+                    if (poi.id == id) {
+                        delete self.pois[key].pois[i];
+                        return;
+                    }
+                });
+            });
+        };
+
+        target.prototype.clearPoi = function(clusterId) {
+            var self = this;
+            if (!clusterId) {
+                clusterId = 'main';
+            }
+            if (clusterId == 'all') {
+                Object.keys(self.pois).map(function(key) {
+                    self.pois[key]['pois'] = [];
+                });
+            } else if (self.pois[clusterId]) {
+                self.pois[clusterId]['pois'] = [];
+            }
+        };
+
+        target.prototype.addPoiLayer = function(id, data) {
+            if (id == 'main') return;
+            if (this.pois[id]) return;
+            if (!data) {
+                data = {
+                    name: id,
+                    pois: []
+                };
+            } else {
+                if (!data.name) {
+                    data.name = id;
+                }
+                if (!data.pois) {
+                    data.pois = [];
+                }
+            }
+            this.pois[id] = data;
+        };
+
+        target.prototype.removePoiLayer = function(id) {
+            if (id == 'main') return;
+            if (!this.pois[id]) return;
+            delete this.pois[id];
         };
     };
     ol.source.META_KEYS = ['title', 'officialTitle', 'author', 'createdAt', 'era',

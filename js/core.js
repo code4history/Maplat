@@ -271,7 +271,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                         xhr.open('GET', url, true);
                         xhr.responseType = 'json';
 
-                        xhr.onload = function (e) {
+                        xhr.onload = function(e) {
                             if (this.status == 200 || this.status == 0) { // 0 for UIWebView
                                 try {
                                     var resp = this.response;
@@ -293,6 +293,29 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                 }
 
                 return poisWait.then(function() {
+                    if (Array.isArray(app.pois)) {
+                        app.pois = {
+                            main: {
+                                name: app.appName,
+                                pois: app.pois
+                            }
+                        };
+                        app.addIdToPoi('main');
+                    } else {
+                        Object.keys(app.pois).map(function(key) {
+                            if (!app.pois[key].name) {
+                                if (key == 'main') {
+                                    app.pois[key].name = app.appName;
+                                } else {
+                                    app.pois[key].name = key;
+                                }
+                            }
+                            if (!app.pois[key].pois) {
+                                app.pois[key].pois = [];
+                            }
+                            app.addIdToPoi(key);
+                        });
+                    }
                     var dataSource = app.appData.sources;
                     var sourcePromise = [];
                     var commonOption = {
@@ -585,6 +608,24 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
         return createMapInfo(app.cacheHash[sourceID]);
     };
 
+    MaplatApp.prototype.addIdToPoi = function(clusterId) {
+        if (!this.pois[clusterId]) return;
+        var cluster = this.pois[clusterId];
+        var pois = cluster.pois;
+        if (!cluster.__nextId) {
+            cluster.__nextId = 0;
+        }
+        pois.map(function(poi) {
+            if (!poi.id) {
+                poi.id = clusterId + '_' + cluster.__nextId;
+                cluster.__nextId++;
+            }
+            if (!poi.namespace_id) {
+                poi.namespace_id = poi.id;
+            }
+        });
+    };
+
     MaplatApp.prototype.setMarker = function(data) {
         var app = this;
         app.logger.debug(data);
@@ -641,14 +682,149 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
         this.mapObject.resetLine();
     };
 
-    MaplatApp.prototype.addMarker = function(data) {
-        this.pois.push(data);
-        this.setMarker(data);
+    MaplatApp.prototype.redrawMarkers= function(source) {
+        var app = this;
+        if (!source) {
+            source = app.from;
+        }
+        app.resetMarker();
+        Object.keys(app.pois).map(function(key) {
+            var cluster = app.pois[key];
+            cluster.pois.map(function(data) {
+                var dataCopy = Object.assign({}, data);
+                if (!dataCopy.icon) {
+                    dataCopy.icon = cluster.icon;
+                    dataCopy.selected_icon = cluster.selected_icon;
+                }
+                app.setMarker(dataCopy);
+            });
+        });
+        if (source.pois) {
+            Object.keys(source.pois).map(function(key) {
+                var cluster = source.pois[key];
+                cluster.pois.map(function(data) {
+                    var dataCopy = Object.assign({}, data);
+                    if (!dataCopy.icon) {
+                        dataCopy.icon = cluster.icon;
+                        dataCopy.selected_icon = cluster.selected_icon;
+                    }
+                    app.setMarker(dataCopy);
+                });
+            });
+        }
     };
 
-    MaplatApp.prototype.clearMarker = function() {
-        this.pois = [];
-        this.resetMarker();
+    MaplatApp.prototype.addMarker = function(data, clusterId) {
+        if (!clusterId) {
+            clusterId = 'main';
+        }
+        if (clusterId.indexOf('#') < 0) {
+            if (this.pois[clusterId]) {
+                this.pois[clusterId]['pois'].push(data);
+                this.addIdToPoi(clusterId);
+                this.redrawMarkers();
+                return data.namespace_id;
+            }
+        } else {
+            var splits = clusterId.split('#');
+            var source = this.cacheHash[splits[0]];
+            if (source) {
+                var ret = source.addPoi(data, splits[1]);
+                this.redrawMarkers();
+                return ret;
+            }
+        }
+    };
+
+    MaplatApp.prototype.removeMarker = function(id) {
+        var app = this;
+        if (id.indexOf('#') < 0) {
+            Object.keys(app.pois).map(function(key) {
+                app.pois[key].pois.map(function(poi, i) {
+                    if (poi.id == id) {
+                        delete app.pois[key].pois[i];
+                        app.redrawMarkers();
+                        return;
+                    }
+                });
+            });
+        } else {
+            var splits = id.split('#');
+            var source = app.cacheHash[splits[0]];
+            if (source) {
+                source.removePoi(splits[1]);
+                app.redrawMarkers();
+            }
+        }
+    };
+
+    MaplatApp.prototype.clearMarker = function(clusterId) {
+        var app = this;
+        if (!clusterId) {
+            clusterId = 'main';
+        }
+        if (clusterId.indexOf('#') < 0) {
+            if (clusterId == 'all') {
+                Object.keys(app.pois).map(function(key) {
+                    app.pois[key]['pois'] = [];
+                });
+            } else if (app.pois[clusterId]) {
+                app.pois[clusterId]['pois'] = [];
+            } else return;
+            app.redrawMarkers();
+        } else {
+            var splits = clusterId.split('#');
+            var source = app.cacheHash[splits[0]];
+            if (source) {
+                source.clearPoi(splits[1]);
+                app.redrawMarkers();
+            }
+        }
+    };
+
+    MaplatApp.prototype.addPoiLayer = function(id, data) {
+        if (id == 'main') return;
+        if (this.pois[id]) return;
+        if (id.indexOf('#') < 0) {
+            if (!data) {
+                data = {
+                    name: id,
+                    pois: []
+                };
+            } else {
+                if (!data.name) {
+                    data.name = id;
+                }
+                if (!data.pois) {
+                    data.pois = [];
+                }
+            }
+            this.pois[id] = data;
+            this.redrawMarkers();
+        } else {
+            var splits = id.split('#');
+            var source = this.cacheHash[splits[0]];
+            if (source) {
+                source.addPoiLayer(splits[1], data);
+                this.redrawMarkers();
+            }
+        }
+    };
+
+    MaplatApp.prototype.removePoiLayer = function(id) {
+        if (id == 'main') return;
+        if (!this.pois[id]) return;
+        if (id.indexOf('#') < 0) {
+            delete this.pois[id];
+            this.redrawMarkers();
+        } else {
+            var splits = id.split('#');
+            var source = this.cacheHash[splits[0]];
+            if (source) {
+                source.removePoiLayer(splits[1]);
+                this.redrawMarkers();
+            }
+        }
     };
 
     MaplatApp.prototype.addLine = function(data) {
@@ -771,19 +947,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                         to.goHome();
                     }
                     to.setGPSMarker(app.currentPosition, true);
-                    app.resetMarker();
-                    for (var i = 0; i < app.pois.length; i++) {
-                        (function(data) {
-                            app.setMarker(data);
-                        })(app.pois[i]);
-                    }
-                    if (to.pois) {
-                        for (var i = 0; i < to.pois.length; i++) {
-                            (function(data) {
-                                app.setMarker(data);
-                            })(to.pois[i]);
-                        }
-                    }
+                    app.redrawMarkers();
                     app.resetLine();
                     for (var i = 0; i < app.lines.length; i++) {
                         (function(data) {
