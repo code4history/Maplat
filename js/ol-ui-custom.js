@@ -331,22 +331,37 @@ define(['ol-custom', 'resize'], function(ol, addResizeListener) {
         var span = document.createElement('span');
         span.innerHTML = options.character;
         button.appendChild(span);
+        var timer;
 
-        button.addEventListener('click', function(e) {
-            e.stopPropagation();
-            e.preventDefault();
-            options.callback();
-        }, false);
         button.addEventListener('mouseup', function(e) {
+            if (timer) {
+                if (options.long_callback) {
+                    clearTimeout(timer);
+                }
+                timer = null;
+                options.callback();
+            }
             e.stopPropagation();
         }, false);
         button.addEventListener('mousemove', function(e) {
             e.stopPropagation();
         }, false);
         button.addEventListener('mousedown', function(e) {
+            if (options.long_callback) {
+                timer = setTimeout(function() {
+                    timer = null;
+                    options.long_callback();
+                }, 2000);
+            } else {
+                timer = true;
+            }
             e.stopPropagation();
         }, false);
         button.addEventListener('mouseout', function(e) {
+            if (options.long_callback) {
+                clearTimeout(timer);
+            }
+            timer = null;
             e.stopPropagation();
         }, false);
         button.addEventListener('dblclick', function(e) {
