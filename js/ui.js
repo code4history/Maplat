@@ -693,7 +693,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
         });
 
         ui.core.addEventListener('pointerMoveOnMapXy', function(evt) {
-            if (!ui.showBorder) {
+            if (!ui.core.stateBuffer.showBorder) {
                 delete ui.selectCandidate;
                 if (ui._selectCandidateSource) {
                     ui.core.mapObject.removeEnvelop(ui._selectCandidateSource);
@@ -708,7 +708,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
         });
 
         ui.core.addEventListener('clickMapXy', function(evt) {
-            if (!ui.showBorder) {
+            if (!ui.core.stateBuffer.showBorder) {
                 return;
             }
 
@@ -956,7 +956,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
 
                     modal.show();
                 } else if (control == 'border') {
-                    var flag = !ui.showBorder;
+                    var flag = !ui.core.stateBuffer.showBorder;
                     ui.setShowBorder(flag);
                 }
             });
@@ -1042,7 +1042,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
     };
 
     MaplatUi.prototype.setShowBorder = function(flag) {
-        this.showBorder = flag;
+        this.core.requestUpdateState({showBorder: flag ? 1 : 0});
         this.updateEnvelop();
         if (flag) {
             this.core.mapDivDocument.classList.add('show-border');
@@ -1052,9 +1052,8 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
         if (this.core.restoreSession) {
             var currentTime = Math.floor(new Date().getTime() / 1000);
             localStorage.setItem('epoch', currentTime);
-            localStorage.setItem('showBorder', this.showBorder ? 1 : 0);
+            localStorage.setItem('showBorder', flag ? 1 : 0);
         }
-        this.core.requestUpdateState({showBorder: this.showBorder ? 1 : 0});
     };
 
     MaplatUi.prototype.updateEnvelop = function() {
@@ -1065,7 +1064,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
         delete ui.selectCandidate;
         delete ui._selectCandidateSource;
 
-        if (ui.showBorder) {
+        if (ui.core.stateBuffer.showBorder) {
             Object.keys(ui.core.cacheHash).filter(function(key) {
                 return ui.core.cacheHash[key].envelop;
             }).map(function(key) {
