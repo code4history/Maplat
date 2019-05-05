@@ -766,6 +766,12 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
             }
             var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
             var modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
+            ui.core.selectMarker(data.namespace_id);
+            var unselectFunc = function(event) {
+                modalElm.removeEventListener('hide.bs.modal', unselectFunc, false);
+                ui.core.unselectMarker();
+            };
+            modalElm.addEventListener('hide.bs.modal', unselectFunc, false);
             modalSetting('poi');
             modal.show();
         });

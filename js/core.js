@@ -634,7 +634,9 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
         var y = data.y;
         var coords = data.coordinates;
         var src = app.from;
-        var icon = app.__selectedMarker == data.namespace_id && data.selected_icon ? data.selected_icon : data.icon;
+        var icon = data.icon ?
+            app.__selectedMarker == data.namespace_id && data.selected_icon ? data.selected_icon : data.icon :
+            app.__selectedMarker == data.namespace_id ? 'parts/defaultpin_selected.png' : 'parts/defaultpin.png';
         var promise = coords ?
             (function() {
                 return src.merc2XyAsync(coords);
