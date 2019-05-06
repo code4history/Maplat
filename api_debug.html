@@ -38,6 +38,8 @@
     <button id="addMap">addMarker(Map)</button>
     <button id="clearMap">clearMarker(Map)</button>
     <button id="unSelect">unSelect</button>
+    <button id="showAll">showAll</button>
+    <button id="hideAll">hideAll</button>
   </div>
 </body>
 <!--script src="lib/aigle-es5.min.js"></script-->
@@ -118,6 +120,12 @@
         });
         document.getElementById('unSelect').addEventListener('click', function(e) {
             app.unselectMarker();
+        });
+        document.getElementById('showAll').addEventListener('click', function(e) {
+            app.showAllMarkers();
+        });
+        document.getElementById('hideAll').addEventListener('click', function(e) {
+            app.hideAllMarkers();
         });
     });
 </script>

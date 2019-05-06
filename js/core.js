@@ -150,6 +150,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                     rotation: parseFloat(localStorage.getItem('rotation'))
                 };
                 app.initialRestore.transparency = parseFloat(localStorage.getItem('transparency') || 0);
+                app.initialRestore.hideMarker = parseInt(localStorage.getItem('hideMarker') || '0') ? true : false;
             }
         }
 
@@ -691,6 +692,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
             source = app.from;
         }
         app.resetMarker();
+        if (app.stateBuffer.hideMarker) return;
         Object.keys(app.pois).map(function(key) {
             var cluster = app.pois[key];
             if (!cluster.hide) {
@@ -824,6 +826,26 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                 source.clearPoi(splits[1]);
                 app.redrawMarkers();
             }
+        }
+    };
+
+    MaplatApp.prototype.showAllMarkers = function() {
+        this.requestUpdateState({hideMarker: 0});
+        this.redrawMarkers();
+        if (this.restoreSession) {
+            var currentTime = Math.floor(new Date().getTime() / 1000);
+            localStorage.setItem('epoch', currentTime);
+            localStorage.setItem('hideMarker', 0);
+        }
+    };
+
+    MaplatApp.prototype.hideAllMarkers = function() {
+        this.requestUpdateState({hideMarker: 1});
+        this.redrawMarkers();
+        if (this.restoreSession) {
+            var currentTime = Math.floor(new Date().getTime() / 1000);
+            localStorage.setItem('epoch', currentTime);
+            localStorage.setItem('hideMarker', 1);
         }
     };
 
@@ -1020,7 +1042,11 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                         to.goHome();
                     }
                     to.setGPSMarker(app.currentPosition, true);
-                    app.redrawMarkers();
+                    if (restore.hideMarker) {
+                        app.hideAllMarkers();
+                    } else {
+                        app.redrawMarkers();
+                    }
                     app.resetLine();
                     for (var i = 0; i < app.lines.length; i++) {
                         (function(data) {

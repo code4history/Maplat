@@ -351,7 +351,7 @@ define(['ol-custom', 'resize'], function(ol, addResizeListener) {
                 timer = setTimeout(function() {
                     timer = null;
                     options.long_callback();
-                }, 2000);
+                }, 1500);
             } else {
                 timer = true;
             }
@@ -551,6 +551,23 @@ define(['ol-custom', 'resize'], function(ol, addResizeListener) {
         ol.control.CustomControl.call(this, options);
     };
     ol.inherits(ol.control.Copyright, ol.control.CustomControl);
+
+    ol.control.HideMarker = function(optOptions) {
+        var options = optOptions || {};
+        options.character = '<i class="fa fa-map-marker fa-lg"></i>';
+        options.cls = 'ol-hide-marker';
+        var self = this;
+        options.callback = function() {
+            var map = self.getMap();
+            map.dispatchEvent(new ol.MapEvent('click_control', map, {control: 'hideMarker'}));
+        };
+        options.long_callback = function() {
+            console.log('!');
+        };
+
+        ol.control.CustomControl.call(this, options);
+    };
+    ol.inherits(ol.control.HideMarker, ol.control.CustomControl);
 
     return ol;
 });

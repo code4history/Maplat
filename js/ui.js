@@ -132,6 +132,9 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                         case 'sb':
                             restore.showBorder = parseInt(line[1]) ? true : false;
                             break;
+                        case 'hm':
+                            restore.hideMarker = parseInt(line[1]) ? true : false;
+                            break;
                         case 'c':
                             if (ui.core) {
                                 var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
@@ -171,11 +174,17 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
 
         if (appOption.restore) {
             ui.setShowBorder(appOption.restore.showBorder || false);
+            if (appOption.restore.hideMarker) {
+                ui.core.mapDivDocument.classList.add('hide-marker');
+            }
         } else if (appOption.restore_session) {
             var lastEpoch = parseInt(localStorage.getItem('epoch') || 0);
             var currentTime = Math.floor(new Date().getTime() / 1000);
             if (lastEpoch && currentTime - lastEpoch < 3600) {
                 ui.setShowBorder(parseInt(localStorage.getItem('showBorder') || '0') ? true : false);
+            }
+            if (ui.core.initialRestore.hideMarker) {
+                ui.core.mapDivDocument.classList.add('hide-marker');
             }
         } else {
             ui.setShowBorder(false);
@@ -280,6 +289,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
             '<li data-i18n-html="html.help_etc_help" class="recipient"></li>' +
             '<span class="share_help"><li data-i18n-html="html.help_share_help" class="recipient"></li></span>' +
             '<li data-i18n-html="html.help_etc_border" class="recipient"></li>' +
+            '<li data-i18n-html="html.help_etc_hide_marker" class="recipient"></li>' +
             '<li data-i18n-html="html.help_etc_slider" class="recipient"></li>' +
             '</ul>' +
             '<p><a href="https://github.com/code4nara/Maplat/wiki" target="_blank">Maplat</a>' +
@@ -292,7 +302,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
             '<iframe id="poi_iframe" class="iframe_poi" frameborder="0" src=""></iframe>' +
             '</div>' +
             '<div id="poi_data" class="hide">' +
-            '<p class="col-xs-12 poi_img"><img id="poi_img" src=""></p>' +
+            '<p class="col-xs-12 poi_img"><img id="poi_img" src="parts/loading_image.png"></p>' +
             '<p class="recipient" id="poi_address"></p>' +
             '<p class="recipient" id="poi_desc"></p>' +
             '</div>' +
@@ -336,7 +346,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
             '</div>' +
 
             '<div id="modal_load_content">' +
-            '<p class="recipient"><img src="parts/loading.gif"><span data-i18n="html.app_loading_body"></span></p>' +
+            '<p class="recipient"><img src="parts/loading.png"><span data-i18n="html.app_loading_body"></span></p>' +
             '<div id="splash_div" class="hide row"><p class="col-xs-12 poi_img"><img id="splash_img" src=""></p></div>' +
             '<p><img src="" height="0px" width="0px"></p>' +
             '</div>' +
@@ -491,7 +501,8 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                 new ol.control.GoHome({tipLabel: ui.core.t('control.home', {ns: 'translation'})}),
                 ui.sliderCommon,
                 new ol.control.Maplat({tipLabel: ui.core.t('control.help', {ns: 'translation'})}),
-                new ol.control.Border({tipLabel: ui.core.t('control.border', {ns: 'translation'})})
+                new ol.control.Border({tipLabel: ui.core.t('control.border', {ns: 'translation'})}),
+                new ol.control.HideMarker({tipLabel: ui.core.t('control.hide_marker', {ns: 'translation'})})
             ];
             if (ui.shareEnable) {
                 ui.core.appData.controls.push(new ol.control.Share({tipLabel: ui.core.t('control.share', {ns: 'translation'})}));
@@ -756,10 +767,11 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                 ui.core.mapDivDocument.querySelector('#poi_data').classList.remove('hide');
                 ui.core.mapDivDocument.querySelector('#poi_web').classList.add('hide');
 
+                var img = ui.core.mapDivDocument.querySelector('#poi_img');
                 if (data.image && data.image != '') {
-                    ui.core.mapDivDocument.querySelector('#poi_img').setAttribute('src', ui.resolveRelativeLink(data.image, 'img'));
+                    img.setAttribute('src', ui.resolveRelativeLink(data.image, 'img'));
                 } else {
-                    ui.core.mapDivDocument.querySelector('#poi_img').setAttribute('src', 'parts/no_image.png');
+                    img.setAttribute('src', 'parts/no_image.png');
                 }
                 ui.core.mapDivDocument.querySelector('#poi_address').innerText = ui.core.translate(data.address);
                 ui.core.mapDivDocument.querySelector('#poi_desc').innerHTML = ui.core.translate(data.desc).replace(/\n/g, '<br>');
@@ -767,11 +779,17 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
             var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
             var modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
             ui.core.selectMarker(data.namespace_id);
-            var unselectFunc = function(event) {
-                modalElm.removeEventListener('hide.bs.modal', unselectFunc, false);
+            var hideFunc = function(event) {
+                modalElm.removeEventListener('hide.bs.modal', hideFunc, false);
                 ui.core.unselectMarker();
             };
-            modalElm.addEventListener('hide.bs.modal', unselectFunc, false);
+            var hiddenFunc = function(event) {
+                modalElm.removeEventListener('hidden.bs.modal', hiddenFunc, false);
+                var img = ui.core.mapDivDocument.querySelector('#poi_img');
+                img.setAttribute('src', 'parts/loading_image.png');
+            };
+            modalElm.addEventListener('hide.bs.modal', hideFunc, false);
+            modalElm.addEventListener('hidden.bs.modal', hiddenFunc, false);
             modalSetting('poi');
             modal.show();
         });
@@ -787,6 +805,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                 link = link + '/z:' + value.position.zoom;
                 if (value.position.rotation) link = link + '/r:' + value.position.rotation;
                 if (value.showBorder) link = link + '/sb:' + value.showBorder;
+                if (value.hideMarker) link = link + '/hm:' + value.hideMarker;
 
                 ui.pathThatSet = link;
                 page(link);
@@ -958,6 +977,9 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                 } else if (control == 'border') {
                     var flag = !ui.core.stateBuffer.showBorder;
                     ui.setShowBorder(flag);
+                } else if (control == 'hideMarker') {
+                    var flag = !ui.core.stateBuffer.hideMarker;
+                    ui.setHideMarker(flag);
                 }
             });
             if (fakeGps) {
@@ -1053,6 +1075,16 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
             var currentTime = Math.floor(new Date().getTime() / 1000);
             localStorage.setItem('epoch', currentTime);
             localStorage.setItem('showBorder', flag ? 1 : 0);
+        }
+    };
+
+    MaplatUi.prototype.setHideMarker = function(flag) {
+        if (flag) {
+            this.core.hideAllMarkers();
+            this.core.mapDivDocument.classList.add('hide-marker');
+        } else {
+            this.core.showAllMarkers();
+            this.core.mapDivDocument.classList.remove('hide-marker');
         }
     };
 

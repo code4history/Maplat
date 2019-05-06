@@ -24,21 +24,21 @@
 
     #modal_poi_content, #modal_map_content, #modal_load_content, #modal_gpsW_content, #modal_gpsD_content,
     #modal_help_content, #modal_title, #modal_load_title, #modal_gpsW_title, #modal_help_title,
-    #modal_share_content, #modal_share_title {
+    #modal_share_content, #modal_share_title, #modal_markerH_content, #modal_markerH_title {
         display: none;
     }
 
     .modal_poi #modal_poi_content, .modal_map #modal_map_content,
     .modal_load #modal_load_content, .modal_help #modal_help_content,
     .modal_gpsW #modal_gpsW_content, .modal_gpsD #modal_gpsD_content,
-    .modal_share #modal_share_content {
+    .modal_share #modal_share_content, .modal_markerH #modal_markerH_content {
         display: block;
     }
 
     .modal_poi #modal_title, .modal_map #modal_title,
     .modal_gpsD #modal_title, .modal_help #modal_help_title,
     .modal_load #modal_load_title, .modal_gpsW #modal_gpsW_title,
-    .modal_share #modal_share_title {
+    .modal_share #modal_share_title, .modal_markerH #modal_markerH_title {
         display: inline;
     }
 
@@ -94,10 +94,7 @@
     }
 
     .poi_img img {
-        width: 100%;
-        height: auto;
-        max-width: 600px;
-        max-height: 600px;
+        max-width: 100%;
         top: 0px;
         bottom: 0px;
         left: 0px;
@@ -457,6 +454,19 @@
         bottom: calc(115px + .5em + env(safe-area-inset-bottom));
     }
 
+    .ol-hide-marker {
+        right: .5em;
+        right: calc(.5em + constant(safe-area-inset-right));
+        right: calc(.5em + env(safe-area-inset-right));
+        bottom: calc(145px + .5em);
+    }
+
+    .ol-touch .ol-hide-marker {
+        bottom: calc(165px + .5em);
+        bottom: calc(165px + .5em + constant(safe-area-inset-bottom));
+        bottom: calc(165px + .5em + env(safe-area-inset-bottom));
+    }
+
     .ol-copyright {
         right: .5em;
         right: calc(.5em + constant(safe-area-inset-right));
@@ -490,13 +500,15 @@
     }
 
     .ol-control.disable button,
-    &.show-border .ol-control.ol-border button {
+    &.show-border .ol-control.ol-border button,
+    &.hide-marker .ol-control.ol-hide-marker button {
         color: rgba(255, 255, 255, .7);
         background-color: rgba(120, 5, 8, .2);
     }
 
     .ol-control.disable button:focus, .ol-control.disable button:hover,
-    &.show-border .ol-control.ol-border button:focus, &.show-border .ol-control.ol-border button:hover {
+    &.show-border .ol-control.ol-border button:focus, &.show-border .ol-control.ol-border button:hover,
+    &.hide-marker .ol-control.ol-hide-marker button:focus, &.hide-marker .ol-control.ol-hide-marker button:hover{
         color: rgba(255, 255, 255, .7);
         background-color: rgba(120, 5, 8, .2)
     }
