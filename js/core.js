@@ -297,6 +297,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                     if (Array.isArray(app.pois)) {
                         app.pois = {
                             main: {
+                                namespace_id: 'main',
                                 name: app.appName,
                                 pois: app.pois
                             }
@@ -314,6 +315,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                             if (!app.pois[key].pois) {
                                 app.pois[key].pois = [];
                             }
+                            app.pois[key].namespace_id = key;
                             app.addIdToPoi(key);
                         });
                     }
@@ -849,6 +851,23 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
         }
     };
 
+    MaplatApp.prototype.listPoiLayers = function(hideOnly) {
+        var app = this;
+        var appPois = Object.keys(app.pois).sort(function(a, b) {
+            if (a == 'main') return -1;
+            else if (b == 'main') return 1;
+            else if (a < b) return -1;
+            else if (a > b) return 1;
+            else return 0;
+        }).map(function(key) {
+            return app.pois[key];
+        }).filter(function(layer) {
+            return hideOnly ? layer.hide : true;
+        });
+        var mapPois = app.from.listPoiLayers(hideOnly);
+        return appPois.concat(mapPois);
+    };
+
     MaplatApp.prototype.showPoiLayer = function(id) {
         var layer = this.getPoiLayer(id);
         if (layer) {
@@ -883,6 +902,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
         if (id.indexOf('#') < 0) {
             if (!data) {
                 data = {
+                    namespace_id: id,
                     name: id,
                     pois: []
                 };
@@ -893,6 +913,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                 if (!data.pois) {
                     data.pois = [];
                 }
+                data.namespace_id = id;
             }
             this.pois[id] = data;
             this.redrawMarkers();

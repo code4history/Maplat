@@ -562,7 +562,8 @@ define(['ol-custom', 'resize'], function(ol, addResizeListener) {
             map.dispatchEvent(new ol.MapEvent('click_control', map, {control: 'hideMarker'}));
         };
         options.long_callback = function() {
-            console.log('!');
+            var map = self.getMap();
+            map.dispatchEvent(new ol.MapEvent('click_control', map, {control: 'hideLayer'}));
         };
 
         ol.control.CustomControl.call(this, options);

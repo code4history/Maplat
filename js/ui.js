@@ -197,7 +197,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
         // Modal記述の動作を調整する関数
         var modalSetting = function(target) {
             var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
-            ['poi', 'map', 'load', 'gpsW', 'gpsD', 'help', 'share'].map(function(target_) {
+            ['poi', 'map', 'load', 'gpsW', 'gpsD', 'help', 'share', 'hide_marker'].map(function(target_) {
                 var className = 'modal_' + target_;
                 if (target == target_) {
                     modalElm.classList.add(className);
@@ -266,6 +266,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
             '<span id="modal_gpsW_title" data-i18n="html.acquiring_gps"></span>' +
             '<span id="modal_help_title" data-i18n="html.help_title"></span>' +
             '<span id="modal_share_title" data-i18n="html.share_title"></span>' +
+            '<span id="modal_hide_marker_title" data-i18n="html.hide_marker_title"></span>' +
 
             '</h4>' +
             '</div>' +
@@ -349,6 +350,31 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
             '<p class="recipient"><img src="parts/loading.png"><span data-i18n="html.app_loading_body"></span></p>' +
             '<div id="splash_div" class="hide row"><p class="col-xs-12 poi_img"><img id="splash_img" src=""></p></div>' +
             '<p><img src="" height="0px" width="0px"></p>' +
+            '</div>' +
+
+            '<div id="modal_hide_marker_content">' +
+            '<ul class="list-group">' +
+            '<li class="list-group-item">' +
+            '<div class="row">' +
+            '<div class="col-sm-1"><img class="markerlist" src="parts/defaultpin.png"></div>' +
+            '<div class="col-sm-9">col-sm-4</div>' +
+            '<div class="col-sm-2">' +
+            '<input type="checkbox" class="markerlist" data="1" id="marker_1"/>' +
+            '<label class="check" for="marker_1"><div></div></label>' +
+            '</div>' +
+            '</div>' +
+            '</li>' +
+            '<li class="list-group-item">' +
+            '<div class="row">' +
+            '<div class="col-sm-1"><img class="markerlist" src="parts/defaultpin.png"></div>' +
+            '<div class="col-sm-9">col-sm-4</div>' +
+            '<div class="col-sm-2">' +
+            '<input type="checkbox" class="markerlist" data="2" id="marker_2"/>' +
+            '<label class="check" for="marker_2"><div></div></label>' +
+            '</div>' +
+            '</div>' +
+            '</li>' +
+            '</ul>' +
             '</div>' +
 
             '<p id="modal_gpsD_content" class="recipient"></p>' +
@@ -980,6 +1006,46 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                 } else if (control == 'hideMarker') {
                     var flag = !ui.core.stateBuffer.hideMarker;
                     ui.setHideMarker(flag);
+                } else if (control == 'hideLayer') {
+                    modalSetting('hide_marker');
+                    var layers = ui.core.listPoiLayers();
+                    var elem = ui.core.mapDivDocument.querySelector('ul.list-group');
+                    var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
+                    elem.innerHTML = '';
+                    layers.map(function(layer, index) {
+                        var icon = layer.icon || 'parts/defaultpin.png';
+                        var title = ui.core.translate(layer.name);
+                        var check = !layer.hide;
+                        var id = layer.namespace_id;
+                        var newElems = Core.createElement('<li class="list-group-item">' +
+                            '<div class="row">' +
+                            '<div class="col-sm-1"><img class="markerlist" src="' + icon + '"></div>' +
+                            '<div class="col-sm-9">' + title + '</div>' +
+                            '<div class="col-sm-2">' +
+                            '<input type="checkbox" class="markerlist" data="' + id +
+                            '" id="marker_' + index + '"' + (check ? ' checked' : '') + '/>' +
+                            '<label class="check" for="marker_' + index + '"><div></div></label>' +
+                            '</div>' +
+                            '</div>' +
+                            '</li>');
+                        for (var i = 0; i < newElems.length; i++) {
+                            elem.appendChild(newElems[i]);
+                        }
+                        var checkbox = ui.core.mapDivDocument.querySelector('#marker_' + index);
+                        var checkFunc = function(event) {
+                            var id = event.target.getAttribute('data');
+                            var checked = event.target.checked;
+                            if (checked) ui.core.showPoiLayer(id);
+                            else ui.core.hidePoiLayer(id);
+                        };
+                        var hideFunc = function(event) {
+                            modalElm.removeEventListener('hide.bs.modal', hideFunc, false);
+                            checkbox.removeEventListener('change', checkFunc, false);
+                        };
+                        modalElm.addEventListener('hide.bs.modal', hideFunc, false);
+                        checkbox.addEventListener('change', checkFunc, false);
+                    });
+                    modal.show();
                 }
             });
             if (fakeGps) {

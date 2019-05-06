@@ -467,6 +467,7 @@ define(['ol3', 'turf'], function(ol, turf) {
                 if (Array.isArray(self.pois)) {
                     self.pois = {
                         main: {
+                            namespace_id: self.sourceID + '#main',
                             name: self.officialTitle || self.title,
                             pois: self.pois
                         }
@@ -484,6 +485,7 @@ define(['ol3', 'turf'], function(ol, turf) {
                         if (!self.pois[key].pois) {
                             self.pois[key].pois = [];
                         }
+                        self.pois[key].namespace_id = self.sourceID + '#' + key;
                         self.addIdToPoi(key);
                     });
                 }
@@ -559,6 +561,21 @@ define(['ol3', 'turf'], function(ol, turf) {
             }
         };
 
+        target.prototype.listPoiLayers = function(hideOnly) {
+            var self = this;
+            return Object.keys(self.pois).sort(function(a, b) {
+                if (a == 'main') return -1;
+                else if (b == 'main') return 1;
+                else if (a < b) return -1;
+                else if (a > b) return 1;
+                else return 0;
+            }).map(function(key) {
+                return self.pois[key];
+            }).filter(function(layer) {
+                return hideOnly ? layer.hide : true;
+            });
+        };
+
         target.prototype.getPoiLayer = function(id) {
             return this.pois[id];
         };
@@ -568,6 +585,7 @@ define(['ol3', 'turf'], function(ol, turf) {
             if (this.pois[id]) return;
             if (!data) {
                 data = {
+                    namespace_id: this.sourceID + '#' + id,
                     name: id,
                     pois: []
                 };
@@ -578,6 +596,7 @@ define(['ol3', 'turf'], function(ol, turf) {
                 if (!data.pois) {
                     data.pois = [];
                 }
+                data.namespace_id = this.sourceID + '#' + id;
             }
             this.pois[id] = data;
         };
