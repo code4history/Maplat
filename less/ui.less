@@ -541,7 +541,11 @@
     }
 
     .ol-control.fade {
-        opacity: 0;
+        display: none;
+    }
+
+    &.with-opacity .ol-slidercommon.fade {
+        display: none;
     }
 
     .ol-control.disable button,
