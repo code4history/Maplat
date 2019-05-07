@@ -764,6 +764,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
             if (this.pois[clusterId]) {
                 this.pois[clusterId]['pois'].push(data);
                 this.addIdToPoi(clusterId);
+                this.dispatchPoiNumber();
                 this.redrawMarkers();
                 return data.namespace_id;
             }
@@ -772,6 +773,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
             var source = this.cacheHash[splits[0]];
             if (source) {
                 var ret = source.addPoi(data, splits[1]);
+                this.dispatchPoiNumber();
                 this.redrawMarkers();
                 return ret;
             }
@@ -785,8 +787,8 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                 app.pois[key].pois.map(function(poi, i) {
                     if (poi.id == id) {
                         delete app.pois[key].pois[i];
+                        app.dispatchPoiNumber();
                         app.redrawMarkers();
-                        return;
                     }
                 });
             });
@@ -795,6 +797,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
             var source = app.cacheHash[splits[0]];
             if (source) {
                 source.removePoi(splits[1]);
+                app.dispatchPoiNumber();
                 app.redrawMarkers();
             }
         }
@@ -813,12 +816,14 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
             } else if (app.pois[clusterId]) {
                 app.pois[clusterId]['pois'] = [];
             } else return;
+            app.dispatchPoiNumber();
             app.redrawMarkers();
         } else {
             var splits = clusterId.split('#');
             var source = app.cacheHash[splits[0]];
             if (source) {
                 source.clearPoi(splits[1]);
+                app.dispatchPoiNumber();
                 app.redrawMarkers();
             }
         }
@@ -834,7 +839,13 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
         this.redrawMarkers();
     };
 
-    MaplatApp.prototype.listPoiLayers = function(hideOnly) {
+    MaplatApp.prototype.dispatchPoiNumber = function() {
+        this.dispatchEvent(new CustomEvent('poi_number', this.listPoiLayers(false, true).reduce(function(prev, curr) {
+            return prev + curr.pois.length;
+        }, 0)));
+    };
+
+    MaplatApp.prototype.listPoiLayers = function(hideOnly, nonzero) {
         var app = this;
         var appPois = Object.keys(app.pois).sort(function(a, b) {
             if (a == 'main') return -1;
@@ -845,9 +856,9 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
         }).map(function(key) {
             return app.pois[key];
         }).filter(function(layer) {
-            return hideOnly ? layer.hide : true;
+            return nonzero ? hideOnly ? layer.pois.length && layer.hide : layer.pois.length : hideOnly ? layer.hide : true;
         });
-        var mapPois = app.from.listPoiLayers(hideOnly);
+        var mapPois = app.from.listPoiLayers(hideOnly, nonzero);
         return appPois.concat(mapPois);
     };
 
@@ -924,6 +935,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
             this.requestUpdateState({hideLayer: this.listPoiLayers(true).map(function(layer) {
                     return layer.namespace_id;
                 }).join(',')});
+            this.dispatchPoiNumber();
             this.redrawMarkers();
         } else {
             var splits = id.split('#');
@@ -933,6 +945,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                 this.requestUpdateState({hideLayer: this.listPoiLayers(true).map(function(layer) {
                         return layer.namespace_id;
                     }).join(',')});
+                this.dispatchPoiNumber();
                 this.redrawMarkers();
             }
         }
@@ -1028,6 +1041,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                     // This must be here: Because, render process works after view.setCenter,
                     // and Changing "from" content must be finished before "postrender" event
                     app.from = to;
+                    app.dispatchPoiNumber();
 
                     var view = app.mapObject.getView();
                     if (app.appData.zoom_restriction) {

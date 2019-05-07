@@ -541,7 +541,6 @@ define(['ol3', 'turf'], function(ol, turf) {
                 self.pois[key].pois.map(function(poi, i) {
                     if (poi.id == id) {
                         delete self.pois[key].pois[i];
-                        return;
                     }
                 });
             });
@@ -561,7 +560,7 @@ define(['ol3', 'turf'], function(ol, turf) {
             }
         };
 
-        target.prototype.listPoiLayers = function(hideOnly) {
+        target.prototype.listPoiLayers = function(hideOnly, nonzero) {
             var self = this;
             return Object.keys(self.pois).sort(function(a, b) {
                 if (a == 'main') return -1;
@@ -572,7 +571,7 @@ define(['ol3', 'turf'], function(ol, turf) {
             }).map(function(key) {
                 return self.pois[key];
             }).filter(function(layer) {
-                return hideOnly ? layer.hide : true;
+                return nonzero ? hideOnly ? layer.pois.length && layer.hide : layer.pois.length : hideOnly ? layer.hide : true;
             });
         };
 

@@ -713,6 +713,15 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
             ui.updateEnvelop();
         });
 
+        ui.core.addEventListener('poi_number', function(evt) {
+            var number = evt.detail;
+            if (number) {
+                ui.core.mapDivDocument.classList.remove('no_poi');
+            } else {
+                ui.core.mapDivDocument.classList.add('no_poi');
+            }
+        });
+
         ui.core.addEventListener('outOfMap', function(evt) {
             if (enableOutOfMap) {
                 ui.core.mapDivDocument.querySelector('#modal_title').innerText = ui.core.t('app.out_of_map');
@@ -1012,7 +1021,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                     ui.setHideMarker(flag);
                 } else if (control == 'hideLayer') {
                     modalSetting('hide_marker');
-                    var layers = ui.core.listPoiLayers();
+                    var layers = ui.core.listPoiLayers(false, true);
                     var elem = ui.core.mapDivDocument.querySelector('ul.list-group');
                     var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
                     elem.innerHTML = '';
