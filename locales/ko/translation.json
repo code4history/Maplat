@@ -8,6 +8,7 @@
         "help": "도움말 표시",
         "trans": "지도 투명도 변경",
         "share": "공유",
+        "hide_marker": "마커 숨기기",
         "border": "지도 경계 표시"
     },
     "html": {
@@ -42,11 +43,13 @@
         "help_etc_help": "<img src='parts/help.png'>버튼: 이 도움말이 표시됩니다.",
         "help_share_help": "<img src='parts/share.png'>버튼: SNS 등에 앱 공유 화면이 표시됩니다.",
         "help_etc_border": "<img src='parts/border.png'>버튼: 지도의 경계를 표시합니다. <br>경계 안쪽을 클릭해서 지도를 변경할 수도 있습니다.<br>PC의 경우는마우스 오버로 지도를 선택합니다. 스마트폰의 경우는 원클릭으로 지도를 선택해, 다시 한번 클릭하면 지도를 변경합니다.",
+        "help_etc_hide_marker": "<img src='parts/hide_marker.png'>버튼: 마커의 표시하기/숨기기를 설정합니다.<br>버튼을 오래 누르면 마커의 레이어 별로 표시하기/숨기기를 설정하는 화면이 표시됩니다.",
         "help_etc_slider": "<img src='parts/slider.png'>슬라이더: 표시되어 있는 지도의 투명도를 변경, 배경에 있는 지도를 비쳐 보이게 합니다.<br>그림 지도, 고지도가 표시 중에만 작동하고 베이스 맵이 표시되어 있을 때는 작동하지 않습니다.",
         "share_title": "공유",
         "share_app_title": "이 앱을 공유",
         "share_state_title": "현재 위치를 공유",
-        "share_copy": "복사"
+        "share_copy": "복사",
+        "hide_marker_title": "마커 레이어 표시 설정"
     },
     "app": {
         "fake_explanation": "※%1$s 중심에서 %2$dkm 이상 떨어져 있을 때는 %1$s 중심 주변에 있는 의사 경위도를 출력합니다. ",
