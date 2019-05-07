@@ -21,15 +21,15 @@ importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.4.1/workbox
 self.__precacheManifest = [
   {
     "url": ".",
-    "revision": "Tue May 07 2019 12:38:44 GMT+0900 (GMT+09:00)"
+    "revision": "Tue May 07 2019 22:35:20 GMT+0900 (GMT+09:00)"
   },
   {
     "url": "dist/maplat.js",
-    "revision": "a18aa061ebc476b794148b1c9f04fbd0"
+    "revision": "ae96d00fead413bb241db4304a9bd5dd"
   },
   {
     "url": "dist/maplat.css",
-    "revision": "3562cd1d20206c4efcdec6c00020d261"
+    "revision": "340031470f59e5f126537a6d4b2ac6b5"
   },
   {
     "url": "parts/all_right_reserved.png",
@@ -177,7 +177,7 @@ self.__precacheManifest = [
   },
   {
     "url": "locales/ko/translation.json",
-    "revision": "00a2e5e364ac4e495829b5b474cf198c"
+    "revision": "a25a3ca96e7ad486211556d5865d74d7"
   },
   {
     "url": "locales/zh-TW/translation.json",

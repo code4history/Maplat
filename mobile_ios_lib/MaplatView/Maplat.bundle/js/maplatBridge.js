@@ -24,6 +24,7 @@ maplatBridge.callWeb2App = maplatBridge.callWeb2App || function(key, data) {
 var app;
 maplatBridge.callApp2Web = function(key, data, callbackKey) {
     try {
+        if (data == '(null)') data = null;
         data = JSON.parse(data);
     } catch (e) {}
     switch (key) {
