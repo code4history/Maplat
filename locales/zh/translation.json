@@ -8,6 +8,7 @@
         "help": "查看帮助",
         "trans": "调整地图透明度",
         "share": "分享",
+        "hide_marker": "隐藏标记",
         "border": "显示地图边界"
     },
     "html": {
@@ -42,11 +43,13 @@
         "help_etc_help": "<img src='parts/help.png'>按钮: 显示这个帮助信息。",
         "help_share_help": "<img src='parts/share.png'>按钮: 显示向SNS等其它应用分享的页面。",
         "help_etc_border": "<img src='parts/border.png'>按钮: 地图的边界显示。<br>在边界内点击也可以切换地图显示。<br>在电脑上操作可以用鼠标在地图上上移动选择后点击进行地图切换显示，手机上在选中地图后，再一次点击后进行地图切换显示。",
+        "help_etc_hide_marker": "<img src='parts/hide_marker.png'>按钮: 显示标记/隐藏标记 的功能切换。<br>长按按钮，会在画面上按顺序对每种标记进行显示/隐藏的切换操作。",
         "help_etc_slider": "<img src='parts/slider.png'>侧边栏: 显示中的地图的透明度调整，可以将背景中的地图透明地看到。<br>只支持在手绘地图、历史地图中使用，基本地图显示时不可用。",
         "share_title": "分享",
         "share_app_title": "分享此应用",
         "share_state_title": "分享现在所在位置",
-        "share_copy": "复制"
+        "share_copy": "复制",
+        "hide_marker_title": "标记项显示切换"
     },
     "app": {
         "fake_explanation": "※以%1$s为中心，超出%2$dkm以上时、以%1$s为中心使用模糊经纬度表示周边范围。",

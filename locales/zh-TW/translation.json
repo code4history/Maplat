@@ -8,6 +8,7 @@
         "help": "查看幫助",
         "trans": "調整地圖透明度",
         "share": "分享",
+        "hide_marker": "隱藏標記",
         "border": "顯示地圖邊界"
     },
     "html": {
@@ -41,12 +42,14 @@
         "help_etc_attr": "<img src='parts/attr.png'>按鈕 顯示中地圖的製作者、所有者、許可等各種信息顯示。",
         "help_etc_help": "<img src='parts/help.png'>按鈕: 顯示這個幫助信息。",
         "help_share_help": "<img src='parts/share.png'>按鈕: 顯示向SNS等其它應用分享的頁面。",
+        "help_etc_hide_marker": "<img src='parts/hide_marker.png'>按鈕: 顯示標記/隱藏標記 的功能切換。 <br>長按按鈕，會在畫面上按順序對每種標記進行顯示/隱藏的切換操作。",
         "help_etc_border": "<img src='parts/border.png'>按鈕: 地圖的邊界顯示。 <br>在邊界內點擊也可以切換地圖顯示。 <br>在電腦上操作可以用鼠標在地圖上上移動選擇後點擊進行地圖切換顯示，手機上在選中地圖後，再一次點擊後進行地圖切換顯示。",
         "help_etc_slider": "<img src='parts/slider.png'>側邊欄: 顯示中的地圖的透明度調整，可以將背景中的地圖透明地看到。 <br>只支持在手繪地圖、歷史地圖中使用，基本地圖顯示時不可用。",
         "share_title": "分享",
         "share_app_title": "分享此應用",
         "share_state_title": "分享現在所在位置",
-        "share_copy": "複製"
+        "share_copy": "複製",
+        "hide_marker_title": "標記項顯示切換"
     },
     "app": {
         "fake_explanation": "※以%1$s為中心，超出%2$dkm以上時、以%1$s為中心使用模糊經緯度表示周邊範圍。",

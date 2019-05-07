@@ -135,6 +135,9 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                         case 'hm':
                             restore.hideMarker = parseInt(line[1]) ? true : false;
                             break;
+                        case 'hl':
+                            restore.hideLayer = line[1];
+                            break;
                         case 'c':
                             if (ui.core) {
                                 var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
@@ -832,6 +835,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                 if (value.position.rotation) link = link + '/r:' + value.position.rotation;
                 if (value.showBorder) link = link + '/sb:' + value.showBorder;
                 if (value.hideMarker) link = link + '/hm:' + value.hideMarker;
+                if (value.hideLayer) link = link + '/hl:' + value.hideLayer;
 
                 ui.pathThatSet = link;
                 page(link);

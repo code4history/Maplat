@@ -151,6 +151,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                 };
                 app.initialRestore.transparency = parseFloat(localStorage.getItem('transparency') || 0);
                 app.initialRestore.hideMarker = parseInt(localStorage.getItem('hideMarker') || '0') ? true : false;
+                app.initialRestore.hideLayer = localStorage.getItem('hideLayer');
             }
         }
 
@@ -559,14 +560,6 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                                     direction: direction,
                                     rotation: rotation
                                 }));
-                                if (app.restoreSession) {
-                                    var currentTime = Math.floor(new Date().getTime() / 1000);
-                                    localStorage.setItem('epoch', currentTime);
-                                    localStorage.setItem('x', center[0]);
-                                    localStorage.setItem('y', center[1]);
-                                    localStorage.setItem('zoom', zoom);
-                                    localStorage.setItem('rotation', rotation);
-                                }
                                 app.requestUpdateState({
                                     position: {
                                         x: center[0],
@@ -834,21 +827,11 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
     MaplatApp.prototype.showAllMarkers = function() {
         this.requestUpdateState({hideMarker: 0});
         this.redrawMarkers();
-        if (this.restoreSession) {
-            var currentTime = Math.floor(new Date().getTime() / 1000);
-            localStorage.setItem('epoch', currentTime);
-            localStorage.setItem('hideMarker', 0);
-        }
     };
 
     MaplatApp.prototype.hideAllMarkers = function() {
         this.requestUpdateState({hideMarker: 1});
         this.redrawMarkers();
-        if (this.restoreSession) {
-            var currentTime = Math.floor(new Date().getTime() / 1000);
-            localStorage.setItem('epoch', currentTime);
-            localStorage.setItem('hideMarker', 1);
-        }
     };
 
     MaplatApp.prototype.listPoiLayers = function(hideOnly) {
@@ -872,6 +855,9 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
         var layer = this.getPoiLayer(id);
         if (layer) {
             delete layer.hide;
+            this.requestUpdateState({hideLayer: this.listPoiLayers(true).map(function(layer) {
+                return layer.namespace_id;
+                }).join(',')});
             this.redrawMarkers();
         }
     };
@@ -880,6 +866,9 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
         var layer = this.getPoiLayer(id);
         if (layer) {
             layer.hide = true;
+            this.requestUpdateState({hideLayer: this.listPoiLayers(true).map(function(layer) {
+                    return layer.namespace_id;
+                }).join(',')});
             this.redrawMarkers();
         }
     };
@@ -932,12 +921,18 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
         if (!this.pois[id]) return;
         if (id.indexOf('#') < 0) {
             delete this.pois[id];
+            this.requestUpdateState({hideLayer: this.listPoiLayers(true).map(function(layer) {
+                    return layer.namespace_id;
+                }).join(',')});
             this.redrawMarkers();
         } else {
             var splits = id.split('#');
             var source = this.cacheHash[splits[0]];
             if (source) {
                 source.removePoiLayer(splits[1]);
+                this.requestUpdateState({hideLayer: this.listPoiLayers(true).map(function(layer) {
+                        return layer.namespace_id;
+                    }).join(',')});
                 this.redrawMarkers();
             }
         }
@@ -999,11 +994,6 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                                     backTo = backSrc;
                                 }
                             }
-                            if (app.restoreSession) {
-                                var currentTime = Math.floor(new Date().getTime() / 1000);
-                                localStorage.setItem('epoch', currentTime);
-                                localStorage.setItem('backgroundID', backTo.sourceID);
-                            }
                             app.requestUpdateState({backgroundID: backTo.sourceID});
                         } else if (to instanceof ol.source.NowMap) {
                             // If new foreground source is basemap or TMS overlay, remove source from background map
@@ -1021,21 +1011,11 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                             var backToLocal = backSrc || now;
                             app.mapObject.exchangeSource(backToLocal);
                         }
-                        if (app.restoreSession) {
-                            var currentTime = Math.floor(new Date().getTime() / 1000);
-                            localStorage.setItem('epoch', currentTime);
-                            localStorage.setItem('backgroundID', app.mapObject.getSource().sourceID);
-                        }
                         app.requestUpdateState({backgroundID: app.mapObject.getSource().sourceID});
                     } else {
                         // Remove overlay from foreground and set current source to foreground
                         app.mapObject.setLayer();
                         app.mapObject.exchangeSource(to);
-                    }
-                    if (app.restoreSession) {
-                        var currentTime = Math.floor(new Date().getTime() / 1000);
-                        localStorage.setItem('epoch', currentTime);
-                        localStorage.setItem('sourceID', to.sourceID);
                     }
                     var updateState = {
                         sourceID: to.sourceID
@@ -1063,6 +1043,16 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                         to.goHome();
                     }
                     to.setGPSMarker(app.currentPosition, true);
+                    if (restore.hideLayer) {
+                        var layers = restore.hideLayer.split(',');
+                        layers.map(function(key) {
+                            var layer = app.getPoiLayer(key);
+                            if (layer) {
+                                layer.hide = true;
+                            }
+                        });
+                        app.requestUpdateState({hideLayer: restore.hideLayer});
+                    }
                     if (restore.hideMarker) {
                         app.hideAllMarkers();
                     } else {
@@ -1111,6 +1101,22 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
         if (app.stateBuffer.backgroundID == '____delete____') {
             delete app.stateBuffer.backgroundID;
         }
+        if (app.restoreSession) {
+            var currentTime = Math.floor(new Date().getTime() / 1000);
+            localStorage.setItem('epoch', currentTime);
+            var loopSession = function(data) {
+                Object.keys(data).map(function(key) {
+                    if (key == 'position') {
+                        loopSession(data[key]);
+                    } else if (key == 'backgroundID' && data[key] == '____delete____') {
+                        localStorage.removeItem(key);
+                    } else {
+                        localStorage.setItem(key, data[key]);
+                    }
+                });
+            }
+            loopSession(data);
+        }
         if (app.timer) clearTimeout(app.timer);
         app.timer = setTimeout(function() {
             app.timer = undefined;
@@ -1121,11 +1127,6 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
     MaplatApp.prototype.setTransparency = function(percentage) {
         this.transparency_ = percentage;
         this.mapObject.setTransparency(percentage);
-        if (this.restoreSession) {
-            var currentTime = Math.floor(new Date().getTime() / 1000);
-            localStorage.setItem('epoch', currentTime);
-            localStorage.setItem('transparency', percentage);
-        }
         this.requestUpdateState({transparency: percentage});
     };
 

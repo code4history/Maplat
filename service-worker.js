@@ -21,15 +21,15 @@ importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.4.1/workbox
 self.__precacheManifest = [
   {
     "url": ".",
-    "revision": "Thu Apr 11 2019 23:18:20 GMT+0900 (GMT+09:00)"
+    "revision": "Tue May 07 2019 12:38:44 GMT+0900 (GMT+09:00)"
   },
   {
     "url": "dist/maplat.js",
-    "revision": "6ee0b117af556ab3505b540d6df14199"
+    "revision": "a18aa061ebc476b794148b1c9f04fbd0"
   },
   {
     "url": "dist/maplat.css",
-    "revision": "bc1653a542041560ae3749837077622d"
+    "revision": "3562cd1d20206c4efcdec6c00020d261"
   },
   {
     "url": "parts/all_right_reserved.png",
@@ -42,6 +42,10 @@ self.__precacheManifest = [
   {
     "url": "parts/basemap.png",
     "revision": "d6eb2a24c9db8612a9e1ebfe1e749c94"
+  },
+  {
+    "url": "parts/blue_marker.png",
+    "revision": "3f0a27365f8197ee4e28acb2b6d4c9d9"
   },
   {
     "url": "parts/bluedot.png",
@@ -84,6 +88,10 @@ self.__precacheManifest = [
     "revision": "e77f58c849942a4738967e01d35af3b6"
   },
   {
+    "url": "parts/defaultpin_selected.png",
+    "revision": "5a59a47efbff1f339a8a72acf5875354"
+  },
+  {
     "url": "parts/defaultpin.png",
     "revision": "914de2be384fd0a7c10edba093102ab4"
   },
@@ -104,12 +112,20 @@ self.__precacheManifest = [
     "revision": "dcae0d7d90782d7ec5126c48158f2757"
   },
   {
+    "url": "parts/hide_marker.png",
+    "revision": "733de5cdee50bd4a793ebedeca2d8090"
+  },
+  {
     "url": "parts/home.png",
     "revision": "8793f7f3c3c8ad97ab0721c9abc0f27a"
   },
   {
-    "url": "parts/loading.gif",
-    "revision": "9e34e033ec7749c0ee473c1879fe4a96"
+    "url": "parts/loading_image.png",
+    "revision": "192f06bfd1c723d52c96f2b2c7515604"
+  },
+  {
+    "url": "parts/loading.png",
+    "revision": "617a6e8f8d4e2f7b1f5b8b6392d1a6fd"
   },
   {
     "url": "parts/Maplat.png",
@@ -136,6 +152,10 @@ self.__precacheManifest = [
     "revision": "7c5bd95e2ed638c542b7684cc5a52724"
   },
   {
+    "url": "parts/red_marker.png",
+    "revision": "7f5a919a8d17390929bb92f3dc480cee"
+  },
+  {
     "url": "parts/redcircle.png",
     "revision": "3bb615256d903d1c7f14e169f35ae6f9"
   },
@@ -149,19 +169,23 @@ self.__precacheManifest = [
   },
   {
     "url": "locales/en/translation.json",
-    "revision": "5c95930a917b5826db278efac0a20a10"
+    "revision": "582e7ef52aa1468ff4729a506839ae33"
   },
   {
     "url": "locales/ja/translation.json",
-    "revision": "92c6a7c7866adfd1f5a3c807395de8d1"
+    "revision": "e667c531c86c266c7b3c2f2c38d74d56"
+  },
+  {
+    "url": "locales/ko/translation.json",
+    "revision": "00a2e5e364ac4e495829b5b474cf198c"
   },
   {
     "url": "locales/zh-TW/translation.json",
-    "revision": "b5107c8fb1e1f289eca1b523a29eab99"
+    "revision": "1b9d0ac1a1c4f23478a2c7e8b67ccee5"
   },
   {
     "url": "locales/zh/translation.json",
-    "revision": "cdf37d41cc3618f044fd2fe8233079b2"
+    "revision": "1cb84f5bfd108637f0b44e6b8638e65f"
   },
   {
     "url": "fonts/clarenbd-webfont.eot",
