@@ -219,7 +219,9 @@ public class MaplatBridge extends Object {
         if (mListener == null) return;
         if (key.equals("ready")){
             if (data.equals("callApp2Web")) {
-                callApp2Web("maplatInitialize", mInitializeValue);
+                List<Object> arr = new ArrayList<Object>();
+                arr.add(mInitializeValue);
+                callApp2Web("maplatInitialize", arr);
             } else if (data.equals("maplatObject")) {
                 mHandler.post(new Runnable() {
                     @Override
@@ -354,6 +356,7 @@ public class MaplatBridge extends Object {
     private void addMarkerInternal(double latitude, double longitude, long markerId, Object markerData, String iconUrl) {
         Map<String, Object> obj = new HashMap<String, Object>();
         List<Double> lnglat = new ArrayList<Double>();
+        List<Object> arr = new ArrayList<Object>();
         try {
             lnglat.add(longitude);
             lnglat.add(latitude);
@@ -363,84 +366,97 @@ public class MaplatBridge extends Object {
             if (!TextUtils.isEmpty(iconUrl)) {
                 obj.put("icon", iconUrl);
             }
+            arr.add(obj);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        callApp2Web("addMarker", obj);
+        callApp2Web("addMarker", arr);
     }
 
     public void clearMarker() {
-        callApp2Web("clearMarker", null);
+        callApp2Web("clearMarker", new ArrayList<Object>());
     }
 
     public void setGPSMarker(double latitude, double longitude, double accuracy) {
         Map<String, Object> obj = new HashMap<String, Object>();
         List<Double> lnglat = new ArrayList<Double>();
+        List<Object> arr = new ArrayList<Object>();
         try {
             lnglat.add(longitude);
             lnglat.add(latitude);
             obj.put("lnglat", lnglat);
             obj.put("acc", accuracy);
+            arr.add(obj);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        callApp2Web("setGPSMarker", obj);
+        callApp2Web("setGPSMarker", arr);
     }
 
     public void changeMap(String mapID) {
-        callApp2Web("changeMap", mapID);
+        List<Object> arr = new ArrayList<Object>();
+        arr.add(mapID);
+        callApp2Web("changeMap", arr);
     }
 
     public void setViewpoint(double latitude, double longitude) {
         Map<String, Object> obj = new HashMap<String, Object>();
+        List<Object> arr = new ArrayList<Object>();
         try {
             obj.put("longitude", longitude);
             obj.put("latitude", latitude);
+            arr.add(obj);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        callApp2Web("setViewpoint", obj);
+        callApp2Web("setViewpoint", arr);
     }
 
     public void setDirection(double direction) {
         Map<String, Object> obj = new HashMap<String, Object>();
+        List<Object> arr = new ArrayList<Object>();
         try {
             obj.put("direction", direction);
+            arr.add(obj);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        callApp2Web("setViewpoint", obj);
+        callApp2Web("setViewpoint", arr);
     }
 
     public void setRotation(double rotation) {
         Map<String, Object> obj = new HashMap<String, Object>();
+        List<Object> arr = new ArrayList<Object>();
         try {
             obj.put("rotation", rotation);
+            arr.add(obj);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        callApp2Web("setViewpoint", obj);
+        callApp2Web("setViewpoint", arr);
     }
 
     public void addLine(ArrayList<ArrayList<Double>> lnglats, HashMap<String, Object> stroke) {
         Map<String, Object> obj = new HashMap<String, Object>();
+        List<Object> arr = new ArrayList<Object>();
         try {
             obj.put("lnglats", lnglats);
             if (stroke != null) {
                 obj.put("stroke", stroke);
             }
+            arr.add(obj);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        callApp2Web("addLine", obj);
+        callApp2Web("addLine", arr);
     }
 
     public void clearLine() {
-        callApp2Web("clearLine", null);
+        callApp2Web("clearLine", new ArrayList<Object>());
     }
 
     public void currentMapInfo(final IMaplatMapCallbackHandler callback) {
-        callApp2Web("currentMapInfo", null, new IMaplatStringCallbackHandler() {
+        callApp2Web("currentMapInfo", new ArrayList<Object>(), new IMaplatStringCallbackHandler() {
             @Override
             public void callback(String value) {
                 if (value.equals("")) {
@@ -454,7 +470,9 @@ public class MaplatBridge extends Object {
     }
 
     public void mapInfo(String sourceID, final IMaplatMapCallbackHandler callback) {
-        callApp2Web("mapInfo", sourceID, new IMaplatStringCallbackHandler() {
+        List<Object> arr = new ArrayList<Object>();
+        arr.add(sourceID);
+        callApp2Web("mapInfo", arr, new IMaplatStringCallbackHandler() {
             @Override
             public void callback(String value) {
                 if (value.equals("")) {
@@ -466,11 +484,11 @@ public class MaplatBridge extends Object {
             }
         });
     }
-    private void callApp2Web(final String key, Object data) {
+    private void callApp2Web(final String key, List<Object> data) {
         callApp2Web(key, data, null);
     }
 
-    private void callApp2Web(final String key, Object data, IMaplatStringCallbackHandler callback) {
+    private void callApp2Web(final String key, List<Object> data, IMaplatStringCallbackHandler callback) {
         final String jsonStr = objectToJson(data);
         String callbackKey = "";
         if (callback != null) {

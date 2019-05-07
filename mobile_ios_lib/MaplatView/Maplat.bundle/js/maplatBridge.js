@@ -24,13 +24,13 @@ maplatBridge.callWeb2App = maplatBridge.callWeb2App || function(key, data) {
 var app;
 maplatBridge.callApp2Web = function(key, data, callbackKey) {
     try {
-        if (data == '(null)') data = null;
+        if (data == '(null)' || !data) data = '[]';
         data = JSON.parse(data);
     } catch (e) {}
     switch (key) {
         case 'maplatInitialize':
             data.mobile_if = true;
-            Maplat.createObject(data).then(function(app_) {
+            Maplat.createObject(data[0]).then(function(app_) {
                 app = app_;
                 maplatBridge.callWeb2App('ready', 'maplatObject');
                 app.addEventListener('clickMarker', function(evt) {
@@ -51,7 +51,7 @@ maplatBridge.callApp2Web = function(key, data, callbackKey) {
             if (app) {
                 var func = app[key];
                 if (func) {
-                    var ret = func.call(app, data);
+                    var ret = func.apply(app, data);
                     if (ret instanceof Object) {
                         ret = JSON.stringify(ret);
                     }

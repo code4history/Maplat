@@ -64,7 +64,7 @@
     NSLog(@"onCallWeb2AppWithKey:%@ value:%@", key, value);
     if ([key isEqualToString:@"ready"]) {
         if ([value isEqualToString:@"callApp2Web"]) {
-            [self callApp2WebWithKey:@"maplatInitialize" value:_initializeValue];
+            [self callApp2WebWithKey:@"maplatInitialize" value:@[_initializeValue]];
         } else if ([value isEqualToString:@"maplatObject"]) {
             [_delegate onReady];
         }
@@ -106,24 +106,18 @@
     }
 }
 
-- (void)callApp2WebWithKey:(NSString *)key value:(id)value
+- (void)callApp2WebWithKey:(NSString *)key value:(NSArray *)value
 {
     [self callApp2WebWithKey:key value:value callback:nil];
 }
 
-- (void)callApp2WebWithKey:(NSString *)key value:(id)value callback:(void (^)(NSString *))callback
+- (void)callApp2WebWithKey:(NSString *)key value:(NSArray *)value callback:(void (^)(NSString *))callback
 {
-    NSString* jsonStr;
     if (value == nil) {
-        jsonStr = nil;
-    } else if ([value isKindOfClass:[NSString class]]) {
-        jsonStr = value;
-    } else if ([value isKindOfClass:[NSNumber class]]) {
-        jsonStr = [value stringValue];
-    } else {
-        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:value options:0 error:nil];
-        jsonStr = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        value = @[];
     }
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:value options:0 error:nil];
+    NSString* jsonStr = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     NSString *retVal = [_webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"maplatBridge.callApp2Web('%@','%@');", key, jsonStr]];
     if (callback != nil) {
         callback(retVal);
@@ -181,12 +175,12 @@
     if ([iconUrl length] > 0) {
         [jsonObj setValue:iconUrl forKey:@"icon"];
     }
-    [self callApp2WebWithKey:@"addMarker" value:jsonObj];
+    [self callApp2WebWithKey:@"addMarker" value:@[jsonObj]];
 }
 
 - (void)clearMarker
 {
-    [self callApp2WebWithKey:@"clearMarker" value:nil];
+    [self callApp2WebWithKey:@"clearMarker" value:@[]];
 }
 
 - (void)setGPSMarkerWithLatitude:(double)latitude longitude:(double)longitude accuracy:(double)accuracy
@@ -195,12 +189,12 @@
     NSArray *Lnglat = @[[NSNumber numberWithDouble:longitude], [NSNumber numberWithDouble:latitude]];
     [jsonObj setValue:Lnglat forKey:@"lnglat"];
     [jsonObj setValue:[NSNumber numberWithDouble:accuracy] forKey:@"acc"];
-    [self callApp2WebWithKey:@"setGPSMarker" value:jsonObj];
+    [self callApp2WebWithKey:@"setGPSMarker" value:@[jsonObj]];
 }
 
 - (void)changeMap:(NSString *)mapID
 {
-    [self callApp2WebWithKey:@"changeMap" value:mapID];
+    [self callApp2WebWithKey:@"changeMap" value:@[mapID]];
 }
 
 - (void)setViewpointWithLatitude:(double)latitude longitude:(double)longitude
@@ -208,21 +202,21 @@
     NSMutableDictionary *jsonObj = [NSMutableDictionary new];
     [jsonObj setValue:[NSNumber numberWithDouble:longitude] forKey:@"longitude"];
     [jsonObj setValue:[NSNumber numberWithDouble:latitude] forKey:@"latitude"];
-    [self callApp2WebWithKey:@"setViewpoint" value:jsonObj];
+    [self callApp2WebWithKey:@"setViewpoint" value:@[jsonObj]];
 }
 
 - (void)setDirection:(double)direction
 {
     NSMutableDictionary *jsonObj = [NSMutableDictionary new];
     [jsonObj setValue:[NSNumber numberWithDouble:direction] forKey:@"direction"];
-    [self callApp2WebWithKey:@"setViewpoint" value:jsonObj];
+    [self callApp2WebWithKey:@"setViewpoint" value:@[jsonObj]];
 }
 
 - (void)setRotation:(double)rotation
 {
     NSMutableDictionary *jsonObj = [NSMutableDictionary new];
     [jsonObj setValue:[NSNumber numberWithDouble:rotation] forKey:@"rotation"];
-    [self callApp2WebWithKey:@"setViewpoint" value:jsonObj];
+    [self callApp2WebWithKey:@"setViewpoint" value:@[jsonObj]];
 }
 
 - (void)addLineWithLngLat:(NSArray *)lnglats stroke:(NSDictionary *)stroke
@@ -232,22 +226,22 @@
     if (stroke) {
         [jsonObj setValue:stroke forKey:@"stroke"];
     }
-    [self callApp2WebWithKey:@"addLine" value:jsonObj];
+    [self callApp2WebWithKey:@"addLine" value:@[jsonObj]];
 }
 
 - (void)clearLine
 {
-    [self callApp2WebWithKey:@"clearLine" value:nil];
+    [self callApp2WebWithKey:@"clearLine" value:@[]];
 }
 
 - (void)currentMapID:(void (^)(NSString *))callback
 {
-    [self callApp2WebWithKey:@"currentMapID" value:nil callback:callback];
+    [self callApp2WebWithKey:@"currentMapID" value:@[] callback:callback];
 }
 
 - (void)currentMapInfo:(void (^)(NSDictionary *))callback
 {
-    [self callApp2WebWithKey:@"currentMapInfo" value:nil callback:^(NSString *value){
+    [self callApp2WebWithKey:@"currentMapInfo" value:@[] callback:^(NSString *value){
         if ([value isEqualToString:@""]) {
             callback(nil);
             return;
@@ -262,7 +256,7 @@
 
 - (void)mapInfo:(NSString *)sourceID callback:(void (^)(NSDictionary *))callback
 {
-    [self callApp2WebWithKey:@"mapInfo" value:sourceID callback:^(NSString *value){
+    [self callApp2WebWithKey:@"mapInfo" value:@[sourceID] callback:^(NSString *value){
         if ([value isEqualToString:@""]) {
             callback(nil);
             return;
