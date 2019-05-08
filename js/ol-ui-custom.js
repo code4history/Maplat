@@ -332,14 +332,17 @@ define(['ol-custom', 'resize'], function(ol, addResizeListener) {
         span.innerHTML = options.character;
         button.appendChild(span);
         var timer;
+        var touchstart;
 
         button.addEventListener('mouseup', function(e) {
-            if (timer) {
-                if (options.long_callback) {
-                    clearTimeout(timer);
+            if (!touchstart) {
+                if (timer) {
+                    if (options.long_callback) {
+                        clearTimeout(timer);
+                    }
+                    timer = null;
+                    options.callback();
                 }
-                timer = null;
-                options.callback();
             }
             e.stopPropagation();
         }, false);
@@ -347,6 +350,20 @@ define(['ol-custom', 'resize'], function(ol, addResizeListener) {
             e.stopPropagation();
         }, false);
         button.addEventListener('mousedown', function(e) {
+            if (!touchstart) {
+                if (options.long_callback) {
+                    timer = setTimeout(function() {
+                        timer = null;
+                        options.long_callback();
+                    }, 1500);
+                } else {
+                    timer = true;
+                }
+            }
+            e.stopPropagation();
+        }, false);
+        button.addEventListener('touchstart', function(e) {
+            touchstart = true;
             if (options.long_callback) {
                 timer = setTimeout(function() {
                     timer = null;
@@ -354,6 +371,16 @@ define(['ol-custom', 'resize'], function(ol, addResizeListener) {
                 }, 1500);
             } else {
                 timer = true;
+            }
+            e.stopPropagation();
+        }, false);
+        button.addEventListener('touchend', function(e) {
+            if (timer) {
+                if (options.long_callback) {
+                    clearTimeout(timer);
+                }
+                timer = null;
+                options.callback();
             }
             e.stopPropagation();
         }, false);

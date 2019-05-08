@@ -127,8 +127,10 @@ gulp.task('sw_build', function() {
             'fonts/*'
         ],
         swDest: 'service-worker_.js',
+        clientsClaim: true,
+        skipWaiting: true,
         runtimeCaching: [{
-            urlPattern: /(?:maps\/.+\.json|apps\/.+\.json|tmbs\/.+_menu\.jpg|img\/.+\.(?:png|jpg))$/,
+            urlPattern: /(?:maps\/.+\.json|pwa\/.+|pois\/.+\.json|apps\/.+\.json|tmbs\/.+_menu\.jpg|img\/.+\.(?:png|jpg))$/,
             handler: 'networkFirst',
             options: {
                 cacheName: 'resourcesCache',
