@@ -474,6 +474,9 @@ define(['ol3', 'turf'], function(ol, turf) {
                     };
                     self.addIdToPoi('main');
                 } else {
+                    if (!self.pois['main']) {
+                        self.pois['main'] = {};
+                    }
                     Object.keys(self.pois).map(function(key) {
                         if (!self.pois[key].name) {
                             if (key == 'main') {

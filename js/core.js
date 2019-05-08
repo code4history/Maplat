@@ -305,6 +305,9 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                         };
                         app.addIdToPoi('main');
                     } else {
+                        if (!app.pois['main']) {
+                            app.pois['main'] = {};
+                        }
                         Object.keys(app.pois).map(function(key) {
                             if (!app.pois[key].name) {
                                 if (key == 'main') {
