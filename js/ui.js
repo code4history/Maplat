@@ -471,7 +471,9 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                     console.log('Service Worker Registered');
                     reg.onupdatefound = function() {
                         console.log('Found Service Worker update');
-                        reg.update();
+                        reg.update().catch(function(e) {
+                            throw e;
+                        });
                     };
                 }).catch(function(err) {
                     console.log(err);
