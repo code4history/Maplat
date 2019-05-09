@@ -131,7 +131,7 @@ gulp.task('sw_build', function() {
         skipWaiting: true,
         runtimeCaching: [{
             urlPattern: /(?:maps\/.+\.json|pwa\/.+|pois\/.+\.json|apps\/.+\.json|tmbs\/.+_menu\.jpg|img\/.+\.(?:png|jpg))$/,
-            handler: 'networkFirst',
+            handler: 'staleWhileRevalidate',
             options: {
                 cacheName: 'resourcesCache',
                 expiration: {

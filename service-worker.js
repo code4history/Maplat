@@ -24,7 +24,7 @@ workbox.clientsClaim();
 self.__precacheManifest = [
   {
     "url": ".",
-    "revision": "Thu May 09 2019 16:01:30 GMT+0900 (GMT+09:00)"
+    "revision": "Thu May 09 2019 16:07:12 GMT+0900 (GMT+09:00)"
   },
   {
     "url": "dist/maplat.js",
@@ -234,4 +234,4 @@ self.__precacheManifest = [
 workbox.precaching.suppressWarnings();
 workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
 
-workbox.routing.registerRoute(/(?:maps\/.+\.json|pwa\/.+|pois\/.+\.json|apps\/.+\.json|tmbs\/.+_menu\.jpg|img\/.+\.(?:png|jpg))$/, workbox.strategies.networkFirst({ "cacheName":"resourcesCache", plugins: [new workbox.expiration.Plugin({"maxAgeSeconds":86400,"purgeOnQuotaError":false})] }), 'GET');
+workbox.routing.registerRoute(/(?:maps\/.+\.json|pwa\/.+|pois\/.+\.json|apps\/.+\.json|tmbs\/.+_menu\.jpg|img\/.+\.(?:png|jpg))$/, workbox.strategies.staleWhileRevalidate({ "cacheName":"resourcesCache", plugins: [new workbox.expiration.Plugin({"maxAgeSeconds":86400,"purgeOnQuotaError":false})] }), 'GET');
