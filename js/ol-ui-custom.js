@@ -334,6 +334,9 @@ define(['ol-custom', 'resize'], function(ol, addResizeListener) {
         var timer;
         var touchstart;
 
+        button.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
         button.addEventListener('mouseup', function(e) {
             if (!touchstart) {
                 if (timer) {
