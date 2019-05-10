@@ -914,30 +914,6 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                     showGPSresult(evt.frameState);
                 }
             });
-            var putTileCacheSize = function(size) {
-                var unit = 'Bytes';
-                if (size > 1024) {
-                    size = Math.round(size * 10 / 1024) / 10;
-                    unit = 'KBytes';
-                }
-                if (size > 1024) {
-                    size = Math.round(size * 10 / 1024) / 10;
-                    unit = 'MBytes';
-                }
-                if (size > 1024) {
-                    size = Math.round(size * 10 / 1024) / 10;
-                    unit = 'GBytes';
-                }
-                ui.core.mapDivDocument.querySelector('#cache_size').innerHTML = size + ' ' + unit;
-            };
-
-            document.querySelector('#cache_delete').addEventListener('click', function(evt) {
-                evt.preventDefault();
-                var from = ui.core.getMapMeta();
-                ui.core.clearMapTileCacheAsync(from.sourceID, true).then(function() {
-                    ui.core.getMapTileCacheSizeAsync(from.sourceID).then(putTileCacheSize);
-                });
-            });
 
             var qr_app;
             var qr_view;
@@ -967,9 +943,41 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                         }
                     });
 
-                    ui.core.getMapTileCacheSizeAsync(from.sourceID).then(putTileCacheSize);
+                    var putTileCacheSize = function(size) {
+                        var unit = 'Bytes';
+                        if (size > 1024) {
+                            size = Math.round(size * 10 / 1024) / 10;
+                            unit = 'KBytes';
+                        }
+                        if (size > 1024) {
+                            size = Math.round(size * 10 / 1024) / 10;
+                            unit = 'MBytes';
+                        }
+                        if (size > 1024) {
+                            size = Math.round(size * 10 / 1024) / 10;
+                            unit = 'GBytes';
+                        }
+                        ui.core.mapDivDocument.querySelector('#cache_size').innerHTML = size + ' ' + unit;
+                    };
 
                     modalSetting('map');
+                    var deleteButton = document.querySelector('#cache_delete');
+                    var deleteFunc = function(evt) {
+                        evt.preventDefault();
+                        var from = ui.core.getMapMeta();
+                        ui.core.clearMapTileCacheAsync(from.sourceID, true).then(function() {
+                            ui.core.getMapTileCacheSizeAsync(from.sourceID).then(putTileCacheSize);
+                        });
+                    };
+                    var hideFunc = function(event) {
+                        deleteButton.removeEventListener('click', deleteFunc, false);
+                        modalElm.removeEventListener('hide.bs.modal', hideFunc, false);
+                    };
+                    deleteButton.addEventListener('click', deleteFunc, false);
+                    modalElm.addEventListener('hide.bs.modal', hideFunc, false);
+
+                    ui.core.getMapTileCacheSizeAsync(from.sourceID).then(putTileCacheSize);
+
                     modal.show();
                 } else if (control == 'help') {
                     modalSetting('help');
