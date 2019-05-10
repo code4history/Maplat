@@ -973,12 +973,14 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                         deleteButton.removeEventListener('click', deleteFunc, false);
                         modalElm.removeEventListener('hide.bs.modal', hideFunc, false);
                     };
-                    deleteButton.addEventListener('click', deleteFunc, false);
                     modalElm.addEventListener('hide.bs.modal', hideFunc, false);
 
                     ui.core.getMapTileCacheSizeAsync(from.sourceID).then(putTileCacheSize);
 
                     modal.show();
+                    setTimeout(function() {
+                        deleteButton.addEventListener('click', deleteFunc, false);
+                    }, 100);
                 } else if (control == 'help') {
                     modalSetting('help');
                     modal.show();
