@@ -23,11 +23,11 @@
 
 /* Begin PBXBuildFile section */
 		164AF03120EB5DFC00648AD9 /* MaplatView-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 164AF02F20EB5DFC00648AD9 /* MaplatView-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		164AF03920EB5FFC00648AD9 /* MaplatView.h in Headers */ = {isa = PBXBuildFile; fileRef = 164AF03720EB5FFC00648AD9 /* MaplatView.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		164AF03A20EB5FFC00648AD9 /* MaplatView.m in Sources */ = {isa = PBXBuildFile; fileRef = 164AF03820EB5FFC00648AD9 /* MaplatView.m */; };
-		164AF06320EC920F00648AD9 /* MaplatCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 164AF05E20EC920E00648AD9 /* MaplatCache.h */; };
 		164AF06520EC920F00648AD9 /* Maplat.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 164AF06020EC920E00648AD9 /* Maplat.bundle */; };
-		164AF06720EC920F00648AD9 /* MaplatCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 164AF06220EC920E00648AD9 /* MaplatCache.m */; };
+		BAED645D22856C9E00A31004 /* MaplatViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAED645C22856C9E00A31004 /* MaplatViewDelegate.swift */; };
+		BAED645F22856D8A00A31004 /* MaplatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAED645E22856D8A00A31004 /* MaplatView.swift */; };
+		BAED646122856E4400A31004 /* MaplatCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAED646022856E4300A31004 /* MaplatCache.swift */; };
+		BAED646322856E6A00A31004 /* MaplatCacheDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAED646222856E6A00A31004 /* MaplatCacheDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,11 +44,11 @@
 		164AF02C20EB5DFC00648AD9 /* MaplatView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MaplatView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		164AF02F20EB5DFC00648AD9 /* MaplatView-umbrella.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MaplatView-umbrella.h"; sourceTree = "<group>"; };
 		164AF03020EB5DFC00648AD9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		164AF03720EB5FFC00648AD9 /* MaplatView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MaplatView.h; sourceTree = "<group>"; };
-		164AF03820EB5FFC00648AD9 /* MaplatView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MaplatView.m; sourceTree = "<group>"; };
-		164AF05E20EC920E00648AD9 /* MaplatCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaplatCache.h; sourceTree = "<group>"; };
 		164AF06020EC920E00648AD9 /* Maplat.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Maplat.bundle; sourceTree = "<group>"; };
-		164AF06220EC920E00648AD9 /* MaplatCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MaplatCache.m; sourceTree = "<group>"; };
+		BAED645C22856C9E00A31004 /* MaplatViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaplatViewDelegate.swift; sourceTree = "<group>"; };
+		BAED645E22856D8A00A31004 /* MaplatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaplatView.swift; sourceTree = "<group>"; };
+		BAED646022856E4300A31004 /* MaplatCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaplatCache.swift; sourceTree = "<group>"; };
+		BAED646222856E6A00A31004 /* MaplatCacheDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaplatCacheDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,12 +82,12 @@
 			isa = PBXGroup;
 			children = (
 				164AF02F20EB5DFC00648AD9 /* MaplatView-umbrella.h */,
-				164AF03720EB5FFC00648AD9 /* MaplatView.h */,
-				164AF03820EB5FFC00648AD9 /* MaplatView.m */,
-				164AF05E20EC920E00648AD9 /* MaplatCache.h */,
-				164AF06220EC920E00648AD9 /* MaplatCache.m */,
 				164AF06020EC920E00648AD9 /* Maplat.bundle */,
 				164AF03020EB5DFC00648AD9 /* Info.plist */,
+				BAED645C22856C9E00A31004 /* MaplatViewDelegate.swift */,
+				BAED645E22856D8A00A31004 /* MaplatView.swift */,
+				BAED646022856E4300A31004 /* MaplatCache.swift */,
+				BAED646222856E6A00A31004 /* MaplatCacheDelegate.swift */,
 			);
 			path = MaplatView;
 			sourceTree = "<group>";
@@ -99,8 +99,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				164AF03920EB5FFC00648AD9 /* MaplatView.h in Headers */,
-				164AF06320EC920F00648AD9 /* MaplatCache.h in Headers */,
 				164AF03120EB5DFC00648AD9 /* MaplatView-umbrella.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -137,6 +135,7 @@
 				TargetAttributes = {
 					164AF02B20EB5DFC00648AD9 = {
 						CreatedOnToolsVersion = 9.4.1;
+						LastSwiftMigration = 1020;
 					};
 					164AF04F20EC794B00648AD9 = {
 						CreatedOnToolsVersion = 9.4.1;
@@ -193,8 +192,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				164AF03A20EB5FFC00648AD9 /* MaplatView.m in Sources */,
-				164AF06720EC920F00648AD9 /* MaplatCache.m in Sources */,
+				BAED645F22856D8A00A31004 /* MaplatView.swift in Sources */,
+				BAED646122856E4400A31004 /* MaplatCache.swift in Sources */,
+				BAED646322856E6A00A31004 /* MaplatCacheDelegate.swift in Sources */,
+				BAED645D22856C9E00A31004 /* MaplatViewDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -328,6 +329,7 @@
 		164AF03520EB5DFC00648AD9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
@@ -345,6 +347,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = jp.tilemap.MaplatView;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -352,6 +356,7 @@
 		164AF03620EB5DFC00648AD9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
@@ -369,6 +374,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = jp.tilemap.MaplatView;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

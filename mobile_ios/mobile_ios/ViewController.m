@@ -7,10 +7,10 @@
 //
 
 #import "ViewController.h"
+#import <MaplatView/MaplatView-Swift.h>
 
 @import UIKit;
 @import CoreLocation;
-@import MaplatView;
 
 const double BaseLongitude = 141.1529555;
 const double BaseLatitude = 39.7006006;
