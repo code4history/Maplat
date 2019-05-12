@@ -75,9 +75,9 @@ public class MaplatView: UIView, MaplatCacheDelegate {
             }
         } else if (key == "clickMarker") {
             if let jsonObject = toDictionary(value) {
-                if let markerId = jsonObject["id"] as? NSNumber {
+                if let markerId = jsonObject["id"] {
                     let markerData = jsonObject["data"]
-                    delegate.onClickMarker(withMarkerId: markerId.intValue, markerData: markerData)
+                    delegate.onClickMarker(withMarkerId: String(describing: markerId), markerData: markerData)
                 }
             }
         } else if (key == "changeViewpoint") {

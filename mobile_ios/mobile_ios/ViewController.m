@@ -120,9 +120,9 @@ const double BaseLatitude = 39.7006006;
     [_locationManager startUpdatingLocation];
 }
 
-- (void)onClickMarkerWithMarkerId:(long)markerId markerData:(id)markerData
+- (void)onClickMarkerWithMarkerId:(id)markerId markerData:(id)markerData
 {
-    NSString *message = [NSString stringWithFormat:@"clickMarker ID:%ld DATA:%@", markerId, markerData];
+    NSString *message = [NSString stringWithFormat:@"clickMarker ID:%@ DATA:%@", markerId, markerData];
     [self toast:message];
 }
 
