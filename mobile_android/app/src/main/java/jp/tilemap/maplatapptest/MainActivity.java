@@ -310,8 +310,8 @@ public class MainActivity extends Activity implements MaplatBridgeListener {
     }
 
     @Override
-    public void onClickMarker(long markerId, Object markerData) {
-        String value = String.format(Locale.US, "clickMarker ID: %d DATA: %s", markerId, markerData);
+    public void onClickMarker(String markerId, Object markerData) {
+        String value = String.format(Locale.US, "clickMarker ID: %s DATA: %s", markerId, markerData);
         Toast.makeText(this, value, Toast.LENGTH_SHORT).show();
     }
 

@@ -6,7 +6,7 @@ package jp.tilemap.maplat
 
 interface MaplatBridgeListener {
     fun onReady()
-    fun onClickMarker(markerId: Long, markerData: Any?)
+    fun onClickMarker(markerId: String, markerData: Any?)
     fun onChangeViewpoint(x: Double, y: Double, latitude: Double, longitude: Double, mercator_x: Double,
                           mercator_y: Double, zoom: Double, merc_zoom: Double, direction: Double, rotation: Double)
 
