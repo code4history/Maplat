@@ -238,11 +238,10 @@ class MaplatBridge(internal var mContext: Context, internal var mWebView: WebVie
                     val obj = jsonToObject(data, Map::class.java) as Map<String, Any>
                     markerId = obj["id"] as Long
                     markerData = obj["data"]
+                    mListener!!.onClickMarker(markerId, markerData)
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
-
-                mListener!!.onClickMarker(markerId, markerData)
             }
         } else if (key == "changeViewpoint") {
             mHandler.post {
@@ -257,17 +256,17 @@ class MaplatBridge(internal var mContext: Context, internal var mWebView: WebVie
                 var direction = 0.0
                 var rotation = 0.0
                 try {
-                    val obj = jsonToObject(data, Map::class.java) as Map<String, Double>
-                    x = obj["x"] ?: 0.0
-                    y = obj["y"] ?: 0.0
-                    latitude = obj["latitude"] ?: 0.0
-                    longitude = obj["longitude"] ?: 0.0
-                    mercator_x = obj["mercator_x"] ?: 0.0
-                    mercator_y = obj["mercator_y"] ?: 0.0
-                    zoom = obj["zoom"] ?: 0.0
-                    merc_zoom = obj["mercZoom"] ?: 0.0
-                    direction = obj["direction"] ?: 0.0
-                    rotation = obj["rotation"] ?: 0.0
+                    val obj = jsonToObject(data, Map::class.java) as Map<String, Number?>
+                    x = obj["x"]?.toDouble() ?: 0.0
+                    y = obj["y"]?.toDouble() ?: 0.0
+                    latitude = obj["latitude"]?.toDouble() ?: 0.0
+                    longitude = obj["longitude"]?.toDouble() ?: 0.0
+                    mercator_x = obj["mercator_x"]?.toDouble() ?: 0.0
+                    mercator_y = obj["mercator_y"]?.toDouble() ?: 0.0
+                    zoom = obj["zoom"]?.toDouble() ?: 0.0
+                    merc_zoom = obj["mercZoom"]?.toDouble() ?: 0.0
+                    direction = obj["direction"]?.toDouble() ?: 0.0
+                    rotation = obj["rotation"]?.toDouble() ?: 0.0
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
