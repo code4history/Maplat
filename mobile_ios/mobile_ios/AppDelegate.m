@@ -8,8 +8,7 @@
 
 #import "AppDelegate.h"
 #import "ViewController.h"
-
-@import MaplatView;
+#import <MaplatView/MaplatView-Swift.h>
 
 @interface AppDelegate ()
 
