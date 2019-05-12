@@ -9,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -35,7 +34,6 @@ import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -200,7 +198,7 @@ public class MainActivity extends Activity implements MaplatBridgeListener {
             public void onClick(View v) {
                 mMaplatView.currentMapInfo(new IMaplatMapCallbackHandler() {
                     @Override
-                    public void callback(Map<String, Object> value) {
+                    public void callback(Map<String, ?> value) {
                         String text = mGson.toJson(value);
                         Toast.makeText(self, text, Toast.LENGTH_SHORT).show();
                     }
