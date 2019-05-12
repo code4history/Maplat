@@ -232,16 +232,17 @@ class MaplatBridge(internal var mContext: Context, internal var mWebView: WebVie
             }
         } else if (key == "clickMarker") {
             mHandler.post {
-                var markerId: Long = 0
+                var markerId = ""
                 var markerData: Any? = null
                 try {
                     val obj = jsonToObject(data, Map::class.java) as Map<String, Any>
-                    markerId = obj["id"] as Long
+                    markerId = obj["id"]?.toString() ?: ""
                     markerData = obj["data"]
-                    mListener!!.onClickMarker(markerId, markerData)
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
+
+                mListener!!.onClickMarker(markerId, markerData)
             }
         } else if (key == "changeViewpoint") {
             mHandler.post {
