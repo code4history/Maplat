@@ -28,7 +28,7 @@ public class MaplatView: UIView, MaplatCacheDelegate {
     }
     
     @objc
-    public init(frame: CGRect, appID: String?, setting: [NSObject : Any]?) {
+    public init(frame: CGRect, appID: String?, setting: [String : Any]?) {
         super.init(frame: frame)
         self.cache = (URLCache.shared as! MaplatCache)
         self.cache!.delegate = self
@@ -230,7 +230,7 @@ public class MaplatView: UIView, MaplatCacheDelegate {
     }
     
     @objc
-    public func addLineWithLngLat(_ lnglats: [Any], stroke: [NSObject : Any]?) {
+    public func addLineWithLngLat(_ lnglats: [Any], stroke: [String : Any]?) {
         var jsonObj: [String: Any] = [
             "lnglats": lnglats
         ]
