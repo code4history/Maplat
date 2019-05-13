@@ -4,51 +4,41 @@ import android.content.Context
 import android.os.Handler
 import android.text.TextUtils
 import android.util.Log
-import android.webkit.ConsoleMessage
-import android.webkit.JavascriptInterface
-import android.webkit.WebChromeClient
-import android.webkit.WebResourceRequest
-import android.webkit.WebResourceResponse
-import android.webkit.WebView
-import android.webkit.WebViewClient
-
+import android.webkit.*
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.TypeAdapter
 import com.google.gson.internal.LinkedTreeMap
-import com.google.gson.stream.JsonWriter
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
-
-import java.io.BufferedReader
+import com.google.gson.stream.JsonWriter
 import java.io.IOException
-import java.io.InputStream
-import java.util.ArrayList
-import java.util.HashMap
-import java.util.regex.Matcher
+import java.util.*
 import java.util.regex.Pattern
-import java.util.UUID
 
-import android.content.res.Resources
+class MaplatBridge(
+        internal var mContext: Context,
+        private var mWebView: WebView,
+        private var mHandler: Handler,
+        private var mListener: MaplatBridgeListener?,
+        appID: String?,
+        setting: HashMap<String, Any>?
+) : Any() {
 
-class MaplatBridge(internal var mContext: Context, internal var mWebView: WebView, internal var mHandler: Handler, internal var mListener: MaplatBridgeListener?, appID: String?, setting: HashMap<String, Any>?) : Any() {
-    internal var mInitializeValue: Map<String, Any>
-    internal var mGson: Gson
-    internal var callbackStore: MutableMap<String, IMaplatStringCallbackHandler>
-
-    constructor(c: Context, w: WebView, h: Handler, appID: String, setting: HashMap<String, Any>) : this(c, w, h, null, appID, setting) {}
+    private var mInitializeValue: Map<String, Any>
+    private var mGson: Gson
+    private var callbackStore: MutableMap<String, IMaplatStringCallbackHandler> = HashMap()
 
     init {
-        var appID = appID
-        callbackStore = HashMap()
         val adapter = CustomizedObjectTypeAdapter()
-        mGson = GsonBuilder()
-                .registerTypeHierarchyAdapter(Map::class.java, adapter)
+        mGson = GsonBuilder().run {
+            registerTypeHierarchyAdapter(Map::class.java, adapter)
                 .registerTypeHierarchyAdapter(List::class.java, adapter)
                 .registerTypeHierarchyAdapter(Double::class.java, adapter)
                 .registerTypeHierarchyAdapter(Long::class.java, adapter)
                 .registerTypeHierarchyAdapter(String::class.java, adapter)
                 .create()
+        }
 
         //リンクをタップしたときに標準ブラウザを起動させない
         mWebView.webViewClient = object : WebViewClient() {
@@ -102,19 +92,13 @@ class MaplatBridge(internal var mContext: Context, internal var mWebView: WebVie
                         "image/svg+xml"
                     else
                         "text/plain"
-                    var inputStream: InputStream? = null
-                    val br: BufferedReader? = null
-                    val text = ""
 
                     try {
                         val res = view.context.resources
                         val resId = res.getIdentifier(resFileName, "raw", view.context.packageName)
 
-                        if (resId != 0) {
-                            inputStream = res.openRawResource(resId)
-                        } else {
-                            inputStream = view.context.assets.open(fileName)
-                        }
+                        val inputStream = if (resId != 0) res.openRawResource(resId) else view.context.assets.open(fileName)
+
                         ret = WebResourceResponse(mime, "UTF-8", inputStream)
                     } catch (e: Exception) {
                         // エラー発生時の処理
@@ -137,11 +121,8 @@ class MaplatBridge(internal var mContext: Context, internal var mWebView: WebVie
         mWebView.addJavascriptInterface(this, "maplatBridge")
         mWebView.loadUrl("http://localresource/mobile.html")
 
-        if (appID == null) {
-            appID = "mobile"
-        }
         val obj = HashMap<String, Any>()
-        obj["appid"] = appID
+        obj["appid"] = appID ?: "mobile"
         if (setting != null) {
             obj["setting"] = setting
         }
@@ -152,33 +133,34 @@ class MaplatBridge(internal var mContext: Context, internal var mWebView: WebVie
         mListener = maplatBridgeListener
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun normalizeObject(root: Any): Any {
-        var root = root
-        if (root is HashMap<*, *>) {
-            val hashRoot = root as HashMap<String, Any>
+        var res = root
+        if (res is HashMap<*, *>) {
+            val hashRoot = res as HashMap<String, Any>
             for ((key, value) in hashRoot) {
                 hashRoot[key] = normalizeObject(value)
             }
             if (root.javaClass.getName().contains("$")) {
-                root = HashMap(hashRoot)
+                res = HashMap(hashRoot)
             }
-        } else if (root is LinkedTreeMap<*, *>) {
+        } else if (res is LinkedTreeMap<*, *>) {
             val hashRoot = HashMap<String, Any>()
             val treeRoot = root as LinkedTreeMap<String, Any>
             for ((key, value) in treeRoot) {
                 hashRoot[key] = normalizeObject(value)
             }
-            root = hashRoot
+            res = hashRoot
         } else if (root is ArrayList<*>) {
             val arrayRoot = root as ArrayList<Any>
             for (i in arrayRoot.indices) {
                 arrayRoot[i] = normalizeObject(arrayRoot[i])
             }
-            if (root.javaClass.getName().contains("$")) {
-                root = ArrayList(arrayRoot)
+            if (res.javaClass.getName().contains("$")) {
+                res = ArrayList(arrayRoot)
             }
         }
-        return root
+        return res
     }
 
     private fun jsonToObject(json: String, type: Class<*>?): Any {
@@ -235,7 +217,8 @@ class MaplatBridge(internal var mContext: Context, internal var mWebView: WebVie
                 var markerId = ""
                 var markerData: Any? = null
                 try {
-                    val obj = jsonToObject(data, Map::class.java) as Map<String, Any>
+                    @Suppress("UNCHECKED_CAST")
+                    val obj = jsonToObject(data, Map::class.java) as Map<String, Any?>
                     markerId = obj["id"]?.toString() ?: ""
                     markerData = obj["data"]
                 } catch (e: Exception) {
@@ -257,6 +240,7 @@ class MaplatBridge(internal var mContext: Context, internal var mWebView: WebVie
                 var direction = 0.0
                 var rotation = 0.0
                 try {
+                    @Suppress("UNCHECKED_CAST")
                     val obj = jsonToObject(data, Map::class.java) as Map<String, Number?>
                     x = obj["x"]?.toDouble() ?: 0.0
                     y = obj["y"]?.toDouble() ?: 0.0
@@ -281,6 +265,7 @@ class MaplatBridge(internal var mContext: Context, internal var mWebView: WebVie
                 var latitude = 0.0
                 var longitude = 0.0
                 try {
+                    @Suppress("UNCHECKED_CAST")
                     val obj = jsonToObject(data, Map::class.java) as Map<String, Double>
                     latitude = obj["latitude"] ?: 0.0
                     longitude = obj["longitude"] ?: 0.0
@@ -295,6 +280,7 @@ class MaplatBridge(internal var mContext: Context, internal var mWebView: WebVie
                 var callbackKey = ""
                 var value = ""
                 try {
+                    @Suppress("UNCHECKED_CAST")
                     val obj = jsonToObject(data, Map::class.java) as Map<String, String>
                     callbackKey = obj["key"] ?: ""
                     value = obj["value"] ?: ""
@@ -449,6 +435,7 @@ class MaplatBridge(internal var mContext: Context, internal var mWebView: WebVie
                     callback.callback(null)
                     return
                 }
+                @Suppress("UNCHECKED_CAST")
                 val obj = jsonToObject(value, Map::class.java) as Map<String, Any>
                 callback.callback(obj)
             }
@@ -464,6 +451,7 @@ class MaplatBridge(internal var mContext: Context, internal var mWebView: WebVie
                     callback.callback(null)
                     return
                 }
+                @Suppress("UNCHECKED_CAST")
                 val obj = jsonToObject(value, Map::class.java) as Map<String, Any>
                 callback.callback(obj)
             }

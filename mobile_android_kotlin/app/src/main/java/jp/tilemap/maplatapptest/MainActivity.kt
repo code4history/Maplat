@@ -1,10 +1,7 @@
 package jp.tilemap.maplatapptest
 
-//import android.support.v7.app.AppCompatActivity;
-
 import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Build
@@ -15,50 +12,45 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
-
 import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.LocationSettingsRequest
-import com.google.android.gms.location.LocationSettingsResponse
-import com.google.android.gms.location.LocationSettingsStatusCodes
-import com.google.android.gms.location.SettingsClient
-import com.google.android.gms.tasks.OnFailureListener
+import com.google.android.gms.location.*
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-
-import java.util.ArrayList
-import java.util.HashMap
-import java.util.Locale
-
 import jp.tilemap.maplat.IMaplatMapCallbackHandler
-import jp.tilemap.maplat.MaplatView
 import jp.tilemap.maplat.MaplatBridgeListener
+import jp.tilemap.maplat.MaplatView
+import java.util.*
 
 class MainActivity : Activity(), MaplatBridgeListener {
-    private var mMaplatView: MaplatView? = null
-    private var nowMap: String? = null
-    private var nowDirection: Double = 0.toDouble()
-    private var nowRotation: Double = 0.toDouble()
 
-    private var mFusedLocationClient: FusedLocationProviderClient? = null
-    private var mSettingsClient: SettingsClient? = null
-    private var mLocationRequest: LocationRequest? = null
-    private var mLocationSettingsRequest: LocationSettingsRequest? = null
-    private var mLocationCallback: LocationCallback? = null
+    var button1: Button? = null
+    var button2: Button? = null
+    var button3: Button? = null
+    var button4: Button? = null
+    var button5: Button? = null
+    var button6: Button? = null
+    var button7: Button? = null
+
+    lateinit var mMaplatView: MaplatView
+    lateinit var nowMap: String
+    private var nowDirection: Double = 0.0
+    private var nowRotation: Double = 0.0
+
+    lateinit var mFusedLocationClient: FusedLocationProviderClient
+    lateinit var mSettingsClient: SettingsClient
+    lateinit var mLocationRequest: LocationRequest
+    lateinit var mLocationSettingsRequest: LocationSettingsRequest
+    lateinit var mLocationCallback: LocationCallback
 
     /**
      * Represents a geographical location.
      */
-    private var mCurrentLocation: Location? = null
+    lateinit var mCurrentLocation: Location
 
     private var defaultLongitude = 0.0
     private var defaultLatitude = 0.0
-    private var mGson: Gson? = null
+    lateinit var mGson: Gson
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val self = this
@@ -78,7 +70,7 @@ class MainActivity : Activity(), MaplatBridgeListener {
         nowDirection = 0.0
         nowRotation = 0.0
 
-        mMaplatView!!.initSetting(this, "mobile", object : HashMap<String, Any>() {
+        mMaplatView.initSetting(this, "mobile", object : HashMap<String, Any>() {
             init {
                 put("app_name", "モバイルアプリ")
                 put("sources", object : ArrayList<Any>() {
@@ -102,26 +94,26 @@ class MainActivity : Activity(), MaplatBridgeListener {
         createLocationRequest()
         buildLocationSettingsRequest()
 
-        button1 = findViewById<View>(R.id.button1) as Button
+        button1 = findViewById(R.id.button1)
         button1!!.setOnClickListener {
             val nextMap = if (nowMap == "morioka_ndl") "gsi" else "morioka_ndl"
-            mMaplatView!!.changeMap(nextMap)
+            mMaplatView.changeMap(nextMap)
             nowMap = nextMap
         }
 
-        button2 = findViewById<View>(R.id.button2) as Button
+        button2 = findViewById(R.id.button2)
         button2!!.setOnClickListener { addMarkers() }
 
-        button3 = findViewById<View>(R.id.button3) as Button
+        button3 = findViewById(R.id.button3)
         button3!!.setOnClickListener {
-            mMaplatView!!.clearLine()
-            mMaplatView!!.clearMarker()
+            mMaplatView.clearLine()
+            mMaplatView.clearMarker()
         }
 
-        button4 = findViewById<View>(R.id.button4) as Button
-        button4!!.setOnClickListener { mMaplatView!!.setViewpoint(39.69994722, 141.1501111) }
+        button4 = findViewById(R.id.button4)
+        button4!!.setOnClickListener { mMaplatView.setViewpoint(39.69994722, 141.1501111) }
 
-        button5 = findViewById<View>(R.id.button5) as Button
+        button5 = findViewById(R.id.button5)
         button5!!.setOnClickListener {
             val nextDirection: Double
             if (nowDirection == 0.0) {
@@ -137,11 +129,11 @@ class MainActivity : Activity(), MaplatBridgeListener {
                 nextDirection = 0.0
                 button5!!.text = "東を上"
             }
-            mMaplatView!!.setDirection(nextDirection)
+            mMaplatView.setDirection(nextDirection)
             nowDirection = nextDirection
         }
 
-        button6 = findViewById<View>(R.id.button6) as Button
+        button6 = findViewById(R.id.button6)
         button6!!.setOnClickListener {
             val nextRotation: Double
             if (nowRotation == 0.0) {
@@ -157,15 +149,15 @@ class MainActivity : Activity(), MaplatBridgeListener {
                 nextRotation = 0.0
                 button6!!.text = "右を上"
             }
-            mMaplatView!!.setRotation(nextRotation)
+            mMaplatView.setRotation(nextRotation)
             nowRotation = nextRotation
         }
 
-        button7 = findViewById<View>(R.id.button7) as Button
+        button7 = findViewById(R.id.button7)
         button7!!.setOnClickListener {
-            mMaplatView!!.currentMapInfo(object : IMaplatMapCallbackHandler {
+            mMaplatView.currentMapInfo(object : IMaplatMapCallbackHandler {
                 override fun callback(value: Map<String, Any>?) {
-                    val text = mGson!!.toJson(value)
+                    val text = mGson.toJson(value)
                     Toast.makeText(self, text, Toast.LENGTH_SHORT).show()
                 }
             })
@@ -189,9 +181,9 @@ class MainActivity : Activity(), MaplatBridgeListener {
 
     private fun createLocationRequest() {
         mLocationRequest = LocationRequest()
-        mLocationRequest!!.interval = UPDATE_INTERVAL_IN_MILLISECONDS
-        mLocationRequest!!.fastestInterval = FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS
-        mLocationRequest!!.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        mLocationRequest.interval = UPDATE_INTERVAL_IN_MILLISECONDS
+        mLocationRequest.fastestInterval = FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS
+        mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
     }
 
     private fun createLocationCallback() {
@@ -202,28 +194,28 @@ class MainActivity : Activity(), MaplatBridgeListener {
                 val latitude: Double
                 val longitude: Double
                 if (defaultLatitude == 0.0 || defaultLongitude == 0.0) {
-                    defaultLatitude = mCurrentLocation!!.latitude
-                    defaultLongitude = mCurrentLocation!!.longitude
+                    defaultLatitude = mCurrentLocation.latitude
+                    defaultLongitude = mCurrentLocation.longitude
                     latitude = baseLatitude
                     longitude = baseLongitude
                 } else {
-                    latitude = baseLatitude - defaultLatitude + mCurrentLocation!!.latitude
-                    longitude = baseLongitude - defaultLongitude + mCurrentLocation!!.longitude
+                    latitude = baseLatitude - defaultLatitude + mCurrentLocation.latitude
+                    longitude = baseLongitude - defaultLongitude + mCurrentLocation.longitude
                 }
-                mMaplatView!!.setGPSMarker(latitude, longitude, mCurrentLocation!!.accuracy.toDouble())
+                mMaplatView.setGPSMarker(latitude, longitude, mCurrentLocation.accuracy.toDouble())
             }
         }
     }
 
     private fun buildLocationSettingsRequest() {
         val builder = LocationSettingsRequest.Builder()
-        builder.addLocationRequest(mLocationRequest!!)
+        builder.addLocationRequest(mLocationRequest)
         mLocationSettingsRequest = builder.build()
     }
 
     fun startLocationUpdates() {
         val mContext = this
-        mSettingsClient!!.checkLocationSettings(mLocationSettingsRequest)
+        mSettingsClient.checkLocationSettings(mLocationSettingsRequest)
                 .addOnSuccessListener(this, OnSuccessListener {
                     Log.i("MaplatBridge", "All location settings are satisfied.")
 
@@ -231,7 +223,7 @@ class MainActivity : Activity(), MaplatBridgeListener {
                     if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                         return@OnSuccessListener
                     }
-                    mFusedLocationClient!!.requestLocationUpdates(mLocationRequest, mLocationCallback!!, Looper.myLooper())
+                    mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper())
                 })
                 .addOnFailureListener(this) { e ->
                     val statusCode = (e as ApiException).statusCode
@@ -281,7 +273,7 @@ class MainActivity : Activity(), MaplatBridgeListener {
 
     private fun addMarkers() {
         try {
-            mMaplatView!!.addLine(object : ArrayList<ArrayList<Double>>() {
+            mMaplatView.addLine(object : ArrayList<ArrayList<Double>>() {
                 init {
                     add(object : ArrayList<Double>() {
                         init {
@@ -296,8 +288,8 @@ class MainActivity : Activity(), MaplatBridgeListener {
                         }
                     })
                 }
-            }, null!!)
-            mMaplatView!!.addLine(object : ArrayList<ArrayList<Double>>() {
+            }, null)
+            mMaplatView.addLine(object : ArrayList<ArrayList<Double>>() {
                 init {
                     add(object : ArrayList<Double>() {
                         init {
@@ -328,24 +320,17 @@ class MainActivity : Activity(), MaplatBridgeListener {
             e.printStackTrace()
         }
 
-        mMaplatView!!.addMarker(39.69994722, 141.1501111, 1, "001")
-        mMaplatView!!.addMarker(39.7006006, 141.1529555, 5, "005")
-        mMaplatView!!.addMarker(39.701599, 141.151995, 6, "006")
-        mMaplatView!!.addMarker(39.703736, 141.151137, 7, "007")
-        mMaplatView!!.addMarker(39.7090232, 141.1521671, 9, "009")
+        mMaplatView.addMarker(39.69994722, 141.1501111, 1, "001")
+        mMaplatView.addMarker(39.7006006, 141.1529555, 5, "005")
+        mMaplatView.addMarker(39.701599, 141.151995, 6, "006")
+        mMaplatView.addMarker(39.703736, 141.151137, 7, "007")
+        mMaplatView.addMarker(39.7090232, 141.1521671, 9, "009")
     }
 
     companion object {
 
         private val REQUEST_PERMISSION = 10
 
-        var button1: Button? = null
-        var button2: Button? = null
-        var button3: Button? = null
-        var button4: Button? = null
-        var button5: Button? = null
-        var button6: Button? = null
-        var button7: Button? = null
         private val baseLongitude = 141.1529555
         private val baseLatitude = 39.7006006
 
