@@ -120,7 +120,7 @@ class MaplatView @JvmOverloads constructor(context: Context, attrs: AttributeSet
         maplatBridge.setGPSMarker(latitude, longitude, accuracy)
     }
 
-    fun addLine(lnglats: ArrayList<ArrayList<Double>>, stroke: HashMap<String, Any>) {
+    fun addLine(lnglats: ArrayList<ArrayList<Double>>, stroke: HashMap<String, Any>?) {
         maplatBridge.addLine(lnglats, stroke)
     }
 
