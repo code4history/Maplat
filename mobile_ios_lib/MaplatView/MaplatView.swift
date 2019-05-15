@@ -77,7 +77,7 @@ public class MaplatView: UIView, MaplatCacheDelegate {
             if let jsonObject = toDictionary(value) {
                 if let markerId = jsonObject["id"] {
                     let markerData = jsonObject["data"]
-                    delegate.onClickMarker(withMarkerId: String(describing: markerId), markerData: markerData)
+                    delegate.onClickMarker(markerId: String(describing: markerId), markerData: markerData)
                 }
             }
         } else if (key == "changeViewpoint") {
@@ -92,7 +92,7 @@ public class MaplatView: UIView, MaplatCacheDelegate {
                 let merc_zoom = (jsonObject["merc_zoom"] as? NSNumber)?.doubleValue,
                 let direction = (jsonObject["direction"] as? NSNumber)?.doubleValue,
                 let rotation = (jsonObject["rotation"] as? NSNumber)?.doubleValue {
-                delegate.onChangeViewpointWith(x: x, y: y, latitude: latitude, longitude: longitude, mercatorX: mercator_x, mercatorY: mercator_y, zoom: zoom, mercZoom: merc_zoom, direction: direction, rotation: rotation)
+                delegate.onChangeViewpoint(x: x, y: y, latitude: latitude, longitude: longitude, mercatorX: mercator_x, mercatorY: mercator_y, zoom: zoom, mercZoom: merc_zoom, direction: direction, rotation: rotation)
             }
         } else if (key == "outOfMap") {
             delegate.onOutOfMap()
@@ -100,7 +100,7 @@ public class MaplatView: UIView, MaplatCacheDelegate {
             if let jsonObject = toDictionary(value) {
                 if let longitude = (jsonObject["longitude"] as? NSNumber)?.doubleValue,
                     let latitude = (jsonObject["latitude"] as? NSNumber)?.doubleValue {
-                    delegate.onClickMap(withLatitude: latitude, longitude: longitude)
+                    delegate.onClickMap(latitude: latitude, longitude: longitude)
                 }
             }
         }

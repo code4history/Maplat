@@ -103,12 +103,12 @@ class ViewController : UIViewController, MaplatViewDelegate, CLLocationManagerDe
         self.locationManager!.startUpdatingLocation()
     }
     
-    func onClickMarker(withMarkerId markerId: String, markerData: Any?) {
+    func onClickMarker(markerId: String, markerData: Any?) {
         let message = "clickMarker ID:\(markerId) DATA:\(markerData ?? "")"
         self.toast(message)
     }
     
-    func onChangeViewpointWith(x: Double, y: Double, latitude: Double, longitude: Double, mercatorX mercator_x: Double, mercatorY mercator_y: Double, zoom: Double, mercZoom merc_zoom: Double, direction: Double, rotation: Double) {
+    func onChangeViewpoint(x: Double, y: Double, latitude: Double, longitude: Double, mercatorX mercator_x: Double, mercatorY mercator_y: Double, zoom: Double, mercZoom merc_zoom: Double, direction: Double, rotation: Double) {
         print("XY: (\(x), \(y)) LatLong: (\(latitude), \(longitude)) Mercator (\(mercator_x), \(mercator_y)) zoom: \(zoom) mercZoom: \(merc_zoom) direction: \(direction) rotation \(rotation)")
     }
     
@@ -116,7 +116,7 @@ class ViewController : UIViewController, MaplatViewDelegate, CLLocationManagerDe
         self.toast("地図範囲外です")
     }
     
-    func onClickMap(withLatitude latitude: Double, longitude: Double) {
+    func onClickMap(latitude: Double, longitude: Double) {
         let message: String = "clickMap latitude:\(latitude) longitude:\(longitude)"
         self.toast(message)
     }
