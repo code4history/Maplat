@@ -53,7 +53,7 @@
 		165C93CF210C307900D984D0 /* MaplatView.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MaplatView.xcodeproj; path = ../mobile_ios_lib/MaplatView.xcodeproj; sourceTree = "<group>"; };
 		660C00C7209201C6004B885B /* tiles */ = {isa = PBXFileReference; lastKnownFileType = folder; path = tiles; sourceTree = "<group>"; };
 		660C00C9209201D4004B885B /* maps */ = {isa = PBXFileReference; lastKnownFileType = folder; path = maps; sourceTree = "<group>"; };
-		6642D2991E5DC88E00555CB7 /* mobile_ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mobile_ios.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6642D2991E5DC88E00555CB7 /* mobile_ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = mobile_ios.app; path = mobile_ios_sample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6642D29D1E5DC88E00555CB7 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		6642D29F1E5DC88E00555CB7 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		6642D2A01E5DC88E00555CB7 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -88,7 +88,7 @@
 			isa = PBXGroup;
 			children = (
 				165C93CF210C307900D984D0 /* MaplatView.xcodeproj */,
-				6642D29B1E5DC88E00555CB7 /* mobile_ios */,
+				6642D29B1E5DC88E00555CB7 /* mobile_ios_sample */,
 				6642D29A1E5DC88E00555CB7 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -101,7 +101,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		6642D29B1E5DC88E00555CB7 /* mobile_ios */ = {
+		6642D29B1E5DC88E00555CB7 /* mobile_ios_sample */ = {
 			isa = PBXGroup;
 			children = (
 				66DEFC8E1E5DE359000684B6 /* content */,
@@ -114,7 +114,7 @@
 				6642D2AD1E5DC88E00555CB7 /* Info.plist */,
 				6642D29C1E5DC88E00555CB7 /* Supporting Files */,
 			);
-			path = mobile_ios;
+			path = mobile_ios_sample;
 			sourceTree = "<group>";
 		};
 		6642D29C1E5DC88E00555CB7 /* Supporting Files */ = {
@@ -137,9 +137,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		6642D2981E5DC88D00555CB7 /* mobile_ios */ = {
+		6642D2981E5DC88D00555CB7 /* mobile_ios_sample */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 6642D2B01E5DC88E00555CB7 /* Build configuration list for PBXNativeTarget "mobile_ios" */;
+			buildConfigurationList = 6642D2B01E5DC88E00555CB7 /* Build configuration list for PBXNativeTarget "mobile_ios_sample" */;
 			buildPhases = (
 				6642D2951E5DC88D00555CB7 /* Sources */,
 				6642D2961E5DC88D00555CB7 /* Frameworks */,
@@ -151,8 +151,8 @@
 			dependencies = (
 				165C93D9210C30B400D984D0 /* PBXTargetDependency */,
 			);
-			name = mobile_ios;
-			productName = mobile_ios;
+			name = mobile_ios_sample;
+			productName = mobile_ios_sample;
 			productReference = 6642D2991E5DC88E00555CB7 /* mobile_ios.app */;
 			productType = "com.apple.product-type.application";
 		};
@@ -172,11 +172,12 @@
 					};
 				};
 			};
-			buildConfigurationList = 6642D2941E5DC88D00555CB7 /* Build configuration list for PBXProject "mobile_ios" */;
+			buildConfigurationList = 6642D2941E5DC88D00555CB7 /* Build configuration list for PBXProject "mobile_ios_sample" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -191,7 +192,7 @@
 			);
 			projectRoot = "";
 			targets = (
-				6642D2981E5DC88D00555CB7 /* mobile_ios */,
+				6642D2981E5DC88D00555CB7 /* mobile_ios_sample */,
 			);
 		};
 /* End PBXProject section */
@@ -348,11 +349,11 @@
 				DEVELOPMENT_TEAM = ZAD4S7J7P3;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/mobile_ios",
+					"$(PROJECT_DIR)/mobile_ios_sample",
 				);
-				INFOPLIST_FILE = mobile_ios/Info.plist;
+				INFOPLIST_FILE = mobile_ios_sample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = jp.tilemap.mobile_ios;
+				PRODUCT_BUNDLE_IDENTIFIER = jp.tilemap.mobile_ios_sample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -364,11 +365,11 @@
 				DEVELOPMENT_TEAM = ZAD4S7J7P3;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/mobile_ios",
+					"$(PROJECT_DIR)/mobile_ios_sample",
 				);
-				INFOPLIST_FILE = mobile_ios/Info.plist;
+				INFOPLIST_FILE = mobile_ios_sample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = jp.tilemap.mobile_ios;
+				PRODUCT_BUNDLE_IDENTIFIER = jp.tilemap.mobile_ios_sample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -376,7 +377,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		6642D2941E5DC88D00555CB7 /* Build configuration list for PBXProject "mobile_ios" */ = {
+		6642D2941E5DC88D00555CB7 /* Build configuration list for PBXProject "mobile_ios_sample" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6642D2AE1E5DC88E00555CB7 /* Debug */,
@@ -385,7 +386,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		6642D2B01E5DC88E00555CB7 /* Build configuration list for PBXNativeTarget "mobile_ios" */ = {
+		6642D2B01E5DC88E00555CB7 /* Build configuration list for PBXNativeTarget "mobile_ios_sample" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6642D2B11E5DC88E00555CB7 /* Debug */,

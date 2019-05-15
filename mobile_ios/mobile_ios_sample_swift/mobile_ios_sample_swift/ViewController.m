@@ -1,6 +1,6 @@
 //
 //  ViewController.m
-//  mobile_ios
+//  mobile_ios_sample_swift
 //
 //  Created by 大塚 恒平 on 2017/02/22.
 //  Copyright © 2017年 TileMapJp. All rights reserved.

@@ -52,7 +52,7 @@
 		165C93CF210C307900D984D0 /* MaplatView.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MaplatView.xcodeproj; path = ../mobile_ios_lib/MaplatView.xcodeproj; sourceTree = "<group>"; };
 		660C00C7209201C6004B885B /* tiles */ = {isa = PBXFileReference; lastKnownFileType = folder; path = tiles; sourceTree = "<group>"; };
 		660C00C9209201D4004B885B /* maps */ = {isa = PBXFileReference; lastKnownFileType = folder; path = maps; sourceTree = "<group>"; };
-		6642D2991E5DC88E00555CB7 /* mobile_ios_swift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mobile_ios_swift.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6642D2991E5DC88E00555CB7 /* mobile_ios_sample_swift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = mobile_ios_sample_swift.app; path = mobile_ios_sample_swift.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6642D2A81E5DC88E00555CB7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6642D2AB1E5DC88E00555CB7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		6642D2AD1E5DC88E00555CB7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -84,7 +84,7 @@
 			isa = PBXGroup;
 			children = (
 				165C93CF210C307900D984D0 /* MaplatView.xcodeproj */,
-				6642D29B1E5DC88E00555CB7 /* mobile_ios_swift */,
+				6642D29B1E5DC88E00555CB7 /* mobile_ios_sample_swift */,
 				6642D29A1E5DC88E00555CB7 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -92,12 +92,12 @@
 		6642D29A1E5DC88E00555CB7 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				6642D2991E5DC88E00555CB7 /* mobile_ios_swift.app */,
+				6642D2991E5DC88E00555CB7 /* mobile_ios_sample_swift.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		6642D29B1E5DC88E00555CB7 /* mobile_ios_swift */ = {
+		6642D29B1E5DC88E00555CB7 /* mobile_ios_sample_swift */ = {
 			isa = PBXGroup;
 			children = (
 				66DEFC8E1E5DE359000684B6 /* content */,
@@ -107,7 +107,7 @@
 				BA5861B32288682D00791582 /* AppDelegate.swift */,
 				BA5861B52288716900791582 /* ViewController.swift */,
 			);
-			path = mobile_ios_swift;
+			path = mobile_ios_sample_swift;
 			sourceTree = "<group>";
 		};
 		66DEFC8E1E5DE359000684B6 /* content */ = {
@@ -122,9 +122,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		6642D2981E5DC88D00555CB7 /* mobile_ios_swift */ = {
+		6642D2981E5DC88D00555CB7 /* mobile_ios_sample_swift */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 6642D2B01E5DC88E00555CB7 /* Build configuration list for PBXNativeTarget "mobile_ios_swift" */;
+			buildConfigurationList = 6642D2B01E5DC88E00555CB7 /* Build configuration list for PBXNativeTarget "mobile_ios_sample_swift" */;
 			buildPhases = (
 				6642D2951E5DC88D00555CB7 /* Sources */,
 				6642D2961E5DC88D00555CB7 /* Frameworks */,
@@ -136,9 +136,9 @@
 			dependencies = (
 				165C93D9210C30B400D984D0 /* PBXTargetDependency */,
 			);
-			name = mobile_ios_swift;
-			productName = mobile_ios;
-			productReference = 6642D2991E5DC88E00555CB7 /* mobile_ios_swift.app */;
+			name = mobile_ios_sample_swift;
+			productName = mobile_ios_sample_swift;
+			productReference = 6642D2991E5DC88E00555CB7 /* mobile_ios_sample_swift.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -158,7 +158,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 6642D2941E5DC88D00555CB7 /* Build configuration list for PBXProject "mobile_ios_swift" */;
+			buildConfigurationList = 6642D2941E5DC88D00555CB7 /* Build configuration list for PBXProject "mobile_ios_sample_swift" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -178,7 +178,7 @@
 			);
 			projectRoot = "";
 			targets = (
-				6642D2981E5DC88D00555CB7 /* mobile_ios_swift */,
+				6642D2981E5DC88D00555CB7 /* mobile_ios_sample_swift */,
 			);
 		};
 /* End PBXProject section */
@@ -335,9 +335,9 @@
 				DEVELOPMENT_TEAM = ZAD4S7J7P3;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/mobile_ios",
+					"$(PROJECT_DIR)/mobile_ios_sample_swift",
 				);
-				INFOPLIST_FILE = "$(SRCROOT)/mobile_ios_swift/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/mobile_ios_sample_swift/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "jp.tilemap.mobile-ios-swift";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -354,9 +354,9 @@
 				DEVELOPMENT_TEAM = ZAD4S7J7P3;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/mobile_ios",
+					"$(PROJECT_DIR)/mobile_ios_sample_swift",
 				);
-				INFOPLIST_FILE = "$(SRCROOT)/mobile_ios_swift/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/mobile_ios_sample_swift/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "jp.tilemap.mobile-ios-swift";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -367,7 +367,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		6642D2941E5DC88D00555CB7 /* Build configuration list for PBXProject "mobile_ios_swift" */ = {
+		6642D2941E5DC88D00555CB7 /* Build configuration list for PBXProject "mobile_ios_sample_swift" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6642D2AE1E5DC88E00555CB7 /* Debug */,
@@ -376,7 +376,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		6642D2B01E5DC88E00555CB7 /* Build configuration list for PBXNativeTarget "mobile_ios_swift" */ = {
+		6642D2B01E5DC88E00555CB7 /* Build configuration list for PBXNativeTarget "mobile_ios_sample_swift" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6642D2B11E5DC88E00555CB7 /* Debug */,

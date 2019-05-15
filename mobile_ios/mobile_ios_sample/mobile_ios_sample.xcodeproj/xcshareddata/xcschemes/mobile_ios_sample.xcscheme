@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "6642D2981E5DC88D00555CB7"
-               BuildableName = "mobile_ios_swift.app"
-               BlueprintName = "mobile_ios_swift"
-               ReferencedContainer = "container:mobile_ios_swift.xcodeproj">
+               BuildableName = "mobile_ios_sample.app"
+               BlueprintName = "mobile_ios_sample"
+               ReferencedContainer = "container:mobile_ios_sample.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "6642D2981E5DC88D00555CB7"
-            BuildableName = "mobile_ios_swift.app"
-            BlueprintName = "mobile_ios_swift"
-            ReferencedContainer = "container:mobile_ios_swift.xcodeproj">
+            BuildableName = "mobile_ios_sample.app"
+            BlueprintName = "mobile_ios_sample"
+            ReferencedContainer = "container:mobile_ios_sample.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -56,9 +56,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "6642D2981E5DC88D00555CB7"
-            BuildableName = "mobile_ios_swift.app"
-            BlueprintName = "mobile_ios_swift"
-            ReferencedContainer = "container:mobile_ios_swift.xcodeproj">
+            BuildableName = "mobile_ios_sample.app"
+            BlueprintName = "mobile_ios_sample"
+            ReferencedContainer = "container:mobile_ios_sample.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -75,9 +75,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "6642D2981E5DC88D00555CB7"
-            BuildableName = "mobile_ios_swift.app"
-            BlueprintName = "mobile_ios_swift"
-            ReferencedContainer = "container:mobile_ios_swift.xcodeproj">
+            BuildableName = "mobile_ios_sample.app"
+            BlueprintName = "mobile_ios_sample"
+            ReferencedContainer = "container:mobile_ios_sample.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
