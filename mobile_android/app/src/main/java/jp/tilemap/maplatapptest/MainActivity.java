@@ -39,9 +39,9 @@ import java.util.Map;
 
 import jp.tilemap.maplat.IMaplatMapCallbackHandler;
 import jp.tilemap.maplat.MaplatView;
-import jp.tilemap.maplat.MaplatBridgeListener;
+import jp.tilemap.maplat.IMaplatViewListener;
 
-public class MainActivity extends Activity implements MaplatBridgeListener {
+public class MainActivity extends Activity implements IMaplatViewListener {
 
     private static final int REQUEST_PERMISSION = 10;
 

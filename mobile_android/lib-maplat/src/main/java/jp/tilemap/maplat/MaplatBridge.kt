@@ -20,7 +20,7 @@ class MaplatBridge(
         internal var mContext: Context,
         private var mWebView: WebView,
         private var mHandler: Handler,
-        private var mListener: MaplatBridgeListener?,
+        private var mListener: IMaplatViewListener?,
         appID: String?,
         setting: HashMap<String, Any>?
 ) : Any() {
@@ -41,7 +41,7 @@ class MaplatBridge(
         }
 
         //リンクをタップしたときに標準ブラウザを起動させない
-        mWebView.webViewClient = object : WebViewClient() {
+        mWebView.setWebViewClient(object : WebViewClient() {
             override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? {
                 val url = request.url.toString()
                 val regex = "https?://localresource/"
@@ -107,15 +107,15 @@ class MaplatBridge(
                 }
                 return ret
             }
-        }
-        mWebView.webChromeClient = object : WebChromeClient() {
+        })
+        mWebView.setWebChromeClient(object : WebChromeClient() {
             override fun onConsoleMessage(consoleMessage: ConsoleMessage): Boolean {
                 Log.d("MyApplication", consoleMessage.message() + " -- From line "
                         + consoleMessage.lineNumber() + " of "
                         + consoleMessage.sourceId())
                 return true
             }
-        }
+        })
 
         mWebView.settings.javaScriptEnabled = true
         mWebView.addJavascriptInterface(this, "maplatBridge")
@@ -129,7 +129,7 @@ class MaplatBridge(
         mInitializeValue = obj
     }
 
-    fun setMaplatBridgeListener(maplatBridgeListener: MaplatBridgeListener) {
+    fun setMaplatBridgeListener(maplatBridgeListener: IMaplatViewListener) {
         mListener = maplatBridgeListener
     }
 

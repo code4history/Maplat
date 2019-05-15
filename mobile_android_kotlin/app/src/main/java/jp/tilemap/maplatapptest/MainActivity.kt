@@ -18,11 +18,11 @@ import com.google.android.gms.tasks.OnSuccessListener
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import jp.tilemap.maplat.IMaplatMapCallbackHandler
-import jp.tilemap.maplat.MaplatBridgeListener
+import jp.tilemap.maplat.IMaplatViewListener
 import jp.tilemap.maplat.MaplatView
 import java.util.*
 
-class MainActivity : Activity(), MaplatBridgeListener {
+class MainActivity : Activity(), IMaplatViewListener {
 
     var button1: Button? = null
     var button2: Button? = null
