@@ -1,0 +1,2 @@
+include ':app', ':MaplatView'
+project(':MaplatView').projectDir = new File(settingsDir, '../mobile_android_lib')

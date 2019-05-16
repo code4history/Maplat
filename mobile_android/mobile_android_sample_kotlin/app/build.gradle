@@ -38,6 +38,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'com.google.android.gms:play-services-location:11.8.0'
     implementation 'com.google.code.gson:gson:2.8.2'
-    implementation project(':mobile_android-lib-maplat')
+    implementation project(':MaplatView')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
