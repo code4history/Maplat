@@ -39,14 +39,14 @@ class MaplatView @JvmOverloads constructor(context: Context, attrs: AttributeSet
         init()
     }
 
-    fun setMaplatViewListener(maplatBridgeListener: IMaplatViewListener) {
-        mListener = maplatBridgeListener
+    fun setMaplatViewListener(maplatViewLListener: IMaplatViewListener) {
+        mListener = maplatViewLListener
     }
 
     /**
      * MaplatBridgeの初期化
      */
-    fun initSetting(listner: IMaplatViewListener, appID: String, setting: HashMap<String, Any>) {
+    fun initSetting(listner: IMaplatViewListener, appID: String?, setting: HashMap<String, Any>?) {
         try {
             mListener = listner
 
