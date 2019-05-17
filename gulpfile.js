@@ -107,10 +107,24 @@ gulp.task('mobile_build_task', function() {
     removeResource();
     copyResource(mobileCopy);
     copyResource(mobileBaseCopy);
-    fs.copySync('mobile.html', './mobile_android/lib-maplat/src/main/res/raw/mobile_html');
-    fs.copySync('mobile.html', './mobile_ios_lib/MaplatView/Maplat.bundle/mobile.html');
+    fs.copySync('mobile.html', './mobile_android/mobile_android_lib/src/main/res/raw/mobile_html');
+    fs.copySync('mobile.html', './mobile_ios/mobile_ios_lib/MaplatView/Maplat.bundle/mobile.html');
     copyAssets();
-    return Promise.resolve();
+    return Promise.all([new Promise(function(resolve, reject) {
+        gulp.src(['./mobile_android/mobile_android_lib/build.gradle'])
+            .pipe(concat('build.gradle'))
+            .pipe(replace(/def VERSION_NAME = ".+"/g, 'def VERSION_NAME = "' + pkg.version + '"'))
+            .on('error', reject)
+            .pipe(gulp.dest('./mobile_android/mobile_android_lib/'))
+            .on('end', resolve);
+    }),new Promise(function(resolve, reject) {
+        gulp.src(['./mobile_ios/mobile_ios_lib/MaplatView/Info.plist'])
+            .pipe(concat('Info.plist'))
+            .pipe(replace(/<key>CFBundleShortVersionString<\/key>\n\t<string>.+<\/string>/g, '<key>CFBundleShortVersionString</key>\n\t<string>' + pkg.version + '</string>'))
+            .on('error', reject)
+            .pipe(gulp.dest('./mobile_ios/mobile_ios_lib/MaplatView/'))
+            .on('end', resolve);
+    })]);
 });
 
 gulp.task('mobile_build', gulp.series('js_build', 'css_build', 'mobile_build_task'));
