@@ -759,6 +759,30 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
         }
     };
 
+    MaplatApp.prototype.updateMarker = function(id, data, overwrite) {
+        var app = this;
+        var poi = app.getMarker(id);
+        if (!poi) return;
+        if (overwrite) {
+            Object.keys(poi).map(function(key) {
+                if (key != 'id' && key != 'namespace_id') {
+                    delete poi[key];
+                }
+            });
+            Object.assign(poi, data);
+        } else {
+            Object.keys(data).map(function(key) {
+                if (key == 'id' || key == 'namespace_id') return;
+                if (data[key] == '____delete____') {
+                    delete poi[key];
+                } else {
+                    poi[key] = data[key];
+                }
+            });
+        }
+        app.redrawMarkers();
+    };
+
     MaplatApp.prototype.addMarker = function(data, clusterId) {
         if (!clusterId) {
             clusterId = 'main';

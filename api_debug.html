@@ -32,6 +32,7 @@
     <button id="show">showLayer(Main)</button>
     <button id="hide">hideLayer(Main)</button>
     <button id="clear">clearMarker(Main)</button>
+    <button id="move">moveMarker(Main)</button>
     <button id="remove">removeMarker(Main)</button>
     <button id="add2">addMarker(Main2)</button>
     <button id="clear2">clearMarker(Main2)</button>
@@ -55,6 +56,7 @@
     Maplat.createObject(option).then(function(app){
         console.log(app.currentMapInfo());
         console.log(app.mapInfo('gsi'));
+        var moveFlag = false;
         app.addEventListener('clickMarker', function(evt) {
             app.selectMarker(evt.detail.namespace_id);
             console.log(evt);
@@ -82,6 +84,16 @@
         });
         document.getElementById('clear').addEventListener('click', function(e) {
             app.clearMarker('main');
+        });
+        document.getElementById('move').addEventListener('click', function(e) {
+            var data;
+            if (moveFlag) {
+                data = {lat: 39.698620, lng: 141.145358};
+            } else {
+                data = {lat: 39.694758, lng: 141.146534};
+            }
+            moveFlag = !moveFlag;
+            app.updateMarker('main_1', data);
         });
         document.getElementById('remove').addEventListener('click', function(e) {
             app.removeMarker('main_2');
