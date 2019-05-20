@@ -587,13 +587,13 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
             var cIndex = 0;
             for (var i=0; i<sources.length; i++) {
                 var source = sources[i];
-                if (source.envelop) {
-                    source.envelopColor = colors[cIndex];
+                if (source.envelope) {
+                    source.envelopeColor = colors[cIndex];
                     cIndex = cIndex + 1;
                     if (cIndex == colors.length) cIndex = 0;
 
-                    var xys = source.envelop.geometry.coordinates[0];
-                    source.envelopAreaIndex = 0.5 * Math.abs([0, 1, 2, 3].reduce(function(prev, curr, i) {
+                    var xys = source.envelope.geometry.coordinates[0];
+                    source.envelopeAreaIndex = 0.5 * Math.abs([0, 1, 2, 3].reduce(function(prev, curr, i) {
                         var xy1 = xys[i];
                         var xy2 = xys[i+1];
                         return prev + (xy1[0] - xy2[0]) * (xy1[1] + xy2[1]);
@@ -677,13 +677,13 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
 
             for (var i=0; i<baseSources.length; i++) {
                 var source = baseSources[i];
-                var colorCss = source.envelop ? ' ' + source.envelopColor : '';
+                var colorCss = source.envelope ? ' ' + source.envelopeColor : '';
                 baseSwiper.appendSlide('<div class="swiper-slide" data="' + source.sourceID + '">' +
                     '<img crossorigin="anonymous" src="' + source.thumbnail + '"><div>' + ui.core.translate(source.label) + '</div></div>');
             }
             for (var i=0; i<overlaySources.length; i++) {
                 var source = overlaySources[i];
-                var colorCss = source.envelop ? ' ' + source.envelopColor : '';
+                var colorCss = source.envelope ? ' ' + source.envelopeColor : '';
                 overlaySwiper.appendSlide('<div class="swiper-slide' + colorCss + '" data="' + source.sourceID + '">' +
                     '<img crossorigin="anonymous" src="' + source.thumbnail + '"><div>' + ui.core.translate(source.label) + '</div></div>');
             }
@@ -712,7 +712,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
             var transparency = ui.sliderCommon.get('slidervalue') * 100;
             ui.core.mapObject.setTransparency(transparency);
 
-            ui.updateEnvelop();
+            ui.updateEnvelope();
         });
 
         ui.core.addEventListener('poi_number', function(evt) {
@@ -738,7 +738,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
         ui.core.mapDivDocument.addEventListener('mouseout', function(evt){
             delete ui.selectCandidate;
             if (ui._selectCandidateSource) {
-                ui.core.mapObject.removeEnvelop(ui._selectCandidateSource);
+                ui.core.mapObject.removeEnvelope(ui._selectCandidateSource);
                 delete ui._selectCandidateSource;
             }
         });
@@ -747,14 +747,14 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
             if (!ui.core.stateBuffer.showBorder) {
                 delete ui.selectCandidate;
                 if (ui._selectCandidateSource) {
-                    ui.core.mapObject.removeEnvelop(ui._selectCandidateSource);
+                    ui.core.mapObject.removeEnvelope(ui._selectCandidateSource);
                     delete ui._selectCandidateSource;
                 }
                 return;
             }
 
             ui.xyToSourceID(evt.detail, function(sourceID) {
-                ui.showFillEnvelop(sourceID);
+                ui.showFillEnvelope(sourceID);
             });
         });
 
@@ -769,7 +769,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                     delete ui.selectCandidate;
                     delete ui._selectCandidateSource;
                 } else {
-                    ui.showFillEnvelop(sourceID);
+                    ui.showFillEnvelope(sourceID);
                 }
             });
         });
@@ -1089,30 +1089,30 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
         });
     };
 
-    MaplatUi.prototype.showFillEnvelop = function(sourceID) {
+    MaplatUi.prototype.showFillEnvelope = function(sourceID) {
         var ui = this;
         if (sourceID && sourceID !== ui.core.from.sourceID) {
             if (ui.selectCandidate != sourceID) {
                 if (ui._selectCandidateSource) {
-                    ui.core.mapObject.removeEnvelop(ui._selectCandidateSource);
+                    ui.core.mapObject.removeEnvelope(ui._selectCandidateSource);
                 }
                 var source = ui.core.cacheHash[sourceID];
-                var xyPromises = source.envelop.geometry.coordinates[0].map(function(coord) {
+                var xyPromises = source.envelope.geometry.coordinates[0].map(function(coord) {
                     return ui.core.from.merc2XyAsync(coord);
                 });
-                var hexColor = source.envelopColor;
+                var hexColor = source.envelopeColor;
                 var color = ol.color.asArray(hexColor);
                 color = color.slice();
                 color[3] = 0.2;
                 Promise.all(xyPromises).then(function(xys) {
-                    ui._selectCandidateSource = ui.core.mapObject.setFillEnvelop(xys, null, {color: color});
+                    ui._selectCandidateSource = ui.core.mapObject.setFillEnvelope(xys, null, {color: color});
                 });
                 ui.overlaySwiper.slideToMapID(sourceID);
             }
             ui.selectCandidate = sourceID;
         } else {
             if (ui._selectCandidateSource) {
-                ui.core.mapObject.removeEnvelop(ui._selectCandidateSource);
+                ui.core.mapObject.removeEnvelope(ui._selectCandidateSource);
                 delete ui._selectCandidateSource;
             }
             delete ui.selectCandidate;
@@ -1123,12 +1123,12 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
         var ui = this;
         var point = turf.point(xy);
         Promise.all(Object.keys(ui.core.cacheHash).filter(function(key) {
-            return ui.core.cacheHash[key].envelop;
+            return ui.core.cacheHash[key].envelope;
         }).map(function(key) {
             var source = ui.core.cacheHash[key];
             return Promise.all([
                 Promise.resolve(source),
-                Promise.all(source.envelop.geometry.coordinates[0].map(function(coord) {
+                Promise.all(source.envelope.geometry.coordinates[0].map(function(coord) {
                     return ui.core.from.merc2XyAsync(coord);
                 }))
             ]);
@@ -1140,8 +1140,8 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                 if (source.sourceID == ui.core.from.sourceID) return prev;
                 var polygon = turf.polygon([mercXys]);
                 if (turf.booleanPointInPolygon(point, polygon)) {
-                    if (!areaIndex || source.envelopAreaIndex < areaIndex) {
-                        areaIndex = source.envelopAreaIndex;
+                    if (!areaIndex || source.envelopeAreaIndex < areaIndex) {
+                        areaIndex = source.envelopeAreaIndex;
                         return source.sourceID;
                     } else {
                         return prev;
@@ -1156,7 +1156,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
 
     MaplatUi.prototype.setShowBorder = function(flag) {
         this.core.requestUpdateState({showBorder: flag ? 1 : 0});
-        this.updateEnvelop();
+        this.updateEnvelope();
         if (flag) {
             this.core.mapDivDocument.classList.add('show-border');
         } else {
@@ -1179,30 +1179,30 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
         }
     };
 
-    MaplatUi.prototype.updateEnvelop = function() {
+    MaplatUi.prototype.updateEnvelope = function() {
         var ui = this;
         if (!ui.core.mapObject) return;
 
-        ui.core.mapObject.resetEnvelop();
+        ui.core.mapObject.resetEnvelope();
         delete ui.selectCandidate;
         delete ui._selectCandidateSource;
 
         if (ui.core.stateBuffer.showBorder) {
             Object.keys(ui.core.cacheHash).filter(function(key) {
-                return ui.core.cacheHash[key].envelop;
+                return ui.core.cacheHash[key].envelope;
             }).map(function(key) {
                 var source = ui.core.cacheHash[key];
                 var xyPromises = (key == ui.core.from.sourceID) && (source instanceof ol.source.HistMap) ?
                     [[0, 0], [source.width, 0], [source.width, source.height], [0, source.height], [0, 0]].map(function(xy) {
                         return Promise.resolve(source.xy2HistMapCoords(xy));
                     }) :
-                    source.envelop.geometry.coordinates[0].map(function(coord) {
+                    source.envelope.geometry.coordinates[0].map(function(coord) {
                         return ui.core.from.merc2XyAsync(coord);
                     });
 
                 Promise.all(xyPromises).then(function(xys) {
-                    ui.core.mapObject.setEnvelop(xys, {
-                        color: source.envelopColor,
+                    ui.core.mapObject.setEnvelope(xys, {
+                        color: source.envelopeColor,
                         width: 2,
                         lineDash: [6, 6]
                     });

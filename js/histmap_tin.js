@@ -80,7 +80,7 @@ define(['histmap', 'tin'], function(ol, Tin) {
         });
     };
 
-    ol.source.HistMap_tin.prototype.xy2MercAsync_ = function(xy) {
+    ol.source.HistMap_tin.prototype.xy2MercAsync_ = function(xy, ) {
         var self = this;
         return new Promise(function(resolve, reject) {
             resolve(ol.proj.transformDirect(xy, 'Illst:' + self.mapID, 'EPSG:3857'));

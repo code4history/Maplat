@@ -242,7 +242,7 @@ define(['ol-custom', 'turf'], function(ol, turf) {
             var delta = (delta1 + delta2) / 2;
             self.merc_zoom = Math.log(300 * (2*ol.const.MERC_MAX) / 256 / delta) / Math.log(2) - 3;
             self.home_position = ol.proj.toLonLat(mercs[4]);
-            self.envelop = turf.helpers.polygon([[mercs[5], mercs[6], mercs[7], mercs[8], mercs[5]]]);
+            self.envelope = turf.helpers.polygon([[mercs[5], mercs[6], mercs[7], mercs[8], mercs[5]]]);
             callback(self);
         }).catch(function(err) {
             throw err;

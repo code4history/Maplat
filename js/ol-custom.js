@@ -623,13 +623,14 @@ define(['ol3', 'turf'], function(ol, turf) {
         self.label = options.label;
         self.maxZoom = options.maxZoom;
         self.minZoom = options.minZoom;
-        if (options.envelopLngLats) {
-            var mercs = options.envelopLngLats.map(function(lnglat){
+        if (options.envelopeLngLats || options.envelopLngLats) {
+            var lngLats = options.envelopeLngLats || options.envelopLngLats;
+            var mercs = lngLats.map(function(lnglat){
                 return ol.proj.transform(lnglat, 'EPSG:4326', 'EPSG:3857');
             });
             mercs.push(mercs[0]);
-            self.envelop = turf.helpers.polygon([mercs]);
-            self.centroid = turf.centroid(self.envelop).geometry.coordinates;
+            self.envelope = turf.helpers.polygon([mercs]);
+            self.centroid = turf.centroid(self.envelope).geometry.coordinates;
         }
 
         for (var i = 0; i < ol.source.META_KEYS.length; i++) {
@@ -677,9 +678,9 @@ define(['ol3', 'turf'], function(ol, turf) {
     };
 
     ol.source.NowMap.prototype.insideCheckXy = function(xy) {
-        if (!this.envelop) return true;
+        if (!this.envelope) return true;
         var point = turf.helpers.point(xy);
-        return turf.booleanPointInPolygon(point, this.envelop);
+        return turf.booleanPointInPolygon(point, this.envelope);
     };
 
     ol.source.NowMap.prototype.insideCheckHistMapCoords = function(histCoords) {
@@ -689,7 +690,7 @@ define(['ol3', 'turf'], function(ol, turf) {
     ol.source.NowMap.prototype.modulateXyInside = function(xy) {
         if (!this.centroid) return xy;
         var expandLine = turf.lineString([xy, this.centroid]);
-        var intersect = turf.lineIntersect(this.envelop, expandLine);
+        var intersect = turf.lineIntersect(this.envelope, expandLine);
         if (intersect.features.length > 0 && intersect.features[0].geometry) {
             return intersect.features[0].geometry.coordinates;
         } else {
@@ -737,12 +738,12 @@ define(['ol3', 'turf'], function(ol, turf) {
         });
         featureLayer.set('name', 'feature');
 
-        var envelopLayer = new ol.layer.Vector({
+        var envelopeLayer = new ol.layer.Vector({
             source: new ol.source.Vector({
                 wrapX: false
             })
         });
-        envelopLayer.set('name', 'envelop');
+        envelopeLayer.set('name', 'envelope');
 
         var baseLayer = optOptions.baseLayer ? optOptions.baseLayer :
             new ol.layer.Tile({
@@ -760,7 +761,7 @@ define(['ol3', 'turf'], function(ol, turf) {
             layers: [
                 baseLayer,
                 overlayLayer,
-                envelopLayer,
+                envelopeLayer,
                 featureLayer,
                 vectorLayer,
                 markerLayer
@@ -891,23 +892,23 @@ define(['ol3', 'turf'], function(ol, turf) {
         this.resetFeature(layer);
     };
 
-    ol.MaplatMap.prototype.setEnvelop = function(xys, stroke, layer) {
-        if (!layer) layer = 'envelop';
+    ol.MaplatMap.prototype.setEnvelope = function(xys, stroke, layer) {
+        if (!layer) layer = 'envelope';
         return this.setLine(xys, stroke, layer);
     };
 
-    ol.MaplatMap.prototype.removeEnvelop = function(feature, layer) {
-        if (!layer) layer = 'envelop';
+    ol.MaplatMap.prototype.removeEnvelope = function(feature, layer) {
+        if (!layer) layer = 'envelope';
         this.removeFeature(feature, layer);
     };
 
-    ol.MaplatMap.prototype.resetEnvelop = function(layer) {
-        if (!layer) layer = 'envelop';
+    ol.MaplatMap.prototype.resetEnvelope = function(layer) {
+        if (!layer) layer = 'envelope';
         this.resetFeature(layer);
     };
 
-    ol.MaplatMap.prototype.setFillEnvelop = function(xys, stroke, fill, layer) {
-        if (!layer) layer = 'envelop';
+    ol.MaplatMap.prototype.setFillEnvelope = function(xys, stroke, fill, layer) {
+        if (!layer) layer = 'envelope';
         var style = null;
         if (stroke != null || fill != null) {
             var option = {};
