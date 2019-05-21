@@ -42,6 +42,7 @@ define(['histmap', 'tin'], function(ol, Tin) {
                 if (options.sub_maps) {
                     var promarray = options.sub_maps.map(function(sub_map, i) {
                         var index = i + 1;
+                        var projKey = 'Illst:' + obj.mapID + '#' + index;
                         var tin = obj.tins[index] = new Tin({
                             bounds: sub_map.bounds,
                             strictMode: options.strictMode,
@@ -50,24 +51,30 @@ define(['histmap', 'tin'], function(ol, Tin) {
                             priority: sub_map.priority
                         });
                         var proj = new ol.proj.Projection({
-                            code: 'Illst:' + obj.mapID + '#' + index,
+                            code: projKey,
                             extent: [tin.xy[0], tin.xy[1], tin.wh[0], tin.wh[1]],
                             units: 'm'
                         });
                         ol.proj.addProjection(proj);
                         ol.proj.addCoordinateTransforms(proj, 'EPSG:3857', function(xy) {
-                            return obj.tins[index].transform(xy, false);
+                            return tin.transform(xy, false);
                         }, function(merc) {
-                            return obj.tins[index].transform(merc, true);
+                            return tin.transform(merc, true);
                         });
                         ol.proj.transformDirect('EPSG:4326', proj);
                         if (sub_map.compiled) {
-                            obj.tins[index].setCompiled(sub_map.compiled);
+                            tin.setCompiled(sub_map.compiled);
                             return Promise.resolve();
                         } else {
-                            obj.tins[index].setPoints(sub_map.gcps);
-                            return obj.tins[index].updateTinAsync();
+                            tin.setPoints(sub_map.gcps);
+                            return tin.updateTinAsync();
                         }
+                        var xyBounds = Object.assign([], sub_map.bounds);
+                        xyBounds.push(sub_map.bounds[0]);
+                        var mercBounds = xy_
+
+
+
                     });
                     proms = Promise.all(promarray);
                 } else {
@@ -80,7 +87,55 @@ define(['histmap', 'tin'], function(ol, Tin) {
         });
     };
 
-    ol.source.HistMap_tin.prototype.xy2MercAsync_ = function(xy, ) {
+    ol.source.HistMap_tin.prototype.xy2MercAsync_specifyLayer = function(xy, layerId) {
+        var self = this;
+        var layerKey = 'Illst:' + self.mapID + (layerId ? '#' + layerId : '');
+        return new Promise(function(resolve, reject) {
+            resolve(ol.proj.transformDirect(xy, layerKey, 'EPSG:3857'));
+        }).catch(function(err) {
+            throw err;
+        });
+    };
+    ol.source.HistMap_tin.prototype.merc2XyAsync_specifyLayer = function(merc, layerId) {
+        var self = this;
+        var layerKey = 'Illst:' + self.mapID + (layerId ? '#' + layerId : '');
+        return new Promise(function(resolve, reject) {
+            resolve(ol.proj.transformDirect(merc, 'EPSG:3857', layerKey));
+        }).catch(function(err) {
+            throw err;
+        });
+    };
+
+    ol.source.HistMap_tin.prototype.xy2MercAsync_returnLayer = function(xy) {
+        var self = this;
+        var tin_sorted = self.tins.map(function(tin, index) {
+            return [index, tin];
+        }).sort(function(a, b) {
+            return a[1].priority < b[1].priority ? 1 : -1;
+        });
+
+        for (var i = 0; i < tin_sorted.length - 1; i++) {
+            if (tin_sorted[i][1].bounds_polygon) {
+
+            }
+        }
+
+        return new Promise(function(resolve, reject) {
+            resolve(ol.proj.transformDirect(xy, 'Illst:' + self.mapID, 'EPSG:3857'));
+        }).catch(function(err) {
+            throw err;
+        });
+    };
+    ol.source.HistMap_tin.prototype.merc2XyAsync_returnLayer = function(merc) {
+        var self = this;
+        return new Promise(function(resolve, reject) {
+            resolve(ol.proj.transformDirect(merc, 'EPSG:3857', 'Illst:' + self.mapID));
+        }).catch(function(err) {
+            throw err;
+        });
+    };
+
+    ol.source.HistMap_tin.prototype.xy2MercAsync_ = function(xy, layer_id) {
         var self = this;
         return new Promise(function(resolve, reject) {
             resolve(ol.proj.transformDirect(xy, 'Illst:' + self.mapID, 'EPSG:3857'));
@@ -88,7 +143,7 @@ define(['histmap', 'tin'], function(ol, Tin) {
             throw err;
         });
     };
-    ol.source.HistMap_tin.prototype.merc2XyAsync_ = function(merc) {
+    ol.source.HistMap_tin.prototype.merc2XyAsync_ = function(merc, layer_id) {
         var self = this;
         return new Promise(function(resolve, reject) {
             resolve(ol.proj.transformDirect(merc, 'EPSG:3857', 'Illst:' + self.mapID));
