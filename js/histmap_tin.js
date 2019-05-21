@@ -1,4 +1,4 @@
-define(['histmap', 'tin'], function(ol, Tin) {
+define(['histmap', 'tin', 'turf'], function(ol, Tin, turf) {
     ol.source.HistMap_tin = function(optOptions) {
         var options = optOptions || {};
 
@@ -41,6 +41,7 @@ define(['histmap', 'tin'], function(ol, Tin) {
                 var proms;
                 if (options.sub_maps) {
                     var promarray = options.sub_maps.map(function(sub_map, i) {
+                        var prom;
                         var index = i + 1;
                         var projKey = 'Illst:' + obj.mapID + '#' + index;
                         var tin = obj.tins[index] = new Tin({
@@ -64,17 +65,22 @@ define(['histmap', 'tin'], function(ol, Tin) {
                         ol.proj.transformDirect('EPSG:4326', proj);
                         if (sub_map.compiled) {
                             tin.setCompiled(sub_map.compiled);
-                            return Promise.resolve();
+                            prom = Promise.resolve();
                         } else {
                             tin.setPoints(sub_map.gcps);
-                            return tin.updateTinAsync();
+                            prom = tin.updateTinAsync();
                         }
-                        var xyBounds = Object.assign([], sub_map.bounds);
-                        xyBounds.push(sub_map.bounds[0]);
-                        var mercBounds = xy_
-
-
-
+                        return prom.then(function() {
+                            var xyBounds = Object.assign([], sub_map.bounds);
+                            xyBounds.push(sub_map.bounds[0]);
+                            var mercBounds = xyBounds.map(function(xy) {
+                                return tin.transform(xy, false);
+                            });
+                            var xyBoundsPolygon = turf.helpers.polygon(xyBounds);
+                            var mercBoundsPolygon = turf.helpers.polygon(mercBounds);
+                            tin.xyBounds = xyBoundsPolygon;
+                            tin.mercBounds = mercBoundsPolygon;
+                        });
                     });
                     proms = Promise.all(promarray);
                 } else {
@@ -108,28 +114,72 @@ define(['histmap', 'tin'], function(ol, Tin) {
 
     ol.source.HistMap_tin.prototype.xy2MercAsync_returnLayer = function(xy) {
         var self = this;
-        var tin_sorted = self.tins.map(function(tin, index) {
-            return [index, tin];
-        }).sort(function(a, b) {
-            return a[1].priority < b[1].priority ? 1 : -1;
-        });
-
-        for (var i = 0; i < tin_sorted.length - 1; i++) {
-            if (tin_sorted[i][1].bounds_polygon) {
-
-            }
-        }
-
         return new Promise(function(resolve, reject) {
-            resolve(ol.proj.transformDirect(xy, 'Illst:' + self.mapID, 'EPSG:3857'));
+            var tinSorted = self.tins.map(function(tin, index) {
+                return [index, tin];
+            }).sort(function(a, b) {
+                return a[1].priority < b[1].priority ? 1 : -1;
+            });
+
+            for (var i = 0; i < tinSorted.length; i++) {
+                var index = tinSorted[i][0];
+                var tin = tinSorted[i][1];
+                if (index == 0 || turf.booleanPointInPolygon(xy, tin.xyBounds)) {
+                    self.xy2MercAsync_specifyLayer(xy, index).then(function(merc) {
+                        resolve([index, merc]);
+                    }).catch(function(err) {
+                        reject(err);
+                    });
+                    break;
+                }
+            }
         }).catch(function(err) {
             throw err;
         });
     };
     ol.source.HistMap_tin.prototype.merc2XyAsync_returnLayer = function(merc) {
         var self = this;
-        return new Promise(function(resolve, reject) {
-            resolve(ol.proj.transformDirect(merc, 'EPSG:3857', 'Illst:' + self.mapID));
+        return Promise.all(self.tins.map(function(tin, index) {
+            return new Promise(function(resolve, reject) {
+                self.merc2XyAsync_specifyLayer(merc, index).then(function(xy) {
+                    if (index == 0 || turf.booleanPointInPolygon(xy, tin.xyBounds)) {
+                        resolve([tin, index, xy]);
+                    } else {
+                        resolve([tin, index]);
+                    }
+                }).catch(function(err) {
+                    reject(err);
+                });
+            });
+        })).then(function(results) {
+            return results.sort(function(a, b) {
+                return a[0].importance < b[0].importance ? 1 : -1;
+            }).reduce(function(ret, result, impIndex, arry) {
+                var tin = result[0];
+                var index = result[1];
+                var xy = result[2];
+                if (!xy) return false;
+                var type;
+                for (var i=0; i<impIndex; i++) {
+                    if (i == impIndex) continue;
+                    var targetTin = arry[i][0];
+                    var targetIndex = arry[i][1];
+                    if (targetTin.priority < tin.priority) continue;
+                    if (targetIndex == 0 || turf.booleanPointInPolygon(xy, targetTin.xyBounds)) {
+                        if (i < impIndex) {
+                            return false;
+                        } else {
+                            type = 'hide';
+                            break;
+                        }
+                    }
+                }
+                if (!type) {
+                    type = ret.length == 0 ? 'main' : 'sub';
+                }
+                ret.push([index, xy, type]);
+                return ret;
+            }, []);
         }).catch(function(err) {
             throw err;
         });
