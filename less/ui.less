@@ -14,7 +14,7 @@
 	        url('../fonts/clarenbd-webfont.svg#webfont') format('svg');
     }
 
-    #modal_load_title {
+    .modal_load_title {
         font-family: 'Clarendon';
     }
 
@@ -22,31 +22,31 @@
         display: none;
     }
 
-    #modal_poi_content, #modal_map_content, #modal_load_content, #modal_gpsW_content, #modal_gpsD_content,
-    #modal_help_content, #modal_title, #modal_load_title, #modal_gpsW_title, #modal_help_title,
-    #modal_share_content, #modal_share_title, #modal_hide_marker_content, #modal_hide_marker_title {
+    .modal_poi_content, .modal_map_content, .modal_load_content, .modal_gpsW_content, .modal_gpsD_content,
+    .modal_help_content, .modal_title, .modal_load_title, .modal_gpsW_title, .modal_help_title,
+    .modal_share_content, .modal_share_title, .modal_hide_marker_content, .modal_hide_marker_title {
         display: none;
     }
 
-    .modal_poi #modal_poi_content, .modal_map #modal_map_content,
-    .modal_load #modal_load_content, .modal_help #modal_help_content,
-    .modal_gpsW #modal_gpsW_content, .modal_gpsD #modal_gpsD_content,
-    .modal_share #modal_share_content, .modal_hide_marker #modal_hide_marker_content {
+    .modal_poi .modal_poi_content, .modal_map .modal_map_content,
+    .modal_load .modal_load_content, .modal_help .modal_help_content,
+    .modal_gpsW .modal_gpsW_content, .modal_gpsD .modal_gpsD_content,
+    .modal_share .modal_share_content, .modal_hide_marker .modal_hide_marker_content {
         display: block;
     }
 
-    .modal_poi #modal_title, .modal_map #modal_title,
-    .modal_gpsD #modal_title, .modal_help #modal_help_title,
-    .modal_load #modal_load_title, .modal_gpsW #modal_gpsW_title,
-    .modal_share #modal_share_title, .modal_hide_marker #modal_hide_marker_title {
+    .modal_poi .modal_title, .modal_map .modal_title,
+    .modal_gpsD .modal_title, .modal_help .modal_help_title,
+    .modal_load .modal_load_title, .modal_gpsW .modal_gpsW_title,
+    .modal_share .modal_share_title, .modal_hide_marker .modal_hide_marker_title {
         display: inline;
     }
 
-    #modal_cache_content, #modal_share_state, .share_help {
+    .modal_cache_content, .modal_share_state, .share_help {
         display: none;
     }
 
-    &.cache_enable #modal_cache_content, &.state_url #modal_share_state {
+    &.cache_enable .modal_cache_content, &.state_url .modal_share_state {
         display: block;
     }
 
@@ -178,7 +178,7 @@
         padding-bottom: 60vh;
     }
 
-    #poi_web {
+    .poi_web {
         overflow-y: scroll;
     }
 
