@@ -90,6 +90,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
     // Maplat UI Class
     var MaplatUi = function(appOption) {
         var ui = this;
+        ui.html_id_seed = '' + (Math.floor( Math.random() * 9000 ) + 1000);
 
         if (appOption.state_url) {
             page(function(ctx, next) {
@@ -140,7 +141,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                             break;
                         case 'c':
                             if (ui.core) {
-                                var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
+                                var modalElm = ui.core.mapDivDocument.querySelector('.modalBase');
                                 var modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
                                 modal.hide();
                             }
@@ -199,7 +200,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
 
         // Modal記述の動作を調整する関数
         var modalSetting = function(target) {
-            var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
+            var modalElm = ui.core.mapDivDocument.querySelector('.modalBase');
             ['poi', 'map', 'load', 'gpsW', 'gpsD', 'help', 'share', 'hide_marker'].map(function(target_) {
                 var className = 'modal_' + target_;
                 if (target == target_) {
@@ -253,7 +254,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
             });
         }
 
-        var newElems = Core.createElement('<div class="modal" id="modalBase" tabindex="-1" role="dialog" ' +
+        var newElems = Core.createElement('<div class="modal modalBase" tabindex="-1" role="dialog" ' +
             'aria-labelledby="staticModalLabel" aria-hidden="true" data-show="true" data-keyboard="false" ' +
             'data-backdrop="static">' +
             '<div class="modal-dialog">' +
@@ -264,19 +265,19 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
             '</button>' +
             '<h4 class="modal-title">' +
 
-            '<span id="modal_title"></span>' +
-            '<span id="modal_load_title"></span>' +
-            '<span id="modal_gpsW_title" data-i18n="html.acquiring_gps"></span>' +
-            '<span id="modal_help_title" data-i18n="html.help_title"></span>' +
-            '<span id="modal_share_title" data-i18n="html.share_title"></span>' +
-            '<span id="modal_hide_marker_title" data-i18n="html.hide_marker_title"></span>' +
+            '<span class="modal_title"></span>' +
+            '<span class="modal_load_title"></span>' +
+            '<span class="modal_gpsW_title" data-i18n="html.acquiring_gps"></span>' +
+            '<span class="modal_help_title" data-i18n="html.help_title"></span>' +
+            '<span class="modal_share_title" data-i18n="html.share_title"></span>' +
+            '<span class="modal_hide_marker_title" data-i18n="html.hide_marker_title"></span>' +
 
             '</h4>' +
             '</div>' +
             '<div class="modal-body">' +
 
-            '<div id="modal_help_content">' +
-            '<div id="help_content">' +
+            '<div class="modal_help_content">' +
+            '<div class="help_content">' +
             '<span data-i18n-html="html.help_using_maplat"></span>' +
             '<p class="col-xs-12 help_img"><img src="parts/fullscreen.png"></p>' +
             '<h4 data-i18n="html.help_operation_title"></h4>' +
@@ -301,87 +302,67 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
             '</div>' +
             '</div>' +
 
-            '<div id="modal_poi_content">' +
-            '<div id="poi_web" class="embed-responsive embed-responsive-60vh">' +
-            '<iframe id="poi_iframe" class="iframe_poi" frameborder="0" src=""></iframe>' +
+            '<div class="modal_poi_content">' +
+            '<div class="poi_web embed-responsive embed-responsive-60vh">' +
+            '<iframe class="poi_iframe iframe_poi" frameborder="0" src=""></iframe>' +
             '</div>' +
-            '<div id="poi_data" class="hide">' +
-            '<p class="col-xs-12 poi_img"><img id="poi_img" src="parts/loading_image.png"></p>' +
-            '<p class="recipient" id="poi_address"></p>' +
-            '<p class="recipient" id="poi_desc"></p>' +
+            '<div class="poi_data hide">' +
+            '<p class="col-xs-12 poi_img"><img class="poi_img_tag" src="parts/loading_image.png"></p>' +
+            '<p class="recipient poi_address"></p>' +
+            '<p class="recipient poi_desc"></p>' +
             '</div>' +
             '</div>' +
 
-            '<div id="modal_share_content">' +
-            '<h4 data-i18n="html.share_app_title"></h4><div id="app_toast"></div>' +
+            '<div class="modal_share_content">' +
+            '<h4 data-i18n="html.share_app_title"></h4><div id="___maplat_app_toast_' + ui.html_id_seed + '"></div>' +
             '<div class="recipient row">' +
             '<div class="form-group col-xs-4 text-center"><button title="Copy to clipboard" class="share btn btn-light" data="cp_app"><i class="fa fa-clipboard"></i>&nbsp;<small data-i18n="html.share_copy"></small></button></div>' +
             '<div class="form-group col-xs-4 text-center"><button title="Twitter" class="share btn btn-light" data="tw_app"><i class="fa fa-twitter"></i>&nbsp;<small>Twitter</small></button></div>' +
             '<div class="form-group col-xs-4 text-center"><button title="Facebook" class="share btn btn-light" data="fb_app"><i class="fa fa-facebook"></i>&nbsp;<small>Facebook</small></button></div></div>' +
-            '<div id="qr_app" class="center-block" style="width:128px;"></div>' +
-            '<div id="modal_share_state">' +
-            '<h4 data-i18n="html.share_state_title"></h4><div id="view_toast"></div>' +
+            '<div class="qr_app center-block" style="width:128px;"></div>' +
+            '<div class="modal_share_state">' +
+            '<h4 data-i18n="html.share_state_title"></h4><div id="___maplat_view_toast_' + ui.html_id_seed + '"></div>' +
             '<div class="recipient row">' +
             '<div class="form-group col-xs-4 text-center"><button title="Copy to clipboard" class="share btn btn-light" data="cp_view"><i class="fa fa-clipboard"></i>&nbsp;<small data-i18n="html.share_copy"></small></button></div>' +
             '<div class="form-group col-xs-4 text-center"><button title="Twitter" class="share btn btn-light" data="tw_view"><i class="fa fa-twitter"></i>&nbsp;<small>Twitter</small></button></div>' +
             '<div class="form-group col-xs-4 text-center"><button title="Facebook" class="share btn btn-light" data="fb_view"><i class="fa fa-facebook"></i>&nbsp;<small>Facebook</small></button></div></div>' +
-            '<div id="qr_view" class="center-block" style="width:128px;"></div>' +
+            '<div class="qr_view center-block" style="width:128px;"></div>' +
             '</div>' +
             '<p><img src="" height="0px" width="0px"></p>' +
             '</div>' +
 
-            '<div id="modal_map_content">' +
+            '<div class="modal_map_content">' +
 
             ol.source.META_KEYS.map(function(key) {
                 if (key == 'title' || key == 'officialTitle') return '';
 
-                return '<div class="recipients" id="' + key + '_div"><dl class="dl-horizontal">' +
+                return '<div class="recipients ' + key + '_div"><dl class="dl-horizontal">' +
                     '<dt data-i18n="html.' + key + '"></dt>' +
-                    '<dd id="' + key + '"></dd>' +
+                    '<dd class="' + key + '_dd"></dd>' +
                     '</dl></div>';
             }).join('') +
 
-            '<div class="recipients" id="modal_cache_content"><dl class="dl-horizontal">' +
+            '<div class="recipients" class="modal_cache_content"><dl class="dl-horizontal">' +
             '<dt data-i18n="html.cache_handle"></dt>' +
-            '<dd><span id="cache_size"></span>' +
-            '<a id="cache_delete" class="btn btn-default pull-right" href="#" data-i18n="html.cache_delete"></a></dd>' +
+            '<dd><span class="cache_size"></span>' +
+            '<a class="cache_delete btn btn-default pull-right" href="#" data-i18n="html.cache_delete"></a></dd>' +
             '</dl></div>' +
 
             '</div>' +
 
-            '<div id="modal_load_content">' +
+            '<div class="modal_load_content">' +
             '<p class="recipient"><img src="parts/loading.png"><span data-i18n="html.app_loading_body"></span></p>' +
-            '<div id="splash_div" class="hide row"><p class="col-xs-12 poi_img"><img id="splash_img" src=""></p></div>' +
+            '<div class="splash_div hide row"><p class="col-xs-12 poi_img"><img class="splash_img" src=""></p></div>' +
             '<p><img src="" height="0px" width="0px"></p>' +
             '</div>' +
 
-            '<div id="modal_hide_marker_content">' +
+            '<div class="modal_hide_marker_content">' +
             '<ul class="list-group">' +
-            '<li class="list-group-item">' +
-            '<div class="row">' +
-            '<div class="col-sm-1"><img class="markerlist" src="parts/defaultpin.png"></div>' +
-            '<div class="col-sm-9">col-sm-4</div>' +
-            '<div class="col-sm-2">' +
-            '<input type="checkbox" class="markerlist" data="1" id="marker_1"/>' +
-            '<label class="check" for="marker_1"><div></div></label>' +
-            '</div>' +
-            '</div>' +
-            '</li>' +
-            '<li class="list-group-item">' +
-            '<div class="row">' +
-            '<div class="col-sm-1"><img class="markerlist" src="parts/defaultpin.png"></div>' +
-            '<div class="col-sm-9">col-sm-4</div>' +
-            '<div class="col-sm-2">' +
-            '<input type="checkbox" class="markerlist" data="2" id="marker_2"/>' +
-            '<label class="check" for="marker_2"><div></div></label>' +
-            '</div>' +
-            '</div>' +
-            '</li>' +
             '</ul>' +
             '</div>' +
 
-            '<p id="modal_gpsD_content" class="recipient"></p>' +
-            '<p id="modal_gpsW_content" class="recipient"></p>' +
+            '<p class="modal_gpsD_content" class="recipient"></p>' +
+            '<p class="modal_gpsW_content" class="recipient"></p>' +
 
             '</div>' +
             '</div>' +
@@ -429,7 +410,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
 
                     document.execCommand('copy');
                     bodyElm.removeChild(copyFrom);
-                    var toastParent = '#' + cmds[1] + '_toast';
+                    var toastParent = '#___maplat_' + cmds[1] + '_toast_' + ui.html_id_seed;
                     iziToast.show(
                         {
                             message: ui.core.t('app.copy_toast', {ns: 'translation'}),
@@ -555,12 +536,12 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                 var splash = false;
                 if (ui.core.appData.splash) splash = true;
 
-                var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
+                var modalElm = ui.core.mapDivDocument.querySelector('.modalBase');
                 var modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
-                ui.core.mapDivDocument.querySelector('#modal_load_title').innerText = ui.core.translate(ui.core.appData.app_name);
+                ui.core.mapDivDocument.querySelector('.modal_load_title').innerText = ui.core.translate(ui.core.appData.app_name);
                 if (splash) {
-                    ui.core.mapDivDocument.querySelector('#splash_img').setAttribute('src', 'img/' + ui.core.appData.splash);
-                    ui.core.mapDivDocument.querySelector('#splash_div').classList.remove('hide');
+                    ui.core.mapDivDocument.querySelector('.splash_img').setAttribute('src', 'img/' + ui.core.appData.splash);
+                    ui.core.mapDivDocument.querySelector('.splash_div').classList.remove('hide');
                 }
                 modalSetting('load');
                 modal.show();
@@ -603,7 +584,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
 
             if (ui.splashPromise) {
                 ui.splashPromise.then(function() {
-                    var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
+                    var modalElm = ui.core.mapDivDocument.querySelector('.modalBase');
                     var modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
                     modalSetting('load');
                     modal.hide();
@@ -726,9 +707,9 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
 
         ui.core.addEventListener('outOfMap', function(evt) {
             if (enableOutOfMap) {
-                ui.core.mapDivDocument.querySelector('#modal_title').innerText = ui.core.t('app.out_of_map');
-                ui.core.mapDivDocument.querySelector('#modal_gpsD_content').innerText = ui.core.t('app.out_of_map_area');
-                var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
+                ui.core.mapDivDocument.querySelector('.modal_title').innerText = ui.core.t('app.out_of_map');
+                ui.core.mapDivDocument.querySelector('.modal_gpsD_content').innerText = ui.core.t('app.out_of_map_area');
+                var modalElm = ui.core.mapDivDocument.querySelector('.modalBase');
                 var modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
                 modalSetting('gpsD');
                 modal.show();
@@ -794,29 +775,29 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                 return;
             }
 
-            ui.core.mapDivDocument.querySelector('#modal_title').innerText = ui.core.translate(data.name);
+            ui.core.mapDivDocument.querySelector('.modal_title').innerText = ui.core.translate(data.name);
             if (data.url || data.html) {
-                ui.core.mapDivDocument.querySelector('#poi_web').classList.remove('hide');
-                ui.core.mapDivDocument.querySelector('#poi_data').classList.add('hide');
+                ui.core.mapDivDocument.querySelector('.poi_web').classList.remove('hide');
+                ui.core.mapDivDocument.querySelector('.poi_data').classList.add('hide');
                 if (data.html) {
-                    ui.core.mapDivDocument.querySelector('#poi_iframe').setAttribute('srcdoc', ui.core.translate(data.html));
+                    ui.core.mapDivDocument.querySelector('.poi_iframe').setAttribute('srcdoc', ui.core.translate(data.html));
                 } else {
-                    ui.core.mapDivDocument.querySelector('#poi_iframe').setAttribute('src', ui.core.translate(data.url));
+                    ui.core.mapDivDocument.querySelector('.poi_iframe').setAttribute('src', ui.core.translate(data.url));
                 }
             } else {
-                ui.core.mapDivDocument.querySelector('#poi_data').classList.remove('hide');
-                ui.core.mapDivDocument.querySelector('#poi_web').classList.add('hide');
+                ui.core.mapDivDocument.querySelector('.poi_data').classList.remove('hide');
+                ui.core.mapDivDocument.querySelector('.poi_web').classList.add('hide');
 
-                var img = ui.core.mapDivDocument.querySelector('#poi_img');
+                var img = ui.core.mapDivDocument.querySelector('.poi_img_tag');
                 if (data.image && data.image != '') {
                     img.setAttribute('src', ui.resolveRelativeLink(data.image, 'img'));
                 } else {
                     img.setAttribute('src', 'parts/no_image.png');
                 }
-                ui.core.mapDivDocument.querySelector('#poi_address').innerText = ui.core.translate(data.address);
-                ui.core.mapDivDocument.querySelector('#poi_desc').innerHTML = ui.core.translate(data.desc).replace(/\n/g, '<br>');
+                ui.core.mapDivDocument.querySelector('.poi_address').innerText = ui.core.translate(data.address);
+                ui.core.mapDivDocument.querySelector('.poi_desc').innerHTML = ui.core.translate(data.desc).replace(/\n/g, '<br>');
             }
-            var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
+            var modalElm = ui.core.mapDivDocument.querySelector('.modalBase');
             var modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
             ui.core.selectMarker(data.namespace_id);
             var hideFunc = function(event) {
@@ -825,7 +806,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
             };
             var hiddenFunc = function(event) {
                 modalElm.removeEventListener('hidden.bs.modal', hiddenFunc, false);
-                var img = ui.core.mapDivDocument.querySelector('#poi_img');
+                var img = ui.core.mapDivDocument.querySelector('.poi_img_tag');
                 img.setAttribute('src', 'parts/loading_image.png');
             };
             modalElm.addEventListener('hide.bs.modal', hideFunc, false);
@@ -865,10 +846,10 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                     ui.core.currentPosition = null;
                     if (result.error == 'gps_out' && shown) {
                         shown = false;
-                        var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
+                        var modalElm = ui.core.mapDivDocument.querySelector('.modalBase');
                         var modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
-                        ui.core.mapDivDocument.querySelector('#modal_title').innerText = ui.core.t('app.out_of_map');
-                        ui.core.mapDivDocument.querySelector('#modal_gpsD_content').innerText = ui.core.t('app.out_of_map_desc');
+                        ui.core.mapDivDocument.querySelector('.modal_title').innerText = ui.core.t('app.out_of_map');
+                        ui.core.mapDivDocument.querySelector('.modal_gpsD_content').innerText = ui.core.t('app.out_of_map_desc');
                         modalSetting('gpsD');
                         modal.show();
                     }
@@ -877,7 +858,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                 }
                 if (shown) {
                     shown = false;
-                    var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
+                    var modalElm = ui.core.mapDivDocument.querySelector('.modalBase');
                     var modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
                     modal.hide();
                 }
@@ -892,7 +873,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                     })
                 ];
                 shown = true;
-                var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
+                var modalElm = ui.core.mapDivDocument.querySelector('.modalBase');
                 var modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
                 modalSetting('gpsW');
                 modal.show();
@@ -919,7 +900,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
             var qr_view;
             ui.core.mapObject.on('click_control', function(evt) {
                 var control = evt.frameState.control;
-                var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
+                var modalElm = ui.core.mapDivDocument.querySelector('.modalBase');
                 var modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
                 if (control == 'copyright') {
                     var from = ui.core.getMapMeta();
@@ -929,14 +910,14 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                         return from[curr] || prev;
                     }, false)) return;
 
-                    ui.core.mapDivDocument.querySelector('#modal_title').innerText = ui.core.translate(from.officialTitle || from.title);
+                    ui.core.mapDivDocument.querySelector('.modal_title').innerText = ui.core.translate(from.officialTitle || from.title);
                     ol.source.META_KEYS.map(function(key) {
                         if (key == 'title' || key == 'officialTitle') return;
                         if (!from[key] || from[key] == '') {
-                            ui.core.mapDivDocument.querySelector('#' + key + '_div').classList.add('hide');
+                            ui.core.mapDivDocument.querySelector('.' + key + '_div').classList.add('hide');
                         } else {
-                            ui.core.mapDivDocument.querySelector('#' + key + '_div').classList.remove('hide');
-                            ui.core.mapDivDocument.querySelector('#' + key).innerHTML =
+                            ui.core.mapDivDocument.querySelector('.' + key + '_div').classList.remove('hide');
+                            ui.core.mapDivDocument.querySelector('.' + key + '_dd').innerHTML =
                                 (key == 'license' || key == 'dataLicense') ?
                                     '<img src="parts/' + from[key].toLowerCase().replace(/ /g, '_') + '.png">' :
                                     ui.core.translate(from[key]);
@@ -957,11 +938,11 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                             size = Math.round(size * 10 / 1024) / 10;
                             unit = 'GBytes';
                         }
-                        ui.core.mapDivDocument.querySelector('#cache_size').innerHTML = size + ' ' + unit;
+                        ui.core.mapDivDocument.querySelector('.cache_size').innerHTML = size + ' ' + unit;
                     };
 
                     modalSetting('map');
-                    var deleteButton = document.querySelector('#cache_delete');
+                    var deleteButton = document.querySelector('.cache_delete');
                     var deleteFunc = function(evt) {
                         evt.preventDefault();
                         var from = ui.core.getMapMeta();
@@ -1000,7 +981,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                     var view = uri;
                     if (path) view = view + '#!' + path;
                     if (!qr_app) {
-                        qr_app = new QRCode(document.getElementById('qr_app'), {
+                        qr_app = new QRCode(ui.core.mapDivDocument.querySelector('.qr_app'), {
                             text: uri,
                             width: 128,
                             height: 128,
@@ -1012,7 +993,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                         qr_app.makeCode(uri);
                     }
                     if (!qr_view) {
-                        qr_view = new QRCode(document.getElementById('qr_view'), {
+                        qr_view = new QRCode(ui.core.mapDivDocument.querySelector('.qr_view'), {
                             text: view,
                             width: 128,
                             height: 128,
@@ -1035,7 +1016,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                     modalSetting('hide_marker');
                     var layers = ui.core.listPoiLayers(false, true);
                     var elem = ui.core.mapDivDocument.querySelector('ul.list-group');
-                    var modalElm = ui.core.mapDivDocument.querySelector('#modalBase');
+                    var modalElm = ui.core.mapDivDocument.querySelector('.modalBase');
                     elem.innerHTML = '';
                     layers.map(function(layer, index) {
                         var icon = layer.icon || 'parts/defaultpin.png';
@@ -1048,15 +1029,15 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                             '<div class="col-sm-9">' + title + '</div>' +
                             '<div class="col-sm-2">' +
                             '<input type="checkbox" class="markerlist" data="' + id +
-                            '" id="marker_' + index + '"' + (check ? ' checked' : '') + '/>' +
-                            '<label class="check" for="marker_' + index + '"><div></div></label>' +
+                            '" id="___maplat_marker_' + index + '_' + ui.html_id_seed + '"' + (check ? ' checked' : '') + '/>' +
+                            '<label class="check" for="___maplat_marker_' + index + '_' + ui.html_id_seed + '"><div></div></label>' +
                             '</div>' +
                             '</div>' +
                             '</li>');
                         for (var i = 0; i < newElems.length; i++) {
                             elem.appendChild(newElems[i]);
                         }
-                        var checkbox = ui.core.mapDivDocument.querySelector('#marker_' + index);
+                        var checkbox = ui.core.mapDivDocument.querySelector('#___maplat_marker_' + index + '_' + ui.html_id_seed);
                         var checkFunc = function(event) {
                             var id = event.target.getAttribute('data');
                             var checked = event.target.checked;
@@ -1075,11 +1056,11 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
             });
             if (fakeGps) {
                 var newElem = Core.createElement(sprintf(ui.core.t('app.fake_explanation'), ui.core.translate(fakeCenter), fakeRadius))[0];
-                var elem = ui.core.mapDivDocument.querySelector('#modal_gpsW_content');
+                var elem = ui.core.mapDivDocument.querySelector('.modal_gpsW_content');
                 elem.appendChild(newElem);
             } else {
                 var newElem = Core.createElement(ui.core.t('app.acquiring_gps_desc'))[0];
-                var elem = ui.core.mapDivDocument.querySelector('#modal_gpsW_content');
+                var elem = ui.core.mapDivDocument.querySelector('.modal_gpsW_content');
                 elem.appendChild(newElem);
             }
             if (ui.waitReadyBridge) {
