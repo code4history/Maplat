@@ -90,6 +90,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
     // Maplat UI Class
     var MaplatUi = function(appOption) {
         var ui = this;
+        ui.html_id_seed = '' + (Math.floor( Math.random() * 9000 ) + 1000);
 
         if (appOption.state_url) {
             page(function(ctx, next) {
@@ -307,20 +308,20 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
             '</div>' +
             '<div class="poi_data hide">' +
             '<p class="col-xs-12 poi_img"><img class="poi_img_tag" src="parts/loading_image.png"></p>' +
-            '<p class="recipient" class="poi_address"></p>' +
-            '<p class="recipient" class="poi_desc"></p>' +
+            '<p class="recipient poi_address"></p>' +
+            '<p class="recipient poi_desc"></p>' +
             '</div>' +
             '</div>' +
 
             '<div class="modal_share_content">' +
-            '<h4 data-i18n="html.share_app_title"></h4><div id="___maplat_app_toast"></div>' +
+            '<h4 data-i18n="html.share_app_title"></h4><div id="___maplat_app_toast_' + ui.html_id_seed + '"></div>' +
             '<div class="recipient row">' +
             '<div class="form-group col-xs-4 text-center"><button title="Copy to clipboard" class="share btn btn-light" data="cp_app"><i class="fa fa-clipboard"></i>&nbsp;<small data-i18n="html.share_copy"></small></button></div>' +
             '<div class="form-group col-xs-4 text-center"><button title="Twitter" class="share btn btn-light" data="tw_app"><i class="fa fa-twitter"></i>&nbsp;<small>Twitter</small></button></div>' +
             '<div class="form-group col-xs-4 text-center"><button title="Facebook" class="share btn btn-light" data="fb_app"><i class="fa fa-facebook"></i>&nbsp;<small>Facebook</small></button></div></div>' +
             '<div class="qr_app center-block" style="width:128px;"></div>' +
             '<div class="modal_share_state">' +
-            '<h4 data-i18n="html.share_state_title"></h4><div id="___maplat_view_toast"></div>' +
+            '<h4 data-i18n="html.share_state_title"></h4><div id="___maplat_view_toast_' + ui.html_id_seed + '"></div>' +
             '<div class="recipient row">' +
             '<div class="form-group col-xs-4 text-center"><button title="Copy to clipboard" class="share btn btn-light" data="cp_view"><i class="fa fa-clipboard"></i>&nbsp;<small data-i18n="html.share_copy"></small></button></div>' +
             '<div class="form-group col-xs-4 text-center"><button title="Twitter" class="share btn btn-light" data="tw_view"><i class="fa fa-twitter"></i>&nbsp;<small>Twitter</small></button></div>' +
@@ -409,7 +410,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
 
                     document.execCommand('copy');
                     bodyElm.removeChild(copyFrom);
-                    var toastParent = '#___maplat_' + cmds[1] + '_toast';
+                    var toastParent = '#___maplat_' + cmds[1] + '_toast_' + ui.html_id_seed;
                     iziToast.show(
                         {
                             message: ui.core.t('app.copy_toast', {ns: 'translation'}),
@@ -1028,15 +1029,15 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                             '<div class="col-sm-9">' + title + '</div>' +
                             '<div class="col-sm-2">' +
                             '<input type="checkbox" class="markerlist" data="' + id +
-                            '" id="___maplat_marker_' + index + '"' + (check ? ' checked' : '') + '/>' +
-                            '<label class="check" for="___maplat_marker_' + index + '"><div></div></label>' +
+                            '" id="___maplat_marker_' + index + '_' + ui.html_id_seed + '"' + (check ? ' checked' : '') + '/>' +
+                            '<label class="check" for="___maplat_marker_' + index + '_' + ui.html_id_seed + '"><div></div></label>' +
                             '</div>' +
                             '</div>' +
                             '</li>');
                         for (var i = 0; i < newElems.length; i++) {
                             elem.appendChild(newElems[i]);
                         }
-                        var checkbox = ui.core.mapDivDocument.querySelector('#___maplat_marker_' + index);
+                        var checkbox = ui.core.mapDivDocument.querySelector('#___maplat_marker_' + index + '_' + ui.html_id_seed);
                         var checkFunc = function(event) {
                             var id = event.target.getAttribute('data');
                             var checked = event.target.checked;
