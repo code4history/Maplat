@@ -185,7 +185,86 @@ define(['histmap', 'tin', 'turf'], function(ol, Tin, turf) {
         });
     };
 
-    ol.source.HistMap_tin.prototype.xy2MercAsync_ = function(xy, layer_id) {
+    ol.source.HistMap_tin.prototype.mapSize2MercSize = function(callback) {
+        var xy = [this.width / 2, this.height / 2];
+        var self = this;
+        self.xy2MercAsync_returnLayer(xy).then(function(results) {
+            var index = results[0];
+            var mercCenter = results[1];
+            var dir4 = [[xy[0] - 150, xy[1]], [xy[0] + 150, xy[1]], [xy[0], xy[1] - 150], [xy[0], xy[1] + 150]];
+            var envelope = [[0, 0], [self.width, 0], [self.width, self.height], [0, self.height]];
+            var proms = [];
+            for (var i=0; i<9; i++) {
+                var prom = i < 4 ? self.xy2MercAsync_specifyLayer(dir4[i], index) :
+                    i == 4 ? Promise.resolve(mercCenter) :
+                        self.xy2MercAsync_specifyLayer(envelope[i-5], 0);
+                proms.push(prom);
+            }
+            Promise.all(proms).then(function(mercs) {
+                var delta1 = Math.sqrt(Math.pow(mercs[0][0] - mercs[1][0], 2) + Math.pow(mercs[0][1] - mercs[1][1], 2));
+                var delta2 = Math.sqrt(Math.pow(mercs[2][0] - mercs[3][0], 2) + Math.pow(mercs[2][1] - mercs[3][1], 2));
+                var delta = (delta1 + delta2) / 2;
+                self.merc_zoom = Math.log(300 * (2*ol.const.MERC_MAX) / 256 / delta) / Math.log(2) - 3;
+                self.home_position = ol.proj.toLonLat(mercs[4]);
+                self.envelope = turf.helpers.polygon([[mercs[5], mercs[6], mercs[7], mercs[8], mercs[5]]]);
+                callback(self);
+            }).catch(function(err) {
+                throw err;
+            });
+        }).catch(function(err) {
+            throw err;
+        });
+    };
+
+    // 画面サイズと地図ズームから、メルカトル座標上での5座標を取得する。zoom, rotate無指定の場合は自動取得
+    ol.source.HistMap_tin.prototype.size2MercsAsync = function(center, zoom, rotate) {
+        var self = this;
+        var cross = this.size2Xys(center, zoom, rotate).map(function(xy, index) {
+            if (index == 5) return xy;
+            return self.histMapCoords2Xy(xy);
+        });
+        var promise = self.xy2MercAsync_returnLayer(cross[0]);
+        return promise.then(function(results) {
+            var index = results[0];
+            var centerMerc = results[1];
+            var promises = cross.map(function(val, i) {
+                if (i == 5) return val;
+                if (i == 0) return Promise.resolve(centerMerc);
+                return self.xy2MercAsync_specifyLayer(val, index);
+            });
+            return Promise.all(promises).catch(function(err) { throw err; });
+        }).catch(function(err) { throw err; });
+    };
+
+    // メルカトル5地点情報から地図サイズ情報（中心座標、サイズ、回転）を得る
+    ol.source.HistMap_tin.prototype.mercs2SizeAsync = function(mercs, asMerc) {
+        var self = this;
+        var promises
+        if (asMerc) {
+            promises = Promise.resolve(mercs);
+        } else {
+            promises = self.merc2XyAsync_returnLayer(mercs[0]).then(function(results) {
+                var index = results[0][0];
+                var centerXy = results[0][1];
+                return Promise.all(mercs.map(function(merc, i) {
+                    if (i == 5) return merc;
+                    if (i == 0) return Promise.resolve(centerXy);
+                    return self.merc2XyAsync_specifyLayer(merc, index);
+                }));
+            });
+        }
+        return promises.then(function(xys) {
+            if (!asMerc) {
+                xys = xys.map(function(xy, i) {
+                    if (i == 5) return xy;
+                    return self.xy2HistMapCoords(xy);
+                });
+            }
+            return self.xys2Size(xys);
+        }).catch(function(err) { throw err; });
+    };
+
+    ol.source.HistMap_tin.prototype.xy2MercAsync_ = function(xy) {
         var self = this;
         return new Promise(function(resolve, reject) {
             resolve(ol.proj.transformDirect(xy, 'Illst:' + self.mapID, 'EPSG:3857'));
@@ -193,7 +272,7 @@ define(['histmap', 'tin', 'turf'], function(ol, Tin, turf) {
             throw err;
         });
     };
-    ol.source.HistMap_tin.prototype.merc2XyAsync_ = function(merc, layer_id) {
+    ol.source.HistMap_tin.prototype.merc2XyAsync_ = function(merc) {
         var self = this;
         return new Promise(function(resolve, reject) {
             resolve(ol.proj.transformDirect(merc, 'EPSG:3857', 'Illst:' + self.mapID));
