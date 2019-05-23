@@ -153,33 +153,48 @@ define(['histmap', 'tin', 'turf'], function(ol, Tin, turf) {
             });
         })).then(function(results) {
             return results.sort(function(a, b) {
-                return a[0].importance < b[0].importance ? 1 : -1;
-            }).reduce(function(ret, result, impIndex, arry) {
+                return a[0].priority < b[0].priority ? 1 : -1;
+            }).reduce(function(ret, result, priIndex, arry) {
                 var tin = result[0];
                 var index = result[1];
                 var xy = result[2];
-                if (!xy) return false;
-                var type;
-                for (var i=0; i<impIndex; i++) {
-                    if (i == impIndex) continue;
+                if (!xy) return ret;
+                for (var i=0; i<priIndex; i++) {
                     var targetTin = arry[i][0];
                     var targetIndex = arry[i][1];
-                    if (targetTin.priority < tin.priority) continue;
                     if (targetIndex == 0 || turf.booleanPointInPolygon(xy, targetTin.xyBounds)) {
-                        if (i < impIndex) {
-                            return false;
+                        if (tin.importance < targetTin.importance) {
+                            return ret;
                         } else {
-                            type = 'hide';
-                            break;
+                            if (ret.length) {
+                                var hide = ret[0][2];
+                                var storedTin = ret[0][3];
+                                if (!hide || tin.importance < storedTin.importance) {
+                                    return ret;
+                                } else {
+                                    return [[index, xy, true, tin]];
+                                }
+                            } else {
+                                return [[index, xy, true, tin]];
+                            }
                         }
                     }
                 }
-                if (!type) {
-                    type = ret.length == 0 ? 'main' : 'sub';
+                if (!ret.length) {
+                    return [[index, xy, false, tin]];
+                } else {
+                    ret.push([index, xy, false, tin]);
+                    return ret.filter(function(row) {
+                        return !row[2];
+                    }).sort(function(a, b) {
+                        return a[3].importance < b[3].importance ? 1 : -1;
+                    }).filter(function(row, i) {
+                        return i < 2 ? true : false;
+                    });
                 }
-                ret.push([index, xy, type]);
-                return ret;
-            }, []);
+            }, []).map(function(row) {
+                return [row[0], row[1], row[2]];
+            });
         }).catch(function(err) {
             throw err;
         });
