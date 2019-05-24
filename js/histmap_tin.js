@@ -76,8 +76,8 @@ define(['histmap', 'tin', 'turf'], function(ol, Tin, turf) {
                             var mercBounds = xyBounds.map(function(xy) {
                                 return tin.transform(xy, false);
                             });
-                            var xyBoundsPolygon = turf.helpers.polygon(xyBounds);
-                            var mercBoundsPolygon = turf.helpers.polygon(mercBounds);
+                            var xyBoundsPolygon = turf.helpers.polygon([xyBounds]);
+                            var mercBoundsPolygon = turf.helpers.polygon([mercBounds]);
                             tin.xyBounds = xyBoundsPolygon;
                             tin.mercBounds = mercBoundsPolygon;
                         });
