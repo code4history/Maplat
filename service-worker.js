@@ -24,11 +24,11 @@ workbox.clientsClaim();
 self.__precacheManifest = [
   {
     "url": ".",
-    "revision": "Wed May 22 2019 17:56:04 GMT+0900 (GMT+09:00)"
+    "revision": "Sun May 26 2019 00:02:38 GMT+0900 (GMT+09:00)"
   },
   {
     "url": "dist/maplat.js",
-    "revision": "d0f0b3649dcad2d31737e3e08cc0b675"
+    "revision": "608b0fb6e80ed66baf4387b5dfc601a0"
   },
   {
     "url": "dist/maplat.css",
@@ -49,6 +49,14 @@ self.__precacheManifest = [
   {
     "url": "parts/blue_marker.png",
     "revision": "3f0a27365f8197ee4e28acb2b6d4c9d9"
+  },
+  {
+    "url": "parts/bluedot_small.png",
+    "revision": "86df29046e4ebed91eec8234a176ab61"
+  },
+  {
+    "url": "parts/bluedot_transparent.png",
+    "revision": "73d040fd36725ee4e8334cc94c90ca17"
   },
   {
     "url": "parts/bluedot.png",
