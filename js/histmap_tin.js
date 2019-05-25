@@ -58,9 +58,9 @@ define(['histmap', 'tin', 'turf'], function(ol, Tin, turf) {
                         });
                         ol.proj.addProjection(proj);
                         ol.proj.addCoordinateTransforms(proj, 'EPSG:3857', function(xy) {
-                            return tin.transform(xy, false);
+                            return tin.transform(xy, false, true);
                         }, function(merc) {
-                            return tin.transform(merc, true);
+                            return tin.transform(merc, true, true);
                         });
                         ol.proj.transformDirect('EPSG:4326', proj);
                         if (sub_map.compiled) {

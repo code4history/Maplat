@@ -22,6 +22,8 @@
             }
             this.strictMode = options.strictMode || Tin.MODE_AUTO;
             this.yaxisMode = options.yaxisMode || Tin.YAXIS_INVERT;
+            this.importance = options.importance || 0;
+            this.priority = options.priority || 0;
             if (options.points) {
                 this.setPoints(options.points);
             }
