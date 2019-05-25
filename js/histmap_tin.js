@@ -307,21 +307,18 @@ define(['histmap', 'tin', 'turf'], function(ol, Tin, turf) {
         }).catch(function(err) { throw err; });
     };
 
-    ol.source.HistMap_tin.prototype.xy2MercAsync_ = function(xy) {
-        var self = this;
-        return new Promise(function(resolve, reject) {
-            resolve(ol.proj.transformDirect(xy, 'Illst:' + self.mapID, 'EPSG:3857'));
-        }).catch(function(err) {
-            throw err;
+    ol.source.HistMap.prototype.xy2MercAsync = function(xy) {
+        var convertXy = this.histMapCoords2Xy(xy);
+        return this.xy2MercAsync_returnLayer(convertXy).then(function(ret) {
+            return ret[1];
         });
     };
-    ol.source.HistMap_tin.prototype.merc2XyAsync_ = function(merc) {
+    ol.source.HistMap.prototype.merc2XyAsync = function(merc) {
         var self = this;
-        return new Promise(function(resolve, reject) {
-            resolve(ol.proj.transformDirect(merc, 'EPSG:3857', 'Illst:' + self.mapID));
-        }).catch(function(err) {
-            throw err;
-        });
+        return this.merc2XyAsync_returnLayer(merc).then(function(ret){
+            var convertXy = !ret[0] ? ret[1][1] : ret[0][1];
+            return self.xy2HistMapCoords(convertXy);
+        }).catch(function(err) { throw err; });
     };
 
     return ol;
