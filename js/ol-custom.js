@@ -65,6 +65,22 @@ define(['ol3', 'turf'], function(ol, turf) {
             src: 'parts/bluedot.png'
         }))
     });
+    var gpsHideStyle = new ol.style.Style({
+        image: new ol.style.Icon(({
+            anchor: [0.5, 0.5],
+            anchorXUnits: 'fraction',
+            anchorYUnits: 'fraction',
+            src: 'parts/bluedot_transparent.png'
+        }))
+    });
+    var gpsSubStyle = new ol.style.Style({
+        image: new ol.style.Icon(({
+            anchor: [0.5, 0.5],
+            anchorXUnits: 'fraction',
+            anchorYUnits: 'fraction',
+            src: 'parts/bluedot_small.png'
+        }))
+    });
     var accCircleStyle = new ol.style.Style({
         fill: new ol.style.Fill({
             color: [128, 128, 256, 0.2]
@@ -250,28 +266,34 @@ define(['ol3', 'turf'], function(ol, turf) {
             var self = this;
             var map = self.getMap();
             var view = map.getView();
-            var mercs = position ? self.mercsFromGPSValue(position.lnglat, position.acc) : ['dummy'];
+            if (!position) {
+                return new Promise(function(resolve, reject) {
+                    map.setGPSPosition(null);
+                    resolve(true);
+                });
+            }
+            var mercs = self.mercsFromGPSValue(position.lnglat, position.acc);
 
-            return Promise.all(mercs.map(function(merc, index) {
-                if (index == 5 || merc == 'dummy') return merc;
-                return self.merc2XyAsync(merc);
-            })).then(function(xys) {
-                var pos = null;
-                if (xys[0] != 'dummy') {
-                    pos = {xy: xys[0]};
-                    if (!self.insideCheckHistMapCoords(xys[0])) {
-                        map.handleGPS(false, true);
-                        return false;
-                    }
-                    var news = xys.slice(1);
-
-                    pos.rad = news.reduce(function(prev, curr, index) {
-                        var ret = prev + Math.sqrt(Math.pow(curr[0] - pos.xy[0], 2) + Math.pow(curr[1] - pos.xy[1], 2));
-                        return index == 3 ? ret / 4.0 : ret;
-                    }, 0);
-                    if (!ignoreMove) view.setCenter(pos.xy);
+            return self.mercs2XysAsync(mercs).then(function(results) {
+                var hide = !results[0];
+                var xys = hide ? results[1] : results[0];
+                var sub = !hide ? results[1] : null;
+                var pos = {xy: xys[0]};
+                if (!self.insideCheckHistMapCoords(xys[0])) {
+                    map.handleGPS(false, true);
+                    return false;
                 }
-                map.setGPSPosition(pos);
+                var news = xys.slice(1);
+
+                pos.rad = news.reduce(function(prev, curr, index) {
+                    var ret = prev + Math.sqrt(Math.pow(curr[0] - pos.xy[0], 2) + Math.pow(curr[1] - pos.xy[1], 2));
+                    return index == 3 ? ret / 4.0 : ret;
+                }, 0);
+                if (!ignoreMove) view.setCenter(pos.xy);
+                map.setGPSPosition(pos, hide ? 'hide' : null);
+                if (sub) {
+                    map.setGPSPosition({xy: sub[0]}, 'sub');
+                }
                 return true;
             }).catch(function(err) { throw err; });
         };
@@ -428,6 +450,16 @@ define(['ol3', 'turf'], function(ol, turf) {
             }
             // var scale = abss / 4.0;
             return Math.atan2(sinx, cosx);
+        };
+
+        target.prototype.mercs2XysAsync = function(mercs) {
+            var self = this;
+            return Promise.all(mercs.map(function(merc, index) {
+                if (index == 5) return merc;
+                return self.merc2XyAsync(merc);
+            })).then(function(xys) {
+                return [xys];
+            });
         };
 
         target.prototype.resolvePois = function(pois) {
@@ -618,7 +650,6 @@ define(['ol3', 'turf'], function(ol, turf) {
         self.map_option = options.map_option || {};
         self.home_position = options.home_position;
         self.merc_zoom = options.merc_zoom;
-        self.fake_gps = options.fake_gps || false;
         self.thumbnail = options.thumbnail || './tmbs/' + (options.mapID || options.sourceID) + '_menu.jpg';
         self.label = options.label;
         self.maxZoom = options.maxZoom;
@@ -780,6 +811,9 @@ define(['ol3', 'turf'], function(ol, turf) {
         }
 
         ol.Map.call(this, options);
+        this.fake_gps = optOptions.fake_gps;
+        this.fake_radius = optOptions.fake_radius;
+        this.home_position = optOptions.home_position;
 
         var view = this.getView();
         var self = this;
@@ -838,15 +872,20 @@ define(['ol3', 'turf'], function(ol, turf) {
         src.clear();
     };
 
-    ol.MaplatMap.prototype.setGPSPosition = function(pos) {
-        this.resetFeature('gps');
+    ol.MaplatMap.prototype.setGPSPosition = function(pos, type) {
+        var style = type == 'sub' ? gpsSubStyle : type == 'hide' ? gpsHideStyle : gpsStyle;
+        if (type != 'sub') {
+            this.resetFeature('gps');
+        }
         if (pos) {
             this.setFeature({
                 geometry: new ol.geom.Point(pos.xy)
-            }, gpsStyle, 'gps');
-            this.setFeature({
-                geometry: new ol.geom.Circle(pos.xy, pos.rad)
-            }, accCircleStyle, 'gps');
+            }, style, 'gps');
+            if (!type) {
+                this.setFeature({
+                    geometry: new ol.geom.Circle(pos.xy, pos.rad)
+                }, accCircleStyle, 'gps');
+            }
         }
     };
 
@@ -971,9 +1010,9 @@ define(['ol3', 'turf'], function(ol, turf) {
                     var source = overlayLayer ? overlayLayer.getSource() : map.getLayers().item(0).getSource();
                     var lnglat = geolocation.getPosition();
                     var acc = geolocation.getAccuracy();
-                    if (source.fake_gps && ol.MathEx.getDistance(source.home_position, lnglat) > source.fake_gps) {
-                        lnglat = [ol.MathEx.randomFromCenter(source.home_position[0], 0.001),
-                            ol.MathEx.randomFromCenter(source.home_position[1], 0.001)];
+                    if (map.fake_gps && ol.MathEx.getDistance(map.home_position, lnglat) > map.fake_gps) {
+                        lnglat = [ol.MathEx.randomFromCenter(map.home_position[0], 0.001),
+                            ol.MathEx.randomFromCenter(map.home_position[1], 0.001)];
                         acc = ol.MathEx.randomFromCenter(15.0, 10);
                     }
                     var gpsVal = {lnglat: lnglat, acc: acc};
@@ -989,9 +1028,9 @@ define(['ol3', 'turf'], function(ol, turf) {
                 geolocation.on('error', function(evt) {
                     var source = map.getLayers().item(0).getSource();
                     var gpsVal = null;
-                    if (source.fake_gps) {
-                        var lnglat = [ol.MathEx.randomFromCenter(source.home_position[0], 0.001),
-                            ol.MathEx.randomFromCenter(source.home_position[1], 0.001)];
+                    if (map.fake_gps) {
+                        var lnglat = [ol.MathEx.randomFromCenter(map.home_position[0], 0.001),
+                            ol.MathEx.randomFromCenter(map.home_position[1], 0.001)];
                         var acc = ol.MathEx.randomFromCenter(15.0, 10);
                         gpsVal = {lnglat: lnglat, acc: acc};
                     }

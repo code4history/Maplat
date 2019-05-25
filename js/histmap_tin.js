@@ -163,37 +163,32 @@ define(['histmap', 'tin', 'turf'], function(ol, Tin, turf) {
                     var targetTin = arry[i][0];
                     var targetIndex = arry[i][1];
                     if (targetIndex == 0 || turf.booleanPointInPolygon(xy, targetTin.xyBounds)) {
-                        if (tin.importance < targetTin.importance) {
-                            return ret;
-                        } else {
-                            if (ret.length) {
-                                var hide = ret[0][2];
-                                var storedTin = ret[0][3];
-                                if (!hide || tin.importance < storedTin.importance) {
-                                    return ret;
-                                } else {
-                                    return [[index, xy, true, tin]];
-                                }
+                        if (ret.length) {
+                            var hide = !ret[0];
+                            var storedTin = hide ? ret[1][2] : ret[0][2];
+                            if (!hide || tin.importance < storedTin.importance) {
+                                return ret;
                             } else {
-                                return [[index, xy, true, tin]];
+                                return [, [index, xy, tin]];
                             }
+                        } else {
+                            return [, [index, xy, tin]];
                         }
                     }
                 }
-                if (!ret.length) {
-                    return [[index, xy, false, tin]];
+                if (!ret.length || !ret[0]) {
+                    return [[index, xy, tin]];
                 } else {
-                    ret.push([index, xy, false, tin]);
-                    return ret.filter(function(row) {
-                        return !row[2];
-                    }).sort(function(a, b) {
-                        return a[3].importance < b[3].importance ? 1 : -1;
+                    ret.push([index, xy, tin]);
+                    return ret.sort(function(a, b) {
+                        return a[2].importance < b[2].importance ? 1 : -1;
                     }).filter(function(row, i) {
                         return i < 2 ? true : false;
                     });
                 }
             }, []).map(function(row) {
-                return [row[0], row[1], row[2]];
+                if (!row) return;
+                return [row[0], row[1]];
             });
         }).catch(function(err) {
             throw err;
@@ -259,8 +254,9 @@ define(['histmap', 'tin', 'turf'], function(ol, Tin, turf) {
             promises = Promise.resolve(mercs);
         } else {
             promises = self.merc2XyAsync_returnLayer(mercs[0]).then(function(results) {
-                var index = results[0][0];
-                var centerXy = results[0][1];
+                var result = results[0] || results[1];
+                var index = result[0];
+                var centerXy = result[1];
                 return Promise.all(mercs.map(function(merc, i) {
                     if (i == 5) return merc;
                     if (i == 0) return Promise.resolve(centerXy);
@@ -276,6 +272,38 @@ define(['histmap', 'tin', 'turf'], function(ol, Tin, turf) {
                 });
             }
             return self.xys2Size(xys);
+        }).catch(function(err) { throw err; });
+    };
+
+    ol.source.HistMap_tin.prototype.mercs2XysAsync = function(mercs) {
+        var self = this;
+        promises = self.merc2XyAsync_returnLayer(mercs[0]).then(function(results) {
+            var hide = false;
+            return Promise.all(results.map(function(result, i) {
+                if (!result) {
+                    hide = true;
+                    return;
+                }
+                var index = result[0];
+                var centerXy = result[1];
+                if (i != 0 && !hide) return Promise.resolve([centerXy]);
+                return Promise.all(mercs.map(function(merc, j) {
+                    if (j == 5) return merc;
+                    if (j == 0) return Promise.resolve(centerXy);
+                    return self.merc2XyAsync_specifyLayer(merc, index);
+                }));
+            }));
+        });
+        return promises.then(function(results) {
+            return results.map(function(result) {
+                if (!result) {
+                    return;
+                }
+                return result.map(function(xy, i) {
+                    if (i == 5) return xy;
+                    return self.xy2HistMapCoords(xy);
+                });
+            });
         }).catch(function(err) { throw err; });
     };
 

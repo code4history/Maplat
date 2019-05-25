@@ -245,7 +245,10 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                             condition: ol.events.condition.altKeyOnly
                         })
                     ]),
-                    off_rotation: noRotate ? true : false
+                    off_rotation: noRotate ? true : false,
+                    fake_gps: fakeGps,
+                    fake_radius: fakeRadius,
+                    home_position: homePos
                 });
 
                 var backDiv = null;
@@ -331,7 +334,6 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                         zoom_restriction: zoomRestriction,
                         merc_min_zoom: mercMinZoom,
                         merc_max_zoom: mercMaxZoom,
-                        fake_gps: fakeGps ? fakeRadius : false,
                         cache_enable: app.cacheEnable,
                         translator: function(fragment) {
                             return app.translate(fragment);
