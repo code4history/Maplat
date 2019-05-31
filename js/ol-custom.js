@@ -902,7 +902,7 @@ define(['ol3', 'turf'], function(ol, turf) {
                     src: markerStyle
                 }))
             });
-        } else {
+        } else if (!(markerStyle instanceof ol.style.Style)) {
             markerStyle = new ol.style.Style({
                 image: new ol.style.Icon((markerStyle))
             });
