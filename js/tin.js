@@ -369,6 +369,20 @@
             var miny = self.xy[1] - 0.05 * self.wh[1];
             var maxy = self.xy[1] + 1.05 * self.wh[1];
 
+            var insideCheck = this.bounds ? function(xy) {
+                return turf.booleanPointInPolygon(xy, self.boundsPolygon);
+            } : function(xy) {
+                return xy[0] >= self.xy[0] && xy[0] <= self.xy[0] + self.wh[0] && xy[1] >= self.xy[1] && xy[1] <= self.xy[1] + self.wh[1];
+            };
+            var inside = this.points.reduce(function(prev, curr) {
+                return prev && insideCheck(curr[0]);
+            }, true);
+            if (!inside) {
+                return new Promise(function(resolve, reject) {
+                    reject('SOME POINTS OUTSIDE');
+                });
+            }
+
             return new Promise(function(resolve, reject) {
                 if (strict != Tin.MODE_STRICT && strict != Tin.MODE_LOOSE) strict = Tin.MODE_AUTO;
 
