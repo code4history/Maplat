@@ -313,9 +313,10 @@ define(['histmap', 'tin', 'turf'], function(ol, Tin, turf) {
             return ret[1];
         });
     };
-    ol.source.HistMap.prototype.merc2XyAsync = function(merc) {
+    ol.source.HistMap.prototype.merc2XyAsync = function(merc, ignoreBackside) {
         var self = this;
         return this.merc2XyAsync_returnLayer(merc).then(function(ret){
+            if (ignoreBackside && !ret[0]) return;
             var convertXy = !ret[0] ? ret[1][1] : ret[0][1];
             return self.xy2HistMapCoords(convertXy);
         }).catch(function(err) { throw err; });

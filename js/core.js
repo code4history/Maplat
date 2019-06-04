@@ -344,8 +344,8 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                         sourcePromise.push(ol.source.HistMap.createAsync(option, commonOption));
                     }
 
-                    return Promise.all(sourcePromise).then(function (sources) {
-                        app.mercSrc = sources.reduce(function (prev, curr) {
+                    return Promise.all(sourcePromise).then(function(sources) {
+                        app.mercSrc = sources.reduce(function(prev, curr) {
                             if (prev) return prev;
                             if (curr instanceof ol.source.NowMap) return curr;
                         }, null);
@@ -362,7 +362,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                         app.dispatchEvent(new CustomEvent('sourceLoaded', sources));
 
                         var initial = app.initialRestore.sourceID || app.startFrom || cache[cache.length - 1].sourceID;
-                        app.from = cache.reduce(function (prev, curr) {
+                        app.from = cache.reduce(function(prev, curr) {
                             if (prev) {
                                 return !(prev instanceof ol.source.HistMap) && curr.sourceID != initial ? curr : prev;
                             }
@@ -374,7 +374,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                         app.mapObject.on('click', function(evt) {
                             app.logger.debug(evt.pixel);
                             var feature = this.forEachFeatureAtPixel(evt.pixel,
-                                function (feature) {
+                                function(feature) {
                                     app.logger.debug(evt.pixel);
                                     if (feature.get('datum')) return feature;
                                 });
@@ -383,7 +383,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                             } else {
                                 var xy = evt.coordinate;
                                 app.dispatchEvent(new CustomEvent('clickMapXy', xy));
-                                app.from.xy2MercAsync(xy).then(function (merc) {
+                                app.from.xy2MercAsync(xy).then(function(merc) {
                                     app.dispatchEvent(new CustomEvent('clickMapMerc', merc));
                                     var lnglat = ol.proj.transform(merc, 'EPSG:3857', 'EPSG:4326');
                                     app.dispatchEvent(new CustomEvent('clickMap', {
@@ -452,7 +452,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
 
                         // MapUI on off
                         var timer;
-                        app.mapObject.on('click', function () {
+                        app.mapObject.on('click', function() {
                             if (timer) {
                                 clearTimeout(timer);
                                 delete timer;
@@ -462,7 +462,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                                 ctls[i].classList.remove('fade');
                             }
                         });
-                        app.mapObject.on('pointerdrag', function () {
+                        app.mapObject.on('pointerdrag', function() {
                             if (timer) {
                                 clearTimeout(timer);
                                 delete timer;
@@ -472,12 +472,12 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                                 ctls[i].classList.add('fade');
                             }
                         });
-                        app.mapObject.on('moveend', function () {
+                        app.mapObject.on('moveend', function() {
                             if (timer) {
                                 clearTimeout(timer);
                                 delete timer;
                             }
-                            timer = setTimeout(function () {
+                            timer = setTimeout(function() {
                                 delete timer;
                                 var ctls = app.mapDivDocument.querySelectorAll('.ol-control');
                                 for (var i = 0; i < ctls.length; i++) {
@@ -487,13 +487,13 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                         });
 
                         // change mouse cursor when over marker
-                        var moveHandler = function (evt) {
+                        var moveHandler = function(evt) {
                             var pixel = this.getEventPixel(evt.originalEvent);
                             var hit = this.hasFeatureAtPixel(pixel);
                             var target = this.getTarget();
                             if (hit) {
                                 var feature = this.forEachFeatureAtPixel(evt.pixel,
-                                    function (feature) {
+                                    function(feature) {
                                         if (feature.get('datum')) return feature;
                                     });
                                 app.mapDivDocument.querySelector('#' + target).style.cursor = feature ? 'pointer' : '';
@@ -503,7 +503,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                         };
                         app.mapObject.on('pointermove', moveHandler);
 
-                        var mapOutHandler = function (evt) {
+                        var mapOutHandler = function(evt) {
                             var histCoord = evt.frameState.viewState.center;
                             var source = app.from;
                             if (!source.insideCheckHistMapCoords(histCoord)) {
@@ -513,7 +513,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                         };
                         app.mapObject.on('moveend', mapOutHandler);
 
-                        var backMapMove = function (evt) {
+                        var backMapMove = function(evt) {
                             if (!app.backMap) return;
                             if (this._backMapMoving) {
                                 app.logger.debug('Backmap moving skipped');
@@ -524,7 +524,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                                 this._backMapMoving = true;
                                 app.logger.debug('Backmap moving started');
                                 var self = this;
-                                app.convertParametersFromCurrent(backSrc, function (size) {
+                                app.convertParametersFromCurrent(backSrc, function(size) {
                                     var view = app.backMap.getView();
                                     view.setCenter(size[0]);
                                     view.setZoom(size[1]);
@@ -536,14 +536,14 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                         };
                         app.mapObject.on('postrender', backMapMove);
 
-                        app.mapObject.on('postrender', function (evt) {
+                        app.mapObject.on('postrender', function(evt) {
                             var view = app.mapObject.getView();
                             var center = view.getCenter();
                             var zoom = view.getDecimalZoom();
                             var rotation = normalizeDegree(view.getRotation() * 180 / Math.PI);
-                            app.from.size2MercsAsync().then(function (mercs) {
+                            app.from.size2MercsAsync().then(function(mercs) {
                                 return app.mercSrc.mercs2SizeAsync(mercs);
-                            }).then(function (size) {
+                            }).then(function(size) {
                                 if (app.mobileMapMoveBuffer && app.mobileMapMoveBuffer[0][0] == size[0][0] &&
                                     app.mobileMapMoveBuffer[0][1] == size[0][1] &&
                                     app.mobileMapMoveBuffer[1] == size[1] &&
@@ -640,7 +640,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
             app.__selectedMarker == data.namespace_id ? 'parts/defaultpin_selected.png' : 'parts/defaultpin.png';
         var promise = coords ?
             (function() {
-                return src.merc2XyAsync(coords);
+                return src.merc2XyAsync(coords, true);
             })() :
             (x && y) ?
             new Promise(function(resolve) {
@@ -648,9 +648,10 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
             }) :
             (function() {
                 var merc = ol.proj.transform(lnglat, 'EPSG:4326', 'EPSG:3857');
-                return src.merc2XyAsync(merc);
+                return src.merc2XyAsync(merc, true);
             })();
         promise.then(function(xy) {
+            if (!xy) return;
             if (src.insideCheckHistMapCoords(xy)) {
                 app.mapObject.setMarker(xy, {'datum': data}, icon);
             }
@@ -710,7 +711,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
             Object.keys(source.pois).map(function(key) {
                 var cluster = source.pois[key];
                 if (!cluster.hide) {
-                    cluster.pois.map(function (data) {
+                    cluster.pois.map(function(data) {
                         var dataCopy = Object.assign({}, data);
                         if (!dataCopy.icon) {
                             dataCopy.icon = cluster.icon;
@@ -1123,7 +1124,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                         app.__init = false;
                         to.goHome();
                     } else if (app.backMap && backTo) {
-                        app.convertParametersFromCurrent(backTo, function (size) {
+                        app.convertParametersFromCurrent(backTo, function(size) {
                             var view = app.backMap.getView();
                             view.setCenter(size[0]);
                             view.setZoom(size[1]);
