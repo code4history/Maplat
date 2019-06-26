@@ -370,6 +370,96 @@
             });
         };
 
+        Tin.prototype.generatePointsSet = function() {
+            var self = this;
+            var pointsArray = {forw: [], bakw: []};
+            for (var i=0; i < self.points.length; i++) {
+                var mapxy = self.points[i][0];
+                var mercs = self.points[i][1];
+                var forPoint = createPoint(mapxy, mercs, i);
+                pointsArray.forw.push(forPoint);
+                pointsArray.bakw.push(counterPoint(forPoint));
+            }
+            var edges = [];
+            for (var i=0; i < self.edges.length; i++) {
+                var startEnd = self.edges[i].startEnd;
+                var illstNodes = Object.assign([], self.edges[i].illstNodes);
+                var mercNodes = Object.assign(self.edges[i].mercNodes);
+                if (!illstNodes && !mercNodes) {
+                    edges.push(startEnd);
+                    continue;
+                }
+                illstNodes.unshift(self.points[startEnd[0]][0]);
+                illstNodes.push(self.points[startEnd[1]][0]);
+                mercNodes.unshift(self.points[startEnd[0]][1]);
+                mercNodes.push(self.points[startEnd[1]][1]);
+                var lengths = [illstNodes, mercNodes].map(function(nodes, i) {
+                    var eachLengths = nodes.map(function(node, index, arr) {
+                        if (index === 0) return 0;
+                        var prev = arr[index - 1];
+                        return Math.sqrt(Math.pow(node[0] - prev[0], 2) + Math.pow(node[1] - prev[1], 2));
+                    });
+                    var sumLengths = eachLengths.reduce(function(prev, node, index) {
+                        if (index === 0) return [0];
+                        prev.push(prev[index - 1] + node);
+                        return prev;
+                    }, []);
+                    return sumLengths.map(function(eachSum, index, arr) {
+                        var ratio = eachSum / arr[arr.length -1];
+                        return [nodes[index], eachLengths[index], sumLengths[index], ratio];
+                    });
+                });
+                lengths.map(function(thisLengths, i) {
+                    var anotherLengths = lengths[i ? 0 : 1];
+                    return thisLengths.filter(function(val, index) {
+                        return index === 0 || index === thisLengths.length - 1 || val[4] === 'handled' ? false : true;
+                    }).map(function(lengthItem) {
+                        var node = lengthItem[0];
+                        var ratio = lengthItem[3];
+                        var anotherSets = anotherLengths.reduce(function(prev, item, index, arr) {
+                            if (prev) return prev;
+                            var next = arr[index + 1];
+                            if (item[3] === ratio) {
+                                item[4] = 'handled';
+                                return [item];
+                            }
+                            if (item[3] < ratio && next[3] > ratio) return [item, next];
+                            return;
+                        }, undefined);
+                        if (anotherSets.length === 1) {
+                            return i === 0 ? [node, anotherSets[0][0], ratio] : [anotherSets[0][0], node, ratio];
+                        } else {
+                            var anotherPrev = anotherSets[0];
+                            var anotherNext = anotherSets[1];
+                            var ratioDelta = ratio - anotherPrev[3];
+                            var ratioAnother = anotherNext[3] - anotherPrev[3];
+                            var ratioInEdge = ratioDelta / ratioAnother;
+                            var anotherNode = [(anotherNext[0][0] - anotherPrev[0][0]) * ratioInEdge + anotherPrev[0][0],
+                                (anotherNext[0][1] - anotherPrev[0][1]) * ratioInEdge + anotherPrev[0][1]];
+                            return i === 0 ? [node, anotherNode, ratio] : [anotherNode, node, ratio];
+                        }
+                    }).reduce(function(prev, nodes) {
+                        return prev.concat(nodes);
+                    }, []).sort(function(a, b) {
+                        return a[2] < b[2] ? -1 : 1;
+                    }).map(function(node, index, arr) {
+                        var forPoint = createPoint(node[0], node[1], 'edgeNode');
+                        pointsArray.forw.push(forPoint);
+                        pointsArray.bakw.push(counterPoint(forPoint));
+                        if (index === 0) {
+                            edges.push([startEnd[0], pointsArray.forw.length - 1]);
+                        } else {
+                            edges.push([pointsArray.forw.length - 2, pointsArray.forw.length - 1]);
+                        }
+                        if (index === arr.length - 1) {
+                            edges.push([pointsArray.forw.length - 1, startEnd[1]]);
+                        }
+                    });
+                });
+            }
+            return {forw: turf.featureCollection(pointsArray.forw), bakw: turf.featureCollection(pointsArray.bakw), edges: edges};
+        };
+
         Tin.prototype.updateTinAsync = function() {
             var self = this;
             var strict = this.strictMode;
@@ -402,15 +492,7 @@
                         [minx, maxy], [maxx, maxy]
                     ];
                 }
-                var pointsArray = {forw: [], bakw: []};
-                for (var i=0; i < self.points.length; i++) {
-                    var mapxy = self.points[i][0];
-                    var mercs = self.points[i][1];
-                    var forPoint = createPoint(mapxy, mercs, i);
-                    pointsArray.forw.push(forPoint);
-                    pointsArray.bakw.push(counterPoint(forPoint));
-                }
-                var pointsSet = {forw: turf.featureCollection(pointsArray.forw), bakw: turf.featureCollection(pointsArray.bakw)};
+                var pointsSet = self.generatePointsSet();
                 resolve([pointsSet, bbox]);
             }).then(function(prevResults) {
                 var pointsSet = prevResults[0];
