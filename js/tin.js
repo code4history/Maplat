@@ -381,12 +381,14 @@
                 pointsArray.bakw.push(counterPoint(forPoint));
             }
             var edges = [];
+            var edgeNodeIndex = 0;
             for (var i=0; i < self.edges.length; i++) {
                 var startEnd = self.edges[i].startEnd;
                 var illstNodes = Object.assign([], self.edges[i].illstNodes);
-                var mercNodes = Object.assign(self.edges[i].mercNodes);
-                if (!illstNodes && !mercNodes) {
+                var mercNodes = Object.assign([], self.edges[i].mercNodes);
+                if (illstNodes.length === 0 && mercNodes.length === 0) {
                     edges.push(startEnd);
+                    console.log(edges);
                     continue;
                 }
                 illstNodes.unshift(self.points[startEnd[0]][0]);
@@ -438,23 +440,25 @@
                                 (anotherNext[0][1] - anotherPrev[0][1]) * ratioInEdge + anotherPrev[0][1]];
                             return i === 0 ? [node, anotherNode, ratio] : [anotherNode, node, ratio];
                         }
-                    }).reduce(function(prev, nodes) {
-                        return prev.concat(nodes);
-                    }, []).sort(function(a, b) {
-                        return a[2] < b[2] ? -1 : 1;
-                    }).map(function(node, index, arr) {
-                        var forPoint = createPoint(node[0], node[1], 'edgeNode');
-                        pointsArray.forw.push(forPoint);
-                        pointsArray.bakw.push(counterPoint(forPoint));
-                        if (index === 0) {
-                            edges.push([startEnd[0], pointsArray.forw.length - 1]);
-                        } else {
-                            edges.push([pointsArray.forw.length - 2, pointsArray.forw.length - 1]);
-                        }
-                        if (index === arr.length - 1) {
-                            edges.push([pointsArray.forw.length - 1, startEnd[1]]);
-                        }
                     });
+                }).reduce(function(prev, nodes) {
+                    return prev.concat(nodes);
+                }, []).sort(function(a, b) {
+                    return a[2] < b[2] ? -1 : 1;
+                }).map(function(node, index, arr) {
+                    var forPoint = createPoint(node[0], node[1], 'edgeNode' + edgeNodeIndex);
+                    edgeNodeIndex++;
+                    console.log(forPoint);
+                    pointsArray.forw.push(forPoint);
+                    pointsArray.bakw.push(counterPoint(forPoint));
+                    if (index === 0) {
+                        edges.push([startEnd[0], pointsArray.forw.length - 1]);
+                    } else {
+                        edges.push([pointsArray.forw.length - 2, pointsArray.forw.length - 1]);
+                    }
+                    if (index === arr.length - 1) {
+                        edges.push([pointsArray.forw.length - 1, startEnd[1]]);
+                    }
                 });
             }
             return {forw: turf.featureCollection(pointsArray.forw), bakw: turf.featureCollection(pointsArray.bakw), edges: edges};
@@ -496,17 +500,14 @@
                 resolve([pointsSet, bbox]);
             }).then(function(prevResults) {
                 var pointsSet = prevResults[0];
-                var edges = self.edges ? self.edges.map(function(edge) {
-                    return edge.startEnd;
-                }) : [];
 
                 // Forward TIN for calcurating Backward Centroid and Backward Vertices
                 return Promise.all([
                     new Promise(function(resolve) {
-                        resolve(turf.constrainedTin(pointsSet.forw, edges, 'target'));
+                        resolve(turf.constrainedTin(pointsSet.forw, pointsSet.edges, 'target'));
                     }),
                     new Promise(function(resolve) {
-                        resolve(turf.constrainedTin(pointsSet.bakw, edges, 'target'));
+                        resolve(turf.constrainedTin(pointsSet.bakw, pointsSet.edges, 'target'));
                     }),
                     new Promise(function(resolve) {
                         resolve(turf.centroid(pointsSet.forw));
@@ -712,10 +713,7 @@
                 }
 
                 self.pointsSet = pointsSet;
-                var edges = self.edges ? self.edges.map(function(edge) {
-                    return edge.startEnd;
-                }) : [];
-                self.tins = {forw: rotateVerticesTriangle(turf.constrainedTin(pointsSet.forw, edges, 'target'))};
+                self.tins = {forw: rotateVerticesTriangle(turf.constrainedTin(pointsSet.forw, pointsSet.edges, 'target'))};
                 var prom;
                 if (strict == Tin.MODE_STRICT || strict == Tin.MODE_AUTO) {
                     prom = self.calcurateStrictTinAsync();
@@ -724,7 +722,7 @@
                 }
                 return prom.then(function() {
                     if (strict == Tin.MODE_LOOSE || (strict == Tin.MODE_AUTO && self.strict_status == Tin.STATUS_ERROR)) {
-                        self.tins.bakw = rotateVerticesTriangle(turf.constrainedTin(pointsSet.bakw, edges, 'target'));
+                        self.tins.bakw = rotateVerticesTriangle(turf.constrainedTin(pointsSet.bakw, pointsSet.edges, 'target'));
                         delete self.kinks;
                         self.strict_status = Tin.STATUS_LOOSE;
                     }
