@@ -287,6 +287,7 @@
 
         Tin.prototype.calcurateStrictTinAsync = function() {
             var self = this;
+            var edges = self.pointsSet.edges;
             return Promise.all(self.tins.forw.features.map(function(tri) {
                 return Promise.resolve(counterTri(tri));
             })).then(function(tris) {
@@ -313,7 +314,15 @@
                     var forConvex = turf.convex(turf.featureCollection([trises[0].forw, trises[1].forw]));
                     var forDiff = turf.difference(forConvex, forUnion);
                     if (forDiff) return;
-                    var sharedVtx = key.split('-').map(function(val) {
+                    var splittedKey = key.split('-');
+                    if (splittedKey[0].match(/^[0-9]+$/) && splittedKey[1].match(/^[0-9]+$/)) {
+                        var numberKey = splittedKey.map(function(key) { return parseInt(key) })
+                            .sort(function(a, b) { return a < b ? -1 : 1 });
+                        for (var i = 0; i < edges.length - 1; i++) {
+                            if (numberKey[0] == edges[i][0] && numberKey[1] == edges[i][1]) return;
+                        }
+                    }
+                    var sharedVtx = splittedKey.map(function(val) {
                         return ['a', 'b', 'c'].map(function(alpha, index) {
                             var prop = trises[0].bakw.properties[alpha];
                             var geom = trises[0].bakw.geometry.coordinates[0][index];
