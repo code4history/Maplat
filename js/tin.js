@@ -11,7 +11,6 @@
                 turf[key] = turf.invariant[key];
             });
         }
-        var isClockwise = turf.booleanClockwise;
         var internal = mapshaper.internal;
         var Tin = function(options) {
             options = options || {};
