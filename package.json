@@ -38,7 +38,7 @@
     "child_process": "^1.0.2",
     "cryptiles": "^4.1.2",
     "debug": "^3.1.0",
-    "eslint": "^3.12.2",
+    "eslint": "^4.18.2",
     "eslint-config-google": "^0.7.1",
     "extend": "^3.0.2",
     "gulp": "^4.0.0",
