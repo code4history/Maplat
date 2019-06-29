@@ -57,6 +57,7 @@
         };
 
         Tin.prototype.setEdges = function(edges) {
+            if (!edges) edges = [];
             this.edges = edges;
             this.edgeNodes = undefined;
             this.tins = undefined;
@@ -131,11 +132,11 @@
                 // tinsを復元
                 var bakwI = compiled.tins_points.length == 1 ? 0 : 1;
                 this.tins = {
-                    'forw': turf.featureCollection(compiled.tins_points[0].map(function(idxes){
-                        return indexesToTri(idxes, compiled.points, compiled.edgeNodes || [], compiled.centroid_point, compiled.vertices_points, false)
+                    'forw': turf.featureCollection(compiled.tins_points[0].map(function(idxes) {
+                        return indexesToTri(idxes, compiled.points, compiled.edgeNodes || [], compiled.centroid_point, compiled.vertices_points, false);
                     })),
-                    'bakw': turf.featureCollection(compiled.tins_points[bakwI].map(function(idxes){
-                        return indexesToTri(idxes, compiled.points, compiled.edgeNodes || [], compiled.centroid_point, compiled.vertices_points, true)
+                    'bakw': turf.featureCollection(compiled.tins_points[bakwI].map(function(idxes) {
+                        return indexesToTri(idxes, compiled.points, compiled.edgeNodes || [], compiled.centroid_point, compiled.vertices_points, true);
                     }))
                 }
                 // kinksを復元

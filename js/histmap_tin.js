@@ -35,6 +35,7 @@ define(['histmap', 'tin', 'turf'], function(ol, Tin, turf) {
                 prom = Promise.resolve();
             } else {
                 obj.tins[0].setPoints(options.gcps);
+                obj.tins[0].setEdges(options.edges);
                 prom = obj.tins[0].updateTinAsync();
             }
             prom.then(function() {
@@ -68,6 +69,7 @@ define(['histmap', 'tin', 'turf'], function(ol, Tin, turf) {
                             prom = Promise.resolve();
                         } else {
                             tin.setPoints(sub_map.gcps);
+                            tin.setEdges(sub_map.edges);
                             prom = tin.updateTinAsync();
                         }
                         return prom.then(function() {
