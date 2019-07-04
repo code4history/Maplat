@@ -806,8 +806,6 @@ define(['ol3', 'turf'], function(ol, turf) {
         };
         if (optOptions.interactions) {
             options.interactions = optOptions.interactions;
-        } else if (optOptions.off_rotation) {
-            options.interactions = ol.interaction.defaults({altShiftDragRotate: false, pinchRotate: false});
         }
 
         ol.Map.call(this, options);

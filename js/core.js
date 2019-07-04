@@ -171,7 +171,6 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
         }
 
         var overlay = 'overlay' in appOption ? appOption.overlay : true;
-        var noRotate = appOption.no_rotate || false;
         if (overlay) {
             app.mapDivDocument.classList.add('with-opacity');
         }
@@ -227,6 +226,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                 var fakeGps = appOption.fake ? app.appData.fake_gps : false;
                 var fakeRadius = appOption.fake ? app.appData.fake_radius : false;
                 app.appLang = app.appData.lang || 'ja';
+                app.noRotate = appOption.no_rotate || app.appData.no_rotate || false;
                 app.currentPosition = null;
                 app.backMap = null;
                 app.__init = true;
@@ -240,12 +240,13 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                 app.mapObject = new ol.MaplatMap({
                     div: frontDiv,
                     controls: app.appData.controls || [],
-                    interactions: ol.interaction.defaults().extend([
-                        new ol.interaction.DragRotateAndZoom({
-                            condition: ol.events.condition.altKeyOnly
-                        })
-                    ]),
-                    off_rotation: noRotate ? true : false,
+                    interactions: app.noRotate ?
+                        ol.interaction.defaults({altShiftDragRotate: false, pinchRotate: false}) :
+                        ol.interaction.defaults().extend([
+                            new ol.interaction.DragRotateAndZoom({
+                                condition: ol.events.condition.altKeyOnly
+                            })
+                        ]),
                     fake_gps: fakeGps,
                     fake_radius: fakeRadius,
                     home_position: homePos
@@ -528,7 +529,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                                     var view = app.backMap.getView();
                                     view.setCenter(size[0]);
                                     view.setZoom(size[1]);
-                                    view.setRotation(size[2]);
+                                    view.setRotation(app.noRotate ? 0 : size[2]);
                                     app.logger.debug('Backmap moving ended');
                                     self._backMapMoving = false;
                                 });
@@ -1006,7 +1007,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
             app.changeMapSeq = Promise.resolve();
         }
 
-        app.changeMapSeq = app.changeMapSeq.then(function() {
+        return app.changeMapSeq = app.changeMapSeq.then(function() {
             return new Promise(function(resolve, reject) {
                 app.convertParametersFromCurrent(to, function(size) {
                     var backSrc = null;
@@ -1081,7 +1082,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                     if (to.insideCheckHistMapCoords(size[0])) {
                         view.setCenter(size[0]);
                         view.setZoom(size[1]);
-                        view.setRotation(size[2]);
+                        view.setRotation(app.noRotate ? 0 : size[2]);
                     } else if (!app.__init) {
                         app.dispatchEvent(new CustomEvent('outOfMap', {}));
                         to.goHome();
@@ -1128,7 +1129,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                             var view = app.backMap.getView();
                             view.setCenter(size[0]);
                             view.setZoom(size[1]);
-                            view.setRotation(size[2]);
+                            view.setRotation(app.noRotate ? 0 : size[2]);
                             app.backMap.updateSize();
                             app.backMap.renderSync();
                         });
