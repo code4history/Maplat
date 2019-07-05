@@ -651,7 +651,7 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
                 var merc = ol.proj.transform(lnglat, 'EPSG:4326', 'EPSG:3857');
                 return src.merc2XyAsync(merc, true);
             })();
-        promise.then(function(xy) {
+        return promise.then(function(xy) {
             if (!xy) return;
             if (src.insideCheckHistMapCoords(xy)) {
                 app.mapObject.setMarker(xy, {'datum': data}, icon);
@@ -693,36 +693,58 @@ define(['histmap', 'i18n', 'i18nxhr'], function(ol, i18n, i18nxhr) {
         if (!source) {
             source = app.from;
         }
-        app.resetMarker();
-        if (app.stateBuffer.hideMarker) return;
-        Object.keys(app.pois).map(function(key) {
-            var cluster = app.pois[key];
-            if (!cluster.hide) {
-                cluster.pois.map(function(data) {
-                    var dataCopy = Object.assign({}, data);
-                    if (!dataCopy.icon) {
-                        dataCopy.icon = cluster.icon;
-                        dataCopy.selected_icon = cluster.selected_icon;
-                    }
-                    app.setMarker(dataCopy);
-                });
+        if (app.__redrawMarkerBlock) {
+            if (!app.__redrawMarkerThrottle) app.__redrawMarkerThrottle = [];
+            var throttle = app.__redrawMarkerThrottle;
+            if (throttle.length == 0 || throttle[throttle.length - 1] !== source) {
+                throttle.push(source);
+                return;
             }
-        });
-        if (source.pois) {
-            Object.keys(source.pois).map(function(key) {
-                var cluster = source.pois[key];
-                if (!cluster.hide) {
-                    cluster.pois.map(function(data) {
-                        var dataCopy = Object.assign({}, data);
-                        if (!dataCopy.icon) {
-                            dataCopy.icon = cluster.icon;
-                            dataCopy.selected_icon = cluster.selected_icon;
+        }
+        app.__redrawMarkerBlock = true;
+
+        var redrawLogic = function(source) {
+            var promises = [];
+            app.resetMarker();
+            if (!app.stateBuffer.hideMarker) {
+                Object.keys(app.pois).map(function(key) {
+                    var cluster = app.pois[key];
+                    if (!cluster.hide) {
+                        cluster.pois.map(function(data) {
+                            var dataCopy = Object.assign({}, data);
+                            if (!dataCopy.icon) {
+                                dataCopy.icon = cluster.icon;
+                                dataCopy.selected_icon = cluster.selected_icon;
+                            }
+                            promises.push(app.setMarker(dataCopy));
+                        });
+                    }
+                });
+                if (source.pois) {
+                    Object.keys(source.pois).map(function(key) {
+                        var cluster = source.pois[key];
+                        if (!cluster.hide) {
+                            cluster.pois.map(function(data) {
+                                var dataCopy = Object.assign({}, data);
+                                if (!dataCopy.icon) {
+                                    dataCopy.icon = cluster.icon;
+                                    dataCopy.selected_icon = cluster.selected_icon;
+                                }
+                                promises.push(app.setMarker(dataCopy));
+                            });
                         }
-                        app.setMarker(dataCopy);
                     });
                 }
+            }
+            Promise.all(promises).then(function() {
+                if (app.__redrawMarkerThrottle && app.__redrawMarkerThrottle.length > 0) {
+                    redrawLogic(app.__redrawMarkerThrottle.shift());
+                } else {
+                    app.__redrawMarkerBlock = false;
+                }
             });
-        }
+        };
+        redrawLogic(source);
     };
 
     MaplatApp.prototype.selectMarker = function(id) {
