@@ -10,7 +10,10 @@ Maplatは古地図/絵地図を歪める事なくGPSや正確な地図と連携�
 他のソリューションにない特徴として、各地図の座標変換において非線形かつ全単射な投影変換が定義可能という点が挙げられます。  
 このプロジェクトは国土交通省主催の2018年ジオアクティビティコンテストにおいて、最優秀賞、教育効果賞、来場者賞をいただきました。
 
-# Introduction slide (In Japanese)
+# Introduction slide (In English, ICC Tokyo 2019)
+<a href="https://www.slideshare.net/kokogiko/maplat-historical-map-viewer-technology-that-guarantees-nonlinear-bijective-conversion-without-distortion">![Introduction of Maplat](https://code4nara.github.io/Maplat/page_imgs/maplat_slide.png)</a>
+
+# Introduction slide (In Japanese, 2018)
 <a href="https://www.slideshare.net/kokogiko/maplat">![Introduction of Maplat](https://code4nara.github.io/Maplat/page_imgs/maplat_slide.png)</a>
 
 # Data Editor
