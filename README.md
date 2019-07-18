@@ -13,7 +13,7 @@ Maplatは古地図/絵地図を歪める事なくGPSや正確な地図と連携�
 # Introduction slide (In English, ICC Tokyo 2019)
 <a href="https://www.slideshare.net/kokogiko/maplat-historical-map-viewer-technology-that-guarantees-nonlinear-bijective-conversion-without-distortion">![Introduction of Maplat](https://code4nara.github.io/Maplat/page_imgs/maplat_slide.png)</a>
 
-# Introduction slide (In Japanese, 2018)
+# Introduction slide (In Japanese, FOSS4G Tokyo 2017)
 <a href="https://www.slideshare.net/kokogiko/maplat">![Introduction of Maplat](https://code4nara.github.io/Maplat/page_imgs/maplat_slide.png)</a>
 
 # Data Editor
@@ -27,6 +27,7 @@ Latest result is shown below:
 * https://s.maplat.jp/r/aizumap/ (Maplat Aizuwakamatsu)
 * https://s.maplat.jp/r/iwakimap/ (Maplat Iwaki)
 * https://s.maplat.jp/r/tatebayashimap/ (Maplat Tatebayashi)
+* https://s.maplat.jp/r/chuokumap/ (Maplat Tokyo Chuo-ku)
 * https://s.maplat.jp/r/uedamap/ (Ueda city)
 * https://s.maplat.jp/r/moriokamap/ (Morioka city)
 * https://s.maplat.jp/r/sabaemap/ (Sabae city)
@@ -39,6 +40,7 @@ Documentation is undergoing.
 * https://s.maplat.jp/r/aizumap/ (ぷらっと会津若松)
 * https://s.maplat.jp/r/iwakimap/ (ぷらっといわき)
 * https://s.maplat.jp/r/tatebayashimap/ (ぷらっと館林)
+* https://s.maplat.jp/r/chuokumap/ (ぷらっと東京中央区)
 * https://s.maplat.jp/r/uedamap/ (上田市版)
 * https://s.maplat.jp/r/moriokamap/ (盛岡市版)
 * https://s.maplat.jp/r/sabaemap/ (鯖江市版)
