@@ -54,4 +54,25 @@ Documentation is undergoing.
 Code 4 NaraからUrban data challenge 2016に応募中のMaplatと[地蔵プロジェクト](https://github.com/code4nara/JizoProject/wiki)をコラボレーションさせたデモを作りました。
 * https://s.maplat.jp/r/narajizomap/
 
+## Contributors
+
+This project exists thanks to all the people who contribute. <!--[[Contribute](CONTRIBUTING.md)].-->
+<a href="https://github.com/code4nara/Maplat/graphs/contributors"><img src="https://opencollective.com/maplat/contributors.svg?width=890&button=false" /></a>
+
+
+## Backers
+
+Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/maplat#backer)]
+
+<a href="https://opencollective.com/maplat#backers" target="_blank"><img src="https://opencollective.com/maplat/backers.svg?width=890"></a>
+
+
+## Sponsors
 Maplat is supported by <img src="https://code4nara.github.io/Maplat/img/jetbrains-variant-4.png" width="150">
+
+Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/maplat#sponsor)]
+
+
+
+
+
