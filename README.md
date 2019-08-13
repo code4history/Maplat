@@ -10,7 +10,12 @@ Maplatは古地図/絵地図を歪める事なくGPSや正確な地図と連携�
 他のソリューションにない特徴として、各地図の座標変換において非線形かつ全単射な投影変換が定義可能という点が挙げられます。  
 このプロジェクトは国土交通省主催の2018年ジオアクティビティコンテストにおいて、最優秀賞、教育効果賞、来場者賞をいただきました。
 
-# Introduction slide (In Japanese)
+# Introduction slide (In English, ICC Tokyo 2019)
+<a href="https://www.slideshare.net/kokogiko/maplat-historical-map-viewer-technology-that-guarantees-nonlinear-bijective-conversion-without-distortion">![Introduction of Maplat](https://code4nara.github.io/Maplat/page_imgs/maplat_slide.png)</a>
+
+# <a href="https://www.slideshare.net/kokogiko/maplat-historical-viewer-technology-that-guarantees-nonlinear-bijective-conversion-without-distortion">ICC Tokyo 2019 paper</a>
+
+# Introduction slide (In Japanese, FOSS4G Tokyo 2017)
 <a href="https://www.slideshare.net/kokogiko/maplat">![Introduction of Maplat](https://code4nara.github.io/Maplat/page_imgs/maplat_slide.png)</a>
 
 # Data Editor
@@ -24,6 +29,7 @@ Latest result is shown below:
 * https://s.maplat.jp/r/aizumap/ (Maplat Aizuwakamatsu)
 * https://s.maplat.jp/r/iwakimap/ (Maplat Iwaki)
 * https://s.maplat.jp/r/tatebayashimap/ (Maplat Tatebayashi)
+* https://s.maplat.jp/r/chuokumap/ (Maplat Tokyo Chuo-ku)
 * https://s.maplat.jp/r/uedamap/ (Ueda city)
 * https://s.maplat.jp/r/moriokamap/ (Morioka city)
 * https://s.maplat.jp/r/sabaemap/ (Sabae city)
@@ -36,6 +42,7 @@ Documentation is undergoing.
 * https://s.maplat.jp/r/aizumap/ (ぷらっと会津若松)
 * https://s.maplat.jp/r/iwakimap/ (ぷらっといわき)
 * https://s.maplat.jp/r/tatebayashimap/ (ぷらっと館林)
+* https://s.maplat.jp/r/chuokumap/ (ぷらっと東京中央区)
 * https://s.maplat.jp/r/uedamap/ (上田市版)
 * https://s.maplat.jp/r/moriokamap/ (盛岡市版)
 * https://s.maplat.jp/r/sabaemap/ (鯖江市版)
@@ -47,4 +54,25 @@ Documentation is undergoing.
 Code 4 NaraからUrban data challenge 2016に応募中のMaplatと[地蔵プロジェクト](https://github.com/code4nara/JizoProject/wiki)をコラボレーションさせたデモを作りました。
 * https://s.maplat.jp/r/narajizomap/
 
+## Contributors
+
+This project exists thanks to all the people who contribute. <!--[[Contribute](CONTRIBUTING.md)].-->
+<a href="https://github.com/code4nara/Maplat/graphs/contributors"><img src="https://opencollective.com/maplat/contributors.svg?width=890&button=false" /></a>
+
+
+## Backers
+
+Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/maplat#backer)]
+
+<a href="https://opencollective.com/maplat#backers" target="_blank"><img src="https://opencollective.com/maplat/backers.svg?width=890"></a>
+
+
+## Sponsors
 Maplat is supported by <img src="https://code4nara.github.io/Maplat/img/jetbrains-variant-4.png" width="150">
+
+Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/maplat#sponsor)]
+
+
+
+
+
