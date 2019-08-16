@@ -779,10 +779,17 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
             if (data.url || data.html) {
                 ui.core.mapDivDocument.querySelector('.poi_web').classList.remove('hide');
                 ui.core.mapDivDocument.querySelector('.poi_data').classList.add('hide');
+                var iframe = ui.core.mapDivDocument.querySelector('.poi_iframe');
                 if (data.html) {
-                    ui.core.mapDivDocument.querySelector('.poi_iframe').setAttribute('srcdoc', ui.core.translate(data.html));
+                    iframe.addEventListener('load', function loadEvent(event) {
+                        event.currentTarget.removeEventListener(event.type, loadEvent);
+                        var cssLink = Core.createElement('<style type="text/css">html, body { height: 100vh; }</style>');
+                        console.log(cssLink);
+                        iframe.contentDocument.head.appendChild(cssLink[0]);
+                    });
+                    iframe.setAttribute('srcdoc', ui.core.translate(data.html));
                 } else {
-                    ui.core.mapDivDocument.querySelector('.poi_iframe').setAttribute('src', ui.core.translate(data.url));
+                    iframe.setAttribute('src', ui.core.translate(data.url));
                 }
             } else {
                 ui.core.mapDivDocument.querySelector('.poi_data').classList.remove('hide');
