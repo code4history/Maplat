@@ -11,12 +11,12 @@ Maplatは古地図/絵地図を歪める事なくGPSや正確な地図と連携�
 このプロジェクトは国土交通省主催の2018年ジオアクティビティコンテストにおいて、最優秀賞、教育効果賞、来場者賞をいただきました。
 
 # Introduction slide (In English, ICC Tokyo 2019)
-<a href="https://www.slideshare.net/kokogiko/maplat-historical-map-viewer-technology-that-guarantees-nonlinear-bijective-conversion-without-distortion">![Introduction of Maplat](https://code4nara.github.io/Maplat/page_imgs/maplat_slide.png)</a>
+<a href="https://www.slideshare.net/kokogiko/maplat-historical-map-viewer-technology-that-guarantees-nonlinear-bijective-conversion-without-distortion">![Introduction of Maplat](https://code4history.github.io/Maplat/page_imgs/maplat_slide.png)</a>
 
 # <a href="https://www.slideshare.net/kokogiko/maplat-historical-viewer-technology-that-guarantees-nonlinear-bijective-conversion-without-distortion">ICC Tokyo 2019 paper</a>
 
 # Introduction slide (In Japanese, FOSS4G Tokyo 2017)
-<a href="https://www.slideshare.net/kokogiko/maplat">![Introduction of Maplat](https://code4nara.github.io/Maplat/page_imgs/maplat_slide.png)</a>
+<a href="https://www.slideshare.net/kokogiko/maplat">![Introduction of Maplat](https://code4history.github.io/Maplat/page_imgs/maplat_slide.png)</a>
 
 # Data Editor
 Please use [MaplatEditor](https://github.com/code4nara/MaplatEditor/) for data creation.
