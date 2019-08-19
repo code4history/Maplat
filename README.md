@@ -1,5 +1,5 @@
-![Maplat Logo](https://code4nara.github.io/Maplat/page_imgs/maplat.png)
-![Maplat Catch Phrase](https://code4nara.github.io/Maplat/page_imgs/bijective.png)
+![Maplat Logo](https://code4history.github.io/Maplat/page_imgs/maplat.png)
+![Maplat Catch Phrase](https://code4history.github.io/Maplat/page_imgs/bijective.png)
 
 Maplat is the cool Historical Map/Illustrated Map Viewer.  
 It can transform each map coordinates with nonlinear but bijective projection and makes possible that the maps can collaborate with GPS/accurate maps, without distorting original maps.  
