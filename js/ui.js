@@ -783,7 +783,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                 if (data.html) {
                     iframe.addEventListener('load', function loadEvent(event) {
                         event.currentTarget.removeEventListener(event.type, loadEvent);
-                        var cssLink = Core.createElement('<style type="text/css">html, body { height: 100vh; }</style>');
+                        var cssLink = Core.createElement('<style type="text/css">html, body { height: 100vh; }\n img { width: 100vw; }</style>');
                         console.log(cssLink);
                         iframe.contentDocument.head.appendChild(cssLink[0]);
                     });
