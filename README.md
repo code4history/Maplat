@@ -68,7 +68,7 @@ Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com
 
 
 ## Sponsors
-Maplat is supported by <img src="https://code4history.github.io/Maplat/img/jetbrains-variant-4.png" width="150">
+Maplat is supported by <a href="https://www.jetbrains.com/" target="_blank"><img src="https://code4history.github.io/Maplat/img/jetbrains-variant-4.png" width="150"></a> <a href="https://www.locazing.com/" target="_blank"><img src="https://code4history.github.io/Maplat/img/locazing.png" width="150"></a> <a href="https://www.browserstack.com/" target="_blank"><img src="https://code4history.github.io/Maplat/img/browserstack-logo-600x315.png" width="150"></a>
 
 Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/maplat#sponsor)]
 
