@@ -3,6 +3,7 @@
   "version": "0.5.4",
   "dependencies": {
     "maplat_core": "^0.5.5",
-    "maplat_tin": "^0.4.7"
+    "maplat_tin": "^0.4.7",
+    "ol": "^5.3.3"
   }
 }
