@@ -217,7 +217,7 @@ var QRCode;
 				this._el.removeChild(this._el.lastChild);
 		};
 		return Drawing;
-	})();
+	}).apply(window);
 
 	var useSVG = document.documentElement.tagName.toLowerCase() === "svg";
 
@@ -272,7 +272,7 @@ var QRCode;
 		};
 
 		return Drawing;
-	})() : (function () { // Drawing in Canvas
+	}).apply(window) : (function () { // Drawing in Canvas
 		function _onMakeImage() {
 			this._elImage.src = this._elCanvas.toDataURL("image/png");
 			this._elImage.style.display = "block";
@@ -456,7 +456,7 @@ var QRCode;
 		};
 
 		return Drawing;
-	})();
+	}).apply(window);
 
 	/**
 	 * Get the type by string length
@@ -611,6 +611,6 @@ var QRCode;
 	 * @name QRCode.CorrectLevel
 	 */
 	QRCode.CorrectLevel = QRErrorCorrectLevel;
-})();
+}).apply(window);
 
 export default QRCode;

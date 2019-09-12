@@ -5,7 +5,7 @@ import page from '../legacy/page';
 import bsn from '../legacy/bootstrap-native';
 import { MaplatApp as Core, createElement } from 'maplat_core';
 import iziToast from '../legacy/iziToast';
-//import QRCode from '../legacy/qrcode';
+import QRCode from '../legacy/qrcode';
 import { point, polygon } from '@turf/helpers';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import sprintf from '../legacy/sprintf';
@@ -103,6 +103,7 @@ export class MaplatUi extends EventTarget {
 
     initializer(appOption) {
         const ui = this;
+        appOption.translate_ui = true;
         ui.core = new Core(appOption);
 
         if (appOption.restore) {
