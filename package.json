@@ -1,9 +1,30 @@
 {
-  "name": "Maplat",
+  "name": "maplat",
   "version": "0.5.4",
+  "description": "Maplat is the cool Historical Map/Illustrated Map Viewer.\nIt can transform each map coordinates with nonlinear but bijective projection and makes possible that the maps can collaborate with GPS/accurate maps, without distorting original maps.",
+  "main": "src/index.js",
+  "module": "src/index.js",
   "scripts": {
+    "less_build": "lessc --clean-css less/ui.less dist/maplat.css",
+    "www_build": "webpack",
+    "zip_build": "gulp zip",
+    "build": "npm run less_build; npm run www_build; npm run zip_build",
     "lint": "eslint src/"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/code4nara/Maplat.git"
+  },
+  "keywords": [
+    "warp",
+    "GIS"
+  ],
+  "author": "Kohei Otsuka, Code for History",
+  "license": "Apache 2.0",
+  "bugs": {
+    "url": "https://github.com/code4nara/Maplat/issues"
+  },
+  "homepage": "https://github.com/code4nara/Maplat/wiki",
   "dependencies": {
     "@turf/turf": "^5.1.6",
     "maplat_core": "^0.5.5",
@@ -11,6 +32,22 @@
     "ol": "^5.3.3"
   },
   "devDependencies": {
-    "eslint": "^6.3.0"
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/polyfill": "^7.4.4",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/register": "^7.5.5",
+    "babel-loader": "^8.0.6",
+    "core-js": "^3.2.1",
+    "eslint": "^6.3.0",
+    "fs-extra": "^8.1.0",
+    "gulp": "^4.0.2",
+    "gulp-cli": "^2.2.0",
+    "gulp-zip": "^4.2.0",
+    "jasmine": "^3.4.0",
+    "less": "^3.10.3",
+    "less-plugin-clean-css": "^1.5.1",
+    "webpack": "^4.39.3",
+    "webpack-cli": "^3.3.7"
   }
 }
