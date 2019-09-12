@@ -6,7 +6,6 @@ warperpass.json
 s3bucket.json
 EXGW/s3
 local.properties
-mobile_android.iml
 .gradle
 app.iml
 build
@@ -15,4 +14,3 @@ xcuserdata
 *.qgs
 *Backward*.json
 *Forward*.json
-mobile_ios_lib/Release
