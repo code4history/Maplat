@@ -1,21 +1,5 @@
 define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziToast', 'qrcode', 'turf'],
     function(Core, sprintf, Swiper, ol, bsn, page, iziToast, QRCode, turf) {
-    var browserLanguage = function() {
-        var ua = window.navigator.userAgent.toLowerCase();
-        try {
-            // Chrome
-            if( ua.indexOf( 'chrome' ) != -1 ) {
-                return ( navigator.languages[0] || navigator.browserLanguage || navigator.language || navigator.userLanguage).substr(0, 2);
-            }
-            // Other
-            else {
-                return ( navigator.browserLanguage || navigator.language || navigator.userLanguage).substr(0, 2);
-            }
-        }
-        catch( e ) {
-            return undefined;
-        }
-    };
 
     var absoluteUrl = function(base, relative) {
         var stack = base.split('/');
