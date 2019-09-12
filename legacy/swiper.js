@@ -1,3 +1,6 @@
+const Global = function() {};
+
+Global.prototype.dispatch = function() {
 /**
  * Swiper 4.3.3
  * Most modern mobile touch slider and framework with hardware accelerated transitions
@@ -7718,3 +7721,9 @@
   return Swiper;
 
 })));
+  return this;
+};
+
+const global = new Global().dispatch();
+
+export default global.Swiper;

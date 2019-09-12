@@ -1,9 +1,16 @@
 {
   "name": "Maplat",
   "version": "0.5.4",
+  "scripts": {
+    "lint": "eslint src/"
+  },
   "dependencies": {
+    "@turf/turf": "^5.1.6",
     "maplat_core": "^0.5.5",
     "maplat_tin": "^0.4.7",
     "ol": "^5.3.3"
+  },
+  "devDependencies": {
+    "eslint": "^6.3.0"
   }
 }

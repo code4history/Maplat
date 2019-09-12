@@ -1,3 +1,6 @@
+const Global = function() {};
+
+Global.prototype.dispatch = function() {
 /*!
 **  sprintf.js -- POSIX sprintf(3)-style String Formatting for JavaScript
 **  Copyright (c) 2006-2014 Ralf S. Engelschall <rse@engelschall.com>
@@ -274,3 +277,9 @@
 
 }));
 
+    return this;
+};
+
+const global = new Global().dispatch();
+
+export default global.sprintf;

@@ -1,3 +1,7 @@
+const Global = function() {};
+
+Global.prototype.dispatch = function() {
+
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
 	typeof define === 'function' && define.amd ? define(factory) :
@@ -406,7 +410,7 @@ pathToRegexp_1.tokensToRegExp = tokensToRegExp_1;
    * Module dependencies.
    */
 
-  
+
 
   /**
    * Module exports.
@@ -1141,3 +1145,9 @@ pathToRegexp_1.tokensToRegExp = tokensToRegExp_1;
 return page_js;
 
 })));
+  return this;
+};
+
+const global = new Global().dispatch();
+
+export default global.page;

@@ -11,8 +11,8 @@ var gulp = require('gulp'),
     wbBuild = require('workbox-build'),
     glob = require('glob');
 
-var pkg = require('./package.json.old');
-var pkg_tin = require('./npm/tmpl/package.json.old');
+var pkg = require('./package.json_');
+var pkg_tin = require('./npm/tmpl/package.json_');
 pkg_tin.version = pkg.version;
 var banner = ['/**',
   ' * <%= pkg.name %> - <%= pkg.description %>',

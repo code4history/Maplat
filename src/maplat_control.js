@@ -6,6 +6,8 @@ import EventType from 'ol/pointer/EventType';
 import { stopPropagation } from 'ol/events/Event';
 import ViewHint from 'ol/ViewHint';
 import { clamp } from 'ol/math';
+import { MapEvent } from 'ol';
+import { addResizeListener } from '../legacy/detect-element-resize';
 
 /**
  * @classdesc
@@ -23,12 +25,12 @@ import { clamp } from 'ol/math';
 export class SliderCommon extends Control {
     constructor(opt_options) {
         const options = opt_options ? opt_options : {};
-        const containerElement = document.createElement('div');
+        const containerElement = document.createElement('div'); // eslint-disable-line no-undef
         const render = options.render ? options.render : SliderCommon.render;
 
         super({
             element: containerElement,
-            render: render
+            render
         });
 
         /**
@@ -90,12 +92,12 @@ export class SliderCommon extends Control {
         this.initialValue = options.initialValue;
 
         const className = options.className !== undefined ? options.className : 'ol-slidercommon';
-        const thumbElement = document.createElement('button');
+        const thumbElement = document.createElement('button'); // eslint-disable-line no-undef
         thumbElement.setAttribute('type', 'button');
-        thumbElement.className = className + '-thumb ' + CLASS_UNSELECTABLE;
+        thumbElement.className = `${className}-thumb${CLASS_UNSELECTABLE}`;
 
         containerElement.title = options.tipLabel;
-        containerElement.className = className + ' ' + CLASS_UNSELECTABLE + ' ' + CLASS_CONTROL;
+        containerElement.className = `${className} ${CLASS_UNSELECTABLE} ${CLASS_CONTROL}`;
         containerElement.appendChild(thumbElement);
 
         /**
@@ -131,7 +133,7 @@ export class SliderCommon extends Control {
         if (!this.sliderInitialized_) {
             this.initSlider_();
         }
-    };
+    }
 
     /**
      * The enum for available directions.
@@ -152,7 +154,7 @@ export class SliderCommon extends Control {
     disposeInternal() {
         this.dragger_.dispose();
         super.disposeInternal();
-    };
+    }
 
     /**
      * @inheritDoc
@@ -162,7 +164,7 @@ export class SliderCommon extends Control {
         if (map) {
             map.render();
         }
-    };
+    }
 
     /**
      * Initializes the slider element. This will determine and set this controls
@@ -177,37 +179,37 @@ export class SliderCommon extends Control {
             width: container.offsetWidth, height: container.offsetHeight
         };
 
-        var thumb = container.firstElementChild;
-        var computedStyle = getComputedStyle(thumb);
-        var thumbWidth = thumb.offsetWidth +
+        const thumb = container.firstElementChild;
+        const computedStyle = getComputedStyle(thumb); // eslint-disable-line no-undef
+        const thumbWidth = thumb.offsetWidth +
             parseFloat(computedStyle['marginRight']) +
             parseFloat(computedStyle['marginLeft']);
-        var thumbHeight = thumb.offsetHeight +
+        const thumbHeight = thumb.offsetHeight +
             parseFloat(computedStyle['marginTop']) +
             parseFloat(computedStyle['marginBottom']);
         this.thumbSize_ = [thumbWidth, thumbHeight];
 
         if (containerSize.width > containerSize.height) {
-            this.direction_ = ol.control.SliderCommon.Direction_.HORIZONTAL;
+            this.direction_ = SliderCommon.Direction_.HORIZONTAL;
         } else {
-            this.direction_ = ol.control.SliderCommon.Direction_.VERTICAL;
+            this.direction_ = SliderCommon.Direction_.VERTICAL;
         }
         this.setValue(this.initialValue || 0);
-        var self = this;
-        addResizeListener(container, function() {
+        const self = this;
+        addResizeListener(container, () => {
             self.setValue(self.value_);
         });
 
         this.sliderInitialized_ = true;
     }
 
-    widthLimit_(event) {
-        var container = this.element;
+    widthLimit_(event) { // eslint-disable-line no-unused-vars
+        const container = this.element;
         return container.offsetWidth - this.thumbSize_[0];
     }
 
-    heightLimit_(event) {
-        var container = this.element;
+    heightLimit_(event) { // eslint-disable-line no-unused-vars
+        const container = this.element;
         return container.offsetHeight - this.thumbSize_[1];
     }
 
@@ -216,7 +218,7 @@ export class SliderCommon extends Control {
      * @private
      */
     handleContainerClick_(event) {
-        var relativePosition = this.getRelativePosition_(
+        const relativePosition = this.getRelativePosition_(
             event.offsetX - this.thumbSize_[0] / 2,
             event.offsetY - this.thumbSize_[1] / 2);
 
@@ -246,10 +248,10 @@ export class SliderCommon extends Control {
      */
     handleDraggerDrag_(event) {
         if (this.dragging_) {
-            var element = this.element.firstElementChild;
-            var deltaX = event.clientX - this.previousX_ + (parseFloat(element.style.left, 10) || 0);
-            var deltaY = event.clientY - this.previousY_ + (parseFloat(element.style.top, 10) || 0);
-            var relativePosition = this.getRelativePosition_(deltaX, deltaY);
+            const element = this.element.firstElementChild;
+            const deltaX = event.clientX - this.previousX_ + (parseFloat(element.style.left, 10) || 0);
+            const deltaY = event.clientY - this.previousY_ + (parseFloat(element.style.top, 10) || 0);
+            const relativePosition = this.getRelativePosition_(deltaX, deltaY);
             this.setThumbPosition_(relativePosition);
             this.previousX_ = event.clientX;
             this.previousY_ = event.clientY;
@@ -261,9 +263,9 @@ export class SliderCommon extends Control {
      * @param {ol.pointer.PointerEvent|Event} event The drag event.
      * @private
      */
-    handleDraggerEnd_(event) {
+    handleDraggerEnd_(event) { // eslint-disable-line no-unused-vars
         if (this.dragging_) {
-            var view = this.getMap().getView();
+            const view = this.getMap().getView();
             view.setHint(ViewHint.INTERACTING, -1);
 
             this.dragging_ = false;
@@ -279,16 +281,16 @@ export class SliderCommon extends Control {
      * @private
      */
     setThumbPosition_(res) {
-        var thumb = this.element.firstElementChild;
+        const thumb = this.element.firstElementChild;
 
         if (this.direction_ == SliderCommon.Direction_.HORIZONTAL) {
-            thumb.style.left = this.widthLimit_() * res + 'px';
+            thumb.style.left = `${this.widthLimit_() * res}px`;
         } else {
-            thumb.style.top = this.heightLimit_() * res + 'px';
+            thumb.style.top = `${this.heightLimit_() * res}px`;
         }
         this.value_ = this.reverse_ ? 1 - res : res;
         this.set('slidervalue', this.value_);
-    };
+    }
 
     /**
      * Calculates the relative position of the thumb given x and y offsets.  The
@@ -301,14 +303,14 @@ export class SliderCommon extends Control {
      * @private
      */
     getRelativePosition_(x, y) {
-        var amount;
+        let amount;
         if (this.direction_ === SliderCommon.Direction_.HORIZONTAL) {
             amount = x / this.widthLimit_();
         } else {
             amount = y / this.heightLimit_();
         }
         return clamp(amount, 0, 1);
-    };
+    }
 
     setValue(res) {
         res = this.reverse_ ? 1 - res : res;
@@ -316,7 +318,7 @@ export class SliderCommon extends Control {
     }
 
     setEnable(cond) {
-        var elem = this.element;
+        const elem = this.element;
         if (cond) {
             elem.classList.remove('disable');
         } else {
@@ -327,33 +329,33 @@ export class SliderCommon extends Control {
 
 export class CustomControl extends Control {
     constructor(optOptions) {
-        var options = optOptions || {};
-        var element = document.createElement('div');
+        const options = optOptions || {};
+        const element = document.createElement('div'); // eslint-disable-line no-undef
 
         super({
-            element: element,
+            element,
             target: options.target,
             render: options.render
         });
 
-        var button = document.createElement('button');
+        const button = document.createElement('button'); // eslint-disable-line no-undef
         button.setAttribute('type', 'button');
         button.title = options.tipLabel;
-        var span = document.createElement('span');
+        const span = document.createElement('span'); // eslint-disable-line no-undef
         span.innerHTML = options.character;
         button.appendChild(span);
         let timer;
         let touchstart;
         const self = this;
 
-        button.addEventListener('click', function(e) {
+        button.addEventListener('click', (e) => {
             e.stopPropagation();
         });
-        button.addEventListener('mouseup', function(e) {
+        button.addEventListener('mouseup', (e) => {
             if (!touchstart) {
                 if (timer) {
                     if (options.long_callback) {
-                        clearTimeout(timer);
+                        clearTimeout(timer); // eslint-disable-line no-undef
                     }
                     timer = null;
                     options.callback.apply(self);
@@ -361,13 +363,13 @@ export class CustomControl extends Control {
             }
             e.stopPropagation();
         }, false);
-        button.addEventListener('mousemove', function(e) {
+        button.addEventListener('mousemove', (e) => {
             e.stopPropagation();
         }, false);
-        button.addEventListener('mousedown', function(e) {
+        button.addEventListener('mousedown', (e) => {
             if (!touchstart) {
                 if (options.long_callback) {
-                    timer = setTimeout(function() {
+                    timer = setTimeout(() => { // eslint-disable-line no-undef
                         timer = null;
                         options.long_callback.apply(self);
                     }, 1500);
@@ -377,10 +379,10 @@ export class CustomControl extends Control {
             }
             e.stopPropagation();
         }, false);
-        button.addEventListener('touchstart', function(e) {
+        button.addEventListener('touchstart', (e) => {
             touchstart = true;
             if (options.long_callback) {
-                timer = setTimeout(function() {
+                timer = setTimeout(() => { // eslint-disable-line no-undef
                     timer = null;
                     options.long_callback.apply(self);
                 }, 1500);
@@ -389,39 +391,39 @@ export class CustomControl extends Control {
             }
             e.stopPropagation();
         }, false);
-        button.addEventListener('touchend', function(e) {
+        button.addEventListener('touchend', (e) => {
             if (timer) {
                 if (options.long_callback) {
-                    clearTimeout(timer);
+                    clearTimeout(timer); // eslint-disable-line no-undef
                 }
                 timer = null;
                 options.callback.apply(self);
             }
             e.stopPropagation();
         }, false);
-        button.addEventListener('mouseout', function(e) {
+        button.addEventListener('mouseout', (e) => {
             if (options.long_callback) {
-                clearTimeout(timer);
+                clearTimeout(timer); // eslint-disable-line no-undef
             }
             timer = null;
             e.stopPropagation();
         }, false);
-        button.addEventListener('dblclick', function(e) {
+        button.addEventListener('dblclick', (e) => {
             e.preventDefault();
         }, false);
 
-        element.className = options.cls + ' ol-unselectable ol-control';
+        element.className = `${options.cls} ol-unselectable ol-control`;
         element.appendChild(button);
     }
 }
 
 export class GoHome extends CustomControl {
     constructor(optOptions) {
-        var options = optOptions || {};
+        const options = optOptions || {};
         options.character = '<i class="fa fa-home fa-lg"></i>';
         options.cls = 'home';
         options.callback = function() {
-            var source = this.getMap().getLayers().item(0).getSource();
+            const source = this.getMap().getLayers().item(0).getSource();
             source.goHome();
         };
         super(options);
@@ -430,18 +432,18 @@ export class GoHome extends CustomControl {
 
 export class SetGPS extends CustomControl {
     constructor(optOptions) {
-        var options = optOptions || {};
+        const options = optOptions || {};
         options.character = '<i class="fa fa-crosshairs fa-lg"></i>';
         options.cls = 'gps';
         options.render = function(mapEvent) {
-            var frameState = mapEvent.frameState;
+            const frameState = mapEvent.frameState;
             if (!frameState) {
                 return;
             }
-            var map = this.getMap();
+            const map = this.getMap();
             if (map.geolocation) {
-                var tracking = map.geolocation.getTracking();
-                var receiving = this.element.classList.contains('disable');
+                const tracking = map.geolocation.getTracking();
+                const receiving = this.element.classList.contains('disable');
                 if (receiving && !tracking) {
                     this.element.classList.remove('disable');
                 } else if (!receiving && tracking) {
@@ -451,8 +453,8 @@ export class SetGPS extends CustomControl {
         };
 
         options.callback = function() {
-            var receiving = this.element.classList.contains('disable');
-            var map = this.getMap();
+            const receiving = this.element.classList.contains('disable');
+            const map = this.getMap();
 
             map.handleGPS(!receiving);
             if (receiving) {
@@ -468,40 +470,40 @@ export class SetGPS extends CustomControl {
 
 export class CompassRotate extends Rotate {
     constructor(optOptions) {
-        var options = optOptions || {};
+        const options = optOptions || {};
         options.autoHide = false;
-        var span = document.createElement('span');
+        const span = document.createElement('span'); // eslint-disable-line no-undef
         span.innerHTML = '<i class="fa fa-compass fa-lg ol-compass-fa"></i>';
         options.label = span;
         options.render = function(mapEvent) {
-            var frameState = mapEvent.frameState;
+            const frameState = mapEvent.frameState;
             if (!frameState) {
                 return;
             }
-            var view = this.getMap().getView();
-            var rotation = frameState.viewState.rotation;
-            var center = view.getCenter();
-            var zoom = view.getDecimalZoom();
+            const view = this.getMap().getView();
+            const rotation = frameState.viewState.rotation;
+            const center = view.getCenter();
+            const zoom = view.getDecimalZoom();
             if (rotation != this.rotation_ || center[0] != this.center_[0] || center[1] != this.center_[1] || zoom != this.zoom_) {
-                var contains = this.element.classList.contains('disable');
+                const contains = this.element.classList.contains('disable');
                 if (!contains && rotation === 0) {
                     this.element.classList.add('disable');
                 } else if (contains && rotation !== 0) {
                     this.element.classList.remove('disable');
                 }
-                var self = this;
-                var layer = this.getMap().getLayers().item(0);
-                var source = layer.getSource ? layer.getSource() : layer.getLayers().item(0).getSource();
+                const self = this;
+                const layer = this.getMap().getLayers().item(0);
+                const source = layer.getSource ? layer.getSource() : layer.getLayers().item(0).getSource();
                 if (!source) {
-                    var transform = 'rotate(0rad)';
+                    const transform = 'rotate(0rad)';
                     self.label_.style.msTransform = transform;
                     self.label_.style.webkitTransform = transform;
                     self.label_.style.transform = transform;
                     return;
                 }
-                source.size2MercsAsync().then(function(mercs) {
-                    var rot = source.mercs2MercRotation(mercs);
-                    var transform = 'rotate(' + rot + 'rad)';
+                source.size2MercsAsync().then((mercs) => {
+                    const rot = source.mercs2MercRotation(mercs);
+                    const transform = `rotate(${rot}rad)`;
                     self.label_.style.msTransform = transform;
                     self.label_.style.webkitTransform = transform;
                     self.label_.style.transform = transform;
@@ -517,96 +519,76 @@ export class CompassRotate extends Rotate {
     }
 }
 
-export class GoHome
-
-    ol.control.GoHome = function(optOptions) {
-        var options = optOptions || {};
-        options.character = '<i class="fa fa-home fa-lg"></i>';
-        options.cls = 'home';
-        var self = this;
-        options.callback = function() {
-            var source = self.getMap().getLayers().item(0).getSource();
-            source.goHome();
-        };
-
-        ol.control.CustomControl.call(this, options);
-    };
-    ol.inherits(ol.control.GoHome, ol.control.CustomControl);
-
-    ol.control.Share = function(optOptions) {
-        var options = optOptions || {};
+export class Share extends CustomControl {
+    constructor(optOptions) {
+        const options = optOptions || {};
         options.character = '<i class="fa fa-share-alt-square fa-lg"></i>';
         options.cls = 'ol-share';
-        var self = this;
         options.callback = function() {
-            var map = self.getMap();
-            map.dispatchEvent(new ol.MapEvent('click_control', map, {control: 'share'}));
+            const map = this.getMap();
+            map.dispatchEvent(new MapEvent('click_control', map, {control: 'share'}));
         };
 
-        ol.control.CustomControl.call(this, options);
-    };
-    ol.inherits(ol.control.Share, ol.control.CustomControl);
+        super(options);
+    }
+}
 
-    ol.control.Border = function(optOptions) {
-        var options = optOptions || {};
+export class Border extends CustomControl {
+    constructor(optOptions) {
+        const options = optOptions || {};
         options.character = '<i class="fa fa-clone fa-lg"></i>';
         options.cls = 'ol-border';
-        var self = this;
         options.callback = function() {
-            var map = self.getMap();
-            map.dispatchEvent(new ol.MapEvent('click_control', map, {control: 'border'}));
+            const map = this.getMap();
+            map.dispatchEvent(new MapEvent('click_control', map, {control: 'border'}));
         };
 
-        ol.control.CustomControl.call(this, options);
-    };
-    ol.inherits(ol.control.Border, ol.control.CustomControl);
+        super(options);
+    }
+}
 
-    ol.control.Maplat = function(optOptions) {
-        var options = optOptions || {};
+export class Maplat extends CustomControl {
+    constructor(optOptions) {
+        const options = optOptions || {};
         options.character = '<i class="fa fa-question-circle fa-lg"></i>';
         options.cls = 'ol-maplat';
-        var self = this;
         options.callback = function() {
-            // window.open('https://github.com/code4nara/Maplat/wiki');
-            var map = self.getMap();
-            map.dispatchEvent(new ol.MapEvent('click_control', map, {control: 'help'}));
+            const map = this.getMap();
+            map.dispatchEvent(new MapEvent('click_control', map, {control: 'help'}));
         };
 
-        ol.control.CustomControl.call(this, options);
-    };
-    ol.inherits(ol.control.Maplat, ol.control.CustomControl);
+        super(options);
+    }
+}
 
-    ol.control.Copyright = function(optOptions) {
-        var options = optOptions || {};
+export class Copyright extends CustomControl {
+    constructor(optOptions) {
+        const options = optOptions || {};
         options.character = '<i class="fa fa-info-circle fa-lg"></i>';
         options.cls = 'ol-copyright';
-        var self = this;
         options.callback = function() {
-            var map = self.getMap();
-            map.dispatchEvent(new ol.MapEvent('click_control', map, {control: 'copyright'}));
+            const map = this.getMap();
+            map.dispatchEvent(new MapEvent('click_control', map, {control: 'copyright'}));
         };
 
-        ol.control.CustomControl.call(this, options);
-    };
-    ol.inherits(ol.control.Copyright, ol.control.CustomControl);
+        super(options);
+    }
+}
 
-    ol.control.HideMarker = function(optOptions) {
-        var options = optOptions || {};
+export class HideMarker extends CustomControl {
+    constructor(optOptions) {
+        const options = optOptions || {};
         options.character = '<i class="fa fa-map-marker fa-lg"></i>';
         options.cls = 'ol-hide-marker';
-        var self = this;
         options.callback = function() {
-            var map = self.getMap();
-            map.dispatchEvent(new ol.MapEvent('click_control', map, {control: 'hideMarker'}));
+            const map = this.getMap();
+            map.dispatchEvent(new MapEvent('click_control', map, {control: 'hideMarker'}));
         };
         options.long_callback = function() {
-            var map = self.getMap();
-            map.dispatchEvent(new ol.MapEvent('click_control', map, {control: 'hideLayer'}));
+            const map = this.getMap();
+            map.dispatchEvent(new MapEvent('click_control', map, {control: 'hideLayer'}));
         };
 
-        ol.control.CustomControl.call(this, options);
-    };
-    ol.inherits(ol.control.HideMarker, ol.control.CustomControl);
-
-    return ol;
-});
+        super(options);
+    }
+}

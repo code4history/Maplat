@@ -1,80 +1,22 @@
-define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziToast', 'qrcode', 'turf'],
-    function(Core, sprintf, Swiper, ol, bsn, page, iziToast, QRCode, turf) {
+import absoluteUrl from './absolute_url';
+import { Swiper } from './swiper_ex';
+import EventTarget from 'ol/events/Target';
+import page from '../legacy/page';
+import bsn from '../legacy/bootstrap-native';
+import { MaplatApp as Core, createElement } from 'maplat_core';
+import iziToast from '../legacy/iziToast';
+import QRCode from '../legacy/qrcode';
+import { point, polygon } from '@turf/helpers';
+import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
+import sprintf from '../legacy/sprintf';
 
-    var absoluteUrl = function(base, relative) {
-        var stack = base.split('/');
-        var parts = relative.split('/');
-        stack.pop(); // remove current file name (or empty string)
-        // (omit if "base" is the current folder without trailing slash)
-        for (var i=0; i<parts.length; i++) {
-            if (parts[i] == '.')
-                continue;
-            if (parts[i] == '..')
-                stack.pop();
-            else
-                stack.push(parts[i]);
-        }
-        return stack.join('/');
-    };
+// Maplat UI Class
+export class MaplatUi extends EventTarget {
+    constructor(appOption) {
+        super();
 
-    Swiper.prototype.slideToMapID = function(mapID) {
-        var slide = this.$el[0].querySelector('.swiper-slide-active');
-        if (slide.getAttribute('data') == mapID) return;
-
-        var sliders = this.$el[0].querySelectorAll('.swiper-slide');
-        for (var i=0; i<sliders.length; i++) {
-            var slider = sliders[i];
-            if (slider.getAttribute('data') == mapID) {
-                return this.slideToLoop(parseInt(slider.getAttribute('data-swiper-slide-index')));
-            }
-        }
-    };
-
-    Swiper.prototype.slideToIndex = function(index) {
-        var slide = this.$el[0].querySelector('.swiper-slide-active');
-        if (parseInt(slide.getAttribute('data-swiper-slide-index')) == index) return;
-
-        this.slideToLoop(index);
-    };
-
-    Swiper.prototype.setSlideMapID = function(mapID) {
-        this.slideToMapID(mapID);
-        this.setSlideMapIDAsSelected(mapID);
-    };
-
-    Swiper.prototype.setSlideIndex = function(index) {
-        this.slideToIndex(index);
-        this.setSlideIndexAsSelected(index);
-    };
-
-    Swiper.prototype.setSlideIndexAsSelected = function(index) {
-        var sliders = this.$el[0].querySelectorAll('.swiper-slide');
-        for (var i=0; i<sliders.length; i++) {
-            var slider = sliders[i];
-            if (slider.getAttribute('data-swiper-slide-index') == index) {
-                slider.classList.add('selected');
-            } else {
-                slider.classList.remove('selected');
-            }
-        }
-    };
-
-    Swiper.prototype.setSlideMapIDAsSelected = function(mapID) {
-        var sliders = this.$el[0].querySelectorAll('.swiper-slide');
-        for (var i=0; i<sliders.length; i++) {
-            var slider = sliders[i];
-            if (slider.getAttribute('data') == mapID) {
-                slider.classList.add('selected');
-            } else {
-                slider.classList.remove('selected');
-            }
-        }
-    };
-
-    // Maplat UI Class
-    var MaplatUi = function(appOption) {
-        var ui = this;
-        ui.html_id_seed = '' + (Math.floor( Math.random() * 9000 ) + 1000);
+        const ui = this;
+        ui.html_id_seed = `${Math.floor( Math.random() * 9000 ) + 1000}`;
 
         if (appOption.state_url) {
             page(function(ctx, next) {
@@ -152,11 +94,9 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
         } else {
             ui.initializer(appOption);
         }
-    };
+    }
 
-    ol.inherits(MaplatUi, ol.events.EventTarget);
-
-    MaplatUi.prototype.initializer = function(appOption) {
+    initializer(appOption) {
         var ui = this;
         ui.core = new Core(appOption);
 
@@ -216,7 +156,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
         var pwaWorker = appOption.pwa_worker;
 
         // Add UI HTML Element
-        var newElems = Core.createElement('<div class="ol-control map-title"><span></span></div>' +
+        var newElems = createElement('<div class="ol-control map-title"><span></span></div>' +
             '<div class="swiper-container ol-control base-swiper prevent-default-ui">' +
             '<i class="fa fa-chevron-left swiper-left-icon" aria-hidden="true"></i>' +
             '<i class="fa fa-chevron-right swiper-right-icon" aria-hidden="true"></i>' +
@@ -238,7 +178,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
             });
         }
 
-        var newElems = Core.createElement('<div class="modal modalBase" tabindex="-1" role="dialog" ' +
+        var newElems = createElement('<div class="modal modalBase" tabindex="-1" role="dialog" ' +
             'aria-labelledby="staticModalLabel" aria-hidden="true" data-show="true" data-keyboard="false" ' +
             'data-backdrop="static">' +
             '<div class="modal-dialog">' +
@@ -428,7 +368,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
 
             var head = document.querySelector('head');
             if (!head.querySelector('link[rel="manifest"]')) {
-                head.appendChild((Core.createElement('<link rel="manifest" href="' + pwaManifest + '">'))[0]);
+                head.appendChild((createElement('<link rel="manifest" href="' + pwaManifest + '">'))[0]);
             }
             // service workerが有効なら、service-worker.js を登録します
             if ('serviceWorker' in navigator) {
@@ -460,7 +400,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                             var src = absoluteUrl(pwaManifest, value.icons[i].src);
                             var sizes = value.icons[i].sizes;
                             var tag = '<link rel="apple-touch-icon" sizes="' + sizes + '" href="' + src + '">';
-                            head.appendChild((Core.createElement(tag))[0]);
+                            head.appendChild((createElement(tag))[0]);
                         }
                     }
                 };
@@ -767,7 +707,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                 if (data.html) {
                     iframe.addEventListener('load', function loadEvent(event) {
                         event.currentTarget.removeEventListener(event.type, loadEvent);
-                        var cssLink = Core.createElement('<style type="text/css">html, body { height: 100vh; }\n img { width: 100vw; }</style>');
+                        var cssLink = createElement('<style type="text/css">html, body { height: 100vh; }\n img { width: 100vw; }</style>');
                         console.log(cssLink);
                         iframe.contentDocument.head.appendChild(cssLink[0]);
                     });
@@ -1014,7 +954,7 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                         var title = ui.core.translate(layer.name);
                         var check = !layer.hide;
                         var id = layer.namespace_id;
-                        var newElems = Core.createElement('<li class="list-group-item">' +
+                        var newElems = createElement('<li class="list-group-item">' +
                             '<div class="row">' +
                             '<div class="col-sm-1"><img class="markerlist" src="' + icon + '"></div>' +
                             '<div class="col-sm-9">' + title + '</div>' +
@@ -1046,11 +986,11 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                 }
             });
             if (fakeGps) {
-                var newElem = Core.createElement(sprintf(ui.core.t('app.fake_explanation'), ui.core.translate(fakeCenter), fakeRadius))[0];
+                var newElem = createElement(sprintf(ui.core.t('app.fake_explanation'), ui.core.translate(fakeCenter), fakeRadius))[0];
                 var elem = ui.core.mapDivDocument.querySelector('.modal_gpsW_content');
                 elem.appendChild(newElem);
             } else {
-                var newElem = Core.createElement(ui.core.t('app.acquiring_gps_desc'))[0];
+                var newElem = createElement(ui.core.t('app.acquiring_gps_desc'))[0];
                 var elem = ui.core.mapDivDocument.querySelector('.modal_gpsW_content');
                 elem.appendChild(newElem);
             }
@@ -1059,9 +999,9 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                 delete ui.waitReadyBridge;
             }
         });
-    };
+    }
 
-    MaplatUi.prototype.showFillEnvelope = function(sourceID) {
+    showFillEnvelope(sourceID) {
         var ui = this;
         if (sourceID && sourceID !== ui.core.from.sourceID) {
             if (ui.selectCandidate != sourceID) {
@@ -1089,11 +1029,11 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
             }
             delete ui.selectCandidate;
         }
-    };
+    }
 
-    MaplatUi.prototype.xyToSourceID = function(xy, callback) {
+    xyToSourceID(xy, callback) {
         var ui = this;
-        var point = turf.point(xy);
+        var point = point(xy);
         Promise.all(Object.keys(ui.core.cacheHash).filter(function(key) {
             return ui.core.cacheHash[key].envelope;
         }).map(function(key) {
@@ -1110,8 +1050,8 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                 var source = curr[0];
                 var mercXys = curr[1];
                 if (source.sourceID == ui.core.from.sourceID) return prev;
-                var polygon = turf.polygon([mercXys]);
-                if (turf.booleanPointInPolygon(point, polygon)) {
+                var polygon = polygon([mercXys]);
+                if (booleanPointInPolygon(point, polygon)) {
                     if (!areaIndex || source.envelopeAreaIndex < areaIndex) {
                         areaIndex = source.envelopeAreaIndex;
                         return source.sourceID;
@@ -1124,9 +1064,9 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
             }, null);
             callback(sourceID);
         });
-    };
+    }
 
-    MaplatUi.prototype.setShowBorder = function(flag) {
+    setShowBorder(flag) {
         this.core.requestUpdateState({showBorder: flag ? 1 : 0});
         this.updateEnvelope();
         if (flag) {
@@ -1139,9 +1079,9 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
             localStorage.setItem('epoch', currentTime);
             localStorage.setItem('showBorder', flag ? 1 : 0);
         }
-    };
+    }
 
-    MaplatUi.prototype.setHideMarker = function(flag) {
+    setHideMarker(flag) {
         if (flag) {
             this.core.hideAllMarkers();
             this.core.mapDivDocument.classList.add('hide-marker');
@@ -1149,9 +1089,9 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
             this.core.showAllMarkers();
             this.core.mapDivDocument.classList.remove('hide-marker');
         }
-    };
+    }
 
-    MaplatUi.prototype.updateEnvelope = function() {
+    updateEnvelope() {
         var ui = this;
         if (!ui.core.mapObject) return;
 
@@ -1181,14 +1121,14 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
                 });
             });
         }
-    };
+    }
 
-    MaplatUi.prototype.resolveRelativeLink = function(file, fallbackPath) {
+    resolveRelativeLink(file, fallbackPath) {
         if (!fallbackPath) fallbackPath = '.';
         return file.match(/\//) ? file : fallbackPath + '/' + file;
-    };
+    }
 
-    MaplatUi.prototype.checkOverlayID = function(mapID) {
+    checkOverlayID(mapID) {
         var ui = this;
         var swiper = ui.overlaySwiper;
         var sliders = swiper.$el[0].querySelectorAll('.swiper-slide');
@@ -1199,9 +1139,9 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
             }
         }
         return false;
-    };
+    }
 
-    MaplatUi.prototype.ellips = function() {
+    ellips() {
         var ui = this;
         var omitMark = '…';
         var omitLine = 2;
@@ -1261,7 +1201,5 @@ define(['core', 'sprintf', 'swiper', 'ol-ui-custom', 'bootstrap', 'page', 'iziTo
             stringSplit(swiperItem);
             omitCheck(swiperItem);
         }
-    };
-
-    return MaplatUi;
-});
+    }
+}

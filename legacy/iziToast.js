@@ -1,3 +1,6 @@
+const Global = function() {};
+
+Global.prototype.dispatch = function() {
 /*
 * iziToast | v1.4.0
 * http://izitoast.marcelodolce.com
@@ -55,7 +58,7 @@
 
 	// Default settings
 	var defaults = {
-		id: null, 
+		id: null,
 		class: '',
 		title: '',
 		titleColor: '',
@@ -240,16 +243,16 @@
 	 * @private
 	 */
 	var drag = function() {
-	    
+
 	    return {
 	        move: function(toast, instance, settings, xpos) {
 
 	        	var opacity,
 	        		opacityRange = 0.3,
 	        		distance = 180;
-	            
+
 	            if(xpos !== 0){
-	            	
+
 	            	toast.classList.add(PLUGIN_NAME+'-dragged');
 
 	            	toast.style.transform = 'translateX('+xpos + 'px)';
@@ -266,7 +269,7 @@
 						}
 		            }
 					toast.style.opacity = opacity;
-			
+
 					if(opacity < opacityRange){
 
 						if(ISCHROME || ISFIREFOX)
@@ -278,7 +281,7 @@
 					}
 	            }
 
-				
+
 	        },
 	        startMoving: function(toast, instance, settings, e) {
 
@@ -327,7 +330,7 @@
 				toast.style.transform = '';
 
 	            if(toast.classList.contains(PLUGIN_NAME+'-dragged')){
-	            	
+
 	            	toast.classList.remove(PLUGIN_NAME+'-dragged');
 
 					toast.style.transition = 'transform 0.4s ease, opacity 0.4s ease';
@@ -462,7 +465,7 @@
 							}
 						}
 
-					}, settings.timeout);			
+					}, settings.timeout);
 		        	that.setSetting(ref, 'time', settings.time);
 	        	}
 	        },
@@ -483,12 +486,12 @@
 							propertyWidth = computedStyle.getPropertyValue('width');
 
 						$elem.style.transition = 'none';
-						$elem.style.width = propertyWidth;					
+						$elem.style.width = propertyWidth;
 					}
 
 					if(typeof callback === 'function'){
 						setTimeout(function() {
-							callback.apply(that);						
+							callback.apply(that);
 						}, 10);
 					}
         		}
@@ -545,7 +548,7 @@
 
 				if(typeof callback === 'function'){
 					setTimeout(function() {
-						callback.apply(that);						
+						callback.apply(that);
 					}, 10);
 				}
 	        }
@@ -563,7 +566,7 @@
 
 		if(typeof $toast != 'object'){
 			$toast = document.querySelector($toast);
-		}		
+		}
 
 		var that = this,
 			settings = extend(this.children[$toast.getAttribute('data-iziToast-ref')], options || {});
@@ -578,12 +581,12 @@
 
 			var $overlay = document.querySelector('.'+PLUGIN_NAME+'-overlay');
 			if($overlay !== null){
-				var refs = $overlay.getAttribute('data-iziToast-ref');		
+				var refs = $overlay.getAttribute('data-iziToast-ref');
 					refs = refs.split(',');
 				var index = refs.indexOf(String(settings.ref));
 
 				if(index !== -1){
-					refs.splice(index, 1);			
+					refs.splice(index, 1);
 				}
 				$overlay.setAttribute('data-iziToast-ref', refs.join());
 
@@ -600,7 +603,7 @@
 
 		if(settings.transitionIn){
 			$toast.classList.remove(settings.transitionIn);
-		} 
+		}
 
 		if(settings.transitionInMobile){
 			$toast.classList.remove(settings.transitionInMobile);
@@ -616,7 +619,7 @@
 		var H = $toast.parentNode.offsetHeight;
 				$toast.parentNode.style.height = H+'px';
 				$toast.style.pointerEvents = 'none';
-		
+
 		if(!ISMOBILE || window.innerWidth > MOBILEWIDTH){
 			$toast.parentNode.style.transitionDelay = '0.2s';
 		}
@@ -629,12 +632,12 @@
 		}
 
 		setTimeout(function() {
-			
+
 			$toast.parentNode.style.height = '0px';
 			$toast.parentNode.style.overflow = '';
 
 			setTimeout(function(){
-				
+
 				delete that.children[settings.ref];
 
 				$toast.parentNode.remove();
@@ -768,7 +771,7 @@
 			}
 
 			if(settings.color) { //#, rgb, rgba, hsl
-				
+
 				if( isColor(settings.color) ){
 					$DOM.toast.style.background = settings.color;
 				} else {
@@ -779,7 +782,7 @@
 			if(settings.backgroundColor) {
 				$DOM.toast.style.background = settings.backgroundColor;
 				if(settings.balloon){
-					$DOM.toast.style.borderColor = settings.backgroundColor;				
+					$DOM.toast.style.borderColor = settings.backgroundColor;
 				}
 			}
 		})();
@@ -799,7 +802,7 @@
 				if(settings.rtl){
 					$DOM.toastBody.style.marginRight = (settings.imageWidth + 10) + 'px';
 				} else {
-					$DOM.toastBody.style.marginLeft = (settings.imageWidth + 10) + 'px';				
+					$DOM.toastBody.style.marginLeft = (settings.imageWidth + 10) + 'px';
 				}
 				$DOM.toast.appendChild($DOM.cover);
 			}
@@ -808,7 +811,7 @@
 		// Button close
 		(function(){
 			if(settings.close){
-				
+
 				$DOM.buttonClose = document.createElement('button');
 				$DOM.buttonClose.type = 'button';
 				$DOM.buttonClose.classList.add(PLUGIN_NAME + '-close');
@@ -841,7 +844,7 @@
 			if(settings.timeout) {
 
 				if(settings.pauseOnHover && !settings.resetOnHover){
-					
+
 					$DOM.toast.addEventListener('mouseenter', function (e) {
 						that.progress(settings, $DOM.toast).pause();
 					});
@@ -872,14 +875,14 @@
 
 			} else if(settings.icon) {
 				$DOM.icon.setAttribute('class', PLUGIN_NAME + '-icon ' + settings.icon);
-				
+
 				if(settings.iconText){
 					$DOM.icon.appendChild(document.createTextNode(settings.iconText));
 				}
-				
+
 				if(settings.iconColor){
 					$DOM.icon.style.color = settings.iconColor;
-				}				
+				}
 			}
 
 			if(settings.icon || settings.iconUrl) {
@@ -887,7 +890,7 @@
 				if(settings.rtl){
 					$DOM.toastBody.style.paddingRight = '33px';
 				} else {
-					$DOM.toastBody.style.paddingLeft = '33px';				
+					$DOM.toastBody.style.paddingLeft = '33px';
 				}
 
 				$DOM.toastBody.appendChild($DOM.icon);
@@ -941,7 +944,7 @@
 					}
 				}
 				if(settings.messageLineHeight) {
-					
+
 					if( !isNaN(settings.titleSize) ){
 						$DOM.p.style.lineHeight = settings.messageLineHeight+'px';
 					} else {
@@ -954,7 +957,7 @@
 				if(settings.rtl){
 					$DOM.strong.style.marginLeft = '10px';
 				} else if(settings.layout !== 2 && !settings.rtl) {
-					$DOM.strong.style.marginRight = '10px';	
+					$DOM.strong.style.marginRight = '10px';
 				}
 			}
 		})();
@@ -1159,14 +1162,14 @@
 				} else {
 					$DOM.overlay.removeEventListener('click', {});
 				}
-			}			
+			}
 		})();
 
 		// Inside animations
 		(function(){
 			if(settings.animateInside){
 				$DOM.toast.classList.add(PLUGIN_NAME+'-animateInside');
-			
+
 				var animationTimes = [200, 100, 300];
 				if(settings.transitionIn == 'bounceInLeft' || settings.transitionIn == 'bounceInRight'){
 					animationTimes = [400, 200, 400];
@@ -1284,9 +1287,15 @@
 			});
 		}
 
-		that.toast = $DOM.toast;		
+		that.toast = $DOM.toast;
 	};
-	
+
 
 	return $iziToast;
 });
+	return this;
+};
+
+const global = new Global().dispatch();
+
+export default global.iziToast;
