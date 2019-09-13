@@ -1,6 +1,9 @@
 var gulp = require('gulp'),
+    concat = require('gulp-concat'),
+    replace = require('gulp-replace'),
     spawn = require('child_process').spawn,
     fs = require('fs-extra'),
+    wbBuild = require('workbox-build'),
     zip = require('gulp-zip');
 
 gulp.task('server', function() {
@@ -72,5 +75,44 @@ gulp.task('zip', function() {
             .on('end', resolve);
     }).then(function() {
         fs.removeSync('./web_set');
+    });
+});
+
+gulp.task('sw_build', function() {
+    return wbBuild.generateSW({
+        globDirectory: '.',
+        globPatterns: [
+            '.',
+            'dist/maplat.js',
+            'dist/maplat.css',
+            'parts/*',
+            'locales/*/*',
+            'fonts/*'
+        ],
+        swDest: 'service-worker_.js',
+        clientsClaim: true,
+        skipWaiting: true,
+        runtimeCaching: [{
+            urlPattern: /(?:maps\/.+\.json|pwa\/.+|pois\/.+\.json|apps\/.+\.json|tmbs\/.+_menu\.jpg|img\/.+\.(?:png|jpg))$/,
+            handler: 'staleWhileRevalidate',
+            options: {
+                cacheName: 'resourcesCache',
+                expiration: {
+                    maxAgeSeconds: 60 * 60 * 24,
+                },
+            },
+        }],
+    }).then(function() {
+        var unixtime = new Date();
+        return new Promise(function(resolve, reject) {
+            gulp.src(['./service-worker_.js'])
+                .pipe(concat('service-worker.js'))
+                .pipe(replace(/self\.__precacheManifest = \[/, "self.__precacheManifest = [\n  {\n    \"url\": \".\",\n    \"revision\": \"" + unixtime + "\"\n  },"))
+                .on('error', reject)
+                .pipe(gulp.dest('./'))
+                .on('end', resolve);
+        });
+    }).then(function() {
+        fs.unlinkSync('./service-worker_.js');
     });
 });

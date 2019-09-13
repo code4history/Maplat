@@ -18,7 +18,8 @@
     "less_build": "lessc --clean-css less/ui.less dist/maplat.css",
     "www_build": "webpack",
     "zip_build": "gulp zip",
-    "build": "npm run less_build; npm run www_build; npm run zip_build",
+    "sw_build": "gulp sw_build",
+    "build": "npm run less_build; npm run www_build; npm run sw_build; npm run zip_build",
     "lint": "eslint src/",
     "prepublish": "npm run lint; npm run build"
   },
@@ -54,11 +55,14 @@
     "fs-extra": "^8.1.0",
     "gulp": "^4.0.2",
     "gulp-cli": "^2.2.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-replace": "^1.0.0",
     "gulp-zip": "^4.2.0",
     "jasmine": "^3.4.0",
     "less": "^3.10.3",
     "less-plugin-clean-css": "^1.5.1",
     "webpack": "^4.39.3",
-    "webpack-cli": "^3.3.7"
+    "webpack-cli": "^3.3.7",
+    "workbox-build": "^4.3.1"
   }
 }
