@@ -2,12 +2,12 @@
 ![Maplat Catch Phrase](https://code4history.github.io/Maplat/page_imgs/bijective.png)
 
 Maplat is the cool Historical Map/Illustrated Map Viewer.  
-It can transform each map coordinates with nonlinear but bijective projection and makes possible that the maps can collaborate with GPS/accurate maps, without distorting original maps.  
-Data editor of this solution is provided as another project, [MaplatEditor](https://github.com/code4nara/MaplatEditor/).  
+It can transform each map coordinates with nonlinear but homeomorphic projection and makes possible that the maps can collaborate with GPS/accurate maps, without distorting original maps.  
+Data editor of this solution is provided as another project, [MaplatEditor](https://github.com/code4history/MaplatEditor/).  
 This project won Grand Prize / Educational Effectiveness Prize / Visitors Selection Prize on Geo-Activity Contest 2018 held by Ministry of Land, Infrastructure, Transport and Tourism.
 
 Maplatは古地図/絵地図を歪める事なくGPSや正確な地図と連携させられるオープンソースプラットフォームです。  
-他のソリューションにない特徴として、各地図の座標変換において非線形かつ全単射な投影変換が定義可能という点が挙げられます。  
+他のソリューションにない特徴として、各地図の座標変換において非線形かつ同相な投影変換が定義可能という点が挙げられます。  
 このプロジェクトは国土交通省主催の2018年ジオアクティビティコンテストにおいて、最優秀賞、教育効果賞、来場者賞をいただきました。
 
 # Introduction slide (In English, ICC Tokyo 2019)
@@ -19,9 +19,9 @@ Maplatは古地図/絵地図を歪める事なくGPSや正確な地図と連携�
 <a href="https://www.slideshare.net/kokogiko/maplat">![Introduction of Maplat](https://code4history.github.io/Maplat/page_imgs/maplat_slide.png)</a>
 
 # Data Editor
-Please use [MaplatEditor](https://github.com/code4nara/MaplatEditor/) for data creation.
+Please use [MaplatEditor](https://github.com/code4history/MaplatEditor/) for data creation.
 
-データの作成には[MaplatEditor](https://github.com/code4nara/MaplatEditor/)を利用してください。
+データの作成には[MaplatEditor](https://github.com/code4history/MaplatEditor/)を利用してください。
 
 # Latest result
 Latest result is shown below:

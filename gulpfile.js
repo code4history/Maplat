@@ -65,17 +65,6 @@ gulp.task('zip', function() {
     }).then(function() {
         fs.removeSync('./example');
     });
-
-
-    return new Promise(function(resolve, reject) {
-        gulp.src(['./web_set/*', './web_set/*/*'])
-            .pipe(zip('web_set.zip'))
-            .on('error', reject)
-            .pipe(gulp.dest('./'))
-            .on('end', resolve);
-    }).then(function() {
-        fs.removeSync('./web_set');
-    });
 });
 
 gulp.task('sw_build', function() {

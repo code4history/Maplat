@@ -2,18 +2,18 @@ import { absoluteUrl } from './absolute_url';
 import { Swiper } from './swiper_ex';
 import EventTarget from 'ol/events/Target';
 import page from '../legacy/page';
-import bsn from '../legacy/bootstrap-native';
-import { MaplatApp as Core, createElement } from 'maplat_core';
+import bsn from 'bootstrap.native';
+import { MaplatApp as Core, createElement } from '@maplat/core';
 import iziToast from '../legacy/iziToast';
 import QRCode from '../legacy/qrcode';
 import { point, polygon } from '@turf/helpers';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import sprintf from '../legacy/sprintf';
-import { META_KEYS, NowMap, TmsMap } from 'maplat_core/src/source_ex';
+import { META_KEYS, NowMap, TmsMap } from '@maplat/core/src/source_ex';
 import { Copyright, CompassRotate, SetGPS, GoHome, Maplat, Border, HideMarker, SliderCommon, Share } from './maplat_control';
 import { Zoom } from 'ol/control';
 import { asArray } from 'ol/color';
-import { HistMap } from 'maplat_core/src/histmap';
+import { HistMap } from '@maplat/core/src/histmap';
 
 // Maplat UI Class
 export class MaplatUi extends EventTarget {
