@@ -1,5 +1,5 @@
 ![Maplat Logo](https://code4history.github.io/Maplat/page_imgs/maplat.png)
-![Maplat Catch Phrase](https://code4history.github.io/Maplat/page_imgs/bijective.png)
+![Maplat Catch Phrase](https://code4history.github.io/Maplat/page_imgs/homeomorphic.png)
 
 Maplat is the cool Historical Map/Illustrated Map Viewer.  
 It can transform each map coordinates with nonlinear but homeomorphic projection and makes possible that the maps can collaborate with GPS/accurate maps, without distorting original maps.  
@@ -68,7 +68,11 @@ Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com
 
 
 ## Sponsors
-Maplat is supported by <a href="https://www.jetbrains.com/" target="_blank"><img src="https://code4history.github.io/Maplat/img/jetbrains-variant-4.png" width="150"></a> <a href="https://www.locazing.com/" target="_blank"><img src="https://code4history.github.io/Maplat/img/locazing.png" width="150"></a> <a href="https://www.browserstack.com/" target="_blank"><img src="https://code4history.github.io/Maplat/img/browserstack-logo-600x315.png" width="150"></a>
+Maplat is supported by 
+<a href="https://www.jetbrains.com/" target="_blank"><img src="https://code4history.github.io/Maplat/img/jetbrains-variant-4.png" width="150"></a>
+<a href="https://www.locazing.com/" target="_blank"><img src="https://code4history.github.io/Maplat/img/locazing.png" width="150"></a>
+<a href="https://www.thedesignium.com/" target="_blank"><img src="https://code4history.github.io/Maplat/img/logo_TheDesignium.png" width="150"></a>
+<a href="https://www.browserstack.com/" target="_blank"><img src="https://code4history.github.io/Maplat/img/browserstack-logo-600x315.png" width="150"></a>
 
 Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/maplat#sponsor)]
 
