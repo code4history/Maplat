@@ -14,7 +14,7 @@ Global.prototype.dispatch = function() {
 	} else {
 		root.iziToast = factory(root);
 	}
-})(typeof global !== 'undefined' ? global : window || this.window || this.global, function (root) {
+})(this, function (root) {
 
 	'use strict';
 

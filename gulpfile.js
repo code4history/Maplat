@@ -1,4 +1,5 @@
 var gulp = require('gulp'),
+    sha1 = require('sha1'),
     concat = require('gulp-concat'),
     replace = require('gulp-replace'),
     spawn = require('child_process').spawn,
@@ -96,7 +97,7 @@ gulp.task('sw_build', function() {
         return new Promise(function(resolve, reject) {
             gulp.src(['./service-worker_.js'])
                 .pipe(concat('service-worker.js'))
-                .pipe(replace(/self\.__precacheManifest = \[/, "self.__precacheManifest = [\n  {\n    \"url\": \".\",\n    \"revision\": \"" + unixtime + "\"\n  },"))
+                .pipe(replace(/self\.__precacheManifest = \[/, "self.__precacheManifest = [\n  {\n    \"url\": \".\",\n    \"revision\": \"" + sha1(unixtime) + "\"\n  },"))
                 .on('error', reject)
                 .pipe(gulp.dest('./'))
                 .on('end', resolve);
