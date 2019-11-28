@@ -41,7 +41,6 @@
     "@maplat/core": "^0.6.2",
     "@maplat/tin": "^0.6.3",
     "@turf/turf": "^5.1.6",
-    "bootstrap.native": "^2.0.27",
     "ol": "^5.3.3"
   },
   "devDependencies": {
