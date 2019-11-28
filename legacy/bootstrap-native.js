@@ -1,3 +1,6 @@
+const Global = function() {};
+
+Global.prototype.dispatch = function() {
 // Native Javascript for Bootstrap 3 v2.0.23 | © dnp_theme | MIT-License
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
@@ -1924,3 +1927,9 @@
     Tooltip: Tooltip
   };
 }));
+  return this;
+};
+
+const global = new Global().dispatch();
+
+export default global;
