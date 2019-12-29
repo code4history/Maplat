@@ -21,7 +21,9 @@
     "sw_build": "gulp sw_build",
     "build": "npm run less_build; npm run www_build; npm run sw_build; npm run zip_build",
     "lint": "eslint src/",
-    "prepublish": "npm run lint; npm run build"
+    "prepublishOnly": "npm run lint && npm run build",
+    "preversion": "npm run lint",
+    "version": "npm run build && git add -A"
   },
   "repository": {
     "type": "git",
@@ -38,10 +40,10 @@
   },
   "homepage": "https://github.com/code4history/Maplat/wiki",
   "dependencies": {
-    "@maplat/core": "^0.6.2",
+    "@maplat/core": "github:code4history/MaplatCore#ol6_bug_report",
     "@maplat/tin": "^0.6.3",
     "@turf/turf": "^5.1.6",
-    "ol": "^5.3.3"
+    "ol": "^6.1.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

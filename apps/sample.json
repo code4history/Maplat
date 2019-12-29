@@ -31,7 +31,14 @@
         {
             "mapID"     : "morioka"
         },
-        "osm"
+        "osm",
+        {
+            "mapID" : "mapbox",
+            "style" : "mapbox://styles/moritoru/ck3xqi0hh1pob1cqpanp3jxxo",
+            "maptype" : "mapbox",
+            "label" : "Mapbox",
+            "title" : "Mapbox"
+        }
     ], 
     "pois" : "morioka_all_poi.json"
 }
