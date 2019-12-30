@@ -66,3 +66,5 @@ typings/
 # Build result
 dist/
 web_set.zip
+
+mapboxToken
