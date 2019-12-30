@@ -1191,4 +1191,9 @@ export class MaplatUi extends EventTarget {
             omitCheck(swiperItem);
         }
     }
+
+    remove() {
+        this.core.remove();
+        delete this.core;
+    }
 }
