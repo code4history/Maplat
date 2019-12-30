@@ -141,15 +141,15 @@ export class MaplatUi extends EventTarget {
             });
         };
 
-        if (appOption.share_enable) {
-            ui.core.mapDivDocument.classList.add('share_enable');
-            ui.shareEnable = true;
+        if (appOption.enable_share) {
+            ui.core.mapDivDocument.classList.add('enable_share');
+            ui.enableShare = true;
         }
         if (appOption.state_url) {
             ui.core.mapDivDocument.classList.add('state_url');
         }
-        if (ui.core.cacheEnable) {
-            ui.core.mapDivDocument.classList.add('cache_enable');
+        if (ui.core.enableCache) {
+            ui.core.mapDivDocument.classList.add('enable_cache');
         }
         if ('ontouchstart' in window) { // eslint-disable-line no-undef
             ui.core.mapDivDocument.classList.add('ol-touch');
@@ -442,7 +442,7 @@ export class MaplatUi extends EventTarget {
                 new Border({tipLabel: ui.core.t('control.border', {ns: 'translation'})}),
                 new HideMarker({tipLabel: ui.core.t('control.hide_marker', {ns: 'translation'})})
             ];
-            if (ui.shareEnable) {
+            if (ui.enableShare) {
                 ui.core.appData.controls.push(new Share({tipLabel: ui.core.t('control.share', {ns: 'translation'})}));
             }
             if (ui.core.mapObject) {
