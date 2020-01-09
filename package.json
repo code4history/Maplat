@@ -19,7 +19,7 @@
     "www_build": "webpack",
     "zip_build": "gulp zip",
     "sw_build": "gulp sw_build",
-    "build": "npm run less_build; npm run www_build; npm run sw_build; npm run zip_build",
+    "build": "npm run less_build && npm run www_build && npm run sw_build && npm run zip_build",
     "lint": "eslint src/",
     "preversion": "npm run lint",
     "version": "npm run build && git add -A"
@@ -42,7 +42,8 @@
     "@maplat/core": "^0.6.5",
     "@maplat/tin": "^0.6.3",
     "@turf/turf": "^5.1.6",
-    "ol": "^6.1.1"
+    "ol": "^6.1.1",
+    "ol5": "file:packages/ol5"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

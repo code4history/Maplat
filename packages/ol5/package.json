@@ -1,0 +1,54 @@
+{
+  "_from": "ol@^5.3.3",
+  "_id": "ol@5.3.3",
+  "_inBundle": false,
+  "_integrity": "sha512-7eU4x8YMduNcED1D5wI+AMWDRe7/1HmGfsbV+kFFROI9RNABU/6n4osj6Q3trZbxxKnK2DSRIjIRGwRHT/Z+Ww==",
+  "_location": "/ol",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "range",
+    "registry": true,
+    "raw": "ol@^5.3.3",
+    "name": "ol",
+    "escapedName": "ol",
+    "rawSpec": "^5.3.3",
+    "saveSpec": null,
+    "fetchSpec": "^5.3.3"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/ol/-/ol-5.3.3.tgz",
+  "_shasum": "ad39b7b485fdbae4b3e1535a0a07cc5d88b0b9b5",
+  "_spec": "ol@^5.3.3",
+  "_where": "C:\\Users\\10467\\OneDrive\\ol5",
+  "bugs": {
+    "url": "https://github.com/openlayers/openlayers/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "pbf": "3.1.0",
+    "pixelworks": "1.1.0",
+    "rbush": "2.0.2"
+  },
+  "deprecated": false,
+  "description": "OpenLayers mapping library",
+  "homepage": "https://openlayers.org/",
+  "keywords": [
+    "map",
+    "mapping",
+    "ol"
+  ],
+  "license": "BSD-2-Clause",
+  "main": "index.js",
+  "name": "ol5",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/openlayers/openlayers.git"
+  },
+  "sideEffects": [
+    "proj.js",
+    "ol.css"
+  ],
+  "version": "5.3.3"
+}

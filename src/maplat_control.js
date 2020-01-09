@@ -1,12 +1,12 @@
-import { Control, Rotate } from 'ol/control';
-import { CLASS_UNSELECTABLE, CLASS_CONTROL } from 'ol/css';
-import PointerEventHandler from 'ol/pointer/PointerEventHandler';
-import { listen } from 'ol/events';
-import EventType from 'ol/pointer/EventType';
-import { stopPropagation } from 'ol/events/Event';
-import ViewHint from 'ol/ViewHint';
-import { clamp } from 'ol/math';
-import { MapEvent } from 'ol';
+import { Control, Rotate } from 'ol5/control';
+import { CLASS_UNSELECTABLE, CLASS_CONTROL } from 'ol5/css';
+import PointerEventHandler from 'ol5/pointer/PointerEventHandler';
+import { listen } from 'ol5/events';
+import EventType from 'ol5/pointer/EventType';
+import { stopPropagation } from 'ol5/events/Event';
+import ViewHint from 'ol5/ViewHint';
+import { clamp } from 'ol5/math';
+import { MapEvent } from 'ol5';
 import { addResizeListener } from '../legacy/detect-element-resize';
 
 /**
