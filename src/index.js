@@ -712,10 +712,10 @@ export class MaplatUi extends EventTarget {
                         console.log(cssLink); // eslint-disable-line no-undef
                         iframe.contentDocument.head.appendChild(cssLink[0]);
                     });
-                    iframe.setAttribute('src', '');
+                    iframe.removeAttribute('src');
                     iframe.setAttribute('srcdoc', ui.core.translate(data.html));
                 } else {
-                    iframe.setAttribute('srcdoc', '');
+                    iframe.removeAttribute('srcdoc');
                     iframe.setAttribute('src', ui.core.translate(data.url));
                 }
             } else {
