@@ -22,7 +22,8 @@
     "build": "npm run less_build && npm run www_build && npm run sw_build && npm run zip_build",
     "lint": "eslint src/",
     "preversion": "npm run lint",
-    "version": "npm run build && git add -A"
+    "version": "npm run build && git add -A",
+    "freeze": "node node_modules/@maplat/core/bin/freezer.js -s parts -o src/freeze_images.js"
   },
   "repository": {
     "type": "git",
@@ -39,7 +40,7 @@
   },
   "homepage": "https://github.com/code4history/Maplat/wiki",
   "dependencies": {
-    "@maplat/core": "^0.6.5",
+    "@maplat/core": "git+https://github.com/code4history/MaplatCore.git#dev",
     "@maplat/tin": "^0.6.3",
     "@turf/turf": "^5.1.6",
     "ol": "^6.1.1",

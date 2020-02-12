@@ -25,11 +25,11 @@ workbox.core.clientsClaim();
 self.__precacheManifest = [
   {
     "url": ".",
-    "revision": "d7bc2c79eb18eeb98cf75204f5103943dc9e5980"
+    "revision": "b44d93a83dc22636bb9a843fa048f7deefddbc20"
   },
   {
     "url": "dist/maplat.js",
-    "revision": "59fc4dc702a7dfe65523c9a99f99e734"
+    "revision": "717fcfbaf923652499804be9e5aca528"
   },
   {
     "url": "dist/maplat.css",
@@ -50,18 +50,6 @@ self.__precacheManifest = [
   {
     "url": "parts/blue_marker.png",
     "revision": "3f0a27365f8197ee4e28acb2b6d4c9d9"
-  },
-  {
-    "url": "parts/bluedot_small.png",
-    "revision": "86df29046e4ebed91eec8234a176ab61"
-  },
-  {
-    "url": "parts/bluedot_transparent.png",
-    "revision": "73d040fd36725ee4e8334cc94c90ca17"
-  },
-  {
-    "url": "parts/bluedot.png",
-    "revision": "fa10ac01a2b93a61c78da31c8412752d"
   },
   {
     "url": "parts/border.png",
@@ -98,14 +86,6 @@ self.__precacheManifest = [
   {
     "url": "parts/compass.png",
     "revision": "e77f58c849942a4738967e01d35af3b6"
-  },
-  {
-    "url": "parts/defaultpin_selected.png",
-    "revision": "5a59a47efbff1f339a8a72acf5875354"
-  },
-  {
-    "url": "parts/defaultpin.png",
-    "revision": "914de2be384fd0a7c10edba093102ab4"
   },
   {
     "url": "parts/favicon.png",
@@ -166,10 +146,6 @@ self.__precacheManifest = [
   {
     "url": "parts/red_marker.png",
     "revision": "7f5a919a8d17390929bb92f3dc480cee"
-  },
-  {
-    "url": "parts/redcircle.png",
-    "revision": "3bb615256d903d1c7f14e169f35ae6f9"
   },
   {
     "url": "parts/share.png",
