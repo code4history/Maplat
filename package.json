@@ -23,7 +23,7 @@
     "lint": "eslint src/",
     "preversion": "npm run lint",
     "version": "npm run build && git add -A",
-    "freeze": "node node_modules/@maplat/core/bin/freezer.js -s parts -o src/freeze_images.js"
+    "freeze": "node node_modules/@maplat/core/bin/freezer.js -s parts -f src/freeze_images.js -u src/pointer_images.js"
   },
   "repository": {
     "type": "git",

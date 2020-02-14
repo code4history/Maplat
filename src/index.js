@@ -14,7 +14,6 @@ import { Copyright, CompassRotate, SetGPS, GoHome, Maplat, Border, HideMarker, S
 import { Zoom } from 'ol/control';
 import { asArray } from 'ol/color';
 import { HistMap } from '@maplat/core/src/histmap';
-import freeze from './freeze_merge';
 
 // Maplat UI Class
 export class MaplatUi extends EventTarget {
