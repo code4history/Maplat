@@ -14,6 +14,7 @@ import { Copyright, CompassRotate, SetGPS, GoHome, Maplat, Border, HideMarker, S
 import { Zoom } from 'ol/control';
 import { asArray } from 'ol/color';
 import { HistMap } from '@maplat/core/src/histmap';
+import pointer from './pointer_images';
 
 // Maplat UI Class
 export class MaplatUi extends EventTarget {
@@ -184,120 +185,120 @@ export class MaplatUi extends EventTarget {
             });
         }
 
-        newElems = createElement(`${'<div class="modal modalBase" tabindex="-1" role="dialog" ' +
-            'aria-labelledby="staticModalLabel" aria-hidden="true" data-show="true" data-keyboard="false" ' +
-            'data-backdrop="static">' +
-            '<div class="modal-dialog">' +
-            '<div class="modal-content">' +
-            '<div class="modal-header">' +
-            '<button type="button" class="close" data-dismiss="modal">' +
-            '<span aria-hidden="true">&#215;</span><span class="sr-only" data-i18n="html.close"></span>' +
-            '</button>' +
-            '<h4 class="modal-title">' +
+        newElems = createElement(`<div class="modal modalBase" tabindex="-1" role="dialog"
+    aria-labelledby="staticModalLabel" aria-hidden="true" data-show="true" data-keyboard="false"
+    data-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&#215;</span><span class="sr-only" data-i18n="html.close"></span>
+        </button>
+        <h4 class="modal-title">
 
-            '<span class="modal_title"></span>' +
-            '<span class="modal_load_title"></span>' +
-            '<span class="modal_gpsW_title" data-i18n="html.acquiring_gps"></span>' +
-            '<span class="modal_help_title" data-i18n="html.help_title"></span>' +
-            '<span class="modal_share_title" data-i18n="html.share_title"></span>' +
-            '<span class="modal_hide_marker_title" data-i18n="html.hide_marker_title"></span>' +
+          <span class="modal_title"></span>
+          <span class="modal_load_title"></span>' +
+          <span class="modal_gpsW_title" data-i18n="html.acquiring_gps"></span>
+          <span class="modal_help_title" data-i18n="html.help_title"></span>
+          <span class="modal_share_title" data-i18n="html.share_title"></span>
+          <span class="modal_hide_marker_title" data-i18n="html.hide_marker_title"></span>
 
-            '</h4>' +
-            '</div>' +
-            '<div class="modal-body">' +
+        </h4>
+      </div>
+      <div class="modal-body">
 
-            '<div class="modal_help_content">' +
-            '<div class="help_content">' +
-            '<span data-i18n-html="html.help_using_maplat"></span>' +
-            '<p class="col-xs-12 help_img"><img src="parts/fullscreen.png"></p>' +
-            '<h4 data-i18n="html.help_operation_title"></h4>' +
-            '<p data-i18n-html="html.help_operation_content" class="recipient"></p>' +
-            '<h4 data-i18n="html.help_selection_title"></h4>' +
-            '<p data-i18n-html="html.help_selection_content" class="recipient"></p>' +
-            '<h4 data-i18n="html.help_gps_title"></h4>' +
-            '<p data-i18n-html="html.help_gps_content" class="recipient"></p>' +
-            '<h4 data-i18n="html.help_poi_title"></h4>' +
-            '<p data-i18n-html="html.help_poi_content" class="recipient"></p>' +
-            '<h4 data-i18n="html.help_etc_title"></h4>' +
-            '<ul>' +
-            '<li data-i18n-html="html.help_etc_attr" class="recipient"></li>' +
-            '<li data-i18n-html="html.help_etc_help" class="recipient"></li>' +
-            '<span class="share_help"><li data-i18n-html="html.help_share_help" class="recipient"></li></span>' +
-            '<li data-i18n-html="html.help_etc_border" class="recipient"></li>' +
-            '<li data-i18n-html="html.help_etc_hide_marker" class="recipient"></li>' +
-            '<li data-i18n-html="html.help_etc_slider" class="recipient"></li>' +
-            '</ul>' +
-            '<p><a href="https://github.com/code4nara/Maplat/wiki" target="_blank">Maplat</a>' +
-            ' © 2015- Kohei Otsuka, Code for Nara, RekishiKokudo project</p>' +
-            '</div>' +
-            '</div>' +
+        <div class="modal_help_content">
+          <div class="help_content">
+            <span data-i18n-html="html.help_using_maplat"></span>
+            <p class="col-xs-12 help_img"><img src="parts/fullscreen.png"></p>
+            <h4 data-i18n="html.help_operation_title"></h4>
+            <p data-i18n-html="html.help_operation_content" class="recipient"></p>
+            <h4 data-i18n="html.help_selection_title"></h4>
+            <p data-i18n-html="html.help_selection_content" class="recipient"></p>
+            <h4 data-i18n="html.help_gps_title"></h4>
+            <p data-i18n-html="html.help_gps_content" class="recipient"></p>
+            <h4 data-i18n="html.help_poi_title"></h4>
+            <p data-i18n-html="html.help_poi_content" class="recipient"></p>
+            <h4 data-i18n="html.help_etc_title"></h4>
+            <ul>
+              <li data-i18n-html="html.help_etc_attr" class="recipient"></li>
+              <li data-i18n-html="html.help_etc_help" class="recipient"></li>
+              <span class="share_help"><li data-i18n-html="html.help_share_help" class="recipient"></li></span>
+              <li data-i18n-html="html.help_etc_border" class="recipient"></li>
+              <li data-i18n-html="html.help_etc_hide_marker" class="recipient"></li>
+              <li data-i18n-html="html.help_etc_slider" class="recipient"></li>
+            </ul>
+            <p><a href="https://github.com/code4nara/Maplat/wiki" target="_blank">Maplat</a>
+              © 2015- Kohei Otsuka, Code for Nara, RekishiKokudo project</p>
+          </div>
+        </div>
 
-            '<div class="modal_poi_content">' +
-            '<div class="poi_web embed-responsive embed-responsive-60vh">' +
-            '<iframe class="poi_iframe iframe_poi" frameborder="0" src=""></iframe>' +
-            '</div>' +
-            '<div class="poi_data hide">' +
-            '<p class="col-xs-12 poi_img"><img class="poi_img_tag" src="parts/loading_image.png"></p>' +
-            '<p class="recipient poi_address"></p>' +
-            '<p class="recipient poi_desc"></p>' +
-            '</div>' +
-            '</div>' +
+        <div class="modal_poi_content">
+          <div class="poi_web embed-responsive embed-responsive-60vh">
+            <iframe class="poi_iframe iframe_poi" frameborder="0" src=""></iframe>
+          </div>
+          <div class="poi_data hide">
+            <p class="col-xs-12 poi_img"><img class="poi_img_tag" src="parts/loading_image.png"></p>
+            <p class="recipient poi_address"></p>
+            <p class="recipient poi_desc"></p>
+          </div>' +
+        </div>
 
-            '<div class="modal_share_content">' +
-            '<h4 data-i18n="html.share_app_title"></h4><div id="___maplat_app_toast_'}${ui.html_id_seed}"></div>` +
-            `<div class="recipient row">` +
-            `<div class="form-group col-xs-4 text-center"><button title="Copy to clipboard" class="share btn btn-light" data="cp_app"><i class="fa fa-clipboard"></i>&nbsp;<small data-i18n="html.share_copy"></small></button></div>` +
-            `<div class="form-group col-xs-4 text-center"><button title="Twitter" class="share btn btn-light" data="tw_app"><i class="fa fa-twitter"></i>&nbsp;<small>Twitter</small></button></div>` +
-            `<div class="form-group col-xs-4 text-center"><button title="Facebook" class="share btn btn-light" data="fb_app"><i class="fa fa-facebook"></i>&nbsp;<small>Facebook</small></button></div></div>` +
-            `<div class="qr_app center-block" style="width:128px;"></div>` +
-            `<div class="modal_share_state">` +
-            `<h4 data-i18n="html.share_state_title"></h4><div id="___maplat_view_toast_${ui.html_id_seed}"></div>` +
-            `<div class="recipient row">` +
-            `<div class="form-group col-xs-4 text-center"><button title="Copy to clipboard" class="share btn btn-light" data="cp_view"><i class="fa fa-clipboard"></i>&nbsp;<small data-i18n="html.share_copy"></small></button></div>` +
-            `<div class="form-group col-xs-4 text-center"><button title="Twitter" class="share btn btn-light" data="tw_view"><i class="fa fa-twitter"></i>&nbsp;<small>Twitter</small></button></div>` +
-            `<div class="form-group col-xs-4 text-center"><button title="Facebook" class="share btn btn-light" data="fb_view"><i class="fa fa-facebook"></i>&nbsp;<small>Facebook</small></button></div></div>` +
-            `<div class="qr_view center-block" style="width:128px;"></div>` +
-            `</div>` +
-            `<p><img src="" height="0px" width="0px"></p>` +
-            `</div>` +
+        <div class="modal_share_content">
+          <h4 data-i18n="html.share_app_title"></h4>
+          <div id="___maplat_app_toast_${ui.html_id_seed}"></div>
+          <div class="recipient row">
+            <div class="form-group col-xs-4 text-center"><button title="Copy to clipboard" class="share btn btn-light" data="cp_app"><i class="fa fa-clipboard"></i>&nbsp;<small data-i18n="html.share_copy"></small></button></div>
+            <div class="form-group col-xs-4 text-center"><button title="Twitter" class="share btn btn-light" data="tw_app"><i class="fa fa-twitter"></i>&nbsp;<small>Twitter</small></button></div>
+            <div class="form-group col-xs-4 text-center"><button title="Facebook" class="share btn btn-light" data="fb_app"><i class="fa fa-facebook"></i>&nbsp;<small>Facebook</small></button></div>
+          </div>
+          <div class="qr_app center-block" style="width:128px;"></div>
+          <div class="modal_share_state">
+            <h4 data-i18n="html.share_state_title"></h4>
+            <div id="___maplat_view_toast_${ui.html_id_seed}"></div>
+            <div class="recipient row">
+              <div class="form-group col-xs-4 text-center"><button title="Copy to clipboard" class="share btn btn-light" data="cp_view"><i class="fa fa-clipboard"></i>&nbsp;<small data-i18n="html.share_copy"></small></button></div>
+              <div class="form-group col-xs-4 text-center"><button title="Twitter" class="share btn btn-light" data="tw_view"><i class="fa fa-twitter"></i>&nbsp;<small>Twitter</small></button></div>
+              <div class="form-group col-xs-4 text-center"><button title="Facebook" class="share btn btn-light" data="fb_view"><i class="fa fa-facebook"></i>&nbsp;<small>Facebook</small></button></div>
+            </div>
+            <div class="qr_view center-block" style="width:128px;"></div>
+          </div>
+          <p><img src="" height="0px" width="0px"></p>
+        </div>
 
-            `<div class="modal_map_content">${ 
-
-            META_KEYS.map((key) => {
+        <div class="modal_map_content">
+            ${META_KEYS.map((key) => {
                 if (key == 'title' || key == 'officialTitle') return '';
+                return `<div class="recipients ${key}_div"><dl class="dl-horizontal">
+                      <dt data-i18n="html.${key}"></dt>
+                      <dd class="${key}_dd"></dd>
+                    </dl></div>`;
+            }).join('')}
+          <div class="recipients" class="modal_cache_content"><dl class="dl-horizontal">
+            <dt data-i18n="html.cache_handle"></dt>
+            <dd><span class="cache_size"></span>
+              <a class="cache_delete btn btn-default pull-right" href="#" data-i18n="html.cache_delete"></a></dd>
+          </dl></div>
 
-                return `<div class="recipients ${key}_div"><dl class="dl-horizontal">` +
-                    `<dt data-i18n="html.${key}"></dt>` +
-                    `<dd class="${key}_dd"></dd>` +
-                    `</dl></div>`;
-            }).join('') 
+        </div>
 
-            }<div class="recipients" class="modal_cache_content"><dl class="dl-horizontal">` +
-            `<dt data-i18n="html.cache_handle"></dt>` +
-            `<dd><span class="cache_size"></span>` +
-            `<a class="cache_delete btn btn-default pull-right" href="#" data-i18n="html.cache_delete"></a></dd>` +
-            `</dl></div>` +
+        <div class="modal_load_content">
+          <p class="recipient"><img src="parts/loading.png"><span data-i18n="html.app_loading_body"></span></p>
+          <div class="splash_div hide row"><p class="col-xs-12 poi_img"><img class="splash_img" src=""></p></div>
+          <p><img src="" height="0px" width="0px"></p>
+        </div>
 
-            `</div>` +
+        <div class="modal_hide_marker_content">
+          <ul class="list-group"></ul>
+        </div>
 
-            `<div class="modal_load_content">` +
-            `<p class="recipient"><img src="parts/loading.png"><span data-i18n="html.app_loading_body"></span></p>` +
-            `<div class="splash_div hide row"><p class="col-xs-12 poi_img"><img class="splash_img" src=""></p></div>` +
-            `<p><img src="" height="0px" width="0px"></p>` +
-            `</div>` +
+        <p class="modal_gpsD_content" class="recipient"></p>
+        <p class="modal_gpsW_content" class="recipient"></p>
 
-            `<div class="modal_hide_marker_content">` +
-            `<ul class="list-group">` +
-            `</ul>` +
-            `</div>` +
-
-            `<p class="modal_gpsD_content" class="recipient"></p>` +
-            `<p class="modal_gpsW_content" class="recipient"></p>` +
-
-            `</div>` +
-            `</div>` +
-            `</div>` +
-            `</div>`);
+      </div>
+    </div>
+  </div>
+</div>`);
         for (let i=newElems.length - 1; i >= 0; i--) {
             ui.core.mapDivDocument.insertBefore(newElems[i], ui.core.mapDivDocument.firstChild);
         }
