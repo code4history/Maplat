@@ -4,10 +4,13 @@ const pjson = require('./package.json');
 module.exports = {
     mode: 'production',
     devtool: 'source-map',
-    entry: ['./tmpl/web-bridge.js'],
+    entry: {
+        'maplat': './tmpl/web-bridge.js',
+        'maplat_packed': './tmpl/web-bridge_packed.js'
+    },
     output: {
         path: `${__dirname}/dist`,
-        filename: 'maplat.js'
+        filename: '[name].js'
     },
     module: {
         rules: [
