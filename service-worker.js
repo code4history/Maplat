@@ -25,11 +25,11 @@ workbox.core.clientsClaim();
 self.__precacheManifest = [
   {
     "url": ".",
-    "revision": "f668b4c2808d46d6aafe43aba5d409cc5dabefd1"
+    "revision": "8679945f740335da77be20cdddd40ce245e21316"
   },
   {
     "url": "dist/maplat.js",
-    "revision": "3fe5f7849a907d4bb7f24c2b3fdcf771"
+    "revision": "e5fbdae2e23f444997cb49d1af2f7323"
   },
   {
     "url": "dist/maplat.css",
@@ -181,23 +181,23 @@ self.__precacheManifest = [
   },
   {
     "url": "locales/en/translation.json",
-    "revision": "ad745a0e9498c8ab5ce3c4de1d7d702b"
+    "revision": "51c737eb68e17da165fbf5da4cf05a8b"
   },
   {
     "url": "locales/ja/translation.json",
-    "revision": "49a7c5594f870a657373e8aeb6be6994"
+    "revision": "00e22b59db6c62129ddca328320e7199"
   },
   {
     "url": "locales/ko/translation.json",
-    "revision": "ac4d3eff2f32346aea90d121e36f9ff1"
+    "revision": "5fafee636f68ae4e7322ebb9068de093"
   },
   {
     "url": "locales/zh-TW/translation.json",
-    "revision": "75a285a5bf91dc01bb767981d3c4480c"
+    "revision": "e5b3837886875a774d74f91080d60ccb"
   },
   {
     "url": "locales/zh/translation.json",
-    "revision": "89867297f82f55687537a35668ee4a6e"
+    "revision": "3a1daeda323e89e1947dc7e071bf757e"
   },
   {
     "url": "fonts/clarenbd-webfont.eot",
@@ -205,7 +205,7 @@ self.__precacheManifest = [
   },
   {
     "url": "fonts/clarenbd-webfont.svg",
-    "revision": "d2f37e259a79183317d620c38598d0c8"
+    "revision": "877daf82b367b4f2967fa7da9d13d747"
   },
   {
     "url": "fonts/clarenbd-webfont.ttf",
@@ -225,7 +225,7 @@ self.__precacheManifest = [
   },
   {
     "url": "fonts/fontawesome-webfont.svg",
-    "revision": "acf3dcb7ff752b5296ca23ba2c7c2606"
+    "revision": "912ec66d7572ff821749319396470bde"
   },
   {
     "url": "fonts/fontawesome-webfont.ttf",

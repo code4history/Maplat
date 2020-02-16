@@ -163,17 +163,17 @@ export class MaplatUi extends EventTarget {
         let pwaWorker = appOption.pwa_worker;
 
         // Add UI HTML Element
-        let newElems = createElement('<div class="ol-control map-title"><span></span></div>' +
-            '<div class="swiper-container ol-control base-swiper prevent-default-ui">' +
-            '<i class="fa fa-chevron-left swiper-left-icon" aria-hidden="true"></i>' +
-            '<i class="fa fa-chevron-right swiper-right-icon" aria-hidden="true"></i>' +
-            '<div class="swiper-wrapper"></div>' +
-            '</div>' +
-            '<div class="swiper-container ol-control overlay-swiper prevent-default-ui">' +
-            '<i class="fa fa-chevron-left swiper-left-icon" aria-hidden="true"></i>' +
-            '<i class="fa fa-chevron-right swiper-right-icon" aria-hidden="true"></i>' +
-            '<div class="swiper-wrapper"></div>' +
-            '</div>');
+        let newElems = createElement(`<div class="ol-control map-title"><span></span></div>
+<div class="swiper-container ol-control base-swiper prevent-default-ui">
+  <i class="fa fa-chevron-left swiper-left-icon" aria-hidden="true"></i>
+  <i class="fa fa-chevron-right swiper-right-icon" aria-hidden="true"></i>
+  <div class="swiper-wrapper"></div>
+</div>
+<div class="swiper-container ol-control overlay-swiper prevent-default-ui">
+  <i class="fa fa-chevron-left swiper-left-icon" aria-hidden="true"></i>
+  <i class="fa fa-chevron-right swiper-right-icon" aria-hidden="true"></i>
+  <div class="swiper-wrapper"></div>
+</div>`);
         for (let i=newElems.length - 1; i >= 0; i--) {
             ui.core.mapDivDocument.insertBefore(newElems[i], ui.core.mapDivDocument.firstChild);
         }
@@ -197,7 +197,7 @@ export class MaplatUi extends EventTarget {
         <h4 class="modal-title">
 
           <span class="modal_title"></span>
-          <span class="modal_load_title"></span>' +
+          <span class="modal_load_title"></span>
           <span class="modal_gpsW_title" data-i18n="html.acquiring_gps"></span>
           <span class="modal_help_title" data-i18n="html.help_title"></span>
           <span class="modal_share_title" data-i18n="html.share_title"></span>
@@ -210,7 +210,7 @@ export class MaplatUi extends EventTarget {
         <div class="modal_help_content">
           <div class="help_content">
             <span data-i18n-html="html.help_using_maplat"></span>
-            <p class="col-xs-12 help_img"><img src="parts/fullscreen.png"></p>
+            <p class="col-xs-12 help_img"><img src="${pointer['fullscreen.png']}"></p>
             <h4 data-i18n="html.help_operation_title"></h4>
             <p data-i18n-html="html.help_operation_content" class="recipient"></p>
             <h4 data-i18n="html.help_selection_title"></h4>
@@ -238,10 +238,10 @@ export class MaplatUi extends EventTarget {
             <iframe class="poi_iframe iframe_poi" frameborder="0" src=""></iframe>
           </div>
           <div class="poi_data hide">
-            <p class="col-xs-12 poi_img"><img class="poi_img_tag" src="parts/loading_image.png"></p>
+            <p class="col-xs-12 poi_img"><img class="poi_img_tag" src="${pointer['loading_image.png']}"></p>
             <p class="recipient poi_address"></p>
             <p class="recipient poi_desc"></p>
-          </div>' +
+          </div>
         </div>
 
         <div class="modal_share_content">
@@ -283,7 +283,7 @@ export class MaplatUi extends EventTarget {
         </div>
 
         <div class="modal_load_content">
-          <p class="recipient"><img src="parts/loading.png"><span data-i18n="html.app_loading_body"></span></p>
+          <p class="recipient"><img src="${pointer['loading.png']}"><span data-i18n="html.app_loading_body"></span></p>
           <div class="splash_div hide row"><p class="col-xs-12 poi_img"><img class="splash_img" src=""></p></div>
           <p><img src="" height="0px" width="0px"></p>
         </div>
@@ -414,17 +414,26 @@ export class MaplatUi extends EventTarget {
         }
 
         ui.core.addEventListener('uiPrepare', (evt) => { // eslint-disable-line no-unused-vars
+            const imageExtractor = function(text) {
+                const regexp = /\$\{([a-zA-Z0-9_\.\/\-]+)\}/g; // eslint-disable-line no-useless-escape
+                let ret = text;
+                let match;
+                while ((match = regexp.exec(text)) != null) {
+                    ret = ret.replace(match[0], pointer[match[1]]);
+                }
+                return ret;
+            };
             let i18nTargets = ui.core.mapDivDocument.querySelectorAll('[data-i18n]');
             for (let i=0; i<i18nTargets.length; i++) {
                 const target = i18nTargets[i];
                 const key = target.getAttribute('data-i18n');
-                target.innerText = ui.core.t(key);
+                target.innerText = imageExtractor(ui.core.t(key));
             }
             i18nTargets = ui.core.mapDivDocument.querySelectorAll('[data-i18n-html]');
             for (let i=0; i<i18nTargets.length; i++) {
                 const target = i18nTargets[i];
                 const key = target.getAttribute('data-i18n-html');
-                target.innerHTML = ui.core.t(key);
+                target.innerHTML = imageExtractor(ui.core.t(key));
             }
 
             const options = {reverse: true, tipLabel: ui.core.t('control.trans', {ns: 'translation'})};
@@ -727,7 +736,7 @@ export class MaplatUi extends EventTarget {
                 if (data.image && data.image != '') {
                     img.setAttribute('src', ui.resolveRelativeLink(data.image, 'img'));
                 } else {
-                    img.setAttribute('src', 'parts/no_image.png');
+                    img.setAttribute('src', pointer['no_image.png']);
                 }
                 ui.core.mapDivDocument.querySelector('.poi_address').innerText = ui.core.translate(data.address);
                 ui.core.mapDivDocument.querySelector('.poi_desc').innerHTML = ui.core.translate(data.desc).replace(/\n/g, '<br>');
@@ -742,7 +751,7 @@ export class MaplatUi extends EventTarget {
             const hiddenFunc = function(event) { // eslint-disable-line no-unused-vars
                 modalElm.removeEventListener('hidden.bs.modal', hiddenFunc, false);
                 const img = ui.core.mapDivDocument.querySelector('.poi_img_tag');
-                img.setAttribute('src', 'parts/loading_image.png');
+                img.setAttribute('src', pointer['loading_image.png']);
             };
             modalElm.addEventListener('hide.bs.modal', hideFunc, false);
             modalElm.addEventListener('hidden.bs.modal', hiddenFunc, false);
@@ -854,7 +863,7 @@ export class MaplatUi extends EventTarget {
                             ui.core.mapDivDocument.querySelector(`.${key}_div`).classList.remove('hide');
                             ui.core.mapDivDocument.querySelector(`.${key}_dd`).innerHTML =
                                 (key == 'license' || key == 'dataLicense') ?
-                                    `<img src="parts/${from[key].toLowerCase().replace(/ /g, '_')}.png">` :
+                                    `<img src="${pointer[`${from[key].toLowerCase().replace(/ /g, '_')}.png`]}">` :
                                     ui.core.translate(from[key]);
                         }
                     });
@@ -952,21 +961,20 @@ export class MaplatUi extends EventTarget {
                     const modalElm = ui.core.mapDivDocument.querySelector('.modalBase');
                     elem.innerHTML = '';
                     layers.map((layer, index) => {
-                        const icon = layer.icon || 'parts/defaultpin.png';
+                        const icon = layer.icon || pointer['defaultpin.png'];
                         const title = ui.core.translate(layer.name);
                         const check = !layer.hide;
                         const id = layer.namespace_id;
-                        const newElems = createElement(`${'<li class="list-group-item">' +
-                            '<div class="row">' +
-                            '<div class="col-sm-1"><img class="markerlist" src="'}${icon}"></div>` +
-                            `<div class="col-sm-9">${title}</div>` +
-                            `<div class="col-sm-2">` +
-                            `<input type="checkbox" class="markerlist" data="${id 
-                            }" id="___maplat_marker_${index}_${ui.html_id_seed}"${check ? ' checked' : ''}/>` +
-                            `<label class="check" for="___maplat_marker_${index}_${ui.html_id_seed}"><div></div></label>` +
-                            `</div>` +
-                            `</div>` +
-                            `</li>`);
+                        const newElems = createElement(`<li class="list-group-item">
+  <div class="row">
+    <div class="col-sm-1"><img class="markerlist" src="${icon}"></div>
+    <div class="col-sm-9">${title}</div>
+    <div class="col-sm-2">
+      <input type="checkbox" class="markerlist" data="${id}" id="___maplat_marker_${index}_${ui.html_id_seed}"${check ? ' checked' : ''}/>
+      <label class="check" for="___maplat_marker_${index}_${ui.html_id_seed}"><div></div></label>
+    </div>
+  </div>
+</li>`);
                         for (let i = 0; i < newElems.length; i++) {
                             elem.appendChild(newElems[i]);
                         }
