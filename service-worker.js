@@ -25,11 +25,11 @@ workbox.core.clientsClaim();
 self.__precacheManifest = [
   {
     "url": ".",
-    "revision": "8679945f740335da77be20cdddd40ce245e21316"
+    "revision": "9acebe9a04c7f22af105d97970875c0a5ad63dc6"
   },
   {
     "url": "dist/maplat.js",
-    "revision": "e5fbdae2e23f444997cb49d1af2f7323"
+    "revision": "d1d7b2fe71126a1200fa9673ad9ce447"
   },
   {
     "url": "dist/maplat.css",
@@ -120,6 +120,14 @@ self.__precacheManifest = [
     "revision": "3412cde5c94f55664fec8e21c6ade49b"
   },
   {
+    "url": "parts/gsi_ortho.jpg",
+    "revision": "38f4240db353696ab2c78792c2ea4e33"
+  },
+  {
+    "url": "parts/gsi.jpg",
+    "revision": "990dacb3d6fccfcc02c5bedbc411cb82"
+  },
+  {
     "url": "parts/help.png",
     "revision": "dcae0d7d90782d7ec5126c48158f2757"
   },
@@ -150,6 +158,10 @@ self.__precacheManifest = [
   {
     "url": "parts/no_image.png",
     "revision": "3eca7da567c5dcc0f0542e404feb6ecb"
+  },
+  {
+    "url": "parts/osm.jpg",
+    "revision": "6e73458310b44ea10ba8d4470a57ea2a"
   },
   {
     "url": "parts/overlay.png",

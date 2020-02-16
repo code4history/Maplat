@@ -19,7 +19,7 @@
     "www_build": "webpack",
     "zip_build": "gulp zip",
     "sw_build": "gulp sw_build",
-    "build": "npm run less_build && npm run www_build && npm run sw_build && npm run zip_build",
+    "build": "npm run freeze && npm run less_build && npm run www_build && npm run sw_build && npm run zip_build",
     "lint": "eslint src/",
     "preversion": "npm run lint",
     "version": "npm run build && git add -A",
