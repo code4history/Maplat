@@ -15,7 +15,7 @@
   ],
   "scripts": {
     "server": "gulp server",
-    "less_build": "lessc --clean-css less/ui.less dist/maplat.css",
+    "less_build": "lessc --clean-css less/ui.less dist/maplat.css && lessc --clean-css less/ui_packed.less dist/maplat_packed.css",
     "www_build": "webpack",
     "zip_build": "gulp zip",
     "sw_build": "gulp sw_build",

@@ -25,15 +25,15 @@ workbox.core.clientsClaim();
 self.__precacheManifest = [
   {
     "url": ".",
-    "revision": "53debbb7f935a8e894738df2993686c574e678d1"
+    "revision": "292655c2c1bc13c1a47da1d71a748b65c487bb69"
   },
   {
     "url": "dist/maplat.js",
-    "revision": "d15bc010900e0242d63f751833e13dc1"
+    "revision": "49d91ded7c030fdb78048c4c90f453ab"
   },
   {
     "url": "dist/maplat.css",
-    "revision": "838bdfe05456a7e816ee697fff9dc28d"
+    "revision": "d09d055c631ce27af8b44ac68989b003"
   },
   {
     "url": "parts/all_right_reserved.png",
@@ -193,63 +193,31 @@ self.__precacheManifest = [
   },
   {
     "url": "locales/en/translation.json",
-    "revision": "51c737eb68e17da165fbf5da4cf05a8b"
+    "revision": "0dd53e891cb14462d03632a211d7593b"
   },
   {
     "url": "locales/ja/translation.json",
-    "revision": "00e22b59db6c62129ddca328320e7199"
+    "revision": "4abfcf4d8d29b1ccc6a465f2e199fb09"
   },
   {
     "url": "locales/ko/translation.json",
-    "revision": "5fafee636f68ae4e7322ebb9068de093"
+    "revision": "ad0717663a4ff7bdb5e9788f459c06f6"
   },
   {
     "url": "locales/zh-TW/translation.json",
-    "revision": "e5b3837886875a774d74f91080d60ccb"
+    "revision": "e1cd2a44f3b332ca442bc4ee7538bf67"
   },
   {
     "url": "locales/zh/translation.json",
-    "revision": "3a1daeda323e89e1947dc7e071bf757e"
-  },
-  {
-    "url": "fonts/clarenbd-webfont.eot",
-    "revision": "7a3f8c05eb924cccdde0874dd522268e"
-  },
-  {
-    "url": "fonts/clarenbd-webfont.svg",
-    "revision": "877daf82b367b4f2967fa7da9d13d747"
-  },
-  {
-    "url": "fonts/clarenbd-webfont.ttf",
-    "revision": "f2d7485a4f532b7ad6bd14fc6afd55bb"
+    "revision": "ba7302a1e53698a65ad4384c818445c8"
   },
   {
     "url": "fonts/clarenbd-webfont.woff",
     "revision": "98ac5855d26c334c24e50ed178ce3e39"
   },
   {
-    "url": "fonts/clarenbd-webfont.woff2",
-    "revision": "5537c950cd889a13c0a685c106401bd8"
-  },
-  {
-    "url": "fonts/fontawesome-webfont.eot",
-    "revision": "674f50d287a8c48dc19ba404d20fe713"
-  },
-  {
-    "url": "fonts/fontawesome-webfont.svg",
-    "revision": "912ec66d7572ff821749319396470bde"
-  },
-  {
-    "url": "fonts/fontawesome-webfont.ttf",
-    "revision": "b06871f281fee6b241d60582ae9369b9"
-  },
-  {
     "url": "fonts/fontawesome-webfont.woff",
-    "revision": "fee66e712a8a08eef5805a46892932ad"
-  },
-  {
-    "url": "fonts/fontawesome-webfont.woff2",
-    "revision": "af7ae505a9eed503f8b8e6982036873e"
+    "revision": "1a78f1d571ba278ae1f9cdd54f5579f2"
   }
 ].concat(self.__precacheManifest || []);
 workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
