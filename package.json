@@ -15,15 +15,18 @@
   ],
   "scripts": {
     "server": "gulp server",
-    "less_build": "lessc --clean-css less/ui.less dist/maplat.css && lessc --clean-css less/ui_packed.less dist/maplat_packed.css",
+    "less_build": "lessc --clean-css less/ui.less dist/maplat.css",
+    "less_build_packed": "lessc --clean-css less/ui_packed.less dist_packed/maplat.css",
     "www_build": "webpack",
+    "www_build_packed": "webpack --config ./webpack.config.packed.js",
     "zip_build": "gulp zip",
     "sw_build": "gulp sw_build",
     "build": "npm run freeze && npm run less_build && npm run www_build && npm run sw_build && npm run zip_build",
+    "build_packed": "npm run freeze && npm run less_build_packed && npm run www_build_packed",
     "lint": "eslint src/",
     "preversion": "npm run lint",
     "version": "npm run build && git add -A",
-    "freeze": "node node_modules/@maplat/core/bin/freezer.js -s parts -f src/freeze_images.js -u src/pointer_images.js"
+    "freeze": "node node_modules/@maplat/core/bin/freezer.js -s parts -f src/freeze_images.js -u src/pointer_images.js && node node_modules/@maplat/core/bin/freezer.js -s locales -f src/freeze_locales.js -i"
   },
   "repository": {
     "type": "git",

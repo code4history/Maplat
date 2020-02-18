@@ -5,8 +5,7 @@ module.exports = {
     mode: 'production',
     devtool: 'source-map',
     entry: {
-        'maplat': './tmpl/web-bridge.js',
-        'maplat_packed': './tmpl/web-bridge_packed.js'
+        'maplat': './tmpl/web-bridge.js'
     },
     output: {
         path: `${__dirname}/dist`,
