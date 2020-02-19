@@ -47,7 +47,8 @@
     "@maplat/tin": "^0.6.3",
     "@turf/turf": "^5.1.6",
     "ol": "^6.1.1",
-    "ol5": "file:packages/ol5"
+    "ol5": "file:packages/ol5",
+    "swiper": "^5.3.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

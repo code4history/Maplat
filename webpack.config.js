@@ -15,7 +15,7 @@ module.exports = {
         rules: [
             {
                 test: /\.js$/,
-                exclude: /node_modules(?!\/@maplat\/)/,
+                exclude: /node_modules(?!\/(@maplat|swiper)\/)/,
                 use: {
                     loader: 'babel-loader',
                     query: {
