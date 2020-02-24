@@ -25,7 +25,7 @@
     "build_packed": "npm run freeze && npm run less_build_packed && npm run www_build_packed",
     "lint": "eslint src/",
     "preversion": "npm run lint",
-    "version": "npm run build && git add -A",
+    "version": "npm run build && npm run build_packed && git add -A",
     "freeze": "node node_modules/@maplat/core/bin/freezer.js -s parts -f src/freeze_images.js -u src/pointer_images.js && node node_modules/@maplat/core/bin/freezer.js -s locales -f src/freeze_locales.js -i"
   },
   "repository": {
