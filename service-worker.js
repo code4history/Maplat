@@ -25,15 +25,15 @@ workbox.core.clientsClaim();
 self.__precacheManifest = [
   {
     "url": ".",
-    "revision": "dd57fadfe9445555f7392bc5b05f464450a7806b"
+    "revision": "db2ad95c89ce3324c04675fa8a5104581b7d8a69"
   },
   {
     "url": "dist/maplat.js",
-    "revision": "669b25d87d9fbabef44d16d9be6f7371"
+    "revision": "d072edf295629287d9cdfdb6616454bc"
   },
   {
     "url": "dist/maplat.css",
-    "revision": "18d21803aed100bd626bb22739c1c04e"
+    "revision": "b93003e8c1c507d9940ed17f4bc68cb4"
   },
   {
     "url": "parts/all_right_reserved.png",

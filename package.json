@@ -1,6 +1,6 @@
 {
   "name": "@maplat/ui",
-  "version": "0.6.9-2",
+  "version": "0.6.9-3",
   "description": "Maplat is the cool Historical Map/Illustrated Map Viewer.\nIt can transform each map coordinates with nonlinear but homeomorphic projection and makes possible that the maps can collaborate with GPS/accurate maps, without distorting original maps.",
   "main": "src/index.js",
   "module": "src/index.js",
@@ -46,7 +46,7 @@
     "@maplat/core": "git+https://github.com/code4history/MaplatCore.git#dev",
     "@maplat/tin": "^0.6.3",
     "@turf/turf": "^5.1.6",
-    "ol": "^6.2.1",
+    "ol": "^6.1.1",
     "ol5": "file:packages/ol5",
     "swiper": "^5.3.1"
   },
