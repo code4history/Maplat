@@ -26,7 +26,7 @@
             "setting_file" : "maps/morioka_ndl.json",
             "label" : "1644 (Maplat)",
             "url" : "tiles/morioka_ndl/{z}/{x}/{y}.jpg",
-            "thumbnail" : "tmbs/morioka_ndl_menu.jpg"
+            "thumbnail" : "tmbs/morioka_ndl.jpg"
         },
         {
             "mapID"     : "morioka"

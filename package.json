@@ -15,6 +15,7 @@
   ],
   "scripts": {
     "server": "gulp server",
+    "stopserver": "gulp stopserver",
     "less_build": "lessc --clean-css less/ui.less dist/maplat.css",
     "less_build_packed": "lessc --clean-css less/ui_packed.less dist_packed/maplat.css",
     "www_build": "webpack",
@@ -43,7 +44,7 @@
   },
   "homepage": "https://github.com/code4history/Maplat/wiki",
   "dependencies": {
-    "@maplat/core": "git+https://github.com/code4history/MaplatCore.git#dev",
+    "@maplat/core": "github:code4history/MaplatCore#dev",
     "@maplat/tin": "^0.6.3",
     "@turf/turf": "^5.1.6",
     "ol": "^6.1.1",
@@ -68,7 +69,9 @@
     "jasmine": "^3.5.0",
     "less": "^3.11.1",
     "less-plugin-clean-css": "^1.5.1",
+    "psaux": "^0.4.0",
     "sha1": "^1.1.1",
+    "terminate": "^2.1.2",
     "webpack": "^4.41.6",
     "webpack-cli": "^3.3.11",
     "workbox-build": "^4.3.1"
