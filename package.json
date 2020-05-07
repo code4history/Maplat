@@ -44,7 +44,7 @@
   },
   "homepage": "https://github.com/code4history/Maplat/wiki",
   "dependencies": {
-    "@maplat/core": "github:code4history/MaplatCore#dev",
+    "@maplat/core": "^0.6.6",
     "@maplat/tin": "^0.6.3",
     "@turf/turf": "^5.1.6",
     "ol": "^6.1.1",
