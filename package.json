@@ -28,7 +28,7 @@
     "preversion": "npm run lint",
     "version": "npm run build && npm run build_packed && git add -A",
     "freeze": "node node_modules/@maplat/core/bin/freezer.js -s parts -f src/freeze_images.js -u src/pointer_images.js && node node_modules/@maplat/core/bin/freezer.js -s locales -f src/freeze_locales.js -i",
-    "preinstall": "npx npm-force-resolutions || true"
+    "preinstall": "npx npm-force-resolutions || echo 'ignore'"
   },
   "repository": {
     "type": "git",
@@ -45,8 +45,8 @@
   },
   "homepage": "https://github.com/code4history/Maplat/wiki",
   "dependencies": {
-    "@maplat/core": "^0.6.7",
-    "@maplat/tin": "^0.6.5",
+    "@maplat/core": "^0.6.8",
+    "@maplat/tin": "^0.6.6",
     "@turf/turf": "^5.1.6",
     "ol": "^6.1.1",
     "ol5": "npm:ol@^5.3.3",
