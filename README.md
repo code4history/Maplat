@@ -1,6 +1,13 @@
 ![Maplat Logo](https://code4history.github.io/Maplat/page_imgs/maplat.png)
 ![Maplat Catch Phrase](https://code4history.github.io/Maplat/page_imgs/homeomorphic.png)
 
+# 新聞記事を見て来られた方へ
+見てみたい内容で以下の遷移先へどうぞ！
+* 奈良の古地図アプリを見てみたい方は、[ぷらっと奈良](https://s.maplat.jp/r/naramap/)へ
+* Maplat技術の特徴を知りたい方は、[技術紹介pdf](https://code4history.github.io/maplat_flyer_ja.pdf)へ
+* Maplatライブラリの使い方を知りたい方は、[Qiitaの記事群](https://qiita.com/tags/maplat)へ
+* 開発元であるCode for Historyの活動を知りたい方は、[Code for Historyのページ](https://code4history.github.io/index_ja.html)へ
+
 Maplat is the cool Historical Map/Illustrated Map Viewer.  
 It can transform each map coordinates with nonlinear but homeomorphic projection and makes possible that the maps can collaborate with GPS/accurate maps, without distorting original maps.  
 Data editor of this solution is provided as another project, [MaplatEditor](https://github.com/code4history/MaplatEditor/).  
