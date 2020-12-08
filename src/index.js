@@ -44,7 +44,7 @@ export class MaplatUi extends EventTarget {
                     const line = state.split(':');
                     switch (line[0]) {
                         case 's':
-                            restore.sourceID = line[1];
+                            restore.mapID = line[1];
                             break;
                         case 'b':
                             restore.backgroundID = line[1];
@@ -80,13 +80,13 @@ export class MaplatUi extends EventTarget {
                     }
                 });
                 if (!ui.core) {
-                    if (restore.sourceID) {
+                    if (restore.mapID) {
                         appOption.restore = restore;
                     }
                     ui.initializer(appOption);
-                } else if (restore.sourceID) {
+                } else if (restore.mapID) {
                     ui.core.waitReady.then(() => {
-                        ui.core.changeMap(restore.sourceID, restore);
+                        ui.core.changeMap(restore.mapID, restore);
                     });
                 }
             });
@@ -125,7 +125,7 @@ export class MaplatUi extends EventTarget {
             ui.setShowBorder(false);
         }
 
-        const enableSplash = ui.core.initialRestore.sourceID ? false : true;
+        const enableSplash = ui.core.initialRestore.mapID ? false : true;
         const restoreTransparency = ui.core.initialRestore.transparency;
         const enableOutOfMap = appOption.presentation_mode ? false : true;
 
@@ -594,13 +594,13 @@ export class MaplatUi extends EventTarget {
             for (let i=0; i<baseSources.length; i++) {
                 const source = baseSources[i];
                 const colorCss = source.envelope ? ` ${source.envelopeColor}` : ''; // eslint-disable-line no-unused-vars
-                baseSwiper.appendSlide(`<div class="swiper-slide" data="${source.sourceID}">` +
+                baseSwiper.appendSlide(`<div class="swiper-slide" data="${source.mapID}">` +
                     `<img crossorigin="anonymous" src="${source.thumbnail}"><div>${ui.core.translate(source.label)}</div></div>`);
             }
             for (let i=0; i<overlaySources.length; i++) {
                 const source = overlaySources[i];
                 const colorCss = source.envelope ? ` ${source.envelopeColor}` : '';
-                overlaySwiper.appendSlide(`<div class="swiper-slide${colorCss}" data="${source.sourceID}">` +
+                overlaySwiper.appendSlide(`<div class="swiper-slide${colorCss}" data="${source.mapID}">` +
                     `<img crossorigin="anonymous" src="${source.thumbnail}"><div>${ui.core.translate(source.label)}</div></div>`);
             }
 
@@ -614,13 +614,13 @@ export class MaplatUi extends EventTarget {
         ui.core.addEventListener('mapChanged', (evt) => {
             const map = evt.detail;
 
-            ui.baseSwiper.setSlideMapID(map.sourceID);
-            ui.overlaySwiper.setSlideMapID(map.sourceID);
+            ui.baseSwiper.setSlideMapID(map.mapID);
+            ui.overlaySwiper.setSlideMapID(map.mapID);
 
             const title = map.officialTitle || map.title || map.label;
             ui.core.mapDivDocument.querySelector('.map-title span').innerText = ui.core.translate(title);
 
-            if (ui.checkOverlayID(map.sourceID)) {
+            if (ui.checkOverlayID(map.mapID)) {
                 ui.sliderCommon.setEnable(true);
             } else {
                 ui.sliderCommon.setEnable(false);
@@ -669,8 +669,8 @@ export class MaplatUi extends EventTarget {
                 return;
             }
 
-            ui.xyToSourceID(evt.detail, (sourceID) => {
-                ui.showFillEnvelope(sourceID);
+            ui.xyToMapID(evt.detail, (mapID) => {
+                ui.showFillEnvelope(mapID);
             });
         });
 
@@ -679,13 +679,13 @@ export class MaplatUi extends EventTarget {
                 return;
             }
 
-            ui.xyToSourceID(evt.detail, (sourceID) => {
-                if (ui.selectCandidate && ui.selectCandidate == sourceID) {
+            ui.xyToMapID(evt.detail, (mapID) => {
+                if (ui.selectCandidate && ui.selectCandidate == mapID) {
                     ui.core.changeMap(ui.selectCandidate);
                     delete ui.selectCandidate;
                     delete ui._selectCandidateSource;
                 } else {
-                    ui.showFillEnvelope(sourceID);
+                    ui.showFillEnvelope(mapID);
                 }
             });
         });
@@ -762,8 +762,8 @@ export class MaplatUi extends EventTarget {
         if (appOption.state_url) {
             ui.core.addEventListener('updateState', (evt) => {
                 const value = evt.detail;
-                if (!value.position || !value.sourceID) return;
-                let link = `s:${value.sourceID}`;
+                if (!value.position || !value.mapID) return;
+                let link = `s:${value.mapID}`;
                 if (value.backgroundID) link = `${link}/b:${value.backgroundID}`;
                 if (value.transparency) link = `${link}/t:${value.transparency}`;
                 link = `${link}/x:${value.position.x}/y:${value.position.y}`;
@@ -890,8 +890,8 @@ export class MaplatUi extends EventTarget {
                     const deleteFunc = function(evt) {
                         evt.preventDefault();
                         const from = ui.core.getMapMeta();
-                        ui.core.clearMapTileCacheAsync(from.sourceID, true).then(() => {
-                            ui.core.getMapTileCacheSizeAsync(from.sourceID).then(putTileCacheSize);
+                        ui.core.clearMapTileCacheAsync(from.mapID, true).then(() => {
+                            ui.core.getMapTileCacheSizeAsync(from.mapID).then(putTileCacheSize);
                         });
                     };
                     const hideFunc = function(event) { // eslint-disable-line no-unused-vars
@@ -900,7 +900,7 @@ export class MaplatUi extends EventTarget {
                     };
                     modalElm.addEventListener('hide.bs.modal', hideFunc, false);
 
-                    ui.core.getMapTileCacheSizeAsync(from.sourceID).then(putTileCacheSize);
+                    ui.core.getMapTileCacheSizeAsync(from.mapID).then(putTileCacheSize);
 
                     modal.show();
                     setTimeout(() => { // eslint-disable-line no-undef
@@ -1011,14 +1011,14 @@ export class MaplatUi extends EventTarget {
         });
     }
 
-    showFillEnvelope(sourceID) {
+    showFillEnvelope(mapID) {
         const ui = this;
-        if (sourceID && sourceID !== ui.core.from.sourceID) {
-            if (ui.selectCandidate != sourceID) {
+        if (mapID && mapID !== ui.core.from.mapID) {
+            if (ui.selectCandidate != mapID) {
                 if (ui._selectCandidateSource) {
                     ui.core.mapObject.removeEnvelope(ui._selectCandidateSource);
                 }
-                const source = ui.core.cacheHash[sourceID];
+                const source = ui.core.cacheHash[mapID];
                 const xyPromises = source.envelope.geometry.coordinates[0].map((coord) => ui.core.from.merc2XyAsync(coord));
                 const hexColor = source.envelopeColor;
                 let color = asArray(hexColor);
@@ -1027,9 +1027,9 @@ export class MaplatUi extends EventTarget {
                 Promise.all(xyPromises).then((xys) => {
                     ui._selectCandidateSource = ui.core.mapObject.setFillEnvelope(xys, null, {color});
                 });
-                ui.overlaySwiper.slideToMapID(sourceID);
+                ui.overlaySwiper.slideToMapID(mapID);
             }
-            ui.selectCandidate = sourceID;
+            ui.selectCandidate = mapID;
         } else {
             if (ui._selectCandidateSource) {
                 ui.core.mapObject.removeEnvelope(ui._selectCandidateSource);
@@ -1039,7 +1039,7 @@ export class MaplatUi extends EventTarget {
         }
     }
 
-    xyToSourceID(xy, callback) {
+    xyToMapID(xy, callback) {
         const ui = this;
         const point_ = point(xy);
         Promise.all(Object.keys(ui.core.cacheHash).filter((key) => ui.core.cacheHash[key].envelope).map((key) => {
@@ -1050,15 +1050,15 @@ export class MaplatUi extends EventTarget {
             ]);
         })).then((sources) => {
             let areaIndex;
-            const sourceID = sources.reduce((prev, curr) => {
+            const mapID = sources.reduce((prev, curr) => {
                 const source = curr[0];
                 const mercXys = curr[1];
-                if (source.sourceID == ui.core.from.sourceID) return prev;
+                if (source.mapID == ui.core.from.mapID) return prev;
                 const polygon_ = polygon([mercXys]);
                 if (booleanPointInPolygon(point_, polygon_)) {
                     if (!areaIndex || source.envelopeAreaIndex < areaIndex) {
                         areaIndex = source.envelopeAreaIndex;
-                        return source.sourceID;
+                        return source.mapID;
                     } else {
                         return prev;
                     }
@@ -1066,7 +1066,7 @@ export class MaplatUi extends EventTarget {
                     return prev;
                 }
             }, null);
-            callback(sourceID);
+            callback(mapID);
         });
     }
 
@@ -1106,7 +1106,7 @@ export class MaplatUi extends EventTarget {
         if (ui.core.stateBuffer.showBorder) {
             Object.keys(ui.core.cacheHash).filter((key) => ui.core.cacheHash[key].envelope).map((key) => {
                 const source = ui.core.cacheHash[key];
-                const xyPromises = (key == ui.core.from.sourceID) && (source instanceof HistMap) ?
+                const xyPromises = (key == ui.core.from.mapID) && (source instanceof HistMap) ?
                     [[0, 0], [source.width, 0], [source.width, source.height], [0, source.height], [0, 0]].map((xy) => Promise.resolve(source.xy2HistMapCoords(xy))) :
                     source.envelope.geometry.coordinates[0].map((coord) => ui.core.from.merc2XyAsync(coord));
 
