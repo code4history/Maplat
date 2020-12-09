@@ -25,11 +25,11 @@ workbox.core.clientsClaim();
 self.__precacheManifest = [
   {
     "url": ".",
-    "revision": "4194049a05e2a6dc4ad48008b32817b068328356"
+    "revision": "7208a7a1a124bfb0f83ae6bc19513cc0e68e704f"
   },
   {
     "url": "dist/maplat.js",
-    "revision": "f4866c94098c09ebfecf09fff5b525c6"
+    "revision": "44462f62d8289113cfb648c90091f4b7"
   },
   {
     "url": "dist/maplat.css",
