@@ -105,7 +105,7 @@ export class MaplatUi extends EventTarget {
         }
     }
 
-    initializer(appOption) {
+    async initializer(appOption) {
         const ui = this;
         appOption.translate_ui = true;
         ui.core = new Core(appOption);
