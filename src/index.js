@@ -367,6 +367,7 @@ export class MaplatUi extends EventTarget {
         }
 
         // PWA対応: 非同期処理
+        let waitWeiwudi
         if (pwaManifest) {
             if (pwaManifest === true) {
                 pwaManifest = `./pwa/${ui.core.appid}_manifest.json`;
@@ -383,7 +384,7 @@ export class MaplatUi extends EventTarget {
                 head.appendChild((createElement(`<link rel="manifest" href="${pwaManifest}">`))[0]);
             }
             // service workerが有効なら、service-worker.js を登録します
-            Weiwudi.registerSW(pwaWorker, {scope: pwaScope});
+            waitWeiwudi = Weiwudi.registerSW(pwaWorker, {scope: pwaScope});
 
             if (!head.querySelector('link[rel="apple-touch-icon"]')) {
                 const xhr = new XMLHttpRequest(); // eslint-disable-line no-undef
@@ -771,6 +772,10 @@ export class MaplatUi extends EventTarget {
                 ui.pathThatSet = link;
                 page(link);
             });
+        }
+
+        if (waitWeiwudi) {
+            await waitWeiwudi;
         }
 
         ui.waitReady = ui.core.waitReady.then(() => {
