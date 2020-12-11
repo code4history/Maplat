@@ -45,7 +45,7 @@
   },
   "homepage": "https://github.com/code4history/Maplat/wiki",
   "dependencies": {
-    "@maplat/core": "github:code4history/MaplatCore#2b6ed3e",
+    "@maplat/core": "github:code4history/MaplatCore#weiwudi",
     "@maplat/tin": "^0.6.7",
     "@turf/turf": "^5.1.6",
     "caniuse-lite": "^1.0.30001120",

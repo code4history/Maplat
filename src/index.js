@@ -842,7 +842,7 @@ export class MaplatUi extends EventTarget {
 
             let qr_app;
             let qr_view;
-            ui.core.mapObject.on('click_control', (evt) => {
+            ui.core.mapObject.on('click_control', async (evt) => {
                 const control = evt.frameState.control;
                 const modalElm = ui.core.mapDivDocument.querySelector('.modalBase');
                 const modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
@@ -887,12 +887,11 @@ export class MaplatUi extends EventTarget {
 
                     modalSetting('map');
                     const deleteButton = document.querySelector('.cache_delete'); // eslint-disable-line no-undef
-                    const deleteFunc = function(evt) {
+                    const deleteFunc = async function(evt) {
                         evt.preventDefault();
                         const from = ui.core.getMapMeta();
-                        ui.core.clearMapTileCacheAsync(from.mapID, true).then(() => {
-                            ui.core.getMapTileCacheSizeAsync(from.mapID).then(putTileCacheSize);
-                        });
+                        await ui.core.clearMapTileCacheAsync(from.mapID);
+                        putTileCacheSize(await ui.core.getMapTileCacheSizeAsync(from.mapID));
                     };
                     const hideFunc = function(event) { // eslint-disable-line no-unused-vars
                         deleteButton.removeEventListener('click', deleteFunc, false);
@@ -900,7 +899,7 @@ export class MaplatUi extends EventTarget {
                     };
                     modalElm.addEventListener('hide.bs.modal', hideFunc, false);
 
-                    ui.core.getMapTileCacheSizeAsync(from.mapID).then(putTileCacheSize);
+                    putTileCacheSize(await ui.core.getMapTileCacheSizeAsync(from.mapID));
 
                     modal.show();
                     setTimeout(() => { // eslint-disable-line no-undef
