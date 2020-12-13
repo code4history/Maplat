@@ -741,7 +741,7 @@ export class MaplatUi extends EventTarget {
             }
             const modalElm = ui.core.mapDivDocument.querySelector('.modalBase');
             const modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
-            ui.core.selectMarker(data.namespace_id);
+            ui.core.selectMarker(data.namespaceID);
             const hideFunc = function(event) { // eslint-disable-line no-unused-vars
                 modalElm.removeEventListener('hide.bs.modal', hideFunc, false);
                 ui.core.unselectMarker();
@@ -965,7 +965,7 @@ export class MaplatUi extends EventTarget {
                         const icon = layer.icon || pointer['defaultpin.png'];
                         const title = ui.core.translate(layer.name);
                         const check = !layer.hide;
-                        const id = layer.namespace_id;
+                        const id = layer.namespaceID;
                         const newElems = createElement(`<li class="list-group-item">
   <div class="row">
     <div class="col-sm-1"><img class="markerlist" src="${icon}"></div>
