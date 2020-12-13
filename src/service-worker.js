@@ -12,7 +12,7 @@
  */
 
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/5.1.4/workbox-sw.js");
-importScripts("https://cdn.jsdelivr.net/npm/weiwudi@0.0.8/src/weiwudi_sw.js");
+importScripts("https://cdn.jsdelivr.net/npm/weiwudi@0.0.10/src/weiwudi_sw.js");
 
 workbox.core.skipWaiting();
 
