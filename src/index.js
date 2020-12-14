@@ -388,7 +388,7 @@ export class MaplatUi extends EventTarget {
             // service workerが有効なら、service-worker.js を登録します
             try {
                 waitWeiwudi = Weiwudi.registerSW(pwaWorker, {scope: pwaScope});
-            } catch(e) {}
+            } catch(e) {} // eslint-disable-line no-empty
 
             if (!head.querySelector('link[rel="apple-touch-icon"]')) {
                 const xhr = new XMLHttpRequest(); // eslint-disable-line no-undef
