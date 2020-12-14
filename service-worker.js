@@ -12,7 +12,7 @@
  */
 
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/5.1.4/workbox-sw.js");  // eslint-disable-line no-undef
-importScripts("https://cdn.jsdelivr.net/npm/weiwudi@0.0.11/src/weiwudi_sw.js");  // eslint-disable-line no-undef
+importScripts("https://cdn.jsdelivr.net/npm/weiwudi@0.0.12/src/weiwudi_sw.js");  // eslint-disable-line no-undef
 
 workbox.core.skipWaiting(); // eslint-disable-line no-undef
 
