@@ -48,6 +48,7 @@
     "@maplat/core": "github:code4history/MaplatCore#iospwa",
     "@maplat/tin": "^0.6.7",
     "@turf/turf": "^5.1.6",
+    "bootstrap.native": "^3.0.14",
     "caniuse-lite": "^1.0.30001120",
     "lodash.template": "^4.5.0",
     "ol": "^6.1.1",
