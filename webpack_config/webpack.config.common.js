@@ -20,7 +20,7 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
-        exclude: /node_modules(?!\/(@maplat|swiper|dom7)\/)/,
+        exclude: /node_modules(?![\/\\](@maplat|swiper|dom7|weiwudi)[\/\\])/,
         loader: 'babel-loader',
       }
     ]
