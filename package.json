@@ -45,7 +45,7 @@
   },
   "homepage": "https://github.com/code4history/Maplat/wiki",
   "dependencies": {
-    "@maplat/core": "github:code4history/MaplatCore#iospwa",
+    "@maplat/core": "^0.7.2",
     "@maplat/tin": "^0.6.7",
     "@turf/turf": "^5.1.6",
     "bootstrap.native": "^3.0.14",
@@ -54,7 +54,7 @@
     "ol": "^6.1.1",
     "ol5": "npm:ol@^5.3.3",
     "swiper": "^5.3.1",
-    "weiwudi": "github:code4history/Weiwudi#iospwa"
+    "weiwudi": "^0.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.8",
