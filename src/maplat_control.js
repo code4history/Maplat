@@ -207,14 +207,12 @@ export class SliderCommon extends Control {
     this.sliderInitialized_ = true;
   }
 
-  widthLimit_(event) {
-    // eslint-disable-line no-unused-vars
+  widthLimit_(_event) {
     const container = this.element;
     return container.offsetWidth - this.thumbSize_[0];
   }
 
-  heightLimit_(event) {
-    // eslint-disable-line no-unused-vars
+  heightLimit_(_event) {
     const container = this.element;
     return container.offsetHeight - this.thumbSize_[1];
   }
@@ -279,8 +277,7 @@ export class SliderCommon extends Control {
    * @param {ol.pointer.PointerEvent|Event} event The drag event.
    * @private
    */
-  handleDraggerEnd_(event) {
-    // eslint-disable-line no-unused-vars
+  handleDraggerEnd_(_event) {
     if (this.dragging_) {
       const view = this.getMap().getView();
       view.setHint(ViewHint.INTERACTING, -1);

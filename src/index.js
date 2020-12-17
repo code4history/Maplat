@@ -40,8 +40,7 @@ export class MaplatUi extends EventTarget {
     ui.html_id_seed = `${Math.floor(Math.random() * 9000) + 1000}`;
 
     if (appOption.stateUrl) {
-      page((ctx, next) => {
-        // eslint-disable-line no-unused-vars
+      page((ctx, _next) => {
         let pathes = ctx.canonicalPath.split("#!");
         let path = pathes.length > 1 ? pathes[1] : pathes[0];
         pathes = path.split("?");
@@ -114,8 +113,7 @@ export class MaplatUi extends EventTarget {
         hashbang: true
       });
       page();
-      ui.waitReady = new Promise((resolve, reject) => {
-        // eslint-disable-line no-unused-vars
+      ui.waitReady = new Promise((resolve, _reject) => {
         ui.waitReadyBridge = resolve;
       });
     } else {
@@ -455,8 +453,7 @@ export class MaplatUi extends EventTarget {
         xhr.open("GET", pwaManifest, true);
         xhr.responseType = "json";
 
-        xhr.onload = function (e) {
-          // eslint-disable-line no-unused-vars
+        xhr.onload = function (_e) {
           let value = this.response;
           if (!value) return;
           if (typeof value != "object") value = JSON.parse(value);
@@ -474,8 +471,7 @@ export class MaplatUi extends EventTarget {
       }
     }
 
-    ui.core.addEventListener("uiPrepare", evt => {
-      // eslint-disable-line no-unused-vars
+    ui.core.addEventListener("uiPrepare", _evt => {
       const imageExtractor = function (text) {
         const regexp = /\$\{([a-zA-Z0-9_\.\/\-]+)\}/g; // eslint-disable-line no-useless-escape
         let ret = text;
@@ -723,7 +719,6 @@ export class MaplatUi extends EventTarget {
 
       for (let i = 0; i < baseSources.length; i++) {
         const source = baseSources[i];
-        const colorCss = source.envelope ? ` ${source.envelopeColor}` : ""; // eslint-disable-line no-unused-vars
         baseSwiper.appendSlide(
           `<div class="swiper-slide" data="${source.mapID}">` +
             `<img crossorigin="anonymous" src="${
@@ -780,8 +775,7 @@ export class MaplatUi extends EventTarget {
       }
     });
 
-    ui.core.addEventListener("outOfMap", evt => {
-      // eslint-disable-line no-unused-vars
+    ui.core.addEventListener("outOfMap", _evt => {
       if (enableOutOfMap) {
         ui.core.mapDivDocument.querySelector(
           ".modal_title"
@@ -796,8 +790,7 @@ export class MaplatUi extends EventTarget {
       }
     });
 
-    ui.core.mapDivDocument.addEventListener("mouseout", evt => {
-      // eslint-disable-line no-unused-vars
+    ui.core.mapDivDocument.addEventListener("mouseout", _evt => {
       delete ui.selectCandidate;
       if (ui._selectCandidateSource) {
         ui.core.mapObject.removeEnvelope(ui._selectCandidateSource);
@@ -902,13 +895,11 @@ export class MaplatUi extends EventTarget {
       const modalElm = ui.core.mapDivDocument.querySelector(".modalBase");
       const modal = new bsn.Modal(modalElm, { root: ui.core.mapDivDocument });
       ui.core.selectMarker(data.namespaceID);
-      const hideFunc = function (event) {
-        // eslint-disable-line no-unused-vars
+      const hideFunc = function (_event) {
         modalElm.removeEventListener("hide.bs.modal", hideFunc, false);
         ui.core.unselectMarker();
       };
-      const hiddenFunc = function (event) {
-        // eslint-disable-line no-unused-vars
+      const hiddenFunc = function (_event) {
         modalElm.removeEventListener("hidden.bs.modal", hiddenFunc, false);
         const img = ui.core.mapDivDocument.querySelector(".poi_img_tag");
         img.setAttribute("src", pointer["loading_image.png"]);
@@ -1085,8 +1076,7 @@ export class MaplatUi extends EventTarget {
               await ui.core.getMapTileCacheSizeAsync(from.mapID)
             );
           };
-          const hideFunc = function (event) {
-            // eslint-disable-line no-unused-vars
+          const hideFunc = function (_event) {
             deleteButton.removeEventListener("click", deleteFunc, false);
             modalElm.removeEventListener("hide.bs.modal", hideFunc, false);
           };
@@ -1196,8 +1186,7 @@ export class MaplatUi extends EventTarget {
               if (checked) ui.core.showPoiLayer(id);
               else ui.core.hidePoiLayer(id);
             };
-            const hideFunc = function (event) {
-              // eslint-disable-line no-unused-vars
+            const hideFunc = function (_event) {
               modalElm.removeEventListener("hide.bs.modal", hideFunc, false);
               checkbox.removeEventListener("change", checkFunc, false);
             };
