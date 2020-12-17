@@ -8,8 +8,14 @@ img
 pwa
 tmbs
 index.html
+index_packed.html
+webpack_config
 service-worker.js
-webpack.config.standard.js
 gulpfile.js
+server.js
+jest.config.js
+babel.config.js
+.eslintrc.json
+.prettierrc
 distribution.zip
 example.zip
