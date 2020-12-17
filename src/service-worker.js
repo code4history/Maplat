@@ -11,8 +11,8 @@
  * See https://goo.gl/2aRDsh
  */
 
+// eslint-disable-next-line no-undef
 importScripts(
-  // eslint-disable-line no-undef
   "https://storage.googleapis.com/workbox-cdn/releases/5.1.4/workbox-sw.js"
 );
 importScripts("https://cdn.jsdelivr.net/npm/weiwudi@0.1.0/src/weiwudi_sw.js"); // eslint-disable-line no-undef
@@ -27,15 +27,15 @@ workbox.core.clientsClaim(); // eslint-disable-line no-undef
  * See https://goo.gl/S9QRab
  */
 workbox.precaching.precacheAndRoute(self.__WB_MANIFEST, {}); // eslint-disable-line no-undef
+// eslint-disable-next-line no-undef
 workbox.routing.registerRoute(
-  // eslint-disable-line no-undef
   /(?:maps\/.+\.json|pwa\/.+|pois\/.+\.json|apps\/.+\.json|tmbs\/.+_menu\.jpg|img\/.+\.(?:png|jpg))$/,
+  // eslint-disable-next-line no-undef
   new workbox.strategies.StaleWhileRevalidate({
-    // eslint-disable-line no-undef
     cacheName: "resourcesCache",
     plugins: [
+      // eslint-disable-next-line no-undef
       new workbox.expiration.ExpirationPlugin({
-        // eslint-disable-line no-undef
         maxAgeSeconds: 86400,
         purgeOnQuotaError: false
       })
