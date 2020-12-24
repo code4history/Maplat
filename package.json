@@ -44,12 +44,13 @@
   },
   "homepage": "https://github.com/code4history/Maplat/wiki",
   "dependencies": {
-    "@maplat/core": "^0.6.6",
+    "@maplat/core": "github:code4history/MaplatCore#fetch_IE",
     "@maplat/tin": "^0.6.3",
     "@turf/turf": "^5.1.6",
     "ol": "^6.1.1",
     "ol5": "file:packages/ol5",
-    "swiper": "^5.3.1"
+    "swiper": "^5.3.1",
+    "weiwudi": "^0.1.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",

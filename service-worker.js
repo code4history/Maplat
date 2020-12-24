@@ -25,11 +25,11 @@ workbox.core.clientsClaim();
 self.__precacheManifest = [
   {
     "url": ".",
-    "revision": "cc1125556464e5e0730850811b8152b2468cc045"
+    "revision": "123a4134143d018ad177ff6a2a5d8a57b68d2170"
   },
   {
     "url": "dist/maplat.js",
-    "revision": "add5e961ec7448e230bb88cfc4fe22a4"
+    "revision": "b64cd79c1734050d214297105656e965"
   },
   {
     "url": "dist/maplat.css",
@@ -193,23 +193,23 @@ self.__precacheManifest = [
   },
   {
     "url": "locales/en/translation.json",
-    "revision": "51c737eb68e17da165fbf5da4cf05a8b"
+    "revision": "0dd53e891cb14462d03632a211d7593b"
   },
   {
     "url": "locales/ja/translation.json",
-    "revision": "00e22b59db6c62129ddca328320e7199"
+    "revision": "4abfcf4d8d29b1ccc6a465f2e199fb09"
   },
   {
     "url": "locales/ko/translation.json",
-    "revision": "5fafee636f68ae4e7322ebb9068de093"
+    "revision": "ad0717663a4ff7bdb5e9788f459c06f6"
   },
   {
     "url": "locales/zh-TW/translation.json",
-    "revision": "e5b3837886875a774d74f91080d60ccb"
+    "revision": "e1cd2a44f3b332ca442bc4ee7538bf67"
   },
   {
     "url": "locales/zh/translation.json",
-    "revision": "3a1daeda323e89e1947dc7e071bf757e"
+    "revision": "ba7302a1e53698a65ad4384c818445c8"
   },
   {
     "url": "fonts/clarenbd-webfont.woff",
