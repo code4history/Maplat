@@ -2,7 +2,7 @@ import { absoluteUrl } from './absolute_url';
 import { Swiper } from './swiper_ex';
 import EventTarget from 'ol/events/Target';
 import page from '../legacy/page';
-import bsn from 'bootstrap.native';
+import bsn from '../legacy/bootstrap-native';
 import { MaplatApp as Core, createElement } from '@maplat/core';
 import iziToast from '../legacy/iziToast';
 import QRCode from '../legacy/qrcode';
