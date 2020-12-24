@@ -386,7 +386,9 @@ export class MaplatUi extends EventTarget {
                 head.appendChild((createElement(`<link rel="manifest" href="${pwaManifest}">`))[0]);
             }
             // service workerが有効なら、service-worker.js を登録します
-            Weiwudi.registerSW(pwaWorker, {scope: pwaScope});
+            try {
+                Weiwudi.registerSW(pwaWorker, {scope: pwaScope});
+            } catch(e) {} // eslint-disable-line no-empty
 
             if (!head.querySelector('link[rel="apple-touch-icon"]')) {
                 const xhr = new XMLHttpRequest(); // eslint-disable-line no-undef
