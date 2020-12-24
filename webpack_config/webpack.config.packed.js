@@ -13,4 +13,8 @@ module.exports = merge(common, {
     path: path.resolve(__dirname, "../dist_packed"),
     filename: '[name].js'
   },
+
+  devServer: {
+    openPage: "index_packed.html",
+  }
 });
