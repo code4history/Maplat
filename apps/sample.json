@@ -31,7 +31,11 @@
         {
             "mapID"     : "morioka"
         },
-        "osm"
+        "osm",
+        {
+            "mapID" : "mapbox",
+            "label" : "Mapbox"
+        }
     ], 
     "pois" : "morioka_all_poi.json"
 }
