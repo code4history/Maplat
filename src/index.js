@@ -10,14 +10,13 @@ import { point, polygon } from '@turf/helpers';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import sprintf from '../legacy/sprintf';
 import { META_KEYS } from '@maplat/core/src/source_ex';
-import { NowMap } from '@maplat/core/src/source/nowmap';
-import { TmsMap } from '@maplat/core/src/source/tmsmap';
 import { Copyright, CompassRotate, SetGPS, GoHome, Maplat, Border, HideMarker, SliderCommon, Share } from './maplat_control';
 import { Zoom } from 'ol/control';
 import { asArray } from 'ol/color';
 import { HistMap } from '@maplat/core/src/source/histmap';
+import { TmsMap } from '@maplat/core/src/source/tmsmap';
+import { NowMap } from '@maplat/core/src/source/nowmap';
 import pointer from './pointer_images';
-import { normalizeArg } from "@maplat/core/src/functions";
 
 // Maplat UI Class
 export class MaplatUi extends EventTarget {

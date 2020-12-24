@@ -1,11 +1,13 @@
-var MaplatUi = require('../src/index_packed').MaplatUi;
+import {MaplatUi} from "../src/index_packed";
+// eslint-disable-next-line no-undef
+const Maplat = window.Maplat = {};
 
-var Maplat = window.Maplat = {};
-Maplat.createObject = function(option) {
-    return new Promise(function(resolve) {
-        var app = new MaplatUi(option);
-        app.waitReady.then(function() {
-            resolve(app);
-        });
+// eslint-disable-next-line arrow-body-style
+Maplat.createObject = (option) => {
+  return new Promise(((resolve) => {
+    const app = new MaplatUi(option);
+    app.waitReady.then(() => {
+      resolve(app);
     });
+  }));
 };

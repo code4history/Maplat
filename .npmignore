@@ -9,7 +9,7 @@ pwa
 tmbs
 index.html
 service-worker.js
-webpack.config.js
+webpack.config.standard.js
 gulpfile.js
 distribution.zip
 example.zip
