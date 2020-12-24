@@ -4,16 +4,18 @@ const pjson = require('./package.json');
 module.exports = {
     mode: 'production',
     devtool: 'source-map',
-    entry: ['./tmpl/web-bridge.js'],
+    entry: {
+        'maplat': './tmpl/web-bridge.js'
+    },
     output: {
         path: `${__dirname}/dist`,
-        filename: 'maplat.js'
+        filename: '[name].js'
     },
     module: {
         rules: [
             {
                 test: /\.js$/,
-                exclude: /node_modules(?![\\\/]@maplat[\\\/])/,
+                exclude: /node_modules(?![\\\/](@maplat|swiper|dom7)[\\\/])/,
                 use: {
                     loader: 'babel-loader',
                     query: {

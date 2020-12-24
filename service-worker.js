@@ -25,15 +25,15 @@ workbox.core.clientsClaim();
 self.__precacheManifest = [
   {
     "url": ".",
-    "revision": "6670246773224490c0b9ed54beb2ec732790c15b"
+    "revision": "cc1125556464e5e0730850811b8152b2468cc045"
   },
   {
     "url": "dist/maplat.js",
-    "revision": "ffecc6e223b84fd1417d1347278796c9"
+    "revision": "add5e961ec7448e230bb88cfc4fe22a4"
   },
   {
     "url": "dist/maplat.css",
-    "revision": "838bdfe05456a7e816ee697fff9dc28d"
+    "revision": "b93003e8c1c507d9940ed17f4bc68cb4"
   },
   {
     "url": "parts/all_right_reserved.png",
@@ -120,6 +120,14 @@ self.__precacheManifest = [
     "revision": "3412cde5c94f55664fec8e21c6ade49b"
   },
   {
+    "url": "parts/gsi_ortho.jpg",
+    "revision": "38f4240db353696ab2c78792c2ea4e33"
+  },
+  {
+    "url": "parts/gsi.jpg",
+    "revision": "990dacb3d6fccfcc02c5bedbc411cb82"
+  },
+  {
     "url": "parts/help.png",
     "revision": "dcae0d7d90782d7ec5126c48158f2757"
   },
@@ -152,6 +160,10 @@ self.__precacheManifest = [
     "revision": "3eca7da567c5dcc0f0542e404feb6ecb"
   },
   {
+    "url": "parts/osm.jpg",
+    "revision": "6e73458310b44ea10ba8d4470a57ea2a"
+  },
+  {
     "url": "parts/overlay.png",
     "revision": "bb91fb788e85eb2f80901951fd6790cc"
   },
@@ -181,63 +193,31 @@ self.__precacheManifest = [
   },
   {
     "url": "locales/en/translation.json",
-    "revision": "ad745a0e9498c8ab5ce3c4de1d7d702b"
+    "revision": "51c737eb68e17da165fbf5da4cf05a8b"
   },
   {
     "url": "locales/ja/translation.json",
-    "revision": "77fa6efd02486e4829f3ff12a96ed9d2"
+    "revision": "00e22b59db6c62129ddca328320e7199"
   },
   {
     "url": "locales/ko/translation.json",
-    "revision": "ac4d3eff2f32346aea90d121e36f9ff1"
+    "revision": "5fafee636f68ae4e7322ebb9068de093"
   },
   {
     "url": "locales/zh-TW/translation.json",
-    "revision": "75a285a5bf91dc01bb767981d3c4480c"
+    "revision": "e5b3837886875a774d74f91080d60ccb"
   },
   {
     "url": "locales/zh/translation.json",
-    "revision": "89867297f82f55687537a35668ee4a6e"
-  },
-  {
-    "url": "fonts/clarenbd-webfont.eot",
-    "revision": "7a3f8c05eb924cccdde0874dd522268e"
-  },
-  {
-    "url": "fonts/clarenbd-webfont.svg",
-    "revision": "d2f37e259a79183317d620c38598d0c8"
-  },
-  {
-    "url": "fonts/clarenbd-webfont.ttf",
-    "revision": "f2d7485a4f532b7ad6bd14fc6afd55bb"
+    "revision": "3a1daeda323e89e1947dc7e071bf757e"
   },
   {
     "url": "fonts/clarenbd-webfont.woff",
     "revision": "98ac5855d26c334c24e50ed178ce3e39"
   },
   {
-    "url": "fonts/clarenbd-webfont.woff2",
-    "revision": "5537c950cd889a13c0a685c106401bd8"
-  },
-  {
-    "url": "fonts/fontawesome-webfont.eot",
-    "revision": "674f50d287a8c48dc19ba404d20fe713"
-  },
-  {
-    "url": "fonts/fontawesome-webfont.svg",
-    "revision": "acf3dcb7ff752b5296ca23ba2c7c2606"
-  },
-  {
-    "url": "fonts/fontawesome-webfont.ttf",
-    "revision": "b06871f281fee6b241d60582ae9369b9"
-  },
-  {
     "url": "fonts/fontawesome-webfont.woff",
-    "revision": "fee66e712a8a08eef5805a46892932ad"
-  },
-  {
-    "url": "fonts/fontawesome-webfont.woff2",
-    "revision": "af7ae505a9eed503f8b8e6982036873e"
+    "revision": "1a78f1d571ba278ae1f9cdd54f5579f2"
   }
 ].concat(self.__precacheManifest || []);
 workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
