@@ -17,6 +17,7 @@ import { HistMap } from '@maplat/core/src/source/histmap';
 import { TmsMap } from '@maplat/core/src/source/tmsmap';
 import { NowMap } from '@maplat/core/src/source/nowmap';
 import pointer from './pointer_images';
+import Weiwudi from "weiwudi";
 
 // Maplat UI Class
 export class MaplatUi extends EventTarget {
@@ -163,6 +164,7 @@ export class MaplatUi extends EventTarget {
 
         let pwaManifest = appOption.pwa_manifest;
         let pwaWorker = appOption.pwa_worker;
+        let pwaScope = appOption.pwa_scope;
 
         // Add UI HTML Element
         let newElems = createElement(`<div class="ol-control map-title"><span></span></div>
@@ -373,25 +375,16 @@ export class MaplatUi extends EventTarget {
             if (!pwaWorker) {
                 pwaWorker = './service-worker.js';
             }
+            if (!pwaScope) {
+                pwaScope = './';
+            }
 
             const head = document.querySelector('head'); // eslint-disable-line no-undef
             if (!head.querySelector('link[rel="manifest"]')) {
                 head.appendChild((createElement(`<link rel="manifest" href="${pwaManifest}">`))[0]);
             }
             // service workerが有効なら、service-worker.js を登録します
-            if ('serviceWorker' in navigator) { // eslint-disable-line no-undef
-                navigator.serviceWorker.register(pwaWorker).then((reg) => { // eslint-disable-line no-undef
-                    console.log('Service Worker Registered'); // eslint-disable-line no-undef
-                    reg.onupdatefound = function() {
-                        console.log('Found Service Worker update'); // eslint-disable-line no-undef
-                        reg.update().catch((e) => {
-                            throw e;
-                        });
-                    };
-                }).catch((err) => {
-                    console.log(err); // eslint-disable-line no-undef
-                });
-            }
+            Weiwudi.registerSW(pwaWorker, {scope: pwaScope});
 
             if (!head.querySelector('link[rel="apple-touch-icon"]')) {
                 const xhr = new XMLHttpRequest(); // eslint-disable-line no-undef

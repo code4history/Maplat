@@ -21,7 +21,7 @@
     "www_build": "webpack --color --progress --config ./webpack_config/webpack.config.standard.js",
     "www_build_packed": "webpack --config ./webpack_config/webpack.config.packed.js",
     "zip_build": "gulp zip",
-    "sw_build": "gulp sw_build",
+    "sw_build": "workbox injectManifest",
     "build": "npm run freeze && npm run less_build && npm run www_build && npm run sw_build && npm run zip_build",
     "build_packed": "npm run freeze && npm run less_build_packed && npm run www_build_packed",
     "lint": "eslint src/",
@@ -82,7 +82,8 @@
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.11",
     "webpack-merge": "^5.4.0",
-    "workbox-build": "^4.3.1",
+    "workbox-build": "^5.1.4",
+    "workbox-cli": "^5.1.4",
     "yargs-parser": "^18.1.3"
   },
   "resolutions": {
