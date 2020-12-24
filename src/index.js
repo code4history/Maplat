@@ -314,7 +314,8 @@ export class MaplatUi extends EventTarget {
                 if (!btn.classList.contains('share')) btn = btn.parentElement;
                 const cmd = btn.getAttribute('data');
                 const cmds = cmd.split('_');
-                const base = evt.target.baseURI;
+                let base = evt.target.baseURI;
+                if (!base) base = window.location.href;
                 const div1 = base.split('#!');
                 const path = div1.length > 1 ? (div1[1].split('?'))[0] : '';
                 const div2 = div1[0].split('?');
@@ -594,14 +595,12 @@ export class MaplatUi extends EventTarget {
                 ui.core.mapDivDocument.querySelector('.overlay-swiper').classList.add('single-map');
             }
 
-            console.log(baseSources);
             for (let i=0; i<baseSources.length; i++) {
                 const source = baseSources[i];
                 const colorCss = source.envelope ? ` ${source.envelopeColor}` : ''; // eslint-disable-line no-unused-vars
                 baseSwiper.appendSlide(`<div class="swiper-slide" data="${source.mapID}">` +
                     `<img crossorigin="anonymous" src="${source.thumbnail}"><div>${ui.core.translate(source.label)}</div></div>`);
             }
-            console.log(overlaySources);
             for (let i=0; i<overlaySources.length; i++) {
                 const source = overlaySources[i];
                 const colorCss = source.envelope ? ` ${source.envelopeColor}` : '';
@@ -724,7 +723,6 @@ export class MaplatUi extends EventTarget {
                     iframe.addEventListener('load', function loadEvent(event) {
                         event.currentTarget.removeEventListener(event.type, loadEvent);
                         const cssLink = createElement('<style type="text/css">html, body { height: 100vh; }\n img { width: 100vw; }</style>');
-                        console.log(cssLink); // eslint-disable-line no-undef
                         iframe.contentDocument.head.appendChild(cssLink[0]);
                     });
                     iframe.removeAttribute('src');
@@ -748,7 +746,7 @@ export class MaplatUi extends EventTarget {
             }
             const modalElm = ui.core.mapDivDocument.querySelector('.modalBase');
             const modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
-            ui.core.selectMarker(data.namespace_id);
+            ui.core.selectMarker(data.namespaceID);
             const hideFunc = function(event) { // eslint-disable-line no-unused-vars
                 modalElm.removeEventListener('hide.bs.modal', hideFunc, false);
                 ui.core.unselectMarker();
@@ -969,7 +967,7 @@ export class MaplatUi extends EventTarget {
                         const icon = layer.icon || pointer['defaultpin.png'];
                         const title = ui.core.translate(layer.name);
                         const check = !layer.hide;
-                        const id = layer.namespace_id;
+                        const id = layer.namespaceID;
                         const newElems = createElement(`<li class="list-group-item">
   <div class="row">
     <div class="col-sm-1"><img class="markerlist" src="${icon}"></div>
