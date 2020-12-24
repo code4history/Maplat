@@ -105,7 +105,7 @@ export class MaplatUi extends EventTarget {
         }
     }
 
-    initializer(appOption) {
+    async initializer(appOption) {
         const ui = this;
         appOption.translate_ui = true;
         ui.core = new Core(appOption);
@@ -470,7 +470,7 @@ export class MaplatUi extends EventTarget {
 
                 const modalElm = ui.core.mapDivDocument.querySelector('.modalBase');
                 const modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
-                ui.core.mapDivDocument.querySelector('.modal_load_title').innerText = ui.core.translate(ui.core.appData.app_name);
+                ui.core.mapDivDocument.querySelector('.modal_load_title').innerText = ui.core.translate(ui.core.appData.appName);
                 if (splash) {
                     ui.core.mapDivDocument.querySelector('.splash_img').setAttribute('src', `img/${ui.core.appData.splash}`);
                     ui.core.mapDivDocument.querySelector('.splash_div').classList.remove('hide');
