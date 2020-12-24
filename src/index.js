@@ -18,16 +18,18 @@ import { TmsMap } from '@maplat/core/src/source/tmsmap';
 import { NowMap } from '@maplat/core/src/source/nowmap';
 import pointer from './pointer_images';
 import Weiwudi from "weiwudi";
+import {normalizeArg} from "./function";
 
 // Maplat UI Class
 export class MaplatUi extends EventTarget {
     constructor(appOption) {
         super();
+        appOption = normalizeArg(appOption);
 
         const ui = this;
         ui.html_id_seed = `${Math.floor( Math.random() * 9000 ) + 1000}`;
 
-        if (appOption.state_url) {
+        if (appOption.stateUrl) {
             page((ctx, next) => { // eslint-disable-line no-unused-vars
                 let pathes = ctx.canonicalPath.split('#!');
                 let path = pathes.length > 1 ? pathes[1] : pathes[0];
@@ -107,7 +109,7 @@ export class MaplatUi extends EventTarget {
 
     async initializer(appOption) {
         const ui = this;
-        appOption.translate_ui = true;
+        appOption.translateUI = true;
         ui.core = new Core(appOption);
 
         if (appOption.restore) {
@@ -115,7 +117,7 @@ export class MaplatUi extends EventTarget {
             if (appOption.restore.hideMarker) {
                 ui.core.mapDivDocument.classList.add('hide-marker');
             }
-        } else if (appOption.restore_session) {
+        } else if (appOption.restoreSession) {
             const lastEpoch = parseInt(localStorage.getItem('epoch') || 0); // eslint-disable-line no-undef
             const currentTime = Math.floor(new Date().getTime() / 1000);
             if (lastEpoch && currentTime - lastEpoch < 3600) {
@@ -145,11 +147,11 @@ export class MaplatUi extends EventTarget {
             });
         };
 
-        if (appOption.enable_share) {
+        if (appOption.enableShare) {
             ui.core.mapDivDocument.classList.add('enable_share');
             ui.enableShare = true;
         }
-        if (appOption.state_url) {
+        if (appOption.stateUrl) {
             ui.core.mapDivDocument.classList.add('state_url');
         }
         if (ui.core.enableCache) {
@@ -158,13 +160,13 @@ export class MaplatUi extends EventTarget {
         if ('ontouchstart' in window) { // eslint-disable-line no-undef
             ui.core.mapDivDocument.classList.add('ol-touch');
         }
-        if (appOption.mobile_if) {
+        if (appOption.mobileIF) {
             appOption.debug = true;
         }
 
-        let pwaManifest = appOption.pwa_manifest;
-        let pwaWorker = appOption.pwa_worker;
-        let pwaScope = appOption.pwa_scope;
+        let pwaManifest = appOption.pwaManifest;
+        let pwaWorker = appOption.pwaWorker;
+        let pwaScope = appOption.pwaScope;
 
         // Add UI HTML Element
         let newElems = createElement(`<div class="ol-control map-title"><span></span></div>
@@ -754,7 +756,7 @@ export class MaplatUi extends EventTarget {
             modal.show();
         });
 
-        if (appOption.state_url) {
+        if (appOption.stateUrl) {
             ui.core.addEventListener('updateState', (evt) => {
                 const value = evt.detail;
                 if (!value.position || !value.mapID) return;
@@ -837,7 +839,7 @@ export class MaplatUi extends EventTarget {
 
             let qr_app;
             let qr_view;
-            ui.core.mapObject.on('click_control', (evt) => {
+            ui.core.mapObject.on('click_control', async (evt) => {
                 const control = evt.frameState.control;
                 const modalElm = ui.core.mapDivDocument.querySelector('.modalBase');
                 const modal = new bsn.Modal(modalElm, {'root': ui.core.mapDivDocument});
@@ -882,12 +884,11 @@ export class MaplatUi extends EventTarget {
 
                     modalSetting('map');
                     const deleteButton = document.querySelector('.cache_delete'); // eslint-disable-line no-undef
-                    const deleteFunc = function(evt) {
+                    const deleteFunc = async function(evt) {
                         evt.preventDefault();
                         const from = ui.core.getMapMeta();
-                        ui.core.clearMapTileCacheAsync(from.mapID, true).then(() => {
-                            ui.core.getMapTileCacheSizeAsync(from.mapID).then(putTileCacheSize);
-                        });
+                        await ui.core.clearMapTileCacheAsync(from.mapID);
+                        putTileCacheSize(await ui.core.getMapTileCacheSizeAsync(from.mapID));
                     };
                     const hideFunc = function(event) { // eslint-disable-line no-unused-vars
                         deleteButton.removeEventListener('click', deleteFunc, false);
@@ -895,7 +896,7 @@ export class MaplatUi extends EventTarget {
                     };
                     modalElm.addEventListener('hide.bs.modal', hideFunc, false);
 
-                    ui.core.getMapTileCacheSizeAsync(from.mapID).then(putTileCacheSize);
+                    putTileCacheSize(await ui.core.getMapTileCacheSizeAsync(from.mapID));
 
                     modal.show();
                     setTimeout(() => { // eslint-disable-line no-undef
