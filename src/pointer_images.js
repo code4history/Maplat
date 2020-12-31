@@ -76,6 +76,6 @@ export default {
   "plus.png": plus,
   "red_marker.png": redM,
   "redcircle.png": redC,
-  "share.png": share, 
+  "share.png": share,
   "slider.png": slider
 };
