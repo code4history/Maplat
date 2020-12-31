@@ -22,7 +22,7 @@
     "sw": "workbox injectManifest",
     "test": "jest",
     "preversion": "npm run lint",
-    "version": "npm run build && npm run build_packed && npm run sw && npm run zip && git add -A",
+    "version": "npm run build && npm run build:packed && npm run sw && npm run zip && git add -A",
     "freeze": "node bin/freezer.js",
     "lint": "npm run lint:eslint && npm run lint:prettier",
     "lint:eslint": "eslint \"{src,spec}/**/*.js\" --fix",
