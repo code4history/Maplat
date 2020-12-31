@@ -1,4 +1,4 @@
-import pointer_core from "../node_modules/@maplat/core/src/pointer_images";
+import pointer_core from "../node_modules/@maplat/core/lib/pointer_images";
 import pointer_ui from "./pointer_images";
 import freeze from "./freeze_images";
 

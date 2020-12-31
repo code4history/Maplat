@@ -1,13 +1,12 @@
 import { MaplatUi } from "../src";
-// eslint-disable-next-line no-undef
+import "../less/ui.less"
+
 const Maplat = window.Maplat = {};
 
-// eslint-disable-next-line arrow-body-style
-Maplat.createObject = (option) => {
-  return new Promise(((resolve) => {
-    const app = new MaplatUi(option);
-    app.waitReady.then(() => {
-      resolve(app);
-    });
-  }));
-};
+Maplat.createObject = option => new Promise((resolve => {
+  const app = new MaplatUi(option);
+  app.waitReady.then(() => {
+    resolve(app);
+  });
+}));
+

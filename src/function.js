@@ -1,4 +1,4 @@
-import { normalizeArg as normalizeArg_ } from "@maplat/core/src/functions";
+import { normalizeArg as normalizeArg_ } from "@maplat/core/lib/functions";
 
 export function normalizeArg(options) {
   const table = {

@@ -9,7 +9,7 @@ import QRCode from "../legacy/qrcode";
 import { point, polygon } from "@turf/helpers";
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 import sprintf from "../legacy/sprintf";
-import { META_KEYS } from "@maplat/core/src/source_ex";
+import { META_KEYS } from "@maplat/core/lib/source_ex";
 import {
   Copyright,
   CompassRotate,
@@ -23,9 +23,9 @@ import {
 } from "./maplat_control";
 import { Zoom } from "ol/control";
 import { asArray } from "ol/color";
-import { HistMap } from "@maplat/core/src/source/histmap";
-import { TmsMap } from "@maplat/core/src/source/tmsmap";
-import { NowMap } from "@maplat/core/src/source/nowmap";
+import { HistMap } from "@maplat/core/lib/source/histmap";
+import { TmsMap } from "@maplat/core/lib/source/tmsmap";
+import { NowMap } from "@maplat/core/lib/source/nowmap";
 import pointer from "./pointer_images";
 import Weiwudi from "weiwudi";
 import { normalizeArg } from "./function";
