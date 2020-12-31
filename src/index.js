@@ -26,9 +26,9 @@ import { asArray } from "ol/color";
 import { HistMap } from "@maplat/core/lib/source/histmap";
 import { TmsMap } from "@maplat/core/lib/source/tmsmap";
 import { NowMap } from "@maplat/core/lib/source/nowmap";
-import pointer from "./pointer_images";
 import Weiwudi from "weiwudi";
 import { normalizeArg } from "./function";
+import pointer from "./pointer_images";
 
 // Maplat UI Class
 export class MaplatUi extends EventTarget {
