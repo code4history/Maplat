@@ -9,7 +9,7 @@ import QRCode from "../legacy/qrcode";
 import { point, polygon } from "@turf/helpers";
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 import sprintf from "../legacy/sprintf";
-import { META_KEYS } from "@maplat/core/lib/source_ex";
+import { META_KEYS } from "@maplat/core/lib/source/mixin";
 import {
   Copyright,
   CompassRotate,
