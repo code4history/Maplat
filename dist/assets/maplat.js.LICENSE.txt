@@ -1,0 +1,45 @@
+/*!
+  **  sprintf.js -- POSIX sprintf(3)-style String Formatting for JavaScript
+  **  Copyright (c) 2006-2014 Ralf S. Engelschall <rse@engelschall.com>
+  **  Partly based on Public Domain code by Jan Moesen <http://jan.moesen.nu/>
+  **
+  **  Permission is hereby granted, free of charge, to any person obtaining
+  **  a copy of this software and associated documentation files (the
+  **  "Software"), to deal in the Software without restriction, including
+  **  without limitation the rights to use, copy, modify, merge, publish,
+  **  distribute, sublicense, and/or sell copies of the Software, and to
+  **  permit persons to whom the Software is furnished to do so, subject to
+  **  the following conditions:
+  **
+  **  The above copyright notice and this permission notice shall be included
+  **  in all copies or substantial portions of the Software.
+  **
+  **  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  **  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  **  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+  **  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+  **  CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+  **  TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+  **  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  */
+
+/*!
+ * PEP v0.5.3 | https://github.com/jquery/PEP
+ * Copyright jQuery Foundation and other contributors | http://jquery.org/license
+ */
+
+/*!
+ * The buffer module from node.js, for the browser.
+ *
+ * @author   Feross Aboukhadijeh <http://feross.org>
+ * @license  MIT
+ */
+
+/*! @maplat/ui v0.8.1 | Kohei Otsuka, Code for History | license: Apache-2.0 */
+
+/**
+ * @license
+ * Latitude/longitude spherical geodesy formulae taken from
+ * http://www.movable-type.co.uk/scripts/latlong.html
+ * Licensed under CC-BY-3.0.
+ */

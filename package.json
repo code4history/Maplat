@@ -16,7 +16,8 @@
   "scripts": {
     "server": "webpack-dev-server --config ./webpack_config/webpack.config.standard.dev.js",
     "server:packed": "npm run freeze && webpack-dev-server --config ./webpack_config/webpack.config.packed.dev.js",
-    "build": "webpack --color --progress --config ./webpack_config/webpack.config.standard.js",
+    "build": "npm run build:standard && npm run build:packed",
+    "build:standard": "webpack --color --progress --config ./webpack_config/webpack.config.standard.js",
     "build:packed": "npm run freeze && webpack --config ./webpack_config/webpack.config.packed.js",
     "zip": "gulp zip",
     "sw": "workbox injectManifest",
