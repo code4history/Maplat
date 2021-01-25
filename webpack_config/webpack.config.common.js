@@ -16,7 +16,7 @@ module.exports = {
   devtool: 'source-map',
 
   entry: {
-    "maplat": path.resolve(__dirname, "../tmpl/web-bridge.js")
+    "maplat": path.resolve(__dirname, "../tmpl/web-bridge.js"),
   },
 
   plugins: [
@@ -24,8 +24,12 @@ module.exports = {
       banner: `${pjson.name} v${pjson.version} | ${pjson.author} | license: ${pjson.license}`
     }),
     new CleanWebpackPlugin(),
-    new HtmlWebpackPlugin({ template: "./public/index.html" }),
-    new MiniCssExtractPlugin()
+    new HtmlWebpackPlugin({
+      template: "./public/index.html"
+    }),
+    new MiniCssExtractPlugin({
+      filename: "./assets/[name].css"
+    })
   ],
 
   externals: [

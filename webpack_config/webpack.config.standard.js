@@ -3,12 +3,24 @@
 const path = require("path");
 const { merge } = require("webpack-merge");
 const common = require("./webpack.config.common.js");
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const WriteFilePlugin = require('write-file-webpack-plugin');
 
 module.exports = merge(common, {
   output: {
     path: path.resolve(__dirname, "../dist"),
-    filename: '[name].js'
+    filename: './assets/[name].js'
   },
+
+  plugins: [
+    new CopyWebpackPlugin({
+      patterns: [{
+        from: 'locales',
+        to: './assets/locales/'
+      }]
+    }),
+    new WriteFilePlugin(),
+  ],
 
   module: {
     rules: [
@@ -17,11 +29,10 @@ module.exports = merge(common, {
         exclude: /node_modules(?![/\\](@maplat)[/\\])/,
         loader: 'file-loader',
         options: {
-          outputPath: "images",
-          /*publicPath(path) {
-            return path;
-            //return `dist/${path}`;
-          }*/
+          outputPath: "assets/images",
+          publicPath(path) {
+            return `assets/images/${path}`;
+          }
         }
       },
       {
@@ -29,7 +40,10 @@ module.exports = merge(common, {
         exclude: /node_modules(?![/\\](@maplat)[/\\])/,
         loader: 'file-loader',
         options: {
-          outputPath: "fonts"
+          outputPath: "assets/fonts",
+          publicPath(path) {
+            return `fonts/${path}`;
+          }
         }
       }
     ]
