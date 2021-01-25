@@ -10,4 +10,19 @@ module.exports = merge(prod, {
     path: path.resolve(__dirname, "../dev"),
     filename: '[name].js'
   },
+  /*module: {
+    rules: [
+      {
+        test: /\.(jpg|jpeg|png)$/,
+        exclude: /node_modules(?![/\\](@maplat)[/\\])/,
+        loader: 'file-loader',
+        options: {
+          outputPath: "images",
+          publicPath(path) {
+            return path;
+          }
+        }
+      }
+    ]
+  }*/
 });

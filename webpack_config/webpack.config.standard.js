@@ -17,7 +17,11 @@ module.exports = merge(common, {
         exclude: /node_modules(?![/\\](@maplat)[/\\])/,
         loader: 'file-loader',
         options: {
-          outputPath: "images"
+          outputPath: "images",
+          /*publicPath(path) {
+            return path;
+            //return `dist/${path}`;
+          }*/
         }
       },
       {
