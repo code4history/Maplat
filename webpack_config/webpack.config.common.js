@@ -8,6 +8,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require("terser-webpack-plugin");
+const {InjectManifest} = require('workbox-webpack-plugin');
 
 const port = process.env.PORT || 8888;
 
@@ -29,7 +30,12 @@ module.exports = {
     }),
     new MiniCssExtractPlugin({
       filename: "./assets/[name].css"
+    }),
+    new InjectManifest({
+      swDest: "./service-worker.js",
+      swSrc: './src/service-worker.js'
     })
+
   ],
 
   externals: [

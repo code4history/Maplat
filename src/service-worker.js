@@ -31,7 +31,7 @@ workbox.core.clientsClaim(); // eslint-disable-line no-undef
 workbox.precaching.precacheAndRoute(self.__WB_MANIFEST, {});
 // eslint-disable-next-line no-undef
 workbox.routing.registerRoute(
-  /(?:maps\/.+\.json|pwa\/.+|pois\/.+\.json|apps\/.+\.json|tmbs\/.+\.jpg|images\/.+\.(?:png|jpg)|fonts\/.+\.woff|locales\/.+\/.+\.json)$/,
+  /(?:maps\/.+\.json|pwa\/.+|pois\/.+\.json|apps\/.+\.json|tmbs\/.+\.jpg|images\/.+\.(?:png|jpg))$/,
   // eslint-disable-next-line no-undef
   new workbox.strategies.StaleWhileRevalidate({
     cacheName: "resourcesCache",
