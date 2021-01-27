@@ -11,11 +11,11 @@
  * See https://goo.gl/2aRDsh
  */
 
-import {skipWaiting, clientsClaim} from "workbox-core";
-import {precacheAndRoute} from "workbox-precaching";
-import {registerRoute} from "workbox-routing";
-import {StaleWhileRevalidate} from "workbox-strategies";
-import {ExpirationPlugin} from "workbox-expiration";
+import { skipWaiting, clientsClaim } from "workbox-core";
+import { precacheAndRoute } from "workbox-precaching";
+import { registerRoute } from "workbox-routing";
+import { StaleWhileRevalidate } from "workbox-strategies";
+import { ExpirationPlugin } from "workbox-expiration";
 import "weiwudi/src/weiwudi_gw";
 
 skipWaiting();
