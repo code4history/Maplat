@@ -16,11 +16,7 @@ gulp.task("zip", async () => {
     fs.removeSync("./example");
   } catch (e) { }
 
-  fs.ensureDirSync("./distribution");
-  fs.copySync("./dist", "./distribution/dist");
-  fs.copySync("./parts", "./distribution/parts");
-  fs.copySync("./fonts", "./distribution/fonts");
-  fs.copySync("./locales", "./distribution/locales");
+  fs.copySync("./dist/assets", "./distribution");
 
   await new Promise((resolve, reject) => {
     gulp
@@ -30,8 +26,9 @@ gulp.task("zip", async () => {
       .pipe(gulp.dest("./"))
       .on("end", resolve);
   });
-  fs.moveSync("./distribution", "./example");
-  fs.copySync("./index.html", "./example/index.html");
+  fs.removeSync("./distribution");
+
+  fs.copySync("./dist", "./example");
   fs.copySync("./apps", "./example/apps");
   fs.copySync("./maps", "./example/maps");
   fs.copySync("./pois", "./example/pois");
@@ -39,7 +36,6 @@ gulp.task("zip", async () => {
   fs.copySync("./img", "./example/img");
   fs.copySync("./pwa", "./example/pwa");
   fs.copySync("./tmbs", "./example/tmbs");
-  fs.copySync("./service-worker.js", "./example/service-worker.js");
 
   await new Promise((resolve, reject) => {
     gulp
