@@ -11,19 +11,12 @@
  * See https://goo.gl/2aRDsh
  */
 
-// eslint-disable-next-line no-undef
-/*importScripts(
-  "https://storage.googleapis.com/workbox-cdn/releases/5.1.4/workbox-sw.js"
-);
-// eslint-disable-next-line no-undef
-importScripts("https://cdn.jsdelivr.net/npm/weiwudi@0.1.2/src/weiwudi_sw.js");*/
-
 import {skipWaiting, clientsClaim} from "workbox-core";
 import {precacheAndRoute} from "workbox-precaching";
 import {registerRoute} from "workbox-routing";
 import {StaleWhileRevalidate} from "workbox-strategies";
 import {ExpirationPlugin} from "workbox-expiration";
-import
+import "weiwudi/src/weiwudi_gw";
 
 skipWaiting();
 clientsClaim();
