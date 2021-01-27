@@ -12,32 +12,37 @@
  */
 
 // eslint-disable-next-line no-undef
-importScripts(
+/*importScripts(
   "https://storage.googleapis.com/workbox-cdn/releases/5.1.4/workbox-sw.js"
 );
 // eslint-disable-next-line no-undef
-importScripts("https://cdn.jsdelivr.net/npm/weiwudi@0.1.2/src/weiwudi_sw.js");
+importScripts("https://cdn.jsdelivr.net/npm/weiwudi@0.1.2/src/weiwudi_sw.js");*/
 
-workbox.core.skipWaiting(); // eslint-disable-line no-undef
+import {skipWaiting, clientsClaim} from "workbox-core";
+import {precacheAndRoute} from "workbox-precaching";
+import {registerRoute} from "workbox-routing";
+import {StaleWhileRevalidate} from "workbox-strategies";
+import {ExpirationPlugin} from "workbox-expiration";
+import
 
-workbox.core.clientsClaim(); // eslint-disable-line no-undef
+skipWaiting();
+clientsClaim();
 
 /**
  * The workboxSW.precacheAndRoute() method efficiently caches and responds to
  * requests for URLs in the manifest.
  * See https://goo.gl/S9QRab
  */
+precacheAndRoute(self.__WB_MANIFEST, {});
 // eslint-disable-next-line no-undef
-workbox.precaching.precacheAndRoute(self.__WB_MANIFEST, {});
-// eslint-disable-next-line no-undef
-workbox.routing.registerRoute(
+registerRoute(
   /(?:maps\/.+\.json|pwa\/.+|pois\/.+\.json|apps\/.+\.json|tmbs\/.+\.jpg|images\/.+\.(?:png|jpg))$/,
   // eslint-disable-next-line no-undef
-  new workbox.strategies.StaleWhileRevalidate({
+  new StaleWhileRevalidate({
     cacheName: "resourcesCache",
     plugins: [
       // eslint-disable-next-line no-undef
-      new workbox.expiration.ExpirationPlugin({
+      new ExpirationPlugin({
         maxAgeSeconds: 86400,
         purgeOnQuotaError: false
       })

@@ -91,6 +91,11 @@
     "webpack-merge": "^5.4.0",
     "workbox-build": "^6.0.2",
     "workbox-cli": "^5.1.4",
+    "workbox-core": "^6.0.2",
+    "workbox-expiration": "^6.0.2",
+    "workbox-precaching": "^6.0.2",
+    "workbox-routing": "^6.0.2",
+    "workbox-strategies": "^6.0.2",
     "workbox-webpack-plugin": "^6.0.2",
     "write-file-webpack-plugin": "^4.5.1"
   }
