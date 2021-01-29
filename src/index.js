@@ -195,17 +195,17 @@ export class MaplatUi extends EventTarget {
     let pwaScope = appOption.pwaScope;
 
     // Add UI HTML Element
-    let newElems = createElement(`<div class="ol-control map-title"><span></span></div>
-<div class="swiper-container ol-control base-swiper prevent-default-ui">
-  <i class="fa fa-chevron-left swiper-left-icon" aria-hidden="true"></i>
-  <i class="fa fa-chevron-right swiper-right-icon" aria-hidden="true"></i>
-  <div class="swiper-wrapper"></div>
-</div>
-<div class="swiper-container ol-control overlay-swiper prevent-default-ui">
-  <i class="fa fa-chevron-left swiper-left-icon" aria-hidden="true"></i>
-  <i class="fa fa-chevron-right swiper-right-icon" aria-hidden="true"></i>
-  <div class="swiper-wrapper"></div>
-</div>`);
+    let newElems = createElement(`<d c="ol-control map-title"><s></s></d> 
+<d c="swiper-container ol-control base-swiper prevent-default-ui">
+  <i c="fa fa-chevron-left swiper-left-icon" aria-hidden="true"></i>
+  <i c="fa fa-chevron-right swiper-right-icon" aria-hidden="true"></i>
+  <d c="swiper-wrapper"></d> 
+</d> 
+<d c="swiper-container ol-control overlay-swiper prevent-default-ui">
+  <i c="fa fa-chevron-left swiper-left-icon" aria-hidden="true"></i>
+  <i c="fa fa-chevron-right swiper-right-icon" aria-hidden="true"></i>
+  <d c="swiper-wrapper"></d> 
+</d> `);
     for (let i = newElems.length - 1; i >= 0; i--) {
       ui.core.mapDivDocument.insertBefore(
         newElems[i],
@@ -222,126 +222,126 @@ export class MaplatUi extends EventTarget {
       });
     }
 
-    newElems = createElement(`<div class="modal modalBase" tabindex="-1" role="dialog"
+    newElems = createElement(`<d c="modal modalBase" tabindex="-1" role="dialog"
     aria-labelledby="staticModalLabel" aria-hidden="true" data-show="true" data-keyboard="false"
     data-backdrop="static">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">
-          <span aria-hidden="true">&#215;</span><span class="sr-only" data-i18n="html.close"></span>
+  <d c="modal-dialog">
+    <d c="modal-content">
+      <d c="modal-header">
+        <button type="button" c="close" data-dismiss="modal">
+          <s aria-hidden="true">&#215;</s><s c="sr-only" din="html.close"></s>
         </button>
-        <h4 class="modal-title">
+        <h4 c="modal-title">
 
-          <span class="modal_title"></span>
-          <span class="modal_load_title"></span>
-          <span class="modal_gpsW_title" data-i18n="html.acquiring_gps"></span>
-          <span class="modal_help_title" data-i18n="html.help_title"></span>
-          <span class="modal_share_title" data-i18n="html.share_title"></span>
-          <span class="modal_hide_marker_title" data-i18n="html.hide_marker_title"></span>
+          <s c="modal_title"></s>
+          <s c="modal_load_title"></s>
+          <s c="modal_gpsW_title" din="html.acquiring_gps"></s>
+          <s c="modal_help_title" din="html.help_title"></s>
+          <s c="modal_share_title" din="html.share_title"></s>
+          <s c="modal_hide_marker_title" din="html.hide_marker_title"></s>
 
         </h4>
-      </div>
-      <div class="modal-body">
+      </d> 
+      <d c="modal-body">
 
-        <div class="modal_help_content">
-          <div class="help_content">
-            <span data-i18n-html="html.help_using_maplat"></span>
-            <p class="col-xs-12 help_img"><img src="${
+        <d c="modal_help_content">
+          <d c="help_content">
+            <s dinh="html.help_using_maplat"></s>
+            <p c="col-xs-12 help_img"><img src="${
               pointer["fullscreen.png"]
             }"></p>
-            <h4 data-i18n="html.help_operation_title"></h4>
-            <p data-i18n-html="html.help_operation_content" class="recipient"></p>
-            <h4 data-i18n="html.help_selection_title"></h4>
-            <p data-i18n-html="html.help_selection_content" class="recipient"></p>
-            <h4 data-i18n="html.help_gps_title"></h4>
-            <p data-i18n-html="html.help_gps_content" class="recipient"></p>
-            <h4 data-i18n="html.help_poi_title"></h4>
-            <p data-i18n-html="html.help_poi_content" class="recipient"></p>
-            <h4 data-i18n="html.help_etc_title"></h4>
+            <h4 din="html.help_operation_title"></h4>
+            <p dinh="html.help_operation_content" c="recipient"></p>
+            <h4 din="html.help_selection_title"></h4>
+            <p dinh="html.help_selection_content" c="recipient"></p>
+            <h4 din="html.help_gps_title"></h4>
+            <p dinh="html.help_gps_content" c="recipient"></p>
+            <h4 din="html.help_poi_title"></h4>
+            <p dinh="html.help_poi_content" c="recipient"></p>
+            <h4 din="html.help_etc_title"></h4>
             <ul>
-              <li data-i18n-html="html.help_etc_attr" class="recipient"></li>
-              <li data-i18n-html="html.help_etc_help" class="recipient"></li>
-              <span class="share_help"><li data-i18n-html="html.help_share_help" class="recipient"></li></span>
-              <li data-i18n-html="html.help_etc_border" class="recipient"></li>
-              <li data-i18n-html="html.help_etc_hide_marker" class="recipient"></li>
-              <li data-i18n-html="html.help_etc_slider" class="recipient"></li>
+              <li dinh="html.help_etc_attr" c="recipient"></li>
+              <li dinh="html.help_etc_help" c="recipient"></li>
+              <s c="share_help"><li dinh="html.help_share_help" c="recipient"></li></s>
+              <li dinh="html.help_etc_border" c="recipient"></li>
+              <li dinh="html.help_etc_hide_marker" c="recipient"></li>
+              <li dinh="html.help_etc_slider" c="recipient"></li>
             </ul>
             <p><a href="https://github.com/code4nara/Maplat/wiki" target="_blank">Maplat</a>
-              © 2015- Kohei Otsuka, Code for Nara, RekishiKokudo project</p>
-          </div>
-        </div>
+              © 2015- Kohei Otsuka, Code for History</p>
+          </d> 
+        </d> 
 
-        <div class="modal_poi_content">
-          <div class="poi_web embed-responsive embed-responsive-60vh">
-            <iframe class="poi_iframe iframe_poi" frameborder="0" src=""></iframe>
-          </div>
-          <div class="poi_data hide">
-            <p class="col-xs-12 poi_img"><img class="poi_img_tag" src="${
+        <d c="modal_poi_content">
+          <d c="poi_web embed-responsive embed-responsive-60vh">
+            <iframe c="poi_iframe iframe_poi" frameborder="0" src=""></iframe>
+          </d> 
+          <d c="poi_data hide">
+            <p c="col-xs-12 poi_img"><img c="poi_img_tag" src="${
               pointer["loading_image.png"]
             }"></p>
-            <p class="recipient poi_address"></p>
-            <p class="recipient poi_desc"></p>
-          </div>
-        </div>
+            <p c="recipient poi_address"></p>
+            <p c="recipient poi_desc"></p>
+          </d> 
+        </d> 
 
-        <div class="modal_share_content">
-          <h4 data-i18n="html.share_app_title"></h4>
-          <div id="___maplat_app_toast_${ui.html_id_seed}"></div>
-          <div class="recipient row">
-            <div class="form-group col-xs-4 text-center"><button title="Copy to clipboard" class="share btn btn-light" data="cp_app"><i class="fa fa-clipboard"></i>&nbsp;<small data-i18n="html.share_copy"></small></button></div>
-            <div class="form-group col-xs-4 text-center"><button title="Twitter" class="share btn btn-light" data="tw_app"><i class="fa fa-twitter"></i>&nbsp;<small>Twitter</small></button></div>
-            <div class="form-group col-xs-4 text-center"><button title="Facebook" class="share btn btn-light" data="fb_app"><i class="fa fa-facebook"></i>&nbsp;<small>Facebook</small></button></div>
-          </div>
-          <div class="qr_app center-block" style="width:128px;"></div>
-          <div class="modal_share_state">
-            <h4 data-i18n="html.share_state_title"></h4>
-            <div id="___maplat_view_toast_${ui.html_id_seed}"></div>
-            <div class="recipient row">
-              <div class="form-group col-xs-4 text-center"><button title="Copy to clipboard" class="share btn btn-light" data="cp_view"><i class="fa fa-clipboard"></i>&nbsp;<small data-i18n="html.share_copy"></small></button></div>
-              <div class="form-group col-xs-4 text-center"><button title="Twitter" class="share btn btn-light" data="tw_view"><i class="fa fa-twitter"></i>&nbsp;<small>Twitter</small></button></div>
-              <div class="form-group col-xs-4 text-center"><button title="Facebook" class="share btn btn-light" data="fb_view"><i class="fa fa-facebook"></i>&nbsp;<small>Facebook</small></button></div>
-            </div>
-            <div class="qr_view center-block" style="width:128px;"></div>
-          </div>
+        <d c="modal_share_content">
+          <h4 din="html.share_app_title"></h4>
+          <d id="___maplat_app_toast_${ui.html_id_seed}"></d> 
+          <d c="recipient row">
+            <d c="form-group col-xs-4 text-center"><button title="Copy to clipboard" c="share btn btn-light" data="cp_app"><i c="fa fa-clipboard"></i>&nbsp;<small din="html.share_copy"></small></button></d> 
+            <d c="form-group col-xs-4 text-center"><button title="Twitter" c="share btn btn-light" data="tw_app"><i c="fa fa-twitter"></i>&nbsp;<small>Twitter</small></button></d> 
+            <d c="form-group col-xs-4 text-center"><button title="Facebook" c="share btn btn-light" data="fb_app"><i c="fa fa-facebook"></i>&nbsp;<small>Facebook</small></button></d> 
+          </d> 
+          <d c="qr_app center-block" style="width:128px;"></d> 
+          <d c="modal_share_state">
+            <h4 din="html.share_state_title"></h4>
+            <d id="___maplat_view_toast_${ui.html_id_seed}"></d> 
+            <d c="recipient row">
+              <d c="form-group col-xs-4 text-center"><button title="Copy to clipboard" c="share btn btn-light" data="cp_view"><i c="fa fa-clipboard"></i>&nbsp;<small din="html.share_copy"></small></button></d> 
+              <d c="form-group col-xs-4 text-center"><button title="Twitter" c="share btn btn-light" data="tw_view"><i c="fa fa-twitter"></i>&nbsp;<small>Twitter</small></button></d> 
+              <d c="form-group col-xs-4 text-center"><button title="Facebook" c="share btn btn-light" data="fb_view"><i c="fa fa-facebook"></i>&nbsp;<small>Facebook</small></button></d> 
+            </d> 
+            <d c="qr_view center-block" style="width:128px;"></d> 
+          </d> 
           <p><img src="" height="0px" width="0px"></p>
-        </div>
+        </d> 
 
-        <div class="modal_map_content">
+        <d c="modal_map_content">
             ${META_KEYS.map(key => {
               if (key == "title" || key == "officialTitle") return "";
-              return `<div class="recipients ${key}_div"><dl class="dl-horizontal">
-                      <dt data-i18n="html.${key}"></dt>
-                      <dd class="${key}_dd"></dd>
-                    </dl></div>`;
+              return `<d c="recipients ${key}_div"><dl c="dl-horizontal">
+                      <dt din="html.${key}"></dt>
+                      <dd c="${key}_dd"></dd>
+                    </dl></d> `;
             }).join("")}
-          <div class="recipients" class="modal_cache_content"><dl class="dl-horizontal">
-            <dt data-i18n="html.cache_handle"></dt>
-            <dd><span class="cache_size"></span>
-              <a class="cache_delete btn btn-default pull-right" href="#" data-i18n="html.cache_delete"></a></dd>
-          </dl></div>
+          <d c="recipients" c="modal_cache_content"><dl c="dl-horizontal">
+            <dt din="html.cache_handle"></dt>
+            <dd><s c="cache_size"></s>
+              <a c="cache_delete btn btn-default pull-right" href="#" din="html.cache_delete"></a></dd>
+          </dl></d> 
 
-        </div>
+        </d> 
 
-        <div class="modal_load_content">
-          <p class="recipient"><img src="${
+        <d c="modal_load_content">
+          <p c="recipient"><img src="${
             pointer["loading.png"]
-          }"><span data-i18n="html.app_loading_body"></span></p>
-          <div class="splash_div hide row"><p class="col-xs-12 poi_img"><img class="splash_img" src=""></p></div>
+          }"><s din="html.app_loading_body"></s></p>
+          <d c="splash_div hide row"><p c="col-xs-12 poi_img"><img c="splash_img" src=""></p></d> 
           <p><img src="" height="0px" width="0px"></p>
-        </div>
+        </d> 
 
-        <div class="modal_hide_marker_content">
-          <ul class="list-group"></ul>
-        </div>
+        <d c="modal_hide_marker_content">
+          <ul c="list-group"></ul>
+        </d> 
 
-        <p class="modal_gpsD_content" class="recipient"></p>
-        <p class="modal_gpsW_content" class="recipient"></p>
+        <p c="modal_gpsD_content" c="recipient"></p>
+        <p c="modal_gpsW_content" c="recipient"></p>
 
-      </div>
-    </div>
-  </div>
-</div>`);
+      </d> 
+    </d> 
+  </d> 
+</d> `);
     for (let i = newElems.length - 1; i >= 0; i--) {
       ui.core.mapDivDocument.insertBefore(
         newElems[i],
@@ -723,7 +723,7 @@ export class MaplatUi extends EventTarget {
           `<div class="swiper-slide" data="${source.mapID}">` +
             `<img crossorigin="anonymous" src="${
               source.thumbnail
-            }"><div>${ui.core.translate(source.label)}</div></div>`
+            }"><div> ${ui.core.translate(source.label)}</div> </div> `
         );
       }
       for (let i = 0; i < overlaySources.length; i++) {
@@ -733,7 +733,7 @@ export class MaplatUi extends EventTarget {
           `<div class="swiper-slide${colorCss}" data="${source.mapID}">` +
             `<img crossorigin="anonymous" src="${
               source.thumbnail
-            }"><div>${ui.core.translate(source.label)}</div></div>`
+            }"><div> ${ui.core.translate(source.label)}</div> </div> `
         );
       }
 
@@ -1156,19 +1156,19 @@ export class MaplatUi extends EventTarget {
             const title = ui.core.translate(layer.name);
             const check = !layer.hide;
             const id = layer.namespaceID;
-            const newElems = createElement(`<li class="list-group-item">
-  <div class="row">
-    <div class="col-sm-1"><img class="markerlist" src="${icon}"></div>
-    <div class="col-sm-9">${title}</div>
-    <div class="col-sm-2">
-      <input type="checkbox" class="markerlist" data="${id}" id="___maplat_marker_${index}_${
+            const newElems = createElement(`<li c="list-group-item">
+  <d c="row">
+    <d c="col-sm-1"><img c="markerlist" src="${icon}"></d> 
+    <d c="col-sm-9">${title}</d> 
+    <d c="col-sm-2">
+      <input type="checkbox" c="markerlist" data="${id}" id="___maplat_marker_${index}_${
               ui.html_id_seed
             }"${check ? " checked" : ""}/>
-      <label class="check" for="___maplat_marker_${index}_${
+      <label c="check" for="___maplat_marker_${index}_${
               ui.html_id_seed
-            }"><div></div></label>
-    </div>
-  </div>
+            }"><d> </d> </label>
+    </d> 
+  </d> 
 </li>`);
             for (let i = 0; i < newElems.length; i++) {
               elem.appendChild(newElems[i]);
