@@ -195,7 +195,7 @@ export class MaplatUi extends EventTarget {
     let pwaScope = appOption.pwaScope;
 
     // Add UI HTML Element
-    let newElems = createElement(`<d class="ol-control map-title"><span></span></d> 
+    let newElems = createElement(`<d class="ol-control map-title"><s></s></d> 
 <d class="swiper-container ol-control base-swiper prevent-default-ui">
   <i class="fa fa-chevron-left swiper-left-icon" aria-hidden="true"></i>
   <i class="fa fa-chevron-right swiper-right-icon" aria-hidden="true"></i>
@@ -229,16 +229,16 @@ export class MaplatUi extends EventTarget {
     <d class="modal-content">
       <d class="modal-header">
         <button type="button" class="close" data-dismiss="modal">
-          <span aria-hidden="true">&#215;</span><span class="sr-only" data-i18n="html.close"></span>
+          <s aria-hidden="true">&#215;</s><s class="sr-only" din="html.close"></s>
         </button>
         <h4 class="modal-title">
 
-          <span class="modal_title"></span>
-          <span class="modal_load_title"></span>
-          <span class="modal_gpsW_title" data-i18n="html.acquiring_gps"></span>
-          <span class="modal_help_title" data-i18n="html.help_title"></span>
-          <span class="modal_share_title" data-i18n="html.share_title"></span>
-          <span class="modal_hide_marker_title" data-i18n="html.hide_marker_title"></span>
+          <s class="modal_title"></s>
+          <s class="modal_load_title"></s>
+          <s class="modal_gpsW_title" din="html.acquiring_gps"></s>
+          <s class="modal_help_title" din="html.help_title"></s>
+          <s class="modal_share_title" din="html.share_title"></s>
+          <s class="modal_hide_marker_title" din="html.hide_marker_title"></s>
 
         </h4>
       </d> 
@@ -246,26 +246,26 @@ export class MaplatUi extends EventTarget {
 
         <d class="modal_help_content">
           <d class="help_content">
-            <span data-i18n-html="html.help_using_maplat"></span>
+            <s dinh="html.help_using_maplat"></s>
             <p class="col-xs-12 help_img"><img src="${
               pointer["fullscreen.png"]
             }"></p>
-            <h4 data-i18n="html.help_operation_title"></h4>
-            <p data-i18n-html="html.help_operation_content" class="recipient"></p>
-            <h4 data-i18n="html.help_selection_title"></h4>
-            <p data-i18n-html="html.help_selection_content" class="recipient"></p>
-            <h4 data-i18n="html.help_gps_title"></h4>
-            <p data-i18n-html="html.help_gps_content" class="recipient"></p>
-            <h4 data-i18n="html.help_poi_title"></h4>
-            <p data-i18n-html="html.help_poi_content" class="recipient"></p>
-            <h4 data-i18n="html.help_etc_title"></h4>
+            <h4 din="html.help_operation_title"></h4>
+            <p dinh="html.help_operation_content" class="recipient"></p>
+            <h4 din="html.help_selection_title"></h4>
+            <p dinh="html.help_selection_content" class="recipient"></p>
+            <h4 din="html.help_gps_title"></h4>
+            <p dinh="html.help_gps_content" class="recipient"></p>
+            <h4 din="html.help_poi_title"></h4>
+            <p dinh="html.help_poi_content" class="recipient"></p>
+            <h4 din="html.help_etc_title"></h4>
             <ul>
-              <li data-i18n-html="html.help_etc_attr" class="recipient"></li>
-              <li data-i18n-html="html.help_etc_help" class="recipient"></li>
-              <span class="share_help"><li data-i18n-html="html.help_share_help" class="recipient"></li></span>
-              <li data-i18n-html="html.help_etc_border" class="recipient"></li>
-              <li data-i18n-html="html.help_etc_hide_marker" class="recipient"></li>
-              <li data-i18n-html="html.help_etc_slider" class="recipient"></li>
+              <li dinh="html.help_etc_attr" class="recipient"></li>
+              <li dinh="html.help_etc_help" class="recipient"></li>
+              <s class="share_help"><li dinh="html.help_share_help" class="recipient"></li></s>
+              <li dinh="html.help_etc_border" class="recipient"></li>
+              <li dinh="html.help_etc_hide_marker" class="recipient"></li>
+              <li dinh="html.help_etc_slider" class="recipient"></li>
             </ul>
             <p><a href="https://github.com/code4nara/Maplat/wiki" target="_blank">Maplat</a>
               © 2015- Kohei Otsuka, Code for Nara, RekishiKokudo project</p>
@@ -286,19 +286,19 @@ export class MaplatUi extends EventTarget {
         </d> 
 
         <d class="modal_share_content">
-          <h4 data-i18n="html.share_app_title"></h4>
+          <h4 din="html.share_app_title"></h4>
           <d id="___maplat_app_toast_${ui.html_id_seed}"></d> 
           <d class="recipient row">
-            <d class="form-group col-xs-4 text-center"><button title="Copy to clipboard" class="share btn btn-light" data="cp_app"><i class="fa fa-clipboard"></i>&nbsp;<small data-i18n="html.share_copy"></small></button></d> 
+            <d class="form-group col-xs-4 text-center"><button title="Copy to clipboard" class="share btn btn-light" data="cp_app"><i class="fa fa-clipboard"></i>&nbsp;<small din="html.share_copy"></small></button></d> 
             <d class="form-group col-xs-4 text-center"><button title="Twitter" class="share btn btn-light" data="tw_app"><i class="fa fa-twitter"></i>&nbsp;<small>Twitter</small></button></d> 
             <d class="form-group col-xs-4 text-center"><button title="Facebook" class="share btn btn-light" data="fb_app"><i class="fa fa-facebook"></i>&nbsp;<small>Facebook</small></button></d> 
           </d> 
           <d class="qr_app center-block" style="width:128px;"></d> 
           <d class="modal_share_state">
-            <h4 data-i18n="html.share_state_title"></h4>
+            <h4 din="html.share_state_title"></h4>
             <d id="___maplat_view_toast_${ui.html_id_seed}"></d> 
             <d class="recipient row">
-              <d class="form-group col-xs-4 text-center"><button title="Copy to clipboard" class="share btn btn-light" data="cp_view"><i class="fa fa-clipboard"></i>&nbsp;<small data-i18n="html.share_copy"></small></button></d> 
+              <d class="form-group col-xs-4 text-center"><button title="Copy to clipboard" class="share btn btn-light" data="cp_view"><i class="fa fa-clipboard"></i>&nbsp;<small din="html.share_copy"></small></button></d> 
               <d class="form-group col-xs-4 text-center"><button title="Twitter" class="share btn btn-light" data="tw_view"><i class="fa fa-twitter"></i>&nbsp;<small>Twitter</small></button></d> 
               <d class="form-group col-xs-4 text-center"><button title="Facebook" class="share btn btn-light" data="fb_view"><i class="fa fa-facebook"></i>&nbsp;<small>Facebook</small></button></d> 
             </d> 
@@ -311,14 +311,14 @@ export class MaplatUi extends EventTarget {
             ${META_KEYS.map(key => {
               if (key == "title" || key == "officialTitle") return "";
               return `<d class="recipients ${key}_div"><dl class="dl-horizontal">
-                      <dt data-i18n="html.${key}"></dt>
+                      <dt din="html.${key}"></dt>
                       <dd class="${key}_dd"></dd>
                     </dl></d> `;
             }).join("")}
           <d class="recipients" class="modal_cache_content"><dl class="dl-horizontal">
-            <dt data-i18n="html.cache_handle"></dt>
-            <dd><span class="cache_size"></span>
-              <a class="cache_delete btn btn-default pull-right" href="#" data-i18n="html.cache_delete"></a></dd>
+            <dt din="html.cache_handle"></dt>
+            <dd><s class="cache_size"></s>
+              <a class="cache_delete btn btn-default pull-right" href="#" din="html.cache_delete"></a></dd>
           </dl></d> 
 
         </d> 
@@ -326,7 +326,7 @@ export class MaplatUi extends EventTarget {
         <d class="modal_load_content">
           <p class="recipient"><img src="${
             pointer["loading.png"]
-          }"><span data-i18n="html.app_loading_body"></span></p>
+          }"><s din="html.app_loading_body"></s></p>
           <d class="splash_div hide row"><p class="col-xs-12 poi_img"><img class="splash_img" src=""></p></d> 
           <p><img src="" height="0px" width="0px"></p>
         </d> 
@@ -720,20 +720,20 @@ export class MaplatUi extends EventTarget {
       for (let i = 0; i < baseSources.length; i++) {
         const source = baseSources[i];
         baseSwiper.appendSlide(
-          `<d class="swiper-slide" data="${source.mapID}">` +
+          `<div class="swiper-slide" data="${source.mapID}">` +
             `<img crossorigin="anonymous" src="${
               source.thumbnail
-            }"><d> ${ui.core.translate(source.label)}</d> </d> `
+            }"><div> ${ui.core.translate(source.label)}</div> </div> `
         );
       }
       for (let i = 0; i < overlaySources.length; i++) {
         const source = overlaySources[i];
         const colorCss = source.envelope ? ` ${source.envelopeColor}` : "";
         overlaySwiper.appendSlide(
-          `<d class="swiper-slide${colorCss}" data="${source.mapID}">` +
+          `<div class="swiper-slide${colorCss}" data="${source.mapID}">` +
             `<img crossorigin="anonymous" src="${
               source.thumbnail
-            }"><d> ${ui.core.translate(source.label)}</d> </d> `
+            }"><div> ${ui.core.translate(source.label)}</div> </div> `
         );
       }
 
