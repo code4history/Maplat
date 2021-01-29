@@ -195,17 +195,17 @@ export class MaplatUi extends EventTarget {
     let pwaScope = appOption.pwaScope;
 
     // Add UI HTML Element
-    let newElems = createElement(`<div class="ol-control map-title"><span></span></div>
-<div class="swiper-container ol-control base-swiper prevent-default-ui">
+    let newElems = createElement(`<d class="ol-control map-title"><span></span></d> 
+<d class="swiper-container ol-control base-swiper prevent-default-ui">
   <i class="fa fa-chevron-left swiper-left-icon" aria-hidden="true"></i>
   <i class="fa fa-chevron-right swiper-right-icon" aria-hidden="true"></i>
-  <div class="swiper-wrapper"></div>
-</div>
-<div class="swiper-container ol-control overlay-swiper prevent-default-ui">
+  <d class="swiper-wrapper"></d> 
+</d> 
+<d class="swiper-container ol-control overlay-swiper prevent-default-ui">
   <i class="fa fa-chevron-left swiper-left-icon" aria-hidden="true"></i>
   <i class="fa fa-chevron-right swiper-right-icon" aria-hidden="true"></i>
-  <div class="swiper-wrapper"></div>
-</div>`);
+  <d class="swiper-wrapper"></d> 
+</d> `);
     for (let i = newElems.length - 1; i >= 0; i--) {
       ui.core.mapDivDocument.insertBefore(
         newElems[i],
@@ -222,12 +222,12 @@ export class MaplatUi extends EventTarget {
       });
     }
 
-    newElems = createElement(`<div class="modal modalBase" tabindex="-1" role="dialog"
+    newElems = createElement(`<d class="modal modalBase" tabindex="-1" role="dialog"
     aria-labelledby="staticModalLabel" aria-hidden="true" data-show="true" data-keyboard="false"
     data-backdrop="static">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
+  <d class="modal-dialog">
+    <d class="modal-content">
+      <d class="modal-header">
         <button type="button" class="close" data-dismiss="modal">
           <span aria-hidden="true">&#215;</span><span class="sr-only" data-i18n="html.close"></span>
         </button>
@@ -241,11 +241,11 @@ export class MaplatUi extends EventTarget {
           <span class="modal_hide_marker_title" data-i18n="html.hide_marker_title"></span>
 
         </h4>
-      </div>
-      <div class="modal-body">
+      </d> 
+      <d class="modal-body">
 
-        <div class="modal_help_content">
-          <div class="help_content">
+        <d class="modal_help_content">
+          <d class="help_content">
             <span data-i18n-html="html.help_using_maplat"></span>
             <p class="col-xs-12 help_img"><img src="${
               pointer["fullscreen.png"]
@@ -269,79 +269,79 @@ export class MaplatUi extends EventTarget {
             </ul>
             <p><a href="https://github.com/code4nara/Maplat/wiki" target="_blank">Maplat</a>
               © 2015- Kohei Otsuka, Code for Nara, RekishiKokudo project</p>
-          </div>
-        </div>
+          </d> 
+        </d> 
 
-        <div class="modal_poi_content">
-          <div class="poi_web embed-responsive embed-responsive-60vh">
+        <d class="modal_poi_content">
+          <d class="poi_web embed-responsive embed-responsive-60vh">
             <iframe class="poi_iframe iframe_poi" frameborder="0" src=""></iframe>
-          </div>
-          <div class="poi_data hide">
+          </d> 
+          <d class="poi_data hide">
             <p class="col-xs-12 poi_img"><img class="poi_img_tag" src="${
               pointer["loading_image.png"]
             }"></p>
             <p class="recipient poi_address"></p>
             <p class="recipient poi_desc"></p>
-          </div>
-        </div>
+          </d> 
+        </d> 
 
-        <div class="modal_share_content">
+        <d class="modal_share_content">
           <h4 data-i18n="html.share_app_title"></h4>
-          <div id="___maplat_app_toast_${ui.html_id_seed}"></div>
-          <div class="recipient row">
-            <div class="form-group col-xs-4 text-center"><button title="Copy to clipboard" class="share btn btn-light" data="cp_app"><i class="fa fa-clipboard"></i>&nbsp;<small data-i18n="html.share_copy"></small></button></div>
-            <div class="form-group col-xs-4 text-center"><button title="Twitter" class="share btn btn-light" data="tw_app"><i class="fa fa-twitter"></i>&nbsp;<small>Twitter</small></button></div>
-            <div class="form-group col-xs-4 text-center"><button title="Facebook" class="share btn btn-light" data="fb_app"><i class="fa fa-facebook"></i>&nbsp;<small>Facebook</small></button></div>
-          </div>
-          <div class="qr_app center-block" style="width:128px;"></div>
-          <div class="modal_share_state">
+          <d id="___maplat_app_toast_${ui.html_id_seed}"></d> 
+          <d class="recipient row">
+            <d class="form-group col-xs-4 text-center"><button title="Copy to clipboard" class="share btn btn-light" data="cp_app"><i class="fa fa-clipboard"></i>&nbsp;<small data-i18n="html.share_copy"></small></button></d> 
+            <d class="form-group col-xs-4 text-center"><button title="Twitter" class="share btn btn-light" data="tw_app"><i class="fa fa-twitter"></i>&nbsp;<small>Twitter</small></button></d> 
+            <d class="form-group col-xs-4 text-center"><button title="Facebook" class="share btn btn-light" data="fb_app"><i class="fa fa-facebook"></i>&nbsp;<small>Facebook</small></button></d> 
+          </d> 
+          <d class="qr_app center-block" style="width:128px;"></d> 
+          <d class="modal_share_state">
             <h4 data-i18n="html.share_state_title"></h4>
-            <div id="___maplat_view_toast_${ui.html_id_seed}"></div>
-            <div class="recipient row">
-              <div class="form-group col-xs-4 text-center"><button title="Copy to clipboard" class="share btn btn-light" data="cp_view"><i class="fa fa-clipboard"></i>&nbsp;<small data-i18n="html.share_copy"></small></button></div>
-              <div class="form-group col-xs-4 text-center"><button title="Twitter" class="share btn btn-light" data="tw_view"><i class="fa fa-twitter"></i>&nbsp;<small>Twitter</small></button></div>
-              <div class="form-group col-xs-4 text-center"><button title="Facebook" class="share btn btn-light" data="fb_view"><i class="fa fa-facebook"></i>&nbsp;<small>Facebook</small></button></div>
-            </div>
-            <div class="qr_view center-block" style="width:128px;"></div>
-          </div>
+            <d id="___maplat_view_toast_${ui.html_id_seed}"></d> 
+            <d class="recipient row">
+              <d class="form-group col-xs-4 text-center"><button title="Copy to clipboard" class="share btn btn-light" data="cp_view"><i class="fa fa-clipboard"></i>&nbsp;<small data-i18n="html.share_copy"></small></button></d> 
+              <d class="form-group col-xs-4 text-center"><button title="Twitter" class="share btn btn-light" data="tw_view"><i class="fa fa-twitter"></i>&nbsp;<small>Twitter</small></button></d> 
+              <d class="form-group col-xs-4 text-center"><button title="Facebook" class="share btn btn-light" data="fb_view"><i class="fa fa-facebook"></i>&nbsp;<small>Facebook</small></button></d> 
+            </d> 
+            <d class="qr_view center-block" style="width:128px;"></d> 
+          </d> 
           <p><img src="" height="0px" width="0px"></p>
-        </div>
+        </d> 
 
-        <div class="modal_map_content">
+        <d class="modal_map_content">
             ${META_KEYS.map(key => {
               if (key == "title" || key == "officialTitle") return "";
-              return `<div class="recipients ${key}_div"><dl class="dl-horizontal">
+              return `<d class="recipients ${key}_div"><dl class="dl-horizontal">
                       <dt data-i18n="html.${key}"></dt>
                       <dd class="${key}_dd"></dd>
-                    </dl></div>`;
+                    </dl></d> `;
             }).join("")}
-          <div class="recipients" class="modal_cache_content"><dl class="dl-horizontal">
+          <d class="recipients" class="modal_cache_content"><dl class="dl-horizontal">
             <dt data-i18n="html.cache_handle"></dt>
             <dd><span class="cache_size"></span>
               <a class="cache_delete btn btn-default pull-right" href="#" data-i18n="html.cache_delete"></a></dd>
-          </dl></div>
+          </dl></d> 
 
-        </div>
+        </d> 
 
-        <div class="modal_load_content">
+        <d class="modal_load_content">
           <p class="recipient"><img src="${
             pointer["loading.png"]
           }"><span data-i18n="html.app_loading_body"></span></p>
-          <div class="splash_div hide row"><p class="col-xs-12 poi_img"><img class="splash_img" src=""></p></div>
+          <d class="splash_div hide row"><p class="col-xs-12 poi_img"><img class="splash_img" src=""></p></d> 
           <p><img src="" height="0px" width="0px"></p>
-        </div>
+        </d> 
 
-        <div class="modal_hide_marker_content">
+        <d class="modal_hide_marker_content">
           <ul class="list-group"></ul>
-        </div>
+        </d> 
 
         <p class="modal_gpsD_content" class="recipient"></p>
         <p class="modal_gpsW_content" class="recipient"></p>
 
-      </div>
-    </div>
-  </div>
-</div>`);
+      </d> 
+    </d> 
+  </d> 
+</d> `);
     for (let i = newElems.length - 1; i >= 0; i--) {
       ui.core.mapDivDocument.insertBefore(
         newElems[i],
@@ -720,20 +720,20 @@ export class MaplatUi extends EventTarget {
       for (let i = 0; i < baseSources.length; i++) {
         const source = baseSources[i];
         baseSwiper.appendSlide(
-          `<div class="swiper-slide" data="${source.mapID}">` +
+          `<d class="swiper-slide" data="${source.mapID}">` +
             `<img crossorigin="anonymous" src="${
               source.thumbnail
-            }"><div>${ui.core.translate(source.label)}</div></div>`
+            }"><d> ${ui.core.translate(source.label)}</d> </d> `
         );
       }
       for (let i = 0; i < overlaySources.length; i++) {
         const source = overlaySources[i];
         const colorCss = source.envelope ? ` ${source.envelopeColor}` : "";
         overlaySwiper.appendSlide(
-          `<div class="swiper-slide${colorCss}" data="${source.mapID}">` +
+          `<d class="swiper-slide${colorCss}" data="${source.mapID}">` +
             `<img crossorigin="anonymous" src="${
               source.thumbnail
-            }"><div>${ui.core.translate(source.label)}</div></div>`
+            }"><d> ${ui.core.translate(source.label)}</d> </d> `
         );
       }
 
@@ -1157,18 +1157,18 @@ export class MaplatUi extends EventTarget {
             const check = !layer.hide;
             const id = layer.namespaceID;
             const newElems = createElement(`<li class="list-group-item">
-  <div class="row">
-    <div class="col-sm-1"><img class="markerlist" src="${icon}"></div>
-    <div class="col-sm-9">${title}</div>
-    <div class="col-sm-2">
+  <d class="row">
+    <d class="col-sm-1"><img class="markerlist" src="${icon}"></d> 
+    <d class="col-sm-9">${title}</d> 
+    <d class="col-sm-2">
       <input type="checkbox" class="markerlist" data="${id}" id="___maplat_marker_${index}_${
               ui.html_id_seed
             }"${check ? " checked" : ""}/>
       <label class="check" for="___maplat_marker_${index}_${
               ui.html_id_seed
-            }"><div></div></label>
-    </div>
-  </div>
+            }"><d> </d> </label>
+    </d> 
+  </d> 
 </li>`);
             for (let i = 0; i < newElems.length; i++) {
               elem.appendChild(newElems[i]);
