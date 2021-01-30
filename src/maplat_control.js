@@ -28,9 +28,10 @@ const delegator = {
 
 export function setControlSettings(options) {
   control_settings = options;
-  Object.keys(control_settings).forEach((key) => {
+  Object.keys(control_settings).forEach(key => {
     if (delegator[key]) {
       pointer[delegator[key]] = control_settings[key];
+      console.log(key);
     }
   });
 }
@@ -491,6 +492,7 @@ export class GoHome extends CustomControl {
   constructor(optOptions) {
     const options = optOptions || {};
     options.character = control_settings["home"] ? `<img src="${control_settings["home"]}">` : '<i class="fa fa-home fa-lg"></i>';
+    console.log(options.character);
     options.cls = "home";
     options.callback = function () {
       const source = this.getMap().getLayers().item(0).getSource();
