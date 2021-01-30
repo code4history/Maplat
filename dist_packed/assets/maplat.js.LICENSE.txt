@@ -35,7 +35,7 @@
  * @license  MIT
  */
 
-/*! @maplat/ui v0.8.2 | Kohei Otsuka, Code for History | license: Apache-2.0 */
+/*! @maplat/ui v0.8.3 | Kohei Otsuka, Code for History | license: Apache-2.0 */
 
 /**
  * @license
