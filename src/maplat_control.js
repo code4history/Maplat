@@ -1,4 +1,4 @@
-import { Control, Rotate } from "ol5/control";
+import { Control, Rotate, Zoom as BaseZoom } from "ol5/control";
 import { CLASS_UNSELECTABLE, CLASS_CONTROL } from "ol5/css";
 import PointerEventHandler from "ol5/pointer/PointerEventHandler";
 import { listen } from "ol5/events";
@@ -8,6 +8,32 @@ import ViewHint from "ol5/ViewHint";
 import { clamp } from "ol5/math";
 import { MapEvent } from "ol5";
 import { addResizeListener } from "../legacy/detect-element-resize";
+import pointer from "./pointer_images";
+
+let control_settings = {};
+const delegator = {
+  "compass": "compass.png",
+  "border": "border.png",
+  "attr": "attr.png",
+  "gps": "gps.png",
+  "zoom_plus": "plus.png",
+  "zoom_minus": "minus.png",
+  "help": "help.png",
+  "home": "home.png",
+  "hide_marker": "hide_marker.png",
+  "share": "share.png",
+  "slider_in_help": "slider.png",
+  "favicon": "favicon.png"
+};
+
+export function setControlSettings(options) {
+  control_settings = options;
+  Object.keys(control_settings).forEach((key) => {
+    if (delegator[key]) {
+      pointer[delegator[key]] = control_settings[key];
+    }
+  });
+}
 
 /**
  * @classdesc
@@ -464,7 +490,7 @@ export class CustomControl extends Control {
 export class GoHome extends CustomControl {
   constructor(optOptions) {
     const options = optOptions || {};
-    options.character = '<i class="fa fa-home fa-lg"></i>';
+    options.character = control_settings["home"] ? `<img src="${control_settings["home"]}">` : '<i class="fa fa-home fa-lg"></i>';
     options.cls = "home";
     options.callback = function () {
       const source = this.getMap().getLayers().item(0).getSource();
@@ -654,4 +680,8 @@ export class HideMarker extends CustomControl {
 
     super(options);
   }
+}
+
+export class Zoom extends BaseZoom {
+
 }

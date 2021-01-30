@@ -19,9 +19,10 @@ import {
   Border,
   HideMarker,
   SliderCommon,
-  Share
+  Share,
+  Zoom,
+  setControlSettings
 } from "./maplat_control";
-import { Zoom } from "ol/control";
 import { asArray } from "ol/color";
 import { HistMap } from "@maplat/core/lib/source/histmap";
 import { TmsMap } from "@maplat/core/lib/source/tmsmap";
@@ -35,6 +36,9 @@ export class MaplatUi extends EventTarget {
   constructor(appOption) {
     super();
     appOption = normalizeArg(appOption);
+    if (appOption.control) {
+      setControlSettings(appOption.control);
+    }
 
     const ui = this;
     ui.html_id_seed = `${Math.floor(Math.random() * 9000) + 1000}`;
