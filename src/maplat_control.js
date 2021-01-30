@@ -1,4 +1,4 @@
-import { Control, Rotate, Zoom as BaseZoom } from "ol5/control";
+import { Control, Rotate } from "ol5/control";
 import { CLASS_UNSELECTABLE, CLASS_CONTROL } from "ol5/css";
 import PointerEventHandler from "ol5/pointer/PointerEventHandler";
 import { listen } from "ol5/events";
@@ -10,6 +10,7 @@ import { MapEvent } from "ol5";
 import { addResizeListener } from "../legacy/detect-element-resize";
 import pointer from "./pointer_images";
 import { createElement } from "@maplat/core";
+import { Zoom as BaseZoom } from "ol/control";
 
 let control_settings = {};
 const delegator = {
