@@ -9,6 +9,7 @@ import { clamp } from "ol5/math";
 import { MapEvent } from "ol5";
 import { addResizeListener } from "../legacy/detect-element-resize";
 import pointer from "./pointer_images";
+import { createElement } from "@maplat/core";
 
 let control_settings = {};
 const delegator = {
@@ -492,20 +493,23 @@ export class GoHome extends CustomControl {
   constructor(optOptions) {
     const options = optOptions || {};
     options.character = control_settings["home"] ? `<img src="${control_settings["home"]}">` : '<i class="fa fa-home fa-lg"></i>';
-    console.log(options.character);
     options.cls = "home";
     options.callback = function () {
       const source = this.getMap().getLayers().item(0).getSource();
       source.goHome();
     };
     super(options);
+    if (control_settings["home"]) {
+      const button = this.element.querySelector("button");
+      button.style.backgroundColor = "rgba(0,0,0,0)";
+    }
   }
 }
 
 export class SetGPS extends CustomControl {
   constructor(optOptions) {
     const options = optOptions || {};
-    options.character = '<i class="fa fa-crosshairs fa-lg"></i>';
+    options.character = control_settings["gps"] ? `<img src="${control_settings["gps"]}">` : '<i class="fa fa-crosshairs fa-lg"></i>';
     options.cls = "gps";
     options.render = function (mapEvent) {
       const frameState = mapEvent.frameState;
@@ -537,6 +541,10 @@ export class SetGPS extends CustomControl {
     };
 
     super(options);
+    if (control_settings["gps"]) {
+      const button = this.element.querySelector("button");
+      button.style.backgroundColor = "rgba(0,0,0,0)";
+    }
   }
 }
 
@@ -545,7 +553,7 @@ export class CompassRotate extends Rotate {
     const options = optOptions || {};
     options.autoHide = false;
     const span = document.createElement("span"); // eslint-disable-line no-undef
-    span.innerHTML = '<i class="fa fa-compass fa-lg ol-compass-fa"></i>';
+    span.innerHTML = control_settings["compass"] ? `<img src="${control_settings["compass"]}">` : '<i class="fa fa-compass fa-lg ol-compass-fa"></i>';
     options.label = span;
     options.render = function (mapEvent) {
       const frameState = mapEvent.frameState;
@@ -593,6 +601,10 @@ export class CompassRotate extends Rotate {
       this.zoom_ = zoom;
     };
     super(options);
+    if (control_settings["compass"]) {
+      const button = this.element.querySelector("button");
+      button.style.backgroundColor = "rgba(0,0,0,0)";
+    }
     this.center_ = [];
     this.zoom_ = undefined;
   }
@@ -685,5 +697,21 @@ export class HideMarker extends CustomControl {
 }
 
 export class Zoom extends BaseZoom {
+  constructor(options = {}) {
+    if (control_settings["zoom_plus"]) {
+      options.zoomInLabel = createElement(`<img src="${control_settings["zoom_plus"]}">`)[0];
+    }
+    if (control_settings["zoom_minus"]) {
+      options.zoomOutLabel = createElement(`<img src="${control_settings["zoom_minus"]}">`)[0];
+    }
 
+    super(options);
+    console.log(this.element);
+    if (control_settings["compass"]) {
+      const buttons = this.element.querySelectorAll("button");
+      buttons.forEach(button => {
+        button.style.backgroundColor = "rgba(0,0,0,0)";
+      });
+    }
+  }
 }
