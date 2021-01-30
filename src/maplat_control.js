@@ -28,12 +28,25 @@ const delegator = {
   "favicon": "favicon.png"
 };
 
+function hexRgb(hex) {
+  const ret = {};
+  if (hex.match(/^#?([0-9A-F]{2})([0-9A-F]{2})([0-9A-F]{2})$/i)) {
+    ret.red = parseInt(RegExp.$1, 16);
+    ret.green = parseInt(RegExp.$2, 16);
+    ret.blue = parseInt(RegExp.$3, 16);
+  } else if (hex.match(/^#?([0-9A-F])([0-9A-F])([0-9A-F])$/i)) {
+    ret.red = parseInt(`${RegExp.$1}${RegExp.$1}`, 16);
+    ret.green = parseInt(`${RegExp.$2}${RegExp.$2}`, 16);
+    ret.blue = parseInt(`${RegExp.$3}${RegExp.$3}`, 16);
+  }
+  return ret;
+}
+
 export function setControlSettings(options) {
   control_settings = options;
   Object.keys(control_settings).forEach(key => {
     if (delegator[key]) {
       pointer[delegator[key]] = control_settings[key];
-      console.log(key);
     }
   });
 }
@@ -136,18 +149,25 @@ export class SliderCommon extends Control {
      */
     this.dragger_ = new PointerEventHandler(containerElement);
 
-    listen(
-      this.dragger_,
-      EventType.POINTERDOWN,
-      this.handleDraggerStart_,
-      this
-    );
+    listen(this.dragger_, EventType.POINTERDOWN, this.handleDraggerStart_, this);
     listen(this.dragger_, EventType.POINTERMOVE, this.handleDraggerDrag_, this);
     listen(this.dragger_, EventType.POINTERUP, this.handleDraggerEnd_, this);
 
     listen(thumbElement, EventType.CLICK, stopPropagation);
 
     listen(this.element, EventType.MOUSEOUT, this.handleDraggerEnd_, this);
+
+    if (control_settings["slider_color"]) {
+      const rgb = hexRgb(control_settings["slider_color"]);
+      const button = this.element.querySelector("button");
+      button.addEventListener("mouseover", () => {
+        button.style.backgroundColor = `rgba(${rgb.red},${rgb.green},${rgb.blue},.7)`;
+      });
+      button.addEventListener("mouseout", () => {
+        const disable = this.element.classList.contains('disable');
+        button.style.backgroundColor = `rgba(${rgb.red},${rgb.green},${rgb.blue},${disable ? 0.2 : 0.5})`;
+      });
+    }
   }
 
   /**
@@ -366,6 +386,10 @@ export class SliderCommon extends Control {
       elem.classList.remove("disable");
     } else {
       elem.classList.add("disable");
+    }
+    if (control_settings["slider_color"]) {
+      const rgb = hexRgb(control_settings["slider_color"]);
+      elem.querySelector("button").style.backgroundColor = `rgba(${rgb.red},${rgb.green},${rgb.blue},${cond ? 0.5 : 0.2})`;
     }
   }
 }
@@ -614,7 +638,7 @@ export class CompassRotate extends Rotate {
 export class Share extends CustomControl {
   constructor(optOptions) {
     const options = optOptions || {};
-    options.character = '<i class="fa fa-share-alt-square fa-lg"></i>';
+    options.character = control_settings["share"] ? `<img src="${control_settings["share"]}">` : '<i class="fa fa-share-alt-square fa-lg"></i>';
     options.cls = "ol-share";
     options.callback = function () {
       const map = this.getMap();
@@ -624,13 +648,17 @@ export class Share extends CustomControl {
     };
 
     super(options);
+    if (control_settings["share"]) {
+      const button = this.element.querySelector("button");
+      button.style.backgroundColor = "rgba(0,0,0,0)";
+    }
   }
 }
 
 export class Border extends CustomControl {
   constructor(optOptions) {
     const options = optOptions || {};
-    options.character = '<i class="fa fa-clone fa-lg"></i>';
+    options.character = control_settings["border"] ? `<img src="${control_settings["border"]}">` : '<i class="fa fa-clone fa-lg"></i>';
     options.cls = "ol-border";
     options.callback = function () {
       const map = this.getMap();
@@ -640,13 +668,17 @@ export class Border extends CustomControl {
     };
 
     super(options);
+    if (control_settings["border"]) {
+      const button = this.element.querySelector("button");
+      button.style.backgroundColor = "rgba(0,0,0,0)";
+    }
   }
 }
 
 export class Maplat extends CustomControl {
   constructor(optOptions) {
     const options = optOptions || {};
-    options.character = '<i class="fa fa-question-circle fa-lg"></i>';
+    options.character = control_settings["help"] ? `<img src="${control_settings["help"]}">` : '<i class="fa fa-question-circle fa-lg"></i>';
     options.cls = "ol-maplat";
     options.callback = function () {
       const map = this.getMap();
@@ -656,13 +688,17 @@ export class Maplat extends CustomControl {
     };
 
     super(options);
+    if (control_settings["help"]) {
+      const button = this.element.querySelector("button");
+      button.style.backgroundColor = "rgba(0,0,0,0)";
+    }
   }
 }
 
 export class Copyright extends CustomControl {
   constructor(optOptions) {
     const options = optOptions || {};
-    options.character = '<i class="fa fa-info-circle fa-lg"></i>';
+    options.character = control_settings["attr"] ? `<img src="${control_settings["attr"]}">` : '<i class="fa fa-info-circle fa-lg"></i>';
     options.cls = "ol-copyright";
     options.callback = function () {
       const map = this.getMap();
@@ -672,13 +708,17 @@ export class Copyright extends CustomControl {
     };
 
     super(options);
+    if (control_settings["attr"]) {
+      const button = this.element.querySelector("button");
+      button.style.backgroundColor = "rgba(0,0,0,0)";
+    }
   }
 }
 
 export class HideMarker extends CustomControl {
   constructor(optOptions) {
     const options = optOptions || {};
-    options.character = '<i class="fa fa-map-marker fa-lg"></i>';
+    options.character = control_settings["hide_marker"] ? `<img src="${control_settings["hide_marker"]}">` : '<i class="fa fa-map-marker fa-lg"></i>';
     options.cls = "ol-hide-marker";
     options.callback = function () {
       const map = this.getMap();
@@ -694,6 +734,10 @@ export class HideMarker extends CustomControl {
     };
 
     super(options);
+    if (control_settings["hide_marker"]) {
+      const button = this.element.querySelector("button");
+      button.style.backgroundColor = "rgba(0,0,0,0)";
+    }
   }
 }
 

@@ -26,7 +26,7 @@
   display: inline;
 }
 
-.modal_cache_content, .modal_share_state, .share_help {
+.modal_cache_content, .modal_share_state, .share_help, .border_help, .hide_marker_help {
   display: none;
 }
 
@@ -34,11 +34,11 @@
   display: block;
 }
 
-&.enable_share .share_help {
+&.enable_share .share_help, &.enable_border .border_help, &.enable_hide_marker .hide_marker_help {
   display: inline;
 }
 
-.ol-touch .ol-zoom {
+&.ol-touch .ol-zoom {
   display: none;
 }
 
@@ -55,7 +55,7 @@
   left: calc(.5em + env(safe-area-inset-left));
 }
 
-.ol-touch .gps {
+&.ol-touch .gps {
   top: .5em;
 }
 
@@ -66,7 +66,7 @@
   left: calc(.5em + env(safe-area-inset-left));
 }
 
-.ol-touch .home {
+&.ol-touch .home {
   top: calc(.5em + 50px);
 }
 
@@ -448,11 +448,11 @@ input[type="checkbox"].markerlist:checked + label.check > div {
 }
 
 @media screen and (max-width: 480px) {
-  .ol-touch .swiper-slide div {
+  &.ol-touch .swiper-slide div {
     font-size: .8em;
   }
 
-  .ol-touch .swiper-slide div.minimize {
+  &.ol-touch .swiper-slide div.minimize {
     font-size: .6em;
   }
 }
@@ -464,33 +464,33 @@ input[type="checkbox"].markerlist:checked + label.check > div {
   bottom: calc(105px + .5em);
 }
 
-.ol-touch .ol-share {
+&.ol-touch .ol-share {
   bottom: calc(115px + .5em);
   bottom: calc(115px + .5em + constant(safe-area-inset-bottom));
   bottom: calc(115px + .5em + env(safe-area-inset-bottom));
 }
 
-.ol-border {
+.ol-border, .ol-hide-marker {
   right: .5em;
   right: calc(.5em + constant(safe-area-inset-right));
   right: calc(.5em + env(safe-area-inset-right));
   bottom: calc(105px + .5em);
 }
 
-.ol-touch .ol-border {
+&.ol-touch .ol-border, &.ol-touch .ol-hide-marker {
   bottom: calc(115px + .5em);
   bottom: calc(115px + .5em + constant(safe-area-inset-bottom));
   bottom: calc(115px + .5em + env(safe-area-inset-bottom));
 }
 
-.ol-hide-marker {
+&.enable_border .ol-hide-marker {
   right: .5em;
   right: calc(.5em + constant(safe-area-inset-right));
   right: calc(.5em + env(safe-area-inset-right));
   bottom: calc(145px + .5em);
 }
 
-.ol-touch .ol-hide-marker {
+&.enable_border.ol-touch .ol-hide-marker {
   bottom: calc(165px + .5em);
   bottom: calc(165px + .5em + constant(safe-area-inset-bottom));
   bottom: calc(165px + .5em + env(safe-area-inset-bottom));

@@ -35,9 +35,7 @@ import pointer from "./pointer_images";
 export class MaplatUi extends EventTarget {
   constructor(appOption) {
     super();
-    console.log(appOption);
     appOption = normalizeArg(appOption);
-    console.log(appOption);
     if (appOption.control) {
       setControlSettings(appOption.control);
     }
@@ -182,6 +180,14 @@ export class MaplatUi extends EventTarget {
       ui.core.mapDivDocument.classList.add("enable_share");
       ui.enableShare = true;
     }
+    if (appOption.enableHideMarker) {
+      ui.core.mapDivDocument.classList.add("enable_hide_marker");
+      ui.enableHideMarker = true;
+    }
+    if (appOption.enableBorder) {
+      ui.core.mapDivDocument.classList.add("enable_border");
+      ui.enableBorder = true;
+    }
     if (appOption.stateUrl) {
       ui.core.mapDivDocument.classList.add("state_url");
     }
@@ -269,8 +275,8 @@ export class MaplatUi extends EventTarget {
               <li dinh="html.help_etc_attr" c="recipient"></li>
               <li dinh="html.help_etc_help" c="recipient"></li>
               <s c="share_help"><li dinh="html.help_share_help" c="recipient"></li></s>
-              <li dinh="html.help_etc_border" c="recipient"></li>
-              <li dinh="html.help_etc_hide_marker" c="recipient"></li>
+              <s c="border_help"><li dinh="html.help_etc_border" c="recipient"></li></s>
+              <s c="hide_marker_help"><li dinh="html.help_etc_hide_marker" c="recipient"></li></s>
               <li dinh="html.help_etc_slider" c="recipient"></li>
             </ul>
             <p><a href="https://github.com/code4nara/Maplat/wiki" target="_blank">Maplat</a>
@@ -527,18 +533,26 @@ export class MaplatUi extends EventTarget {
         ui.sliderCommon,
         new Maplat({
           tipLabel: ui.core.t("control.help", { ns: "translation" })
-        }),
-        new Border({
-          tipLabel: ui.core.t("control.border", { ns: "translation" })
-        }),
-        new HideMarker({
-          tipLabel: ui.core.t("control.hide_marker", { ns: "translation" })
         })
       ];
       if (ui.enableShare) {
         ui.core.appData.controls.push(
           new Share({
             tipLabel: ui.core.t("control.share", { ns: "translation" })
+          })
+        );
+      }
+      if (ui.enableBorder) {
+        ui.core.appData.controls.push(
+          new Border({
+            tipLabel: ui.core.t("control.border", { ns: "translation" })
+          })
+        );
+      }
+      if (ui.enableHideMarker) {
+        ui.core.appData.controls.push(
+          new HideMarker({
+            tipLabel: ui.core.t("control.hide_marker", { ns: "translation" })
           })
         );
       }
