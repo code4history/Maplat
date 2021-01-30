@@ -35,7 +35,9 @@ import pointer from "./pointer_images";
 export class MaplatUi extends EventTarget {
   constructor(appOption) {
     super();
+    console.log(appOption);
     appOption = normalizeArg(appOption);
+    console.log(appOption);
     if (appOption.control) {
       setControlSettings(appOption.control);
     }
