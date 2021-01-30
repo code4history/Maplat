@@ -14,18 +14,18 @@ import { Zoom as BaseZoom } from "ol/control";
 
 let control_settings = {};
 const delegator = {
-  "compass": "compass.png",
-  "border": "border.png",
-  "attr": "attr.png",
-  "gps": "gps.png",
-  "zoom_plus": "plus.png",
-  "zoom_minus": "minus.png",
-  "help": "help.png",
-  "home": "home.png",
-  "hide_marker": "hide_marker.png",
-  "share": "share.png",
-  "slider_in_help": "slider.png",
-  "favicon": "favicon.png"
+  compass: "compass.png",
+  border: "border.png",
+  attr: "attr.png",
+  gps: "gps.png",
+  zoom_plus: "plus.png",
+  zoom_minus: "minus.png",
+  help: "help.png",
+  home: "home.png",
+  hide_marker: "hide_marker.png",
+  share: "share.png",
+  slider_in_help: "slider.png",
+  favicon: "favicon.png"
 };
 
 function hexRgb(hex) {
@@ -149,7 +149,12 @@ export class SliderCommon extends Control {
      */
     this.dragger_ = new PointerEventHandler(containerElement);
 
-    listen(this.dragger_, EventType.POINTERDOWN, this.handleDraggerStart_, this);
+    listen(
+      this.dragger_,
+      EventType.POINTERDOWN,
+      this.handleDraggerStart_,
+      this
+    );
     listen(this.dragger_, EventType.POINTERMOVE, this.handleDraggerDrag_, this);
     listen(this.dragger_, EventType.POINTERUP, this.handleDraggerEnd_, this);
 
@@ -164,8 +169,10 @@ export class SliderCommon extends Control {
         button.style.backgroundColor = `rgba(${rgb.red},${rgb.green},${rgb.blue},.7)`;
       });
       button.addEventListener("mouseout", () => {
-        const disable = this.element.classList.contains('disable');
-        button.style.backgroundColor = `rgba(${rgb.red},${rgb.green},${rgb.blue},${disable ? 0.2 : 0.5})`;
+        const disable = this.element.classList.contains("disable");
+        button.style.backgroundColor = `rgba(${rgb.red},${rgb.green},${
+          rgb.blue
+        },${disable ? 0.2 : 0.5})`;
       });
     }
   }
@@ -389,7 +396,9 @@ export class SliderCommon extends Control {
     }
     if (control_settings["slider_color"]) {
       const rgb = hexRgb(control_settings["slider_color"]);
-      elem.querySelector("button").style.backgroundColor = `rgba(${rgb.red},${rgb.green},${rgb.blue},${cond ? 0.5 : 0.2})`;
+      elem.querySelector("button").style.backgroundColor = `rgba(${rgb.red},${
+        rgb.green
+      },${rgb.blue},${cond ? 0.5 : 0.2})`;
     }
   }
 }
@@ -517,7 +526,9 @@ export class CustomControl extends Control {
 export class GoHome extends CustomControl {
   constructor(optOptions) {
     const options = optOptions || {};
-    options.character = control_settings["home"] ? `<img src="${control_settings["home"]}">` : '<i class="fa fa-home fa-lg"></i>';
+    options.character = control_settings["home"]
+      ? `<img src="${control_settings["home"]}">`
+      : '<i class="fa fa-home fa-lg"></i>';
     options.cls = "home";
     options.callback = function () {
       const source = this.getMap().getLayers().item(0).getSource();
@@ -534,7 +545,9 @@ export class GoHome extends CustomControl {
 export class SetGPS extends CustomControl {
   constructor(optOptions) {
     const options = optOptions || {};
-    options.character = control_settings["gps"] ? `<img src="${control_settings["gps"]}">` : '<i class="fa fa-crosshairs fa-lg"></i>';
+    options.character = control_settings["gps"]
+      ? `<img src="${control_settings["gps"]}">`
+      : '<i class="fa fa-crosshairs fa-lg"></i>';
     options.cls = "gps";
     options.render = function (mapEvent) {
       const frameState = mapEvent.frameState;
@@ -578,7 +591,9 @@ export class CompassRotate extends Rotate {
     const options = optOptions || {};
     options.autoHide = false;
     const span = document.createElement("span"); // eslint-disable-line no-undef
-    span.innerHTML = control_settings["compass"] ? `<img src="${control_settings["compass"]}">` : '<i class="fa fa-compass fa-lg ol-compass-fa"></i>';
+    span.innerHTML = control_settings["compass"]
+      ? `<img src="${control_settings["compass"]}">`
+      : '<i class="fa fa-compass fa-lg ol-compass-fa"></i>';
     options.label = span;
     options.render = function (mapEvent) {
       const frameState = mapEvent.frameState;
@@ -638,7 +653,9 @@ export class CompassRotate extends Rotate {
 export class Share extends CustomControl {
   constructor(optOptions) {
     const options = optOptions || {};
-    options.character = control_settings["share"] ? `<img src="${control_settings["share"]}">` : '<i class="fa fa-share-alt-square fa-lg"></i>';
+    options.character = control_settings["share"]
+      ? `<img src="${control_settings["share"]}">`
+      : '<i class="fa fa-share-alt-square fa-lg"></i>';
     options.cls = "ol-share";
     options.callback = function () {
       const map = this.getMap();
@@ -658,7 +675,9 @@ export class Share extends CustomControl {
 export class Border extends CustomControl {
   constructor(optOptions) {
     const options = optOptions || {};
-    options.character = control_settings["border"] ? `<img src="${control_settings["border"]}">` : '<i class="fa fa-clone fa-lg"></i>';
+    options.character = control_settings["border"]
+      ? `<img src="${control_settings["border"]}">`
+      : '<i class="fa fa-clone fa-lg"></i>';
     options.cls = "ol-border";
     options.callback = function () {
       const map = this.getMap();
@@ -678,7 +697,9 @@ export class Border extends CustomControl {
 export class Maplat extends CustomControl {
   constructor(optOptions) {
     const options = optOptions || {};
-    options.character = control_settings["help"] ? `<img src="${control_settings["help"]}">` : '<i class="fa fa-question-circle fa-lg"></i>';
+    options.character = control_settings["help"]
+      ? `<img src="${control_settings["help"]}">`
+      : '<i class="fa fa-question-circle fa-lg"></i>';
     options.cls = "ol-maplat";
     options.callback = function () {
       const map = this.getMap();
@@ -698,7 +719,9 @@ export class Maplat extends CustomControl {
 export class Copyright extends CustomControl {
   constructor(optOptions) {
     const options = optOptions || {};
-    options.character = control_settings["attr"] ? `<img src="${control_settings["attr"]}">` : '<i class="fa fa-info-circle fa-lg"></i>';
+    options.character = control_settings["attr"]
+      ? `<img src="${control_settings["attr"]}">`
+      : '<i class="fa fa-info-circle fa-lg"></i>';
     options.cls = "ol-copyright";
     options.callback = function () {
       const map = this.getMap();
@@ -718,7 +741,9 @@ export class Copyright extends CustomControl {
 export class HideMarker extends CustomControl {
   constructor(optOptions) {
     const options = optOptions || {};
-    options.character = control_settings["hide_marker"] ? `<img src="${control_settings["hide_marker"]}">` : '<i class="fa fa-map-marker fa-lg"></i>';
+    options.character = control_settings["hide_marker"]
+      ? `<img src="${control_settings["hide_marker"]}">`
+      : '<i class="fa fa-map-marker fa-lg"></i>';
     options.cls = "ol-hide-marker";
     options.callback = function () {
       const map = this.getMap();
@@ -744,10 +769,14 @@ export class HideMarker extends CustomControl {
 export class Zoom extends BaseZoom {
   constructor(options = {}) {
     if (control_settings["zoom_plus"]) {
-      options.zoomInLabel = createElement(`<img src="${control_settings["zoom_plus"]}">`)[0];
+      options.zoomInLabel = createElement(
+        `<img src="${control_settings["zoom_plus"]}">`
+      )[0];
     }
     if (control_settings["zoom_minus"]) {
-      options.zoomOutLabel = createElement(`<img src="${control_settings["zoom_minus"]}">`)[0];
+      options.zoomOutLabel = createElement(
+        `<img src="${control_settings["zoom_minus"]}">`
+      )[0];
     }
 
     super(options);
