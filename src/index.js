@@ -129,6 +129,9 @@ export class MaplatUi extends EventTarget {
     const ui = this;
     appOption.translateUI = true;
     ui.core = new Core(appOption);
+    if (appOption.icon) {
+      pointer["defaultpin.png"] = appOption.icon;
+    }
 
     if (appOption.restore) {
       ui.setShowBorder(appOption.restore.showBorder || false);

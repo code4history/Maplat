@@ -780,7 +780,6 @@ export class Zoom extends BaseZoom {
     }
 
     super(options);
-    console.log(this.element);
     if (control_settings["compass"]) {
       const buttons = this.element.querySelectorAll("button");
       buttons.forEach(button => {
