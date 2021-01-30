@@ -191,6 +191,9 @@ export class MaplatUi extends EventTarget {
       ui.core.mapDivDocument.classList.add("enable_border");
       ui.enableBorder = true;
     }
+    if (appOption.disableNoimage) {
+      ui.disableNoimage = true;
+    }
     if (appOption.stateUrl) {
       ui.core.mapDivDocument.classList.add("state_url");
     }
@@ -904,8 +907,12 @@ export class MaplatUi extends EventTarget {
 
         const img = ui.core.mapDivDocument.querySelector(".poi_img_tag");
         if (data.image && data.image != "") {
+          img.classList.remove("hide");
           img.setAttribute("src", ui.resolveRelativeLink(data.image, "img"));
+        } else if (ui.disableNoimage) {
+          img.classList.add("hide");
         } else {
+          img.classList.remove("hide");
           img.setAttribute("src", pointer["no_image.png"]);
         }
         ui.core.mapDivDocument.querySelector(

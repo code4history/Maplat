@@ -25,7 +25,8 @@ const delegator = {
   hide_marker: "hide_marker.png",
   share: "share.png",
   slider_in_help: "slider.png",
-  favicon: "favicon.png"
+  favicon: "favicon.png",
+
 };
 
 function hexRgb(hex) {
