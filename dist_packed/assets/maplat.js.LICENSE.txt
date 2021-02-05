@@ -1,4 +1,10 @@
 /*!
+  * ol-contextmenu - v4.1.0
+  * https://github.com/jonataswalker/ol-contextmenu
+  * Built: Sat Aug 15 2020 10:43:26 GMT-0300 (Brasilia Standard Time)
+  */
+
+/*!
   **  sprintf.js -- POSIX sprintf(3)-style String Formatting for JavaScript
   **  Copyright (c) 2006-2014 Ralf S. Engelschall <rse@engelschall.com>
   **  Partly based on Public Domain code by Jan Moesen <http://jan.moesen.nu/>

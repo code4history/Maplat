@@ -4,6 +4,7 @@ import EventTarget from "ol/events/Target";
 import page from "../legacy/page";
 import bsn from "../legacy/bootstrap-native";
 import { MaplatApp as Core, createElement } from "@maplat/core";
+import ContextMenu from "ol-contextmenu";
 import iziToast from "../legacy/iziToast";
 import QRCode from "../legacy/qrcode";
 import { point, polygon } from "@turf/helpers";
@@ -49,7 +50,7 @@ export class MaplatUi extends EventTarget {
         let path = pathes.length > 1 ? pathes[1] : pathes[0];
         pathes = path.split("?");
         path = pathes[0];
-        if (path == ui.pathThatSet) {
+        if (path === ui.pathThatSet) {
           delete ui.pathThatSet;
           return;
         }
@@ -82,10 +83,10 @@ export class MaplatUi extends EventTarget {
               restore.position[line[0]] = parseFloat(line[1]);
               break;
             case "sb":
-              restore.showBorder = parseInt(line[1]) ? true : false;
+              restore.showBorder = !!parseInt(line[1]);
               break;
             case "hm":
-              restore.hideMarker = parseInt(line[1]) ? true : false;
+              restore.hideMarker = !!parseInt(line[1]);
               break;
             case "hl":
               restore.hideLayer = line[1];
@@ -143,7 +144,7 @@ export class MaplatUi extends EventTarget {
       const currentTime = Math.floor(new Date().getTime() / 1000);
       if (lastEpoch && currentTime - lastEpoch < 3600) {
         ui.setShowBorder(
-          parseInt(localStorage.getItem("showBorder") || "0") ? true : false
+          !!parseInt(localStorage.getItem("showBorder") || "0")
         ); // eslint-disable-line no-undef
       }
       if (ui.core.initialRestore.hideMarker) {
@@ -153,31 +154,9 @@ export class MaplatUi extends EventTarget {
       ui.setShowBorder(false);
     }
 
-    const enableSplash = ui.core.initialRestore.mapID ? false : true;
+    const enableSplash = !ui.core.initialRestore.mapID;
     const restoreTransparency = ui.core.initialRestore.transparency;
-    const enableOutOfMap = appOption.presentation_mode ? false : true;
-
-    // Modal記述の動作を調整する関数
-    const modalSetting = function (target) {
-      const modalElm = ui.core.mapDivDocument.querySelector(".modalBase");
-      [
-        "poi",
-        "map",
-        "load",
-        "gpsW",
-        "gpsD",
-        "help",
-        "share",
-        "hide_marker"
-      ].map(target_ => {
-        const className = `modal_${target_}`;
-        if (target == target_) {
-          modalElm.classList.add(className);
-        } else {
-          modalElm.classList.remove(className);
-        }
-      });
-    };
+    const enableOutOfMap = !appOption.presentation_mode;
 
     if (appOption.enableShare) {
       ui.core.mapDivDocument.classList.add("enable_share");
@@ -385,22 +364,22 @@ export class MaplatUi extends EventTarget {
           div2.length > 1
             ? div2[1]
                 .split("&")
-                .filter(qs => (qs == "pwa" ? false : true))
+                .filter(qs => (qs !== "pwa"))
                 .join("&")
             : "";
 
         if (query) uri = `${uri}?${query}`;
-        if (cmds[1] == "view") {
+        if (cmds[1] === "view") {
           if (path) uri = `${uri}#!${path}`;
         }
-        if (cmds[0] == "cp") {
+        if (cmds[0] === "cp") {
           const copyFrom = document.createElement("textarea"); // eslint-disable-line no-undef
           copyFrom.textContent = uri;
 
           const bodyElm = document.querySelector("body"); // eslint-disable-line no-undef
           bodyElm.appendChild(copyFrom);
 
-          if (/iP(hone|(o|a)d)/.test(navigator.userAgent)) {
+          if (/iP(hone|[oa]d)/.test(navigator.userAgent)) {
             // eslint-disable-line no-undef
             const range = document.createRange(); // eslint-disable-line no-undef
             range.selectNode(copyFrom);
@@ -420,7 +399,7 @@ export class MaplatUi extends EventTarget {
             progressBar: false,
             target: toastParent
           });
-        } else if (cmds[0] == "tw") {
+        } else if (cmds[0] === "tw") {
           const twuri = `https://twitter.com/share?url=${encodeURIComponent(
             uri
           )}&hashtags=Maplat`;
@@ -429,7 +408,7 @@ export class MaplatUi extends EventTarget {
             "_blank",
             "width=650,height=450,menubar=no,toolbar=no,scrollbars=yes"
           ); // eslint-disable-line no-undef
-        } else if (cmds[0] == "fb") {
+        } else if (cmds[0] === "fb") {
           // https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2Fshare-button%2F&display=popup&ref=plugin&src=like&kid_directed_site=0&app_id=113869198637480
           const fburi = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
             uri
@@ -562,6 +541,16 @@ export class MaplatUi extends EventTarget {
           })
         );
       }
+
+      // Contextmenu
+      ui.contextMenu = new ContextMenu({
+        eventType: "__dummy__",
+        width: 170,
+        defaultItems: false,
+        items: []
+      });
+      ui.core.appData.controls.push(ui.contextMenu);
+
       if (ui.core.mapObject) {
         ui.core.appData.controls.map(control => {
           ui.core.mapObject.addControl(control);
@@ -592,7 +581,7 @@ export class MaplatUi extends EventTarget {
             .querySelector(".splash_div")
             .classList.remove("hide");
         }
-        modalSetting("load");
+        ui.modalSetting("load");
         modal.show();
 
         const fadeTime = splash ? 1000 : 200;
@@ -645,7 +634,7 @@ export class MaplatUi extends EventTarget {
         if (source.envelope) {
           source.envelopeColor = colors[cIndex];
           cIndex = cIndex + 1;
-          if (cIndex == colors.length) cIndex = 0;
+          if (cIndex === colors.length) cIndex = 0;
 
           const xys = source.envelope.geometry.coordinates[0];
           source.envelopeAreaIndex =
@@ -666,7 +655,7 @@ export class MaplatUi extends EventTarget {
           const modal = new bsn.Modal(modalElm, {
             root: ui.core.mapDivDocument
           });
-          modalSetting("load");
+          ui.modalSetting("load");
           modal.hide();
         });
       }
@@ -694,7 +683,7 @@ export class MaplatUi extends EventTarget {
         },
         centeredSlides: true,
         threshold: 2,
-        loop: baseSources.length < 2 ? false : true
+        loop: baseSources.length >= 2
       }));
       baseSwiper.on("click", e => {
         e.preventDefault();
@@ -724,7 +713,7 @@ export class MaplatUi extends EventTarget {
         },
         centeredSlides: true,
         threshold: 2,
-        loop: overlaySources.length < 2 ? false : true
+        loop: overlaySources.length >= 2
       }));
       overlaySwiper.on("click", e => {
         e.preventDefault();
@@ -811,7 +800,7 @@ export class MaplatUi extends EventTarget {
         ).innerText = ui.core.t("app.out_of_map_area");
         const modalElm = ui.core.mapDivDocument.querySelector(".modalBase");
         const modal = new bsn.Modal(modalElm, { root: ui.core.mapDivDocument });
-        modalSetting("gpsD");
+        ui.modalSetting("gpsD");
         modal.show();
       }
     });
@@ -845,7 +834,7 @@ export class MaplatUi extends EventTarget {
       }
 
       ui.xyToMapID(evt.detail, mapID => {
-        if (ui.selectCandidate && ui.selectCandidate == mapID) {
+        if (ui.selectCandidate && ui.selectCandidate === mapID) {
           ui.core.changeMap(ui.selectCandidate);
           delete ui.selectCandidate;
           delete ui._selectCandidateSource;
@@ -855,89 +844,50 @@ export class MaplatUi extends EventTarget {
       });
     });
 
-    ui.core.addEventListener("clickMarker", evt => {
+    ui.core.addEventListener("clickMarkers", evt => {
       const data = evt.detail;
-
-      if (data.directgo) {
-        let blank = false;
-        let href = "";
-        if (typeof data.directgo == "string") {
-          href = data.directgo;
-        } else {
-          href = data.directgo.href;
-          blank = data.directgo.blank || false;
-        }
-        if (blank) {
-          window.open(href, "_blank"); // eslint-disable-line no-undef
-        } else {
-          window.location.href = href; // eslint-disable-line no-undef
-        }
-        return;
-      }
-
-      ui.core.mapDivDocument.querySelector(
-        ".modal_title"
-      ).innerText = ui.core.translate(data.name);
-      if (data.url || data.html) {
-        ui.core.mapDivDocument
-          .querySelector(".poi_web")
-          .classList.remove("hide");
-        ui.core.mapDivDocument.querySelector(".poi_data").classList.add("hide");
-        const iframe = ui.core.mapDivDocument.querySelector(".poi_iframe");
-        if (data.html) {
-          iframe.addEventListener("load", function loadEvent(event) {
-            event.currentTarget.removeEventListener(event.type, loadEvent);
-            const cssLink = createElement(
-              '<style type="text/css">html, body { height: 100vh; }\n img { width: 100vw; }</style>'
-            );
-            console.log(cssLink); // eslint-disable-line no-undef
-            iframe.contentDocument.head.appendChild(cssLink[0]);
-          });
-          iframe.removeAttribute("src");
-          iframe.setAttribute("srcdoc", ui.core.translate(data.html));
-        } else {
-          iframe.removeAttribute("srcdoc");
-          iframe.setAttribute("src", ui.core.translate(data.url));
-        }
+      if (data.length === 1) {
+        ui.handleMarkerAction(data[0]);
       } else {
-        ui.core.mapDivDocument
-          .querySelector(".poi_data")
-          .classList.remove("hide");
-        ui.core.mapDivDocument.querySelector(".poi_web").classList.add("hide");
+        ui.contextMenu.clear();
+        data.forEach(datum => {
+          ui.contextMenu.push({
+            icon: datum.icon || pointer["defaultpin.png"],
+            text: ui.core.translate(datum.name),
+            callback: () => {
+              ui.handleMarkerAction(datum);
+            }
+          })
+        });
 
-        const img = ui.core.mapDivDocument.querySelector(".poi_img_tag");
-        if (data.image && data.image != "") {
-          img.classList.remove("hide");
-          img.setAttribute("src", ui.resolveRelativeLink(data.image, "img"));
-        } else if (ui.disableNoimage) {
-          img.classList.add("hide");
-        } else {
-          img.classList.remove("hide");
-          img.setAttribute("src", pointer["no_image.png"]);
-        }
-        ui.core.mapDivDocument.querySelector(
-          ".poi_address"
-        ).innerText = ui.core.translate(data.address);
-        ui.core.mapDivDocument.querySelector(
-          ".poi_desc"
-        ).innerHTML = ui.core.translate(data.desc).replace(/\n/g, "<br>");
+        const coordinate = ui.core.lastClickEvent.coordinate;
+        const pixel = ui.core.lastClickEvent.pixel;
+
+        ui.contextMenu.dispatchEvent({
+          type: "beforeopen",
+          pixel,
+          coordinate,
+        });
+
+        if (ui.contextMenu.disabled) return;
+
+        ui.contextMenu.Internal.openMenu(pixel, coordinate);
+
+        //one-time fire
+        ui.core.mapObject.getViewport().addEventListener(
+          'pointerdown',
+          {
+            handleEvent(e) {
+              if (ui.contextMenu.Internal.opened) {
+                ui.contextMenu.Internal.closeMenu();
+                e.stopPropagation();
+                ui.core.mapObject.getViewport().removeEventListener(e.type, this, false);
+              }
+            },
+          },
+          false
+        );
       }
-      const modalElm = ui.core.mapDivDocument.querySelector(".modalBase");
-      const modal = new bsn.Modal(modalElm, { root: ui.core.mapDivDocument });
-      ui.core.selectMarker(data.namespaceID);
-      const hideFunc = function (_event) {
-        modalElm.removeEventListener("hide.bs.modal", hideFunc, false);
-        ui.core.unselectMarker();
-      };
-      const hiddenFunc = function (_event) {
-        modalElm.removeEventListener("hidden.bs.modal", hiddenFunc, false);
-        const img = ui.core.mapDivDocument.querySelector(".poi_img_tag");
-        img.setAttribute("src", pointer["loading_image.png"]);
-      };
-      modalElm.addEventListener("hide.bs.modal", hideFunc, false);
-      modalElm.addEventListener("hidden.bs.modal", hiddenFunc, false);
-      modalSetting("poi");
-      modal.show();
     });
 
     if (appOption.stateUrl) {
@@ -970,7 +920,7 @@ export class MaplatUi extends EventTarget {
       function showGPSresult(result) {
         if (result && result.error) {
           ui.core.currentPosition = null;
-          if (result.error == "gps_out" && shown) {
+          if (result.error === "gps_out" && shown) {
             shown = false;
             const modalElm = ui.core.mapDivDocument.querySelector(".modalBase");
             const modal = new bsn.Modal(modalElm, {
@@ -982,7 +932,7 @@ export class MaplatUi extends EventTarget {
             ui.core.mapDivDocument.querySelector(
               ".modal_gpsD_content"
             ).innerText = ui.core.t("app.out_of_map_desc");
-            modalSetting("gpsD");
+            ui.modalSetting("gpsD");
             modal.show();
           }
         } else {
@@ -1001,7 +951,7 @@ export class MaplatUi extends EventTarget {
         gpsWaitPromise = "gps_request";
         const promises = [
           new Promise(resolve => {
-            if (gpsWaitPromise != "gps_request") {
+            if (gpsWaitPromise !== "gps_request") {
               resolve(gpsWaitPromise);
             } else gpsWaitPromise = resolve;
           })
@@ -1009,7 +959,7 @@ export class MaplatUi extends EventTarget {
         shown = true;
         const modalElm = ui.core.mapDivDocument.querySelector(".modalBase");
         const modal = new bsn.Modal(modalElm, { root: ui.core.mapDivDocument });
-        modalSetting("gpsW");
+        ui.modalSetting("gpsW");
         modal.show();
         // 200m秒以上最低待たないと、Modalがうまく動かない場合がある
         promises.push(
@@ -1022,7 +972,7 @@ export class MaplatUi extends EventTarget {
         });
       });
       ui.core.mapObject.on("gps_result", evt => {
-        if (gpsWaitPromise == "gps_request") {
+        if (gpsWaitPromise === "gps_request") {
           gpsWaitPromise = evt.frameState;
         } else if (gpsWaitPromise) {
           gpsWaitPromise(evt.frameState);
@@ -1038,12 +988,12 @@ export class MaplatUi extends EventTarget {
         const control = evt.frameState.control;
         const modalElm = ui.core.mapDivDocument.querySelector(".modalBase");
         const modal = new bsn.Modal(modalElm, { root: ui.core.mapDivDocument });
-        if (control == "copyright") {
+        if (control === "copyright") {
           const from = ui.core.getMapMeta();
 
           if (
             !META_KEYS.reduce((prev, curr) => {
-              if (curr == "title") return prev;
+              if (curr === "title") return prev;
               return from[curr] || prev;
             }, false)
           )
@@ -1053,8 +1003,8 @@ export class MaplatUi extends EventTarget {
             ".modal_title"
           ).innerText = ui.core.translate(from.officialTitle || from.title);
           META_KEYS.map(key => {
-            if (key == "title" || key == "officialTitle") return;
-            if (!from[key] || from[key] == "") {
+            if (key === "title" || key === "officialTitle") return;
+            if (!from[key] || from[key] === "") {
               ui.core.mapDivDocument
                 .querySelector(`.${key}_div`)
                 .classList.add("hide");
@@ -1063,7 +1013,7 @@ export class MaplatUi extends EventTarget {
                 .querySelector(`.${key}_div`)
                 .classList.remove("hide");
               ui.core.mapDivDocument.querySelector(`.${key}_dd`).innerHTML =
-                key == "license" || key == "dataLicense"
+                key === "license" || key === "dataLicense"
                   ? `<img src="${
                       pointer[
                         `${from[key].toLowerCase().replace(/ /g, "_")}.png`
@@ -1092,7 +1042,7 @@ export class MaplatUi extends EventTarget {
             ).innerHTML = `${size} ${unit}`;
           };
 
-          modalSetting("map");
+          ui.modalSetting("map");
           const deleteButton = document.querySelector(".cache_delete"); // eslint-disable-line no-undef
           const deleteFunc = async function (evt) {
             evt.preventDefault();
@@ -1115,11 +1065,11 @@ export class MaplatUi extends EventTarget {
             // eslint-disable-line no-undef
             deleteButton.addEventListener("click", deleteFunc, false);
           }, 100);
-        } else if (control == "help") {
-          modalSetting("help");
+        } else if (control === "help") {
+          ui.modalSetting("help");
           modal.show();
-        } else if (control == "share") {
-          modalSetting("share");
+        } else if (control === "share") {
+          ui.modalSetting("share");
 
           const base = location.href; // eslint-disable-line no-undef
           const div1 = base.split("#!");
@@ -1130,7 +1080,7 @@ export class MaplatUi extends EventTarget {
             div2.length > 1
               ? div2[1]
                   .split("&")
-                  .filter(qs => (qs == "pwa" ? false : true))
+                  .filter(qs => (qs !== "pwa"))
                   .join("&")
               : "";
 
@@ -1169,14 +1119,14 @@ export class MaplatUi extends EventTarget {
           }
 
           modal.show();
-        } else if (control == "border") {
+        } else if (control === "border") {
           const flag = !ui.core.stateBuffer.showBorder;
           ui.setShowBorder(flag);
-        } else if (control == "hideMarker") {
+        } else if (control === "hideMarker") {
           const flag = !ui.core.stateBuffer.hideMarker;
           ui.setHideMarker(flag);
-        } else if (control == "hideLayer") {
-          modalSetting("hide_marker");
+        } else if (control === "hideLayer") {
+          ui.modalSetting("hide_marker");
           const layers = ui.core.listPoiLayers(false, true);
           const elem = ui.core.mapDivDocument.querySelector("ul.list-group");
           const modalElm = ui.core.mapDivDocument.querySelector(".modalBase");
@@ -1248,10 +1198,115 @@ export class MaplatUi extends EventTarget {
     });
   }
 
+  // Modal記述の動作を調整する関数
+  modalSetting(target) {
+    const modalElm = this.core.mapDivDocument.querySelector(".modalBase");
+    [
+      "poi",
+      "map",
+      "load",
+      "gpsW",
+      "gpsD",
+      "help",
+      "share",
+      "hide_marker"
+    ].map(target_ => {
+      const className = `modal_${target_}`;
+      if (target === target_) {
+        modalElm.classList.add(className);
+      } else {
+        modalElm.classList.remove(className);
+      }
+    });
+  }
+
+  handleMarkerAction(data) {
+    if (data.directgo) {
+      let blank = false;
+      let href = "";
+      if (typeof data.directgo == "string") {
+        href = data.directgo;
+      } else {
+        href = data.directgo.href;
+        blank = data.directgo.blank || false;
+      }
+      if (blank) {
+        window.open(href, "_blank"); // eslint-disable-line no-undef
+      } else {
+        window.location.href = href; // eslint-disable-line no-undef
+      }
+      return;
+    }
+
+    this.core.mapDivDocument.querySelector(
+      ".modal_title"
+    ).innerText = this.core.translate(data.name);
+    if (data.url || data.html) {
+      this.core.mapDivDocument
+        .querySelector(".poi_web")
+        .classList.remove("hide");
+      this.core.mapDivDocument.querySelector(".poi_data").classList.add("hide");
+      const iframe = this.core.mapDivDocument.querySelector(".poi_iframe");
+      if (data.html) {
+        iframe.addEventListener("load", function loadEvent(event) {
+          event.currentTarget.removeEventListener(event.type, loadEvent);
+          const cssLink = createElement(
+            '<style type="text/css">html, body { height: 100vh; }\n img { width: 100vw; }</style>'
+          );
+          console.log(cssLink); // eslint-disable-line no-undef
+          iframe.contentDocument.head.appendChild(cssLink[0]);
+        });
+        iframe.removeAttribute("src");
+        iframe.setAttribute("srcdoc", this.core.translate(data.html));
+      } else {
+        iframe.removeAttribute("srcdoc");
+        iframe.setAttribute("src", this.core.translate(data.url));
+      }
+    } else {
+      this.core.mapDivDocument
+        .querySelector(".poi_data")
+        .classList.remove("hide");
+      this.core.mapDivDocument.querySelector(".poi_web").classList.add("hide");
+
+      const img = this.core.mapDivDocument.querySelector(".poi_img_tag");
+      if (data.image && data.image !== "") {
+        img.classList.remove("hide");
+        img.setAttribute("src", this.resolveRelativeLink(data.image, "img"));
+      } else if (this.disableNoimage) {
+        img.classList.add("hide");
+      } else {
+        img.classList.remove("hide");
+        img.setAttribute("src", pointer["no_image.png"]);
+      }
+      this.core.mapDivDocument.querySelector(
+        ".poi_address"
+      ).innerText = this.core.translate(data.address);
+      this.core.mapDivDocument.querySelector(
+        ".poi_desc"
+      ).innerHTML = this.core.translate(data.desc).replace(/\n/g, "<br>");
+    }
+    const modalElm = this.core.mapDivDocument.querySelector(".modalBase");
+    const modal = new bsn.Modal(modalElm, { root: this.core.mapDivDocument });
+    this.core.selectMarker(data.namespaceID);
+    const hideFunc = _event => {
+      modalElm.removeEventListener("hide.bs.modal", hideFunc, false);
+      this.core.unselectMarker();
+    };
+    const hiddenFunc = _event => {
+      modalElm.removeEventListener("hidden.bs.modal", hiddenFunc, false);
+      const img = this.core.mapDivDocument.querySelector(".poi_img_tag");
+      img.setAttribute("src", pointer["loading_image.png"]);
+    };
+    modalElm.addEventListener("hide.bs.modal", hideFunc, false);
+    modalElm.addEventListener("hidden.bs.modal", hiddenFunc, false);
+    this.modalSetting("poi");
+    modal.show();
+  }
+
   showFillEnvelope(mapID) {
     const ui = this;
     if (mapID && mapID !== ui.core.from.mapID) {
-      if (ui.selectCandidate != mapID) {
+      if (ui.selectCandidate !== mapID) {
         if (ui._selectCandidateSource) {
           ui.core.mapObject.removeEnvelope(ui._selectCandidateSource);
         }
@@ -1304,7 +1359,7 @@ export class MaplatUi extends EventTarget {
       const mapID = sources.reduce((prev, curr) => {
         const source = curr[0];
         const mercXys = curr[1];
-        if (source.mapID == ui.core.from.mapID) return prev;
+        if (source.mapID === ui.core.from.mapID) return prev;
         const polygon_ = polygon([mercXys]);
         if (booleanPointInPolygon(point_, polygon_)) {
           if (!areaIndex || source.envelopeAreaIndex < areaIndex) {
@@ -1360,7 +1415,7 @@ export class MaplatUi extends EventTarget {
         .map(key => {
           const source = ui.core.cacheHash[key];
           const xyPromises =
-            key == ui.core.from.mapID && source instanceof HistMap
+            key === ui.core.from.mapID && source instanceof HistMap
               ? [
                   [0, 0],
                   [source.width, 0],
@@ -1394,7 +1449,7 @@ export class MaplatUi extends EventTarget {
     const sliders = swiper.$el[0].querySelectorAll(".swiper-slide");
     for (let i = 0; i < sliders.length; i++) {
       const slider = sliders[i];
-      if (slider.getAttribute("data") == mapID) {
+      if (slider.getAttribute("data") === mapID) {
         return true;
       }
     }
