@@ -143,9 +143,7 @@ export class MaplatUi extends EventTarget {
       const lastEpoch = parseInt(localStorage.getItem("epoch") || 0); // eslint-disable-line no-undef
       const currentTime = Math.floor(new Date().getTime() / 1000);
       if (lastEpoch && currentTime - lastEpoch < 3600) {
-        ui.setShowBorder(
-          !!parseInt(localStorage.getItem("showBorder") || "0")
-        ); // eslint-disable-line no-undef
+        ui.setShowBorder(!!parseInt(localStorage.getItem("showBorder") || "0")); // eslint-disable-line no-undef
       }
       if (ui.core.initialRestore.hideMarker) {
         ui.core.mapDivDocument.classList.add("hide-marker");
@@ -364,7 +362,7 @@ export class MaplatUi extends EventTarget {
           div2.length > 1
             ? div2[1]
                 .split("&")
-                .filter(qs => (qs !== "pwa"))
+                .filter(qs => qs !== "pwa")
                 .join("&")
             : "";
 
@@ -857,7 +855,7 @@ export class MaplatUi extends EventTarget {
             callback: () => {
               ui.handleMarkerAction(datum);
             }
-          })
+          });
         });
 
         const coordinate = ui.core.lastClickEvent.coordinate;
@@ -866,7 +864,7 @@ export class MaplatUi extends EventTarget {
         ui.contextMenu.dispatchEvent({
           type: "beforeopen",
           pixel,
-          coordinate,
+          coordinate
         });
 
         if (ui.contextMenu.disabled) return;
@@ -875,15 +873,17 @@ export class MaplatUi extends EventTarget {
 
         //one-time fire
         ui.core.mapObject.getViewport().addEventListener(
-          'pointerdown',
+          "pointerdown",
           {
             handleEvent(e) {
               if (ui.contextMenu.Internal.opened) {
                 ui.contextMenu.Internal.closeMenu();
                 e.stopPropagation();
-                ui.core.mapObject.getViewport().removeEventListener(e.type, this, false);
+                ui.core.mapObject
+                  .getViewport()
+                  .removeEventListener(e.type, this, false);
               }
-            },
+            }
           },
           false
         );
@@ -1080,7 +1080,7 @@ export class MaplatUi extends EventTarget {
             div2.length > 1
               ? div2[1]
                   .split("&")
-                  .filter(qs => (qs !== "pwa"))
+                  .filter(qs => qs !== "pwa")
                   .join("&")
               : "";
 
@@ -1201,23 +1201,16 @@ export class MaplatUi extends EventTarget {
   // Modal記述の動作を調整する関数
   modalSetting(target) {
     const modalElm = this.core.mapDivDocument.querySelector(".modalBase");
-    [
-      "poi",
-      "map",
-      "load",
-      "gpsW",
-      "gpsD",
-      "help",
-      "share",
-      "hide_marker"
-    ].map(target_ => {
-      const className = `modal_${target_}`;
-      if (target === target_) {
-        modalElm.classList.add(className);
-      } else {
-        modalElm.classList.remove(className);
+    ["poi", "map", "load", "gpsW", "gpsD", "help", "share", "hide_marker"].map(
+      target_ => {
+        const className = `modal_${target_}`;
+        if (target === target_) {
+          modalElm.classList.add(className);
+        } else {
+          modalElm.classList.remove(className);
+        }
       }
-    });
+    );
   }
 
   handleMarkerAction(data) {
