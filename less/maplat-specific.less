@@ -195,7 +195,7 @@ input[type="checkbox"].markerlist:checked + label.check > div {
   }
 }
 
-.swiper-container {
+.swiper-container.base-swiper, .swiper-container.overlay-swiper {
   position: absolute;
   bottom: .5em;
   bottom: calc(.5em + constant(safe-area-inset-bottom));
@@ -203,6 +203,12 @@ input[type="checkbox"].markerlist:checked + label.check > div {
   width: 224px;
   background-color: rgba(32, 32, 32, 0.5);
   height: 60px;
+}
+
+.swiper-container.poi_img_swiper {
+  position: relative;
+  width: 100%;
+  height: 500px;
 }
 
 .base-swiper {
@@ -214,7 +220,7 @@ input[type="checkbox"].markerlist:checked + label.check > div {
 }
 
 @media screen and (max-width: 640px) {
-  .swiper-container {
+  .swiper-container.base-swiper, .swiper-container.overlay-swiper {
     width: 35%;
   }
 
@@ -228,7 +234,7 @@ input[type="checkbox"].markerlist:checked + label.check > div {
 }
 
 @media screen and (max-width: 320px) {
-  .swiper-container {
+  .swiper-container.base-swiper, .swiper-container.overlay-swiper {
     width: 112px;
   }
 
@@ -241,7 +247,7 @@ input[type="checkbox"].markerlist:checked + label.check > div {
   }
 }
 
-.swiper-slide {
+.base-swiper .swiper-slide, .overlay-swiper .swiper-slide {
   text-align: center;
   font-size: 18px;
   background-color: rgba(0, 0, 0, 0);
@@ -263,7 +269,19 @@ input[type="checkbox"].markerlist:checked + label.check > div {
   align-items: center;
 }
 
-.swiper-slide.selected {
+.poi_img_swiper .swiper-slide {
+  width: 100%;
+  height: 100%;
+}
+
+.poi_img_swiper .swiper-slide img {
+  width:auto;
+  height:auto;
+  max-width:100%;
+  max-height:calc(100% - 50px);
+}
+
+.base-swiper .swiper-slide.selected, .overlay-swiper .swiper-slide.selected {
   background-color: rgba(0, 0, 255, 0.1);
 }
 

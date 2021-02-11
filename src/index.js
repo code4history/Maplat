@@ -275,6 +275,11 @@ export class MaplatUi extends EventTarget {
             <p c="col-xs-12 poi_img"><img c="poi_img_tag" src="${
               pointer["loading_image.png"]
             }"></p>
+            <d c="col-xs-12 swiper-container poi_img_swiper">
+              <d c="swiper-wrapper"></d>
+              <d c="swiper-button-next"></d>
+              <d c="swiper-button-prev swiper-button-white"></d>
+            </d>
             <p c="recipient poi_address"></p>
             <p c="recipient poi_desc"></p>
           </d> 
@@ -1234,6 +1239,7 @@ export class MaplatUi extends EventTarget {
     this.core.mapDivDocument.querySelector(
       ".modal_title"
     ).innerText = this.core.translate(data.name);
+    const modalElm = this.core.mapDivDocument.querySelector(".modalBase");
     if (data.url || data.html) {
       this.core.mapDivDocument
         .querySelector(".poi_web")
@@ -1271,6 +1277,28 @@ export class MaplatUi extends EventTarget {
         img.classList.remove("hide");
         img.setAttribute("src", pointer["no_image.png"]);
       }
+
+      const imgShowFunc = _event => {
+        modalElm.removeEventListener("shown.bs.modal", imgShowFunc, false);
+        if (!this.poiSwiper) {
+          this.poiSwiper = new Swiper('.swiper-container.poi_img_swiper', {
+            // Enable lazy loading
+            lazy: true,
+            pagination: {
+              el: '.swiper-pagination',
+              clickable: true,
+            },
+            navigation: {
+              nextEl: '.swiper-button-next',
+              prevEl: '.swiper-button-prev',
+            }
+          });
+        }
+        this.poiSwiper.appendSlide(`<div class="swiper-slide"><img src="${this.resolveRelativeLink(data.image, "img")}"></div>`);
+        this.poiSwiper.appendSlide(`<div class="swiper-slide"><img src="${pointer["no_image.png"]}"></div>`);
+      }
+      modalElm.addEventListener("shown.bs.modal", imgShowFunc, false);
+
       this.core.mapDivDocument.querySelector(
         ".poi_address"
       ).innerText = this.core.translate(data.address);
@@ -1278,7 +1306,6 @@ export class MaplatUi extends EventTarget {
         ".poi_desc"
       ).innerHTML = this.core.translate(data.desc).replace(/\n/g, "<br>");
     }
-    const modalElm = this.core.mapDivDocument.querySelector(".modalBase");
     const modal = new bsn.Modal(modalElm, { root: this.core.mapDivDocument });
     this.core.selectMarker(data.namespaceID);
     const hideFunc = _event => {
@@ -1289,6 +1316,7 @@ export class MaplatUi extends EventTarget {
       modalElm.removeEventListener("hidden.bs.modal", hiddenFunc, false);
       const img = this.core.mapDivDocument.querySelector(".poi_img_tag");
       img.setAttribute("src", pointer["loading_image.png"]);
+      this.poiSwiper.removeAllSlides();
     };
     modalElm.addEventListener("hide.bs.modal", hideFunc, false);
     modalElm.addEventListener("hidden.bs.modal", hiddenFunc, false);
