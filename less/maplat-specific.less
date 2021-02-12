@@ -208,7 +208,7 @@ input[type="checkbox"].markerlist:checked + label.check > div {
 .swiper-container.poi_img_swiper {
   position: relative;
   width: 100%;
-  height: 500px;
+  height: 300px;
 }
 
 .base-swiper {
@@ -272,17 +272,35 @@ input[type="checkbox"].markerlist:checked + label.check > div {
 .poi_img_swiper .swiper-slide {
   width: 100%;
   height: 100%;
+  text-align: center;
 }
 
 .poi_img_swiper .swiper-slide img {
-  width:auto;
-  height:auto;
-  max-width:100%;
-  max-height:calc(100% - 50px);
+  top: 0px;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: calc(100% - 50px);
+}
+
+.poi_img_swiper .swiper-slide div {
+  bottom: 0px;
+  width: 100%;
+  height: 50px;
+  text-align: center;
 }
 
 .base-swiper .swiper-slide.selected, .overlay-swiper .swiper-slide.selected {
   background-color: rgba(0, 0, 255, 0.1);
+}
+
+.base-next, .base-prev, .overlay-next, .overlay-prev {
+  margin-top: 0px;
+  top: 15px;
+  bottom: 15px;
+  height: 30px;
+  width: 18px;
+  background-size: 18px 30px;
 }
 
 &.show-border {
@@ -413,7 +431,7 @@ input[type="checkbox"].markerlist:checked + label.check > div {
   }
 }
 
-.swiper-slide img {
+.base-swiper .swiper-slide img, .overlay-swiper .swiper-slide img {
   position: absolute;
   top: 0;
   right: 0;
@@ -423,7 +441,7 @@ input[type="checkbox"].markerlist:checked + label.check > div {
   z-index: 0;
 }
 
-.swiper-slide div {
+.base-swiper .swiper-slide div, .overlay-swiper .swiper-slide div {
   font-size: 1em;
   position: absolute;
   right: 0;
@@ -434,7 +452,7 @@ input[type="checkbox"].markerlist:checked + label.check > div {
   color: white;
   background-color: rgba(32, 32, 32, 0.5);
 }
-.swiper-slide div.minimize {
+.base-swiper .swiper-slide div.minimize, .overlay-swiper .swiper-slide div.minimize {
   font-size: .8em;
 }
 

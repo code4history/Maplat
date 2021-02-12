@@ -192,14 +192,14 @@ export class MaplatUi extends EventTarget {
     // Add UI HTML Element
     let newElems = createElement(`<d c="ol-control map-title"><s></s></d> 
 <d c="swiper-container ol-control base-swiper prevent-default-ui">
-  <i c="fa fa-chevron-left swiper-left-icon" aria-hidden="true"></i>
-  <i c="fa fa-chevron-right swiper-right-icon" aria-hidden="true"></i>
   <d c="swiper-wrapper"></d> 
+  <d c="swiper-button-next base-next swiper-button-white"></d>
+  <d c="swiper-button-prev base-prev swiper-button-white"></d>
 </d> 
 <d c="swiper-container ol-control overlay-swiper prevent-default-ui">
-  <i c="fa fa-chevron-left swiper-left-icon" aria-hidden="true"></i>
-  <i c="fa fa-chevron-right swiper-right-icon" aria-hidden="true"></i>
   <d c="swiper-wrapper"></d> 
+  <d c="swiper-button-next overlay-next swiper-button-white"></d>
+  <d c="swiper-button-prev overlay-prev swiper-button-white"></d>
 </d> `);
     for (let i = newElems.length - 1; i >= 0; i--) {
       ui.core.mapDivDocument.insertBefore(
@@ -272,13 +272,10 @@ export class MaplatUi extends EventTarget {
             <iframe c="poi_iframe iframe_poi" frameborder="0" src=""></iframe>
           </d> 
           <d c="poi_data hide">
-            <p c="col-xs-12 poi_img"><img c="poi_img_tag" src="${
-              pointer["loading_image.png"]
-            }"></p>
             <d c="col-xs-12 swiper-container poi_img_swiper">
               <d c="swiper-wrapper"></d>
-              <d c="swiper-button-next"></d>
-              <d c="swiper-button-prev swiper-button-white"></d>
+              <d c="swiper-button-next poi-img-next"></d>
+              <d c="swiper-button-prev poi-img-prev"></d>
             </d>
             <p c="recipient poi_address"></p>
             <p c="recipient poi_desc"></p>
@@ -686,7 +683,11 @@ export class MaplatUi extends EventTarget {
         },
         centeredSlides: true,
         threshold: 2,
-        loop: baseSources.length >= 2
+        loop: baseSources.length >= 2,
+        navigation: {
+          nextEl: '.base-next',
+          prevEl: '.base-prev',
+        }
       }));
       baseSwiper.on("click", e => {
         e.preventDefault();
@@ -716,7 +717,11 @@ export class MaplatUi extends EventTarget {
         },
         centeredSlides: true,
         threshold: 2,
-        loop: overlaySources.length >= 2
+        loop: overlaySources.length >= 2,
+        navigation: {
+          nextEl: '.overlay-next',
+          prevEl: '.overlay-prev',
+        }
       }));
       overlaySwiper.on("click", e => {
         e.preventDefault();
@@ -1267,35 +1272,44 @@ export class MaplatUi extends EventTarget {
         .classList.remove("hide");
       this.core.mapDivDocument.querySelector(".poi_web").classList.add("hide");
 
-      const img = this.core.mapDivDocument.querySelector(".poi_img_tag");
+      const slides = [];
       if (data.image && data.image !== "") {
-        img.classList.remove("hide");
-        img.setAttribute("src", this.resolveRelativeLink(data.image, "img"));
-      } else if (this.disableNoimage) {
-        img.classList.add("hide");
-      } else {
-        img.classList.remove("hide");
-        img.setAttribute("src", pointer["no_image.png"]);
+        const images = Array.isArray(data.image) ? data.image : [data.image];
+        images.forEach(image => {
+          if (typeof image === "string") {
+            image = {src: image};
+          }
+          const tmpImg = this.resolveRelativeLink(image.src, "img");
+          let slide = `<a target="_blank" href="${tmpImg}"><img src="${tmpImg}"></a>`;
+          if (image.desc) slide = `${slide}<div>${image.desc}</div>`;
+          slides.push(`<div class="swiper-slide">${slide}</div>`);
+        });
+      } else if (!this.disableNoimage) {
+        slides.push(`<div class="swiper-slide"><img src="${pointer["no_image.png"]}"></div>`);
       }
 
       const imgShowFunc = _event => {
         modalElm.removeEventListener("shown.bs.modal", imgShowFunc, false);
-        if (!this.poiSwiper) {
-          this.poiSwiper = new Swiper('.swiper-container.poi_img_swiper', {
-            // Enable lazy loading
-            lazy: true,
-            pagination: {
-              el: '.swiper-pagination',
-              clickable: true,
-            },
-            navigation: {
-              nextEl: '.swiper-button-next',
-              prevEl: '.swiper-button-prev',
-            }
-          });
+        const swiperDiv = this.core.mapDivDocument.querySelector(".swiper-container.poi_img_swiper");
+        if (slides.length === 0) {
+          swiperDiv.classList.add("hide");
+        } else {
+          swiperDiv.classList.remove("hide");
+          if (!this.poiSwiper) {
+            this.poiSwiper = new Swiper('.swiper-container.poi_img_swiper', {
+              lazy: true,
+              pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+              },
+              navigation: {
+                nextEl: '.poi-img-next',
+                prevEl: '.poi-img-prev',
+              }
+            });
+          }
+          slides.forEach(slide => this.poiSwiper.appendSlide(slide));
         }
-        this.poiSwiper.appendSlide(`<div class="swiper-slide"><img src="${this.resolveRelativeLink(data.image, "img")}"></div>`);
-        this.poiSwiper.appendSlide(`<div class="swiper-slide"><img src="${pointer["no_image.png"]}"></div>`);
       }
       modalElm.addEventListener("shown.bs.modal", imgShowFunc, false);
 
@@ -1314,9 +1328,10 @@ export class MaplatUi extends EventTarget {
     };
     const hiddenFunc = _event => {
       modalElm.removeEventListener("hidden.bs.modal", hiddenFunc, false);
-      const img = this.core.mapDivDocument.querySelector(".poi_img_tag");
-      img.setAttribute("src", pointer["loading_image.png"]);
-      this.poiSwiper.removeAllSlides();
+      if (this.poiSwiper) {
+        this.poiSwiper.removeAllSlides();
+        this.poiSwiper = undefined;
+      }
     };
     modalElm.addEventListener("hide.bs.modal", hideFunc, false);
     modalElm.addEventListener("hidden.bs.modal", hiddenFunc, false);
