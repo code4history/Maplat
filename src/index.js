@@ -694,8 +694,7 @@ export class MaplatUi extends EventTarget {
         if (!baseSwiper.clickedSlide) return;
         const slide = baseSwiper.clickedSlide;
         ui.core.changeMap(slide.getAttribute("data"));
-        delete ui.selectCandidate;
-        delete ui._selectCandidateSource;
+        delete ui._selectCandidateSources;
         baseSwiper.setSlideIndexAsSelected(
           slide.getAttribute("data-swiper-slide-index")
         );
@@ -728,8 +727,7 @@ export class MaplatUi extends EventTarget {
         if (!overlaySwiper.clickedSlide) return;
         const slide = overlaySwiper.clickedSlide;
         ui.core.changeMap(slide.getAttribute("data"));
-        delete ui.selectCandidate;
-        delete ui._selectCandidateSource;
+        delete ui._selectCandidateSources;
         overlaySwiper.setSlideIndexAsSelected(
           slide.getAttribute("data-swiper-slide-index")
         );
@@ -814,25 +812,23 @@ export class MaplatUi extends EventTarget {
     });
 
     ui.core.mapDivDocument.addEventListener("mouseout", _evt => {
-      delete ui.selectCandidate;
-      if (ui._selectCandidateSource) {
-        ui.core.mapObject.removeEnvelope(ui._selectCandidateSource);
-        delete ui._selectCandidateSource;
+      if (ui._selectCandidateSources) {
+        Object.keys(ui._selectCandidateSources).forEach(key => ui.core.mapObject.removeEnvelope(ui._selectCandidateSources[key]));
+        delete ui._selectCandidateSources;
       }
     });
 
     ui.core.addEventListener("pointerMoveOnMapXy", evt => {
       if (!ui.core.stateBuffer.showBorder) {
-        delete ui.selectCandidate;
-        if (ui._selectCandidateSource) {
-          ui.core.mapObject.removeEnvelope(ui._selectCandidateSource);
-          delete ui._selectCandidateSource;
+        if (ui._selectCandidateSources) {
+          Object.keys(ui._selectCandidateSources).forEach(key => ui.core.mapObject.removeEnvelope(ui._selectCandidateSources[key]));
+          delete ui._selectCandidateSources;
         }
         return;
       }
 
-      ui.xyToMapID(evt.detail, mapID => {
-        ui.showFillEnvelope(mapID);
+      ui.xyToMapIDs(evt.detail, mapIDs => {
+        ui.showFillEnvelope(mapIDs);
       });
     });
 
@@ -841,62 +837,104 @@ export class MaplatUi extends EventTarget {
         return;
       }
 
-      ui.xyToMapID(evt.detail, mapID => {
-        if (ui.selectCandidate && ui.selectCandidate === mapID) {
-          ui.core.changeMap(ui.selectCandidate);
-          delete ui.selectCandidate;
-          delete ui._selectCandidateSource;
-        } else {
-          ui.showFillEnvelope(mapID);
+      ui.xyToMapIDs(evt.detail, mapIDs => {
+        if (mapIDs.length > 0) {
+          showContextMenu(mapIDs.map(mapID => {
+            const source = ui.core.cacheHash[mapID];
+            const hexColor = source.envelopeColor;
+            let iconSVG = `<?xml version="1.0" encoding="utf-8"?><svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+x="0px" y="0px" width="10px" height="10px" viewBox="0 0 10 10"
+enable-background="new 0 0 10 10" xml:space="preserve">
+<polygon x="0" y="0" points="2,2 2,8 8,8 8,2
+2,2" stroke="${hexColor}" fill="${hexColor}" stroke-width="2" style="fill-opacity: .25;"></polygon></svg>`;
+            iconSVG = `data:image/svg+xml,${encodeURIComponent(iconSVG)}`;
+            return {
+              icon: iconSVG,
+              text: ui.core.translate(ui.core.getMapMeta(mapID).title),
+              callback: () => {
+                delete ui._selectCandidateSources;
+                ui.core.changeMap(mapID);
+              },
+              mouseOnTask() {
+                ui.showFillEnvelope([mapID]);
+                ui.overlaySwiper.slideToMapID(mapID);
+              },
+              mouseOutTask() {
+                ui.showFillEnvelope([]);
+              }
+            };
+          }));
+          ui.showFillEnvelope(mapIDs);
         }
       });
     });
+
+    function showContextMenu(menues) {
+      ui.contextMenu.clear();
+      const mouseOnTasks = [];
+      menues.forEach(menu => {
+        ui.contextMenu.push(menu);
+        if (menu.mouseOnTask) mouseOnTasks.push([menu.mouseOnTask, menu.mouseOutTask]);
+      });
+
+      const coordinate = ui.core.lastClickEvent.coordinate;
+      const pixel = ui.core.lastClickEvent.pixel;
+
+      if (ui.contextMenu.disabled) return;
+
+      const openHandler = () => {
+        ui.contextMenu.removeEventListener("open", openHandler);
+        if (mouseOnTasks.length > 0) {
+          const lis = [...ui.core.mapDivDocument.querySelectorAll(".ol-ctx-menu-container ul li")];
+          const events = lis.map((li, i) => {
+            const tasks = mouseOnTasks[i];
+            li.addEventListener("mouseover", tasks[0]);
+            li.addEventListener("mouseout", tasks[1]);
+            return [li, tasks[0], tasks[1]];
+          });
+          const closeHandler = () => {
+            ui.contextMenu.removeEventListener("close", closeHandler);
+            events.forEach(event => {
+              event[0].removeEventListener("mouseover", event[1]);
+              event[0].removeEventListener("mouseout", event[2]);
+            });
+          };
+          ui.contextMenu.on("close", closeHandler);
+        }
+      };
+      ui.contextMenu.on("open", openHandler);
+      ui.contextMenu.Internal.openMenu(pixel, coordinate);
+
+      //one-time fire
+      ui.core.mapObject.getViewport().addEventListener(
+        "pointerdown",
+        {
+          handleEvent(e) {
+            if (ui.contextMenu.Internal.opened) {
+              ui.contextMenu.Internal.closeMenu();
+              e.stopPropagation();
+              ui.core.mapObject
+                .getViewport()
+                .removeEventListener(e.type, this, false);
+            }
+          }
+        },
+        false
+      );
+    }
 
     ui.core.addEventListener("clickMarkers", evt => {
       const data = evt.detail;
       if (data.length === 1) {
         ui.handleMarkerAction(data[0]);
       } else {
-        ui.contextMenu.clear();
-        data.forEach(datum => {
-          ui.contextMenu.push({
-            icon: datum.icon || pointer["defaultpin.png"],
-            text: ui.core.translate(datum.name),
-            callback: () => {
-              ui.handleMarkerAction(datum);
-            }
-          });
-        });
-
-        const coordinate = ui.core.lastClickEvent.coordinate;
-        const pixel = ui.core.lastClickEvent.pixel;
-
-        ui.contextMenu.dispatchEvent({
-          type: "beforeopen",
-          pixel,
-          coordinate
-        });
-
-        if (ui.contextMenu.disabled) return;
-
-        ui.contextMenu.Internal.openMenu(pixel, coordinate);
-
-        //one-time fire
-        ui.core.mapObject.getViewport().addEventListener(
-          "pointerdown",
-          {
-            handleEvent(e) {
-              if (ui.contextMenu.Internal.opened) {
-                ui.contextMenu.Internal.closeMenu();
-                e.stopPropagation();
-                ui.core.mapObject
-                  .getViewport()
-                  .removeEventListener(e.type, this, false);
-              }
-            }
-          },
-          false
-        );
+        showContextMenu(data.map(datum => ({
+          icon: datum.icon || pointer["defaultpin.png"],
+          text: ui.core.translate(datum.name),
+          callback() {
+            ui.handleMarkerAction(datum);
+          }
+        })));
       }
     });
 
@@ -1339,41 +1377,48 @@ export class MaplatUi extends EventTarget {
     modal.show();
   }
 
-  showFillEnvelope(mapID) {
+  showFillEnvelope(mapIDs) {
     const ui = this;
-    if (mapID && mapID !== ui.core.from.mapID) {
-      if (ui.selectCandidate !== mapID) {
-        if (ui._selectCandidateSource) {
-          ui.core.mapObject.removeEnvelope(ui._selectCandidateSource);
+    if (mapIDs.length > 0) {
+      if (!ui._selectCandidateSources) ui._selectCandidateSources = {};
+      Object.keys(ui._selectCandidateSources).forEach(key => {
+        const index = mapIDs.indexOf(key);
+        if (index < 0) {
+          ui.core.mapObject.removeEnvelope(ui._selectCandidateSources[key]);
+          delete ui._selectCandidateSources[key];
         }
-        const source = ui.core.cacheHash[mapID];
-        const xyPromises = source.envelope.geometry.coordinates[0].map(coord =>
-          ui.core.from.merc2XyAsync(coord)
-        );
-        const hexColor = source.envelopeColor;
-        let color = asArray(hexColor);
-        color = color.slice();
-        color[3] = 0.2;
-        Promise.all(xyPromises).then(xys => {
-          ui._selectCandidateSource = ui.core.mapObject.setFillEnvelope(
-            xys,
-            null,
-            { color }
+        else mapIDs.splice(index, 1);
+      });
+
+      mapIDs.forEach(mapID => {
+        if (mapID !== ui.core.from.mapID) {
+          const source = ui.core.cacheHash[mapID];
+          const xyPromises = source.envelope.geometry.coordinates[0].map(coord =>
+            ui.core.from.merc2XyAsync(coord)
           );
-        });
-        ui.overlaySwiper.slideToMapID(mapID);
-      }
-      ui.selectCandidate = mapID;
+          const hexColor = source.envelopeColor;
+          let color = asArray(hexColor);
+          color = color.slice();
+          color[3] = 0.2;
+
+          Promise.all(xyPromises).then(xys => {
+            ui._selectCandidateSources[mapID] = ui.core.mapObject.setFillEnvelope(
+              xys,
+              null,
+              { color }
+            );
+          });
+        }
+      });
     } else {
-      if (ui._selectCandidateSource) {
-        ui.core.mapObject.removeEnvelope(ui._selectCandidateSource);
-        delete ui._selectCandidateSource;
+      if (ui._selectCandidateSources) {
+        Object.keys(ui._selectCandidateSources).forEach(key => ui.core.mapObject.removeEnvelope(ui._selectCandidateSources[key]));
+        delete ui._selectCandidateSources;
       }
-      delete ui.selectCandidate;
     }
   }
 
-  xyToMapID(xy, callback) {
+  async xyToMapIDs(xy, callback) {
     const ui = this;
     const point_ = point(xy);
     Promise.all(
@@ -1391,24 +1436,18 @@ export class MaplatUi extends EventTarget {
           ]);
         })
     ).then(sources => {
-      let areaIndex;
-      const mapID = sources.reduce((prev, curr) => {
+      const mapIDs = sources.reduce((prev, curr) => {
         const source = curr[0];
         const mercXys = curr[1];
-        if (source.mapID === ui.core.from.mapID) return prev;
-        const polygon_ = polygon([mercXys]);
-        if (booleanPointInPolygon(point_, polygon_)) {
-          if (!areaIndex || source.envelopeAreaIndex < areaIndex) {
-            areaIndex = source.envelopeAreaIndex;
-            return source.mapID;
-          } else {
-            return prev;
+        if (source.mapID !== ui.core.from.mapID) {
+          const polygon_ = polygon([mercXys]);
+          if (booleanPointInPolygon(point_, polygon_)) {
+            prev.push(source.mapID);
           }
-        } else {
-          return prev;
         }
-      }, null);
-      callback(mapID);
+        return prev;
+      }, []);
+      callback(mapIDs);
     });
   }
 
@@ -1442,8 +1481,7 @@ export class MaplatUi extends EventTarget {
     if (!ui.core.mapObject) return;
 
     ui.core.mapObject.resetEnvelope();
-    delete ui.selectCandidate;
-    delete ui._selectCandidateSource;
+    delete ui._selectCandidateSources;
 
     if (ui.core.stateBuffer.showBorder) {
       Object.keys(ui.core.cacheHash)
