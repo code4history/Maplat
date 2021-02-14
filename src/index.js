@@ -180,6 +180,7 @@ export class MaplatUi extends EventTarget {
     if ("ontouchstart" in window) {
       // eslint-disable-line no-undef
       ui.core.mapDivDocument.classList.add("ol-touch");
+      ui.isTouch = true;
     }
     if (appOption.mobileIF) {
       appOption.debug = true;
@@ -903,13 +904,17 @@ enable-background="new 0 0 10 10" xml:space="preserve">
                   }
                 },
                 mouseOnTask(_evt) {
-                  currentID = mapID;
-                  ui.showFillEnvelope([mapID]);
-                  ui.overlaySwiper.slideToMapID(mapID);
+                  if (!ui.isTouch) {
+                    currentID = mapID;
+                    ui.showFillEnvelope([mapID]);
+                    ui.overlaySwiper.slideToMapID(mapID);
+                  }
                 },
                 mouseOutTask(_evt) {
-                  currentID = undefined;
-                  ui.showFillEnvelope([]);
+                  if (!ui.isTouch) {
+                    currentID = undefined;
+                    ui.showFillEnvelope([]);
+                  }
                 }
               };
             })
