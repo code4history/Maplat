@@ -550,6 +550,28 @@ export class MaplatUi extends EventTarget {
         items: []
       });
       ui.core.appData.controls.push(ui.contextMenu);
+      ui.contextMenu.Internal.setItemListener = function (li, index) {
+        const this_ = this;
+        if (li && typeof this.items[index].callback === "function") {
+          (function (callback) {
+            li.addEventListener("pointerdown", evt => {
+              evt.stopPropagation();
+            });
+            li.addEventListener(
+              "click",
+              evt => {
+                evt.preventDefault();
+                const obj = {
+                  coordinate: this_.getCoordinateClicked(),
+                  data: this_.items[index].data || null
+                };
+                if (!callback(obj, this_.map)) this_.closeMenu();
+              },
+              false
+            );
+          })(this.items[index].callback);
+        }
+      };
 
       if (ui.core.mapObject) {
         ui.core.appData.controls.map(control => {
@@ -685,8 +707,8 @@ export class MaplatUi extends EventTarget {
         threshold: 2,
         loop: baseSources.length >= 2,
         navigation: {
-          nextEl: '.base-next',
-          prevEl: '.base-prev',
+          nextEl: ".base-next",
+          prevEl: ".base-prev"
         }
       }));
       baseSwiper.on("click", e => {
@@ -718,8 +740,8 @@ export class MaplatUi extends EventTarget {
         threshold: 2,
         loop: overlaySources.length >= 2,
         navigation: {
-          nextEl: '.overlay-next',
-          prevEl: '.overlay-prev',
+          nextEl: ".overlay-next",
+          prevEl: ".overlay-prev"
         }
       }));
       overlaySwiper.on("click", e => {
@@ -813,7 +835,9 @@ export class MaplatUi extends EventTarget {
 
     ui.core.mapDivDocument.addEventListener("mouseout", _evt => {
       if (ui._selectCandidateSources) {
-        Object.keys(ui._selectCandidateSources).forEach(key => ui.core.mapObject.removeEnvelope(ui._selectCandidateSources[key]));
+        Object.keys(ui._selectCandidateSources).forEach(key =>
+          ui.core.mapObject.removeEnvelope(ui._selectCandidateSources[key])
+        );
         delete ui._selectCandidateSources;
       }
     });
@@ -821,7 +845,9 @@ export class MaplatUi extends EventTarget {
     ui.core.addEventListener("pointerMoveOnMapXy", evt => {
       if (!ui.core.stateBuffer.showBorder) {
         if (ui._selectCandidateSources) {
-          Object.keys(ui._selectCandidateSources).forEach(key => ui.core.mapObject.removeEnvelope(ui._selectCandidateSources[key]));
+          Object.keys(ui._selectCandidateSources).forEach(key =>
+            ui.core.mapObject.removeEnvelope(ui._selectCandidateSources[key])
+          );
           delete ui._selectCandidateSources;
         }
         return;
@@ -839,31 +865,55 @@ export class MaplatUi extends EventTarget {
 
       ui.xyToMapIDs(evt.detail, mapIDs => {
         if (mapIDs.length > 0) {
-          showContextMenu(mapIDs.map(mapID => {
-            const source = ui.core.cacheHash[mapID];
-            const hexColor = source.envelopeColor;
-            let iconSVG = `<?xml version="1.0" encoding="utf-8"?><svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+          const mapIDs_ = mapIDs.map(id => id);
+          let currentID;
+          showContextMenu(
+            mapIDs.map(mapID => {
+              const source = ui.core.cacheHash[mapID];
+              const hexColor = source.envelopeColor;
+              let iconSVG = `<?xml version="1.0" encoding="utf-8"?><svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
 x="0px" y="0px" width="10px" height="10px" viewBox="0 0 10 10"
 enable-background="new 0 0 10 10" xml:space="preserve">
 <polygon x="0" y="0" points="2,2 2,8 8,8 8,2
 2,2" stroke="${hexColor}" fill="${hexColor}" stroke-width="2" style="fill-opacity: .25;"></polygon></svg>`;
-            iconSVG = `data:image/svg+xml,${encodeURIComponent(iconSVG)}`;
-            return {
-              icon: iconSVG,
-              text: ui.core.translate(ui.core.getMapMeta(mapID).title),
-              callback: () => {
-                delete ui._selectCandidateSources;
-                ui.core.changeMap(mapID);
-              },
-              mouseOnTask() {
-                ui.showFillEnvelope([mapID]);
-                ui.overlaySwiper.slideToMapID(mapID);
-              },
-              mouseOutTask() {
-                ui.showFillEnvelope([]);
-              }
-            };
-          }));
+              iconSVG = `data:image/svg+xml,${encodeURIComponent(iconSVG)}`;
+              return {
+                icon: iconSVG,
+                text: ui.core.translate(ui.core.getMapMeta(mapID).title),
+                callback: () => {
+                  const lis = [
+                    ...ui.core.mapDivDocument.querySelectorAll(
+                      ".ol-ctx-menu-container ul li"
+                    )
+                  ];
+                  lis.forEach(li => li.classList.remove("selected"));
+                  if (currentID && currentID === mapID) {
+                    delete ui._selectCandidateSources;
+                    ui.core.changeMap(mapID);
+                  } else {
+                    currentID = mapID;
+                    ui.showFillEnvelope([mapID]);
+                    ui.overlaySwiper.slideToMapID(mapID);
+                    const index = mapIDs_.indexOf(mapID);
+                    if (index > -1) {
+                      const li = lis[index];
+                      li.classList.add("selected");
+                    }
+                    return true;
+                  }
+                },
+                mouseOnTask(_evt) {
+                  currentID = mapID;
+                  ui.showFillEnvelope([mapID]);
+                  ui.overlaySwiper.slideToMapID(mapID);
+                },
+                mouseOutTask(_evt) {
+                  currentID = undefined;
+                  ui.showFillEnvelope([]);
+                }
+              };
+            })
+          );
           ui.showFillEnvelope(mapIDs);
         }
       });
@@ -874,7 +924,8 @@ enable-background="new 0 0 10 10" xml:space="preserve">
       const mouseOnTasks = [];
       menues.forEach(menu => {
         ui.contextMenu.push(menu);
-        if (menu.mouseOnTask) mouseOnTasks.push([menu.mouseOnTask, menu.mouseOutTask]);
+        if (menu.mouseOnTask)
+          mouseOnTasks.push([menu.mouseOnTask, menu.mouseOutTask]);
       });
 
       const coordinate = ui.core.lastClickEvent.coordinate;
@@ -885,7 +936,11 @@ enable-background="new 0 0 10 10" xml:space="preserve">
       const openHandler = () => {
         ui.contextMenu.removeEventListener("open", openHandler);
         if (mouseOnTasks.length > 0) {
-          const lis = [...ui.core.mapDivDocument.querySelectorAll(".ol-ctx-menu-container ul li")];
+          const lis = [
+            ...ui.core.mapDivDocument.querySelectorAll(
+              ".ol-ctx-menu-container ul li"
+            )
+          ];
           const events = lis.map((li, i) => {
             const tasks = mouseOnTasks[i];
             li.addEventListener("mouseover", tasks[0]);
@@ -928,13 +983,15 @@ enable-background="new 0 0 10 10" xml:space="preserve">
       if (data.length === 1) {
         ui.handleMarkerAction(data[0]);
       } else {
-        showContextMenu(data.map(datum => ({
-          icon: datum.icon || pointer["defaultpin.png"],
-          text: ui.core.translate(datum.name),
-          callback() {
-            ui.handleMarkerAction(datum);
-          }
-        })));
+        showContextMenu(
+          data.map(datum => ({
+            icon: datum.icon || pointer["defaultpin.png"],
+            text: ui.core.translate(datum.name),
+            callback() {
+              ui.handleMarkerAction(datum);
+            }
+          }))
+        );
       }
     });
 
@@ -1315,7 +1372,7 @@ enable-background="new 0 0 10 10" xml:space="preserve">
         const images = Array.isArray(data.image) ? data.image : [data.image];
         images.forEach(image => {
           if (typeof image === "string") {
-            image = {src: image};
+            image = { src: image };
           }
           const tmpImg = this.resolveRelativeLink(image.src, "img");
           let slide = `<a target="_blank" href="${tmpImg}"><img src="${tmpImg}"></a>`;
@@ -1323,32 +1380,36 @@ enable-background="new 0 0 10 10" xml:space="preserve">
           slides.push(`<div class="swiper-slide">${slide}</div>`);
         });
       } else if (!this.disableNoimage) {
-        slides.push(`<div class="swiper-slide"><img src="${pointer["no_image.png"]}"></div>`);
+        slides.push(
+          `<div class="swiper-slide"><img src="${pointer["no_image.png"]}"></div>`
+        );
       }
 
       const imgShowFunc = _event => {
         modalElm.removeEventListener("shown.bs.modal", imgShowFunc, false);
-        const swiperDiv = this.core.mapDivDocument.querySelector(".swiper-container.poi_img_swiper");
+        const swiperDiv = this.core.mapDivDocument.querySelector(
+          ".swiper-container.poi_img_swiper"
+        );
         if (slides.length === 0) {
           swiperDiv.classList.add("hide");
         } else {
           swiperDiv.classList.remove("hide");
           if (!this.poiSwiper) {
-            this.poiSwiper = new Swiper('.swiper-container.poi_img_swiper', {
+            this.poiSwiper = new Swiper(".swiper-container.poi_img_swiper", {
               lazy: true,
               pagination: {
-                el: '.swiper-pagination',
-                clickable: true,
+                el: ".swiper-pagination",
+                clickable: true
               },
               navigation: {
-                nextEl: '.poi-img-next',
-                prevEl: '.poi-img-prev',
+                nextEl: ".poi-img-next",
+                prevEl: ".poi-img-prev"
               }
             });
           }
           slides.forEach(slide => this.poiSwiper.appendSlide(slide));
         }
-      }
+      };
       modalElm.addEventListener("shown.bs.modal", imgShowFunc, false);
 
       this.core.mapDivDocument.querySelector(
@@ -1386,15 +1447,14 @@ enable-background="new 0 0 10 10" xml:space="preserve">
         if (index < 0) {
           ui.core.mapObject.removeEnvelope(ui._selectCandidateSources[key]);
           delete ui._selectCandidateSources[key];
-        }
-        else mapIDs.splice(index, 1);
+        } else mapIDs.splice(index, 1);
       });
 
       mapIDs.forEach(mapID => {
         if (mapID !== ui.core.from.mapID) {
           const source = ui.core.cacheHash[mapID];
-          const xyPromises = source.envelope.geometry.coordinates[0].map(coord =>
-            ui.core.from.merc2XyAsync(coord)
+          const xyPromises = source.envelope.geometry.coordinates[0].map(
+            coord => ui.core.from.merc2XyAsync(coord)
           );
           const hexColor = source.envelopeColor;
           let color = asArray(hexColor);
@@ -1402,17 +1462,17 @@ enable-background="new 0 0 10 10" xml:space="preserve">
           color[3] = 0.2;
 
           Promise.all(xyPromises).then(xys => {
-            ui._selectCandidateSources[mapID] = ui.core.mapObject.setFillEnvelope(
-              xys,
-              null,
-              { color }
-            );
+            ui._selectCandidateSources[
+              mapID
+            ] = ui.core.mapObject.setFillEnvelope(xys, null, { color });
           });
         }
       });
     } else {
       if (ui._selectCandidateSources) {
-        Object.keys(ui._selectCandidateSources).forEach(key => ui.core.mapObject.removeEnvelope(ui._selectCandidateSources[key]));
+        Object.keys(ui._selectCandidateSources).forEach(key =>
+          ui.core.mapObject.removeEnvelope(ui._selectCandidateSources[key])
+        );
         delete ui._selectCandidateSources;
       }
     }
