@@ -660,15 +660,8 @@ export class MaplatUi extends EventTarget {
           if (cIndex === colors.length) cIndex = 0;
 
           const xys = source.envelope.geometry.coordinates[0];
-          source.envelopeAreaIndex =
-            0.5 *
-            Math.abs(
-              [0, 1, 2, 3].reduce((prev, curr, i) => {
-                const xy1 = xys[i];
-                const xy2 = xys[i + 1];
-                return prev + (xy1[0] - xy2[0]) * (xy1[1] + xy2[1]);
-              }, 0)
-            );
+          // http://blog.arq.name/wp-content/uploads/2018/02/Rectangle_Area.pdf
+          source.envelopeAreaIndex = ui.areaIndex(xys);
         }
       }
 
@@ -843,7 +836,7 @@ export class MaplatUi extends EventTarget {
       }
     });
 
-    ui.core.addEventListener("pointerMoveOnMapXy", evt => {
+    ui.core.addEventListener("pointerMoveOnMapXy", async (evt) => {
       if (!ui.core.stateBuffer.showBorder) {
         if (ui._selectCandidateSources) {
           Object.keys(ui._selectCandidateSources).forEach(key =>
@@ -854,74 +847,71 @@ export class MaplatUi extends EventTarget {
         return;
       }
 
-      ui.xyToMapIDs(evt.detail, mapIDs => {
-        ui.showFillEnvelope(mapIDs);
-      });
+      const mapIDs = await ui.xyToMapIDs(evt.detail);
+      ui.showFillEnvelope(mapIDs);
     });
 
-    ui.core.addEventListener("clickMapXy", evt => {
+    ui.core.addEventListener("clickMapXy", async (evt) => {
       if (!ui.core.stateBuffer.showBorder) {
         return;
       }
 
-      ui.xyToMapIDs(evt.detail, mapIDs => {
-        if (mapIDs.length > 0) {
-          const mapIDs_ = mapIDs.map(id => id);
-          let currentID;
-          showContextMenu(
-            mapIDs.map(mapID => {
-              const source = ui.core.cacheHash[mapID];
-              const hexColor = source.envelopeColor;
-              let iconSVG = `<?xml version="1.0" encoding="utf-8"?><svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+      const mapIDs = await ui.xyToMapIDs(evt.detail);
+      if (mapIDs.length > 0) {
+        let currentID;
+        showContextMenu(
+          mapIDs.map(mapID => {
+            const source = ui.core.cacheHash[mapID];
+            const hexColor = source.envelopeColor;
+            let iconSVG = `<?xml version="1.0" encoding="utf-8"?><svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
 x="0px" y="0px" width="10px" height="10px" viewBox="0 0 10 10"
 enable-background="new 0 0 10 10" xml:space="preserve">
 <polygon x="0" y="0" points="2,2 2,8 8,8 8,2
 2,2" stroke="${hexColor}" fill="${hexColor}" stroke-width="2" style="fill-opacity: .25;"></polygon></svg>`;
-              iconSVG = `data:image/svg+xml,${encodeURIComponent(iconSVG)}`;
-              return {
-                icon: iconSVG,
-                text: ui.core.translate(ui.core.getMapMeta(mapID).title),
-                callback: () => {
-                  const lis = [
-                    ...ui.core.mapDivDocument.querySelectorAll(
-                      ".ol-ctx-menu-container ul li"
-                    )
-                  ];
-                  lis.forEach(li => li.classList.remove("selected"));
-                  if (currentID && currentID === mapID) {
-                    delete ui._selectCandidateSources;
-                    ui.core.changeMap(mapID);
-                  } else {
-                    currentID = mapID;
-                    ui.showFillEnvelope([mapID]);
-                    ui.overlaySwiper.slideToMapID(mapID);
-                    const index = mapIDs_.indexOf(mapID);
-                    if (index > -1) {
-                      const li = lis[index];
-                      li.classList.add("selected");
-                    }
-                    return true;
+            iconSVG = `data:image/svg+xml,${encodeURIComponent(iconSVG)}`;
+            return {
+              icon: iconSVG,
+              text: ui.core.translate(source.title),
+              callback: () => {
+                const lis = [
+                  ...ui.core.mapDivDocument.querySelectorAll(
+                    ".ol-ctx-menu-container ul li"
+                  )
+                ];
+                lis.forEach(li => li.classList.remove("selected"));
+                if (currentID && currentID === mapID) {
+                  delete ui._selectCandidateSources;
+                  ui.core.changeMap(mapID);
+                } else {
+                  currentID = mapID;
+                  ui.showFillEnvelope([mapID]);
+                  ui.overlaySwiper.slideToMapID(mapID);
+                  const index = mapIDs.indexOf(mapID);
+                  if (index > -1) {
+                    const li = lis[index];
+                    li.classList.add("selected");
                   }
-                },
-                mouseOnTask(_evt) {
-                  if (!ui.isTouch) {
-                    currentID = mapID;
-                    ui.showFillEnvelope([mapID]);
-                    ui.overlaySwiper.slideToMapID(mapID);
-                  }
-                },
-                mouseOutTask(_evt) {
-                  if (!ui.isTouch) {
-                    currentID = undefined;
-                    ui.showFillEnvelope([]);
-                  }
+                  return true;
                 }
-              };
-            })
-          );
-          ui.showFillEnvelope(mapIDs);
-        }
-      });
+              },
+              mouseOnTask(_evt) {
+                if (!ui.isTouch) {
+                  currentID = mapID;
+                  ui.showFillEnvelope([mapID]);
+                  ui.overlaySwiper.slideToMapID(mapID);
+                }
+              },
+              mouseOutTask(_evt) {
+                if (!ui.isTouch) {
+                  currentID = undefined;
+                  ui.showFillEnvelope([]);
+                }
+              }
+            };
+          })
+        );
+        ui.showFillEnvelope(mapIDs);
+      }
     });
 
     function showContextMenu(menues) {
@@ -1483,10 +1473,19 @@ enable-background="new 0 0 10 10" xml:space="preserve">
     }
   }
 
-  async xyToMapIDs(xy, callback) {
+  async xyToMapIDs(xy, threshold = 10) {
     const ui = this;
     const point_ = point(xy);
-    Promise.all(
+
+    const map = ui.core.mapObject;
+    const size = map.getSize();
+    const extent = [[0, 0], [size[0], 0], size, [0, size[1]], [0, 0]];
+    const histXys = extent.map(pixel => map.getCoordinateFromPixel(pixel));
+    const xys = await (ui.core.from instanceof NowMap ? Promise.resolve(histXys) :
+      Promise.all(histXys.map(histXy => ui.core.from.xy2MercAsync(histXy))));
+    const areaIndex = ui.areaIndex(xys);
+
+    return Promise.all(
       Object.keys(ui.core.cacheHash)
         .filter(key => ui.core.cacheHash[key].envelope)
         .map(key => {
@@ -1507,12 +1506,15 @@ enable-background="new 0 0 10 10" xml:space="preserve">
         if (source.mapID !== ui.core.from.mapID) {
           const polygon_ = polygon([mercXys]);
           if (booleanPointInPolygon(point_, polygon_)) {
-            prev.push(source.mapID);
+            prev.push(source);
           }
         }
         return prev;
-      }, []);
-      callback(mapIDs);
+      }, []).filter(source => source.envelopeAreaIndex / areaIndex < threshold)
+        .sort((a, b) => a.envelopeAreaIndex - b.envelopeAreaIndex )
+        .map(source => source.mapID);
+      console.log(mapIDs);
+      return mapIDs;
     });
   }
 
@@ -1593,6 +1595,17 @@ enable-background="new 0 0 10 10" xml:space="preserve">
       }
     }
     return false;
+  }
+
+  areaIndex(xys) {
+    return 0.5 *
+    Math.abs(
+      [0, 1, 2, 3].reduce((prev, curr, i) => {
+        const xy1 = xys[i];
+        const xy2 = xys[i + 1];
+        return prev + (xy1[0] - xy2[0]) * (xy1[1] + xy2[1]);
+      }, 0)
+    );
   }
 
   ellips() {
