@@ -814,7 +814,7 @@ export class MaplatUi extends EventTarget {
       }
     });
 
-    ui.core.addEventListener("pointerMoveOnMapXy", async (evt) => {
+    ui.core.addEventListener("pointerMoveOnMapXy", async evt => {
       if (!ui.core.stateBuffer.showBorder) {
         if (ui._selectCandidateSources) {
           Object.keys(ui._selectCandidateSources).forEach(key =>
@@ -829,7 +829,7 @@ export class MaplatUi extends EventTarget {
       ui.showFillEnvelope(mapIDs);
     });
 
-    ui.core.addEventListener("clickMapXy", async (evt) => {
+    ui.core.addEventListener("clickMapXy", async evt => {
       if (!ui.core.stateBuffer.showBorder) {
         return;
       }
@@ -1459,8 +1459,9 @@ enable-background="new 0 0 10 10" xml:space="preserve">
     const size = map.getSize();
     const extent = [[0, 0], [size[0], 0], size, [0, size[1]], [0, 0]];
     const histXys = extent.map(pixel => map.getCoordinateFromPixel(pixel));
-    const xys = await (ui.core.from instanceof NowMap ? Promise.resolve(histXys) :
-      Promise.all(histXys.map(histXy => ui.core.from.xy2MercAsync(histXy))));
+    const xys = await (ui.core.from instanceof NowMap
+      ? Promise.resolve(histXys)
+      : Promise.all(histXys.map(histXy => ui.core.from.xy2MercAsync(histXy))));
     const areaIndex = ui.areaIndex(xys);
 
     return Promise.all(
@@ -1478,18 +1479,20 @@ enable-background="new 0 0 10 10" xml:space="preserve">
           ]);
         })
     ).then(sources => {
-      const mapIDs = sources.reduce((prev, curr) => {
-        const source = curr[0];
-        const mercXys = curr[1];
-        if (source.mapID !== ui.core.from.mapID) {
-          const polygon_ = polygon([mercXys]);
-          if (booleanPointInPolygon(point_, polygon_)) {
-            prev.push(source);
+      const mapIDs = sources
+        .reduce((prev, curr) => {
+          const source = curr[0];
+          const mercXys = curr[1];
+          if (source.mapID !== ui.core.from.mapID) {
+            const polygon_ = polygon([mercXys]);
+            if (booleanPointInPolygon(point_, polygon_)) {
+              prev.push(source);
+            }
           }
-        }
-        return prev;
-      }, []).filter(source => source.envelopeAreaIndex / areaIndex < threshold)
-        .sort((a, b) => a.envelopeAreaIndex - b.envelopeAreaIndex )
+          return prev;
+        }, [])
+        .filter(source => source.envelopeAreaIndex / areaIndex < threshold)
+        .sort((a, b) => a.envelopeAreaIndex - b.envelopeAreaIndex)
         .map(source => source.mapID);
       console.log(mapIDs);
       return mapIDs;
@@ -1576,13 +1579,15 @@ enable-background="new 0 0 10 10" xml:space="preserve">
   }
 
   areaIndex(xys) {
-    return 0.5 *
-    Math.abs(
-      [0, 1, 2, 3].reduce((prev, curr, i) => {
-        const xy1 = xys[i];
-        const xy2 = xys[i + 1];
-        return prev + (xy1[0] - xy2[0]) * (xy1[1] + xy2[1]);
-      }, 0)
+    return (
+      0.5 *
+      Math.abs(
+        [0, 1, 2, 3].reduce((prev, curr, i) => {
+          const xy1 = xys[i];
+          const xy2 = xys[i + 1];
+          return prev + (xy1[0] - xy2[0]) * (xy1[1] + xy2[1]);
+        }, 0)
+      )
     );
   }
 
