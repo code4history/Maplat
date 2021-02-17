@@ -4,7 +4,7 @@ import EventTarget from "ol/events/Target";
 import page from "../legacy/page";
 import bsn from "../legacy/bootstrap-native";
 import { MaplatApp as Core, createElement } from "@maplat/core";
-import ContextMenu from "ol-contextmenu";
+import ContextMenu from "./contextmenu";
 import iziToast from "../legacy/iziToast";
 import QRCode from "../legacy/qrcode";
 import { point, polygon } from "@turf/helpers";
@@ -551,28 +551,6 @@ export class MaplatUi extends EventTarget {
         items: []
       });
       ui.core.appData.controls.push(ui.contextMenu);
-      ui.contextMenu.Internal.setItemListener = function (li, index) {
-        const this_ = this;
-        if (li && typeof this.items[index].callback === "function") {
-          (function (callback) {
-            li.addEventListener("pointerdown", evt => {
-              evt.stopPropagation();
-            });
-            li.addEventListener(
-              "click",
-              evt => {
-                evt.preventDefault();
-                const obj = {
-                  coordinate: this_.getCoordinateClicked(),
-                  data: this_.items[index].data || null
-                };
-                if (!callback(obj, this_.map)) this_.closeMenu();
-              },
-              false
-            );
-          })(this.items[index].callback);
-        }
-      };
 
       if (ui.core.mapObject) {
         ui.core.appData.controls.map(control => {
