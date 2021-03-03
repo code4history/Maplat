@@ -313,7 +313,7 @@ export class MaplatUi extends EventTarget {
                       <dd c="${key}_dd"></dd>
                     </dl></d> `;
             }).join("")}
-          <d c="recipients" c="modal_cache_content"><dl c="dl-horizontal">
+          <d c="recipients modal_cache_content"><dl c="dl-horizontal">
             <dt din="html.cache_handle"></dt>
             <dd><s c="cache_size"></s>
               <a c="cache_delete btn btn-default pull-right" href="#" din="html.cache_delete"></a></dd>
