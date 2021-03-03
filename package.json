@@ -43,7 +43,7 @@
   },
   "homepage": "https://github.com/code4history/Maplat/wiki",
   "dependencies": {
-    "@maplat/core": "github:code4history/MaplatCore#heightwidthbug",
+    "@maplat/core": "github:code4history/MaplatCore#weiwudi_install_strategy",
     "@maplat/tin": "^0.7.4",
     "@turf/turf": "^5.1.6",
     "bootstrap.native": "^3.0.14",
@@ -55,7 +55,7 @@
     "strip-whitespace-loader": "github:kochizufan/strip-whitespace-loader#fix_dq_npm",
     "swiper": "^5.3.1",
     "swiper4": "npm:swiper@^4.5.1",
-    "weiwudi": "^0.1.3"
+    "weiwudi": "github:code4history/Weiwudi#install_strategy"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.8",
