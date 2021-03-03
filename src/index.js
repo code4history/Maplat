@@ -1120,6 +1120,33 @@ enable-background="new 0 0 10 10" xml:space="preserve">
             ).innerHTML = `${size} ${unit}`;
           };
 
+          const putTileCacheStats = function (stats) {
+            let size = stats.size || 0;
+            let unit = "Bytes";
+            if (size > 1024) {
+              size = Math.round((size * 10) / 1024) / 10;
+              unit = "KBytes";
+            }
+            if (size > 1024) {
+              size = Math.round((size * 10) / 1024) / 10;
+              unit = "MBytes";
+            }
+            if (size > 1024) {
+              size = Math.round((size * 10) / 1024) / 10;
+              unit = "GBytes";
+            }
+            let content = `${size} ${unit}`;
+            if (stats.total) {
+              content = `${content} (${stats.count} / ${stats.total} tiles [${stats.percent}%])`;
+            } else {
+              content = `${content} (${stats.count} tiles)`;
+            }
+            ui.core.mapDivDocument.querySelector(
+              ".cache_size"
+            ).innerHTML = content;
+          };
+
+
           ui.modalSetting("map");
 
           const cacheDiv = ui.core.mapDivDocument.querySelector(".modal_cache_content");
@@ -1141,9 +1168,11 @@ enable-background="new 0 0 10 10" xml:space="preserve">
               modalElm.removeEventListener("hide.bs.modal", hideFunc, false);
             };
             modalElm.addEventListener("hide.bs.modal", hideFunc, false);
-            const size = (await ui.core.getMapTileCacheStatsAsync(from.mapID)).size || 0;
+            //const size = (await ui.core.getMapTileCacheStatsAsync(from.mapID)).size || 0;
+            const stats = await ui.core.getMapTileCacheStatsAsync(from.mapID);
 
-            putTileCacheSize(size);
+            //putTileCacheSize(size);
+            putTileCacheStats(stats);
 
             setTimeout(() => {
               // eslint-disable-line no-undef
