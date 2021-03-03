@@ -1121,28 +1121,38 @@ enable-background="new 0 0 10 10" xml:space="preserve">
           };
 
           ui.modalSetting("map");
-          const deleteButton = document.querySelector(".cache_delete"); // eslint-disable-line no-undef
-          const deleteFunc = async function (evt) {
-            evt.preventDefault();
-            const from = ui.core.getMapMeta();
-            await ui.core.clearMapTileCacheAsync(from.mapID);
-            putTileCacheSize(
-              await ui.core.getMapTileCacheSizeAsync(from.mapID)
-            );
-          };
-          const hideFunc = function (_event) {
-            deleteButton.removeEventListener("click", deleteFunc, false);
-            modalElm.removeEventListener("hide.bs.modal", hideFunc, false);
-          };
-          modalElm.addEventListener("hide.bs.modal", hideFunc, false);
 
-          putTileCacheSize(await ui.core.getMapTileCacheSizeAsync(from.mapID));
+          const cacheDiv = ui.core.mapDivDocument.querySelector(".modal_cache_content");
+          const cacheEnable = ui.core.getMapCacheEnable(from.mapID);
 
+          if (cacheEnable) {
+            cacheDiv.classList.remove("hide");
+            const deleteButton = document.querySelector(".cache_delete"); // eslint-disable-line no-undef
+            const deleteFunc = async function (evt) {
+              evt.preventDefault();
+              const from = ui.core.getMapMeta();
+              await ui.core.clearMapTileCacheAsync(from.mapID);
+              putTileCacheSize(
+                await ui.core.getMapTileCacheSizeAsync(from.mapID)
+              );
+            };
+            const hideFunc = function (_event) {
+              deleteButton.removeEventListener("click", deleteFunc, false);
+              modalElm.removeEventListener("hide.bs.modal", hideFunc, false);
+            };
+            modalElm.addEventListener("hide.bs.modal", hideFunc, false);
+            const size = (await ui.core.getMapTileCacheStatsAsync(from.mapID)).size || 0;
+
+            putTileCacheSize(size);
+
+            setTimeout(() => {
+              // eslint-disable-line no-undef
+              deleteButton.addEventListener("click", deleteFunc, false);
+            }, 200);
+          } else {
+            cacheDiv.classList.add("hide");
+          }
           modal.show();
-          setTimeout(() => {
-            // eslint-disable-line no-undef
-            deleteButton.addEventListener("click", deleteFunc, false);
-          }, 100);
         } else if (control === "help") {
           ui.modalSetting("help");
           modal.show();
