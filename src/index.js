@@ -1101,25 +1101,6 @@ enable-background="new 0 0 10 10" xml:space="preserve">
             }
           });
 
-          const putTileCacheSize = function (size) {
-            let unit = "Bytes";
-            if (size > 1024) {
-              size = Math.round((size * 10) / 1024) / 10;
-              unit = "KBytes";
-            }
-            if (size > 1024) {
-              size = Math.round((size * 10) / 1024) / 10;
-              unit = "MBytes";
-            }
-            if (size > 1024) {
-              size = Math.round((size * 10) / 1024) / 10;
-              unit = "GBytes";
-            }
-            ui.core.mapDivDocument.querySelector(
-              ".cache_size"
-            ).innerHTML = `${size} ${unit}`;
-          };
-
           const putTileCacheStats = function (stats) {
             let size = stats.size || 0;
             let unit = "Bytes";
@@ -1146,7 +1127,6 @@ enable-background="new 0 0 10 10" xml:space="preserve">
             ).innerHTML = content;
           };
 
-
           ui.modalSetting("map");
 
           const cacheDiv = ui.core.mapDivDocument.querySelector(".modal_cache_content");
@@ -1159,20 +1139,15 @@ enable-background="new 0 0 10 10" xml:space="preserve">
               evt.preventDefault();
               const from = ui.core.getMapMeta();
               await ui.core.clearMapTileCacheAsync(from.mapID);
-              putTileCacheSize(
-                await ui.core.getMapTileCacheSizeAsync(from.mapID)
-              );
+              putTileCacheStats(await ui.core.getMapTileCacheStatsAsync(from.mapID));
             };
             const hideFunc = function (_event) {
               deleteButton.removeEventListener("click", deleteFunc, false);
               modalElm.removeEventListener("hide.bs.modal", hideFunc, false);
             };
             modalElm.addEventListener("hide.bs.modal", hideFunc, false);
-            //const size = (await ui.core.getMapTileCacheStatsAsync(from.mapID)).size || 0;
-            const stats = await ui.core.getMapTileCacheStatsAsync(from.mapID);
 
-            //putTileCacheSize(size);
-            putTileCacheStats(stats);
+            putTileCacheStats(await ui.core.getMapTileCacheStatsAsync(from.mapID));
 
             setTimeout(() => {
               // eslint-disable-line no-undef
