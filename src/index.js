@@ -315,11 +315,12 @@ export class MaplatUi extends EventTarget {
             }).join("")}
           <d c="recipients modal_cache_content"><dl c="dl-horizontal">
             <dt din="html.cache_handle"></dt>
-            <dd><s c="cache_size"></s>
-              <a c="cache_delete btn btn-default pull-right" href="#" din="html.cache_delete"></a></dd>
+            <dd><s c="cache_size"></s></dd>
+            <dt></dt>
+            <dd><s c="pull-right"><button c="cache_fetch btn btn-default" href="#" din="html.cache_fetch"></button>
+              <button c="cache_delete btn btn-default" href="#" din="html.cache_delete"></button></s></dd>
           </dl></d> 
-
-        </d> 
+        </d>
 
         <d c="modal_load_content">
           <p c="recipient"><img src="${
@@ -1101,22 +1102,26 @@ enable-background="new 0 0 10 10" xml:space="preserve">
             }
           });
 
+          const deleteButton = document.querySelector(".cache_delete"); // eslint-disable-line no-undef
+          const fetchButton = document.querySelector(".cache_fetch"); // eslint-disable-line no-undef
           const putTileCacheStats = function (stats) {
             let size = stats.size || 0;
             let unit = "Bytes";
-            if (size > 1024) {
-              size = Math.round((size * 10) / 1024) / 10;
-              unit = "KBytes";
+            if (size !== -1) {
+              if (size > 1024) {
+                size = Math.round((size * 10) / 1024) / 10;
+                unit = "KBytes";
+              }
+              if (size > 1024) {
+                size = Math.round((size * 10) / 1024) / 10;
+                unit = "MBytes";
+              }
+              if (size > 1024) {
+                size = Math.round((size * 10) / 1024) / 10;
+                unit = "GBytes";
+              }
             }
-            if (size > 1024) {
-              size = Math.round((size * 10) / 1024) / 10;
-              unit = "MBytes";
-            }
-            if (size > 1024) {
-              size = Math.round((size * 10) / 1024) / 10;
-              unit = "GBytes";
-            }
-            let content = `${size} ${unit}`;
+            let content = size === -1 ? ui.core.t("html.cache_processing") : `${size} ${unit}`;
             if (stats.total) {
               content = `${content} (${stats.count} / ${stats.total} tiles [${stats.percent}%])`;
             } else {
@@ -1125,8 +1130,22 @@ enable-background="new 0 0 10 10" xml:space="preserve">
             ui.core.mapDivDocument.querySelector(
               ".cache_size"
             ).innerHTML = content;
+            if (stats.count != 0) {
+              deleteButton.removeAttribute("disabled");
+            } else {
+              deleteButton.setAttribute("disabled", true);
+            }
+            if (stats.total) {
+              fetchButton.classList.remove("hide");
+              if (stats.total === stats.count) {
+                fetchButton.setAttribute("disabled", true);
+              } else {
+                fetchButton.removeAttribute("disabled");
+              }
+            } else {
+              fetchButton.classList.add("hide");
+            }
           };
-
           ui.modalSetting("map");
 
           const cacheDiv = ui.core.mapDivDocument.querySelector(".modal_cache_content");
@@ -1134,15 +1153,48 @@ enable-background="new 0 0 10 10" xml:space="preserve">
 
           if (cacheEnable) {
             cacheDiv.classList.remove("hide");
-            const deleteButton = document.querySelector(".cache_delete"); // eslint-disable-line no-undef
             const deleteFunc = async function (evt) {
               evt.preventDefault();
               const from = ui.core.getMapMeta();
               await ui.core.clearMapTileCacheAsync(from.mapID);
               putTileCacheStats(await ui.core.getMapTileCacheStatsAsync(from.mapID));
             };
+            const cancelFunc = async function (evt) {
+              if (evt) evt.preventDefault();
+              const from = ui.core.getMapMeta();
+              await ui.core.cancelMapTileCacheAsync(from.mapID);
+            };
+            const fetchFunc = async function (evt) {
+              evt.preventDefault();
+              fetchButton.innerHTML = ui.core.t("html.cache_cancel");
+              fetchButton.removeEventListener("click", fetchFunc);
+              fetchButton.addEventListener("click", cancelFunc);
+              const from = ui.core.getMapMeta();
+              await ui.core.fetchAllMapTileCacheAsync(from.mapID, async (type, data) => {
+                switch(type) {
+                  case "proceed":
+                    putTileCacheStats({
+                      count: data.processed,
+                      total: data.total,
+                      percent: data.percent,
+                      size: -1
+                    });
+                    return;
+                  case "canceled":
+                  case "stop":
+                  case "finish":
+                    fetchButton.innerHTML = ui.core.t("html.cache_fetch");
+                    fetchButton.removeEventListener("click", cancelFunc);
+                    fetchButton.addEventListener("click", fetchFunc);
+                    putTileCacheStats(await ui.core.getMapTileCacheStatsAsync(from.mapID));
+                }
+
+              });
+            };
             const hideFunc = function (_event) {
               deleteButton.removeEventListener("click", deleteFunc, false);
+              fetchButton.removeEventListener("click", fetchFunc, false);
+              fetchButton.removeEventListener("click", cancelFunc, false);
               modalElm.removeEventListener("hide.bs.modal", hideFunc, false);
             };
             modalElm.addEventListener("hide.bs.modal", hideFunc, false);
@@ -1152,6 +1204,8 @@ enable-background="new 0 0 10 10" xml:space="preserve">
             setTimeout(() => {
               // eslint-disable-line no-undef
               deleteButton.addEventListener("click", deleteFunc, false);
+              fetchButton.addEventListener("click", fetchFunc, false);
+              fetchButton.innerHTML = ui.core.t("html.cache_fetch");
             }, 200);
           } else {
             cacheDiv.classList.add("hide");
