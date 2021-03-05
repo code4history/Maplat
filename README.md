@@ -58,13 +58,13 @@ Documentation is undergoing.
 成果物を他人がコンテンツ作れる形でまとめられていないですが、おいおい整理します。
 
 # Collaboration demo with Jizo project
-Code 4 NaraからUrban data challenge 2016に応募中のMaplatと[地蔵プロジェクト](https://github.com/code4nara/JizoProject/wiki)をコラボレーションさせたデモを作りました。
+Code 4 NaraからUrban data challenge 2016に応募中のMaplatと[地蔵プロジェクト](https://github.com/code4history/JizoProject/wiki)をコラボレーションさせたデモを作りました。
 * https://s.maplat.jp/r/narajizomap/
 
 ## Contributors
 
 This project exists thanks to all the people who contribute. <!--[[Contribute](CONTRIBUTING.md)].-->
-<a href="https://github.com/code4nara/Maplat/graphs/contributors"><img src="https://opencollective.com/maplat/contributors.svg?width=890&button=false" /></a>
+<a href="https://github.com/code4history/Maplat/graphs/contributors"><img src="https://opencollective.com/maplat/contributors.svg?width=890&button=false" /></a>
 
 
 ## Backers

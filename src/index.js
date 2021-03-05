@@ -263,7 +263,7 @@ export class MaplatUi extends EventTarget {
               <s c="hide_marker_help"><li dinh="html.help_etc_hide_marker" c="recipient"></li></s>
               <li dinh="html.help_etc_slider" c="recipient"></li>
             </ul>
-            <p><a href="https://github.com/code4nara/Maplat/wiki" target="_blank">Maplat</a>
+            <p><a href="https://github.com/code4history/Maplat/wiki" target="_blank">Maplat</a>
               © 2015- Kohei Otsuka, Code for History</p>
           </d> 
         </d> 
@@ -1102,8 +1102,8 @@ enable-background="new 0 0 10 10" xml:space="preserve">
             }
           });
 
-          const deleteButton = document.querySelector(".cache_delete"); // eslint-disable-line no-undef
-          const fetchButton = document.querySelector(".cache_fetch"); // eslint-disable-line no-undef
+          const deleteButton = ui.core.mapDivDocument.querySelector(".cache_delete"); // eslint-disable-line no-undef
+          const fetchButton = ui.core.mapDivDocument.querySelector(".cache_fetch"); // eslint-disable-line no-undef
           const putTileCacheStats = function (stats) {
             let size = stats.size || 0;
             let unit = "Bytes";
@@ -1165,10 +1165,12 @@ enable-background="new 0 0 10 10" xml:space="preserve">
               await ui.core.cancelMapTileCacheAsync(from.mapID);
             };
             const fetchFunc = async function (evt) {
+              const closeButton = ui.core.mapDivDocument.querySelector(".close");
               evt.preventDefault();
               fetchButton.innerHTML = ui.core.t("html.cache_cancel");
               fetchButton.removeEventListener("click", fetchFunc);
               fetchButton.addEventListener("click", cancelFunc);
+              closeButton.classList.add("temp_no_close");
               const from = ui.core.getMapMeta();
               await ui.core.fetchAllMapTileCacheAsync(from.mapID, async (type, data) => {
                 switch(type) {
@@ -1186,6 +1188,7 @@ enable-background="new 0 0 10 10" xml:space="preserve">
                     fetchButton.innerHTML = ui.core.t("html.cache_fetch");
                     fetchButton.removeEventListener("click", cancelFunc);
                     fetchButton.addEventListener("click", fetchFunc);
+                    closeButton.classList.remove("temp_no_close");
                     putTileCacheStats(await ui.core.getMapTileCacheStatsAsync(from.mapID));
                 }
 
