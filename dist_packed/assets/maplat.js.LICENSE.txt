@@ -34,7 +34,7 @@
  * Copyright jQuery Foundation and other contributors | http://jquery.org/license
  */
 
-/*! @maplat/ui v0.8.5 | Kohei Otsuka, Code for History | license: Apache-2.0 */
+/*! @maplat/ui v0.8.6 | Kohei Otsuka, Code for History | license: Apache-2.0 */
 
 /**
  * @license

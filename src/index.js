@@ -1102,8 +1102,12 @@ enable-background="new 0 0 10 10" xml:space="preserve">
             }
           });
 
-          const deleteButton = ui.core.mapDivDocument.querySelector(".cache_delete"); // eslint-disable-line no-undef
-          const fetchButton = ui.core.mapDivDocument.querySelector(".cache_fetch"); // eslint-disable-line no-undef
+          const deleteButton = ui.core.mapDivDocument.querySelector(
+            ".cache_delete"
+          ); // eslint-disable-line no-undef
+          const fetchButton = ui.core.mapDivDocument.querySelector(
+            ".cache_fetch"
+          ); // eslint-disable-line no-undef
           const putTileCacheStats = function (stats) {
             let size = stats.size || 0;
             let unit = "Bytes";
@@ -1121,7 +1125,10 @@ enable-background="new 0 0 10 10" xml:space="preserve">
                 unit = "GBytes";
               }
             }
-            let content = size === -1 ? ui.core.t("html.cache_processing") : `${size} ${unit}`;
+            let content =
+              size === -1
+                ? ui.core.t("html.cache_processing")
+                : `${size} ${unit}`;
             if (stats.total) {
               content = `${content} (${stats.count} / ${stats.total} tiles [${stats.percent}%])`;
             } else {
@@ -1148,7 +1155,9 @@ enable-background="new 0 0 10 10" xml:space="preserve">
           };
           ui.modalSetting("map");
 
-          const cacheDiv = ui.core.mapDivDocument.querySelector(".modal_cache_content");
+          const cacheDiv = ui.core.mapDivDocument.querySelector(
+            ".modal_cache_content"
+          );
           const cacheEnable = ui.core.getMapCacheEnable(from.mapID);
 
           if (cacheEnable) {
@@ -1157,7 +1166,9 @@ enable-background="new 0 0 10 10" xml:space="preserve">
               evt.preventDefault();
               const from = ui.core.getMapMeta();
               await ui.core.clearMapTileCacheAsync(from.mapID);
-              putTileCacheStats(await ui.core.getMapTileCacheStatsAsync(from.mapID));
+              putTileCacheStats(
+                await ui.core.getMapTileCacheStatsAsync(from.mapID)
+              );
             };
             const cancelFunc = async function (evt) {
               if (evt) evt.preventDefault();
@@ -1165,34 +1176,40 @@ enable-background="new 0 0 10 10" xml:space="preserve">
               await ui.core.cancelMapTileCacheAsync(from.mapID);
             };
             const fetchFunc = async function (evt) {
-              const closeButton = ui.core.mapDivDocument.querySelector(".close");
+              const closeButton = ui.core.mapDivDocument.querySelector(
+                ".close"
+              );
               evt.preventDefault();
               fetchButton.innerHTML = ui.core.t("html.cache_cancel");
               fetchButton.removeEventListener("click", fetchFunc);
               fetchButton.addEventListener("click", cancelFunc);
               closeButton.classList.add("temp_no_close");
               const from = ui.core.getMapMeta();
-              await ui.core.fetchAllMapTileCacheAsync(from.mapID, async (type, data) => {
-                switch(type) {
-                  case "proceed":
-                    putTileCacheStats({
-                      count: data.processed,
-                      total: data.total,
-                      percent: data.percent,
-                      size: -1
-                    });
-                    return;
-                  case "canceled":
-                  case "stop":
-                  case "finish":
-                    fetchButton.innerHTML = ui.core.t("html.cache_fetch");
-                    fetchButton.removeEventListener("click", cancelFunc);
-                    fetchButton.addEventListener("click", fetchFunc);
-                    closeButton.classList.remove("temp_no_close");
-                    putTileCacheStats(await ui.core.getMapTileCacheStatsAsync(from.mapID));
+              await ui.core.fetchAllMapTileCacheAsync(
+                from.mapID,
+                async (type, data) => {
+                  switch (type) {
+                    case "proceed":
+                      putTileCacheStats({
+                        count: data.processed,
+                        total: data.total,
+                        percent: data.percent,
+                        size: -1
+                      });
+                      return;
+                    case "canceled":
+                    case "stop":
+                    case "finish":
+                      fetchButton.innerHTML = ui.core.t("html.cache_fetch");
+                      fetchButton.removeEventListener("click", cancelFunc);
+                      fetchButton.addEventListener("click", fetchFunc);
+                      closeButton.classList.remove("temp_no_close");
+                      putTileCacheStats(
+                        await ui.core.getMapTileCacheStatsAsync(from.mapID)
+                      );
+                  }
                 }
-
-              });
+              );
             };
             const hideFunc = function (_event) {
               deleteButton.removeEventListener("click", deleteFunc, false);
@@ -1202,7 +1219,9 @@ enable-background="new 0 0 10 10" xml:space="preserve">
             };
             modalElm.addEventListener("hide.bs.modal", hideFunc, false);
 
-            putTileCacheStats(await ui.core.getMapTileCacheStatsAsync(from.mapID));
+            putTileCacheStats(
+              await ui.core.getMapTileCacheStatsAsync(from.mapID)
+            );
 
             setTimeout(() => {
               // eslint-disable-line no-undef
