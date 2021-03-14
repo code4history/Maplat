@@ -638,17 +638,18 @@ export class MaplatUi extends EventTarget {
       for (let i = 0; i < sources.length; i++) {
         const source = sources[i];
         if (source.envelope) {
-          if (ui.appEnvelope) source.envelope.geometry.coordinates[0].map((xy) => {
-            if (appBbox.length === 0) {
-              appBbox[0] = appBbox[2] = xy[0];
-              appBbox[1] = appBbox[3] = xy[1];
-            } else {
-              if (xy[0] < appBbox[0]) appBbox[0] = xy[0];
-              if (xy[0] > appBbox[2]) appBbox[2] = xy[0];
-              if (xy[1] < appBbox[1]) appBbox[1] = xy[1];
-              if (xy[1] > appBbox[3]) appBbox[3] = xy[1];
-            }
-          });
+          if (ui.appEnvelope)
+            source.envelope.geometry.coordinates[0].map(xy => {
+              if (appBbox.length === 0) {
+                appBbox[0] = appBbox[2] = xy[0];
+                appBbox[1] = appBbox[3] = xy[1];
+              } else {
+                if (xy[0] < appBbox[0]) appBbox[0] = xy[0];
+                if (xy[0] > appBbox[2]) appBbox[2] = xy[0];
+                if (xy[1] < appBbox[1]) appBbox[1] = xy[1];
+                if (xy[1] > appBbox[3]) appBbox[3] = xy[1];
+              }
+            });
           source.envelopeColor = colors[cIndex];
           cIndex = cIndex + 1;
           if (cIndex === colors.length) cIndex = 0;

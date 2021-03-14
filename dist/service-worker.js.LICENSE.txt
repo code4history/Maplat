@@ -1,1 +1,1 @@
-/*! @maplat/ui v0.8.6 | Kohei Otsuka, Code for History | license: Apache-2.0 */
+/*! @maplat/ui v0.9.0 | Kohei Otsuka, Code for History | license: Maplat Limited License 1.1 */
