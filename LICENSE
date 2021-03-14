@@ -1,3 +1,26 @@
+Maplat Limited License
+Ver. 1.1 Mar. 9 2021
+
+残念ながら、悪質なフリーライダーの発生により、Maplat関連のライブラリはオープンソースであることを一時放棄し、制限ライセンスで公開せざるを得なくなりました。
+本ライセンスのVer.1.1を公開した2021年3月9日以降、問題が解決し再びApache 2.0ライセンスに戻せるようになるまでの間、MaplatUI Version 0.9.0以降のバージョンを制限ライセンスで公開します。
+制限期間のライセンス条項は以下の通りです。
+
+1. 次項以降に記されない一般の利用者については、通常のApache 2.0に等しい条件での利用を認める。ただし、本ライセンスとApache 2.0ライセンスが矛盾する場合は、本ライセンスが優先される。
+2. しかし、下記に記す特定のユーザについては、ライブラリの利用、コードの閲覧や再利用、また利用に伴う特許の知的財産利用権など、本ライブラリの利用に関する一切の権限を認めない。
+   * 株式会社コギト 日本、京都市中京区錦小路通烏丸西入ル占出山町311 アニマート錦5F
+3. 本ライセンスの記載内容について日本語表記と英語表記が矛盾する場合、日本語表記での内容が優先される。
+
+Unfortunately, due to the occurrence of malicious free riders, we have been forced to temporarily abandon the Maplat-related libraries as open source and release them under a restricted license.
+After March 9, 2021, when we released Version 1.1 of this license, we will release MaplatUI Version 0.9.0 and later versions under a restricted license until the problem is resolved and we can revert to the Apache 2.0 license again.
+The license terms for the restricted period are as follows:
+
+1. For general users not listed in the next sections, the terms of the license are the same as for regular Apache 2.0 license. However, if there is any conflict between this License and the Apache 2.0 License, this License shall prevail.
+2. However, the specific users listed below are not granted any rights related to the use of the library, including but not limited to the use of the library, viewing and reuse of the code, and the right to use any patents associated with the use of the library.
+   * COGITO Inc., 5F Animato Nishiki, 311 Uradeyamacho, Nakagyo-ku, Kyoto, Japan
+3. In the event of any discrepancy between the Japanese and English versions of this license, the Japanese version shall prevail.
+
+=====
+Reference:
                                  Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
