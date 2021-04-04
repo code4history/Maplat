@@ -43,7 +43,7 @@
   },
   "homepage": "https://github.com/code4history/Maplat/wiki",
   "dependencies": {
-    "@maplat/core": "^0.9.0",
+    "@maplat/core": "github:code4history/MaplatCore#vector",
     "@maplat/tin": "^0.8.0",
     "@turf/turf": "^5.1.6",
     "bootstrap.native": "^3.0.14",
