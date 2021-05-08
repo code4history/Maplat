@@ -1565,11 +1565,11 @@ enable-background="new 0 0 10 10" xml:space="preserve">
     const map = ui.core.mapObject;
     const size = map.getSize();
     const extent = [[0, 0], [size[0], 0], size, [0, size[1]], [0, 0]];
-    const histXys = extent.map(pixel => map.getCoordinateFromPixel(pixel));
-    const xys = await (ui.core.from instanceof NowMap
-      ? Promise.resolve(histXys)
-      : Promise.all(histXys.map(histXy => ui.core.from.sysCoord2MercAsync(histXy))));
-    const areaIndex = ui.areaIndex(xys);
+    const sysCoords = extent.map(pixel => map.getCoordinateFromPixel(pixel));
+    const mercs = await (ui.core.from instanceof NowMap
+      ? Promise.resolve(sysCoords)
+      : Promise.all(sysCoords.map(sysCoord => ui.core.from.sysCoord2MercAsync(sysCoord))));
+    const areaIndex = ui.areaIndex(mercs);
 
     return Promise.all(
       Object.keys(ui.core.cacheHash)
