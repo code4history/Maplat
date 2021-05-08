@@ -1534,7 +1534,7 @@ enable-background="new 0 0 10 10" xml:space="preserve">
         if (mapID !== ui.core.from.mapID) {
           const source = ui.core.cacheHash[mapID];
           const xyPromises = source.envelope.geometry.coordinates[0].map(
-            coord => ui.core.from.merc2XyAsync(coord)
+            coord => ui.core.from.merc2SysCoordAsync(coord)
           );
           const hexColor = source.envelopeColor;
           let color = asArray(hexColor);
@@ -1568,7 +1568,7 @@ enable-background="new 0 0 10 10" xml:space="preserve">
     const histXys = extent.map(pixel => map.getCoordinateFromPixel(pixel));
     const xys = await (ui.core.from instanceof NowMap
       ? Promise.resolve(histXys)
-      : Promise.all(histXys.map(histXy => ui.core.from.xy2MercAsync(histXy))));
+      : Promise.all(histXys.map(histXy => ui.core.from.sysCoord2MercAsync(histXy))));
     const areaIndex = ui.areaIndex(xys);
 
     return Promise.all(
@@ -1580,7 +1580,7 @@ enable-background="new 0 0 10 10" xml:space="preserve">
             Promise.resolve(source),
             Promise.all(
               source.envelope.geometry.coordinates[0].map(coord =>
-                ui.core.from.merc2XyAsync(coord)
+                ui.core.from.merc2SysCoordAsync(coord)
               )
             )
           ]);
@@ -1651,9 +1651,9 @@ enable-background="new 0 0 10 10" xml:space="preserve">
                   [source.width, source.height],
                   [0, source.height],
                   [0, 0]
-                ].map(xy => Promise.resolve(source.xy2HistMapCoords(xy)))
+                ].map(xy => Promise.resolve(source.xy2SysCoord(xy)))
               : source.envelope.geometry.coordinates[0].map(coord =>
-                  ui.core.from.merc2XyAsync(coord)
+                  ui.core.from.merc2SysCoordAsync(coord)
                 );
 
           Promise.all(xyPromises).then(xys => {
