@@ -628,8 +628,8 @@ export class CompassRotate extends Rotate {
           self.label_.style.transform = transform;
           return;
         }
-        source.viewPoint2MercsAsync().then(mercs => {
-          const rot = source.mercs2MercRotation(mercs);
+        source.viewpoint2MercsAsync().then(mercs => {
+          const rot = source.mercs2MercViewpoint(mercs)[2];
           const transform = `rotate(${rot}rad)`;
           self.label_.style.msTransform = transform;
           self.label_.style.webkitTransform = transform;
