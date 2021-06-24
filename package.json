@@ -14,8 +14,8 @@
     "locales/"
   ],
   "scripts": {
-    "server": "webpack-dev-server --config ./webpack_config/webpack.config.standard.dev.js",
-    "server:packed": "npm run freeze && webpack-dev-server --config ./webpack_config/webpack.config.packed.dev.js",
+    "server": "webpack-cli serve --config ./webpack_config/webpack.config.standard.dev.js --mode=development --devtool=inline-source-map",
+    "server:packed": "npm run freeze && webpack-cli serve --config ./webpack_config/webpack.config.packed.dev.js --mode=development --devtool=inline-source-map",
     "build": "npm run build:standard && npm run build:packed",
     "build:standard": "webpack --color --progress --config ./webpack_config/webpack.config.standard.js",
     "build:packed": "npm run freeze && webpack --config ./webpack_config/webpack.config.packed.js",
@@ -43,8 +43,8 @@
   },
   "homepage": "https://github.com/code4history/Maplat/wiki",
   "dependencies": {
-    "@maplat/core": "github:code4history/MaplatCore#unifyTerm",
-    "@maplat/tin": "github:code4history/MaplatTin#pointInPolygon",
+    "@maplat/core": "^0.9.2",
+    "@maplat/tin": "^0.8.2",
     "@turf/turf": "^5.1.6",
     "bootstrap.native": "^3.0.14",
     "caniuse-lite": "^1.0.30001120",
@@ -77,7 +77,7 @@
     "gulp": "^4.0.2",
     "gulp-cli": "^2.2.0",
     "gulp-zip": "^4.2.0",
-    "html-webpack-plugin": "^4.5.0",
+    "html-webpack-plugin": "^4.5.2",
     "jest": "^26.6.3",
     "jest-canvas-mock": "^2.3.0",
     "less": "^3.13.1",
@@ -87,10 +87,9 @@
     "prettier": "^2.2.1",
     "terser-webpack-plugin": "^4.2.3",
     "url-loader": "^4.1.1",
-    "webpack": "^4.41.6",
-    "webpack-cli": "^3.3.11",
-    "webpack-dev-server": "^3.11.0",
-    "webpack-merge": "^5.4.0",
+    "webpack": "^5.40.0",
+    "webpack-cli": "^4.7.2",
+    "webpack-dev-server": "^3.11.2",
     "workbox-build": "^6.0.2",
     "workbox-cli": "^5.1.4",
     "workbox-core": "^6.0.2",
@@ -98,7 +97,6 @@
     "workbox-precaching": "^6.0.2",
     "workbox-routing": "^6.0.2",
     "workbox-strategies": "^6.0.2",
-    "workbox-webpack-plugin": "^6.0.2",
-    "write-file-webpack-plugin": "^4.5.1"
+    "workbox-webpack-plugin": "^6.0.2"
   }
 }

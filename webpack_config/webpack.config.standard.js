@@ -18,8 +18,7 @@ module.exports = merge(common, {
         from: 'locales',
         to: './assets/locales/'
       }]
-    }),
-    new WriteFilePlugin()
+    })
   ],
 
   module: {
