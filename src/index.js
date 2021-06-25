@@ -701,8 +701,7 @@ export class MaplatUi extends EventTarget {
           prevEl: ".base-prev"
         }
       }));
-      baseSwiper.on("click", e => {
-        e.preventDefault();
+      baseSwiper.on("click", _e => {
         if (!baseSwiper.clickedSlide) return;
         const slide = baseSwiper.clickedSlide;
         ui.core.changeMap(slide.getAttribute("data"));
@@ -734,8 +733,7 @@ export class MaplatUi extends EventTarget {
           prevEl: ".overlay-prev"
         }
       }));
-      overlaySwiper.on("click", e => {
-        e.preventDefault();
+      overlaySwiper.on("click", _e => {
         if (!overlaySwiper.clickedSlide) return;
         const slide = overlaySwiper.clickedSlide;
         ui.core.changeMap(slide.getAttribute("data"));
