@@ -93,9 +93,8 @@ export class MaplatUi extends EventTarget {
               break;
             case "c":
               if (ui.core) {
-                const modalElm = ui.core.mapDivDocument.querySelector(
-                  ".modalBase"
-                );
+                const modalElm =
+                  ui.core.mapDivDocument.querySelector(".modalBase");
                 const modal = new bsn.Modal(modalElm, {
                   root: ui.core.mapDivDocument
                 });
@@ -575,9 +574,8 @@ export class MaplatUi extends EventTarget {
 
         const modalElm = ui.core.mapDivDocument.querySelector(".modalBase");
         const modal = new bsn.Modal(modalElm, { root: ui.core.mapDivDocument });
-        ui.core.mapDivDocument.querySelector(
-          ".modal_load_title"
-        ).innerText = ui.core.translate(ui.core.appData.appName);
+        ui.core.mapDivDocument.querySelector(".modal_load_title").innerText =
+          ui.core.translate(ui.core.appData.appName);
         if (splash) {
           ui.core.mapDivDocument
             .querySelector(".splash_img")
@@ -782,9 +780,8 @@ export class MaplatUi extends EventTarget {
       ui.overlaySwiper.setSlideMapID(map.mapID);
 
       const title = map.officialTitle || map.title || map.label;
-      ui.core.mapDivDocument.querySelector(
-        ".map-title span"
-      ).innerText = ui.core.translate(title);
+      ui.core.mapDivDocument.querySelector(".map-title span").innerText =
+        ui.core.translate(title);
 
       if (ui.checkOverlayID(map.mapID)) {
         ui.sliderCommon.setEnable(true);
@@ -808,12 +805,10 @@ export class MaplatUi extends EventTarget {
 
     ui.core.addEventListener("outOfMap", _evt => {
       if (enableOutOfMap) {
-        ui.core.mapDivDocument.querySelector(
-          ".modal_title"
-        ).innerText = ui.core.t("app.out_of_map");
-        ui.core.mapDivDocument.querySelector(
-          ".modal_gpsD_content"
-        ).innerText = ui.core.t("app.out_of_map_area");
+        ui.core.mapDivDocument.querySelector(".modal_title").innerText =
+          ui.core.t("app.out_of_map");
+        ui.core.mapDivDocument.querySelector(".modal_gpsD_content").innerText =
+          ui.core.t("app.out_of_map_area");
         const modalElm = ui.core.mapDivDocument.querySelector(".modalBase");
         const modal = new bsn.Modal(modalElm, { root: ui.core.mapDivDocument });
         ui.modalSetting("gpsD");
@@ -1020,9 +1015,8 @@ enable-background="new 0 0 10 10" xml:space="preserve">
             const modal = new bsn.Modal(modalElm, {
               root: ui.core.mapDivDocument
             });
-            ui.core.mapDivDocument.querySelector(
-              ".modal_title"
-            ).innerText = ui.core.t("app.out_of_map");
+            ui.core.mapDivDocument.querySelector(".modal_title").innerText =
+              ui.core.t("app.out_of_map");
             ui.core.mapDivDocument.querySelector(
               ".modal_gpsD_content"
             ).innerText = ui.core.t("app.out_of_map_desc");
@@ -1093,9 +1087,8 @@ enable-background="new 0 0 10 10" xml:space="preserve">
           )
             return;
 
-          ui.core.mapDivDocument.querySelector(
-            ".modal_title"
-          ).innerText = ui.core.translate(from.officialTitle || from.title);
+          ui.core.mapDivDocument.querySelector(".modal_title").innerText =
+            ui.core.translate(from.officialTitle || from.title);
           META_KEYS.map(key => {
             if (key === "title" || key === "officialTitle") return;
             if (!from[key] || from[key] === "") {
@@ -1117,12 +1110,10 @@ enable-background="new 0 0 10 10" xml:space="preserve">
             }
           });
 
-          const deleteButton = ui.core.mapDivDocument.querySelector(
-            ".cache_delete"
-          ); // eslint-disable-line no-undef
-          const fetchButton = ui.core.mapDivDocument.querySelector(
-            ".cache_fetch"
-          ); // eslint-disable-line no-undef
+          const deleteButton =
+            ui.core.mapDivDocument.querySelector(".cache_delete"); // eslint-disable-line no-undef
+          const fetchButton =
+            ui.core.mapDivDocument.querySelector(".cache_fetch"); // eslint-disable-line no-undef
           const putTileCacheStats = function (stats) {
             let size = stats.size || 0;
             let unit = "Bytes";
@@ -1149,9 +1140,8 @@ enable-background="new 0 0 10 10" xml:space="preserve">
             } else {
               content = `${content} (${stats.count} tiles)`;
             }
-            ui.core.mapDivDocument.querySelector(
-              ".cache_size"
-            ).innerHTML = content;
+            ui.core.mapDivDocument.querySelector(".cache_size").innerHTML =
+              content;
             if (stats.count != 0) {
               deleteButton.removeAttribute("disabled");
             } else {
@@ -1191,9 +1181,8 @@ enable-background="new 0 0 10 10" xml:space="preserve">
               await ui.core.cancelMapTileCacheAsync(from.mapID);
             };
             const fetchFunc = async function (evt) {
-              const closeButton = ui.core.mapDivDocument.querySelector(
-                ".close"
-              );
+              const closeButton =
+                ui.core.mapDivDocument.querySelector(".close");
               evt.preventDefault();
               fetchButton.innerHTML = ui.core.t("html.cache_cancel");
               fetchButton.removeEventListener("click", fetchFunc);
@@ -1414,9 +1403,8 @@ enable-background="new 0 0 10 10" xml:space="preserve">
       return;
     }
 
-    this.core.mapDivDocument.querySelector(
-      ".modal_title"
-    ).innerText = this.core.translate(data.name);
+    this.core.mapDivDocument.querySelector(".modal_title").innerText =
+      this.core.translate(data.name);
     const modalElm = this.core.mapDivDocument.querySelector(".modalBase");
     if (data.url || data.html) {
       this.core.mapDivDocument
@@ -1490,12 +1478,11 @@ enable-background="new 0 0 10 10" xml:space="preserve">
       };
       modalElm.addEventListener("shown.bs.modal", imgShowFunc, false);
 
-      this.core.mapDivDocument.querySelector(
-        ".poi_address"
-      ).innerText = this.core.translate(data.address);
-      this.core.mapDivDocument.querySelector(
-        ".poi_desc"
-      ).innerHTML = this.core.translate(data.desc).replace(/\n/g, "<br>");
+      this.core.mapDivDocument.querySelector(".poi_address").innerText =
+        this.core.translate(data.address);
+      this.core.mapDivDocument.querySelector(".poi_desc").innerHTML = this.core
+        .translate(data.desc)
+        .replace(/\n/g, "<br>");
     }
     const modal = new bsn.Modal(modalElm, { root: this.core.mapDivDocument });
     this.core.selectMarker(data.namespaceID);
@@ -1540,9 +1527,8 @@ enable-background="new 0 0 10 10" xml:space="preserve">
           color[3] = 0.2;
 
           Promise.all(xyPromises).then(xys => {
-            ui._selectCandidateSources[
-              mapID
-            ] = ui.core.mapObject.setFillEnvelope(xys, null, { color });
+            ui._selectCandidateSources[mapID] =
+              ui.core.mapObject.setFillEnvelope(xys, null, { color });
           });
         }
       });
@@ -1566,7 +1552,9 @@ enable-background="new 0 0 10 10" xml:space="preserve">
     const sysCoords = extent.map(pixel => map.getCoordinateFromPixel(pixel));
     const mercs = await (ui.core.from instanceof NowMap
       ? Promise.resolve(sysCoords)
-      : Promise.all(sysCoords.map(sysCoord => ui.core.from.sysCoord2MercAsync(sysCoord))));
+      : Promise.all(
+          sysCoords.map(sysCoord => ui.core.from.sysCoord2MercAsync(sysCoord))
+        ));
     const areaIndex = ui.areaIndex(mercs);
 
     return Promise.all(
@@ -1750,9 +1738,8 @@ enable-background="new 0 0 10 10" xml:space="preserve">
         thisSpan[i].style.display = "none";
       }
     };
-    const swiperItems = ui.core.mapDivDocument.querySelectorAll(
-      ".swiper-slide div"
-    );
+    const swiperItems =
+      ui.core.mapDivDocument.querySelectorAll(".swiper-slide div");
     for (let i = 0; i < swiperItems.length; i++) {
       const swiperItem = swiperItems[i];
       stringSplit(swiperItem);
