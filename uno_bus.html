@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>宇野バス運行状況表示</title>
+  <meta content="yes" name="apple-mobile-web-app-capable">
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+  <link rel="icon" type="image/png" href="parts/favicon.png">
+  <link rel="stylesheet" href="https://code4history.github.io/MaplatCore/dist/maplat_core.css">
+  <style>
+    .title {
+      position: absolute;
+      top: 0%;
+      bottom: 95%;
+      left: 5%;
+      right: 30%;
+    }
+    .mainview {
+        position: absolute;
+        top: 5%;
+        bottom: 5%;
+        left: 5%;
+        right: 30%;
+    }
+    .subview {
+      position: absolute;
+      top: 5%;
+      bottom: 5%;
+      left: 70%;
+      right: 5%;
+    }
+    .button {
+      position: absolute;
+      top: 95%;
+      bottom: 0%;
+      left: 5%;
+      right: 5%;
+    }
+  </style>
+</head>
+<body>
+  <div class="title">宇野バス運行状況表示</div>
+  <div class="mainview">
+    <div id="map_div"></div>
+  </div>
+  <div class="subview">
+  </div>
+  <div class="button">
+    <button id="changeMap">OSMに切り替える</button>　
+    <select id="routes">
+      <option value="">全路線表示</option>
+    </select>　
+    <small>Bus icon: (c) <a href="https://fontawesome.com/">Font Awesome</a> 路線図: (c) 宇野バス OSM: (c) OpenStreetMap Contributors</small>
+  </div>
+</body>
+<script src="js/gtfs_loader_dist.js"></script>
+<script src="https://code4history.github.io/MaplatCore/dist/maplat_core.js"></script>
+<script>
+    var option = {
+        overlay: false,
+        appid: 'uno_bus',
+        no_rotate: true
+    };
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for (var i = 0; i < hashes.length; i++) {
+        hash = hashes[i].split('=');
+        option[hash[0]] = hash[1] == 'true' ? true : hash[1] == 'false' ? false : hash[1];
+    }
+    var promises = [Maplat.createObject(option)];
+    promises.push(new Promise(function(resolve, reject) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'data/uno_bus/routes.txt', true);
+        xhr.responseType = 'text';
+        xhr.onload = function(e) {
+            if (this.status == 200) {
+                var content = this.response;
+                var lines = content.split('\n');
+                lines.shift();
+                lines.pop();
+                var result = {};
+                lines.map(function(line) {
+                    var elements = line.split(',');
+                    result[elements[0]] = {
+                        'name': elements[3],
+                        'from_to': elements[4]
+                    };
+                });
+                resolve(result);
+            } else {
+                reject();
+            }
+        };
+        xhr.send();
+    }));
+    promises.push(new Promise(function(resolve, reject) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'data/uno_bus/shapes.txt', true);
+        xhr.responseType = 'text';
+        xhr.onload = function(e) {
+            if (this.status == 200) {
+                var content = this.response;
+                var lines = content.split('\n');
+                lines.shift();
+                lines.pop();
+                var result = {};
+                lines.map(function(line) {
+                    var elements = line.split(',');
+                    if (!result[elements[0]]) result[elements[0]] = [];
+                    result[elements[0]].push([parseFloat(elements[2]), parseFloat(elements[1])]);
+                });
+                resolve(result);
+            } else {
+                reject();
+            }
+        };
+        xhr.send();
+    }));
+
+    Promise.all(promises).then(function(results){
+        var app = results[0];
+        var routes = results[1];
+        var shapes = results[2];
+        var headers;
+
+        var select = document.querySelector('#routes');
+        Object.keys(routes).map(function(key) {
+            var route = routes[key];
+            select.innerHTML = select.innerHTML + '<option value="' + key + '">' + route.name + ' (' + route.from_to + ')' + '</option>';
+        });
+        select.addEventListener('change', function(e) {
+            app.unselectMarker();
+            app.clearLine();
+            document.querySelector('.subview').innerHTML = '';
+            var shape = shapes[e.target.value];
+            if (shape) {
+                app.addLine({
+                    lnglats: shape,
+                    stroke: {
+                        color: '#ffcc33',
+                        width: 6
+                    }
+                });
+            }
+            showMarker();
+        });
+
+        document.getElementById('changeMap').addEventListener('click', function(e) {
+            var mapInfo = app.currentMapInfo();
+            if (mapInfo.sourceID == 'osm') {
+                app.changeMap('uno_bus_gtfs2').then(function() {
+                    app.mapObject.getView().setZoom(3);
+                });
+                document.getElementById('changeMap').innerHTML = 'OSMに切り替える';
+            } else {
+                app.changeMap('osm').then(function() {
+                    app.mapObject.getView().setZoom(13);
+                });
+                document.getElementById('changeMap').innerHTML = 'バス路線図に切り替える';
+            }
+        });
+
+        app.addEventListener('clickMarker', function(evt) {
+            app.unselectMarker();
+            var data = evt.detail.data;
+            var html = Object.keys(data).map(function(key) {
+                return '<dt><b>' + key + '</b></dt><dd>' + data[key] + '</dd>';
+            }).join('');
+
+            document.querySelector('.subview').innerHTML = '<small><dl>' + html + '</dl></small>';
+            app.selectMarker(evt.detail.namespace_id);
+        });
+
+        app.addEventListener('clickMap', function(evt) {
+            app.unselectMarker();
+            document.querySelector('.subview').innerHTML = '';
+        });
+
+        var busList;
+        var showMarker = function() {
+            app.clearMarker();
+            var targetRoute = document.querySelector('#routes').value;
+            var list = !targetRoute ? busList : busList.filter(function(item) {
+                return item.route == targetRoute;
+            });
+            list.map(function(item) {
+                app.addMarker(item);
+            })
+        };
+        var requestGTFS = function() {
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'https://api.allorigins.win/raw?url=http://www3.unobus.co.jp/GPS/unobus.txt', true);
+            xhr.responseType = 'text';
+            xhr.onload = function(e) {
+                if (this.status == 200 || true) {
+                    var content = this.response;
+                    /*var content ='13:34:05\n' +
+                            '1631,,2,,13:31(13:33) 牟佐下,1184,34.72111,133.97511,始発=13:00 表町BC,行先=ネオ西９（西 ・下市）\n' +
+                            '8001,,32,,12:55(13:27) 後楽園前(Korakuen),1329,34.66543,133.91995,始発=12:45 岡山駅(Okayama sta.),行先=岡山駅(Okayama sta.)（県立美術館）\n' +
+                            '1111,,4,,13:28(13:32) 清水,1354,34.68356,133.95886,始発=13:05 岡山駅(Okayama sta.),行先=四御神\n' +
+                            '1371,,8,,13:25(13:33) 裁判所前,1367,34.67100,133.92106,始発=12:10 表町BC,行先=表町BC（岡山駅前）\n' +
+                            '5142,,3,,13:30(13:33) 裁判所前,1369,34.67100,133.92221,始発=13:05 四御神車庫(東岡山),行先=表町BC\n' +
+                            '1282,,2,,13:31(13:33) 大原,1371,34.71690,133.97389,始発=13:03 野間,行先=表町BC（岡山駅前）\n' +
+                            '5142,,0,,13:34(13:33) 四御神車庫(東岡山),1395,34.69163,133.98160,始発=13:34 四御神車庫(東岡山),行先=表町BC（高島団地・岡山駅前）\n' +
+                            '1111,13:35,0,,13:35(13:33) 岡山駅(Okayama sta.),1396,34.66490,133.91870,始発=13:35 岡山駅(Okayama sta.),行先=四御神（県庁前）\n' +
+                            '5141,,6,,13:25(13:31) 県民局入口（東岡山）,1525,34.67128,133.92644,始発=13:15 表町BC,行先=東岡山（高島団地）\n' +
+                            '1612,,0,,13:27(13:27) 三野,1584,34.68181,133.92832,始発=12:55 桜が丘運動公園口,行先=表町BC（岡山駅前）\n' +
+                            '1611,,0,,13:33(13:33) 桜が丘西一丁目上,1614,34.76574,134.04004,始発=12:45 表町BC,行先=ネオ西９\n' +
+                            '1282,,5,,13:13(13:18) 中銀本店西,1616,34.66169,133.93031,始発=12:17 野間,行先=表町BC\n' +
+                            '1632,,2,,13:31(13:33) 桜が丘西二丁目,1618,34.76824,134.04196,始発=13:26 桜が丘運動公園口,行先=表町BC（下市・西・岡山駅前）\n' +
+                            '1112,,6,,13:27(13:33) 国富東,1658,34.66607,133.94608,始発=13:10 四御神車庫,行先=岡山駅（表町ＢＣ）\n' +
+                            '5141,,7,,13:26(13:33) 雄町中,1659,34.68465,133.97248,始発=12:55 表町BC,行先=東岡山\n' +
+                            '2021,,1,,13:28(13:29) 岡山駅前・ドレミの街,1661,34.66720,133.92617,始発=13:20 表町BC,行先=ネオ東６（中 ・下市）\n' +
+                            '1061,,3,,13:30(13:33) 藤井,1662,34.69100,134.00693,始発=12:55 岡山駅(Okayama sta.),行先=瀬戸駅\n' +
+                            '2001,,1,,13:32(13:33) 瀬戸駅前,1663,34.73537,134.04166,始発=12:35 岡山駅(Okayama sta.),行先=ネオ東６（瀬戸駅）\n' +
+                            '//LAST\n' +
+                            '//系統番号,岡山駅の発時間,遅延,運行状態,計画時間（通過時間）停留所名,車両番号,緯度,経度,始発停留所情報,行先情報\n';*/
+
+                    var lines = content.split('\n');
+                    lines.shift();
+                    lines.pop();
+                    headers = lines.pop().replace('//', '').split(',');
+                    lines.pop();
+                    busList = lines.map(function(line) {
+                        var vals = line.split(',');
+                        var lat = parseFloat(vals[6]);
+                        var lng = parseFloat(vals[7]);
+                        var data = vals.reduce(function(prev, curr, index) {
+                            if (index == 6 || index == 7) return prev;
+                            prev[headers[index]] = curr;
+                            return prev;
+                        }, {});
+                        return {
+                            id: vals[5],
+                            route: vals[0],
+                            lat: lat,
+                            lng: lng,
+                            data: data,
+                            icon: 'parts/bus.png',
+                            selected_icon: 'parts/selected_bus.png'
+                        };
+                    });
+                    showMarker();
+                }
+            };
+            xhr.send();
+        };
+        requestGTFS();
+        setInterval(requestGTFS, 60000);
+    });
+</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-104602009-1', 'auto');
+  ga('send', 'pageview', {
+    'dimension1': navigator.userAgent,
+    'dimension2': navigator.languages[0] || navigator.browserLanguage || navigator.language || navigator.userLanguage,
+    'dimension3': ip
+  });
+</script>
+</html>

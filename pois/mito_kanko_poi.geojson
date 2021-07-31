@@ -1,0 +1,952 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20001,
+        "name": "伊奈忠次像",
+        "address": "水戸市紺屋町1385",
+        "desc": "<b>説明:</b> 関東代官頭として、検地や知行割、利根川をはじめとする河川改修などの諸政策にあたり徳川家康公の関東支配に貢献しました。18世紀初頭、水戸藩初代藩主頼房公の命により千波湖の水を引いて、備前堀（伊奈堀）で、その水の恵みは現代にまで及んでいます<br><b>連絡先:</b> 水戸市教育委員会<br><b>電話:</b> 029-224-1111<br><b>入場料:</b> 無料<br><b><a href=\"http://mito.inetcci.or.jp/110iitoko/shiseki/02bizenbori.html\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ",
+        "image": "https://upload.wikimedia.org/wikipedia/ja/8/87/Ina_tadatsugu.jpg"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.489115,
+          36.363123
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20002,
+        "name": "能化稲荷",
+        "address": "水戸市本町1-8-16 ",
+        "desc": "<b>説明:</b> 徳川光圀公の母久昌院の請願により、久慈郡太田在稲木村に七堂伽藍の精舎を建立されたことに起源し、のちにこの地に遷されました。藤が咲く季節は大変見事です。<br><b><a href=\"http://www.e-mito.net/east/jinjya/02.html\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.488609,
+          36.364289
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20003,
+        "name": "竈神社",
+        "address": "水戸市本町1-1-17",
+        "desc": "<b>説明:</b> はじめは水戸城内に祀られていましたが、17世紀後半に光圀公により現在の地に遷されました。火の神・かまどの神と慕われています。<br><b>電話:</b> 029-226-5896<br><b><a href=\"http://www.e-mito.net/east/jinjya/01.html\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.486482,
+          36.364078
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20004,
+        "name": "常陸山谷右衛門生誕の地",
+        "address": "水戸市城東2-9",
+        "desc": "<b>説明:</b> 明治7年に宝鏡院門前町に生まれ、同36年に第19代横綱となり「角聖」と呼ばれました。相撲界に礼儀第一の思想を持ち込み、国技館建設・初の海外興行など相撲界の発展に尽くすとともに磯節を全国に広めました<br><b>連絡先:</b> 水戸市教育委員会<br><b>電話:</b> 029-224-1111<br><b>入場料:</b> 無料<br><b><a href=\"http://www.e-mito.net/east/shiseki/05.html\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.490322,
+          36.372305
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20005,
+        "name": "横山大観生誕の地",
+        "address": "水戸市城東2-7",
+        "desc": "<b>説明:</b> 横山大 観は明 治 元 年三ノ町（現・城東2丁目）に水戸藩藩士酒井捨彦の長男として生まれ、母方の横山家を継ぎました。在野精神を貫くとともに、岡倉天心による日本美術院の創設に参加しました<br><b>連絡先:</b> 水戸市教育委員会<br><b>電話:</b> 029-224-1111<br><b>入場料:</b> 無料<br><b><a href=\"http://www.e-mito.net/east/shiseki/06.html\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.492176,
+          36.372116
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20006,
+        "name": "赤沼牢屋敷跡",
+        "address": "水戸市東台2",
+        "desc": "<b>説明:</b> 江戸時代には4棟の牢があり、幕末の藩内争乱時には300名以上がこの地で処刑されました。現在、慰霊碑が建てられています。<br><b><a href=\"http://www.e-mito.net/east/shiseki/03.html\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.495854,
+          36.368051
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20007,
+        "name": "銭谷稲生神社",
+        "address": "水戸市浜田町150",
+        "desc": "<b>説明:</b> この地では、中国からの輸入銭の減少を補うため、17世紀前半に銭の鋳造が行われていました。神社は18世紀半ばに遷社されてきたもので、境内には銭塚や盆歌の碑があります。<br><b><a href=\"http://www.e-mito.net/east/jinjya/02.html\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.4970432,
+          36.364403
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20008,
+        "name": "酒蔵（吉久保酒造）",
+        "address": "茨城県水戸市本町3-9-5",
+        "desc": "<b>説明:</b> 18世紀後半創業の酒蔵。光圀公により整備された笠原水道の水源の水を利用した酒は、藤田東湖をはじめとする幕末志士にも愛飲されていました。現在も笠原水源に自社の井戸を持ち、酒造りを行っています。<br><b>電話:</b> 029-224-4111<br><b><a href=\"http://www.ippin.co.jp/\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.495146,
+          36.365948
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20009,
+        "name": "水府提灯店（蔭山利兵衛商店）★",
+        "address": "水戸市本町3-3-7",
+        "desc": "<b>説明:</b> 水戸は、岐阜・八女（福岡県）とともに提灯の日本3大産地といわれています。水戸藩の産業振興として生まれ、独自の手法と丈夫な厚い紙を使用して型くずれしないのが特徴です。<br><b>電話:</b> 029-221-3666<br><b><a href=\"http://www.e-mito.net/east/shop/tyoutin/01.html\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.49388,
+          36.365589
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20010,
+        "name": "染物工場（大谷屋染工場）",
+        "address": "水戸市本町2-10-33",
+        "desc": "<b>説明:</b> 下市では古くから染物が盛んでした。こちらの染物工場は、1856年創業で、その後、当時の学生服だった木綿の黒紋付の羽織を一手に引き受けていました。<br><b>電話:</b> 029-221-2068<br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.490634,
+          36.363662
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20011,
+        "name": "たまげ橋",
+        "address": "水戸市紺屋町1401-1",
+        "desc": "<b>説明:</b> 水戸城下の江戸との出入口にあたり、高札が立てられていました。この地で別れ泣き悲しみ魂を消すという意味からたまげ橋と付けられ、水茶屋が置かれました<br><b><a href=\"http://www.e-mito.net/east/shiseki/01.html\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.487491,
+          36.363315
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20012,
+        "name": "吉田神社",
+        "address": "水戸市宮内町3193-2",
+        "desc": "<b>説明:</b> 創建は5世紀といわれ、鎌倉時代には常陸三の宮として大きな勢力を持ちました。その後武士勢力に侵食されますが光圀公により社殿が修築さ\nれ復興。現在の社殿は昭和23年建立のものです<br><b>電話:</b> 029-247-6464<br><b><a href=\"http://www.yoshidajinja.jp/index.html\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/d/d4/Yoshida_Jinja_Mitoshi_Haiden.jpg"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.482365,
+          36.361823
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20013,
+        "name": "吉田古墳",
+        "address": "水戸市元吉田町346",
+        "desc": "<b>説明:</b> 小規模ですが、武具を主体とした壁画（非公開）を施す珍しい古墳です。平成１８年度の発掘調査によって、非常に珍しい八角形墳である可能性が高くなりました。営造年代は、７世紀前半と考えられています<br><b>連絡先:</b> 水戸市教育委員会<br><b>電話:</b> 029-224-1111<br><b><a href=\"http://www.edu.pref.ibaraki.jp/board/bunkazai/kuni/shiseki/12-6/12-6.html\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/d/de/Yoshida-kofun_zenkei.JPG"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.475149,
+          36.358812
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20014,
+        "name": "別春館",
+        "address": "水戸市元吉田町338",
+        "desc": "<b>説明:</b> 平成20年度に日本一になった「百年梅酒」や全国新種鑑評会で何回も金賞を受賞している日本酒の造り方がわかる資料館です。名前は、黄門様が飲酒のことを「別春会」と称したことに由来します<br><b>電話:</b> 029-246-4811<br><b><a href=\"http://www.meirishurui.com/shiryokan/\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/8/88/Bessyunkan02.JPG"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.474832,
+          36.357465
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20015,
+        "name": "薬王院",
+        "address": "水戸市元吉田町682",
+        "desc": "<b>説明:</b> 桓武天皇の勅願により創建された名刹。光圀公の尽力により水戸藩の檀林寺（学問寺）に認定され隆盛しました。本堂は享禄3（1530）年に再建されたもので国指定重要文化財です<br><b>電話:</b> 029-247-6266<br><b><a href=\"http://www.yakuouin.jp/\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Memorial_service_temple_of_Yakuoin_temple_%28Mito_city%2C_Ibaraki%2C_Japan%29.jpg"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.477816,
+          36.356546
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20016,
+        "name": "清巌寺",
+        "address": "水戸市元吉田町3240",
+        "desc": "<b>説明:</b> 常陸国４番観音の札所として信仰を受けていました。境内には延命地蔵堂や観音堂があり、墓地には画家・林十江や水戸藩家老・結城寅寿などの墓があります。<br><b>電話:</b> 029-247-6070<br><b><a href=\"http://www.e-mito.net/east/bulukaku/01.html\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.480654,
+          36.357812
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20017,
+        "name": "車丹波守憤恨の地",
+        "address": "水戸市元吉田町2461",
+        "desc": "<b>説明:</b> 車丹波守は佐竹氏の家臣。佐竹氏の秋田移封に反対して水戸城奪還を企てるも失敗し、この地で捕らえられ磔にされた。咳の神様として祭られています<br><b><a href=\"http://www.e-mito.net/east/shiseki/02.html\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.482282,
+          36.356546
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20018,
+        "name": "常照寺",
+        "address": "水戸市元吉田町2723",
+        "desc": "<b>説明:</b> 光圀公が、大徳寺の仰堂和尚を迎えて創建しようとしましたが、二人とも没してしまったので、元禄13（1700）年に敬峯（けいほう）和尚により建立されました。境内の一帯は中世の吉田城跡で、周囲に土塁や空堀が残っています。<br><b>電話:</b> 029-247-7172<br><b><a href=\"http://www.mitokoumon.com/kankou/%E5%B8%B8%E7%85%A7%E5%AF%BA.html\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.489334,
+          36.357257
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20019,
+        "name": "宝船寺",
+        "address": "水戸市瓦谷4-1",
+        "desc": "<b>説明:</b> 明治後期建立の真言宗の寺。加持祈祷の護摩をたく修法に遠く、東京・栃木からも信者が集まりました。境内では祭文が語られ、相撲がとられるなど小公園として賑わっていました<br><b><a href=\"http://www.e-mito.net/east/bulukaku/02.html\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.491726,
+          36.362695
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20020,
+        "name": "水戸市平和記念館",
+        "address": "水戸市三の丸1-4-19",
+        "desc": "<b>説明:</b> 戦争の悲惨さと平和の尊さを後世に伝え、市民の平和に関する活動を推進し、平和への意識の醸成に資するため平成21年につくられました。水戸市の戦災資料などが展示されています。<br><b>連絡先:</b> 水戸市総務課<br><b>電話:</b> 029-224-1111<br><b>入場料:</b> 無料<br><b><a href=\"http://www.city.mito.lg.jp/001373/001408/p004960.html\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.473989,
+          36.374155
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20021,
+        "name": "東照宮",
+        "address": "水戸市宮町2-5-13",
+        "desc": "<b>説明:</b> 水戸藩初代藩主徳川頼房公が家康公を祀る神社として創建され、現在は頼房公も祀られています。\n境内には頼房公奉納の銅灯篭などが現存しています。<br><b>電話:</b> 029-221-3784<br><b>入場料:</b> 無料<br><b>定休日:</b> なし<br><b>駐車場:</b> 無料<br><b><a href=\"http://www.mitokoumon.com/kankou/%E6%9D%B1%E7%85%A7%E5%AE%AE.html\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/f/fa/Mito_Toshogu.jpg"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.473385,
+          36.372638
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20022,
+        "name": "義公生誕の地（黄門神社）",
+        "address": "水戸市三の丸2-4-42",
+        "desc": "<b>説明:</b> 光圀公（黄門さま）は、寛永５年（1628年）に家臣三木仁兵衛之次の屋敷で生まれ４歳まで三木家の子としてここで養育されました。現在この地に水戸黄門神社が建てられています。<br><b>連絡先:</b> 水戸市観光課<br><b>電話:</b> 029-224-1111<br><b>入場料:</b> 無料<br><b>定休日:</b> なし<br><b>駐車場:</b> なし<br><b><a href=\"http://www.mitokoumon.com/kankou/%E7%BE%A9%E5%85%AC%EF%BC%88%E9%BB%84%E9%96%80%E3%81%95%E3%81%BE%EF%BC%89%E7%94%9F%E8%AA%95%E3%81%AE%E5%9C%B0.html\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.479021,
+          36.372172
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20023,
+        "name": "納豆なんでも展示館",
+        "address": "水戸市三の丸3-4-30",
+        "desc": "<b>説明:</b> 納豆の老舗笹沼五郎商店に ある納豆の資料館。納豆の起 源や水戸納豆が全国的に有 名になったわけなどが学べま す。平日は工場見学も行ってい ます。<br><b>連絡先:</b> 笹沼五郎商店<br><b>電話:</b> 029-225-2121<br><b>入場料:</b> 無料<br><b><a href=\"http://www.tengunatto.jp/pavilion/\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.482065,
+          36.370977
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20024,
+        "name": "旧水戸城薬医門",
+        "address": "水戸市三の丸3-10-1",
+        "desc": "<b>説明:</b> 旧水戸城の現存する唯一つの建造物です。銅葺き屋根・切妻造りの立派な門は、構造や技法から安土・桃山期建立のものと推定されています。<br><b>連絡先:</b> 水戸市教育委員会<br><b>電話:</b> 029-224-1111<br><b>入場料:</b> 無料<br><b><a href=\"http://www.mitokoumon.com/kankou/%E6%B0%B4%E6%88%B8%E5%9F%8E%E8%96%AC%E5%8C%BB%E9%96%80.html\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/3/34/Yakui_Gate_of_Mito_Castle_in_Mito_1st_High_School.jpg"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.483137,
+          36.372441
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20025,
+        "name": "伝燈坂",
+        "address": "茨城県水戸市北見町1-1",
+        "desc": "<b>説明:</b> 坂の名は、16世紀に伝燈山和光院があったことに由来しています。またこの地は茨城の電気供給発祥の地でもあります。曲がり方がえびに似ているため、海老坂とも言われています<br><b>入場料:</b> 無料<br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.478841,
+          36.376493
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20026,
+        "name": "大手橋",
+        "address": "水戸市三の丸2-6",
+        "desc": "<b>説明:</b> 水戸城の二の丸と三の丸をつないでおり、明治時代のはじめまで、大手門がこの地にありました。近年、この門と推定される門の一部が発見されました。<br><b>連絡先:</b> 水戸市観光課<br><b>電話:</b> 029-224-1111<br><b>入場料:</b> 無料<br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.478399,
+          36.374963
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20027,
+        "name": "徳川斉昭公像・徳川頼房公像",
+        "address": "水戸市三の丸2-6",
+        "desc": "<b>説明:</b> <br><b>連絡先:</b> 水戸市教育委員会<br><b>電話:</b> 029-224-1111<br><b>入場料:</b> 無料<br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.478171,
+          36.375063
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20028,
+        "name": "水戸彰考館跡",
+        "address": "水戸市三の丸2-6",
+        "desc": "<b>説明:</b> <br><b>連絡先:</b> 水戸市教育委員会<br><b>電話:</b> 029-224-1111<br><b>入場料:</b> 無料<br><b><a href=\"http://www.city.mito.lg.jp/000271/000273/000294/001005/002519/p005177.html\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/4/43/Site_of_the_Shokokan_Hall.JPG"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.47976,
+          36.374913
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20029,
+        "name": "弘道館",
+        "address": "水戸市三の丸1-6-29",
+        "desc": "<b>説明:</b> 水戸藩9代藩主徳川斉昭公によりつくられた当時日本最大級の藩校です。武芸一般はもとより医学・薬学・天文学・蘭学など幅広い学問も取り入れた総合大学ともいうべき学校でした。<br><b>連絡先:</b> 弘道館<br><b>電話:</b> 029-231-4725<br><b>入場料:</b> 高校生以上200円（20名以上は150円）、小・中学生100円（20名以上は80円<br><b>営業時間:</b> (9:00～17:00（10/1～2/19は16:30まで<br><b>定休日:</b> 12/29～31<br><b>駐車場:</b> 無料（大型バス可<br><b><a href=\"http://www.koen.pref.ibaraki.jp/park/kodokan01.html\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/6/6a/Kodokan%2C_Mito%2C_2020.jpg"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.477915,
+          36.375607
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20030,
+        "name": "水戸市水道低区配水塔",
+        "address": "水戸市北見町2-11",
+        "desc": "<b>説明:</b> 市街の低地部分に給水するため水道技師・後藤鶴松の設計により昭和7年に完成し、平成11年まで現役で活躍しました。近代水道100選、登録有形文化財に指定されています。<br><b>連絡先:</b> 水戸市教育委員会<br><b>電話:</b> 029-224-1111<br><b>入場料:</b> 無料<br><b><a href=\"http://www.city.mito.lg.jp/001373/001374/0/shiteibunkazai/siteibunkazai/mitosisuidouteikuhaisuitou.html\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.475547,
+          36.377989
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20031,
+        "name": "水戸東武館",
+        "address": "水戸市北見町2-26",
+        "desc": "<b>説明:</b> 明治7年に、弘道館剣術方教授小澤寅吉政方が創設。当時、武芸は廃刀令と相まって、衰退の一途をたどっていましたが、寅吉はあえて「文武不岐」「学業一致」の水戸学の精神に基づいた、少年剣道の礎を築きました。<br><b>連絡先:</b> 水戸東武館<br><b>電話:</b> 029-221-4729<br><b><a href=\"http://toubukan.or.jp/\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/a/a2/Mito_Tobukan.jpg"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.474249,
+          36.378788
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20032,
+        "name": "県三の丸庁舎",
+        "address": "水戸市三の丸1-5",
+        "desc": "<b>説明:</b> 昭和5年に建てられた旧茨城県庁舎。宮崎県庁と同じ設計者による設計で、近世ゴシック様式の外観はよく似ています。県庁舎は、1999年に水戸市笠原町に移転され、現在は「県三の丸庁舎」として利用されています。<br><b>電話:</b> 029-226-5171<br>情報提供：水戸市オープンデータライブラリ",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/2/2d/Former_Ibaraki_Prefectural_office_after_the_reconstruction.JPG"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.475449,
+          36.376348
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20033,
+        "name": "水戸芸術館",
+        "address": "水戸市五軒町 1-6-8 ",
+        "desc": "<b>説明:</b> 市制100周年を記念して建築されました。音楽・演劇・美術の芸術活動がそれぞれの専用空間で繰り広げられています。高さ100m のシンボルタワーからは市内の眺望が楽しめます。<br><b>電話:</b> 029-227-8111<br><b>入場料:</b> 塔…大人200円、小・中学生100円\n館内見学ツアー…大人500円、小・中学生400円<br><b>営業時間:</b> 9:30～18:00<br><b>定休日:</b> 月曜日（祝日の場合は翌日）、年末年始<br><b>駐車場:</b> 最初の30分まで無料、最初の30分超～１時間まで200円\n(以後30分ごとに100円（バス要予約<br><b><a href=\"http://arttowermito.or.jp/\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/3/37/Art_Tower_Mito01.jpg"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.465574,
+          36.380421
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20034,
+        "name": "眞木神社",
+        "address": "水戸市五軒町2-1-37",
+        "desc": "<b>説明:</b> この地には、水戸藩士の眞木彦之進景嗣の屋敷がありました、眞木家は越前朝倉氏の一族で、頼房公に3000石で仕えました。歌手のマイク眞木さん、俳優の眞木蔵人さんはその子孫です。<br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.465075,
+          36.380983
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20036,
+        "name": "中村つね生誕記念碑",
+        "address": "水戸市金町3-2-25",
+        "desc": "<b>説明:</b> 水戸生まれの洋画家。黒田清輝や中村不折の指導を受け、「エロチェンコ氏の像」などの傑作を生みました。つねは、五軒小学校の卒業生でもあります。<br><b>連絡先:</b> 水戸市教育委員会<br><b>電話:</b> 029-224-1111<br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.463327,
+          36.384765
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20037,
+        "name": "水戸地方気象台",
+        "address": "水戸市金町1-4-6",
+        "desc": "<b>説明:</b> 明治29年に茨城県水戸測候所として発足し、100年以上にわたって県内の気象、地震、津波などを監視するとともに、災害の未然防止に努めています。<br><b>電話:</b> 029-224-1107<br><b><a href=\"http://www.jma-net.go.jp/mito/\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.468285,
+          36.381518
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20038,
+        "name": "市立博物館",
+        "address": "水戸市大町3-3-20",
+        "desc": "<b>説明:</b> 自然・民俗・歴史・美術の4部門で、水戸の歴史と文化を紹介する展示をしています。また、特別展をはじめ様々なイベントも開催しています。<br><b>電話:</b> 029-226-6521<br><b>入場料:</b> 無料<br><b>営業時間:</b> 9:30～16:45（入館は16:15まで<br><b>定休日:</b> 月曜日、祝日、12/29～1/3<br><b>駐車場:</b> 無料<br><b><a href=\"http://shihaku1.hs.plala.or.jp/\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/f/f0/Mito_City_Central_Library_%26_Mito_City_Museum02.jpg"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.468861,
+          36.379992
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20039,
+        "name": "朱舜水像",
+        "address": "水戸市北見町8-8",
+        "desc": "<b>説明:</b> 明の儒学者。明朝が滅亡し、長崎に亡命していた舜水を徳川光圀公が師として招きました。水戸藩の実用的な学風は舜水の影響といわれています。<br><b>連絡先:</b> 水戸市教育委員会<br><b>電話:</b> 029-224-1111<br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.470582,
+          36.379958
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20040,
+        "name": "工芸品店（工芸デパート）",
+        "address": "水戸市南町3-4-5",
+        "desc": "<b>説明:</b> 農人形や水戸彫をはじめ、水戸や茨城の工芸品を展示・販売しています。農人形は、斉昭公が農民の苦労に感謝するため、食事前にご飯を供した、農民を模した人形です。<br><b>電話:</b> 029-224-3217<br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.469134,
+          36.376742
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20041,
+        "name": "おしゃべりパーク水戸黄門さん像",
+        "address": "水戸市南町3-3-28",
+        "desc": "<b>説明:</b> 常陸太田の西山荘に向かって出立される光圀公の姿に、そのお顔立ちから音声学的に電子合成された声で春夏秋冬の季節ごとに呼びかけられる言葉を再現したものです。<br><b>連絡先:</b> 水戸市観光課<br><b>電話:</b> 029-224-1111<br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.466843,
+          36.377078
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20042,
+        "name": "桂岸寺　延命ぴんころ地蔵さん",
+        "address": "水戸市松本町13-19",
+        "desc": "<b>説明:</b> 古来から天命をまっとうし、ころりと最期を迎えられると親しまれている地蔵さん。近年できた新しい地蔵さんでは多くの参拝客が自分の体の悪いところと同じ箇所にふれながら願い事をしています。<br><b>電話:</b> 029-221-4948<br><b><a href=\"http://www.mitokoumon.com/kankou/%E4%BA%8C%E5%8D%81%E4%B8%89%E5%A4%9C%E5%B0%8A%E6%A1%82%E5%B2%B8%E5%AF%BA.html\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.454802,
+          36.391625
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20043,
+        "name": "保和苑",
+        "address": "水戸市松本町13-19",
+        "desc": "<b>説明:</b> 元禄時代、徳川光圀公が寺の庭を愛されて保和園と名づけたのが由来です。昭和初期に地元有志により拡張整備され純日本庭園になりました6月には約30種6000本のあじさいが園内を彩ります<br><b>連絡先:</b> 水戸市公園緑地課<br><b>電話:</b> 029-224-1111<br><b>入場料:</b> 無料<br><b>定休日:</b> 無し<br><b>駐車場:</b> 普通車400円　マイクロバス1,000円\n(大型バス2,000円（1時間あたり<br><b><a href=\"http://www.mitokoumon.com/kankou/%E4%BF%9D%E5%92%8C%E8%8B%91.html\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.454802,
+          36.391625
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20044,
+        "name": "常磐共有墓地",
+        "address": "水戸市松本町13-34",
+        "desc": "<b>説明:</b> 格さんのモデル、安積澹泊や藤田幽谷、東湖父子、豊田天功など水戸学の学者たち、桜田門外の変の現場指揮者・関鉄之助などの幕末志士な\nどの墓が立ち並びます<br><b>連絡先:</b> 水戸市教育委員会<br><b>電話:</b> 029-224-1111<br><b>入場料:</b> 無料<br><b>定休日:</b> 無し<br><b>駐車場:</b> 普通車400円　マイクロバス1,000円\n大型バス2,000円（1時間あたり）<br><b><a href=\"http://www.mitokoumon.com/kankou/%E5%B8%B8%E7%A3%90%E5%85%B1%E6%9C%89%E5%A2%93%E5%9C%B0.html\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.454305,
+          36.393039
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20045,
+        "name": "荻津古灯具館",
+        "address": "水戸市愛宕町",
+        "desc": "<b>説明:</b> 古灯具約300点が展示されています。展示品は主に庶民が使用したもので灯台、燭台、石油ランプ、ガス灯など灯りの歴史がわかる資料が揃っています。<br><b>電話:</b> 029-227-6971<br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.451955,
+          36.394814
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20046,
+        "name": "愛宕神社（愛宕山古墳）",
+        "address": "水戸市愛宕町10-5",
+        "desc": "<b>説明:</b> 6世紀初頭の築造と考えられる全長136.5mの前方後円墳・愛宕山古墳にあります。平安時代に府中（石岡市）から勧進され、火災除けの神様として信仰されています。<br><b>電話:</b> 029-221-9247<br><b>入場料:</b> 無料<br><b>定休日:</b> 無し<br><b>駐車場:</b> なし<br><b><a href=\"http://www.mitokoumon.com/kankou/%E6%84%9B%E5%AE%95%E7%A5%9E%E7%A4%BE.html\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.451508,
+          36.395919
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20047,
+        "name": "工芸菓子店(前田屋製菓）",
+        "address": "戸市上水戸1-8-21",
+        "desc": "<b>説明:</b> 柿や梅などをもした、展示されている工芸菓子は、鉢以外は全てお菓子でできています。また、販売されている吉原殿中などのお菓子は全て手作りです。<br><b>電話:</b> 029-221-2468<br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.452069,
+          36.390034
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20048,
+        "name": "水戸商業高等学校\n　旧本館玄関",
+        "address": "水戸市新荘3-7-2",
+        "desc": "<b>説明:</b> 明治36年に着工、翌年完成した校舎の玄関です。ベルサイユ宮殿を模してつくられたといわれており、屋根・柱・石貼の外観に特徴があらわれています<br><b>電話:</b> 029-224-4402<br><b><a href=\"http://www.city.mito.lg.jp/001373/001374/0/shiteibunkazai/siteibunkazai/mitosyougyoukoukoukyuuhonkan.html\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.453611,
+          36.387448
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20049,
+        "name": "水戸八幡宮",
+        "address": "水戸市八幡町8-54",
+        "desc": "<b>説明:</b> 文禄元（1592）年の佐竹義宣が鎮斎。一時期、他の地に移された後、現在の地に移されてきました。400年の風雪を経た今日安土桃山時代の荘\n厳華麗な姿で現存し、国指定重要文化財となっています。<br><b>電話:</b> 029-226-8854<br><b>入場料:</b> 無料<br><b>定休日:</b> 無し<br><b>駐車場:</b> 無料<br><b><a href=\"http://www.mitohachimangu.or.jp/\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/2/22/Mito_Hachiman-gu.JPG"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.460244,
+          36.387734
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20050,
+        "name": "ステンドグラス工房",
+        "address": "水戸市松本町3",
+        "desc": "<b>説明:</b> ステンドグラスは主に欧州やアメリカから伝えられたものです。当工房では日本的なデザインと色彩で窓辺に置くランプやパネル（窓枠）を主に作っています。散歩の途中でも是非、現物を見にお立寄り下さい<br><b>電話:</b> 029-231-0896<br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.454933,
+          36.390408
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20051,
+        "name": "常陽史料館",
+        "address": "水戸市備前町6-71",
+        "desc": "<b>説明:</b> 常陽銀行創立60周年を記念して平成7年に創設された史料館。郷土の歴史や芸術文化、金融経済に関する資料を収集・公開しています。<br><b>電話:</b> 029-228-1781<br><b><a href=\"http://www.joyogeibun.or.jp/siryokan/\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.463372,
+          36.373871
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20052,
+        "name": "旧川崎銀行水戸支店",
+        "address": "水戸市泉町3-2-4",
+        "desc": "<b>説明:</b> 明治42年（1909）に建てられた鉄筋コンクリート2階建の建物です。外壁の仕上げは1階が石張り、2階がタイル張りで、当時の銀行建築らしく重厚な印象をもつ建物です。<br><b>電話:</b> 029-221-4121<br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.461817,
+          36.379502
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20053,
+        "name": "神応寺",
+        "address": "水戸市元山町1-2-64",
+        "desc": "<b>説明:</b> 佐竹義宣により、天正19（1591）年に消失していた時宗の本山・藤沢清浄光寺にかわる本寺としてつくられました。境内には、山国兵部、田\n丸稲之衛門の墓があります<br><b><a href=\"http://mito.inetcci.or.jp/110iitoko/shiseki/jinjya_yzdtwx3u.html\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/c/c7/Jinno-ji_%28Mito%29.JPG"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.456975,
+          36.379524
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20054,
+        "name": "別雷皇太神",
+        "address": "水戸市元山町1-1-57",
+        "desc": "<b>説明:</b> 神亀元年（724年）、京都の加茂別雷神社の御分祀を当地に祀ったことはじまりです。佐竹氏、徳川氏の産土神として信仰され、特に雷難消\n除、武運長久の守護神として仰められてきました。<br><b>電話:</b> 029-221-2323<br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.45723,
+          36.379102
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20055,
+        "name": "偕楽園",
+        "address": "水戸市常磐町1",
+        "desc": "<b>説明:</b> 徳川斉昭公は弘道館を創設するとともに、修学の休養の場として千波湖岸の景勝地に偕楽園を造営しました。偕楽園は斉昭自ら設計監督を指図したと伝えられ、その趣旨が園内の偕楽園記碑という石碑に書かれています。<br><b>電話:</b> 029-244-5454<br><b>入場料:</b> 無料<br><b>営業時間:</b> 6:00～19:00（10/1～2/19は7:00～18:00<br><b>定休日:</b> なし<br><b>駐車場:</b> 無料（ただし、梅まつり期間中は有料になる場合有り<br><b><a href=\"http://www.koen.pref.ibaraki.jp/park/kairakuen01.html\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/e/ec/Kairaku-en%2C_Ibaraki_24.jpg"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.455392,
+          36.374597
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20056,
+        "name": "常磐神社",
+        "address": "水戸市常磐町1-3-1",
+        "desc": "<b>説明:</b> 水戸藩を代表する2代藩主光圀公、9代藩斉昭公をまつる神社です。境内の義烈館には陣太鼓などが展示されています。<br><b>電話:</b> 029-221-0748<br><b><a href=\"http://komonsan.jp/\" target=\"_blank\">外部リンク</a></b><br>情報提供：水戸市オープンデータライブラリ",
+        "image": "https://upload.wikimedia.org/wikipedia/ja/e/ea/Tokiwa-jinja_haiden.jpg"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.453577,
+          36.374766
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20057,
+        "name": "大日本史完成の地",
+        "address": "水戸市常磐町1",
+        "desc": "<b>説明:</b> 光圀公により始められた、史書編纂は明暦3年から数えて250年後の明治39年に完成しました。「彰考館」と名付けられたこの編纂所は、時代\nの変遷とともに転々と場所を移し完成時には偕楽園南崖にありました。<br><b>連絡先:</b> 水戸市教育委員会<br><b>電話:</b> 029-224-1111<br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.453172,
+          36.374352
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20058,
+        "name": "好文cafe",
+        "address": "水戸市千波町3080",
+        "desc": "<b>説明:</b> 水戸市市制施行120周年を記念し整備され、飲食・売店・休憩・案内などの機能を併せ持ちます。外壁にガラス面を多用し開放感ある明るい外\n観となっており、建物前には千波湖にせり出す形で親水デッキが設置されています。<br><b>電話:</b> 029-244-1141<br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.454265,
+          36.370466
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20059,
+        "name": "親水デッキ",
+        "address": "水戸市千波町3080",
+        "desc": "<b>説明:</b> 幅 30m、奥行き10mで湖面にたったような感覚が味わえ、大噴水も正面に見えます。夜はライトアップされ、白鳥座の形が浮かび上がります。<br>情報提供：水戸市オープンデータライブラリ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.454265,
+          36.370466
+        ]
+      }
+    }
+  ],
+  "id": "mito_kanko_opendata",
+  "name": "まちなか観光マップデータ"
+}

@@ -1,0 +1,26 @@
+{
+  "attr" : "農研機構",
+  "title" : "東京図測量原図",
+  "contributor": "国土地理院",
+  "createdAt": "1880-1886",
+  "author": "参謀本部陸軍部測量局",
+  "maptype" : "overlay",
+  "url" : "https://www.finds.jp/ws/tmc/1.0.0/Tokyo5000-900913-L/{z}/{x}/{y}.jpg",
+  "maxZoom": 18,
+  "envelopLngLats" : [[139.71513078997233, 35.71784272867369], [139.71525542339558, 35.650390851545765], [139.79804587263402, 35.65045810523935], [139.79796430828705, 35.71789915024054]],
+  "pois":[
+    {
+      "lat": 35.68662617485727,
+      "lng": 139.75651046798333,
+      "directgo": {
+        "href": "#!s:maplat_2018_nov_14/b:osm/x:-5366490.881828856/y:11784755.272876307/z:3"
+      },
+      "icon": {
+        "anchor": [0.5, 0.5],
+        "anchorXUnits": "fraction",
+        "anchorYUnits": "fraction",
+        "src": "parts/turnback.png"
+      }
+    }
+  ]
+}

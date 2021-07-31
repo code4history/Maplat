@@ -1,0 +1,1946 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "円教寺名号塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no256-DSC_7083.JPG",
+        "address": "朝日町 円教寺",
+        "desc": "<b>年代:</b> 文政12年 (1829)<br><b>備考:</b> 柱型<br><b>撮影日時:</b> 2020/11/28 14:43:07<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53884167,
+          36.25075
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "六百遠忌報恩塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no260-DSC_7125.JPG",
+        "address": "朝日町 円教寺",
+        "desc": "<b>年代:</b> 不明<br><b>備考:</b> 宝塔 供養→報恩へ変更<br><b>撮影日時:</b> 2021/01/04 10:14:56<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53902778,
+          36.25141111
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "新築記念宝塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no23-DSC_7123.JPG",
+        "address": "朝日町 円教寺境内",
+        "desc": "<b>種別:</b> 塔<br><b>年代:</b> 明治6年 (1873)<br><b>備考:</b> <br><b>サイズ:</b> 高さ330cm 幅33cm 厚さ33cm<br><b>撮影日時:</b> 2021/01/04 10:14:19<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53887222,
+          36.25145556
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "吉長馬頭尊",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no96-DSC_7139.JPG",
+        "address": "朝日町 法高寺",
+        "desc": "<b>年代:</b> 安永6年 (1777)<br><b>備考:</b> 舟形背面、像浮彫<br><b>撮影日時:</b> 2021/01/04 11:12:54<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53786667,
+          36.25154444
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "明治馬頭尊",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no103-DSC_7140.JPG",
+        "address": "朝日町 法高寺",
+        "desc": "<b>年代:</b> 明治36年 (1903)<br><b>備考:</b> 柱型、文字<br><b>撮影日時:</b> 2021/01/04 11:14:32<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53783611,
+          36.25156389
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "法高寺三猿庚申塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no117-DSC_7133.JPG",
+        "address": "朝日町 法高寺",
+        "desc": "<b>年代:</b> 延宝5年 (1677)<br><b>備考:</b> 舟型背面、像浮彫<br><b>撮影日時:</b> 2021/01/04 11:10:36<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53782778,
+          36.25151944
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "延宝三猿庚申塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no120-DSC_7134.JPG",
+        "address": "朝日町 法高寺",
+        "desc": "<b>年代:</b> 延宝8年 (1680)<br><b>備考:</b> 舟型背面、三猿浮彫<br><b>撮影日時:</b> 2021/01/04 11:10:45<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53786667,
+          36.25152778
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "法高寺宝篋印塔（1）",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no220-DSC_7132.JPG",
+        "address": "朝日町 法高寺",
+        "desc": "<b>年代:</b> 寛永13年 (1636)<br><b>備考:</b> <br><b>撮影日時:</b> 2021/01/04 11:03:15<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53783611,
+          36.25153333
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "法高寺宝篋印塔（3）",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no222-DSC_7131.JPG",
+        "address": "朝日町 法高寺",
+        "desc": "<b>年代:</b> 寛永16年 (1639)<br><b>備考:</b> <br><b>撮影日時:</b> 2021/01/04 10:55:09<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53803611,
+          36.25164722
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "法高寺宝篋印塔（4）",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no223-DSC_7130.JPG",
+        "address": "朝日町 法高寺",
+        "desc": "<b>年代:</b> 明治21年 (1888)<br><b>備考:</b> <br><b>撮影日時:</b> 2021/01/04 10:51:08<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53803611,
+          36.25162778
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "六百五十遠忌報恩謝徳",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no1803-DSC_7126.JPG",
+        "address": "朝日町 法高寺",
+        "desc": "<b>年代:</b> 昭和6年 (1931)<br><b>備考:</b> <br><b>撮影日時:</b> 2021/01/04 10:37:45<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53798889,
+          36.25186389
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "天笠勝臧翁之碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no1804-DSC_7187.JPG",
+        "address": "西本町 法泉寺",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 大正11年 (1922)<br><b>備考:</b> <br><b>撮影日時:</b> 2021/01/04 16:04:02<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.52921111,
+          36.25285833
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "元禄浮彫り地蔵尊",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no74-DSC_7142.JPG",
+        "address": "朝日町 法輪寺",
+        "desc": "<b>種別:</b> 立像<br><b>年代:</b> 元禄6年 (1693)<br><b>備考:</b> 舟型背面、浮彫<br><b>撮影日時:</b> 2021/01/04 13:33:54<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.536625,
+          36.25157778
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "法輪寺月参地蔵尊",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no80-DSC_7148.JPG",
+        "address": "朝日町 法輪寺",
+        "desc": "<b>種別:</b> 立像<br><b>年代:</b> 享保3年 (1718)<br><b>備考:</b> 丸彫 地蔵は新規<br><b>撮影日時:</b> 2021/01/04 13:52:17<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53643056,
+          36.251275
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "法輪寺寒念仏地蔵尊",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no82-DSC_7149.JPG",
+        "address": "朝日町 法輪寺",
+        "desc": "<b>種別:</b> 立像<br><b>年代:</b> 元文元年 (1736)<br><b>備考:</b> 丸彫 地蔵は新規<br><b>撮影日時:</b> 2021/01/04 13:52:29<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.536425,
+          36.25125833
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "享和百萬遍供養地蔵尊",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no87-DSC_7147.JPG",
+        "address": "朝日町 法輪寺",
+        "desc": "<b>種別:</b> 座像<br><b>年代:</b> 享和2年 (1802)<br><b>備考:</b> 丸彫 地蔵は新規<br><b>撮影日時:</b> 2021/01/04 13:52:08<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53643889,
+          36.25130833
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "三界萬霊地蔵尊",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no89-DSC_7144.JPG",
+        "address": "朝日町 法輪寺",
+        "desc": "<b>種別:</b> 立像<br><b>年代:</b> 弘化4年 (1847)<br><b>備考:</b> 丸彫<br><b>撮影日時:</b> 2021/01/04 13:35:34<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53650833,
+          36.25156944
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "法輪寺閻魔大王",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no242-DSC_7141.JPG",
+        "address": "朝日町 法輪寺",
+        "desc": "<b>種別:</b> 座像<br><b>年代:</b> 元禄6年 (1693)<br><b>備考:</b> 浮彫<br><b>撮影日時:</b> 2021/01/04 13:33:44<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.536625,
+          36.25153889
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "戒壇石",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no258-DSC_7145.JPG",
+        "address": "朝日町 法輪寺",
+        "desc": "<b>年代:</b> 明治44年 (1911)<br><b>備考:</b> 柱型<br><b>撮影日時:</b> 2021/01/04 13:44:26<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53650833,
+          36.25125
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "百度石",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no1800-DSC_7073.JPG",
+        "address": "朝日町 夜明稲荷神社境内",
+        "desc": "<b>年代:</b> 昭和6年 (1931)<br><b>備考:</b> <br><b>撮影日時:</b> 2020/11/28 14:20:57<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53991667,
+          36.24958056
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "庚申待供養塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no112-DSC_7157.JPG",
+        "address": "台宿町 熊野神社",
+        "desc": "<b>年代:</b> 寛文8年 (1668)<br><b>備考:</b> 舟形、文字 H9墓地工事で移動<br><b>撮影日時:</b> 2021/01/04 14:50:40<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53608611,
+          36.25236111
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "寛文三猿庚申塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no113-DSC_7162.JPG",
+        "address": "台宿町 熊野神社",
+        "desc": "<b>年代:</b> 寛文10年 (1670)<br><b>備考:</b> 舟型、文字、三猿 H9墓地工事で移動<br><b>撮影日時:</b> 2021/01/04 14:51:23<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53614167,
+          36.25235278
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "延宝文字庚申塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no115-DSC_7158.JPG",
+        "address": "台宿町 熊野神社",
+        "desc": "<b>年代:</b> 延宝2年 (1674)<br><b>備考:</b> 舟型、文字、三猿 H9墓地工事で移動<br><b>撮影日時:</b> 2021/01/04 14:50:51<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53609444,
+          36.25236111
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "延宝三猿庚申塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no116-DSC_7159.JPG",
+        "address": "台宿町 熊野神社",
+        "desc": "<b>年代:</b> 延宝2年 (1674)<br><b>備考:</b> 舟型背面、像浮彫 H9墓地工事で移動<br><b>撮影日時:</b> 2021/01/04 14:50:54<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53611111,
+          36.25235278
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "元禄三猿庚申塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no126-DSC_7160.JPG",
+        "address": "台宿町 熊野神社",
+        "desc": "<b>年代:</b> 元禄4年 (1691)<br><b>備考:</b> 舟形背面、三猿浮彫 H9墓地工事で移動<br><b>撮影日時:</b> 2021/01/04 14:51:00<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.536125,
+          36.25235278
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "自然石庚申塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no140-DSC_7164.JPG",
+        "address": "台宿町 熊野神社",
+        "desc": "<b>年代:</b> 不明<br><b>備考:</b> 自然石、文字 H9墓地工事で移動<br><b>撮影日時:</b> 2021/01/04 14:52:02<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.5362,
+          36.25233611
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "寒念仏供養塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no248-DSC_7163.JPG",
+        "address": "台宿町 熊野神社",
+        "desc": "<b>年代:</b> 享保14年 (1729)<br><b>備考:</b> 柱型 H9墓地工事で移動<br><b>撮影日時:</b> 2021/01/04 14:51:36<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53616944,
+          36.25234722
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "五宝寺十九夜塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no109-DSC_7152.JPG",
+        "address": "台宿町 五宝寺",
+        "desc": "<b>年代:</b> 明治17年 (1884)<br><b>備考:</b> 柱型、文字<br><b>撮影日時:</b> 2021/01/04 14:05:05<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53402778,
+          36.25422222
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "寛政文字庚申塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no131-DSC_7153.JPG",
+        "address": "台宿町 五宝寺",
+        "desc": "<b>年代:</b> 寛政3年 (1791)<br><b>備考:</b> 厚碑型、文字<br><b>撮影日時:</b> 2021/01/04 14:05:17<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53401944,
+          36.25425833
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "不動まんだら板碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no149-DSC_7154.JPG",
+        "address": "台宿町 五宝寺",
+        "desc": "<b>年代:</b> 永仁5年 (1297)<br><b>備考:</b> 種子 キリーク<br><b>サイズ:</b> 高さ122cm 幅36cm<br><b>撮影日時:</b> 2021/01/04 14:14:46<br><b>参考文献:</b> 『館林市史特別編第4巻』(館林市史編さん委員会編 館林城と中近世の遺跡) 434ページ<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br><b>参考文献:</b> 『館林市誌 歴史編』(館林市誌編集委員会編 1969) 955ページ<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53388056,
+          36.25448333
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "種子不明板碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no208-DSC_7155.JPG",
+        "address": "台宿町 五宝寺",
+        "desc": "<b>年代:</b> 延文年間 (1356～1361)<br><b>備考:</b> <br><b>撮影日時:</b> 2021/01/04 14:19:06<br><b>参考文献:</b> 『館林市史特別編第4巻』(館林市史編さん委員会編 館林城と中近世の遺跡) 450ページ<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53429722,
+          36.25420833
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "火防組創部記念碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no1752-DSC_7189.JPG",
+        "address": "大街道一丁目 会館構内",
+        "desc": "<b>年代:</b> 昭和12年 (1937)<br><b>備考:</b>  広報館林(2018/04)に記事あり<br><b>サイズ:</b> 高さ179cm 幅99cm 厚さ13cm<br><b>撮影日時:</b> 2021/01/04 16:09:25<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.52386111,
+          36.25444167
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "篤敬三宝碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no7-DSC_7169.JPG",
+        "address": "栄町 覚応寺境内",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 大正6年 (1917)<br><b>備考:</b> <br><b>サイズ:</b> 高さ192cm 幅87cm 厚さ11cm<br><b>撮影日時:</b> 2021/01/04 15:03:09<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.52741111,
+          36.24889444
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "御大典記念碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no8-DSC_7168.JPG",
+        "address": "栄町 覚応寺境内",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 昭和3年 (1928)<br><b>備考:</b> <br><b>サイズ:</b> 高さ243cm 幅100cm 厚さ16cm<br><b>撮影日時:</b> 2021/01/04 15:03:00<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.52745833,
+          36.24886944
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "館林鳶組記念碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no9-DSC_7167.JPG",
+        "address": "栄町 覚応寺境内",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 明治35年 (1902)<br><b>備考:</b>  広報館林(2019/11)に記事あり<br><b>サイズ:</b> 高さ286cm 幅69cm 厚さ10cm<br><b>撮影日時:</b> 2021/01/04 15:02:47<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.52753333,
+          36.24884444
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "東亜志士加藤仡夫君碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no11-DSC_7170.JPG",
+        "address": "栄町 覚応寺境内",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 大正2年 (1913)<br><b>備考:</b> <br><b>サイズ:</b> 高さ227cm 幅100cm 厚さ13cm<br><b>撮影日時:</b> 2021/01/04 15:07:39<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991) 41ページ<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.52710833,
+          36.249
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "本堂改築記念碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no12-DSC_7171.JPG",
+        "address": "栄町 覚応寺境内",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 昭和6年 (1931)<br><b>備考:</b> <br><b>サイズ:</b> 高さ223cm 幅114cm 厚さ12cm<br><b>撮影日時:</b> 2021/01/04 15:08:51<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.52741111,
+          36.248975
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "白山神社改築記念碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no1753-DSC_7190.JPG",
+        "address": "栄町 白山神社境内",
+        "desc": "<b>年代:</b> 昭和10年 (1935)<br><b>備考:</b> <br><b>サイズ:</b> 高さ185cm 幅63cm 厚さ12cm<br><b>撮影日時:</b> 2021/01/04 16:15:03<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.524675,
+          36.24881667
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "享保三猿庚申塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no1805-DSC_7192.JPG",
+        "address": "栄町 白山神社境内",
+        "desc": "<b>種別:</b> 立像<br><b>年代:</b> 享保5年 (1720)<br><b>備考:</b> <br><b>撮影日時:</b> 2021/01/04 16:15:35<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.52454722,
+          36.24875278
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "正徳三猿庚申塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no1806-DSC_7193.JPG",
+        "address": "栄町 白山神社境内",
+        "desc": "<b>種別:</b> 立像<br><b>年代:</b> 正徳5年 (1715)<br><b>備考:</b> <br><b>撮影日時:</b> 2021/01/04 16:15:46<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.52453056,
+          36.24877778
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "享保三猿庚申塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no1807-DSC_7194.JPG",
+        "address": "栄町 白山神社境内",
+        "desc": "<b>種別:</b> 立像<br><b>年代:</b> 享保9年 (1724)<br><b>備考:</b> <br><b>撮影日時:</b> 2021/01/04 16:15:57<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.52450833,
+          36.24878333
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "婦命弁財天",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no1808-DSC_7195.JPG",
+        "address": "栄町 白山神社境内",
+        "desc": "<b>年代:</b> 享保12年 (1727)<br><b>備考:</b> <br><b>撮影日時:</b> 2021/01/04 16:17:35<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.52449167,
+          36.24878333
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "普門品供養塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no1809-DSC_7196.JPG",
+        "address": "栄町 白山神社境内",
+        "desc": "<b>種別:</b> 塔<br><b>年代:</b> 文化7年 (1810)<br><b>備考:</b> <br><b>撮影日時:</b> 2021/01/04 16:17:47<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.52447778,
+          36.24877222
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "戦死者の碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no48-DSC_7119.JPG",
+        "address": "代官町 邑楽護国神社境内",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 明治2年 (1869)<br><b>備考:</b>  広報館林(2018/10)に記事あり<br><b>サイズ:</b> 高さ122cm 幅83cm 厚さ20cm<br><b>撮影日時:</b> 2020/11/28 15:38:33<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991) 40ページ<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53173889,
+          36.25373889
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "招魂祠前長歌等碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no49-DSC_7115.JPG",
+        "address": "代官町 邑楽護国神社境内",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 明治2年 (1869)<br><b>備考:</b> <br><b>サイズ:</b> 高さ135cm 幅90cm 厚さ14cm<br><b>撮影日時:</b> 2020/11/28 15:37:54<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53182222,
+          36.25369167
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "西南役戦死碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no50-DSC_7109.JPG",
+        "address": "代官町 邑楽護国神社境内",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 明治11年 (1878)<br><b>備考:</b>  広報館林(2018/12)に記事あり<br><b>サイズ:</b> 高さ210cm 幅155cm 厚さ12cm<br><b>撮影日時:</b> 2020/11/28 15:29:26<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53148889,
+          36.25387778
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "十一士招魂碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no51-DSC_7106.JPG",
+        "address": "代官町 邑楽護国神社境内",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 明治21年 (1869)<br><b>備考:</b>  2年→21年へ<br><b>サイズ:</b> 高さ255cm 幅164cm<br><b>撮影日時:</b> 2020/11/28 15:27:21<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53139167,
+          36.253775
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "大久保無二斎の碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no52-DSC_7114.JPG",
+        "address": "代官町 邑楽護国神社境内",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 明治26年 (1893)<br><b>備考:</b> <br><b>サイズ:</b> 高さ344cm 幅115cm 厚さ17cm<br><b>撮影日時:</b> 2020/11/28 15:32:38<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53160556,
+          36.25386111
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "明治二十七、八年戦役碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no53-DSC_7110.JPG",
+        "address": "代官町 邑楽護国神社境内",
+        "desc": "<b>種別:</b> 碑<br><b>備考:</b> <br><b>サイズ:</b> 高さ430cm 幅150cm 厚さ23cm<br><b>撮影日時:</b> 2020/11/28 15:29:49<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53153056,
+          36.2539
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "日露戦役記念碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no54-DSC_7104.JPG",
+        "address": "代官町 邑楽護国神社境内",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 明治39年 (1906)<br><b>備考:</b> <br><b>サイズ:</b> 高さ330cm 幅147cm 厚さ25cm<br><b>撮影日時:</b> 2020/11/28 15:19:43<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53158056,
+          36.25337222
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "招魂合祭碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no55-DSC_7105.JPG",
+        "address": "代官町 邑楽護国神社境内",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 明治2年 (1869)<br><b>備考:</b> <br><b>サイズ:</b> 高さ141cm 幅78cm 厚さ14cm<br><b>撮影日時:</b> 2020/11/28 15:20:38<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53140556,
+          36.25345556
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "櫻樹移植の碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no56-DSC_7120.JPG",
+        "address": "代官町 邑楽護国神社境内",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 明治2年 (1869)<br><b>備考:</b> <br><b>サイズ:</b> 高さ73cm 幅91cm 厚さ18cm<br><b>撮影日時:</b> 2020/11/28 15:38:42<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53168333,
+          36.25375
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "官祭招魂社石標",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no57-DSC_7118.JPG",
+        "address": "代官町 邑楽護国神社境内",
+        "desc": "<b>種別:</b> 標石<br><b>年代:</b> 大正3年 (1914)<br><b>備考:</b> <br><b>サイズ:</b> 高さ164cm 幅84cm 厚さ21cm<br><b>撮影日時:</b> 2020/11/28 15:38:24<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53178056,
+          36.25371389
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "つつじ分植の碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no58-DSC_7088.JPG",
+        "address": "代官町 長良神社",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 明治19年 (1886)<br><b>備考:</b> <br><b>サイズ:</b> 高さ188cm 幅92cm 厚さ10cm<br><b>撮影日時:</b> 2020/11/28 14:51:58<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53235556,
+          36.25417222
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "伊勢両宮太々神楽碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no59-DSC_7091.JPG",
+        "address": "代官町 長良神社",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 明治33年 (1900)<br><b>備考:</b> <br><b>サイズ:</b> 高さ175cm 幅66cm 厚さ13cm<br><b>撮影日時:</b> 2020/11/28 14:58:55<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53220278,
+          36.25420556
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "社殿改築記念碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no60-DSC_7092.JPG",
+        "address": "代官町 長良神社",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 昭和3年 (1928)<br><b>備考:</b> <br><b>サイズ:</b> 高さ350cm 幅135cm 厚さ18cm<br><b>撮影日時:</b> 2020/11/28 14:59:20<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53216944,
+          36.25421667
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "織物組合記念碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no61-DSC_7090.JPG",
+        "address": "代官町 長良神社",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 昭和5年 (1930)<br><b>備考:</b> <br><b>サイズ:</b> 高さ317cm 幅117cm 厚さ22cm<br><b>撮影日時:</b> 2020/11/28 14:54:29<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53231389,
+          36.25418333
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "織姫神社石鳥居記念碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no62-DSC_7093.JPG",
+        "address": "代官町 長良神社",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 昭和6年 (1931)<br><b>備考:</b> <br><b>サイズ:</b> 高さ158cm 幅71cm 厚さ12cm<br><b>撮影日時:</b> 2020/11/28 15:03:31<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53193056,
+          36.25423889
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "長良大明神標石",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no64-DSC_7085.JPG",
+        "address": "代官町 長良神社",
+        "desc": "<b>種別:</b> 標石<br><b>年代:</b> 天和2年 (1682)<br><b>備考:</b> <br><b>サイズ:</b> 高さ180cm 幅26cm 厚さ26cm<br><b>撮影日時:</b> 2020/11/28 14:50:12<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991) 53ページ<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53245556,
+          36.25401111
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "御神前",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no1801-DSC_7102.JPG",
+        "address": "代官町 長良神社",
+        "desc": "<b>種別:</b> 灯篭<br><b>年代:</b> 不明<br><b>備考:</b> ■年七月吉日／若連氏子中<br><b>撮影日時:</b> 2020/11/28 15:14:08<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53226667,
+          36.2542
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "永代常灯明",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no1802-DSC_7100.JPG",
+        "address": "代官町 長良神社",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 明和5年 (1768)<br><b>備考:</b> <br><b>撮影日時:</b> 2020/11/28 15:09:49<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53186111,
+          36.25426667
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "青石地蔵板碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no145-DSC_7179.JPG",
+        "address": "西本町 愛宕神社",
+        "desc": "<b>年代:</b> 文永10年 (1273)<br><b>備考:</b> 陰刻地蔵像<br><b>サイズ:</b> 高さ182cm 幅55.5cm<br><b>撮影日時:</b> 2021/01/04 15:29:02<br><b>参考文献:</b> 『館林市史特別編第4巻』(館林市史編さん委員会編 館林城と中近世の遺跡) 432ページ<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br><b>参考文献:</b> 『館林市誌 歴史編』(館林市誌編集委員会編 1969) 955ページ<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.52884722,
+          36.25160556
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "征露祈願碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no46-DSC_7181.JPG",
+        "address": "西本町 愛宕神社境内",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 明治42年 (1909)<br><b>備考:</b> <br><b>サイズ:</b> 高さ210cm 幅75cm 厚さ210cm<br><b>撮影日時:</b> 2021/01/04 15:33:47<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.52866944,
+          36.25148056
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "合祀記念之碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no47-DSC_7180.JPG",
+        "address": "西本町 愛宕神社境内",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 大正8年 (1919)<br><b>備考:</b> <br><b>サイズ:</b> 高さ216cm 幅100cm 厚さ16cm<br><b>撮影日時:</b> 2021/01/04 15:30:44<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.52889167,
+          36.251475
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "廊應名号塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no241-DSC_7175.JPG",
+        "address": "西本町 応声寺",
+        "desc": "<b>年代:</b> 貞享5年 (1688)<br><b>備考:</b> 柱型、笠付き<br><b>撮影日時:</b> 2021/01/04 15:22:22<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.52773611,
+          36.25018333
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "覚阿名号塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no243-DSC_7176.JPG",
+        "address": "西本町 応声寺",
+        "desc": "<b>年代:</b> 元禄7年 (1694)<br><b>備考:</b> 柱型、笠付き<br><b>撮影日時:</b> 2021/01/04 15:24:38<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.52769167,
+          36.25009167
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "鐘楼堂石垣再建碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no44-DSC_7174.JPG",
+        "address": "西本町 応声寺境内",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 大正13年 (1924)<br><b>備考:</b> <br><b>サイズ:</b> 高さ148cm 幅85cm 厚さ16cm<br><b>撮影日時:</b> 2021/01/04 15:18:19<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.52762778,
+          36.25021667
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "筆塚碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no45-DSC_7173.JPG",
+        "address": "西本町 応声寺境内",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 明治7年 (1874)<br><b>備考:</b>  一覧と年代異なる<br><b>サイズ:</b> 高さ278cm 幅90cm 厚さ32cm<br><b>撮影日時:</b> 2021/01/04 15:17:50<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991) 45ページ<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.52743611,
+          36.25015278
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "左山馬頭尊",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no98-DSC_7182.JPG",
+        "address": "西本町 法泉寺",
+        "desc": "<b>年代:</b> 嘉永5年 (1852)<br><b>備考:</b> 駒型、文字<br><b>撮影日時:</b> 2021/01/04 15:44:07<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.52923611,
+          36.25288333
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "法泉寺宝篋印塔（1）",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no213-DSC_7184.JPG",
+        "address": "西本町 法泉寺",
+        "desc": "<b>年代:</b> 寛永10年 (1633)<br><b>備考:</b> <br><b>撮影日時:</b> 2021/01/04 16:01:28<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.52927222,
+          36.25299167
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "法泉寺宝篋印塔（2）",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no214-DSC_7185.JPG",
+        "address": "西本町 法泉寺",
+        "desc": "<b>年代:</b> 寛永11年 (1634)<br><b>備考:</b> <br><b>撮影日時:</b> 2021/01/04 16:01:55<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.52926667,
+          36.25299722
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "法泉寺宝篋印塔（3）",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no215-DSC_7186.JPG",
+        "address": "西本町 法泉寺",
+        "desc": "<b>年代:</b> 寛永12年 (1635)<br><b>備考:</b> <br><b>撮影日時:</b> 2021/01/04 16:02:04<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.52929722,
+          36.25299722
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "甲州地蔵尊",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no88.JPG",
+        "address": "本町一丁目 琴平神社",
+        "desc": "<b>種別:</b> 立像<br><b>年代:</b> 文化13年 (1816)<br><b>備考:</b> 浮彫<br><b>撮影日時:</b> 2020/11/28 10:49:25<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53520833,
+          36.25034722
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "菅原馬頭尊",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no101.JPG",
+        "address": "本町一丁目 琴平神社",
+        "desc": "<b>年代:</b> 明治28年 (1895)<br><b>備考:</b> 厚碑型、文字<br><b>撮影日時:</b> 2020/11/28 10:48:51<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53522222,
+          36.25031944
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "琴平神社営築記念碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no20.JPG",
+        "address": "本町一丁目 琴平神社境内",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 昭和3年 (1928)<br><b>備考:</b> <br><b>サイズ:</b> 高さ170cm 幅73cm 厚さ11cm<br><b>撮影日時:</b> 2020/11/28 10:47:37<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53525,
+          36.25030278
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "青梅庚申塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no141.JPG",
+        "address": "本町二丁目 青梅天神",
+        "desc": "<b>年代:</b> 不明 (　)<br><b>備考:</b> 碑型、文字<br><b>撮影日時:</b> 2020/11/28 10:59:38<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53243333,
+          36.2465
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "青梅自然石庚申塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no142.JPG",
+        "address": "本町二丁目 青梅天神",
+        "desc": "<b>年代:</b> 不明 (　)<br><b>備考:</b> 自然石、文字<br><b>撮影日時:</b> 2020/11/28 11:00:50<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53240556,
+          36.24650556
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "碑型三猿庚申塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no143.JPG",
+        "address": "本町二丁目 青梅天神",
+        "desc": "<b>年代:</b> 不明 (　)<br><b>備考:</b> 碑型、三猿浮彫<br><b>撮影日時:</b> 2020/11/28 11:00:35<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53241944,
+          36.24650556
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "後岡庚申塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no144.JPG",
+        "address": "本町二丁目 青梅天神",
+        "desc": "<b>年代:</b> 不明 (　)<br><b>備考:</b> 自然石、文字<br><b>撮影日時:</b> 2020/11/28 11:01:00<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53239167,
+          36.24650556
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "青梅天満宮標石",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no5.JPG",
+        "address": "本町二丁目 青梅神社境内",
+        "desc": "<b>種別:</b> 標石<br><b>年代:</b> 寛文6年 (1666)<br><b>備考:</b> <br><b>サイズ:</b> 高さ190cm 幅36cm 厚さ35cm<br><b>撮影日時:</b> 2020/11/28 10:55:59<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991) 26ページ<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53323611,
+          36.24625556
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "参宮記念碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no6.JPG",
+        "address": "本町二丁目 青梅神社境内",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 昭和9年 (1934)<br><b>備考:</b> <br><b>サイズ:</b> 高さ178cm 幅73cm 厚さ14cm<br><b>撮影日時:</b> 2020/11/28 10:58:32<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53253889,
+          36.24646944
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "元禄地蔵尊",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no77.JPG",
+        "address": "本町二丁目 大道寺",
+        "desc": "<b>種別:</b> 立像<br><b>年代:</b> 元禄13年 (1700)<br><b>備考:</b> 丸彫<br><b>撮影日時:</b> 2020/12/05 14:46:44<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53134722,
+          36.24655556
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "伊右衛門地蔵尊",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no81.JPG",
+        "address": "本町二丁目 大道寺",
+        "desc": "<b>種別:</b> 座像<br><b>年代:</b> 享保6年 (1721)<br><b>備考:</b> 丸彫<br><b>撮影日時:</b> 2020/12/05 14:42:15<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53146944,
+          36.24646111
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "大道寺寛延仏地蔵尊",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no83.JPG",
+        "address": "本町二丁目 大道寺",
+        "desc": "<b>種別:</b> 立像<br><b>年代:</b> 寛延4年 (1751)<br><b>備考:</b> 丸彫<br><b>撮影日時:</b> 2020/12/05 14:39:27<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53153056,
+          36.24619722
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "大道寺寛延地蔵尊",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no84.JPG",
+        "address": "本町二丁目 大道寺",
+        "desc": "<b>種別:</b> 立像<br><b>年代:</b> 寛延4年 (1751)<br><b>備考:</b> 丸彫<br><b>撮影日時:</b> 2020/12/05 14:39:07<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53155278,
+          36.24616944
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "喜市馬頭尊",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no102.JPG",
+        "address": "本町二丁目 大道寺",
+        "desc": "<b>年代:</b> 明治28年 (1895)<br><b>備考:</b> 自然石、文字<br><b>撮影日時:</b> 2020/12/05 14:44:19<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53146944,
+          36.24643889
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "天和庚申塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no123.JPG",
+        "address": "本町二丁目 大道寺",
+        "desc": "<b>年代:</b> 天和2年 (1682)<br><b>備考:</b> 舟型背面、像浮彫<br><b>撮影日時:</b> 2020/12/05 14:40:01<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53153889,
+          36.24624167
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "貞享庚申塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no124.JPG",
+        "address": "本町二丁目 大道寺",
+        "desc": "<b>年代:</b> 貞享3年 (1686)<br><b>備考:</b> 舟型背面、像浮彫<br><b>撮影日時:</b> 2020/12/05 14:39:55<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53155278,
+          36.24621944
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "大道寺宝篋印塔（1）",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no203.JPG",
+        "address": "本町二丁目 大道寺",
+        "desc": "<b>年代:</b> 元和6年 (1620)<br><b>備考:</b> 塔身のみ<br><b>撮影日時:</b> 2020/12/05 14:45:48<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53156667,
+          36.24651667
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "大道寺名号塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no261.JPG",
+        "address": "本町二丁目 大道寺",
+        "desc": "<b>年代:</b> 不明 (　)<br><b>備考:</b> 自然石（間知石）<br><b>撮影日時:</b> 2020/12/05 14:44:29<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53146944,
+          36.24642222
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "竹生島神社入口道標",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no237.JPG",
+        "address": "本町三丁目 竹生島神社入口",
+        "desc": "<b>種別:</b> 道標<br><b>年代:</b> 明治12年 (1879)<br><b>備考:</b> 碑型 広報館林(2013/11)に記事あり<br><b>サイズ:</b> 高さ120cm 幅20cm 厚さ13cm<br><b>撮影日時:</b> 2020/11/28 11:08:30<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br><b>参考文献:</b> 『館林市史特別編第4巻』(館林市史編さん委員会編 館林城と中近世の遺跡) 489ページ<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53911667,
+          36.24496667
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "竹生島神社建営碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no2.JPG",
+        "address": "本町三丁目 竹生島神社境内",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 昭和61年 (1986)<br><b>備考:</b> <br><b>サイズ:</b> 高さ83cm 幅125cm 厚さ32cm<br><b>撮影日時:</b> 2020/11/28 11:12:26<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991) 29ページ<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53811667,
+          36.24515
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "神社記念碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no3.JPG",
+        "address": "本町三丁目 竹生島神社境内",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 大正5年 (1916)<br><b>備考:</b> <br><b>サイズ:</b> 高さ183cm 幅81cm 厚さ4cm<br><b>撮影日時:</b> 2020/11/28 11:11:11<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53817222,
+          36.24516111
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "城沼耕地整理記念碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no4.JPG",
+        "address": "本町三丁目 竹生島神社境内",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 昭和4年 (1929)<br><b>備考:</b>  広報館林(2018/07)に記事あり<br><b>サイズ:</b> 高さ244cm 幅94cm 厚さ24cm<br><b>撮影日時:</b> 2020/11/28 11:10:11<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991) 24ページ<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53821944,
+          36.24515833
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "下町馬頭尊",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no99.JPG",
+        "address": "本町四丁目 館林信用金庫南支店前",
+        "desc": "<b>年代:</b> 明治9年 (1876)<br><b>備考:</b> 自然石、文字<br><b>撮影日時:</b> 2020/11/28 11:27:04<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53437778,
+          36.241775
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "龍泉寺元禄庚申塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no125.JPG",
+        "address": "本町四丁目 龍泉寺",
+        "desc": "<b>年代:</b> 元禄元年 (1688)<br><b>備考:</b> 柱型、像浮彫<br><b>撮影日時:</b> 2020/11/28 11:22:19<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53154722,
+          36.24209444
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "自然石庚申塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no134.JPG",
+        "address": "本町四丁目 龍泉寺",
+        "desc": "<b>年代:</b> 寛政12年 (1800)<br><b>備考:</b> 自然石、文字<br><b>撮影日時:</b> 2020/11/28 11:18:20<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53151389,
+          36.24208056
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "毘沙門堂修理記念碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no1584.JPG",
+        "address": "本町四丁目 竜泉寺境内",
+        "desc": "<b>年代:</b> 明治41年 (1908)<br><b>備考:</b> <br><b>サイズ:</b> 高さ167cm 幅83cm 厚さ20cm<br><b>撮影日時:</b> 2020/11/28 11:17:57<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53157222,
+          36.24186944
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "凱旋紀念碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no1585.JPG",
+        "address": "本町四丁目 竜泉寺境内",
+        "desc": "<b>年代:</b> 明治32年 (1899)<br><b>備考:</b> <br><b>サイズ:</b> 高さ184cm 幅80cm 厚さ19cm<br><b>撮影日時:</b> 2020/11/28 11:18:05<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53155278,
+          36.241925
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "当寺中興碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no1586.JPG",
+        "address": "本町四丁目 竜泉寺境内",
+        "desc": "<b>年代:</b> 昭和4年 (1929)<br><b>備考:</b> <br><b>サイズ:</b> 高さ250cm 幅103cm 厚さ20cm<br><b>撮影日時:</b> 2020/11/28 11:20:16<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53163333,
+          36.24208056
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "常念丸彫り地蔵尊",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no79.JPG",
+        "address": "仲町 観性寺",
+        "desc": "<b>種別:</b> 立像<br><b>年代:</b> 享保3年 (1718)<br><b>備考:</b> 丸彫<br><b>撮影日時:</b> 2020/11/28 12:08:07<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.52865556,
+          36.24941944
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "観性寺二十三夜塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no108.JPG",
+        "address": "仲町 観性寺",
+        "desc": "<b>年代:</b> 天保14年 (1843)<br><b>備考:</b> 柱型<br><b>撮影日時:</b> 2020/11/28 12:06:05<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.52864167,
+          36.24931667
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "延宝観性寺庚申塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no118.JPG",
+        "address": "仲町 観性寺",
+        "desc": "<b>年代:</b> 延宝5年 (1677)<br><b>備考:</b> 舟型背面、像浮彫<br><b>撮影日時:</b> 2020/11/28 12:08:11<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.52865556,
+          36.24936389
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "宝永観性寺庚申塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no128.JPG",
+        "address": "仲町 観性寺",
+        "desc": "<b>年代:</b> 宝永元年 (1704)<br><b>備考:</b> 舟型背面、像浮彫<br><b>撮影日時:</b> 2020/11/28 12:08:00<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.52864722,
+          36.24939167
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "寛政玉石庚申塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no133.JPG",
+        "address": "仲町 観性寺",
+        "desc": "<b>年代:</b> 寛政12年 (1800)<br><b>備考:</b> 玉石、文字<br><b>撮影日時:</b> 2020/11/28 12:08:30<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.52873611,
+          36.24938333
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "荒井閑窓句碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no17.JPG",
+        "address": "仲町 常光寺境内",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 大正4年 (1915)<br><b>備考:</b> <br><b>サイズ:</b> 高さ227cm 幅66cm 厚さ12cm<br><b>撮影日時:</b> 2020/11/28 11:47:09<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991) 47ページ<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53228611,
+          36.24991389
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "石塚荘次郎君碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no18.JPG",
+        "address": "仲町 常光寺境内",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 明治41年 (1908)<br><b>備考:</b> <br><b>サイズ:</b> 高さ189cm 幅90cm 厚さ15cm<br><b>撮影日時:</b> 2020/11/28 11:46:17<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53231111,
+          36.24992778
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "寺門興隆之碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no15.JPG",
+        "address": "仲町 千眼寺境内",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 大正3年 (1914)<br><b>備考:</b> <br><b>サイズ:</b> 高さ194cm 幅89cm 厚さ13cm<br><b>撮影日時:</b> 2020/11/28 11:56:39<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53192778,
+          36.24903611
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "前町長銅像寄附者の碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no16.JPG",
+        "address": "仲町 中部公民館前",
+        "desc": "<b>種別:</b> 碑<br><b>備考:</b> <br><b>サイズ:</b> 高さ273cm 幅110cm 厚さ18cm<br><b>撮影日時:</b> 2020/11/28 11:42:33<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53235,
+          36.24923611
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "藤牧義夫版画碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no43.JPG",
+        "address": "尾曳町 秋元別邸庭園内",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 昭和53年 (1978)<br><b>備考:</b>  広報館林(2019/04)に記事あり<br><b>サイズ:</b> 高さ144cm 幅90cm 厚さ16cm<br><b>撮影日時:</b> 2019/03/15 17:10:45<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.54651667,
+          36.24352778
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "田山花袋歌碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no35.JPG",
+        "address": "尾曳町 尾曳稲荷神社境内",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 昭和22年 (1947)<br><b>備考:</b>  広報館林(2017/05)に記事あり<br><b>サイズ:</b> 高さ180cm 幅140cm 厚さ17cm<br><b>撮影日時:</b> 2017/04/07 11:20:49<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991) 49ページ<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.54628611,
+          36.24519444
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "尾曳神社入口道標",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no238.JPG",
+        "address": "尾曳町 尾曳神社入口",
+        "desc": "<b>種別:</b> 道標<br><b>年代:</b> 明治44年 (1911)<br><b>備考:</b> 柱型 広報館林(2014/05)に記事あり<br><b>撮影日時:</b> undefined<br><b>参考文献:</b> 『館林市史特別編第4巻』(館林市史編さん委員会編 館林城と中近世の遺跡) 489ページ<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.54615278,
+          36.2452
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "曜華如意輪塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no107.JPG",
+        "address": "加法師町 教王院",
+        "desc": "<b>年代:</b> 宝永3年 (1774)<br><b>備考:</b> 舟型背面、像浮彫<br><b>撮影日時:</b> 2020/12/05 14:20:53<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.54605833,
+          36.25057222
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "延宝夘月庚申塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no122.JPG",
+        "address": "加法師町 教王院",
+        "desc": "<b>年代:</b> 延宝8年 (1680)<br><b>備考:</b> 舟型背面、像浮彫<br><b>撮影日時:</b> 2020/12/05 14:16:55<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.54600833,
+          36.25039444
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "元禄教王院庚申塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no127.JPG",
+        "address": "加法師町 教王院",
+        "desc": "<b>年代:</b> 元禄10年 (1697)<br><b>備考:</b> 柱笠型<br><b>撮影日時:</b> 2020/12/05 14:20:47<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.54605833,
+          36.25055
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "光明真言供養塔",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no249.JPG",
+        "address": "加法師町 教王院",
+        "desc": "<b>年代:</b> 享保17年 (1732)<br><b>備考:</b> 柱型<br><b>撮影日時:</b> 2020/12/05 14:20:59<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.54606389,
+          36.25060556
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "教王院宝篋印塔（1）",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no231.JPG",
+        "address": "加法師町 教王院",
+        "desc": "<b>年代:</b> 宝暦14年 (1764)<br><b>備考:</b> 〃<br><b>撮影日時:</b> 2020/12/05 14:22:05<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.54609444,
+          36.25049444
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "秋元志朝頌徳碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no25.JPG",
+        "address": "城町 三の丸内",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 明治29年 (1896)<br><b>備考:</b>  広報館林(2020/03)に記事あり<br><b>サイズ:</b> 高さ420cm 幅227cm 厚さ27cm<br><b>撮影日時:</b> 2017/02/18 10:10:48<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991) 37ページ<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.54038611,
+          36.24595278
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "城沼墾田碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no26.JPG",
+        "address": "城町 三の丸内",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 明治36年 (1903)<br><b>備考:</b>  広報館林(2019/06)に記事あり<br><b>サイズ:</b> 高さ276cm 幅124cm 厚さ17cm<br><b>撮影日時:</b> 2017/02/18 10:05:57<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991) 35ページ<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53995278,
+          36.24506111
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "岡谷瑳磨介の碑",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no28.JPG",
+        "address": "城町 三の丸内",
+        "desc": "<b>種別:</b> 碑<br><b>年代:</b> 明治42年 (1909)<br><b>備考:</b>  広報館林(2018/01)に記事あり<br><b>サイズ:</b> 高さ273cm 幅125cm 厚さ19cm<br><b>撮影日時:</b> 2017/02/18 10:04:01<br><b>参考文献:</b> 『館林双書　第十九巻』(館林市教育委員会・市立図書館編 1991) 32ページ<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.54059444,
+          36.24458889
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "館林町道路元標",
+        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no239.JPG",
+        "address": "城町 市立図書館前(元大辻)",
+        "desc": "<b>種別:</b> 道標<br><b>年代:</b> 大正14年 (1925)<br><b>備考:</b> 厚碑型 広報館林(2014/11)に記事あり<br><b>撮影日時:</b> undefined<br><b>参考文献:</b> 『館林市史特別編第4巻』(館林市史編さん委員会編 館林城と中近世の遺跡) 489ページ<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.53390278,
+          36.24801944
+        ]
+      }
+    }
+  ],
+  "id": "tatebayashi_stones",
+  "name": "館林市石造物",
+  "properties": {
+    "icon": "img/stones.png"
+  }
+}

@@ -1,0 +1,112 @@
+<!DOCTYPE html><html><head>
+  <meta charset="UTF-8">
+  <title>ぷらっと館林 - 館林を楽しむ古地図/絵地図街歩きアプリ</title>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.6.1/mapbox-gl.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/maplat.css">
+  <style>
+    .mainview {
+        position: absolute;
+        top: 0px;
+        bottom: 0px;
+        left: 0px;
+        right: 0px;
+    }
+  </style>
+  <meta property="og:image" content="https://s.maplat.jp/r/tatebayashimap/img/tatebayashi_splash.png">
+  <meta name="twitter:card" content="summary">
+  <link rel="canonical" href="https://s.maplat.jp/r/tatebayashimap/">
+  <link rel="alternate" href="https://s.maplat.jp/r/tatebayashimap/?lang=ja" hreflang="ja">
+  <link rel="alternate" href="https://s.maplat.jp/r/tatebayashimap/?lang=en" hreflang="en">
+  <link rel="manifest" href="./pwa/tatebayashi_manifest.json">
+  <meta property="og:title" content="ぷらっと館林 - 館林を楽しむ古地図/絵地図街歩きアプリ">
+  <meta name="description" content="まち歩きの地図サービス「ぷらっと館林」を片手に館林城下を散策してみませんか。話題のアニメ「宇宙よりも遠い場所」聖地巡礼マップ、徳川綱吉が藩主だった頃の古地図、幕末の名君、秋元志朝の頃の古地図や観光地図を収録。今ここではない時代に思いを馳せながら、ぷらぷら歩くのはきっと楽しいですよ。">
+  <meta property="og:description" content="まち歩きの地図サービス「ぷらっと館林」を片手に館林城下を散策してみませんか。話題のアニメ「宇宙よりも遠い場所」聖地巡礼マップ、徳川綱吉が藩主だった頃の古地図、幕末の名君、秋元志朝の頃の古地図や観光地図を収録。今ここではない時代に思いを馳せながら、ぷらぷら歩くのはきっと楽しいですよ。">
+  <meta name="keywords" content="ぷらっと館林 - 館林を楽しむ古地図/絵地図街歩きアプリ,古地図,絵地図,散歩,街歩き,観光,歴史">
+<link rel="icon" type="image/png" sizes="196x196" href="pwa/tatebayashi/favicon-196.png">
+
+<meta name="msapplication-square70x70logo" content="pwa/tatebayashi/mstile-icon-128.png">
+<meta name="msapplication-square150x150logo" content="pwa/tatebayashi/mstile-icon-270.png">
+<meta name="msapplication-square310x310logo" content="pwa/tatebayashi/mstile-icon-558.png">
+<meta name="msapplication-wide310x150logo" content="pwa/tatebayashi/mstile-icon-558-270.png">
+
+<link rel="apple-touch-icon" href="pwa/tatebayashi/apple-icon-180.png">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<link rel="apple-touch-startup-image" href="pwa/tatebayashi/apple-splash-2048-2732.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="pwa/tatebayashi/apple-splash-2732-2048.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
+<link rel="apple-touch-startup-image" href="pwa/tatebayashi/apple-splash-1668-2388.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="pwa/tatebayashi/apple-splash-2388-1668.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
+<link rel="apple-touch-startup-image" href="pwa/tatebayashi/apple-splash-1536-2048.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="pwa/tatebayashi/apple-splash-2048-1536.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
+<link rel="apple-touch-startup-image" href="pwa/tatebayashi/apple-splash-1668-2224.png" media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="pwa/tatebayashi/apple-splash-2224-1668.png" media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
+<link rel="apple-touch-startup-image" href="pwa/tatebayashi/apple-splash-1620-2160.png" media="(device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="pwa/tatebayashi/apple-splash-2160-1620.png" media="(device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
+<link rel="apple-touch-startup-image" href="pwa/tatebayashi/apple-splash-1284-2778.png" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="pwa/tatebayashi/apple-splash-2778-1284.png" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)">
+<link rel="apple-touch-startup-image" href="pwa/tatebayashi/apple-splash-1170-2532.png" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="pwa/tatebayashi/apple-splash-2532-1170.png" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)">
+<link rel="apple-touch-startup-image" href="pwa/tatebayashi/apple-splash-1125-2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="pwa/tatebayashi/apple-splash-2436-1125.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)">
+<link rel="apple-touch-startup-image" href="pwa/tatebayashi/apple-splash-1242-2688.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="pwa/tatebayashi/apple-splash-2688-1242.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)">
+<link rel="apple-touch-startup-image" href="pwa/tatebayashi/apple-splash-828-1792.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="pwa/tatebayashi/apple-splash-1792-828.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
+<link rel="apple-touch-startup-image" href="pwa/tatebayashi/apple-splash-1242-2208.png" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="pwa/tatebayashi/apple-splash-2208-1242.png" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)">
+<link rel="apple-touch-startup-image" href="pwa/tatebayashi/apple-splash-750-1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="pwa/tatebayashi/apple-splash-1334-750.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
+<link rel="apple-touch-startup-image" href="pwa/tatebayashi/apple-splash-640-1136.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="pwa/tatebayashi/apple-splash-1136-640.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
+
+</head>
+<body>
+  <div class="mainview">
+    <div id="map_div"></div>
+  </div>
+
+<script src="https://api.tiles.mapbox.com/mapbox-gl-js/v1.6.1/mapbox-gl.js"></script>
+<script src="assets/maplat.js"></script>
+<script>
+  var ip;
+  var option = {
+    appid: "tatebayashi",
+    pwaManifest: true,
+    overlay: true,
+    enableHideMarker: true,
+    enableBorder: true,
+    enableCache: true,
+    stateUrl: true,
+    enableShare: true
+  };
+  option.mapboxgl = mapboxgl;
+  option.mapboxToken = 'pk.eyJ1IjoicmVraXNoaWtva3VkbyIsImEiOiJjazRoMmF3dncwODU2M2ttdzI2aDVqYXVwIn0.8Hb9sekgjfck6Setxk5uVg';
+  var hashes = (window.location.href.split('#!'))[0];
+  hashes = hashes.slice(window.location.href.indexOf('?') + 1).split('&');
+  for (var i = 0; i < hashes.length; i++) {
+    hash = hashes[i].split('=');
+    option[hash[0]] = hash[1] == 'true' ? true : hash[1] == 'false' ? false : hash[1];
+  }
+  Maplat.createObject(option).then(function(app){
+    app.addEventListener('clickMarker', function(evt) {
+      console.log(evt);
+    });
+  });
+</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-104602009-1', 'auto');
+  ga('send', 'pageview', {
+    'dimension1': navigator.userAgent,
+    'dimension2': navigator.languages[0] || navigator.browserLanguage || navigator.language || navigator.userLanguage,
+    'dimension3': ip
+  });
+</script>
+</body></html>

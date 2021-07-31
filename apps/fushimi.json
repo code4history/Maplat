@@ -1,0 +1,80 @@
+{
+    "app_name": {
+        "ja": "ぷらっと伏見 - 伏見を楽しむ古地図/絵地図街歩きアプリ",
+        "en": "Maplat Fushimi"
+    },
+    "splash" : "fushimi_splash.png",
+    "lang": "ja",
+    "fake_gps": true,
+    "fake_center": "伏見城",
+    "fake_radius": 10,
+    "home_position": [
+        139.929796,
+        37.487708
+    ],
+    "default_zoom": 18,
+    "start_from": "fushimijo_maplat",
+    "sources": [
+        {
+            "mapID": "fushimijo_maplat",
+            "label": {
+                "ja": "丸の内圖",
+                "en": "Castle Center"
+            }
+        },
+        {
+            "mapID": "fushimi_kojo_ezu",
+            "label": {
+                "ja": "古城絵図",
+                "en": "Old Castle Map"
+            }
+        },
+        {
+            "mapID": "fushimi_joka_ezu",
+            "label": {
+                "ja": "城下町絵図",
+                "en": "Castle Town"
+            }
+        },
+        {
+            "mapID": "fushimi_zenzu",
+            "label": {
+                "ja": "昭和4年",
+                "en": "1929"
+            }
+        },
+        {
+            "title": "Kyoto South - Japan City Plans",
+            "contributor": "University of Texas Libraries",
+            "createdAt": "1945-1946",
+            "author": "U.S.Army Map Service",
+            "attr": "Courtesy of the University of Texas Libraries, The University of Texas at Austin, Tilemap.JP.",
+            "label": {
+                "ja": "戦後",
+                "en": "After WW II (1946)"
+            },
+            "mapID": "jcp_maps_kyoto_south",
+            "maptype": "overlay",
+            "url": "https://t.tilemap.jp/jcp_maps/kyoto_south/{z}/{x}/{-y}.png",
+            "maxZoom": 16,
+            "envelopeLngLats" : [[135.8048498927519, 34.9168101412896], [135.69476329720152, 34.91676244596299], [135.69536392424456, 34.9959964028684], [135.80553570844708, 34.99604308790897]]
+        },
+        "gsi",
+        "gsi_ortho",
+        {
+            "mapID" : "mapbox",
+            "label" : "Mapbox"
+        },
+        "osm"
+    ],
+    "pois": [
+        {"lng":135.776944756508,"lat":34.9389288665907,"name":"サブステージ","desc":"サブステージ"},
+        {"lng":135.766398310661,"lat":34.9329875598072,"name":"シャトルバス乗り場/降り場","desc":"シャトルバス乗り場/降り場"},
+        {"lng":135.777068138123,"lat":34.9387441692346,"name":"ステージ","desc":"ステージ"},
+        {"lng":135.77661216259, "lat":34.9387485667955,"name":"キッズランド","desc":"キッズランド"},
+        {"lng":135.776982307434,"lat":34.9385603509632,"name":"受付本部","desc":"受付本部"},
+        {"lng":135.777668952942,"lat":34.9395181363274,"name":"五大老サミット","desc":"五大老サミット"},
+        {"lng":135.777513384819,"lat":34.9416904822129,"name":"シャトルバス乗り場/降り場","desc":"シャトルバス乗り場/降り場"},
+        {"lng":135.777357816696,"lat":34.9395849785839,"name":"北側受付","desc":"北側受付"}
+    ]
+}

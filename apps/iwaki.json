@@ -1,0 +1,140 @@
+{
+    "app_name": {
+        "ja": "ぷらっといわき - いわきを楽しむ古地図/絵地図街歩きアプリ",
+        "en": "Maplat Iwaki"
+    },
+    "splash" : "iwaki_splash.png",
+    "lang": "ja",
+    "fake_gps": true,
+    "fake_center": {
+        "ja": "いわき市",
+        "en": "Iwaki"
+    },
+    "fake_radius": 10,
+    "home_position": [
+        140.890889,
+        37.059067
+    ],
+    "default_zoom": 17,
+    "start_from": "iwaki_taira_genna2",
+    "sources": [
+        {
+            "mapID": "iwaki_taira_genna2",
+            "label": {
+                "ja": "元和平城",
+                "en": "Taira castle (1622)"
+            }
+        },
+        {
+            "mapID": "boshinshiki_tairajo",
+            "label": {
+                "ja": "戊辰平城",
+                "en": "Taira castle (1868)"
+            }
+        },
+        {
+            "mapID": "daitaira_shokugyo_meisai",
+            "label": {
+                "ja": "平(1936)",
+                "en": "Taira (1936)"
+            }
+        },
+        {
+            "mapID": "iwaki_taira_shigai_1954",
+            "label": {
+                "ja": "平市街(1954)",
+                "en": "Taira (1954)"
+            }
+        },
+        {
+            "mapID": "iwaki_taira_shigai_1961",
+            "label": {
+                "ja": "平市街(1961)",
+                "en": "Taira (1961)"
+            }
+        },
+        {
+            "mapID": "taira_rekishi_sansaku_2009",
+            "label": {
+                "ja": "歴史散策(2009)",
+                "en": "History Tour (2009)"
+            }
+        },
+        {
+            "mapID": "taira_machinaka_burari_2009",
+            "label": {
+                "ja": "平散歩(2009)",
+                "en": "Taira Stroll (2009)"
+            }
+        },
+        "gsi",
+        "gsi_ortho",
+        {
+            "mapID" : "mapbox",
+            "label" : "Mapbox"
+        },
+        "osm"
+    ],
+    "pois": [
+        {
+            "lat": 37.059201,
+            "lng": 140.890927,
+            "name": {
+                "ja": "磐城平城(イワキタイラジョウ)",
+                "en": "Iwaki Taira Castle"
+            },
+            "url": {
+                "ja": "https://ja.m.wikipedia.org/wiki/%E7%A3%90%E5%9F%8E%E5%B9%B3%E5%9F%8E",
+                "en": "https://en.m.wikipedia.org/wiki/Iwakitaira_Castle"
+            }
+        },
+        {
+            "lat": 37.055892,
+            "lng": 140.871595,
+            "name": {
+                "ja": "飯野平城(イイノタイラジョウ)",
+                "en": "Iino Taira Castle"
+            },
+            "url": "https://ja.m.wikipedia.org/wiki/%E5%A4%A7%E9%A4%A8%E5%9F%8E_(%E9%99%B8%E5%A5%A5%E5%9B%BD)"
+        },
+        {
+            "lat": 37.056875,
+            "lng": 140.885965,
+            "name": {
+                "ja": "子倉鍬神社(コクラクワジンジャ)",
+                "en": "Kokurakuwa Shrine"
+            },
+            "url": "https://ja.m.wikipedia.org/wiki/%E5%AD%90%E9%8D%AC%E5%80%89%E7%A5%9E%E7%A4%BE"
+        },
+        {
+            "lat": 37.060293,
+            "lng": 140.882363,
+            "name": {
+                "ja": "飯野八幡宮(イイノハチマングウ)",
+                "en": "Iino Hachimangu Shrine"
+            },
+            "url": "https://ja.m.wikipedia.org/wiki/%E9%A3%AF%E9%87%8E%E5%85%AB%E5%B9%A1%E5%AE%AE"
+        },
+        {
+            "lat": 37.054986,
+            "lng": 140.882741,
+            "name": {
+                "ja": "松ヶ岡公園(マツガオカコウエン)",
+                "en": "Matsugaoka Park"
+            },
+            "url": "https://ja.m.wikipedia.org/wiki/%E6%9D%BE%E3%83%B6%E5%B2%A1%E5%85%AC%E5%9C%92"
+        },
+        {
+            "lat": 37.066344,
+            "lng": 140.883610,
+            "name": {
+                "ja": "北目観音(キタメカンノン)",
+                "en": "Kitame Kannon Temple"
+            },
+            "url": "https://ja.m.wikipedia.org/wiki/%E6%99%AE%E9%96%80%E5%AF%BA_(%E3%81%84%E3%82%8F%E3%81%8D%E5%B8%82)"
+        }
+
+
+
+    ]
+}

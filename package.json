@@ -26,7 +26,9 @@
     "freeze": "node bin/freezer.js",
     "lint": "npm run lint:eslint && npm run lint:prettier",
     "lint:eslint": "eslint \"{src,spec}/**/*.js\" --fix",
-    "lint:prettier": "prettier \"./{src,spec}/**/*.js\" --write"
+    "lint:prettier": "prettier \"./{src,spec}/**/*.js\" --write",
+    "publish:assets": "gulp publish:assets",
+    "publish:plat": "gulp publish:plat"
   },
   "repository": {
     "type": "git",
@@ -76,6 +78,8 @@
     "fs-extra": "^8.1.0",
     "gulp": "^4.0.2",
     "gulp-cli": "^2.3.0",
+    "gulp-rename": "^2.0.0",
+    "gulp-replace": "^1.0.0",
     "gulp-zip": "^4.2.0",
     "html-webpack-plugin": "^4.5.2",
     "jest": "^26.6.3",
@@ -84,7 +88,9 @@
     "less-loader": "^7.1.0",
     "lodash": "^4.17.21",
     "mini-css-extract-plugin": "^1.6.0",
+    "minimist": "^1.2.5",
     "prettier": "^2.3.1",
+    "pwa-asset-generator": "^4.1.1",
     "terser-webpack-plugin": "^4.2.3",
     "url-loader": "^4.1.1",
     "webpack": "^5.40.0",

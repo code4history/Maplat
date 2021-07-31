@@ -1,0 +1,19 @@
+{
+    "app_name" : "宇野バスGTFSアプリ",
+    "lang" : "ja",
+    "fake_gps" : true,
+    "fake_center" : "岡山市",
+    "fake_radius" : 10,
+    "home_position" : [133.919299, 34.665689],
+    "default_zoom" : 17,
+    "zoom_restriction" : true,
+    "start_from" : "uno_bus_gtfs2",
+    "sources" : [
+        {
+            "label" : "宇野バス",
+            "mapID" : "uno_bus_gtfs2"
+        },
+        "osm"
+    ],
+    "pois" : []
+}

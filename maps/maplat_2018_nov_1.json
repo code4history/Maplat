@@ -1,0 +1,64 @@
+{
+    "title": "Maplat発表 2018 11月 (1)",
+    "attr": "(c) Maplat - Kohei Otsuka",
+    "dataAttr": "",
+    "strictMode": "strict",
+    "vertexMode": "plain",
+    "gcps": [
+        [
+            [
+                0,
+                0
+            ],
+            [
+                15555442,
+                4258098
+            ]
+        ],
+        [
+            [
+                2999,
+                0
+            ],
+            [
+                15558441,
+                4258098
+            ]
+        ],
+        [
+            [
+                0,
+                1687
+            ],
+            [
+                15555442,
+                4256411
+            ]
+        ],
+        [
+            [
+                2999,
+                1687
+            ],
+            [
+                15558441,
+                4256411
+            ]
+        ]
+    ],
+    "officialTitle": "",
+    "author": "Kohei Otsuka",
+    "era": "",
+    "createdAt": "",
+    "license": "All right reserved",
+    "dataLicense": "CC BY-SA",
+    "contributor": "Kohei Otsuka",
+    "mapper": "Kohei Otsuka",
+    "reference": "",
+    "description": "",
+    "url": "https://t.tilemap.jp/maplat/tiles/maplat_2018_nov_1/{z}/{x}/{y}.png",
+    "width": 2999,
+    "height": 1687,
+    "lang": "ja",
+    "imageExtention": "png"
+}

@@ -1,0 +1,53 @@
+{
+    "app_name": {
+        "ja": "ぷらっと姫路 - 姫路を楽しむ古地図/絵地図街歩きアプリ",
+        "en": "Maplat Himeji"
+    },
+    "splash" : "himeji_splash.png",
+    "lang": "ja",
+    "fake_gps": true,
+    "fake_center": {
+        "ja": "姫路城",
+        "en": "Himeji Castle"
+    },
+    "fake_radius": 10,
+    "home_position": [
+        134.69400739117089,
+        34.83935275101559
+    ],
+    "default_zoom": 17,
+    "start_from": "Jissoku_Himeji_Shigai",
+    "sources": [
+        {
+            "mapID": "Jissoku_Himeji_Shigai",
+            "label": {
+                "ja": "昭和8年",
+                "en": "1933"
+            }
+        },
+        {
+            "title": "Himeji - Japan City Plans",
+            "contributor": "University of Texas Libraries",
+            "createdAt": "1945-1946",
+            "author": "U.S.Army Map Service",
+            "attr": "Courtesy of the University of Texas Libraries, The University of Texas at Austin, Tilemap.JP.",
+            "label": {
+                "ja": "戦後",
+                "en": "After WW II (1946)"
+            },
+            "mapID": "jcp_maps_himeji",
+            "maptype": "overlay",
+            "url": "https://t.tilemap.jp/jcp_maps/himeji/{z}/{x}/{-y}.png",
+            "maxZoom": 16,
+            "envelopeLngLats" : [[134.73739252006752, 34.80283574570777], [134.6410828742192, 34.80282469543059], [134.64154938270025, 34.87013580851463], [134.73794145035222, 34.870131826833216]]
+        },
+        "gsi",
+        "gsi_ortho",
+        {
+            "mapID" : "mapbox",
+            "label" : "Mapbox"
+        },
+        "osm"
+    ],
+    "pois": []
+}

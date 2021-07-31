@@ -1,0 +1,9 @@
+{
+  "name": "Maplat",
+  "short_name": "Maplat",
+  "background_color": "#f6f0d3",
+  "icons": [],
+  "start_url": "https://s.maplat.jp/r/tatebayashimap/?pwa",
+  "scope":"/r/tatebayashimap/",
+  "display": "standalone"
+}

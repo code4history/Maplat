@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Maplat</title>
+  <meta content="yes" name="apple-mobile-web-app-capable">
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <link rel="icon" type="image/png" href="parts/favicon.png">
+  <link rel="stylesheet" href="dist/maplat.css">
+  <style>
+    .mainview {
+        position: absolute;
+        top: 0px;
+        bottom: 5%;
+        left: 0px;
+        right: 0px;
+    }
+    .uiview {
+      position: absolute;
+      top: 95%;
+      bottom: 0px;
+      left: 0px;
+      right: 0px;
+    }
+  </style>
+</head>
+<body>
+  <div class="mainview">
+    <div id="map_div"></div>
+  </div>
+  <div class="row uiview">　
+    <input id="ui_sei" type="button" class="btn btn-default" value="正位置に">　
+    <input id="ui_hidari" type="button" class="btn btn-default" value="左を上に">　
+    <input id="ui_gyaku" type="button" class="btn btn-default" value="逆位置に">　
+    <input id="ui_migi" type="button" class="btn btn-default" value="右を上に">
+    クリック箇所経緯度: <span id="ui_latlng"></span>
+  </div>
+</body>
+<script src="dist/maplat.js"></script>
+<script>
+    var option = {
+        cache_enable: true,
+        restore_session: false,
+        state_url: true,
+        share_enable: true,
+        presentation_mode: true,
+        appid: 'foss4g'
+    };
+    var hashes = (window.location.href.split('#!'))[0];
+    hashes = hashes.slice(window.location.href.indexOf('?') + 1).split('&');
+    for (var i = 0; i < hashes.length; i++) {
+        hash = hashes[i].split('=');
+        option[hash[0]] = hash[1] == 'true' ? true : hash[1] == 'false' ? false : hash[1];
+    }
+    Maplat.createObject(option).then(function(app) {
+        /*app.core.addEventListener('clickMarker', function (evt) {
+            console.log(evt);
+        });*/
+        app.core.addEventListener('clickMap', function (evt) {
+            console.log(evt);
+            document.querySelector('#ui_latlng').innerText = evt.detail.latitude + ',' + evt.detail.longitude;
+        });
+        app.core.addEventListener('changeViewpoint', function (evt) {
+            console.log(evt);
+        });
+        app.core.addEventListener('updateState', function (evt) {
+            console.log(evt);
+        });
+        app.core.addLine({
+            lnglats: [[135.84448984840537, 34.67345543805217], [135.83733617775167, 34.67967601394585], [135.8230478791817, 34.68581830545061], [135.82469660607725, 34.68707580243378], [135.83833615842798, 34.6830671212401]],
+            stroke: {
+                color: '#33ccff',
+                width: 3
+            }
+        });
+        document.querySelector('#ui_sei').addEventListener('click', function() {
+            app.core.setViewpoint({rotation: 0});
+        });
+        document.querySelector('#ui_hidari').addEventListener('click', function() {
+            app.core.setViewpoint({rotation: 90});
+        });
+        document.querySelector('#ui_gyaku').addEventListener('click', function() {
+            app.core.setViewpoint({rotation: 180});
+        });
+        document.querySelector('#ui_migi').addEventListener('click', function() {
+            app.core.setViewpoint({rotation: 270});
+        });
+    });
+</script>
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-104602009-1', 'auto');
+    ga('send', 'pageview', {
+        'dimension1': navigator.userAgent,
+        'dimension2': navigator.languages[0] || navigator.browserLanguage || navigator.language || navigator.userLanguage,
+        'dimension3': ip
+    });
+</script>
+</html>

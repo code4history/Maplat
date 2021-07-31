@@ -1,0 +1,170 @@
+{
+    "app_name": "Maplat 2018秋発表",
+    "lang": "ja",
+    "fake_gps": true,
+    "fake_center": "伏見城",
+    "fake_radius": 10,
+    "home_position": [
+        139.929796,
+        37.487708
+    ],
+    "default_zoom": 18,
+    "start_from": "maplat_2018_nov_1",
+    "sources": [
+        {
+            "mapID": "maplat_2018_nov_1",
+            "label": "(1)"
+        },
+        {
+            "mapID": "maplat_2018_nov_2",
+            "label": "(2)"
+        },
+        {
+            "mapID": "maplat_2018_nov_3",
+            "label": "(3)"
+        },
+        {
+            "mapID": "maplat_2018_nov_4",
+            "label": "(4)"
+        },
+        {
+            "mapID": "maplat_2018_nov_5",
+            "label": "(5)"
+        },
+        {
+            "mapID": "maplat_2018_nov_6",
+            "label": "(6)"
+        },
+        {
+            "mapID": "maplat_2018_nov_7",
+            "label": "(7)"
+        },
+        {
+            "mapID": "maplat_2018_nov_8",
+            "label": "(8)"
+        },
+        {
+            "mapID": "maplat_2018_nov_9",
+            "label": "(9)"
+        },
+        {
+            "mapID": "maplat_2018_nov_10",
+            "label": "(10)"
+        },
+        {
+            "mapID": "maplat_2018_nov_11",
+            "label": "(11)"
+        },
+        {
+            "mapID": "maplat_2018_nov_12",
+            "label": "(12)"
+        },
+        {
+            "mapID": "maplat_2018_nov_13",
+            "label": "(13)"
+        },
+        {
+            "mapID": "maplat_2018_nov_14",
+            "label": "(14)"
+        },
+        {
+            "mapID": "maplat_2018_nov_15",
+            "label": "(15)"
+        },
+        {
+            "mapID": "maplat_2018_nov_16",
+            "label": "(16)"
+        },
+        {
+            "mapID": "maplat_2018_nov_17",
+            "label": "(17)"
+        },
+        {
+            "mapID": "maplat_2018_nov_18",
+            "label": "(18)"
+        },
+        {
+            "mapID": "maplat_2018_nov_19",
+            "label": "(19)"
+        },
+        {
+            "mapID": "maplat_2018_nov_20",
+            "label": "(20)"
+        },
+        {
+            "mapID": "maplat_2018_nov_21",
+            "label": "(21)"
+        },
+        {
+            "mapID": "maplat_aizu-jonai-kyoho-period",
+            "label": "デモ会津(1)"
+        },
+        {
+            "mapID": "maplat_aizuwakamatsu-annai-showa5",
+            "label": "デモ会津(2)"
+        },
+        {
+            "mapID": "maplat_paris_1784",
+            "label": "デモパリ(1)"
+        },
+        {
+            "mapID": "maplat_paris_1821",
+            "label": "デモパリ(2)"
+        },
+        {
+            "mapID": "Tokyo5000-900913",
+            "label": "東京原図"
+        },
+        {
+            "mapID": "maplat_nara_ezuya",
+            "label": "デモ奈良(1)"
+        },
+        {
+            "mapID": "maplat_kofukuji_keidai_kou",
+            "label": "デモ奈良(2)"
+        },
+        {
+            "mapID": "maplat_2018_nov_mobile",
+            "label": "モバイル"
+        },
+        {
+            "mapID": "maplat_2018_nov_pwa",
+            "label": "PWA"
+        },
+        "gsi",
+        "gsi_ortho",
+        "osm"
+    ],
+    "pois": [
+        {
+            "lat": 34.67345543805217,
+            "lng": 135.84448984840537,
+            "name": "鬼界ヶ島",
+            "url": "https://ja.m.wikipedia.org/wiki/%E9%AC%BC%E7%95%8C%E3%83%B6%E5%B3%B6_(%E5%A5%88%E8%89%AF%E5%B8%82)"
+        },
+        {
+            "lat": 34.67967601394585,
+            "lng": 135.83733617775167,
+            "name": "勧修坊",
+            "desc": "勧修坊周防得業の住坊。寛永年間頃の一時期、本薬師はここに安置されたとされる。"
+        },
+        {
+            "lat": 34.68581830545061,
+            "lng": 135.8230478791817,
+            "name": "奥芝辻薬師堂",
+            "desc": "寛永年間頃以降本薬師はここに安置されたが、廃れた後は称名寺に移った。"
+        },
+        {
+            "lat": 34.68707580243378,
+            "lng": 135.82469660607725,
+            "name": "称名寺",
+            "url": "https://ja.m.wikipedia.org/wiki/%E7%A7%B0%E5%90%8D%E5%AF%BA_(%E5%A5%88%E8%89%AF%E5%B8%82)"
+        },
+        {
+            "lat": 34.6830671212401,
+            "lng": 135.83833615842798,
+            "name": "奈良国立博物館",
+            "url": "http://www.eonet.ne.jp/~syomyoji/syomyoji4.html"
+        }
+    ]
+}

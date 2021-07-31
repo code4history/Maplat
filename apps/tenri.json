@@ -1,0 +1,29 @@
+{
+    "app_name" : "山の辺の道お世話アプリ",
+    "description": "紅葉の長岳寺と山の辺の道ミニお世話ツアー案内アプリ",
+    "lang": "ja",
+    "fake_gps" : true,
+    "fake_center" : "黒塚古墳",
+    "fake_radius" : 10,
+    "home_position" : [ 135.843168, 34.559975 ],
+    "default_zoom" : 17,
+    "start_from": "yamanobe_minami",
+    "sources" : [
+        {
+            "mapID" : "yamanobe_minami",
+            "label" : "山の辺の道(南)"
+        },
+        {
+            "mapID" : "kintetsu_teku2_yamanobe",
+            "label" : "近鉄てくてく"
+        },
+        "gsi",
+        "gsi_ortho",
+        {
+            "mapID" : "mapbox",
+            "label" : "Mapbox"
+        },
+        "osm"
+    ],
+    "pois" :[]
+}

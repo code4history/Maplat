@@ -1,0 +1,753 @@
+{
+    "app_name": {
+        "ja": "ぷらっと会津若松 - 会津若松を楽しむ古地図/絵地図街歩きアプリ",
+        "en": "Maplat Aizuwakamatsu"
+    },
+    "splash" : "aizu_splash.png",
+    "lang": "ja",
+    "fake_gps": true,
+    "fake_center": {
+        "ja": "会津若松市",
+        "en": "Aizuwakamatsu"
+    },
+    "fake_radius": 10,
+    "home_position": [
+        139.929796,
+        37.487708
+    ],
+    "default_zoom": 17,
+    "start_from": "aizu-jonai-kato-period",
+    "sources": [
+        {
+            "mapID": "aizu-jonai-kato-period",
+            "label": {
+                "ja": "加藤家期",
+                "en": "Kato family (1627)"
+            }
+        },
+        {
+            "mapID": "aizu-jonai-hoshina-period",
+            "label": {
+                "ja": "保科家期",
+                "en": "Hoshina family (1643)"
+            }
+        },
+        {
+            "mapID": "aizu-jonai-kyoho-period",
+            "label": {
+                "ja": "享保期",
+                "en": "Mid of Edo (1734)"
+            }
+        },
+        {
+            "mapID": "aizu-boshin-wakamatsujo-meisaizu",
+            "label": {
+                "ja": "戊辰戦期",
+                "en": "Boshin War (1868)"
+            }
+        },
+        {
+            "mapID": "aizu-wakamatsu-taisho-kaitei",
+            "label": {
+                "ja": "大正期",
+                "en": "Taisho (1914)"
+            }
+        },
+        {
+            "mapID": "aizuwakamatsu_tetsudosho_1935",
+            "label": {
+                "ja": "鉄道省地図",
+                "en": "Railway Map (1930)"
+            }
+        },
+        {
+            "mapID": "aizuwakamatsu-annai-showa5",
+            "label": {
+                "ja": "昭和初期",
+                "en": "Showa (1930)"
+            }
+        },
+        {
+            "title": "Wakamatsu - Japan City Plans",
+            "contributor": "University of Texas Libraries",
+            "createdAt": "1945-1946",
+            "author": "U.S.Army Map Service",
+            "attr": "Courtesy of the University of Texas Libraries, The University of Texas at Austin, Tilemap.JP.",
+            "label": {
+                "ja": "戦後",
+                "en": "After WW II (1946)"
+            },
+            "mapID": "jcp_maps_wakamatsu",
+            "maptype": "overlay",
+            "url": "https://t.tilemap.jp/jcp_maps/wakamatsu/{z}/{x}/{-y}.png",
+            "maxZoom": 16,
+            "envelopeLngLats" : [[139.90101308591164, 37.523848776110384], [139.95794705763817, 37.52390560293867], [139.95730934084384, 37.46644763380387], [139.90049820485194, 37.466379239469816]]
+        },
+        {
+            "mapID": "aizu_1961",
+            "label": {
+                "ja": "昭和36",
+                "en": "Showa (1961)"
+            }
+        },
+        {
+            "mapID": "aizuwakamatsu-machinaka-jokamachi",
+            "label": {
+                "ja": "まちなか",
+                "en": "City center"
+            }
+        },
+        {
+            "mapID": "aizu-wakamatsu-shigaizu-aibase",
+            "label": {
+                "ja": "市街図",
+                "en": "Sightseeing"
+            }
+        },
+        "gsi",
+        "gsi_ortho",
+        {
+            "mapID" : "mapbox",
+            "label" : "Mapbox"
+        },
+        "osm"
+    ],
+    "pois": [
+        {
+            "lat": 37.487717,
+            "lng": 139.929786,
+            "name": {
+                "ja": "若松城(ワカマツジョウ)",
+                "en": "Wakamatsu Castle"
+            },
+            "url": {
+                "ja": "https://ja.m.wikipedia.org/wiki/%E8%8B%A5%E6%9D%BE%E5%9F%8E",
+                "en": "https://en.m.wikipedia.org/wiki/Aizuwakamatsu_Castle"
+            }
+        },
+        {
+            "lat": 37.491,
+            "lng": 139.944111,
+            "name": {
+                "ja": "御薬園(オヤクエン)",
+                "en": "Oyaku-en Garden"
+            },
+            "url": {
+                "ja": "https://ja.m.wikipedia.org/wiki/%E5%BE%A1%E8%96%AC%E5%9C%92",
+                "en": "https://en.m.wikipedia.org/wiki/Aizu_Matsudaira%27s_Royal_Garden"
+            }
+        },
+        {
+            "lat": 37.485126,
+            "lng": 139.958679,
+            "address": {
+                "ja": "福島県会津若松市東山町大字石山字墓山 (バス停「院内」から徒歩５分駐車場無し)",
+                "en": "Aza-Hakayama, Oaza-Ishiyama, Higashiyama-machi, Aizuwakamatsu, FUKUSHIMA (5 minutes walk from \"Innai\" bus stop)"
+            },
+            "name": {
+                "ja": "松平家墓所(マツダイラケボショ)",
+                "en": "Graveyard of the Matsudaira family"
+            },
+            "desc": {
+                "ja": "<b>松平家の歴代藩主が眠る、山腹の広大な史跡</b>\n「会津藩主松平家墓所」は、会津若松市の院内山と猪苗代町の見禰山（みねやま）の二カ所の総称で昭和62年5月に国の史跡として指定を受けています。院内山の墓所は通称「院内御廟」と呼ばれ親しまれていますが、その面積は約15万平方メートルと広大で、墓域の中腹には西の御庭、中の御庭と呼ばれる墓所があり、さらに石段を上ったところを入峰墓所と呼んでいます。寛永20年（1643）に会津に入封した初代の保科正之公は、猪苗代の土津（はにつ）神社に祀られ、ここには、二代保科正経公から幕末の九代容保公までの墓があります。新緑の時期や紅葉の時期に、散策をかねてのお参りをする人も多いスポットです。\n\n<a href=\"http://www.aizukanko.com/spot/27/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1\n写真: Wikimedia Commonsより",
+                "en": "<b>A vast historical site on the mountainside where the successive lords of the Matsudaira family lie</b>\n\"Graveyard of the Aizu Lord owner Matsudaira family\" is the general name of two sites, one is on Mt.Innai in Aizuwakamatsu city and the other is on Mt.Mine in Inawashiro town. They were designated as a national historic site in May 1982. The graveyard on Mt.Innai is commonly called \"Innai Mausoleum\", and its area is about 150,000 square meters. In the middle of the graveyard, there are gardens called west garden and middle garden. Above stone stairways from these gardens, there is the other garden called \"Nyubu graveyard\". The first Lord Masayuki Hoshina, who entered Aizu in 1643, was enshrined in Hanitsu shrine at Inawashiro. In the shrine, there are also tombs of succesive lords - from 2nd lord Masatsune to 9th lord Katamori. Many sightseekers visit here for fresh green summer period and in red leaves autumn period.\nPHOTO: From Wikimedia Commons"
+            },
+            "image": "innai_gobyo.jpg"
+        },
+        {
+            "lat": 37.48068,
+            "lng": 139.921076,
+            "address": {
+                "ja": "福島県会津若松市館馬町8",
+                "en": "8, Hakouma-machi, Aizuwakamatsu, FUKUSHIMA"
+            },
+            "name": {
+                "ja": "蒲生秀行廟(ガモウヒデユキビョウ)",
+                "en": "Tomb of Hideyuki Gamo"
+            },
+            "desc": {
+                "ja": "<b>県指定建造物、蒲生秀行の墓</b>\n今日に至る会津の姿の創設者ともいえる会津領主 蒲生氏郷 の嫡男、蒲生秀行の墓料です。蒲生秀行は蒲生氏郷と織田信長の娘とのあいだに1583年に生まれ、文禄4年（1595年）、父・氏郷が急死したために会津92万石を継いでいます。その後、豊臣秀吉の命令で宇都宮に18万石で移封されていますが、関ヶ原の合戦での功績などが徳川家康に評価されて、慶長3年（1601）再び会津60万石に復帰しています。慶長17年（1612）5月、30歳の若さでこの世を去り、この地に眠っています。県指定建造物、市指定史跡にもなっています。\n\n<a href=\"http://www.aizukanko.com/spot/35/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1\n写真: 会津若松観光ビューロー提供",
+                "en": "<b>Prefecture Designated Building, Tomb of Hideyuki Gamo</b>\nUjisato Gamo could be considered as the founder of Aizu and Hideyuki, who lies in this tomb, was his eldest son. Hideyuki was born in 1583, between Ujisato and daughter of Nobunaga Oda. He has succeeded Aizu area, because Ujisato suddenly died in 1595. After that, he was transferred to Utsunomiya clan, which was a lower-valued territory than Aizu, according to Hideyoshi Toyotomi's order. His achievements in the battle of Sekigahara were highly appreciated by Ieyasu Tokugawa, so he could be back to the Aizu clan in 1601.In May 1612, He died at the young age of 30 and he laid to rest here. This site has become a prefecture-designated building and a city-designated historic site.\nPHOTO: Aizuwakamatsu Tourist Bureau"
+            },
+            "image": "hideyuki_gamo.jpg"
+        },
+        {
+            "lat": 37.484462,
+            "lng": 139.913627,
+            "address": {
+                "ja": "福島県会津若松市材木町2-2",
+                "en": "2-2, Zaimoku-machi, Aizuwakamatsu, FUKUSHIMA"
+            },
+            "name": {
+                "ja": "スネル邸跡(スネルテイアト)",
+                "en": "Schnell's House ruins"
+            },
+            "desc": {
+                "ja": "<b>武器・弾薬を扱ったスネル商会のヘンリースネル邸跡</b>\n戊辰戦争時、会津藩軍事顧問（砲術指南）であったプロシア人 ヘンリー・スネル の屋敷跡です。スネルは外国人でありながら鶴ヶ城の城下に屋敷を持ち、ちょんまげを結い「平松武兵衛」と名乗っていました。彼はもともとはオランダ公使館に勤務していましたが、新潟に移って、弟のエドワルドとともにスネル商会という武器を扱う会社を設立しました。幕末に長岡藩家老の河井継之助に武器を売り込んだのもスネル兄弟です。その後、会津藩も河井継之助の紹介でスネル商会から武器・弾薬を購入したことから、兄のヘンリーは会津に住むようになったということです。藩主の松平容保からも信頼されるほどで、彼と会津藩との間には深いつながりがあったことがわかります。\n\n出展: 会津若松市内の観光情報 CC BY-ND 2.1",
+                "en": "<b>House ruins of Henry Schnell, who dealt with weapons and ammunitions at Schnell's company</b>\nHenry Schnell was Prussian military advisor (gunnery guidance) of the Aizu clan during the Boshin war period. While Schnell was a foreigner, he had a mansion just below the Tsuru-ga Castle (Wakamatsu Castle). He styled his hair as Samurai style and he referred himself with Japanese name \"Buhe Hiramatsu\". He originally worked at the Dutch Embassy then moved to Niigata and established a company dealing with weapons called Schnell company with his younger brother - Edwald. They also sold weapons to Tsugunosuke Kawai, who were chief retainer of Nagaoka clan at the end of Tokugawa period. After that, Tsugunosuke introduced them to the Aizu clan and they also purchased weapons / ammunitions from Schnell company, so eventually Henry lived in Aizu. The Aizu Lord Katamori trusted him deeply so he had deep connection with the Aizu clan."
+            },
+            "image": ""
+        },
+        {
+            "lat": 37.50787,
+            "lng": 139.948719,
+            "address": {
+                "ja": "福島県会津若松市一箕町八幡墓料78",
+                "en": "78, Yahata-Boryo, Ikki-machi, Aizuwakamatsu, FUKUSHIMA"
+            },
+            "name": {
+                "ja": "妙国寺(ミョウコクジ)",
+                "en": "Myokokuji temple"
+            },
+            "desc": {
+                "ja": "<b>白虎隊士の仮埋葬地</b>\n白虎隊士の飯盛山での自刃後、遺骸は埋葬を許されず、哀れに思った滝沢村の吉田伊惣治が、西軍の目を盗んで最初に埋葬した寺です。戊辰戦争のとき、会津藩が降伏後、藩主松平容保・親子が一ヶ月間謹慎した寺としても有名です。寺宝に日什上人直筆曼荼羅、釈迦涅槃像（刺しゅう）、田中正玄夫人使用什器などがあります。\n\n<a href=\"http://www.aizukanko.com/spot/39/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1\n写真: 会津若松観光ビューロー提供",
+                "en": "<b>Temporary burial place of \"Byakko-tai\" warriors</b>\nIn the Boshin War, youth warriors unit \"Byakko-tai\" committed suicide on Mt.Iimori. Their remains were prohibited to be buried by the West Army (the Imperial Army). However, Isoji Yoshida from Takizawa village felt sorry, so he secretly buried their remains temporarily in this temple. This temple is also famous with the fact that Aizu Lord Katamori Matsudaira and his son were confined for one month here. There are some cultural assets - for example: Mandala drawn by holy priest Nichiju, picture of Buddha Nirvana (embroidery), and so on.\nPHOTO: Aizuwakamatsu Tourist Bureau"
+            },
+            "image": "myokokuji.jpg"
+        },
+        {
+            "lat": 37.504687,
+            "lng": 139.939041,
+            "address": {
+                "ja": "福島県会津若松市蚕養町2-1",
+                "en": "2-1, Kogai-machi, Aizuwakamatsu, FUKUSHIMA"
+            },
+            "name": {
+                "ja": "蚕養国神社(コガイクニジンジャ)",
+                "en": "Kogaikuni shrine"
+            },
+            "desc": {
+                "ja": "<b>養蚕守護の神。紅葉の名所。</b>\n御神徳養蚕守護の神として広く知られ、農、工、商、諸業繁栄、交通安全守神として信仰されています。境内の紅葉は、秋になるととても鮮やかな朱色に染まり、参拝に来た観光客の心を奪います。入口から歩いて進むと石の鳥居が立っており、さらに参道の途中にも赤い鳥居があります。またその奥にも寛弘七年（1010年）に植えられたと伝えられる御神木の峰張桜があり、観光客の記念撮影スポットになっています。\n\n<a href=\"http://www.aizukanko.com/spot/40/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1\n写真: Wikimedia Commonsより",
+                "en": "<b>The Guardian of Sericulture. A good place for seeing autumn leaves.</b>\nIt is widely believed that this shrine is the guardian God of Sericulture, and is also believed to be a God of agriculture, industry, commerce, business prosperity, traffic safety, etc. The maple leaves in the precincts are dyed in vivid vermillion in autumn. As you walk from the entrance, a stone torii-gate stands and there is also another red torii-gate in the middle of the approach. The object enshrined in this shrine is Minehari-sakura cherry tree, which was planted in 1010. This cherry tree is very good place to take memorial photograph.\nPHOTO: From Wikimedia Commons"
+            },
+            "image": "kogaikuni.jpg"
+        },
+        {
+            "lat": 37.513028,
+            "lng": 139.944105,
+            "address": {
+                "ja": "福島県会津若松市一箕町八幡北滝沢228 ",
+                "en": "228, Yahata-KitaTakizawa, Ikki-cho, Aizuwakamatsu, FUKUSHIMA"
+            },
+            "name": {
+                "ja": "大塚山古墳(オオツカヤマコフン)",
+                "en": "Otsuka-yama mound tomb"
+            },
+            "desc": {
+                "ja": "<b>古墳全域が国の史跡</b>\n大塚山山頂に立地する全長114メートルの前方後円墳。福島県内2番目の大きさを誇っています。古墳全域が国の史跡になっており、出土品も一括して国の重要文化財に指定されています。完成時期は四世紀前半と言われています。発掘された副葬品は、東北で初めて出土されたものが多く、現在でも東北では会津大塚山古墳でしか出土していないものもあります。鶴ヶ城内の展示室では、その副葬品の一部を見ることができます。\n\n<a href=\"http://www.aizukanko.com/spot/41/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1\n写真: Wikimedia Commonsより",
+                "en": "<b>The whole area of​the mound tomb is a national historic site</b>\nThis keyhole-shaped tomb with total length of 114 meters is located on Mt.Otsukayama's peak. It boasts the second biggest size in Fukushima Prefecture. The whole area of ​​the tomb has become a national historic site, so all excavated artifacts from the tomb were also designated as a National important cultural asset. The constructed period is said to be the first half of the 4th century. Many excavated burial artifacts were excavated for the first time in Tohoku area. In the exhibition room inside Tsuru-ga Castle (Wakamatsu Castle), you can see some of the excavated burial artifacts\nPHOTO: From Wikimedia Commons"
+            },
+            "image": "otsukayama_aizu.jpg"
+        },
+        {
+            "lat": 37.486827,
+            "lng": 139.933891,
+            "address": {
+                "ja": "福島県会津若松市城東町",
+                "en": "Joto-machi, Aizuwakamatsu, FUKUSHIMA"
+            },
+            "name": {
+                "ja": "佐川官兵衛顕彰碑(サガワカンベエケンショウヒ)",
+                "en": "Honoring monument of Kanbe Sagawa"
+            },
+            "desc": {
+                "ja": "<b>戊辰戦争を戦い抜き、その戦いぶりから「鬼官兵衛」の異名をとった会津藩士</b>\n佐川官兵衛は天保2年（1831年）生まれ。明治10年（1877)没。文武両道に秀で、会津藩京都守護職時代には学校奉行・別選組隊長・諸生組隊長を兼ね、「鬼佐川」「鬼官兵衛と呼ばれていました。鳥羽伏見の戦いで奮戦、戊辰戦争の北越戦では会津軍指揮として、長岡藩河井継之助らと共に各地に転戦。戦後明治7年に警視庁の巡査に応募、明治10年の西南戦争には警視隊隊長として参戦し黒川村で戦死しました。この顕彰碑は平成13年に建立。西南戦争で佐川官兵衛が戦死した地である、熊本県南阿蘇村よりゆかりの大石を譲り受けて建立されたものです。\n\n<a href=\"http://www.aizukanko.com/spot/43/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1\n写真: 会津若松観光ビューロー提供",
+                "en": "<b>Aizu samurai, who fought the Boshin War and took the honor of \"Brave Kanbe\" from the fight</b>\nKanbe Sagawa was born in Edo period 1831, died in Meiji period 1877. He was excellent both in scholarship and martial arts. When Aizu clan was the Military Commissioner of Kyoto, he worked as many key positions. For example - school magistrate, captains of various warrior units, which then he was called \"Brave Sagawa\" or \"Brave Kanbe\". He fought bravely in the Battle of Toba Fushimi(Kyoto) and in Boshin War, he fought in various battlefields with the Aizu Army and friendly troops like the Nagaoka Army. After the Boshin War, he applied to be a police in 1874 and died in Seinan War as chief of police troops at Kurokawa village in Kumamoto. This monument was erected in 2001 and the big stone of the monument was brought from Kumamoto, his dead place.\nPHOTO: Aizuwakamatsu Tourist Bureau"
+            },
+            "image": "kanbe_sagawa.jpg"
+        },
+        {
+            "lat": 37.502121,
+            "lng": 139.927765,
+            "address": {
+                "ja": "福島県会津若松市大町2-1-5",
+                "en": "2-1-5, O-machi, Aizuwakamatsu, FUKUSHIMA"
+            },
+            "name": {
+                "ja": "西軍墓地(セイグンボチ)",
+                "en": "Cemetery of the West Army"
+            },
+            "desc": {
+                "ja": "<b>薩摩、長州兵など150基の墓</b>\n大町の東明寺墓地にあり、戊辰戦争で会津に攻めてきた西軍のうち若松付近で戦死した将兵を埋葬しています。薩摩、長州兵など150基の墓が建っています。1868年の戊辰戦争では、会津藩だけでなく、会津に来攻した西軍にも多くの犠牲者がでました。この墓地は、西軍のうち会津若松付近で戦死した将兵の墓群で、戦争で亡くなった薩摩、長州、大垣、肥州、備州など当時西軍だった人々が静かに眠っています。会津藩にとっては敵であった藩士150名を埋葬した墓地ということを考えると、これも会津藩士の心意気ということができるのではないでしょうか。\n\n<a href=\"http://www.aizukanko.com/spot/45/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1\n写真: 会津若松観光ビューロー提供",
+                "en": "<b>150 tombs including Satsuma, Choshu's imperial warriors</b>\nThis cemetery within Tomyoji cemetery in Omachi. It is a burial site of officers or warriors of the West Army (the Imperial Army), who attacked Aizu during the Boshin War and died near Wakamatsu area. There are 150 tombs of Satsuma and Choshu warriors. During the Boshin War of 1868, there were too many victims of war not only in Aizu clan warriors but also in West Army warriors, who attacked Aizu. This cemetery is for West Army warriors who came from West Japan such as Chochu, Satsuma, Ogaki, Hishu, Bishu etc who died near Wakamatsu. These 150 victims were enemies of Aizu clan but Aizu people buried them kindly...Does this show the kindness of Aizu people?\nPHOTO: Aizuwakamatsu Tourist Bureau"
+            },
+            "image": "west_army_tomb.jpg"
+        },
+        {
+            "lat": 37.504219,
+            "lng": 139.954652,
+            "address": {
+                "ja": "福島県会津若松市一箕町八幡弁天下 (ハイカラさん・あかべぇ「飯盛山下」下車、徒歩5分 磐越自動車道：会津若松ICより約15分)",
+                "en": "Yahata-Bentenshita, Ikki-machi, Aizuwakamatsu, FUKUSHIMA (5 minutes walk from \"Imori-yama shita\" bus stop of \"Haikara-san\" or \"Akabe\")"
+            },
+            "name": {
+                "ja": "白虎隊十九士の墓(ビャッコタイジュウクシノハカ)",
+                "en": "Tombs of 19 warriors of \"Byakko-tai\""
+            },
+            "desc": {
+                "ja": "<b>幕末の大きな時代の流れの中で戊辰に散った白虎隊の霊が眠る</b>\n\"戊辰戦争のおり、16〜17歳の少年たちで編成された白虎士中二番隊20人が戸の口原合戦場から退却し、滝沢峠の間道を通り、戸の口堰の洞門をくぐり飯盛山に辿り着くと、鶴ヶ城の天守閣は黒煙の中に見え隠れして、「城は陥落したか、今は主君のために殉じよう」と、全員が自決しました。20名のなかで1人だけ生き残った 飯沼貞吉 によって、白虎隊の忠義と悲運の物語は広く人々に知られるところとなりました。春と秋の年2回行われる<a href=\"http://www.aizukanko.com/event/110/\">慰霊祭</a>では、白虎隊を偲びその霊を慰める剣舞が奉納されます。\n\n<a href=\"http://www.aizukanko.com/spot/137/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1\n写真: 会津若松観光ビューロー提供",
+                "en": "<b>The warriors of \"Byakko-tai\", who lived through the end of Edo - the ever-changing and turbulent period, lays peacefully here</b>\nIn the Boshin War, 20 warriors of \"Byakko-tai 2nd unit\" organized by youth aged 16 to 17 withdrew from Tonokuchi-hara battlefield. They retreated through Takizawa-toge path, crawled through Tonokuchi-seki cave and arrived at Mt.Imori. They looked down Wakamatsu city from Mt.Imori but the city was concealed by the smoke of war and the state of Tsuru-ga Castle (Wakamatsu Castle) was not well understood. They believed the castle fell so all committed suicide to show their loyalty to the lord. Only Sadakichi Inuma survived as a result, he told this story and \"Byakko-tai\"'s story of loyalty and tragedy which became widely known to people. \"Byakko-tai\" memorial ceremonies are held twice a year in spring and autumn. In the ceremony, swordsman dance is held to comfort the spirits of \"Byakko-tai\".\nPHOTO: Aizuwakamatsu Tourist Bureau"
+            },
+            "image": "byakko19.jpg"
+        },
+        {
+            "lat": 37.479754,
+            "lng": 139.940903,
+            "address": {
+                "ja": "福島県会津若松市北青木13-3 (路線バス「青木」から徒歩10分)",
+                "en": "13-3, Kita-Aoki, Aizuwakamatsu, FUKUSHIMA (10 minutes walk from \"Aoki\" bus stop)"
+            },
+            "name": {
+                "ja": "善龍寺・奈与竹の碑(ゼンリュウジ・ナヨタケノヒ)",
+                "en": "The Monument of Nayotake at Zenryuji temple"
+            },
+            "desc": {
+                "ja": "<b>戊辰戦争で花と散った会津婦女子の精神</b>\n会津藩主・保科正之の会津入部とともに建立され、保科家の元祖筑前守正則の霊を守る保科家の菩提所として発展してきた寺です。家老西郷頼母の妻千重子の;なよたけの風にまかする身ながらもたわまぬ節はありとこそきけ;戊辰戦争で花と散った会津婦道の精神を示すこの有名な辞世を昭和３年、｢なよたけの碑｣として善龍寺に建立されました。碑陰には戊辰戦争で散った２３３名の会津藩の婦人名が刻まれています。　毎年５月１日に奈与竹墓前祭がおこなわれます。奥にある墓地には西郷頼母夫妻の墓や西郷邸で自決した「二十一人の墓」があります。\n\n<a href=\"http://www.aizukanko.com/spot/140/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1\n写真: Wikimedia Commonsより",
+                "en": "<b>The spirit of Aizu women, who scattered like a flower during Boshin War</b>\nThis temple was built together with the Aizu entrance of Aizu Lord Masayuki Hoshina. Masanori Hoshina, who is oldest ancestor of Masayuki, is enshrined here. During Boshin War, Chieko, who was the wife of Tanomo Saigo (Chief retainer of Aizu), composed a farewell poem \"Nayotakeno Kazenimakasuru Minagaramo Tawamanufushiwa Aritokosokike\" which means \"Even though my life is like a weak bamboo that bends easily with a gentle breeze, there are strong clauses that cannot break easily.\" The Monument of Nayotake was built in 1928 at Zenryuji temple to commemorate this well-known poem, which shows Aizu women's brave spirit in the Boshin War. The names of 233 Aizu women who lost their lives in the Boshin War are engraved on the monument. Nayotake memorial ceremony is held here every May 1st. There are tombs of 21 persons who commited suicide in Tanomo Saigo's house, which including his wife, his families and his servants and himself at the cemetery at the back of the monument.\nPHOTO: From Wikimedia Commons"
+            },
+            "image": "nayotake.jpg"
+        },
+        {
+            "lat": 37.48201,
+            "lng": 139.944406,
+            "address": {
+                "ja": "福島県会津若松市花見ヶ丘三丁目 (路線バス「花見が丘」から徒歩20分)",
+                "en": "Hanamiga-Oka 3 chome, Aizuwakamatsu, FUKUSHIMA (20 minutes walk from \"Hanamiga-Oka\" bus stop)"
+            },
+            "name": {
+                "ja": "小田山公園(オダヤマコウエン)",
+                "en": "Odayama park"
+            },
+            "desc": {
+                "ja": "<b>戊辰戦争で西軍が鶴ヶ城へ砲撃した場所</b>\n鶴ヶ城の南東2kmほどのところにある小高い山（372m）で通称小田山公園と呼ばれています。山麓には葦名家ゆかりの名刹古跡があり、山頂には会津藩名家老田中玄宰の墓があります。鶴ヶ城を見下ろせるこの地の利は、戊辰の役では新政府軍に利用され鶴ヶ城への砲撃場所となりました。また、東北側の山腹には、若松第65聯隊・第29聯隊の実弾射撃がありました。現在は公園として整備され、四季を通じて散策が楽しめます。\n\n<a href=\"http://www.aizukanko.com/spot/141/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1\n写真: Wikimedia Commonsより",
+                "en": "<b>The place where the West Army attacked Tsuru-ga Castle (Wakamatsu Castle) with artillery during the Boshin War</b>\nOdayama park is a small mountain (372m height), located about 2km south-east of Tsuru-ga Castle. At the foot of the mountain, there are famous historical temples related to Lord Ashina family and at the summit of the mountain, there is a tomb of Harunaka Tanaka, who was the chief retainer of Aizu clan. It was a good place to look down to Tsuru-ga Castle, so the West Army built an attack position here and attacked the castle with artillery during the Boshin War. After Meiji period, there were shooting training field of Wakamatsu 65th / 25th Infantry Regiment at the north slope of the mountain. Currently it is maintained as a park, which you can enjoy walking through the four seasons.\nPHOTO: From Wikimedia Commons"
+            },
+            "image": "odayama.jpg"
+        },
+        {
+            "lat": 37.484785,
+            "lng": 139.942812,
+            "address": {
+                "ja": "福島県会津若松市花見ヶ丘2丁目 (路線バス「花見ヶ丘」から徒歩10分)",
+                "en": "Hanamiga-Oka 2 chome, Aizuwakamatsu, FUKUSHIMA (10 minutes walk from \"Hanamiga-Oka\" bus stop)"
+            },
+            "name": {
+                "ja": "花見ヶ森廟所(ハナミガモリビョウショ)",
+                "en": "Hanamiga-mori Mausoleum"
+            },
+            "desc": {
+                "ja": "<b>葦名三代が眠ります・・・</b>\n会津の中世を400年にわたって支配していた葦名家三代の廟所です。奥州を代表する戦国大名になった名君16代盛氏、葦名家の全盛期を築き上げた名君17代盛興、若いながら優れた武将と誉れ高い18代盛隆との三基並んだ五輪塔で、空風火水地の五文字が刻されています北側にもう一つの墓（氏名未詳）がありますが、この辺は「花見ヶ丘森廟」と呼ばれ、葦名氏11代〜19代の墓地だったと思われます。またこの南の小田山中には3代〜9代の墓があって「寿山廟」と呼ばれていましたが、現在はよく判りません。\n\n<a href=\"http://www.aizukanko.com/spot/142/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1\n写真: 会津若松観光ビューロー提供",
+                "en": "<b>3 lords of Ashina family lays here</b>\nAsina family ruled the middle age of Aizu over 400 years and there are 3 tombs of Ashina family here. They are tombs of the 16th lord Moriuji, who was the greatest warlord in Tohoku region, 17th lord Morioki, who built the hayday of Ashina family, and 18th lord Moritaka, who was known as brave young warrior. The tombs style are stone pagoda, 5 characters which mean \"Sky\", \"Wind\", \"Fire\", \"Water\" and \"Soil\" are engraved on them. There is another tomb at the north side, but it is unknown whose tomb it is. This place is called \"Hanamiga-mori Mausoleum\", it is believed that there used to be tombs from the 11th lord to the 19th lord here in the past. According to the record, it is said that there was a graveyard from the 3rd lord to the 9th lord called \"Juzan Mausoleum\" in Mt.Odayama on the south side, but details are unknown.\nPHOTO: Aizuwakamatsu Tourist Bureau"
+            },
+            "image": "hanamigamori.jpg"
+        },
+        {
+            "lat": 37.490421,
+            "lng": 139.93049,
+            "address": {
+                "ja": "福島県会津若松市追手町 (ハイカラさん・あかべぇ「北出丸大通り」下車、徒歩1分)",
+                "en": "Ote-machi, Aizuwakamatsu, FUKUSHIMA (1 minute walk from \"Kita-Demaru O-dori\" bus stop of \"Haikara-san\" or \"Akabe\")"
+            },
+            "name": {
+                "ja": "西郷頼母邸跡(サイゴウタノモテイアト)",
+                "en": "Tanomo Saigo House ruins"
+            },
+            "desc": {
+                "ja": "<b>幕末の会津藩家老「西郷頼母」ゆかりの地</b>\n西郷頼母邸跡が鶴ヶ城正面の追手町にあります。西郷家は重臣（藩祖以来）で戊辰戦争の際の当主は国家老1700石の西郷頼母近悳(ちかのり)でした。頼母は田中土佐と共に会津藩主松平容保に京都守護職辞退を進言しました。そのため容保公から怒りを買い、家老職を解任されました。戊辰戦争がおこると、家老職に復帰し、白河口総督として、戦いますが、「白河口の戦い」で敗れ、会津へ戻ります。その後、長男・吉十郎を連れて会津から脱出します。西軍が城下町に乱入したとき、家族ら21人は、屋敷の中で辞世の句を残して自決しました。妻・千重子の辞世の歌｢なよたけの碑｣は墓とともに善龍寺に建っています。\n\n<a href=\"http://www.aizukanko.com/spot/143/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1\n写真: 会津若松観光ビューロー提供",
+                "en": "<b>The house of Tanomo Saigo, who was the chief retainer of Aizu clan at the end of Tokugawa period</b>\nThe house of Tanomo Saigo was at Ote-machi, in front of the Tsuru-ga Castle (Wakamatsu Castle). Saigo family was successive chief vassal of Aizu clan and the chief of the family at the Boshin War period was Chikanori Tanomo Saigo. Together with Tosa Tanaka, Tanomo advised Aizu Lord Katamori Matsudaira that he should decline the position of the Military Commissioner of Kyoto. For that reason, he made Katamori angry and was dismissed from his responsibilities. However, once Boshin War started, he was back to chief retainer, commanded the Battle of Shirakawa-guchi and was defeated. After the defeat, he escaped from Aizu with his son, Kichijuro. When the West Army rushed into Aizu city, all his 21 families committed suicide. His wife Chieko's farewell poem is left in Zenryuji temple as \"The Monument of Nayotake\". Their tombs are also there.\nPHOTO: Aizuwakamatsu Tourist Bureau"
+            },
+            "image": "tanomo_house.jpg"
+        },
+        {
+            "lat": 37.496414,
+            "lng": 139.928996,
+            "address": {
+                "ja": "福島県会津若松市栄町2-12 (路線バス「神明通り」下車、徒歩2分　)",
+                "en": "2-12, Sakae-machi, Aizuwakamatsu, FUKUSHIMA (2 minutes walk from \"Shinmei-dori\" bus stop)"
+            },
+            "name": {
+                "ja": "蒲生氏郷の墓(ガモウウジサトノハカ)",
+                "en": "Tomb of Ujisato Gamo"
+            },
+            "desc": {
+                "ja": "<b>会津若松の基礎を作った文武両道に優れた名将「蒲生氏郷」が眠ります・・・</b>\nいまに至る城下町の整備と産業を興した蒲生氏郷公の墓が会津若松市神明通りの東裏、興徳寺の本堂東側にあります。瑞雲山興徳寺は臨済宗妙心寺派の寺で、秀吉が奥羽仕置のため会津へきたとき三泊したほどの大寺院でした。墓は空風火水地の五文字を刻した五輪塔で、京都大徳寺の本墓から分骨したものと伝えられます。墓前には、「限りあれば吹かねど花は散るものを心短き春の山風」の辞世の歌碑があります。会津史談会が昭和28年に氏郷公360年祭を記念して建てたものです。\n\n<a href=\"http://www.aizukanko.com/spot/144/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1\n写真: Wikimedia Commonsより",
+                "en": "<b>Ujisato Gamo, who was good with literature and martial arts and built the foundation of Aizuwakamatsu lays here</b>\nThe tomb of Ujisato Gamo, who developed the foundation of the castle town and industries up to now is located at the Kotoku-ji temple on the east side of the Shinmei-dori street. Kotokuji temple is a temple of Rinzai sect Myoshinji school and was a big temple and was known that Hideyoshi Toyotomi stayed 3 nights at this temple when he was conquering the Tohoku Region. The tomb is stone pagoda style and 5 characters which mean \"Sky\", \"Wind\", \"Fire\", \"Water\" and \"Soil\" are engraved on it. In front of the tomb, there are monument of Ujisato's farewell poem, saying \"Kagiriareba FukanedoHanawa Chirumonowo KokoroMijikaki HarunoYamakaze\" which means \"Even if the wind does not blow, the spring flowers will be scattered someday but the brief spring wind will scatter the flowers early\". This monument was erected in 1953, celebrating Ujisato's 360th anniversary commemoration of birth.\nPHOTO: From Wikimedia Commons"
+            },
+            "image": "ujisato_gamo_tomb.jpg"
+        },
+        {
+            "lat": 37.496303,
+            "lng": 139.931864,
+            "address": {
+                "ja": "福島県会津若松市栄町4-49付近 (ハイカラさん・あかべぇ「会津若松市役所」下車徒歩5分)",
+                "en": "Around 4-19, Sakae-machi, Aizuwakamatsu, FUKUSHIMA (5 minutes walk from \"Aizu Shiyakusho Mae (City Hall)\" bus stop of \"Haikara-san\" or \"Akabe\")"
+            },
+            "name": {
+                "ja": "甲賀町口門跡（国指定史跡）(コウカマチグチモンアト)",
+                "en": "Koka-machi Gate ruins（Country-designated historic site)"
+            },
+            "desc": {
+                "ja": "<b>若松城下で十六あった郭門中、唯一現存する郭門の名残の石垣です。</b>\n蒲生氏郷は若松の町割りを行い、城下町を武士の住む郭内と町人の住む郭外とに分け、郭内と郭外の間は深い濠と土塁、16の郭門によって仕切られました。外濠明治4年に田畑にする条件で払い下げられ埋め立てられました。甲賀町口の石垣はただ1つ残る郭門の一部です。明治から昭和にかけて、城内にあった鐘撞堂が置かれていましたが、第二次世界大戦後城内に戻されました。　;;\n\n<a href=\"http://www.aizukanko.com/spot/145/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1\n写真: 会津若松観光ビューロー提供",
+                "en": "<b>There were 16 gates in Wakamatsu Castle in the past but now only gate ruins and the stone wall remains.</b>\nUjisato Gamo carried out city planning of Wakamatsu. He divided the city by the castle wall and made Samurais to live within the wall and citizens to live outside of the wall. The inside and outside of the castle wall were partitioned by deep moats, castle walls and 16 gates. The moats were landfilled in 1871 during Meiji era and the lands were sold as farmland. The stone wall of Koka-machi gate are the only remaining gate ruins. From Meiji to Showa era, there was a bell tower that moved from the castle and after World War II, it was moved back and rebuilt inside the castle.\nPHOTO: Aizuwakamatsu Tourist Bureau"
+            },
+            "image": "kokamachi.jpg"
+        },
+        {
+            "lat": 37.49077,
+            "lng": 139.940999,
+            "address": {
+                "ja": "福島県会津若松市花春町 (ハイカラさん・あかべぇ「県立病院前」下車、徒歩3分)",
+                "en": "Hanaharu-machi, Aizuwakamatsu, FUKUSHIMA (3 minutes walk from \"Kenritsu Byoin Mae (Prefectural Hospital)\" bus stop of \"Haikara-san\" or \"Akabe\")"
+            },
+            "name": {
+                "ja": "天寧寺町土塁（国指定史跡）(テンネイジマチドルイ)",
+                "en": "Tenneiji-machi earthwork（Country-designated historic site)"
+            },
+            "desc": {
+                "ja": "<b>若松城の改築に着手した際に築造されたとされる若松城の追手として最重要点。</b>\nこの土塁は蒲生氏郷が会津に入部し文禄元年（１５９２年）若松城の改築に着手した際に築造されたとされ、若松城の追手として最重要点でした。また、外郭と内郭を区画した若松城の土塁の遺構で市内に現存するものはわずかであり、貴重なものです。｢甲賀町口門跡｣、｢天寧寺町土塁｣、｢三の丸堀跡｣の三ヵ所が国指定史跡若松城跡として追加指定を受けました。春になるといち早く桜が咲き誇り、通りを通る人々の目を楽しませるスポットです。\n\n<a href=\"http://www.aizukanko.com/spot/146/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1\n写真: 会津若松観光ビューロー提供",
+                "en": "<b>The most imporatnt defense base of Wakamatsu Castle, was built in 1592</b>\nThis earthwork was founded as the most important defense base of Wakamatsu Castle in 1592 when Ujisato Gamo entered Aizu. Most of the earthworks of the castle have already been lost, therefore this earthwork is very precious. This \"Tenneiji-machi earthwork\" and other two sites, \"Koka-machi Gate ruins\" and \"Sanno-maru Moat ruins\" are designated together as historic site by Country. Here, cherry blossoms will be in full bloom from early spring, entertaining visitors.\nPHOTO: Aizuwakamatsu Tourist Bureau"
+            },
+            "image": "tenneiji_dorui.jpg"
+        },
+        {
+            "lat": 37.513551,
+            "lng": 139.895734,
+            "address": {
+                "ja": "福島県会津若松市神指町高瀬 (路線バス「黒川」下車、徒歩15分磐越自動車道：会津若松ＩＣより約10分)",
+                "en": "Takase, Kozashi-machi, Aizuwakamatsu, FUKUSHIMA (15 minutes walk from \"Kurokawa\" bus stop)"
+            },
+            "name": {
+                "ja": "神指城跡(コウザシジョウアト)",
+                "en": "Ruins of the Kozashi Castle"
+            },
+            "desc": {
+                "ja": "<b>上杉景勝が徳川家康の会津征伐に備えて計画した未完の城跡</b>\n慶長５年（１６００）会津領主上杉景勝は、周囲が開けており大川の水を利用できる神指原の地に築城を始めました。しかし、この築城工事が徳川家康に上杉征伐の口実を与え、数ヵ月後の６月１０日、会津征伐が間近に迫ったことから工事が中止。神指城はそのまま破棄され現在にいたります。　面積は鶴ヶ城の２倍の５５ｈａ。完成すれば奥州を代表する巨大城郭が出現するはずだった神指城ですが、現在は二の丸の一部と本丸跡をわずかに残すのみです。\n\n<a href=\"http://www.aizukanko.com/spot/147/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1\n写真: Wikimedia Commonsより",
+                "en": "<b>Ruin of an unfinished castle, which was planned by Kagekatsu Uesugi in order to stop the invasion of Ieyasu Tokugawa</b>\nIn 1600, the Aizu Load Kagekatsu Uesugi started to construct new castle at vast plain named Kozashiga-hara where it was convinient to use O-kawa river's water. However, this project was noticed immediately by Ieyasu Tokugawa and became a reason of Ieyasu's invasion to Aizu. Therefore, the project was suspended immediately on June 10, five months from the start of construction. Kozashi Castle was abandoned as it was. The castle area is 55ha, twice as large as the Tsuru-ga Castle (Wakamatsu Castle). If it was completed, it should have been one of the largest castle in Tohoku area but now only a part of the central block remains.\nPHOTO: From Wikimedia Commons"
+            },
+            "image": "kouzashi.jpg"
+        },
+        {
+            "lat": 37.489419,
+            "lng": 139.92427,
+            "address": {
+                "ja": "福島県会津若松市米代1-1-55 付近 (路線バス「鶴ヶ城西口」下車、徒歩3分ハイカラさん・あかべぇ「鶴ヶ城入口」下車、徒歩10分)",
+                "en": "Around 1-1-55 Yonedai, Aizuwakamatsu, FUKUSHIMA (3 minutes walk from \"Tsuruga-jo Nishiguchi\" bus stop of \"Haikara-san\" or \"Akabe\")"
+            },
+            "name": {
+                "ja": "藩校日新館天文台跡（市指定史跡）(ハンコウニッシンカンテンモンダイアト)",
+                "en": "Astronomical observatory ruins of the Nisshinkan School (City-designated Historic site)"
+            },
+            "desc": {
+                "ja": "<b>会津藩校日新館の施設で今に残る唯一の遺構</b>\n白虎隊の少年達も文武を学んだ藩校日新館は戊辰戦争で焼失し天文台跡が今に残る唯一の遺構です。基底12間余、台上方5間半、高さ3間半で、天文学習の観測場でした。天文学の授業でどれほど実測用に活用されたか不明ですが、冬至の日には、暦学家や天文師範などが集まって、明年の雲気候や、晴雨考を編んで官に提出しました。\n\n<a href=\"http://www.aizukanko.com/spot/148/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1\n写真: 会津若松観光ビューロー提供",
+                "en": "<b>The only remaining ruins of the Nisshinkan School related facilities</b>\nThe Nisshinkan is a school which was founded by the Aizu clan \"Byakko-tai\" youth warriors also learnt literature and martial arts in this school. All school faclities were burnt down during Boshin War, so astronomical observatory is the only remaining ruins. The size of the foundation was 22m square - the size of the observation stand was 10m square, and the height of it was 6.4m. This facility was used to study astronomy. On the day of the winter solstice, many scholars of calendar and astronomy gathered here to predict the weather and harvest for next year, and submit the results to the government.\nPHOTO: Aizuwakamatsu Tourist Bureau"
+            },
+            "image": "nisshinkan_tenmon.jpg"
+        },
+        {
+            "lat": 37.507351,
+            "lng": 139.90944,
+            "address": {
+                "ja": "福島県会津若松市神指町黒川字薬師川原 (路線バス「神指農協前」下車、徒歩1分)",
+                "en": "Aza-Yakushigawara, Kurokawa, Kozashi-machi, Aizuwakamatsu, FUKUSHIMA (1 minute walk from \"Kozashi Nokyo Mae\" bus stop)"
+            },
+            "name": {
+                "ja": "キリシタン塚(キリシタンヅカ)",
+                "en": "Mound of Christian"
+            },
+            "desc": {
+                "ja": "<b>会津のキリシタンの歴史を伝える</b>\nこの塚には、寛永12年（1635年）12月17日以降，外人バテレンなど多数のキリスト教信者が処刑されたと記されています。蒲生氏郷はレオ氏郷の洗礼名を持つキリシタン大名であったため、知行地であった若松･猪苗代・南会津郡山・三春・白岩・糖沢・二本松・福島にキリスト教が広まりました。しかし、寛永9年（1632年）会津藩15人，白河藩13人，二本松藩14人，若松藩42人のキリシタンが処刑されています。\n\n<a href=\"http://www.aizukanko.com/spot/149/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1\n写真: 会津若松観光ビューロー提供",
+                "en": "<b>This mound tells the history of Christians in Aizu</b>\nAccording to the description engraved on this mound, many Christians and foreign evangelists were executed after December 17th, 1635. Ujisato Gamo was the Christian warload whose christian name was Leo. Christianity had spread in his territory - Wakamatsu, Inawashiro, Minamiaizu, Koriyama, Miharu, Shiraiwa, Nukazawa, Nihonmatsu and Fukushima. However, in 1632, 15 Chiristians in Aizu, 13 in Shirakawa, 14 in Nihonmatsu and 42 in Wakamatsu were executed, because Christianity was prohibited in Edo period.\nPHOTO: Aizuwakamatsu Tourist Bureau"
+            },
+            "image": "christian_zuka.jpg"
+        },
+        {
+            "lat": 37.508585,
+            "lng": 139.891188,
+            "address": {
+                "ja": "福島県会津若松市神指町如来堂 (路線バス「黒川」下車、徒歩20分)",
+                "en": "Nyorai-Do, Kozashi-machi, Aizuwakamatsu, FUKUSHIMA (20 minutes walk from \"Kurokawa\" bus stop)"
+            },
+            "name": {
+                "ja": "如来堂(ニョライドウ)",
+                "en": "Nyorai-Do temple"
+            },
+            "desc": {
+                "ja": "<b>斎藤一を隊長とする会津新選組死闘の地</b>\n新選組殉難の地。母成峠の戦いに敗れた新選組は、北へ向かおうとする土方歳三らと会津に留まろうとする斎藤一らに分かれました。このとき斎藤一は「今、落城せんとするのを見て、志を捨て去る、誠義にあらず」（谷川史郎兵衛日記）と同意した隊士とともに会津へ残りました。明治元年(1868)年９月４日、城下に進出した新政府軍は、如来堂に立てこもる新選組を攻撃し激しい戦いを繰り広げました。このとき全員討ち死にしたとされています、実際は、斎藤一をはじめ数名が生き残りました。\n\n<a href=\"http://www.aizukanko.com/spot/150/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1\n写真: 会津若松観光ビューロー提供",
+                "en": "<b>Shinsen-gumi troops commanded by Hajime Saito fought a fierce battle here</b>\nAfter the defeat at the Battle of the Bonari Pass, the \"Shinsen-gumi\" troops was divided into 2 units - Toshizo Hijikata's unit which were heading north and Hajime Saito's unit which stayed in Aizu. At that time, Hajime insisted, \"It is not justice to abandon the companions who are about to perish\", so he remained in Aizu with his consenting comrades. On September 4th 1868, the West Army advanced into the castle and fought a fierce battle with the \"Shinsen-gumi\" at Nyorai-Do temple. It is said that all \"Shinsen-gumi\" died here, but in fact, several people including Hajime Saito survived.\nPHOTO: Aizuwakamatsu Tourist Bureau"
+            },
+            "image": "shinsengumi_nyoraido.jpg"
+        },
+        {
+            "lat": 37.511858,
+            "lng": 139.906237,
+            "address": {
+                "ja": "福島県会津若松市神指町大字黒川街道西250付近 (路線バス「黒川」下車、徒歩3分)",
+                "en": "Around 250, Oaza-KurokawaKaidoNishi, Kozashi-machi, Aizuwakamatsu, FUKUSHIMA (3 minutes walk from \"Kurokawa\" bus stop)"
+            },
+            "name": {
+                "ja": "中野竹子殉節碑(ナカノタケコジュンセツヒ)",
+                "en": "Memorial monument of Takeko Nakano's loyalty in death"
+            },
+            "desc": {
+                "ja": "<b>戊辰に散った娘子隊軍隊長中野竹子の碑</b>\n戊辰戦争で、柳橋付近で奮戦し戦死した娘子隊軍隊長中野竹子の碑。;昭和１３年に会津若松市神指町黒川の湯川橋に建てられました。 出陣の際に薙刀に結び付けていたという辞世の句「武士（もののふ）の猛き心にくらぶれば数にも入らぬ我が身ながらも」が刻まれています。\n\n<a href=\"http://www.aizukanko.com/spot/158/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1\n写真: 会津若松観光ビューロー提供",
+                "en": "<b>Memorial monument of Takeko Nakano, who was the commanderess of \"Joshi-tai\" (Women troops) died in Boshin War</b>\nThis is a memorial monument of Takeko Nakano, who was the commanderess of the \"Joshi-tai\" (Women troops) and died in a fierce battle around Yanagi-bridge. It was built in 1938, at the side of the Yukawa-biridge in Kurokawa, Kozashi-machi. Her farewell poem, which was \"Mononofuno TakekiKokoroni Kurabureba KazunimoIranu Wagaminagaramo\" means \"Compared to the brave spirit of the Samurai, my spirit is not a big deal, but I still want to fight as much as I can\", is engraved on the monument. When she was fighting, she bounded the fabric with this poem written to her halberd.\nPHOTO: Aizuwakamatsu Tourist Bureau"
+            },
+            "image": "takeko_nakano.jpg"
+        },
+        {
+            "lat": 37.53385,
+            "lng": 139.931982,
+            "address": {
+                "ja": "福島県会津若松市河東町倉橋字藤倉160-2 (磐越自動車道　会津若松ICから車で５分)",
+                "en": "160-2, Aza-Fujikura, Kurahashi, KawaHigashi-machi, Aizuwakamatsu, FUKUSHIMA (5 minutes by car from Aizuwakamatsu IC, Banetsu Highway)"
+            },
+            "name": {
+                "ja": "延命寺地蔵堂(エンメイジジゾウドウ)",
+                "en": "Jizodo (The Hall of Kshitigarbha), Enmeiji Temple"
+            },
+            "desc": {
+                "ja": "<b>徳一大師が建てたと伝えられる国指定重要文化財・建造物 </b>\n市内河東町の西南・藤倉集落にあり、この建物の屋根は唐様の重層建築で周囲に円柱で支えた裳階がつけられ二階建てのように見えるため、「藤倉二階堂」と親しまれています。徳一大師が建てたと伝えられて現在の建造物は、室町初期から中期の作といわれています。 昭和２５年国指定重要文化財・建造物に指定。\n\n<a href=\"http://www.aizukanko.com/spot/159/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1",
+                "en": "<b>National important cultural asset/building, which is believed to be built by the Master Priest Tokuitsu</b>\nThis Hall is located on Fujikura settlement, south-west most area of KawaHigashi-machi. The roof of the hall is Chinese-style and multi-storied and the pent roof supported by circular pillars is installed around the hall, therefore it looks like a two-story building although it is actually a one-story. Because of this, it is called \"Fujikura Nikai-do (Fujikura Two Story Hall)\". It is told built by the Master Priest Tokuitsu, around 14th or 15th century.In 1950, It was designated as Natural important cultural asset/building."
+            },
+            "image": "enmeiji_jizodo.jpg"
+        },
+        {
+            "lat": 37.562637,
+            "lng": 139.933089,
+            "address": {
+                "ja": "福島県会津若松市河東町広野冬木沢 (電車：ＪＲ磐越西線広田駅下車、タクシー５分、又は徒歩約１５分車：磐越自動車道・磐梯河東ＩＣを降り、国道４９号線経由約１０分)",
+                "en": "HironoFuyukizawa, KawaHigashi-machi, Aizuwakamatsu, FUKUSHIMA (15 minutes walk from Hirota station, JR Banetsu-Sai Line)"
+            },
+            "name": {
+                "ja": "八葉寺(ハチヨウジ)",
+                "en": "Hachiyoji temple"
+            },
+            "desc": {
+                "ja": "<b>会津高野山とも呼ばれる由緒あるお寺。会津高野山参りや空也念仏踊りで有名</b>\n会津高野山とも呼ばれる由緒あるお寺で、中央にある阿弥陀堂は昭和２５年に国指定重要文化財・建造物に指定されました。空也上人により康保元年（964）に建立されたと伝えられ、文禄年間に再建されました。この地方には、古くから通称「木製五輪塔」と呼ばれる小さな塔に、亡くなられた親族の遺品などを入れて奉納し供養する、という今では全国でここだけに残る風習があり､一万四千点を超える五輪塔は、境内の舎利殿に納められています。８月の会津の高野山参り（会津地方に古く伝わる盆迎えの御参り）や空也念仏踊り（県重要無形民俗文化財指定）が有名です。\n\n<a href=\"http://www.aizukanko.com/spot/161/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1\n写真: Wikimedia Commonsより",
+                "en": "<b>A historic temple called Aizu Koyasan. Famous for Aizu Koyasan pilgrimage and Kuya dancing prayer to Amitabha</b>\nThe Amidado (The Hall of Amitabha) at the center of the temple, was designated as National important cultural asset/building in 1950. It is said that it was erected in 964 by the Priest Kuya and was rebuilt around 1590s. In Aizu area, there is a mysterious custom that people in this area enshrined wooden pagoda which stores the remains of the deceased family, in this temple. There are over 14,000 wooden pagodas enshirined in Shari-den building of this temple. It is famous for Aizu Koyasan pilgrimage in August (Welcome ceremony of the ancestors' spirits who returns from the heaven) or Kuya dancing prayer to Amitabha (Prefecture-designated important intangible folk cultural asset).\nPHOTO: From Wikimedia Commons"
+            },
+            "image": "hachiyoji.jpg"
+        },
+        {
+            "lat": 37.533212,
+            "lng": 139.935694,
+            "address": {
+                "ja": "福島県会津若松市河東町倉橋字藤倉 (集落の東側) (磐越自動車道　会津若松ＩＣより車で10分 )",
+                "en": "Aza-Fujikura, Kurahashi, KawaHigashi-machi, Aizuwakamatsu, FUKUSHIMA (10 minutes by car from Aizuwakamatsu IC, Banetsu Highway)"
+            },
+            "name": {
+                "ja": "皆鶴姫の碑(ミナヅルヒメノヒ)",
+                "en": "Monument of Princess Minazuru"
+            },
+            "desc": {
+                "ja": "<b>源義経と皆鶴姫の悲恋を今に伝えます・・・</b>\n市内河東町藤倉集落の東に、源義経と皆鶴姫の悲恋物語を伝える碑があります。平家打倒を願う義経は、鬼一法眼の兵法書を学ぶために、義理の娘皆鶴姫に近づき恋仲になり、義経は兵法書をひそかに写し取ることに成功しますが、平清盛に気づかれ奥州へ逃げます。姫は、義経の後を慕って藤倉まで来ますが、追いつけないと知り、難波池に身を投げてしまいます。義経は、磐梯町の大寺でこれを知り姫を池のほとりに葬って墓を築いたとされます。;義経に再会できず空しいままなくなった皆鶴姫は、他の人にはこのような別離の気持ちを味合わせたくないとして、参詣する人に良縁を授けると今日でも信じられています。\n\n<a href=\"http://www.aizukanko.com/spot/163/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1\n写真: 会津若松観光ビューロー提供",
+                "en": "<b>At the east edge of Fujikura settlement, this monument tells a sad love story of Yoshitsune Minamoto and Princess Minazuru</b>\nTo overthrow the Heike clan, Yoshitsune must learn art of war from Hogen Kiichi. He went for it and fell in love with Hogen's daughter, Princess Minazuru. Yoshitsune succeeded to copy the book of art of war from Hogen but Kiyomori Taira, the chief of the Heike clan noticed him, so he escaped to Tohoku region. The Princess chased him and came to Tohoku but she realized she could not catch up with him, so she drowned herself in Namba-pond. Yoshitsune noticed her death later and he buried her near the pond and built her tomb. As Princess Minazuru know well the sad feelings of those who can not meet loved ones, if people pray to her spirit, she is said to give that person a good love affair.\nPHOTO: Aizuwakamatsu Tourist Bureau"
+            },
+            "image": "minazuru.jpg"
+        },
+        {
+            "lat": 37.52147,
+            "lng": 139.859433,
+            "address": {
+                "ja": "福島県会津若松市北会津町田村山字塚越 (会津若松駅から車で20分磐越自動車道新鶴スマートICより5分)",
+                "en": "Aza-Tsukagoe, Tamurayama, KitaAizu-machi, Aizuwakamatsu, FUKUSHIMA (10 minutes by car from Aizuwakamatsu station)"
+            },
+            "name": {
+                "ja": "田村山古墳(タムラヤマコフン)",
+                "en": "Tamura-yama mound tomb"
+            },
+            "desc": {
+                "ja": "<b>「古事記」に掲載された東北唯−の地名。多くの謎を秘めています！</b>\n田村山古墳は全長24.85m、高さ2.15m程の前方後円墳です。1200年以上前に築かれ、東北では珍しい内行花文鏡、直刀などが出土しました。直刀は、県の重要文化財に指定されています。「古事記」に掲載された東北唯−の地名で、四道将軍伝説や坂上田村麻呂にまつわる伝説など、多くの謎を秘めています。\n\n<a href=\"http://www.aizukanko.com/spot/165/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1\n写真: 会津若松観光ビューロー提供",
+                "en": "<b>Mysterious old mound tomb, which is the only named place in Tohoku written in \"Kojiki (the history book in 8 century)\"</b>\nTamura-yama mound tomb is a Key-hole shaped mound tomb, which length is 24.85m and height is 2.15m. It was erected over 1200 years ago, the flower pattern copper mirror,  the straight sword were found as burial goods. These burial goods are very rare in the Tohoku region, the straight sword was designated as Prefecture's important cultural asset. This mound tomb's name was the only named place in Tohoku region which is found in \"Kojiki (the history book in 8 century)\", there are some mysterious legends of the four Generals of Conquerors or the General Tamuramaro Sakanoue.\nPHOTO: Aizuwakamatsu Tourist Bureau"
+            },
+            "image": "tamurayama_kofun.jpg"
+        },
+        {
+            "lat": 37.479882,
+            "lng": 139.944111,
+            "address": {
+                "ja": "福島県会津若松市花見ヶ丘三丁目 (路線バス「花見ヶ丘」下車、徒歩20分)",
+                "en": "HanamigaOka 3 chome, Aizuwakamatsu, FUKUSHIMA (20 minutes walk from \"HanamigaOka\" bus stop)"
+            },
+            "name": {
+                "ja": "田中玄宰の墓(タナカハルナカノハカ)",
+                "en": "Tomb of Harunaka Tanaka"
+            },
+            "desc": {
+                "ja": "<b>会津藩家老で三代の藩主に仕えた名宰相が眠ります・・・</b>\n会津藩家老で三代の藩主に仕えた名宰相。34歳で家老に任じられた際、会津藩は天明の大飢饉でした。玄宰は藩主容頌に領民の救済と藩政の改革を願い出たが受け入れられず、一時病と称して辞職。その間兵学や経済について研究し、一年後復権の際に藩政の大改革「天明の改革」を提言し大きな成果をあげました。また、藩校「日新館」を創設、会津藩が文武ともに天下の雄藩となる基礎を築きました。会津藩樺太出兵の最中、61歳でこの世を去りました。「わが骨は鶴ヶ城と日新館の見えるところに埋めよ」と遺言し、墓はそれらの見渡せる小田山の山頂にあります。\n\n<a href=\"http://www.aizukanko.com/spot/205/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1\n写真: 会津若松観光ビューロー提供",
+                "en": "<b>The chief retainer who served to 3 successive Aizu Lords lays here</b>\nHarunaka Tanaka was the chief retainer who served 3 successive Aizu Lords. When he was appointed to chief retainer, the Aizu area was under the Great famine during Tenmei period. Harunaka advocated to the the Aizu Lord Katanobu both assistance to the people and political reform, but these were rejected. Therefore, he insisted that he was sick and resigned temporarily due to that reason. He studied economics and strategies during the period of leave and when he returned to work a year later, he carried out political reforms and achieved significant results. He built a new school \"Nisshinkan\", and thanks to that, Aizu clan became a powerful clan in both politics and military affairs. He died at the age of 61 during the subjugation to Sakhalin of the Aizu clan. He said \"I want my tomb to be made in the place where the Tsuru-ga Castle (Wakamatsu Castle) and the Nisshinkan school can be seen\", and based on this request, his tomb is at the top of Odayama.\nPHOTO: Aizuwakamatsu Tourist Bureau"
+            },
+            "image": "harunaka_tanaka.jpg"
+        },
+        {
+            "lat": 37.494937,
+            "lng": 139.950671,
+            "address": {
+                "ja": "福島県会津若松市慶山2-7-23 (ハイカラさん・あかべぇ「慶山」下車 徒歩15分  )",
+                "en": "2-7-23 Keizan, Aizuwakamatsu, FUKUSHIMA (15 minutes walk from \"Keizan\" bus stop of \"Haikara-san\" or \"Akabe\")"
+            },
+            "name": {
+                "ja": "大龍寺(ダイリュウジ)",
+                "en": "Dairyuji temple"
+            },
+            "desc": {
+                "ja": "<b>藩祖保科正之によって開かれた由緒あるお寺。本堂には幽霊の足跡が・・</b>\n宝雲山と号し、保科正之が会津に転封となった時会津に移転してきた「お供寺」の一つです。当時は慶山寺という無住の寺で、そこに山形より正之に従って会津入りした機外禅師が入って開山した由緒あるお寺です。礼法小笠原の祖、小笠原長時などの墓や本堂には幽霊の足跡があります。京都高尾・嵐山より移植した「大龍寺のかえで」や、目黒浄定作の庭園も見事です。\n\n出展: 会津若松市内の観光情報 CC BY-ND 2.1",
+                "en": "<b>A historical temple built by the first Lord Masayuki Hoshina. The footprint of Ghost is in the Main Hall</b>\nDairyuji temple is one of the temples which were moved to Aizu together at the same time when Masayuki moved to Aizu. Prefixed name of this temple is \"Houn-zan\". At that time, it was a temple of non-residence called Keizanji, then the Zen master Kigai, who entered Aizu according to Masayuki from Yamagata, rebuilt and renamed the temple. Tomb of Nagatoki Ogasawara, who is known as the founder of Ogasawara-style etiquette is here and the footprint of the ghost is at the Main Hall. \"Dairyuji Maple\" which was moved from Kyoto Arashiyama is very famous and the garden created by Jotei Meguro is excellent too."
+            },
+            "image": ""
+        },
+        {
+            "lat": 37.490221,
+            "lng": 139.95315,
+            "address": {
+                "ja": "福島県会津若松市東山町石山天寧208 (ハイカラさん・あかべぇ「奴郎ヶ前」下車、徒歩15分)",
+                "en": "208 Tennei, Ishiyama, Higashiyama-machi, Aizuwakamatsu, FUKUSHIMA (15 minutes walk from \"Yarogamae\" bus stop of \"Haikara-san\" or \"Akabe\")"
+            },
+            "name": {
+                "ja": "天寧寺・近藤勇の墓(テンネイジ・コンドウイサミノハカ)",
+                "en": "Tenneiji temple and tomb of Isami Kondo"
+            },
+            "desc": {
+                "ja": "<b>11代葦名盛信の建立により創設。裏手の墓地には新選組の近藤勇の墓があります</b>\n応永28年（1422）、会津にきた傑堂禅師が11代芦名盛信の建立により創立した寺。かつては会津曹洞宗の僧録司で、末寺33カ寺、12の寺院をかぞえました。のちに伊達氏の侵攻にあって焼けたため、芦名氏の菩提寺としての面影は、本堂の礎石にわずかに残るのみです。　天寧寺の裏手の墓地には新選組の近藤勇の墓があります。土方歳三が遺髪などを持っていて会津戦の折、ここに仮埋葬したといいます。４月２５日の近藤勇の命日には、墓前祭りが開催されます。また、藩主松平容保が京都守護職にあった際の国家老で、戊辰戦争の責任者となり明治2年に切腹した萱野権兵衛と、その次男郡長正の墓もあります。\n\n<a href=\"http://www.aizukanko.com/spot/207/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1\n写真: Wikimedia Commonsより",
+                "en": "<b>11th Lord Moriuji Ashina built the temple. tomb of Isami Kondo, the chief of \"Shinsen-gumi\" troops, is at the cemetery</b>\nAccording to the 11th Aizu Lord Morinobu Ashina's request, this temple was built by the Zen Master Ketsudo in 1422. The temple was once the headquarter of the Aizu Soto sect, which had 12 branch temples and 33 local temples. During Date family's invasion to Aizu, the temple was burned so only the ruin of the stone foundation of the temple during Ashina period can be seen today. In the cemetery at the back of Tenneiji temple, there is a tomb of Isami Kondo, the chief of \"Shinsen-gumi\" troops. The sub leader Toshizo Hijikata brought his deceased hair to Aizu and buried it here. The memorial service is held every April 25th, the death day of Isami. There are also tombs of Gonbe Kayano, who was the chief retainer of Aizu and who was killed by Harakiri to take responsibility for the Boshin War and of his son, Nagamasa Kori.\nPHOTO: From Wikimedia Commons"
+            },
+            "image": "isami_kondo.jpg"
+        },
+        {
+            "lat": 37.498951,
+            "lng": 139.926086,
+            "address": {
+                "ja": "福島県会津若松市大町一丁目1-38 (ハイカラさん・あかべぇ「七日町白木屋」下車すぐ)",
+                "en": "1-38 O-machi 1 chome, Aizuwakamatsu, FUKUSHIMA (Near from \"Nanokamachi Shirakiya\" bus stop of \"Haikara-san\" or \"Akabe\")"
+            },
+            "name": {
+                "ja": "清水屋旅館跡(シミズヤリョカンアト)",
+                "en": "Ruins of Shimizuya Inn"
+            },
+            "desc": {
+                "ja": "<b>新選組副長土方歳三や吉田松陰等が宿泊した宿の跡</b>\n新選組副長土方歳三が滞在した宿。宇都宮城をめぐる攻防で足を負傷した土方歳三は、会津藩士秋月登之助が手配した当時格式の高かったこの宿屋に宿泊し、治療しました。このほか、1852年に吉田松陰が東北紀行の途中に宿泊しています。現在は大東銀行会津支店となっています。\n\n<a href=\"http://www.aizukanko.com/spot/209/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1\n写真: 会津若松観光ビューロー提供",
+                "en": "<b>The ruins of the inn, which Shoin Yoshida or Toshizo Hijikata stayed</b>\nThe inn which Toshizo Hijikata, who was the sub leader of \"Shinsen-gumi\" troops, stayed. Toshizo was wounded at his leg during the battle of Utsunomiya Castle so Aizu officer Noborinosuke Aikizuki reserved this luxury inn for Toshizo. He stayed at the inn and received treatment. On another, Shoin Yoshida, who are known as philosopher at the end of Edo era, stayed at this inn in 1852 during his Tohoku trip. Till today, Daito bank Aizu branch is here.\nPHOTO: Aizuwakamatsu Tourist Bureau"
+            },
+            "image": "shimizuya_inn.jpg"
+        },
+        {
+            "lat": 37.475948,
+            "lng": 139.882414,
+            "address": {
+                "ja": "福島県会津若松市北会津町両堂字宮の下 ((バス)ピカリン号「両堂前」下車( 車 )磐越自動車道、会津若松ＩＣから約２５分)",
+                "en": "Aza-Miyanoshita, Ryodo, KitaAizu-machi, Aizuwakamatsu, FUKUSHIMA (Around \"Ryodo Mae\" bus stop of \"Pikarin-go\")"
+            },
+            "name": {
+                "ja": "両堂不動尊(リョウドウフドウソン)",
+                "en": "Ryodo Fudoson temple"
+            },
+            "desc": {
+                "ja": "<b>眼病に霊験あらたか。日本三所の不動明王と伝えられています。</b>\n古くは、不動堂と太子堂が並んでいたので 二堂村といわれています。 両堂の地名もこの二つの堂に由来しています。日本三所の不動明王と伝えられていますが、創建年代、 開山については定かでなく、 眼病に霊験あらたかで、伝説なども多く残っています。9月3日の例大祭には、夜店が並び賑わいを見せており、かつては、お籠り堂で願かけ籠りをしたり、玄如節のかけ合いなどをしたといいます。\n\n<a href=\"http://www.aizukanko.com/spot/213/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1\n写真: 会津若松観光ビューロー提供",
+                "en": "<b>Temple with mysterious power to heal eye diseases. One of the three famous Acala in Japan.</b>\nOnce upon a time this settlement was called \"Nido Village (Village of two halls)\", because there were two temple halls, \"Fudo-do (Hall of Acala)\" and \"Taishi-do (Hall of Prince)\". The current settlement name \"Ryodo\" also came from these two halls. It is said this temple's statue of Acala is one of the three famous Acala in Japan. However it is unclear when the temple was built. It is said this temple has mysterious power to heal eye deseases, and there are some legends of eyes being healed. Regular celemony is held every September 3rd and during the celemony, a night fair with many food carts are open.\nPHOTO: Aizuwakamatsu Tourist Bureau"
+            },
+            "image": "ryodo_fudo.jpg"
+        },
+        {
+            "lat": 37.490319,
+            "lng": 139.867287,
+            "address": {
+                "ja": "福島県会津若松市北会津町寺堀字四百苅 ((車)磐越自動車道、会津若松ＩＣから約２５分)",
+                "en": "Aza-Yonhyakugari, Terahori, KitaAizu-machi, Aizuwakamatsu, FUKUSHIMA (25 minutes by car from Aizuwakamatsu IC, Banetsu Highway)"
+            },
+            "name": {
+                "ja": "多門院毘沙門天像 (タモンインビシャモンテンゾウ)",
+                "en": "Statue of Vaisravana at Tamonin temple"
+            },
+            "desc": {
+                "ja": "<b>洪水で流れついたと伝えられる毘沙門天像</b>\n洪水のとき流れつき、昆沙門洞の湧水にうかびあがっていたのを多門院中興の僧本行が拾いあげ、本堂に安置したものと伝えられています。 高さは1m程の寄木造りで、布張に漆をかけ、金箔をおいた極彩色のこの像は、江戸時代の作と推定されています。\n\n<a href=\"http://www.aizukanko.com/spot/215/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1\n写真: 会津若松観光ビューロー提供",
+                "en": "<b>The statue of Vaisravana, which flowed here during the flood</b>\nAt the time of the flood, it is said that this statue of Vaisravana had flowed here and floated above the pond in the cave. The monk named Hongyo found it and set it at the main hall of this temple. The height of the statue is about 1m, made by several wooden parts, wrapped by cloth, painted by lacquer and gilded. It is presumed to be a work in the Edo period.\nPHOTO: Aizuwakamatsu Tourist Bureau"
+            },
+            "image": "tamonin_bisyamon.jpg"
+        },
+        {
+            "lat": 37.490577,
+            "lng": 139.926564,
+            "address": {
+                "ja": "福島県会津若松市山鹿町1-25 (路線バス「鶴ヶ城西口」下車、徒歩3分ハイカラさん・あかべぇ「鶴ヶ城入口」下車、徒歩10分)",
+                "en": "1-25 Yamaga-machi, Aizuwakamatsu, FUKUSHIMA (3 minutes walk from \"Tsuru-ga Jo Nishiguchi\" bus stop)"
+            },
+            "name": {
+                "ja": "直江兼続屋敷跡・山鹿素行生誕地(ナオエカネツグヤシキアト・ヤマガソコウタンジョウノチ)",
+                "en": "Ruins of House of Kanetsugu Naoe / Born place of Soko Yamaga"
+            },
+            "desc": {
+                "ja": "<b>上杉景勝の執政「直江兼続」と江戸時代の代表的兵学者「山鹿素行」ゆかりの地</b>\n蒲生時代からの一等地で、上杉景勝の執政 直江兼続もここに住まいしていました。関ヶ原の戦い後、上杉家は米沢に移されました。また、後に江戸時代の代表的兵学者、山鹿素行が生まれた場所でもあります。素行の誕生地を記念した碑石は地元の自然石で「山鹿素行誕生地　大正15年春　元帥伯爵東郷平八郎書」と雄渾な文字が刻まれています。素行は幕末の思想家達に与えた影響も大きく、また討ち入りで有名な赤穂義士を教育した人物でもあります。\n\n<a href=\"http://www.aizukanko.com/spot/224/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1\n写真: 会津若松観光ビューロー提供",
+                "en": "<b>The place which was related to Kanetsugu Naoe, who served Kagekatsu Uesugi as a consul and Soko Yamaga, who was the scholar of the art of war in Edo era</b>\nThis place is a prime location even from Gamo family period, Kanetsugu Naoe, who served Kagekatsu Uesugi as a consul, lived here in his Aizu days. After the battle of Sekigahara, Uesugi family left Aizu and moved to Yonezawa. Later, in Edo era, Soko Yamaga, who is known as the great scholar of the art of war, was born here. The memorial monument of Soko is made of natual stone of Aizu, the message \"The born place of Soko Yamaga: Written by Count Heihaciro Togo, the Marshall of the Army, in Spring 1926\" is engraved on it. Soko had large influence for the philosophers at the end of Edo era and also, he educated famous \"Ako Gishi (Ako warriors of loyalty)\".\nPHOTO: Aizuwakamatsu Tourist Bureau"
+            },
+            "image": "kanetsugu_soko.jpg"
+        },
+        {
+            "lat": 37.474875,
+            "lng": 139.904623,
+            "address": {
+                "ja": "福島県会津若松市門田町飯寺村東 (路線バス「飯寺」下車、徒歩5分 )",
+                "en": "MuraHigashi, Niidera, Monden-machi, Aizuwakamatsu, FUKUSHIMA (5 minutes walk from \"Niidera\" bus stop)"
+            },
+            "name": {
+                "ja": "長岡藩士殉節の碑(ナガオカハンシジュンセツノヒ)",
+                "en": "Memorial monument of the Nagaoka clan warriors' loyalty in death"
+            },
+            "desc": {
+                "ja": "<b>戊辰戦争で戦死した長岡藩藩士山本帯刀隊長以下44名を弔う殉節の碑</b>\n戊辰戦争時、長岡城落城後、長岡藩藩士山本帯刀を隊長とする一隊は八十里峠の難関を越えて会津に入り奮戦しました。しかし早朝の濃霧の中飯寺河原で新政府軍に包囲され、隊長以下44名が戦死しました。明治23年村民が供養の碑を建てて霊を弔いましたが、その後昭和31年会津史談会が新たに殉節の碑を建てて供養しました。長岡藩士殉節のある本光寺は来迎山と号し、天平12年（740）開基、開山は行基菩薩と伝えられています。\n\n<a href=\"http://www.aizukanko.com/spot/225/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1\n写真: 会津若松観光ビューロー提供",
+                "en": "<b>Memorial monument of loyalty, of the Nagaoka clan's 44 warriors who died in Boshin War, including the Chief Tatewaki Yamomoto</b>\nAfter the fall of the Nagaoka Castle during the Boshin War, the unit of Nagaoka clan warriors commanded by Tatewaki Yamamoto ran through the Hachijuri Pass and got into Aizu. However, they were surrounded by the West Army in the early morning thick fog at Niidera Kawara, 44 warriors including Tatewaki died in the battle. In Meiji period, 1890, the villagers built a cenotaph here and in 1898, the Aizu historic association built a new monument of loyalty for Nagaoka clan warriors. This monument is at Hongoji temple, which prefixed name is \"Raigo-san\" and was erected in 740 by the High Priest Gyoki.\nPHOTO: Aizuwakamatsu Tourist Bureau"
+            },
+            "image": "nagaoka_clan_memorial.jpg"
+        },
+        {
+            "lat": 37.500636,
+            "lng": 139.919,
+            "address": {
+                "ja": "福島県会津若松市七日町4-20 (ハイカラさん・あかべぇ「七日町駅前」下車すぐ )",
+                "en": "4-20 Nanoka-machi, Aizuwakamatsu, FUKUSHIMA (Near from \"Nanokamachi Ekimae\" bus stop of \"Haikara-san\" or \"Akabe\")"
+            },
+            "name": {
+                "ja": "阿弥陀寺・御三階(アミダジ・オサンガイ)",
+                "en": "Osangai (3 floors) at Amidaji temple"
+            },
+            "desc": {
+                "ja": "<b>かつては鶴ヶ城本丸内にあり密議の場所として使われた建物。</b>\n御三階はかつては鶴ヶ城本丸内にあった建物です。外観上は三階ですが、内部が四層になっており密議の場所として使用されたといわれています。明治3年本丸にあった鶴ヶ城御三階は阿弥陀寺にうつされ、仮本堂として使用されました。また阿弥陀寺には、戊辰戦争戦死者が埋葬されており、斉藤一の墓、萱野権兵衛遥拝碑もあります。\n\n<a href=\"http://www.aizukanko.com/spot/226/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1\n写真: 会津若松観光ビューロー提供",
+                "en": "<b>This building was once inside of the Tsuru-ga Castle (Wakamatsu Castle), and used as secret conference</b>\nOsangai (3 floors) is the building which was once inside of the Tsuru-ga Castle (Wakamatsu Castle). It looks as if there are 3 floors from outside but actually it has 4 floors, the secret floor was used for secret conferences. In 1870, the building was moved from the castle to Amidaji temple and was used as a temporal main hall. Many victims of the Boshin War are buried in Amidaji temple, there are tomb of Hajime Saito or the memorial monument of Gonbe Kayano.\nPHOTO: Aizuwakamatsu Tourist Bureau"
+            },
+            "image": "osangai.jpg"
+        },
+        {
+            "lat": 37.490549,
+            "lng": 139.930072,
+            "address": {
+                "ja": "福島県会津若松市追手町6-6 (ハイカラさん・あかべぇ「鶴ヶ城入口」下車、徒歩3分)",
+                "en": "6-6 Ote-machi, Aizuwakamatsu, FUKUSHIMA (3 minutes walk from \"Tsuru-ga Jo Iriguchi\" bus stop of \"Haikara-san\" or \"Akabe\")"
+            },
+            "name": {
+                "ja": "白露庭(ハクロテイ)",
+                "en": "Hakuro-tei garden"
+            },
+            "desc": {
+                "ja": "<b>遠州流庭園としても名高い会津藩家老・内藤家の屋敷跡</b>\n会津藩家老・内藤家の屋敷跡で遠州流庭園としても名高い。明治以後は裁判所の前庭となっているが、昔の家老邸の名庭だった面影をとどめている。ヒマラヤスギ、トウカエデの高木、ゴヨウマツ、キャラボク、ツツジ等の多種の中低木で構成されている。鶴ヶ城玄関口の歴史的にも貴重な緑地である。\n\n<a href=\"http://www.aizukanko.com/spot/237/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1\n写真: 会津若松観光ビューロー提供",
+                "en": "<b>This garden is ruins of Naito family (the chief retainer family of Aizu) House and is famous as Onshu-style garden</b>\nThis garden is ruins of Naito family (the chief retainer family of Aizu) House and is famous as Onshu-style garden. It became the front yard of the Court after Meiji period but you can find the traces that was part of the Samurai residence even in today. There are several botanical species - the high trees like Himalayan cedar or Acer Buergerianum, the low trees like Japanese white pine, Taxus cuspidata or Azalea. This garden is precious green area in the front of the Tsuru-ga Castle.\nPHOTO: Aizuwakamatsu Tourist Bureau"
+            },
+            "image": "hakurotei.jpg"
+        },
+        {
+            "lat": 37.475454,
+            "lng": 139.982386,
+            "address": {
+                "ja": "福島県会津若松市",
+                "en": "Aizuwakamatsu, FUKUSHIMA"
+            },
+            "name": {
+                "ja": "おけいの墓(オケイノハカ)",
+                "en": "Tomb of Okei"
+            },
+            "desc": {
+                "ja": "<b>日本人女性初のアメリカ移民「おけい」の墓</b>\nおけいは、会津藩軍事顧問のプロシア人、ヘンリー・スネル家の子守役でした。戊辰戦争後、スネルをリーダーとする会津藩士らとともにカリフォルニアに入植しましたが、開拓に失敗、移民団は離散してしまいました。残されたおけいは、アメリカ人に引き取られましたが、熱病にかかり、19歳の短い生涯を終えました。カリフォルニア州ゴールドヒルと同様の墓が背あぶり山にたてられています。\n\n<a href=\"http://www.aizukanko.com/spot/473/\" target=\"_blank\">会津観光内解説ページ</a>\n出展: 会津若松市内の観光情報 CC BY-ND 2.1\n写真: 会津若松観光ビューロー提供",
+                "en": "<b>Tomb of Okei, who is known as the first female Japanese immigrant to USA</b>\nOkei worked at the House of Henry Schell (Prussian military advisor of the Aizu clan) as a babysitter. After the Boshin War, She went to California as immigrant, with Aizu officers including Henry Schell as the leader. However the development failed and the immigrants broke up. Okei was adopted by an American family, but she suffered from a fever and died at the age of 19. Her tombs in same style are both in GoldHill in California and Mt.Seaburi in Aizu.\nPHOTO: Aizuwakamatsu Tourist Bureau"
+            },
+            "image": "okei_tomb.jpg"
+        }
+    ]
+}

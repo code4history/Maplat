@@ -1,0 +1,38 @@
+{
+    "app_name": "ぷらっと鴨川運河",
+    "lang": "ja",
+    "fake_gps": true,
+    "fake_center": "竹田駅",
+    "fake_radius": 10,
+    "home_position": [
+        135.756170,
+        34.955801
+    ],
+    "default_zoom": 18,
+    "start_from": "kamogawa_unga",
+    "sources": [
+        {
+            "mapID": "kamogawa_unga",
+            "label": "鴨川運河"
+        },
+        "gsi",
+        "gsi_ortho",
+        {
+            "mapID" : "mapbox",
+            "label" : "Mapbox"
+        },
+        "osm"
+    ],
+    "pois": [
+        {"lng":135.764337703325,"lat":34.9453860402298,"name":"伏見インクライン","html":"<html>\n<head>\n<style type=\"text/css\">\n</style>\n</head>\n<body>\n<img src='./img/1490879543_1500256355.jpg' />\n</body>\n</html>"},
+        {"lng":135.763442516327,"lat":34.9662779520704,"name":"高橋","html":"<html>\n<head>\n<style type=\"text/css\">\n</style>\n</head>\n<body>高瀬舟で伏見稲荷を参拝する人々は、ここで舟を降り東に向かう。</body>\n</html>"},
+        {"lng":135.770233869553,"lat":34.966471379546,"name":"稲荷舟溜り","html":"<html>\n<head>\n<style type=\"text/css\">\n</style>\n</head>\n<body>明治の終わりには姿を消した。</body>\n</html>"},
+        {"lng":135.770394802094,"lat":34.9628577271927,"name":"砂川橋","html":" "},
+        {"lng":135.770303606987,"lat":34.9559992625976,"name":"極楽橋","html":"<html>\n<head>\n<style type=\"text/css\">\n</style>\n</head>\n<body>\n大正11（1922）年建造\n「川嶋睦山書」\n\n\n<img src='./img/1490879543_1501419047.jpg' />\nimg{\n     width: 10%;\n     margin: 0 auto;\n     display: block;\n}\n\n\n</body>\n</html>"},
+        {"lng":135.766779184341,"lat":34.9456665176524,"name":"墨染発電所","html":"<html>\n<head>\n<style type=\"text/css\">img {width :100%;}</style>\n</head>\n<body>\n<iframe width=\"100%\" height=\"100%\" src=\"https://ja.m.wikipedia.org/wiki/墨染発電所\" frameborder=\"0\" >\n</iframe>\n<img src='./img/1490879543_1500256434.jpg' />\n</body>\n</html>"},
+        {"lng":135.767508745193,"lat":34.9450245254222,"name":"墨染舟溜まり","html":"<html>\n<head>\n<style type=\"text/css\">\n</style>\n</head>\n<body>\n<img src='./img/1490879543_1500252108.jpg' />\n<iframe width=\"100%\" height=\"100%\" src=\"https://openmatome.net/matome/view.php?q=14598579779954\" frameborder=\"0\" >\n</iframe>\n</body>\n</html>"},
+        {"lng":135.769944190979,"lat":34.949166606056,"name":"藤森分かれ道","html":"<html>\n<head>\n<style type=\"text/css\">\n</style>\n</head>\n<body>伏見街道と大津街道の分かれ道<img src='./img/1490879543_1500253081.jpg' />\n</body>\n</html>"},
+        {"lng":135.769439935684,"lat":34.947539699127,"name":"墨染　有馬稲荷","html":"<html>\n<head>\n<style type=\"text/css\">\n</style>\n</head>\n<body>\n東山五条から南下してきた伏見街道は、ここで直角に西に曲がる。\n「淀川両岸一覧」より\n<img src='./img/1490879543_1500253289.jpg' />\n</body>\n</html>"},
+        {"lng":135.770148038864,"lat":34.9533084774235,"name":"七瀬川くぐり","html":"<html>\n<head>\n<style type=\"text/css\">\n</style>\n</head>\n<body>七瀬川はここで鴨川運河をくぐる。煉瓦で作られた水路であるが、水面に映る水門が美しい。<img src='./img/1490879543_1500253825.jpg' />img<width: 10%;margin: 0 auto;display: block;>\nmargin: 0 auto;\n     display: block;\n</body>\n</html>"}
+    ]
+}

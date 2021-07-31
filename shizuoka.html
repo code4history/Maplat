@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Maplat vs Stroly 静岡</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css">
+    <link rel="stylesheet" href="https://code4history.github.io/Maplat/dist/maplat.css">
+    <style>
+        #map_div {
+            position: absolute;
+            top: 0px;
+            bottom: 0px;
+            left: 0px;
+            right: 30%;
+        }
+        #ui_div {
+            position: absolute;
+            top: 0px;
+            bottom: 0px;
+            left: 70%;
+            right: 0px;
+        }
+    </style>
+</head>
+<body>
+<div id="map_div"></div>
+<div id="ui_div">
+    <h1>Maplat vs Stroly 静岡</h1>
+    <h2>変換精度 (ピクセル誤差平均)</h2>
+    Maplat: <span id="del_maplat"></span>ピクセル<br>
+    Stroly: <span id="del_stroly"></span>ピクセル<br>
+    <br>
+    <a href="foss4g.html#!s:maplat_2018_nov_14/b:osm/x:-5366490.881828856/y:11784755.272876307/z:3"><img src="parts/turnback.png"></a>
+</div>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sprintf/1.1.1/sprintf.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+<script src="https://m.stroly.com/a/js/app-built.js"></script>
+<script src="https://code4history.github.io/Maplat/dist/maplat.js"></script>
+<script>
+    requirejs(['histmap', 'tin'], function(ol, Tin) {
+        var height = 10524;
+        var width = 24585;
+        var num = 10;
+        var points =[
+            [[7796.410685668943,3713.169005310057],[15440229.1649767,4183436.48622672]],
+            [[7282.090204833981,4563.052227905272],[15439770.542807,4182156.16600294]],
+            [[8740.308424804685,1728.0310922241204],[15441576.3676002,4185949.35353159]],
+            [[8624.27274682617,1276.432672485351],[15441452.1574293,4186491.57870099]],
+            [[8222.851795898436,1050.6335376434308],[15440983.980631,4186868.98652815]],
+            [[7890.425502319333,1307.793703033447],[15440472.8080043,4186522.63124373]]
+        ];
+        // For Stroly
+        var mapping = {
+            mappingLayers: {
+                "mainmap": {
+                    mapping: [],
+                    sw: { lat:0.0, lng: 0.0 },
+                    ne: { lat:0.0, lng: 0.0 },
+                    order: 0,
+                    importance: 0,
+                    boundary: [],
+                    coordinateBoundary: []
+                }
+            }
+        };
+        for (var i = 0;i<points.length;i++) {
+            var mapPoint = {
+                x: points[i][0][0],
+                y: points[i][0][1],
+                lat: 0.0,
+                lng: 0.0,
+                mercX: points[i][1][0],
+                mercY: points[i][1][1]
+            };
+            mapping.mappingLayers.mainmap.mapping.push(mapPoint);
+        }
+        var tin = new Tin({
+            wh: [width, height],
+            points: points
+        });
+        tin.updateTinAsync(true).then(function() {
+            var convert = function(xy) {
+                var start = Date.now();
+                var sll = [illustmap.Logics.ConvXY2LL(xy[0], xy[1], mapping, 0)].map(function(ll){ return [ll.latLng.lng, ll.latLng.lat] })[0];
+                var sxy = [illustmap.Logics.ConvLL2XY(sll[0], sll[1], mapping, 0)].map(function(xy){ return [xy.resultPoint.x, xy.resultPoint.y] })[0];
+                var mid = Date.now();
+                var mll = tin.transform(xy);
+                var mxy = tin.transform(mll, true);
+                var end = Date.now();
+                return [xy, sxy, mxy, mid-start, end-mid];
+            };
+
+            var map = new ol.MaplatMap({
+                div: 'map_div',
+                interactions: ol.interaction.defaults().extend([
+                    new ol.interaction.DragRotateAndZoom({
+                        condition: ol.events.condition.altKeyOnly
+                    })
+                ]),
+                controls: ol.control.defaults()
+            });
+            ol.source.HistMap.createAsync({
+                mapID: 'Paris',
+                url: 'https://ods3.illustmap.org/tiles/_SZOK_Yoshiwara-Numazu/_SZOK_Yoshiwara-Numazu-{z}_{x}_{y}.jpg',
+                width: width,
+                height: height,
+                attr: 'Paris',
+                noload: true
+            },{}).then(function(source) {
+                map.exchangeSource(source);
+
+                var ssum = 0;
+                var msum = 0;
+                var stim = 0;
+                var mtim = 0;
+                var count = 0;
+                var results = [];
+                for (var i=0; i<=num; i++) {
+                    var x = i * width / num;
+                    results[i] = [];
+                    for (var j=0; j<=num; j++) {
+                        var y = j * height / num;
+                        var result = convert([x,y]);
+                        results[i][j] = result;
+                        var sdel = Math.sqrt(Math.pow(result[0][0]-result[1][0], 2) + Math.pow(result[0][1]-result[1][1], 2));
+                        var mdel = Math.sqrt(Math.pow(result[0][0]-result[2][0], 2) + Math.pow(result[0][1]-result[2][1], 2));
+                        if (mdel > 1) console.log(JSON.stringify(result));
+                        ssum = ssum + sdel;
+                        msum = msum + mdel;
+                        stim = stim + result[3];
+                        mtim = mtim + result[4];
+                        count++;
+                    }
+                }
+                console.log("Stroly: " + (ssum / count) + " " + stim);
+                console.log("Maplat: " + (msum / count) + " " + mtim);
+                document.querySelector('#del_maplat').innerText = sprintf('%.11f', msum / count);
+                document.querySelector('#del_stroly').innerText = sprintf('%.11f', ssum / count);
+                for (var i=0; i<=num; i++) {
+                    //xに沿って縦線
+                    var svxys = [];
+                    var mvxys = [];
+                    //yに沿って横線
+                    var shxys = [];
+                    var mhxys = [];
+                    for (var j=0; j<=num; j++) {
+                        svxys.push(source.xy2HistMapCoords(results[j][i][1]));
+                        mvxys.push(source.xy2HistMapCoords(results[j][i][2]));
+                        shxys.push(source.xy2HistMapCoords(results[i][j][1]));
+                        mhxys.push(source.xy2HistMapCoords(results[i][j][2]));
+                    }
+                    var sStyle = new ol.style.Style({
+                        stroke: new ol.style.Stroke({
+                            color: '#ffcc33',
+                            width: 4
+                        })
+                    });
+                    var mStyle = new ol.style.Style({
+                        stroke: new ol.style.Stroke({
+                            color: '#780508',
+                            width: 4
+                        })
+                    });
+                    var src = map.getSource('marker');
+                    var lineFeature = new ol.Feature({
+                        geometry: new ol.geom.LineString(svxys),
+                        name: 'Line'
+                    });
+                    lineFeature.setStyle(sStyle);
+                    src.addFeature(lineFeature);
+                    lineFeature = new ol.Feature({
+                        geometry: new ol.geom.LineString(shxys),
+                        name: 'Line'
+                    });
+                    lineFeature.setStyle(sStyle);
+                    src.addFeature(lineFeature);
+                    lineFeature = new ol.Feature({
+                        geometry: new ol.geom.LineString(mvxys),
+                        name: 'Line'
+                    });
+                    lineFeature.setStyle(mStyle);
+                    src.addFeature(lineFeature);
+                    lineFeature = new ol.Feature({
+                        geometry: new ol.geom.LineString(mhxys),
+                        name: 'Line'
+                    });
+                    lineFeature.setStyle(mStyle);
+                    src.addFeature(lineFeature);
+                }
+            });
+        });
+    });
+</script>
+</html>

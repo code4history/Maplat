@@ -1,0 +1,43 @@
+{
+    "app_name": "京終駅転車台",
+    "lang": "ja",
+    "fake_gps": true,
+    "fake_center": "京終駅",
+    "fake_radius": 10,
+    "home_position": [
+        135.828772,
+        34.669800
+    ],
+    "default_zoom": 17,
+    "start_from": "kyobate_station",
+    "sources": [
+        {
+            "mapID": "kyobate_station",
+            "label": "京終駅(Maplat)"
+        },
+        {
+            "mapID": "kyobate_station_tms",
+            "label": "京終駅(TMS)",
+            "title": "京終駅構内図(TMS技術使用)",
+            "contributor": "京終さろん",
+            "attr": "京終さろん",
+            "maptype": "overlay",
+            "url": "https://t.tilemap.jp/private/kyobate_station_tms/{z}/{x}/{-y}.png",
+            "maxZoom": 19,
+            "envelopLngLats" : [[135.83015098708262, 34.66681721605795], [135.82509423686204, 34.67130045226634], [135.82744651451628, 34.67309011661298], [135.83249031161327, 34.668603264704345]]
+        },
+        {
+            "mapID": "gsi_ortho_6164",
+            "title": "地理院地図オルソ航空写真1961-64",
+            "label": "地理院1961-64",
+            "attr": "国土地理院",
+            "maptype": "base",
+            "url": "https://cyberjapandata.gsi.go.jp/xyz/ort_old10/{z}/{x}/{y}.png",
+            "maxZoom": 17
+        },
+        "osm",
+        "gsi",
+        "gsi_ortho"
+    ],
+    "pois": []
+}

@@ -1,0 +1,61 @@
+{
+    "app_name": {
+        "ja": "延岡市古地図アプリ",
+        "en": "Nobeoka Historical Map App"
+    },
+    "lang": "ja",
+    "fake_gps": true,
+    "fake_center": {
+        "ja": "延岡市",
+        "en": "Nobeoka"
+    },
+    "fake_radius": 10,
+    "home_position": [
+        131.6688678,
+        32.5902584
+    ],
+    "default_zoom": 17,
+    "sources": [
+        {
+            "mapID": "1932_nobeoka",
+            "maptype": "maplat",
+            "algorythm": "tin",
+            "label": {
+                "ja": "市街地図 (1932)",
+                "en": "Urban Map (1932)"
+            }
+        },
+        {
+            "mapID": "1953_nobeoka",
+            "maptype": "maplat",
+            "algorythm": "tin",
+            "label": {
+                "ja": "明細図 (1953)",
+                "en": "Urban Map (1953)"
+            }
+        },
+        {
+            "title": "Nobeoka - Japan City Plans",
+            "contributor": "University of Texas Libraries",
+            "createdAt": "1945-1946",
+            "author": "U.S.Army Map Service",
+            "attr": "Courtesy of the University of Texas Libraries, The University of Texas at Austin, Tilemap.JP.",
+            "label": {
+                "ja": "戦後",
+                "en": "After WW II (1946)"
+            },
+            "mapID": "jcp_maps_nobeoka",
+            "maptype": "overlay",
+            "url": "https://t.tilemap.jp/jcp_maps/nobeoka/{z}/{x}/{-y}.png",
+            "maxZoom": 16
+        },
+        "gsi",
+        "gsi_ortho",
+        {
+            "mapID" : "mapbox",
+            "label" : "Mapbox"
+        },
+        "osm"
+    ],
+    "pois": []
+}

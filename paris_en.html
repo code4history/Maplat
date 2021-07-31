@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Maplat vs Stroly Paris 1784</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css">
+    <link rel="stylesheet" href="https://code4nara.github.io/Maplat/css/ol.css">
+    <style>
+        #map_div {
+            position: absolute;
+            top: 0px;
+            bottom: 0px;
+            left: 0px;
+            right: 30%;
+        }
+        #ui_div {
+            position: absolute;
+            top: 0px;
+            bottom: 0px;
+            left: 70%;
+            right: 0px;
+        }
+    </style>
+</head>
+<body>
+<div id="map_div"></div>
+<div id="ui_div">
+    <h1>Maplat vs Stroly Paris 1784</h1>
+    <h2>Conversion accuracy (average error in pixel)</h2>
+    <h2>Maplat: <span id="del_maplat"></span>pixel</h2>
+    <h2>Stroly: <span id="del_stroly"></span>pixel</h2>
+    <br>
+    <!--a href="shizuoka.html"><img src="parts/go.png"></a-->
+</div>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sprintf/1.1.1/sprintf.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+<script src="https://m.stroly.com/a/js/app-built.js"></script>
+<script src="https://code4nara.github.io/Maplat/dist/maplat.js"></script>
+<script>
+    requirejs(['histmap', 'tin'], function(ol, Tin) {
+        var height = 8424;
+        var width = 11989;
+        var num = 30;
+        var points =[
+            [
+                [
+                    8828,
+                    3154
+                ],
+                [
+                    264986.873479067,
+                    6250052.76702248
+                ]
+            ],
+            [
+                [
+                    4712,
+                    5770
+                ],
+                [
+                    258775.767766614,
+                    6249521.88797447
+                ]
+            ],
+            [
+                [
+                    5072,
+                    6096
+                ],
+                [
+                    259039.117215627,
+                    6248950.40175518
+                ]
+            ],
+            [
+                [
+                    6627,
+                    5475
+                ],
+                [
+                    261170.993707644,
+                    6248802.30501287
+                ]
+            ],
+            [
+                [
+                    5857,
+                    5673
+                ],
+                [
+                    260174.923682803,
+                    6248922.93219814
+                ]
+            ],
+            [
+                [
+                    6164,
+                    7372
+                ],
+                [
+                    259644.641799075,
+                    6246770.75212049
+                ]
+            ],
+            [
+                [
+                    7678,
+                    7286
+                ],
+                [
+                    261547.804370518,
+                    6245990.85556626
+                ]
+            ],
+            [
+                [
+                    4801,
+                    2259
+                ],
+                [
+                    260747.604230658,
+                    6253516.91703094
+                ]
+            ],
+            [
+                [
+                    3831,
+                    2442
+                ],
+                [
+                    259574.176413624,
+                    6253923.58590799
+                ]
+            ],
+            [
+                [
+                    2565,
+                    4109
+                ],
+                [
+                    257160.438379806,
+                    6252656.40329845
+                ]
+            ],
+            [
+                [
+                    3311,
+                    6366
+                ],
+                [
+                    256711.37083863,
+                    6249585.7845528
+                ]
+            ],
+            [
+                [
+                    3316,
+                    5068
+                ],
+                [
+                    257492.46172142,
+                    6251131.24571844
+                ]
+            ],
+            [
+                [
+                    8142,
+                    2694
+                ],
+                [
+                    264479.283838112,
+                    6251044.05973305
+                ]
+            ],
+            [
+                [
+                    8139,
+                    3431
+                ],
+                [
+                    263987.817632809,
+                    6250182.94883627
+                ]
+            ],
+            [
+                [
+                    7314,
+                    1450
+                ],
+                [
+                    264152.037810766,
+                    6252928.7102117
+                ]
+            ],
+            [
+                [
+                    6670,
+                    2262
+                ],
+                [
+                    263035.340600662,
+                    6252345.87787103
+                ]
+            ],
+            [
+                [
+                    7583,
+                    3502
+                ],
+                [
+                    263325.562442432,
+                    6250399.12230689
+                ]
+            ],
+            [
+                [
+                    7119,
+                    4328
+                ],
+                [
+                    262327.103760457,
+                    6249756.57353787
+                ]
+            ],
+            [
+                [
+                    8251,
+                    4964
+                ],
+                [
+                    263250.319742714,
+                    6248460.72704272
+                ]
+            ],
+            [
+                [
+                    8222,
+                    6718
+                ],
+                [
+                    262222.002846565,
+                    6246308.54696506
+                ]
+            ],
+            [
+                [
+                    6052,
+                    2295
+                ],
+                [
+                    262227.9744894,
+                    6252683.87285549
+                ]
+            ],
+            [
+                [
+                    5790,
+                    2349
+                ],
+                [
+                    261898.936969204,
+                    6252796.13974078
+                ]
+            ],
+            [
+                [
+                    5613,
+                    4366
+                ],
+                [
+                    260628.768538246,
+                    6250635.59936315
+                ]
+            ],
+            [
+                [
+                    6489,
+                    4452
+                ],
+                [
+                    261492.268092155,
+                    6249999.02223696
+                ]
+            ]
+        ];
+        // For Stroly
+        var mapping = {
+            mappingLayers: {
+                "mainmap": {
+                    mapping: [],
+                    sw: { lat:0.0, lng: 0.0 },
+                    ne: { lat:0.0, lng: 0.0 },
+                    order: 0,
+                    importance: 0,
+                    boundary: [],
+                    coordinateBoundary: []
+                }
+            }
+        };
+        for (var i = 0;i<points.length;i++) {
+            var mapPoint = {
+                x: points[i][0][0],
+                y: points[i][0][1],
+                lat: 0.0,
+                lng: 0.0,
+                mercX: points[i][1][0],
+                mercY: points[i][1][1]
+            };
+            mapping.mappingLayers.mainmap.mapping.push(mapPoint);
+        }
+        var tin = new Tin({
+            wh: [width, height],
+            points: points
+        });
+        tin.updateTinAsync(true).then(function() {
+            var convert = function(xy) {
+                var start = Date.now();
+                var sll = [illustmap.Logics.ConvXY2LL(xy[0], xy[1], mapping, 0)].map(function(ll){ return [ll.latLng.lng, ll.latLng.lat] })[0];
+                var sxy = [illustmap.Logics.ConvLL2XY(sll[0], sll[1], mapping, 0)].map(function(xy){ return [xy.resultPoint.x, xy.resultPoint.y] })[0];
+                var mid = Date.now();
+                var mll = tin.transform(xy);
+                var mxy = tin.transform(mll, true);
+                var end = Date.now();
+                return [xy, sxy, mxy, mid-start, end-mid];
+            };
+
+            var map = new ol.MaplatMap({
+                div: 'map_div',
+                interactions: ol.interaction.defaults().extend([
+                    new ol.interaction.DragRotateAndZoom({
+                        condition: ol.events.condition.altKeyOnly
+                    })
+                ]),
+                controls: ol.control.defaults()
+            });
+            ol.source.HistMap.createAsync({
+                mapID: 'Paris',
+                url: 'https://ods3.illustmap.org/tiles/1499243561/1499243561-{z}_{x}_{y}.jpg',
+                width: width,
+                height: height,
+                attr: 'Paris',
+                noload: true
+            },{}).then(function(source) {
+                map.exchangeSource(source);
+
+                var ssum = 0;
+                var msum = 0;
+                var stim = 0;
+                var mtim = 0;
+                var count = 0;
+                var results = [];
+                for (var i=0; i<=num; i++) {
+                    var x = i * width / num;
+                    results[i] = [];
+                    for (var j=0; j<=num; j++) {
+                        var y = j * height / num;
+                        var result = convert([x,y]);
+                        results[i][j] = result;
+                        var sdel = Math.sqrt(Math.pow(result[0][0]-result[1][0], 2) + Math.pow(result[0][1]-result[1][1], 2));
+                        var mdel = Math.sqrt(Math.pow(result[0][0]-result[2][0], 2) + Math.pow(result[0][1]-result[2][1], 2));
+                        if (mdel > 1) console.log(JSON.stringify(result));
+                        ssum = ssum + sdel;
+                        msum = msum + mdel;
+                        stim = stim + result[3];
+                        mtim = mtim + result[4];
+                        count++;
+                    }
+                }
+                console.log("Stroly: " + (ssum / count) + " " + stim);
+                console.log("Maplat: " + (msum / count) + " " + mtim);
+                document.querySelector('#del_maplat').innerText = sprintf('%.11f', msum / count);
+                document.querySelector('#del_stroly').innerText = sprintf('%.11f', ssum / count);
+                for (var i=0; i<=num; i++) {
+                    //xに沿って縦線
+                    var svxys = [];
+                    var mvxys = [];
+                    //yに沿って横線
+                    var shxys = [];
+                    var mhxys = [];
+                    for (var j=0; j<=num; j++) {
+                        svxys.push(source.xy2HistMapCoords(results[j][i][1]));
+                        mvxys.push(source.xy2HistMapCoords(results[j][i][2]));
+                        shxys.push(source.xy2HistMapCoords(results[i][j][1]));
+                        mhxys.push(source.xy2HistMapCoords(results[i][j][2]));
+                    }
+                    var sStyle = new ol.style.Style({
+                        stroke: new ol.style.Stroke({
+                            color: '#ffcc33',
+                            width: 4
+                        })
+                    });
+                    var mStyle = new ol.style.Style({
+                        stroke: new ol.style.Stroke({
+                            color: '#780508',
+                            width: 4
+                        })
+                    });
+                    var src = map.getSource('marker');
+                    var lineFeature = new ol.Feature({
+                        geometry: new ol.geom.LineString(svxys),
+                        name: 'Line'
+                    });
+                    lineFeature.setStyle(sStyle);
+                    src.addFeature(lineFeature);
+                    lineFeature = new ol.Feature({
+                        geometry: new ol.geom.LineString(shxys),
+                        name: 'Line'
+                    });
+                    lineFeature.setStyle(sStyle);
+                    src.addFeature(lineFeature);
+                    lineFeature = new ol.Feature({
+                        geometry: new ol.geom.LineString(mvxys),
+                        name: 'Line'
+                    });
+                    lineFeature.setStyle(mStyle);
+                    src.addFeature(lineFeature);
+                    lineFeature = new ol.Feature({
+                        geometry: new ol.geom.LineString(mhxys),
+                        name: 'Line'
+                    });
+                    lineFeature.setStyle(mStyle);
+                    src.addFeature(lineFeature);
+                }
+            });
+        });
+    });
+</script>
+</html>

@@ -1,0 +1,23 @@
+{
+  "name": "龍野城城下町アプリ",
+  "short_name": "龍野城",
+  "background_color": "#780508",
+  "icons": [
+    {
+      "src": "sample/manifest-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "sample/manifest-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "start_url": "https://s.maplat.jp/r/tatsunomap/",
+  "scope": "/r/tatsunomap/",
+  "display": "standalone",
+  "theme_color": "#780508"
+}
