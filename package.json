@@ -1,6 +1,6 @@
 {
   "name": "@maplat/ui",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "description": "Maplat is the cool Historical Map/Illustrated Map Viewer.\nIt can transform each map coordinates with nonlinear but homeomorphic projection and makes possible that the maps can collaborate with GPS/accurate maps, without distorting original maps.",
   "main": "src/index.js",
   "module": "src/index.js",
@@ -28,7 +28,8 @@
     "lint:eslint": "eslint \"{src,spec}/**/*.js\" --fix",
     "lint:prettier": "prettier \"./{src,spec}/**/*.js\" --write",
     "publish:assets": "gulp publish:assets",
-    "publish:plat": "gulp publish:plat"
+    "publish:plat": "gulp publish:plat",
+    "git_switch": "gulp git_switch"
   },
   "repository": {
     "type": "git",
@@ -45,8 +46,8 @@
   },
   "homepage": "https://github.com/code4history/Maplat/wiki",
   "dependencies": {
-    "@maplat/core": "^0.10.0",
-    "@maplat/tin": "^0.9.0",
+    "@maplat/core": "^0.10.1",
+    "@maplat/tin": "^0.9.1",
     "@turf/turf": "^6.5.0",
     "bootstrap.native": "^3.0.15",
     "caniuse-lite": "^1.0.30001239",
@@ -65,6 +66,7 @@
     "babel-jest": "^26.6.3",
     "babel-loader": "^8.2.2",
     "clean-webpack-plugin": "^3.0.0",
+    "concaveman": "https://github.com/grassick/concaveman#patch-1",
     "strip-whitespace-loader": "github:kochizufan/strip-whitespace-loader#fix_dq_npm",
     "copy-webpack-plugin": "^6.4.1",
     "core-js": "^3.15.1",
@@ -104,5 +106,8 @@
     "workbox-routing": "^6.1.5",
     "workbox-strategies": "^6.1.5",
     "workbox-webpack-plugin": "^6.1.5"
+  },
+  "resolutions": {
+    "concaveman": "https://github.com/grassick/concaveman#patch-1"
   }
 }

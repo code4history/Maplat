@@ -69,3 +69,7 @@ web_set.zip
 mapboxToken
 
 dev/
+
+# Open/Keep
+.git.keep
+.git.open
