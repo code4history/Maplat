@@ -84,6 +84,13 @@
             }
         },
         {
+            "mapID" : "Nara_Sight_Seeing_Map_1936",
+            "label" : {
+                "ja" : "昭和11",
+                "en" : "1936"
+            }
+        },
+        {
             "mapID" : "NaraSightseeingMap1953",
             "label" : {
                 "ja" : "昭和28",
