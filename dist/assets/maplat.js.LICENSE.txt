@@ -29,7 +29,7 @@
   **  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   */
 
-/*! @maplat/ui v0.10.2 | Kohei Otsuka, Code for History | license: Maplat Limited License 1.1 */
+/*! @maplat/ui v0.10.3 | Kohei Otsuka, Code for History | license: Maplat Limited License 1.1 */
 
 /**
    * splaytree v3.1.0
