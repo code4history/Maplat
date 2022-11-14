@@ -29,12 +29,7 @@
   **  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   */
 
-/*!
- * PEP v0.5.3 | https://github.com/jquery/PEP
- * Copyright jQuery Foundation and other contributors | http://jquery.org/license
- */
-
-/*! @maplat/ui v0.10.1 | Kohei Otsuka, Code for History | license: Maplat Limited License 1.1 */
+/*! @maplat/ui v0.10.2 | Kohei Otsuka, Code for History | license: Maplat Limited License 1.1 */
 
 /**
    * splaytree v3.1.0
@@ -44,10 +39,3 @@
    * @license MIT
    * @preserve
    */
-
-/**
- * @license
- * Latitude/longitude spherical geodesy formulae taken from
- * http://www.movable-type.co.uk/scripts/latlong.html
- * Licensed under CC-BY-3.0.
- */

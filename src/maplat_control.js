@@ -1,16 +1,11 @@
-import { Control, Rotate } from "ol5/control";
-import { CLASS_UNSELECTABLE, CLASS_CONTROL } from "ol5/css";
-import PointerEventHandler from "ol5/pointer/PointerEventHandler";
-import { listen } from "ol5/events";
-import EventType from "ol5/pointer/EventType";
-import { stopPropagation } from "ol5/events/Event";
-import ViewHint from "ol5/ViewHint";
-import { clamp } from "ol5/math";
-import { MapEvent } from "ol5";
+import { Control, Rotate, Zoom as BaseZoom } from "ol/control";
+import { CLASS_UNSELECTABLE, CLASS_CONTROL } from "ol/css";
+import ViewHint from "ol/ViewHint";
+import { clamp } from "ol/math";
+import { MapEvent } from "ol";
 import { addResizeListener } from "../legacy/detect-element-resize";
 import pointer from "./pointer_images";
 import { createElement } from "@maplat/core";
-import { Zoom as BaseZoom } from "ol/control";
 
 let control_settings = {};
 const delegator = {
@@ -147,20 +142,25 @@ export class SliderCommon extends Control {
      * @type {ol.pointer.PointerEventHandler}
      * @private
      */
-    this.dragger_ = new PointerEventHandler(containerElement);
-
-    listen(
-      this.dragger_,
-      EventType.POINTERDOWN,
-      this.handleDraggerStart_,
-      this
-    );
-    listen(this.dragger_, EventType.POINTERMOVE, this.handleDraggerDrag_, this);
-    listen(this.dragger_, EventType.POINTERUP, this.handleDraggerEnd_, this);
-
-    listen(thumbElement, EventType.CLICK, stopPropagation);
-
-    listen(this.element, EventType.MOUSEOUT, this.handleDraggerEnd_, this);
+    containerElement.addEventListener("pointerdown", ev => {
+      ev.stopPropagation();
+      this.handleDraggerStart_(ev);
+    });
+    containerElement.addEventListener("pointermove", ev => {
+      ev.stopPropagation();
+      this.handleDraggerDrag_(ev);
+    });
+    containerElement.addEventListener("pointerup", ev => {
+      ev.stopPropagation();
+      this.handleDraggerEnd_(ev);
+    });
+    thumbElement.addEventListener("click", ev => {
+      ev.stopPropagation();
+    });
+    containerElement.addEventListener("mouseout", ev => {
+      ev.stopPropagation();
+      this.handleDraggerEnd_(ev);
+    });
 
     if (control_settings["slider_color"]) {
       const rgb = hexRgb(control_settings["slider_color"]);
@@ -294,7 +294,7 @@ export class SliderCommon extends Control {
   handleDraggerStart_(event) {
     if (
       !this.dragging_ &&
-      event.originalEvent.target === this.element.firstElementChild &&
+      event.target === this.element.firstElementChild &&
       !this.element.classList.contains("disable")
     ) {
       this.getMap().getView().setHint(ViewHint.INTERACTING, 1);
