@@ -142,22 +142,22 @@ export class SliderCommon extends Control {
      * @type {ol.pointer.PointerEventHandler}
      * @private
      */
-    containerElement.addEventListener("pointerdown", (ev) => {
+    containerElement.addEventListener("pointerdown", ev => {
       ev.stopPropagation();
       this.handleDraggerStart_(ev);
     });
-    containerElement.addEventListener("pointermove", (ev) => {
+    containerElement.addEventListener("pointermove", ev => {
       ev.stopPropagation();
       this.handleDraggerDrag_(ev);
     });
-    containerElement.addEventListener("pointerup", (ev) => {
+    containerElement.addEventListener("pointerup", ev => {
       ev.stopPropagation();
       this.handleDraggerEnd_(ev);
     });
-    thumbElement.addEventListener("click", (ev) => {
+    thumbElement.addEventListener("click", ev => {
       ev.stopPropagation();
-    })
-    containerElement.addEventListener("mouseout", (ev) => {
+    });
+    containerElement.addEventListener("mouseout", ev => {
       ev.stopPropagation();
       this.handleDraggerEnd_(ev);
     });
@@ -292,8 +292,6 @@ export class SliderCommon extends Control {
    * @private
    */
   handleDraggerStart_(event) {
-    console.log("handleDraggerStart_")
-    console.log(event)
     if (
       !this.dragging_ &&
       event.target === this.element.firstElementChild &&
@@ -303,7 +301,6 @@ export class SliderCommon extends Control {
       this.previousX_ = event.clientX;
       this.previousY_ = event.clientY;
       this.dragging_ = true;
-      console.log(`${this.previousX_} ${this.previousY_} ${this.dragging_}`)
     }
   }
 
@@ -314,11 +311,7 @@ export class SliderCommon extends Control {
    * @private
    */
   handleDraggerDrag_(event) {
-    console.log("handleDraggerDrag_")
-    console.log(event)
-    console.log(this.dragging_)
     if (this.dragging_) {
-      console.log(this.dragging_)
       const element = this.element.firstElementChild;
       const deltaX =
         event.clientX -
