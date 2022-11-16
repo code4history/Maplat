@@ -26,7 +26,8 @@ module.exports = {
     }),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
-      template: "./public/index.html"
+      template: "./public/index.html",
+      scriptLoading: "blocking"
     }),
     new MiniCssExtractPlugin({
       filename: "./assets/[name].css"
