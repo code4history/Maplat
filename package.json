@@ -78,7 +78,7 @@
     "gulp-cli": "^2.3.0",
     "gulp-zip": "^4.2.0",
     "html-webpack-plugin": "^5.5.0",
-    "jest": "^26.6.3",
+    "jest": "^28.1.0",
     "jest-canvas-mock": "^2.3.1",
     "less": "^4.1.2",
     "less-loader": "^11.0.0",
