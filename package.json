@@ -76,7 +76,7 @@
     "fs-extra": "^10.1.0",
     "gulp": "^4.0.2",
     "gulp-cli": "^2.3.0",
-    "gulp-zip": "^4.2.0",
+    "gulp-zip": "^5.1.0",
     "html-webpack-plugin": "^5.5.0",
     "jest": "^28.1.0",
     "jest-canvas-mock": "^2.3.1",
