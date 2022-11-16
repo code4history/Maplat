@@ -86,7 +86,7 @@
     "mini-css-extract-plugin": "^1.6.0",
     "prettier": "^2.3.1",
     "strip-whitespace-loader": "github:kochizufan/strip-whitespace-loader#fix_dq_npm",
-    "terser-webpack-plugin": "^4.2.3",
+    "terser-webpack-plugin": "^5.3.1",
     "url-loader": "^4.1.1",
     "webpack": "^5.40.0",
     "webpack-cli": "^4.7.2",
