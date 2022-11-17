@@ -31,6 +31,8 @@
 
 /*! @maplat/ui v0.10.3 | Kohei Otsuka, Code for History | license: Maplat Limited License 1.1 */
 
+/*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */
+
 /**
    * splaytree v3.1.0
    * Fast Splay tree for Node and browser
