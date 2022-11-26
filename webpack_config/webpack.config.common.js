@@ -69,7 +69,8 @@ module.exports = {
       },
       {
         test: /\.less$/,
-        exclude: /node_modules(?![/\\]@maplat[/\\])/,
+        //exclude: /node_modules(?![/\\]@maplat[/\\])/,
+        exclude: /node_modules/,
         use: [
           MiniCssExtractPlugin.loader,
           { loader: "css-loader" },
