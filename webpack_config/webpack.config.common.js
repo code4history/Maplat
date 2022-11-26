@@ -60,7 +60,8 @@ module.exports = {
       },
       {
         test: /\.js$/,
-        exclude: /node_modules(?![/\\](@maplat|swiper|dom7|weiwudi)[/\\])/,
+        //exclude: /node_modules(?![/\\](@maplat|swiper|dom7|weiwudi)[/\\])/,
+        exclude: /node_modules/,
         use: [
           { loader: "strip-whitespace-loader" },
           { loader: 'babel-loader' }
