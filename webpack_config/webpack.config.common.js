@@ -26,7 +26,8 @@ module.exports = {
     }),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
-      template: "./public/index.html"
+      template: "./public/index.html",
+      scriptLoading: "blocking"
     }),
     new MiniCssExtractPlugin({
       filename: "./assets/[name].css"
@@ -59,7 +60,8 @@ module.exports = {
       },
       {
         test: /\.js$/,
-        exclude: /node_modules(?![/\\](@maplat|swiper|dom7|weiwudi)[/\\])/,
+        //exclude: /node_modules(?![/\\](@maplat|swiper|dom7|weiwudi)[/\\])/,
+        exclude: /node_modules/,
         use: [
           { loader: "strip-whitespace-loader" },
           { loader: 'babel-loader' }
@@ -67,7 +69,8 @@ module.exports = {
       },
       {
         test: /\.less$/,
-        exclude: /node_modules(?![/\\]@maplat[/\\])/,
+        //exclude: /node_modules(?![/\\]@maplat[/\\])/,
+        exclude: /node_modules/,
         use: [
           MiniCssExtractPlugin.loader,
           { loader: "css-loader" },
