@@ -44,8 +44,8 @@
   },
   "homepage": "https://github.com/code4history/Maplat/wiki",
   "dependencies": {
-    "@maplat/core": "github:code4history/MaplatCore#same_library",
-    "@maplat/tin": "github:code4history/MaplatTin#same_library",
+    "@maplat/core": "^0.10.5",
+    "@maplat/tin": "^0.9.4",
     "@turf/turf": "^6.5.0",
     "caniuse-lite": "^1.0.30001431",
     "lodash.template": "^4.5.0",
