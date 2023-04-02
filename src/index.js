@@ -1,5 +1,6 @@
 import { absoluteUrl } from "./absolute_url";
 import { Swiper } from "./swiper_ex";
+import { Navigation, Pagination } from "swiper";
 import EventTarget from "ol/events/Target";
 import page from "../legacy/page";
 import bsn from "../legacy/bootstrap-native";
@@ -684,6 +685,7 @@ export class MaplatUi extends EventTarget {
       const baseSwiper = (ui.baseSwiper = new Swiper(".base-swiper", {
         slidesPerView: 2,
         spaceBetween: 15,
+        modules: [ Navigation ],
         breakpoints: {
           // when window width is <= 480px
           480: {
@@ -716,6 +718,7 @@ export class MaplatUi extends EventTarget {
       const overlaySwiper = (ui.overlaySwiper = new Swiper(".overlay-swiper", {
         slidesPerView: 2,
         spaceBetween: 15,
+        modules: [ Navigation ],
         breakpoints: {
           // when window width is <= 480px
           480: {
@@ -1463,6 +1466,7 @@ enable-background="new 0 0 10 10" xml:space="preserve">
           if (!this.poiSwiper) {
             this.poiSwiper = new Swiper(".swiper-container.poi_img_swiper", {
               lazy: true,
+              modules: [ Navigation, Pagination ],
               pagination: {
                 el: ".swiper-pagination",
                 clickable: true
