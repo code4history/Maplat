@@ -1,0 +1,40 @@
+{
+    "app_name" : {
+        "ja" : "Maplat ジオ展2023向けデモサイト",
+        "en" : "Maplat Geoten 2023"
+    },
+    "splash" : "geoten_splash.png",
+    "lang": "ja",
+    "fake_gps" : true,
+    "fake_center" : "JR八丁堀",
+    "fake_radius" : 10,
+    "home_position" : [ 139.777708, 35.674717 ],
+    "default_zoom" : 17,
+    "start_from": "geoten_shiba",
+    "sources" : [
+        {
+            "mapID" : "geoten_shiba",
+            "label" : "明治40芝區"
+        },
+        {
+            "mapID" : "geoten_kojimachi",
+            "label" : "明治40麹町區"
+        },
+        {
+            "mapID" : "geoten_akasaka",
+            "label" : "明治40赤坂區"
+        },
+        {
+            "mapID" : "geoten_azabu",
+            "label" : "明治40麻布區"
+        },
+        "gsi",
+        "gsi_ortho",
+        {
+            "mapID" : "mapbox",
+            "label" : "Mapbox"
+        },
+        "osm"
+    ],
+    "pois" :[]
+}
