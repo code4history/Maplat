@@ -28,6 +28,62 @@
             "mapID" : "geoten_azabu",
             "label" : "明治40麻布區"
         },
+        {
+            "attr" : {
+                "ja": "出典: 農研機構 農研機構農業環境研究部門",
+                "en": "NARO"
+            },
+            "label" : {
+                "ja": "東京原図",
+                "en": "Tokyo base"
+            },
+            "title" : {
+                "ja": "東京図測量原図",
+                "en": "Tokyo Survey Base Map"
+            },
+            "contributor": {
+                "ja": "国土地理院",
+                "en": "Geospatial Information Authority of Japan"
+            },
+            "createdAt": "1883-1884",
+            "author": {
+                "ja": "大日本帝国陸軍参謀本部陸地測量部",
+                "en": "Japan Imperial Army Map Service"
+            },
+            "mapID" : "Tokyo5000-900913",
+            "maptype" : "overlay",
+            "url" : "https://boiledorange73.sakura.ne.jp/ws/tile/Tokyo5000-900913/{z}/{x}/{y}.jpg",
+            "maxZoom": 17,
+            "envelopLngLats" : [[139.6820454856718, 35.62595769911905], [139.7865530745962, 35.62595769911905], [139.7865530745962, 35.706161177110666], [139.6820454856718, 35.706161177110666]]
+        },
+        {
+            "attr" : {
+                "ja": "出典: 農研機構 農研機構農業環境研究部門",
+                "en": "NARO"
+            },
+            "label" : {
+                "ja": "迅速測図",
+                "en": "Rapid Survey Map"
+            },
+            "title" : {
+                "ja": "関東平野迅速測図",
+                "en": "Rapid Survey Map of Kanto Plain"
+            },
+            "contributor": {
+                "ja": "国土地理院",
+                "en": "Geospatial Information Authority of Japan"
+            },
+            "createdAt": "1880-1886",
+            "author": {
+                "ja": "大日本帝国陸軍参謀本部陸地測量部",
+                "en": "Japan Imperial Army Map Service"
+            },
+            "mapID" : "kanto_rapid-900913",
+            "maptype" : "overlay",
+            "url" : "https://boiledorange73.sakura.ne.jp/ws/tile/Kanto_Rapid-900913/{z}/{x}/{y}.jpg",
+            "maxZoom": 17,
+            "envelopLngLats" : [[139.6820454856718, 35.62595769911905], [139.7865530745962, 35.62595769911905], [139.7865530745962, 35.706161177110666], [139.6820454856718, 35.706161177110666]]
+        },
         "gsi",
         "gsi_ortho",
         {
