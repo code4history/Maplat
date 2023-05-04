@@ -126,6 +126,13 @@
             }
         },
         {
+            "mapID" : "takabatake_kasuga",
+            "label" : {
+                "ja" : "高畑神官住居",
+                "en" : "Takabatake Area"
+            }
+        },
+        {
             "mapID" : "kyobate_kaiwai_map",
             "label" : {
                 "ja" : "京終界隈",
