@@ -1,0 +1,123 @@
+{
+    "app_name" : {
+        "ja" : "ぷらっと館林 - 館林を楽しむ古地図/絵地図街歩きアプリ",
+        "en" : "Maplat Tatebayashi"
+    },
+    "description": "まち歩きの地図サービス「ぷらっと館林」を片手に館林城下を散策してみませんか。徳川綱吉が藩主だった頃の古地図、幕末の名君、秋元志朝の頃の古地図や観光地図を収録。今ここではない時代に思いを馳せながら、ぷらぷら歩くのはきっと楽しいですよ。",
+    "splash" : "tatebayashi_splash.png",
+    "lang": "ja",
+    "fake_gps" : true,
+    "fake_center" : "千眼寺",
+    "fake_radius" : 10,
+    "home_position" : [ 139.532100, 36.249302 ],
+    "default_zoom" : 17,
+    "start_from": "tatebayashi_ojozu",
+    "sources" : [
+        {
+            "mapID" : "tatebayashi_ojozu",
+            "label" : {
+                "ja" : "綱吉時代",
+                "en" : "Tsunayoshi Era"
+            }
+        },
+        {
+            "mapID" : "tatebayashi_castle_akimoto",
+            "label" : {
+                "ja" : "秋元時代",
+                "en" : "Akimoto Era"
+            }
+        },
+        {
+            "mapID" : "tatebayashi_kaei_jokamachi",
+            "label" : {
+                "ja" : "嘉永館林城下",
+                "en" : "Tatebayashi (1848)"
+            }
+        },
+        {
+            "attr" : {
+                "ja": "農研機構",
+                "en": "NARO"
+            },
+            "label" : {
+                "ja": "迅速測図",
+                "en": "Rapid Survey Map"
+            },
+            "title" : {
+                "ja": "関東迅速測図",
+                "en": "Rapid Survey Map of Kanto Plain"
+            },
+            "contributor": {
+                "ja": "国土地理院",
+                "en": "Geospatial Information Authority of Japan"
+            },
+            "createdAt": "1880-1886",
+            "author": {
+                "ja": "大日本帝国陸軍参謀本部陸地測量部",
+                "en": "Japan Imperial Army Map Service"
+            },
+            "mapID" : "kanto_rapid-900913",
+            "maptype" : "overlay",
+            "url" : "https://boiledorange73.sakura.ne.jp/ws/tile/Kanto_Rapid-900913/{z}/{x}/{y}.jpg",
+            "maxZoom": 17,
+            "mercatorXShift": -3.26,
+            "mercatorYShift": -57.01,
+            "envelopLngLats" : [[139.454802, 36.209997], [139.630240, 36.209997], [139.630240, 36.283371], [139.454802, 36.283371]]
+        },
+        {
+            "mapID" : "zendoji_garan",
+            "label" : {
+                "ja" : "善導寺伽藍配置",
+                "en" : "Zengo-ji Layout"
+            }
+        },
+        {
+            "mapID" : "tatebayashi_bunkazai_center",
+            "label" : {
+                "ja" : "文化財中心部",
+                "en" : "Cultural Property-1"
+            }
+        },{
+            "mapID" : "tatebayashi_bunkazai_zeniki",
+            "label" : {
+                "ja" : "文化財全域",
+                "en" : "Cultural Property-2"
+            }
+        },
+        {
+            "mapID" : "tatebayashi_rekishinokomichi_1",
+            "label" : {
+                "ja" : "歴史小径1",
+                "en" : "History Path-1"
+            }
+        },{
+            "mapID" : "tatebayashi_rekishinokomichi_2",
+            "label" : {
+                "ja" : "歴史小径2",
+                "en" : "History Path-2"
+            }
+        },
+        {
+            "mapID" : "tatebayashi_saiken_ura",
+            "label" : {
+                "ja" : "お寺お散歩",
+                "en" : "Temple Stroll"
+            }
+        },
+        {
+            "mapID" : "tatebayashi_satonuma_village_1",
+            "label" : {
+                "ja" : "里沼ビレッジ",
+                "en" : "Satonuma Village"
+            }
+        },
+        "gsi",
+        "gsi_ortho",
+        {
+            "mapID" : "mapbox",
+            "label" : "Mapbox"
+        },
+        "osm"
+    ], 
+    "pois" : ["tatebayashi.json", "stones_poi.geojson"]
+}
