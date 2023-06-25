@@ -14,11 +14,11 @@
     "locales/"
   ],
   "scripts": {
-    "server": "webpack-cli serve --config ./webpack_config/webpack.config.standard.dev.js --mode=development",
-    "server:packed": "npm run freeze && webpack-cli serve --config ./webpack_config/webpack.config.packed.dev.js --mode=development",
+    "server": "cross-env NODE_OPTIONS=--openssl-legacy-provider webpack-cli serve --config ./webpack_config/webpack.config.standard.dev.js --mode=development",
+    "server:packed": "cross-env NODE_OPTIONS=--openssl-legacy-provider npm run freeze && webpack-cli serve --config ./webpack_config/webpack.config.packed.dev.js --mode=development",
     "build": "npm run build:standard && npm run build:packed",
-    "build:standard": "webpack --color --progress --config ./webpack_config/webpack.config.standard.js",
-    "build:packed": "npm run freeze && webpack --config ./webpack_config/webpack.config.packed.js",
+    "build:standard": "cross-env NODE_OPTIONS=--openssl-legacy-provider webpack --color --progress --config ./webpack_config/webpack.config.standard.js",
+    "build:packed": "cross-env NODE_OPTIONS=--openssl-legacy-provider npm run freeze && webpack --config ./webpack_config/webpack.config.packed.js",
     "zip": "gulp zip",
     "test": "jest",
     "preversion": "npm run lint",
@@ -65,6 +65,7 @@
     "concaveman": "https://github.com/grassick/concaveman#patch-1",
     "copy-webpack-plugin": "^6.4.1",
     "core-js": "^3.22.7",
+    "cross-env": "^7.0.3",
     "css-loader": "^5.2.6",
     "css-minimizer-webpack-plugin": "^4.2.2",
     "eslint": "^7.32.0",
