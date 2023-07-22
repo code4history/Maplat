@@ -532,7 +532,12 @@ export class GoHome extends CustomControl {
     options.cls = "home";
     options.callback = function () {
       const source = this.getMap().getLayers().item(0).getSource();
-      source.goHome();
+      const ratio = window.devicePixelRatio;
+      let div = this.getMap().getTarget();
+      if (typeof div === 'string') { 
+        div = document.getElementById(div);
+      }
+      source.goHome([div.clientWidth * ratio, div.clientHeight * ratio]);
     };
     super(options);
     if (control_settings["home"]) {

@@ -15,10 +15,10 @@
   ],
   "scripts": {
     "server": "cross-env NODE_OPTIONS=--openssl-legacy-provider webpack-cli serve --config ./webpack_config/webpack.config.standard.dev.js --mode=development",
-    "server:packed": "cross-env NODE_OPTIONS=--openssl-legacy-provider npm run freeze && webpack-cli serve --config ./webpack_config/webpack.config.packed.dev.js --mode=development",
+    "server:packed": "cross-env NODE_OPTIONS=--openssl-legacy-provider npm run freeze && cross-env NODE_OPTIONS=--openssl-legacy-provider webpack-cli serve --config ./webpack_config/webpack.config.packed.dev.js --mode=development",
     "build": "npm run build:standard && npm run build:packed",
     "build:standard": "cross-env NODE_OPTIONS=--openssl-legacy-provider webpack --color --progress --config ./webpack_config/webpack.config.standard.js",
-    "build:packed": "cross-env NODE_OPTIONS=--openssl-legacy-provider npm run freeze && webpack --config ./webpack_config/webpack.config.packed.js",
+    "build:packed": "cross-env NODE_OPTIONS=--openssl-legacy-provider npm run freeze && cross-env NODE_OPTIONS=--openssl-legacy-provider webpack --config ./webpack_config/webpack.config.packed.js",
     "zip": "gulp zip",
     "test": "jest",
     "preversion": "npm run lint",
