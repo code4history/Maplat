@@ -1470,7 +1470,7 @@ enable-background="new 0 0 10 10" xml:space="preserve">
           if (!this.poiSwiper) {
             this.poiSwiper = new Swiper(".swiper-container.poi_img_swiper", {
               lazy: true,
-              modules: [ Navigation, Pagination ],
+              modules: [Navigation, Pagination],
               pagination: {
                 el: ".poi-pagination",
                 clickable: true

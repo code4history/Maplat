@@ -532,12 +532,7 @@ export class GoHome extends CustomControl {
     options.cls = "home";
     options.callback = function () {
       const source = this.getMap().getLayers().item(0).getSource();
-      const ratio = window.devicePixelRatio;
-      let div = this.getMap().getTarget();
-      if (typeof div === 'string') { 
-        div = document.getElementById(div);
-      }
-      source.goHome([div.clientWidth * ratio, div.clientHeight * ratio]);
+      source.goHome();
     };
     super(options);
     if (control_settings["home"]) {
@@ -666,14 +661,16 @@ export class CompassRotate extends Rotate {
     this.callResetNorth_ = () => {
       if (this.northTop_) {
         const layer = this.getMap().getLayers().item(0);
-        const source = layer.getSource ? layer.getSource() : layer.getLayers().item(0).getSource();
+        const source = layer.getSource
+          ? layer.getSource()
+          : layer.getLayers().item(0).getSource();
         source.setViewpoint({
           direction: 0
-        })
+        });
       } else {
         this.resetNorth_();
       }
-    }
+    };
   }
 }
 
