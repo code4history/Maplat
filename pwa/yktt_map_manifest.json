@@ -1,0 +1,23 @@
+{
+  "name": "Maplat",
+  "short_name": "Maplat",
+  "background_color": "#FFFFFF",
+  "icons": [
+    {
+      "src": "yktt_map/manifest-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "yktt_map/manifest-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "start_url": "https://s.maplat.jp/r/yktt_mapmap/",
+  "scope": "/r/yktt_mapmap/",
+  "display": "standalone",
+  "theme_color": "#FFFFFF"
+}
