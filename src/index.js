@@ -1,5 +1,6 @@
 import { absoluteUrl } from "./absolute_url";
 import { Swiper } from "./swiper_ex";
+import { Navigation, Pagination } from "swiper";
 import EventTarget from "ol/events/Target";
 import page from "../legacy/page";
 import bsn from "../legacy/bootstrap-native";
@@ -31,6 +32,7 @@ import { NowMap } from "@maplat/core/lib/source/nowmap";
 import Weiwudi from "weiwudi";
 import { normalizeArg } from "./function";
 import pointer from "./pointer_images";
+Swiper.use([Navigation, Pagination]);
 
 // Maplat UI Class
 export class MaplatUi extends EventTarget {
@@ -187,6 +189,9 @@ export class MaplatUi extends EventTarget {
     if (appOption.appEnvelope) {
       ui.appEnvelope = true;
     }
+    if (appOption.northTop) {
+      ui.northTop = true;
+    }
 
     let pwaManifest = appOption.pwaManifest;
     let pwaWorker = appOption.pwaWorker;
@@ -277,6 +282,7 @@ export class MaplatUi extends EventTarget {
           <d c="poi_data hide">
             <d c="col-xs-12 swiper-container poi_img_swiper">
               <d c="swiper-wrapper"></d>
+              <d c="swiper-pagination poi-pagination"></d>
               <d c="swiper-button-next poi-img-next"></d>
               <d c="swiper-button-prev poi-img-prev"></d>
             </d>
@@ -508,7 +514,8 @@ export class MaplatUi extends EventTarget {
           tipLabel: ui.core.t("control.info", { ns: "translation" })
         }),
         new CompassRotate({
-          tipLabel: ui.core.t("control.compass", { ns: "translation" })
+          tipLabel: ui.core.t("control.compass", { ns: "translation" }),
+          northTop: ui.northTop
         }),
         new Zoom({
           tipLabel: ui.core.t("control.zoom", { ns: "translation" })
@@ -1463,8 +1470,9 @@ enable-background="new 0 0 10 10" xml:space="preserve">
           if (!this.poiSwiper) {
             this.poiSwiper = new Swiper(".swiper-container.poi_img_swiper", {
               lazy: true,
+              modules: [Navigation, Pagination],
               pagination: {
-                el: ".swiper-pagination",
+                el: ".poi-pagination",
                 clickable: true
               },
               navigation: {

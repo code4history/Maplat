@@ -11,8 +11,10 @@
         enable_share: true,
         presentation_mode: true,
         pwa_manifest: true,
+        northTop: true,
         mapboxgl: mapboxgl,
-        mapboxToken: 'YOUR-ACCESS-TOKEN'
+        mapboxToken: 'YOUR-ACCESS-TOKEN',
+        tapDuration: 60000
     };
     var hashes = (window.location.href.split('#!'))[0];
     hashes = hashes.slice(window.location.href.indexOf('?') + 1).split('&');
