@@ -1423,7 +1423,7 @@ enable-background="new 0 0 10 10" xml:space="preserve">
         iframe.addEventListener("load", function loadEvent(event) {
           event.currentTarget.removeEventListener(event.type, loadEvent);
           const cssLink = createElement(
-            '<style type="text/css">html, body { height: 100vh; }\n img { width: 100vw; }</style>'
+            '<style type="text/css">html, body { height: 100vh; }\n img { width: 100%; }</style>'
           );
           console.log(cssLink); // eslint-disable-line no-undef
           iframe.contentDocument.head.appendChild(cssLink[0]);
