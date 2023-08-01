@@ -189,9 +189,6 @@ export class MaplatUi extends EventTarget {
     if (appOption.appEnvelope) {
       ui.appEnvelope = true;
     }
-    if (appOption.northTop) {
-      ui.northTop = true;
-    }
 
     let pwaManifest = appOption.pwaManifest;
     let pwaWorker = appOption.pwaWorker;
@@ -514,8 +511,7 @@ export class MaplatUi extends EventTarget {
           tipLabel: ui.core.t("control.info", { ns: "translation" })
         }),
         new CompassRotate({
-          tipLabel: ui.core.t("control.compass", { ns: "translation" }),
-          northTop: ui.northTop
+          tipLabel: ui.core.t("control.compass", { ns: "translation" })
         }),
         new Zoom({
           tipLabel: ui.core.t("control.zoom", { ns: "translation" })

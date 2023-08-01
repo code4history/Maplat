@@ -610,7 +610,7 @@ export class CompassRotate extends Rotate {
         center[1] != this.center_[1] ||
         zoom != this.zoom_
       ) {
-        if (!this.northTop_) {
+        if (!this.getMap().northUp) {
           const contains = this.element.classList.contains("disable");
           if (!contains && rotation === 0) {
             this.element.classList.add("disable");
@@ -636,7 +636,7 @@ export class CompassRotate extends Rotate {
           self.label_.style.msTransform = transform;
           self.label_.style.webkitTransform = transform;
           self.label_.style.transform = transform;
-          if (this.northTop_) {
+          if (this.getMap().northUp) {
             const contains = self.element.classList.contains("disable");
             if (!contains && rot === 0) {
               self.element.classList.add("disable");
@@ -657,9 +657,8 @@ export class CompassRotate extends Rotate {
     }
     this.center_ = [];
     this.zoom_ = undefined;
-    this.northTop_ = options.northTop;
     this.callResetNorth_ = () => {
-      if (this.northTop_) {
+      if (this.getMap().northUp) {
         const layer = this.getMap().getLayers().item(0);
         const source = layer.getSource
           ? layer.getSource()
