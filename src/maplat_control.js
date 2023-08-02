@@ -631,16 +631,17 @@ export class CompassRotate extends Rotate {
           return;
         }
         source.viewpoint2MercsAsync().then(mercs => {
-          const rot = source.mercs2MercViewpoint(mercs)[2];
-          const transform = `rotate(${rot}rad)`;
+          const direction = source.mercs2MercViewpoint(mercs)[2];
+          const transform = `rotate(${direction}rad)`;
           self.label_.style.msTransform = transform;
           self.label_.style.webkitTransform = transform;
           self.label_.style.transform = transform;
           if (this.getMap().northUp) {
+            console.log(direction);
             const contains = self.element.classList.contains("disable");
-            if (!contains && rot === 0) {
+            if (!contains && Math.abs(direction) < 0.1) {
               self.element.classList.add("disable");
-            } else if (contains && rot !== 0) {
+            } else if (contains && Math.abs(direction) >= 0.1) {
               self.element.classList.remove("disable");
             }
           }
@@ -658,17 +659,11 @@ export class CompassRotate extends Rotate {
     this.center_ = [];
     this.zoom_ = undefined;
     this.callResetNorth_ = () => {
-      if (this.getMap().northUp) {
-        const layer = this.getMap().getLayers().item(0);
-        const source = layer.getSource
-          ? layer.getSource()
-          : layer.getLayers().item(0).getSource();
-        source.setViewpoint({
-          direction: 0
-        });
-      } else {
-        this.resetNorth_();
-      }
+      const layer = this.getMap().getLayers().item(0);
+      const source = layer.getSource
+        ? layer.getSource()
+        : layer.getLayers().item(0).getSource();
+      source.resetCirculation();
     };
   }
 }
