@@ -156,6 +156,7 @@ export class MaplatUi extends EventTarget {
     const enableSplash = !ui.core.initialRestore.mapID;
     const restoreTransparency = ui.core.initialRestore.transparency;
     const enableOutOfMap = !appOption.presentation_mode;
+    const enablePoiHtmlNoScroll = appOption.enablePoiHtmlNoScroll;
 
     if (appOption.enableShare) {
       ui.core.mapDivDocument.classList.add("enable_share");
@@ -273,8 +274,10 @@ export class MaplatUi extends EventTarget {
         </d> 
 
         <d c="modal_poi_content">
-          <d c="poi_web embed-responsive embed-responsive-60vh">
-            <iframe c="poi_iframe iframe_poi" frameborder="0" src=""></iframe>
+          <d c="poi_web${enablePoiHtmlNoScroll ? '' : ' embed-responsive embed-responsive-60vh'}">
+            <iframe c="poi_iframe iframe_poi" frameborder="0" src=""${
+              enablePoiHtmlNoScroll ? ` onload="const px = this.contentWindow.document.documentElement.offsetHeight + 'px'; console.log(px);this.style.height = px;" scrolling="no"` : ''
+            }></iframe>
           </d> 
           <d c="poi_data hide">
             <d c="col-xs-12 swiper-container poi_img_swiper">
