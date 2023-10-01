@@ -276,7 +276,7 @@ export class MaplatUi extends EventTarget {
         <d c="modal_poi_content">
           <d c="poi_web${enablePoiHtmlNoScroll ? '' : ' embed-responsive embed-responsive-60vh'}">
             <iframe c="poi_iframe iframe_poi" frameborder="0" src=""${
-              enablePoiHtmlNoScroll ? ` onload="const px = (this.contentDocument.body.scrollHeight * 1.2) + 'px'; this.style.height = px;console.log('AAAA'); window.addEventListener('message', (e) =>{console.log(e);});" scrolling="no"` : ''
+              enablePoiHtmlNoScroll ? ` onload="window.addEventListener('message', (e) =>{if (e.data[0] == 'setHeight') {console.log(this.style.height = e.data[1]);}});" scrolling="no"` : ''
             }></iframe>
           </d> 
           <d c="poi_data hide">
@@ -1428,7 +1428,7 @@ enable-background="new 0 0 10 10" xml:space="preserve">
             `<script>
               const heightGetter = document.querySelector("#heightGetter");
               const resizeObserver = new ResizeObserver(entries => {
-                window.parent.postMessage(["setHeight", entries[0].target.clientHeight + "px"], "*");
+                window.parent.postMessage(["setHeight", (entries[0].target.clientHeight + 16) + "px"], "*");
               });
               resizeObserver.observe(heightGetter);
             </script>`
