@@ -276,7 +276,7 @@ export class MaplatUi extends EventTarget {
         <d c="modal_poi_content">
           <d c="poi_web${enablePoiHtmlNoScroll ? '' : ' embed-responsive embed-responsive-60vh'}">
             <iframe c="poi_iframe iframe_poi" frameborder="0" src=""${
-              enablePoiHtmlNoScroll ? ` onload="const px = (this.contentDocument.body.scrollHeight * 1.2) + 'px'; this.style.height = px;" scrolling="no"` : ''
+              enablePoiHtmlNoScroll ? ` onload="const px = (this.contentDocument.body.scrollHeight * 1.2) + 'px'; this.style.height = px;console.log('AAAA'); window.addEventListener('message', (e) =>{console.log(e);});" scrolling="no"` : ''
             }></iframe>
           </d> 
           <d c="poi_data hide">
@@ -1424,10 +1424,20 @@ enable-background="new 0 0 10 10" xml:space="preserve">
           const cssLink = createElement(
             '<style type="text/css">html, body { height: 100vh; }\n img { width: 100%; }</style>'
           );
+          const jsLink = createElement(
+            `<script>
+              const heightGetter = document.querySelector("#heightGetter");
+              const resizeObserver = new ResizeObserver(entries => {
+                window.parent.postMessage(["setHeight", entries[0].target.clientHeight + "px"], "*");
+              });
+              resizeObserver.observe(heightGetter);
+            </script>`
+          );
           iframe.contentDocument.head.appendChild(cssLink[0]);
+          iframe.contentDocument.head.appendChild(jsLink[0]);
         });
         iframe.removeAttribute("src");
-        iframe.setAttribute("srcdoc", this.core.translate(data.html));
+        iframe.setAttribute("srcdoc", `<div id="heightGetter">${this.core.translate(data.html)}</div>`);
       } else {
         iframe.removeAttribute("srcdoc");
         iframe.setAttribute("src", this.core.translate(data.url));
