@@ -274,9 +274,15 @@ export class MaplatUi extends EventTarget {
         </d> 
 
         <d c="modal_poi_content">
-          <d c="poi_web${enablePoiHtmlNoScroll ? '' : ' embed-responsive embed-responsive-60vh'}">
+          <d c="poi_web${
+            enablePoiHtmlNoScroll
+              ? ""
+              : " embed-responsive embed-responsive-60vh"
+          }">
             <iframe c="poi_iframe iframe_poi" frameborder="0" src=""${
-              enablePoiHtmlNoScroll ? ` onload="window.addEventListener('message', (e) =>{if (e.data[0] == 'setHeight') {console.log(this.style.height = e.data[1]);}});" scrolling="no"` : ''
+              enablePoiHtmlNoScroll
+                ? ` onload="window.addEventListener('message', (e) =>{if (e.data[0] == 'setHeight') {console.log(this.style.height = e.data[1]);}});" scrolling="no"`
+                : ""
             }></iframe>
           </d> 
           <d c="poi_data hide">
@@ -1437,7 +1443,10 @@ enable-background="new 0 0 10 10" xml:space="preserve">
           iframe.contentDocument.head.appendChild(jsLink[0]);
         });
         iframe.removeAttribute("src");
-        iframe.setAttribute("srcdoc", `<div id="heightGetter">${this.core.translate(data.html)}</div>`);
+        iframe.setAttribute(
+          "srcdoc",
+          `<div id="heightGetter">${this.core.translate(data.html)}</div>`
+        );
       } else {
         iframe.removeAttribute("srcdoc");
         iframe.setAttribute("src", this.core.translate(data.url));
