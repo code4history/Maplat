@@ -156,6 +156,7 @@ export class MaplatUi extends EventTarget {
     const enableSplash = !ui.core.initialRestore.mapID;
     const restoreTransparency = ui.core.initialRestore.transparency;
     const enableOutOfMap = !appOption.presentation_mode;
+    const enablePoiHtmlNoScroll = appOption.enablePoiHtmlNoScroll;
 
     if (appOption.enableShare) {
       ui.core.mapDivDocument.classList.add("enable_share");
@@ -188,9 +189,6 @@ export class MaplatUi extends EventTarget {
     }
     if (appOption.appEnvelope) {
       ui.appEnvelope = true;
-    }
-    if (appOption.northTop) {
-      ui.northTop = true;
     }
 
     let pwaManifest = appOption.pwaManifest;
@@ -276,8 +274,16 @@ export class MaplatUi extends EventTarget {
         </d> 
 
         <d c="modal_poi_content">
-          <d c="poi_web embed-responsive embed-responsive-60vh">
-            <iframe c="poi_iframe iframe_poi" frameborder="0" src=""></iframe>
+          <d c="poi_web${
+            enablePoiHtmlNoScroll
+              ? ""
+              : " embed-responsive embed-responsive-60vh"
+          }">
+            <iframe c="poi_iframe iframe_poi" frameborder="0" src=""${
+              enablePoiHtmlNoScroll
+                ? ` onload="window.addEventListener('message', (e) =>{if (e.data[0] == 'setHeight') {console.log(this.style.height = e.data[1]);}});" scrolling="no"`
+                : ""
+            }></iframe>
           </d> 
           <d c="poi_data hide">
             <d c="col-xs-12 swiper-container poi_img_swiper">
@@ -514,8 +520,7 @@ export class MaplatUi extends EventTarget {
           tipLabel: ui.core.t("control.info", { ns: "translation" })
         }),
         new CompassRotate({
-          tipLabel: ui.core.t("control.compass", { ns: "translation" }),
-          northTop: ui.northTop
+          tipLabel: ui.core.t("control.compass", { ns: "translation" })
         }),
         new Zoom({
           tipLabel: ui.core.t("control.zoom", { ns: "translation" })
@@ -1423,13 +1428,25 @@ enable-background="new 0 0 10 10" xml:space="preserve">
         iframe.addEventListener("load", function loadEvent(event) {
           event.currentTarget.removeEventListener(event.type, loadEvent);
           const cssLink = createElement(
-            '<style type="text/css">html, body { height: 100vh; }\n img { width: 100vw; }</style>'
+            '<style type="text/css">html, body { height: 100vh; }\n img { width: 100%; }</style>'
           );
-          console.log(cssLink); // eslint-disable-line no-undef
+          const jsLink = createElement(
+            `<script>
+              const heightGetter = document.querySelector("#heightGetter");
+              const resizeObserver = new ResizeObserver(entries => {
+                window.parent.postMessage(["setHeight", (entries[0].target.clientHeight + 16) + "px"], "*");
+              });
+              resizeObserver.observe(heightGetter);
+            </script>`
+          );
           iframe.contentDocument.head.appendChild(cssLink[0]);
+          iframe.contentDocument.head.appendChild(jsLink[0]);
         });
         iframe.removeAttribute("src");
-        iframe.setAttribute("srcdoc", this.core.translate(data.html));
+        iframe.setAttribute(
+          "srcdoc",
+          `<div id="heightGetter">${this.core.translate(data.html)}</div>`
+        );
       } else {
         iframe.removeAttribute("srcdoc");
         iframe.setAttribute("src", this.core.translate(data.url));
@@ -1595,7 +1612,6 @@ enable-background="new 0 0 10 10" xml:space="preserve">
         .filter(source => source.envelopeAreaIndex / areaIndex < threshold)
         .sort((a, b) => a.envelopeAreaIndex - b.envelopeAreaIndex)
         .map(source => source.mapID);
-      console.log(mapIDs);
       return mapIDs;
     });
   }

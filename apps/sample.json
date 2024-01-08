@@ -38,5 +38,5 @@
             "label" : "Mapbox"
         }
     ], 
-    "pois" : "morioka_all_poi.json"
+    "pois" : "morioka_one_poi.json"
 }

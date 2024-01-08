@@ -31,10 +31,12 @@
         enable_share: true,
         presentation_mode: true,
         pwa_manifest: true,
-        northTop: true,
+        northUp: true,
         mapboxgl: mapboxgl,
         mapboxToken: 'YOUR-ACCESS-TOKEN',
-        tapDuration: 60000
+        tapDuration: 60000,
+        tapUIVanish: true,
+        enablePoiHtmlNoScroll: true
     };
     var hashes = (window.location.href.split('#!'))[0];
     hashes = hashes.slice(window.location.href.indexOf('?') + 1).split('&');
