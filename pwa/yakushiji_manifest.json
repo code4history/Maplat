@@ -1,0 +1,23 @@
+{
+  "name": "ぷらっと薬師寺",
+  "short_name": "ぷら薬師寺",
+  "background_color": "#f6f0d3",
+  "icons": [
+    {
+      "src": "yakushiji/manifest-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "yakushiji/manifest-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "start_url": "https://s.maplat.jp/r/yakushijimap/",
+  "scope": "/r/yakushijimap/",
+  "display": "standalone",
+  "theme_color": "#f6f0d3"
+}
