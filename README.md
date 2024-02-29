@@ -1,5 +1,4 @@
 ![Maplat Logo](https://code4history.github.io/Maplat/page_imgs/maplat.png)
-![Maplat Catch Phrase](https://code4history.github.io/Maplat/page_imgs/homeomorphic.png)
 
 # 新聞記事を見て来られた方へ
 見てみたい内容で以下の遷移先へどうぞ！
