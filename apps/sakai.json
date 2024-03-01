@@ -25,6 +25,13 @@
                 "en": "Sakai (1735)"
             }
         },
+        {
+            "mapID": "sakai-1851",
+            "label": {
+                "ja": "堺大繪圖",
+                "en": "Sakai (1851)"
+            }
+        },
         "gsi",
         "gsi_ortho",
         {
