@@ -3,7 +3,7 @@
         "ja": "ぷらっと堺 - 堺を楽しむ古地図/絵地図街歩きアプリ",
         "en": "Maplat Sakai"
     },
-    "splash" : "sakai_splash.png",
+    "splash": "sakai_splash.png",
     "lang": "ja",
     "fake_gps": true,
     "fake_center": {
@@ -16,10 +16,10 @@
         34.576412364864424
     ],
     "default_zoom": 17,
-    "start_from": "sakai",
+    "start_from": "sakai-1735",
     "sources": [
         {
-            "mapID": "sakai",
+            "mapID": "sakai-1735",
             "label": {
                 "ja": "改正堺繪圖",
                 "en": "Sakai (1735)"
@@ -42,8 +42,8 @@
         "gsi",
         "gsi_ortho",
         {
-            "mapID" : "mapbox",
-            "label" : "Mapbox"
+            "mapID": "mapbox",
+            "label": "Mapbox"
         },
         "osm"
     ],
