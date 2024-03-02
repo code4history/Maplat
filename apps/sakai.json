@@ -32,6 +32,13 @@
                 "en": "Sakai (1851)"
             }
         },
+        {
+            "mapID": "sakai-1872",
+            "label": {
+                "ja": "堺市圖",
+                "en": "Sakai (1872)"
+            }
+        },
         "gsi",
         "gsi_ortho",
         {
