@@ -1,0 +1,55 @@
+import type OlMap from 'ol/Map';
+import type { Coordinate } from 'ol/coordinate';
+import MapBrowserEvent from 'ol/MapBrowserEvent';
+export declare enum EventTypes {
+    CONTEXTMENU = "contextmenu",
+    CLICK = "click",
+    DBLCLICK = "dblclick"
+}
+export declare enum CustomEventTypes {
+    BEFOREOPEN = "beforeopen",
+    OPEN = "open",
+    CLOSE = "close",
+    ADD_MENU_ENTRY = "add-menu-entry"
+}
+export declare class ContextMenuEvent extends MapBrowserEvent<MouseEvent> {
+    constructor(options: {
+        type: `${CustomEventTypes.BEFOREOPEN}` | `${CustomEventTypes.OPEN}`;
+        map: OlMap;
+        originalEvent: MouseEvent;
+    });
+}
+export type CallbackObject = {
+    coordinate: Coordinate;
+    data: unknown;
+};
+export type ItemSeparator = '-';
+export type SingleItem = {
+    text: string;
+    classname?: string;
+    icon?: string;
+    callback: (object: CallbackObject, map: OlMap) => void;
+    data?: unknown;
+};
+export type MenuEntry = {
+    id: string;
+    isSubmenu: boolean;
+    isInsideSubmenu: boolean;
+    isSeparator: boolean;
+    callback: SingleItem['callback'] | null;
+    data: unknown;
+};
+export type ItemWithNested = {
+    text: string;
+    classname?: string;
+    icon?: string;
+    items: Item[];
+};
+export type Item = SingleItem | ItemSeparator | ItemWithNested;
+export type Options = {
+    width: number;
+    scrollAt: number;
+    eventType: `${EventTypes}`;
+    defaultItems: boolean;
+    items: Item[];
+};

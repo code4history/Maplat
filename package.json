@@ -44,15 +44,16 @@
   },
   "homepage": "https://github.com/code4history/Maplat/wiki",
   "dependencies": {
-    "@maplat/core": "https://github.com/code4history/MaplatCore#yamato_koriyama_4",
+    "@maplat/core": "github:code4history/MaplatCore#ol9",
     "@maplat/tin": "^0.9.4",
     "@turf/turf": "^6.5.0",
-    "caniuse-lite": "^1.0.30001431",
+    "caniuse-lite": "^1.0.30001591",
     "lodash.template": "^4.5.0",
-    "ol": "^6.14.1",
+    "ol": "^9.0.0",
     "ol-contextmenu": "^4.1.0",
     "swiper": "^6.7.1",
     "swiper4": "npm:swiper@^4.5.1",
+    "tiny-emitter": "^2.1.0",
     "weiwudi": "^0.1.4"
   },
   "devDependencies": {
@@ -100,7 +101,9 @@
     "workbox-strategies": "^6.5.4",
     "workbox-webpack-plugin": "^6.5.4"
   },
-  "resolutions": {
-    "concaveman": "https://github.com/grassick/concaveman#patch-1"
+  "overrides": {
+    "@babel/traverse": "7.23.2",
+    "glob-parent": "5.1.2",
+    "axios": "1.6.0"
   }
 }
