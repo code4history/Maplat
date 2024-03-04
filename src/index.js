@@ -29,6 +29,7 @@ import { asArray } from "ol/color";
 import { HistMap } from "@maplat/core/lib/source/histmap";
 import { TmsMap } from "@maplat/core/lib/source/tmsmap";
 import { NowMap } from "@maplat/core/lib/source/nowmap";
+import { GoogleMap } from "@maplat/core/lib/source/googlemap";
 import Weiwudi from "weiwudi";
 import { normalizeArg } from "./function";
 import pointer from "./pointer_images";
@@ -686,7 +687,7 @@ export class MaplatUi extends EventTarget {
       const overlaySources = [];
       for (let i = 0; i < sources.length; i++) {
         const source = sources[i];
-        if (source instanceof NowMap && !(source instanceof TmsMap)) {
+        if ((source instanceof NowMap && !(source instanceof TmsMap)) || source instanceof GoogleMap) {
           baseSources.push(source);
         } else {
           overlaySources.push(source);
@@ -1575,7 +1576,7 @@ enable-background="new 0 0 10 10" xml:space="preserve">
     const size = map.getSize();
     const extent = [[0, 0], [size[0], 0], size, [0, size[1]], [0, 0]];
     const sysCoords = extent.map(pixel => map.getCoordinateFromPixel(pixel));
-    const mercs = await (ui.core.from instanceof NowMap
+    const mercs = await (ui.core.from instanceof NowMap || ui.core.from instanceof GoogleMap
       ? Promise.resolve(sysCoords)
       : Promise.all(
           sysCoords.map(sysCoord => ui.core.from.sysCoord2MercAsync(sysCoord))
