@@ -39,6 +39,20 @@
                 "en": "Sakai (1872)"
             }
         },
+        {
+            "mapID": "sakai-kango-area",
+            "label": {
+                "ja": "環濠エリア",
+                "en": "Kango Area"
+            }
+        },
+        {
+            "mapID": "mozu-furuichi",
+            "label": {
+                "ja": "百舌鳥古市",
+                "en": "Mozu Furuichi"
+            }
+        },
         "gsi",
         "gsi_ortho",
         {
