@@ -3,7 +3,7 @@
         "ja": "ぷらっと会津若松 - 会津若松を楽しむ古地図/絵地図街歩きアプリ",
         "en": "Maplat Aizuwakamatsu"
     },
-    "splash" : "aizu_splash.png",
+    "splash": "aizu_splash.png",
     "lang": "ja",
     "fake_gps": true,
     "fake_center": {
@@ -81,7 +81,24 @@
             "maptype": "overlay",
             "url": "https://t.tilemap.jp/jcp_maps/wakamatsu/{z}/{x}/{-y}.png",
             "maxZoom": 16,
-            "envelopeLngLats" : [[139.90101308591164, 37.523848776110384], [139.95794705763817, 37.52390560293867], [139.95730934084384, 37.46644763380387], [139.90049820485194, 37.466379239469816]]
+            "envelopeLngLats": [
+                [
+                    139.90101308591164,
+                    37.523848776110384
+                ],
+                [
+                    139.95794705763817,
+                    37.52390560293867
+                ],
+                [
+                    139.95730934084384,
+                    37.46644763380387
+                ],
+                [
+                    139.90049820485194,
+                    37.466379239469816
+                ]
+            ]
         },
         {
             "mapID": "aizu_1961",
@@ -107,8 +124,12 @@
         "gsi",
         "gsi_ortho",
         {
-            "mapID" : "mapbox",
-            "label" : "Mapbox"
+            "mapID": "mapbox",
+            "label": "Mapbox"
+        },
+        {
+            "mapID": "google",
+            "label": "Google"
         },
         "osm"
     ],

@@ -1,33 +1,36 @@
 {
-    "app_name" : {
-        "ja" : "ぷらっと水戸 - 水戸を楽しむ古地図/絵地図街歩きアプリ",
-        "en" : "Maplat Mito"
+    "app_name": {
+        "ja": "ぷらっと水戸 - 水戸を楽しむ古地図/絵地図街歩きアプリ",
+        "en": "Maplat Mito"
     },
     "description": "まち歩きの地図サービス「ぷらっと水戸」をあなたのスマートフォンで、タブレットで！梅でおなじみの水戸は中世以来の歴史を持ち、水戸徳川家の本拠地として大規模な城下町が営まれていました。今でもその痕跡が各地にみられます。古地図は縮尺や方角が正確でないこともありますが、現代地図が自動的に合わせてくれるのでわかりやすい！大手門・隅櫓などの再建が進みより想像しやすくなった水戸のまちなみをぜひ訪ねてみてください。",
-    "splash" : "mito_splash.png",
+    "splash": "mito_splash.png",
     "lang": "ja",
-    "fake_gps" : true,
-    "fake_center" : "弘道館",
-    "fake_radius" : 10,
-    "home_position" : [ 140.4773091747215, 36.37532743309838 ],
-    "default_zoom" : 17,
+    "fake_gps": true,
+    "fake_center": "弘道館",
+    "fake_radius": 10,
+    "home_position": [
+        140.4773091747215,
+        36.37532743309838
+    ],
+    "default_zoom": 17,
     "start_from": "mito_edo",
-    "sources" : [
+    "sources": [
         {
-            "mapID" : "mito_edo",
-            "label" : "江戸"
+            "mapID": "mito_edo",
+            "label": "江戸"
         },
         {
-            "mapID" : "mito_1661",
-            "label" : "万治4"
+            "mapID": "mito_1661",
+            "label": "万治4"
         },
         {
-            "mapID" : "mito_1890",
-            "label" : "明治23"
+            "mapID": "mito_1890",
+            "label": "明治23"
         },
         {
-            "mapID" : "mito_1915",
-            "label" : "大正4"
+            "mapID": "mito_1915",
+            "label": "大正4"
         },
         {
             "title": "Mito - Japan City Plans",
@@ -43,19 +46,40 @@
             "maptype": "overlay",
             "url": "https://t.tilemap.jp/jcp_maps/mito/{z}/{x}/{-y}.png",
             "maxZoom": 16,
-            "envelopeLngLats" : [[140.54449947954032, 36.350708959947866], [140.41850861038526, 36.35069007036196], [140.4189621678005, 36.41283812382862], [140.54506031532773, 36.412831003870636]]
+            "envelopeLngLats": [
+                [
+                    140.54449947954032,
+                    36.350708959947866
+                ],
+                [
+                    140.41850861038526,
+                    36.35069007036196
+                ],
+                [
+                    140.4189621678005,
+                    36.41283812382862
+                ],
+                [
+                    140.54506031532773,
+                    36.412831003870636
+                ]
+            ]
         },
         "gsi",
         "gsi",
         "gsi_ortho",
         {
-            "mapID" : "mapbox",
-            "label" : "Mapbox"
+            "mapID": "mapbox",
+            "label": "Mapbox"
+        },
+        {
+            "mapID": "google",
+            "label": "Google"
         },
         "osm"
-    ], 
-    "pois" :[
-      "mito_chomei.geojson",
-      "mito_kanko_poi.geojson"
+    ],
+    "pois": [
+        "mito_chomei.geojson",
+        "mito_kanko_poi.geojson"
     ]
 }

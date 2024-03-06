@@ -3,7 +3,7 @@
         "ja": "ぷらっといわき - いわきを楽しむ古地図/絵地図街歩きアプリ",
         "en": "Maplat Iwaki"
     },
-    "splash" : "iwaki_splash.png",
+    "splash": "iwaki_splash.png",
     "lang": "ja",
     "fake_gps": true,
     "fake_center": {
@@ -70,8 +70,12 @@
         "gsi",
         "gsi_ortho",
         {
-            "mapID" : "mapbox",
-            "label" : "Mapbox"
+            "mapID": "mapbox",
+            "label": "Mapbox"
+        },
+        {
+            "mapID": "google",
+            "label": "Google"
         },
         "osm"
     ],
@@ -133,8 +137,5 @@
             },
             "url": "https://ja.m.wikipedia.org/wiki/%E6%99%AE%E9%96%80%E5%AF%BA_(%E3%81%84%E3%82%8F%E3%81%8D%E5%B8%82)"
         }
-
-
-
     ]
 }

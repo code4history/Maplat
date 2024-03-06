@@ -52,8 +52,12 @@
         "gsi",
         "gsi_ortho",
         {
-            "mapID" : "mapbox",
-            "label" : "Mapbox"
+            "mapID": "mapbox",
+            "label": "Mapbox"
+        },
+        {
+            "mapID": "google",
+            "label": "Google"
         },
         "osm"
     ],

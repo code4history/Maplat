@@ -72,6 +72,10 @@
             "map_id" : "mapbox",
             "label" : "Mapbox"
         },
+        {
+            "map_id": "google",
+            "label": "Google"
+        },
         "osm"
     ],
     "pois": [

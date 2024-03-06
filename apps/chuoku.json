@@ -1,64 +1,71 @@
 {
-    "app_name" : {
-        "ja" : "ぷらっと東京中央区 - 東京都中央区を楽しむ古地図/絵地図街歩きアプリ",
-        "en" : "Maplat Tokyo Chuoku"
+    "app_name": {
+        "ja": "ぷらっと東京中央区 - 東京都中央区を楽しむ古地図/絵地図街歩きアプリ",
+        "en": "Maplat Tokyo Chuoku"
     },
-    "splash" : "chuoku_splash.png",
+    "splash": "chuoku_splash.png",
     "lang": "ja",
-    "fake_gps" : true,
-    "fake_center" : "JR八丁堀",
-    "fake_radius" : 10,
-    "home_position" : [ 139.777708, 35.674717 ],
-    "default_zoom" : 17,
+    "fake_gps": true,
+    "fake_center": "JR八丁堀",
+    "fake_radius": 10,
+    "home_position": [
+        139.777708,
+        35.674717
+    ],
+    "default_zoom": 17,
     "start_from": "miesan_kayabacho_map",
-    "sources" : [
+    "sources": [
         {
-            "mapID" : "edo_tsukiji_hacchobori_19c",
-            "label" : "江戸築地"
+            "mapID": "edo_tsukiji_hacchobori_19c",
+            "label": "江戸築地"
         },
         {
-            "mapID" : "edo_nihonbashi_kanda_19c",
-            "label" : "江戸日本橋"
+            "mapID": "edo_nihonbashi_kanda_19c",
+            "label": "江戸日本橋"
         },
         {
-            "mapID" : "tokyo_kyobashi_ward_1906",
-            "label" : "明治京橋"
+            "mapID": "tokyo_kyobashi_ward_1906",
+            "label": "明治京橋"
         },
         {
-            "mapID" : "tokyo_nihonbashi_ward_1906",
-            "label" : "明治日本橋"
+            "mapID": "tokyo_nihonbashi_ward_1906",
+            "label": "明治日本橋"
         },
         {
-            "mapID" : "miesan_nihombashi_map",
-            "label" : "街歩き日本橋"
+            "mapID": "miesan_nihombashi_map",
+            "label": "街歩き日本橋"
         },
         {
-            "mapID" : "miesan_ginza_map",
-            "label" : "街歩き銀座"
+            "mapID": "miesan_ginza_map",
+            "label": "街歩き銀座"
         },
         {
-            "mapID" : "miesan_tsukiji_map",
-            "label" : "街歩き築地"
+            "mapID": "miesan_tsukiji_map",
+            "label": "街歩き築地"
         },
         {
-            "mapID" : "miesan_ningyocho_map",
-            "label" : "街歩き人形町"
+            "mapID": "miesan_ningyocho_map",
+            "label": "街歩き人形町"
         },
         {
-            "mapID" : "miesan_kayabacho_map",
-            "label" : "街歩き茅場町"
+            "mapID": "miesan_kayabacho_map",
+            "label": "街歩き茅場町"
         },
         {
-            "mapID" : "miesan_tsukishima_map",
-            "label" : "街歩き月島"
+            "mapID": "miesan_tsukishima_map",
+            "label": "街歩き月島"
         },
         "gsi",
         "gsi_ortho",
         {
-            "mapID" : "mapbox",
-            "label" : "Mapbox"
+            "mapID": "mapbox",
+            "label": "Mapbox"
+        },
+        {
+            "mapID": "google",
+            "label": "Google"
         },
         "osm"
     ],
-    "pois" :[]
+    "pois": []
 }

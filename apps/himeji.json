@@ -3,7 +3,7 @@
         "ja": "ぷらっと姫路 - 姫路を楽しむ古地図/絵地図街歩きアプリ",
         "en": "Maplat Himeji"
     },
-    "splash" : "himeji_splash.png",
+    "splash": "himeji_splash.png",
     "lang": "ja",
     "fake_gps": true,
     "fake_center": {
@@ -39,13 +39,34 @@
             "maptype": "overlay",
             "url": "https://t.tilemap.jp/jcp_maps/himeji/{z}/{x}/{-y}.png",
             "maxZoom": 16,
-            "envelopeLngLats" : [[134.73739252006752, 34.80283574570777], [134.6410828742192, 34.80282469543059], [134.64154938270025, 34.87013580851463], [134.73794145035222, 34.870131826833216]]
+            "envelopeLngLats": [
+                [
+                    134.73739252006752,
+                    34.80283574570777
+                ],
+                [
+                    134.6410828742192,
+                    34.80282469543059
+                ],
+                [
+                    134.64154938270025,
+                    34.87013580851463
+                ],
+                [
+                    134.73794145035222,
+                    34.870131826833216
+                ]
+            ]
         },
         "gsi",
         "gsi_ortho",
         {
-            "mapID" : "mapbox",
-            "label" : "Mapbox"
+            "mapID": "mapbox",
+            "label": "Mapbox"
+        },
+        {
+            "mapID": "google",
+            "label": "Google"
         },
         "osm"
     ],
