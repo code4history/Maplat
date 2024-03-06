@@ -1,4 +1,4 @@
-import ContextMenuBase from "ol-contextmenu";
+import ContextMenuBase from "./contextmenu/base";
 
 export default class ContextMenu extends ContextMenuBase {
   constructor(options) {

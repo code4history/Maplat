@@ -18,24 +18,29 @@
     "start_from" : "morioka_ndl2",
     "sources" : [
         {
-            "label" : "1644 (TMS)",
-            "map_id" : "morioka_ndl_affine"
+            "label": "1644 (TMS)",
+            "map_id": "morioka_ndl_affine"
         },
         {
-            "map_id"     : "morioka_ndl2",
-            "setting_file" : "maps/morioka_ndl.json",
-            "label" : "1644 (Maplat)",
-            "url" : "tiles/morioka_ndl/{z}/{x}/{y}.jpg",
-            "thumbnail" : "tmbs/morioka_ndl.jpg"
+            "map_id": "morioka_ndl2",
+            "setting_file": "maps/morioka_ndl.json",
+            "label": "1644 (Maplat)",
+            "url": "tiles/morioka_ndl/{z}/{x}/{y}.jpg",
+            "thumbnail": "tmbs/morioka_ndl.jpg"
         },
         {
-            "map_id"     : "morioka"
+            "label": "Morioka Castle",
+            "map_id": "morioka"
         },
         "gsi",
         "osm",
         {
-            "map_id" : "mapbox",
+            "map_id": "mapbox",
             "label" : "Mapbox"
+        },
+        {
+            "map_id": "google",
+            "label": "Google"
         }
     ], 
     "pois" : "morioka_one_poi.json"
