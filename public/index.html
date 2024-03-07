@@ -6,7 +6,6 @@
   <meta content="yes" name="apple-mobile-web-app-capable">
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <link rel="icon" type="image/png" href="parts/favicon.png">
-  <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.6.1/mapbox-gl.css" rel="stylesheet">
   <style>
     .mainview {
         position: absolute;
@@ -21,7 +20,6 @@
   <div class="mainview">
     <div id="map_div"></div>
   </div>
-  <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v1.6.1/mapbox-gl.js"></script>
 </body>
 <script>
     var option = {
@@ -32,8 +30,8 @@
         presentation_mode: true,
         pwa_manifest: true,
         northUp: true,
-        mapboxgl: mapboxgl,
-        mapboxToken: 'YOUR-ACCESS-TOKEN',
+        mapboxToken: 'pk.eyJ1Ijoia29jaGl6dWZhbiIsImEiOiJjbHRnaWhzOW8wd2p4MmtvZDFsOWJiOG40In0.FYTPboTqXKv5a_onOaW1vQ',
+        googleApiKey: 'AIzaSyB0v_F9EVPbE7R2uOm6Mixrtzts21DEICc',
         tapDuration: 60000,
         tapUIVanish: true,
         enablePoiHtmlNoScroll: true
