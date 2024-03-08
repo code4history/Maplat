@@ -1,0 +1,62 @@
+{
+    "app_name": {
+        "ja": "ぷらっと長浜・竹生島 - 長浜・竹生島を楽しむ古地図/絵地図街歩きアプリ",
+        "en": "Maplat Nagahama"
+    },
+    "splash": "nagahama_splash.png",
+    "lang": "ja",
+    "fake_gps": true,
+    "fake_center": {
+        "ja": "長浜",
+        "en": "Naghama"
+    },
+    "fake_radius": 10,
+    "home_position": [
+        136.26709137564265,
+        35.380642225972935
+    ],
+    "default_zoom": 17,
+    "start_from": "nagahama-kanko",
+    "sources": [
+        {
+            "mapID": "nagahama-kanko",
+            "label": {
+                "ja": "観光マップ",
+                "en": "Sightseeing"
+            }
+        },
+        {
+            "mapID": "nagahama-machiaruki-map",
+            "label": {
+                "ja": "まち歩き",
+                "en": "Strolling"
+            }
+        },
+        {
+            "mapID": "hogenji",
+            "label": {
+                "ja": "宝厳寺",
+                "en": "Hogenji"
+            }
+        },
+        {
+            "mapID": "hogenji-tsukubusuma",
+            "label": {
+                "ja": "都久夫須麻",
+                "en": "Tsukubusuma"
+            }
+        },
+        "gsi",
+        "gsi_ortho",
+        {
+            "mapID": "mapbox",
+            "label": "Mapbox"
+        },
+        {
+            "mapID": "google",
+            "label": "Google"
+        },
+        "osm"
+    ],
+    "pois": []
+}

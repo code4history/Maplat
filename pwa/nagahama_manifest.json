@@ -1,0 +1,23 @@
+{
+  "name": "ぷらっと長浜・竹生島",
+  "short_name": "ぷら長浜",
+  "background_color": "#f6f0d3",
+  "icons": [
+    {
+      "src": "nagahama/manifest-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "nagahama/manifest-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "start_url": "https://s.maplat.jp/r/nagahamamap/",
+  "scope": "/r/nagahamamap/",
+  "display": "standalone",
+  "theme_color": "#f6f0d3"
+}
