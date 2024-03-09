@@ -108,6 +108,13 @@
             }
         },
         {
+            "mapID": "burarikita-2024",
+            "label": {
+                "ja": "ぶらきた2024",
+                "en": "Kitamachi-2024"
+            }
+        },
+        {
             "mapID": "naramachi_omoshiro_part1",
             "label": {
                 "ja": "ならまち初心者",
