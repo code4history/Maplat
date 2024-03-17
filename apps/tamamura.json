@@ -52,7 +52,7 @@
             },
             "mapID" : "kanto_rapid-900913",
             "maptype" : "overlay",
-            "url" : "https://aginfo.cgk.affrc.go.jp/ws/tmc/1.0.0/Kanto_Rapid-900913-L/{z}/{x}/{y}.jpg",
+            "url" : "https://boiledorange73.sakura.ne.jp/ws/tile/Kanto_Rapid-900913/{z}/{x}/{y}.jpg",
             "maxZoom": 17,
             "mercatorXShift": -87.85100000041227,
             "mercatorYShift": 32.25345000003775,
