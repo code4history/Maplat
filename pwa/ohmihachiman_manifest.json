@@ -1,0 +1,23 @@
+{
+  "name": "ぷらっと近江八幡",
+  "short_name": "ぷら八幡",
+  "background_color": "#f6f0d3",
+  "icons": [
+    {
+      "src": "ohmihachiman/manifest-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "ohmihachiman/manifest-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "start_url": "https://s.maplat.jp/r/ohmihachimanmap/",
+  "scope": "/r/ohmihachimanmap/",
+  "display": "standalone",
+  "theme_color": "#f6f0d3"
+}

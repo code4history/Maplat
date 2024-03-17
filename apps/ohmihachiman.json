@@ -1,0 +1,48 @@
+{
+    "app_name": {
+        "ja": "ぷらっと近江八幡 - 近江八幡を楽しむ古地図/絵地図街歩きアプリ",
+        "en": "Maplat Ohmi-Hachiman"
+    },
+    "splash": "ohmihachiman_splash.png",
+    "lang": "ja",
+    "fake_gps": true,
+    "fake_center": {
+        "ja": "近江八幡",
+        "en": "Ohmi-Hachiman"
+    },
+    "fake_radius": 10,
+    "home_position": [
+        136.08995594509312,
+        35.139886954261094
+    ],
+    "default_zoom": 17,
+    "start_from": "ohmihachiman",
+    "sources": [
+        {
+            "mapID": "ohmihachiman",
+            "label": {
+                "ja": "観光マップ",
+                "en": "Sightseeing"
+            }
+        },
+        {
+            "mapID": "hachimanhori",
+            "label": {
+                "ja": "八幡堀",
+                "en": "Hachiman-Hori"
+            }
+        },
+        "gsi",
+        "gsi_ortho",
+        {
+            "mapID": "mapbox",
+            "label": "Mapbox"
+        },
+        {
+            "mapID": "google",
+            "label": "Google"
+        },
+        "osm"
+    ],
+    "pois": []
+}
