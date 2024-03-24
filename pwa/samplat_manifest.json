@@ -1,0 +1,23 @@
+{
+  "name": "さんぷらっと",
+  "short_name": "Samplat",
+  "background_color": "#FFFFFF",
+  "icons": [
+    {
+      "src": "samplat/manifest-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "samplat/manifest-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "start_url": "https://s.maplat.jp/r/samplat/",
+  "scope": "/r/samplat/",
+  "display": "standalone",
+  "theme_color": "#FFFFFF"
+}

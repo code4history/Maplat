@@ -1,0 +1,48 @@
+{
+    "app_name" : {
+        "ja" : "さんぷらっと",
+        "en" : "Samplat"
+    },
+    "lang" : "ja",
+    "fake_gps" : true,
+    "fake_center" : {
+        "ja" : "京都市",
+        "en" : "Kyoto"
+    },
+    "fake_radius" : 10,
+    "home_position" : [141.149989,39.699952],
+    "default_zoom" : 17,
+    "zoom_restriction" : true,
+    "min_zoom" : 10,
+    "max_zoom" : 18,
+    "start_from" : "cutout_kyoto-station",
+    "sources" : [
+        {
+            "label": "京都駅",
+            "map_id": "cutout_kyoto-station"
+        },
+        {
+            "label": "京都衣笠",
+            "map_id": "cutout_kinugasa"
+        },
+        {
+            "label": "大阪天満1863",
+            "map_id": "cutout_osaka-temma_1863"
+        },
+        {
+            "label": "大阪天満1895",
+            "map_id": "cutout_osaka-temma_1895"
+        },
+        "gsi",
+        "osm",
+        {
+            "map_id": "mapbox",
+            "label" : "Mapbox"
+        },
+        {
+            "map_id": "google",
+            "label": "Google"
+        }
+    ], 
+    "pois" : []
+}
