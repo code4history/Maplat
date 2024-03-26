@@ -20,7 +20,7 @@ import {
   Maplat,
   Border,
   HideMarker,
-  SliderCommon,
+  SliderNew,
   Share,
   Zoom,
   setControlSettings
@@ -515,7 +515,7 @@ export class MaplatUi extends EventTarget {
       if (restoreTransparency) {
         options.initialValue = restoreTransparency / 100;
       }
-      ui.sliderCommon = new SliderCommon(options);
+      ui.sliderNew = new SliderNew(options);
       ui.core.appData.controls = [
         new Copyright({
           tipLabel: ui.core.t("control.info", { ns: "translation" })
@@ -532,7 +532,7 @@ export class MaplatUi extends EventTarget {
         new GoHome({
           tipLabel: ui.core.t("control.home", { ns: "translation" })
         }),
-        ui.sliderCommon,
+        ui.sliderNew,
         new Maplat({
           tipLabel: ui.core.t("control.help", { ns: "translation" })
         })
@@ -574,9 +574,9 @@ export class MaplatUi extends EventTarget {
         });
       }
 
-      ui.sliderCommon.on("propertychange", evt => {
+      ui.sliderNew.on("propertychange", evt => {
         if (evt.key === "slidervalue") {
-          ui.core.setTransparency(ui.sliderCommon.get(evt.key) * 100);
+          ui.core.setTransparency(ui.sliderNew.get(evt.key) * 100);
         }
       });
 
@@ -797,11 +797,11 @@ export class MaplatUi extends EventTarget {
         ui.core.translate(title);
 
       if (ui.checkOverlayID(map.mapID)) {
-        ui.sliderCommon.setEnable(true);
+        ui.sliderNew.setEnable(true);
       } else {
-        ui.sliderCommon.setEnable(false);
+        ui.sliderNew.setEnable(false);
       }
-      const transparency = ui.sliderCommon.get("slidervalue") * 100;
+      const transparency = ui.sliderNew.get("slidervalue") * 100;
       ui.core.mapObject.setTransparency(transparency);
 
       ui.updateEnvelope();

@@ -1,9 +1,6 @@
 import { Control, Rotate, Zoom as BaseZoom } from "ol/control";
 import { CLASS_UNSELECTABLE, CLASS_CONTROL } from "ol/css";
-import ViewHint from "ol/ViewHint";
-import { clamp } from "ol/math";
 import { MapEvent } from "ol";
-import { addResizeListener } from "../legacy/detect-element-resize";
 import pointer from "./pointer_images";
 import { createElement } from "@maplat/core";
 
@@ -52,165 +49,80 @@ export function setControlSettings(options) {
  *
  * Example:
  *
- *     map.addControl(new ol.control.SliderCommon());
+ *     map.addControl(new ol.control.SliderNew());
  *
  * @constructor
  * @extends {ol.control.Control}
- * @param {olx.control.SliderCommonOptions=} opt_options Zoom slider options.
+ * @param {olx.control.SliderNewOptions=} opt_options Zoom slider options.
  * @api
  */
-export class SliderCommon extends Control {
-  constructor(opt_options) {
+export class SliderNew extends Control {
+  constructor(opt_options) { 
     const options = opt_options ? opt_options : {};
-    const containerElement = document.createElement("div"); // eslint-disable-line no-undef
-    const render = options.render ? options.render : SliderCommon.render;
-
+    const containerElement = document.createElement("input"); // eslint-disable-line no-undef
+    containerElement.type = "range";
+    containerElement.min = 0;
+    containerElement.max = 1;
+    containerElement.value = 1;
+    containerElement.step = 0.01;
+    const render = options.render ? options.render : SliderNew.render;
     super({
       element: containerElement,
       render
     });
-
-    /**
-     * The direction of the slider. Will be determined from actual display of the
-     * container and defaults to ol.control.SliderCommon.Direction_.VERTICAL.
-     *
-     * @type {ol.control.SliderCommon.Direction_}
-     * @private
-     */
-    this.direction_ = SliderCommon.Direction_.VERTICAL;
-
-    /**
-     * @type {boolean}
-     * @private
-     */
-    this.dragging_ = undefined;
-
-    this.value_ = undefined;
-
-    /**
-     * @type {number|undefined}
-     * @private
-     */
-    this.previousX_ = undefined;
-
-    /**
-     * @type {number|undefined}
-     * @private
-     */
-    this.previousY_ = undefined;
-
-    /**
-     * The calculated thumb size (border box plus margins).  Set when initSlider_
-     * is called.
-     * @type {ol.Size}
-     * @private
-     */
-    this.thumbSize_ = null;
-
-    /**
-     * Whether the slider is initialized.
-     * @type {boolean}
-     * @private
-     */
-    this.sliderInitialized_ = false;
-
-    /**
-     * @type {number}
-     * @private
-     */
-    this.duration_ = options.duration !== undefined ? options.duration : 200;
-
-    /**
-     * @type {number}
-     * @private
-     */
-    this.reverse_ = options.reverse !== undefined ? options.reverse : false;
-
-    this.initialValue = options.initialValue;
-
     const className =
-      options.className !== undefined ? options.className : "ol-slidercommon";
-    const thumbElement = document.createElement("button"); // eslint-disable-line no-undef
-    thumbElement.setAttribute("type", "button");
-    thumbElement.className = `${className}-thumb${CLASS_UNSELECTABLE}`;
+      options.className !== undefined ? options.className : "ol-slidernew";
+    this.set("slidervalue", 0);
 
     containerElement.title = options.tipLabel;
     containerElement.className = `${className} ${CLASS_UNSELECTABLE} ${CLASS_CONTROL}`;
-    containerElement.appendChild(thumbElement);
-
-    /**
-     * @type {ol.pointer.PointerEventHandler}
-     * @private
-     */
+    containerElement.addEventListener("click", ev => {
+      ev.stopPropagation();
+    });
     containerElement.addEventListener("pointerdown", ev => {
       ev.stopPropagation();
-      this.handleDraggerStart_(ev);
     });
     containerElement.addEventListener("pointermove", ev => {
       ev.stopPropagation();
-      this.handleDraggerDrag_(ev);
     });
     containerElement.addEventListener("pointerup", ev => {
       ev.stopPropagation();
-      this.handleDraggerEnd_(ev);
     });
-    thumbElement.addEventListener("click", ev => {
-      ev.stopPropagation();
-    });
-    containerElement.addEventListener("mouseout", ev => {
-      ev.stopPropagation();
-      this.handleDraggerEnd_(ev);
+
+    // eslint-disable-next-line no-unused-vars
+    containerElement.addEventListener("input", ev => { 
+      this.set("slidervalue", 1 - this.element.value);
     });
 
     if (control_settings["slider_color"]) {
       const rgb = hexRgb(control_settings["slider_color"]);
-      const button = this.element.querySelector("button");
-      button.addEventListener("mouseover", () => {
-        button.style.backgroundColor = `rgba(${rgb.red},${rgb.green},${rgb.blue},.7)`;
-      });
-      button.addEventListener("mouseout", () => {
-        const disable = this.element.classList.contains("disable");
-        button.style.backgroundColor = `rgba(${rgb.red},${rgb.green},${
-          rgb.blue
-        },${disable ? 0.2 : 0.5})`;
-      });
-    }
-  }
+      containerElement.addClass("ol-slider-originalcolor");
+      const sheets = document.styleSheets
+      const sheet = sheets[sheets.length - 1];
+      sheet.insertRule(`.maplat.with-opacity .ol-slider-originalcolor.${className}::-webkit-slider-thumb {
+        background: rgba(${rgb.red},${rgb.green},${rgb.blue}, 0.5);
+      }
 
-  /**
-   * Update the SliderCommon element.
-   * @param {ol.MapEvent} mapEvent Map event.
-   * @this {ol.control.SliderCommon}
-   * @api
-   */
-  static render(mapEvent) {
-    if (!mapEvent.frameState) {
-      return;
-    }
-    if (!this.sliderInitialized_) {
-      this.initSlider_();
-    }
-  }
+      .maplat.with-opacity .ol-slider-originalcolor.${className}::-moz-range-thumb {
+        background: rgba(${rgb.red},${rgb.green},${rgb.blue}, 0.5);
+      }
+        
+      .maplat.with-opacity .ol-slider-originalcolor.${className}[disabled]::-webkit-slider-thumb {
+        background: rgba(${rgb.red},${rgb.green},${rgb.blue}, 0.2);
+      }
 
-  /**
-   * The enum for available directions.
-   *
-   * @enum {number}
-   * @private
-   */
-  static get Direction_() {
-    return {
-      VERTICAL: 0,
-      HORIZONTAL: 1
-    };
-  }
+      .maplat.with-opacity .ol-slider-originalcolor.${className}[disabled]::-moz-range-thumb {
+        background: rgba(${rgb.red},${rgb.green},${rgb.blue}, 0.2);
+      }
+         
+      .maplat.with-opacity .ol-slider-originalcolor.${className}:not([disabled])::-webkit-slider-thumb:hover {
+        background: rgba(${rgb.red},${rgb.green},${rgb.blue}, 0.7);
+      }
 
-  /**
-   * @inheritDoc
-   */
-  disposeInternal() {
-    this.dragger_.dispose();
-    super.disposeInternal();
+      .maplat.with-opacity .ol-slider-originalcolor.${className}:not([disabled])::-moz-range-thumb:hover {
+        background: rgba(${rgb.red},${rgb.green},${rgb.blue}, 0.7);
+      }`, sheet.cssRules.length);
+    }
   }
 
   /**
@@ -224,182 +136,29 @@ export class SliderCommon extends Control {
   }
 
   /**
-   * Initializes the slider element. This will determine and set this controls
-   * direction_ and also constrain the dragging of the thumb to always be within
-   * the bounds of the container.
-   *
-   * @private
+   * Update the SliderCommon element.
+   * @param {ol.MapEvent} mapEvent Map event.
+   * @this {ol.control.SliderCommon}
+   * @api
    */
-  initSlider_() {
-    const container = this.element;
-    const containerSize = {
-      width: container.offsetWidth,
-      height: container.offsetHeight
-    };
-
-    const thumb = container.firstElementChild;
-    const computedStyle = getComputedStyle(thumb); // eslint-disable-line no-undef
-    const thumbWidth =
-      thumb.offsetWidth +
-      parseFloat(computedStyle["marginRight"]) +
-      parseFloat(computedStyle["marginLeft"]);
-    const thumbHeight =
-      thumb.offsetHeight +
-      parseFloat(computedStyle["marginTop"]) +
-      parseFloat(computedStyle["marginBottom"]);
-    this.thumbSize_ = [thumbWidth, thumbHeight];
-
-    if (containerSize.width > containerSize.height) {
-      this.direction_ = SliderCommon.Direction_.HORIZONTAL;
-    } else {
-      this.direction_ = SliderCommon.Direction_.VERTICAL;
+  static render(mapEvent) {
+    if (!mapEvent.frameState) {
+      return;
     }
-    this.setValue(this.initialValue || 0);
-    const self = this;
-    addResizeListener(container, () => {
-      self.setValue(self.value_);
-    });
-
-    this.sliderInitialized_ = true;
-  }
-
-  widthLimit_(_event) {
-    const container = this.element;
-    return container.offsetWidth - this.thumbSize_[0];
-  }
-
-  heightLimit_(_event) {
-    const container = this.element;
-    return container.offsetHeight - this.thumbSize_[1];
-  }
-
-  /**
-   * @param {Event} event The browser event to handle.
-   * @private
-   */
-  handleContainerClick_(event) {
-    const relativePosition = this.getRelativePosition_(
-      event.offsetX - this.thumbSize_[0] / 2,
-      event.offsetY - this.thumbSize_[1] / 2
-    );
-
-    this.setThumbPosition_(relativePosition);
-  }
-
-  /**
-   * Handle dragger start events.
-   * @param {ol.pointer.PointerEvent} event The drag event.
-   * @private
-   */
-  handleDraggerStart_(event) {
-    if (
-      !this.dragging_ &&
-      event.target === this.element.firstElementChild &&
-      !this.element.classList.contains("disable")
-    ) {
-      this.getMap().getView().setHint(ViewHint.INTERACTING, 1);
-      this.previousX_ = event.clientX;
-      this.previousY_ = event.clientY;
-      this.dragging_ = true;
-    }
-  }
-
-  /**
-   * Handle dragger drag events.
-   *
-   * @param {ol.pointer.PointerEvent|Event} event The drag event.
-   * @private
-   */
-  handleDraggerDrag_(event) {
-    if (this.dragging_) {
-      const element = this.element.firstElementChild;
-      const deltaX =
-        event.clientX -
-        this.previousX_ +
-        (parseFloat(element.style.left, 10) || 0);
-      const deltaY =
-        event.clientY -
-        this.previousY_ +
-        (parseFloat(element.style.top, 10) || 0);
-      const relativePosition = this.getRelativePosition_(deltaX, deltaY);
-      this.setThumbPosition_(relativePosition);
-      this.previousX_ = event.clientX;
-      this.previousY_ = event.clientY;
-    }
-  }
-
-  /**
-   * Handle dragger end events.
-   * @param {ol.pointer.PointerEvent|Event} event The drag event.
-   * @private
-   */
-  handleDraggerEnd_(_event) {
-    if (this.dragging_) {
-      const view = this.getMap().getView();
-      view.setHint(ViewHint.INTERACTING, -1);
-
-      this.dragging_ = false;
-      this.previousX_ = undefined;
-      this.previousY_ = undefined;
-    }
-  }
-
-  /**
-   * Positions the thumb inside its container according to the given resolution.
-   *
-   * @param {number} res The res.
-   * @private
-   */
-  setThumbPosition_(res) {
-    const thumb = this.element.firstElementChild;
-
-    if (this.direction_ == SliderCommon.Direction_.HORIZONTAL) {
-      thumb.style.left = `${this.widthLimit_() * res}px`;
-    } else {
-      thumb.style.top = `${this.heightLimit_() * res}px`;
-    }
-    this.value_ = this.reverse_ ? 1 - res : res;
-    this.set("slidervalue", this.value_);
-  }
-
-  /**
-   * Calculates the relative position of the thumb given x and y offsets.  The
-   * relative position scales from 0 to 1.  The x and y offsets are assumed to be
-   * in pixel units within the dragger limits.
-   *
-   * @param {number} x Pixel position relative to the left of the slider.
-   * @param {number} y Pixel position relative to the top of the slider.
-   * @return {number} The relative position of the thumb.
-   * @private
-   */
-  getRelativePosition_(x, y) {
-    let amount;
-    if (this.direction_ === SliderCommon.Direction_.HORIZONTAL) {
-      amount = x / this.widthLimit_();
-    } else {
-      amount = y / this.heightLimit_();
-    }
-    return clamp(amount, 0, 1);
-  }
-
-  setValue(res) {
-    res = this.reverse_ ? 1 - res : res;
-    this.setThumbPosition_(res);
   }
 
   setEnable(cond) {
     const elem = this.element;
     if (cond) {
-      elem.classList.remove("disable");
+      elem.disabled = false;
     } else {
-      elem.classList.add("disable");
+      elem.disabled = true;
     }
-    if (control_settings["slider_color"]) {
-      const rgb = hexRgb(control_settings["slider_color"]);
-      elem.querySelector("button").style.backgroundColor = `rgba(${rgb.red},${
-        rgb.green
-      },${rgb.blue},${cond ? 0.5 : 0.2})`;
-    }
+  }
+
+  setValue(res) {
+    res = this.reverse_ ? 1 - res : res;
+    this.element.value = res;
   }
 }
 
