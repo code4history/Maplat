@@ -82,9 +82,6 @@ export class SliderNew extends Control {
     containerElement.addEventListener("pointerdown", ev => {
       ev.stopPropagation();
     });
-    containerElement.addEventListener("pointermove", ev => {
-      ev.stopPropagation();
-    });
     containerElement.addEventListener("pointerup", ev => {
       ev.stopPropagation();
     });
@@ -157,8 +154,9 @@ export class SliderNew extends Control {
   }
 
   setValue(res) {
-    res = this.reverse_ ? 1 - res : res;
-    this.element.value = res;
+    console.log(`setValue: ${res}`);
+    this.set("slidervalue", res);
+    this.element.value = 1 - res;
   }
 }
 
