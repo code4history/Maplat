@@ -598,57 +598,70 @@ input[type="checkbox"].markerlist:checked + label.check > div {
   background-color: rgba(120, 5, 8, .5);
 }
 
-.ol-slidercommon {
+.ol-slidernew {
   display: none;
 }
 
-&.with-opacity .ol-slidercommon {
-  display: block;
+&.with-opacity .ol-slidernew {
+  appearance: none;
   bottom: .5em;
   bottom: calc(.5em + constant(safe-area-inset-bottom));
   bottom: calc(.5em + env(safe-area-inset-bottom));
   left: calc(50% - 80px);
   width: 160px;
   height: 25px;
-  padding: 0;
+  background: rgba(255, 255, 255, .5);
   border: 2px solid #666666;
+  border-radius: 4px;
+  &[disabled] {
+    background: rgba(255, 255, 255, .7);
+  }
 }
 
 @media screen and (max-width: 640px) {
-  &.with-opacity .ol-slidercommon {
+  &.with-opacity .ol-slidernew {
     left: 37.5%;
     width: 25%;
   }
 }
 
 @media screen and (max-width: 320px) {
-  &.with-opacity .ol-slidercommon {
+  &.with-opacity .ol-slidernew {
     left: 120px;
     width: 80px;
   }
 }
 
-&.with-opacity .ol-slidercommon button {
-  position: relative;
+&.with-opacity .ol-slidernew::-webkit-slider-thumb {
+  appearance: none;
   width: 20px;
   height: 25px;
-  margin-left: -2px;
-  margin-right: 2px;
-  margin-top: -2px;
+  background-color: rgba(120, 5, 8, 0.5);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  &[disabled] {
+    background-color: rgba(120, 5, 8, 0.2);
+  }
 }
 
-&.with-opacity .ol-slidercommon-thumb {
-  height: 15px;
-  width: 15px;
-  margin: 0;
-  filter: none;
+&.with-opacity .ol-slidernew::-moz-range-thumb {
+  appearance: none;
+  width: 20px;
+  height: 25px;
+  background-color: rgba(120, 5, 8, 0.5);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  &[disabled] {
+    background-color: rgba(120, 5, 8, 0.2);
+  }
 }
 
-&.with-opacity .ol-slidercommon.disable button {
-  color: rgba(255, 255, 255, .7);
-  background-color: rgba(120, 5, 8, .2);
+&.with-opacity .ol-slidernew:not([disabled])::-webkit-slider-thumb:hover {
+  background-color: rgba(120, 5, 8, 0.7);
 }
 
-.ol-control button:focus, .ol-control button:hover {
-  background-color: rgba(120, 5, 8, .7)
+&.with-opacity .ol-slidernew:not([disabled])::-moz-range-thumb:hover {
+  background-color: rgba(120, 5, 8, 0.7);
 }

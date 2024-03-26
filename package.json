@@ -52,9 +52,7 @@
     "caniuse-lite": "^1.0.30001591",
     "lodash.template": "^4.5.0",
     "ol": "^9.0.0",
-    "ol-contextmenu": "^4.1.0",
     "swiper": "^6.7.1",
-    "swiper4": "npm:swiper@^4.5.1",
     "tiny-emitter": "^2.1.0",
     "weiwudi": "^0.1.4"
   },
