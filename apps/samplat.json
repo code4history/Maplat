@@ -6,17 +6,25 @@
     "lang" : "ja",
     "fake_gps" : true,
     "fake_center" : {
-        "ja" : "京都市",
+        "ja" : "東京蔵前",
         "en" : "Kyoto"
     },
     "fake_radius" : 10,
-    "home_position" : [141.149989,39.699952],
+    "home_position" : [139.7844623021058,35.69779582131052],
     "default_zoom" : 17,
     "zoom_restriction" : true,
     "min_zoom" : 10,
     "max_zoom" : 18,
-    "start_from" : "cutout_kyoto-station",
+    "start_from" : "tokyo_kuramae_1692",
     "sources" : [
+        {
+            "label": "蔵前1692",
+            "map_id": "tokyo_kuramae_1692"
+        },
+        {
+            "label": "蔵前1891",
+            "map_id": "tokyo_kuramae_1891"
+        },
         {
             "label": "京都駅",
             "map_id": "cutout_kyoto-station"

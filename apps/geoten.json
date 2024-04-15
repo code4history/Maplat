@@ -13,8 +13,12 @@
         35.674717
     ],
     "default_zoom": 17,
-    "start_from": "geoten_shiba",
+    "start_from": "keio-mita",
     "sources": [
+        {
+            "mapID": "keio-mita",
+            "label": "慶應三田"
+        },
         {
             "mapID": "geoten_shiba",
             "label": "明治40芝區"
