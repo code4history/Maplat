@@ -1,0 +1,23 @@
+{
+  "name": "ぷらっと奈良",
+  "short_name": "ぷら奈良",
+  "background_color": "#f6f0d3",
+  "icons": [
+    {
+      "src": "junen_nara/manifest-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "junen_nara/manifest-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "start_url": "https://s.maplat.jp/r/junen_naramap/",
+  "scope": "/r/junen_naramap/",
+  "display": "standalone",
+  "theme_color": "#f6f0d3"
+}
