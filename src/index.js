@@ -39,10 +39,14 @@ Swiper.use([Navigation, Pagination]);
 export class MaplatUi extends EventTarget {
   constructor(appOption) {
     super();
+    console.log("###############eeee");
+    console.log(appOption);
     appOption = normalizeArg(appOption);
     if (appOption.control) {
       setControlSettings(appOption.control);
     }
+    console.log("###############ffff");
+    console.log(appOption);
 
     const ui = this;
     ui.html_id_seed = `${Math.floor(Math.random() * 9000) + 1000}`;
@@ -156,7 +160,7 @@ export class MaplatUi extends EventTarget {
 
     const enableSplash = !ui.core.initialRestore.mapID;
     const restoreTransparency = ui.core.initialRestore.transparency;
-    const enableOutOfMap = !appOption.presentation_mode;
+    const enableOutOfMap = !appOption.presentationMode;
     const enablePoiHtmlNoScroll = appOption.enablePoiHtmlNoScroll;
 
     if (appOption.enableShare) {
