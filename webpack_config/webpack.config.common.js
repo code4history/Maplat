@@ -52,7 +52,7 @@ module.exports = {
       {
         enforce: "pre",
         test: /\.js$/,
-        exclude: /(legacy|node_modules)/,
+        exclude: /(^file:|legacy|node_modules|)/,
         loader: "eslint-loader",
         options: {
           cache: true

@@ -311,31 +311,58 @@ export class SetGPS extends CustomControl {
       if (!frameState) {
         return;
       }
-      const map = this.getMap();
-      if (map.geolocation) {
-        const tracking = map.geolocation.getTracking();
-        const receiving = this.element.classList.contains("disable");
-        if (receiving && !tracking) {
-          this.element.classList.remove("disable");
-        } else if (!receiving && tracking) {
-          this.element.classList.add("disable");
-        }
-      }
     };
 
     options.callback = function () {
-      const receiving = this.element.classList.contains("disable");
-      const map = this.getMap();
-
-      map.handleGPS(!receiving);
-      if (receiving) {
-        this.element.classList.remove("disable");
+      const lnglat = ui.geolocation.getPosition();
+      const acc = ui.geolocation.getAccuracy();
+      const map = ui.core.mapObject;
+      map.setGPSMarker({ lnglat, acc }, true);
+      console.log(lnglat);
+      console.log(acc);
+      /*if (this.alwaysGpsOn) {
+        console.log("Hogehogehoge");
       } else {
-        this.element.classList.add("disable");
-      }
+        const receiving = this.element.classList.contains("disable");
+        const map = this.getMap();
+        const tracking = map.geolocation.getTracking();
+        console.log(`Tracking condition ${tracking}`);
+
+        map.handleGPS(!receiving);
+        if (receiving) {
+          this.element.classList.remove("disable");
+        } else {
+          this.element.classList.add("disable");
+        }
+      }*/
     };
 
     super(options);
+    
+    this.ui = options.ui;
+    this.ui.waitReady.then(() => {
+      const ui = this.ui;
+      ui.geolocation.on("change", (evt) => {
+        const lnglat = ui.geolocation.getPosition();
+        const acc = ui.geolocation.getAccuracy();
+        const map = ui.core.mapObject;
+        map.setGPSMarker({ lnglat, acc }, true);
+        console.log(lnglat);
+        console.log(acc);
+
+
+
+
+      });
+      ui.geolocation.on("error", (evt) => {
+
+      });
+    });
+
+    if (options.alwaysGpsOn) {
+      this.alwaysGpsOn = true;
+    }
+
     if (control_settings["gps"]) {
       const button = this.element.querySelector("button");
       button.style.backgroundColor = "rgba(0,0,0,0)";

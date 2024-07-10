@@ -6,6 +6,7 @@ import page from "../legacy/page";
 import bsn from "../legacy/bootstrap-native";
 import { MaplatApp as Core, createElement } from "@maplat/core";
 import ContextMenu from "./contextmenu";
+import { Geolocation } from "./geolocation";
 import iziToast from "../legacy/iziToast";
 import QRCode from "../legacy/qrcode";
 import { point, polygon } from "@turf/helpers";
@@ -135,6 +136,8 @@ export class MaplatUi extends EventTarget {
   async initializer(appOption) {
     const ui = this;
     appOption.translateUI = true;
+    console.log("Settings for Core");
+    console.log(appOption);
     ui.core = new Core(appOption);
     if (appOption.icon) {
       pointer["defaultpin.png"] = appOption.icon;
@@ -180,6 +183,10 @@ export class MaplatUi extends EventTarget {
     }
     if (appOption.stateUrl) {
       ui.core.mapDivDocument.classList.add("state_url");
+    }
+    if (appOption.alwaysGpsOn) {
+      console.log("#### alwaysGpsOn ####");
+      ui.alwaysGpsOn = true;
     }
     if (ui.core.enableCache) {
       ui.core.mapDivDocument.classList.add("enable_cache");
@@ -520,6 +527,7 @@ export class MaplatUi extends EventTarget {
         options.initialValue = restoreTransparency / 100;
       }
       ui.sliderNew = new SliderNew(options);
+      console.log("Setup Controls");
       ui.core.appData.controls = [
         new Copyright({
           tipLabel: ui.core.t("control.info", { ns: "translation" })
@@ -531,6 +539,7 @@ export class MaplatUi extends EventTarget {
           tipLabel: ui.core.t("control.zoom", { ns: "translation" })
         }),
         new SetGPS({
+          ui,
           tipLabel: ui.core.t("control.gps", { ns: "translation" })
         }),
         new GoHome({
@@ -571,12 +580,6 @@ export class MaplatUi extends EventTarget {
         items: []
       });
       ui.core.appData.controls.push(ui.contextMenu);
-
-      if (ui.core.mapObject) {
-        ui.core.appData.controls.map(control => {
-          ui.core.mapObject.addControl(control);
-        });
-      }
 
       ui.sliderNew.on("propertychange", evt => {
         if (evt.key === "slidervalue") {
@@ -1017,13 +1020,44 @@ enable-background="new 0 0 10 10" xml:space="preserve">
     }
 
     ui.waitReady = ui.core.waitReady.then(() => {
-      const fakeGps = appOption.fake ? ui.core.appData.fake_gps : false;
-      const fakeCenter = appOption.fake ? ui.core.appData.fake_center : false;
-      const fakeRadius = appOption.fake ? ui.core.appData.fake_radius : false;
+      const fakeGps = appOption.fake ? ui.core.appData.fakeGps : false;
+      const fakeCenter = appOption.fake ? ui.core.appData.fakeCenter : false;
+      const fakeRadius = appOption.fake ? ui.core.appData.fakeRadius : false;
+      console.log("FFFFFFFFFFFFFFFFFFFF");
+      console.log(appOption.fake);
+      console.log(ui.core.appData);
+
+      const geolocation = new Geolocation({
+        timerBase: true,
+        homePosition: ui.core.appData.homePosition
+      });
+      geolocation.setTracking(true);
+
+      ui.geolocation = geolocation;
 
       let shown = false;
       let gpsWaitPromise = null;
-      function showGPSresult(result) {
+
+      if (ui.alwaysGpsOn) {
+        ui.core.mapObject.handleGPS(true);
+      }
+
+      const showGPSresult = ui.alwaysGpsOn ?
+      (result) => {
+        // 常時GPSオンの処理
+        console.log("always");
+        if (result && result.error === "gps_error") {
+          // GPS取得のエラーだけは、ケアする
+
+        } else {
+
+        }
+      } :
+      (result) => {
+        // デフォルトのGPS処理
+        console.log("notAlways");
+        console.log(result);
+        console.log(shown);
         if (result && result.error) {
           ui.core.currentPosition = null;
           if (result.error === "gps_out" && shown) {
@@ -1077,13 +1111,14 @@ enable-background="new 0 0 10 10" xml:space="preserve">
         });
       });
       ui.core.mapObject.on("gps_result", evt => {
+        console.log(evt);
         if (gpsWaitPromise === "gps_request") {
-          gpsWaitPromise = evt.frameState;
+          gpsWaitPromise = evt.detail;
         } else if (gpsWaitPromise) {
-          gpsWaitPromise(evt.frameState);
+          gpsWaitPromise(evt.detail);
           gpsWaitPromise = null;
         } else if (!shown) {
-          showGPSresult(evt.frameState);
+          showGPSresult(evt.detail);
         }
       });
 
