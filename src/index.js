@@ -1028,7 +1028,7 @@ enable-background="new 0 0 10 10" xml:space="preserve">
       console.log(ui.core.appData);
 
       const geolocation = new Geolocation({
-        timerBase: true,
+        timerBase: appOption.fake,
         homePosition: ui.core.appData.homePosition
       });
       geolocation.setTracking(true);

@@ -312,29 +312,33 @@ export class SetGPS extends CustomControl {
         return;
       }
     };
-
     options.callback = function () {
-      const lnglat = ui.geolocation.getPosition();
-      const acc = ui.geolocation.getAccuracy();
+      const ui = this.ui;
       const map = ui.core.mapObject;
-      map.setGPSMarker({ lnglat, acc }, true);
-      console.log(lnglat);
-      console.log(acc);
-      /*if (this.alwaysGpsOn) {
-        console.log("Hogehogehoge");
-      } else {
-        const receiving = this.element.classList.contains("disable");
-        const map = this.getMap();
-        const tracking = map.geolocation.getTracking();
-        console.log(`Tracking condition ${tracking}`);
+      const overlayLayer = map.getLayer("overlay").getLayers().item(0);
+      const firstLayer = map.getLayers().item(0);
+      const source = (overlayLayer ? overlayLayer.getSource() : firstLayer.getSource());
+      const geolocation = ui.geolocation;
 
-        map.handleGPS(!receiving);
-        if (receiving) {
-          this.element.classList.remove("disable");
-        } else {
-          this.element.classList.add("disable");
-        }
-      }*/
+      if (!geolocation.getTracking()) {
+        geolocation.once("change", () => {
+          const lnglat = geolocation.getPosition();
+          const acc = geolocation.getAccuracy();
+          source.setGPSMarker({ lnglat, acc }).then((insideCheck) => {
+            if (!insideCheck) {
+              source.setGPSMarker();
+            }
+          });
+        });
+      } else {
+        const lnglat = geolocation.getPosition();
+        const acc = geolocation.getAccuracy();
+        source.setGPSMarkerAsync({ lnglat, acc }).then((insideCheck) => {
+          if (!insideCheck) {
+            source.setGPSMarker();
+          }
+        });
+      }
     };
 
     super(options);
@@ -342,19 +346,22 @@ export class SetGPS extends CustomControl {
     this.ui = options.ui;
     this.ui.waitReady.then(() => {
       const ui = this.ui;
-      ui.geolocation.on("change", (evt) => {
-        const lnglat = ui.geolocation.getPosition();
-        const acc = ui.geolocation.getAccuracy();
+      const geolocation = ui.geolocation;
+      
+      geolocation.on("change", () => {
         const map = ui.core.mapObject;
-        map.setGPSMarker({ lnglat, acc }, true);
-        console.log(lnglat);
-        console.log(acc);
-
-
-
-
+        const overlayLayer = map.getLayer("overlay").getLayers().item(0);
+        const firstLayer = map.getLayers().item(0);
+        const source = (overlayLayer ? overlayLayer.getSource() : firstLayer.getSource());
+        const lnglat = geolocation.getPosition();
+        const acc = geolocation.getAccuracy();
+        source.setGPSMarkerAsync({ lnglat, acc }, true).then((insideCheck) => {
+          if (!insideCheck) {
+            source.setGPSMarker();
+          }
+        });
       });
-      ui.geolocation.on("error", (evt) => {
+      geolocation.on("error", (evt) => {
 
       });
     });

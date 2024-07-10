@@ -104,8 +104,8 @@ export class Geolocation extends BaseObject {
 
   timerPositionChange_() {
     const coords = {
-      longitude: randomFromCenter(this.home_position_[0], 0.01),
-      latitude: randomFromCenter(this.home_position_[1], 0.01),
+      longitude: randomFromCenter(this.home_position_[0], 0.05),
+      latitude: randomFromCenter(this.home_position_[1], 0.05),
       accuracy: randomFromCenter(15.0, 10)
     };
     this.positionChange_({coords});
