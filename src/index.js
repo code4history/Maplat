@@ -1035,7 +1035,7 @@ enable-background="new 0 0 10 10" xml:space="preserve">
 
       ui.geolocation = geolocation;
 
-      let shown = false;
+      /*let shown = false;
       let gpsWaitPromise = null;
 
       if (ui.alwaysGpsOn) {
@@ -1120,7 +1120,7 @@ enable-background="new 0 0 10 10" xml:space="preserve">
         } else if (!shown) {
           showGPSresult(evt.detail);
         }
-      });
+      });*/
 
       let qr_app;
       let qr_view;

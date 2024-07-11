@@ -16,6 +16,10 @@
   display: none;
 }
 
+.close {
+  font-size: 32px;
+}
+
 .modal_poi_content, .modal_map_content, .modal_load_content, .modal_gpsW_content, .modal_gpsD_content,
 .modal_help_content, .modal_title, .modal_load_title, .modal_gpsW_title, .modal_help_title,
 .modal_share_content, .modal_share_title, .modal_hide_marker_content, .modal_hide_marker_title {
@@ -187,6 +191,13 @@ input[type="checkbox"].markerlist:checked + label.check > div {
   white-space: nowrap;
   text-overflow: ellipsis;
   font-size: 18px;
+}
+
+@media (max-width: 768px) {
+  .swiper-button-next,
+  .swiper-button-prev{
+    margin-top: -40px;
+    }
 }
 
 @media screen and (max-width: 600px) {

@@ -78,7 +78,8 @@ export class Geolocation extends BaseObject {
         if (allowGps) {
           this.task_id_ = setInterval(this.timerPositionChange_.bind(this), trackingOptions.maximumAge);
         } else {
-          this.timerPositionError_();
+          console.log("AlertError");
+          setTimeout(this.timerPositionError_.bind(this), trackingOptions.maximumAge);
         }
       } else if (!tracking && this.task_id_ !== undefined) {
         clearInterval(this.task_id_);
@@ -141,7 +142,10 @@ export class Geolocation extends BaseObject {
   }
 
   positionError_(error) {
-    this.dispatchEvent(new GeolocationError(error));
+    console.log(error);
+    const desc = new GeolocationError(error);
+    console.log(desc);
+    this.dispatchEvent(desc);
   }
 
   getAccuracy() {

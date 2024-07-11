@@ -3,6 +3,7 @@ import { CLASS_UNSELECTABLE, CLASS_CONTROL } from "ol/css";
 import { MapEvent } from "ol";
 import pointer from "./pointer_images";
 import { createElement } from "@maplat/core";
+import bsn from "../legacy/bootstrap-native";
 
 let control_settings = {};
 const delegator = {
@@ -321,6 +322,7 @@ export class SetGPS extends CustomControl {
       const geolocation = ui.geolocation;
 
       if (!geolocation.getTracking()) {
+        geolocation.setTracking(true);
         geolocation.once("change", () => {
           const lnglat = geolocation.getPosition();
           const acc = geolocation.getAccuracy();
@@ -362,7 +364,19 @@ export class SetGPS extends CustomControl {
         });
       });
       geolocation.on("error", (evt) => {
-
+        console.log("Error");
+        console.log(evt);
+        geolocation.setTracking(false);
+        const code = evt.code;
+        ui.core.mapDivDocument.querySelector(".modal_title").innerText = "位置取得エラー";
+          //ui.core.t("app.out_of_map");
+        ui.core.mapDivDocument.querySelector(".modal_gpsD_content").innerText = code === 1 ? "ユーザーが位置取得を許可しませんでした" :
+          code === 2 ? "位置取得に失敗しました" : "位置取得がタイムアウトしました";
+          // ui.core.t("app.out_of_map_area");
+        const modalElm = ui.core.mapDivDocument.querySelector(".modalBase");
+        const modal = new bsn.Modal(modalElm, { root: ui.core.mapDivDocument });
+        ui.modalSetting("gpsD");
+        modal.show();
       });
     });
 
