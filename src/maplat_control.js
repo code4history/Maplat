@@ -155,7 +155,6 @@ export class SliderNew extends Control {
   }
 
   setValue(res) {
-    console.log(`setValue: ${res}`);
     this.set("slidervalue", res);
     this.element.value = 1 - res;
   }
@@ -346,6 +345,7 @@ export class SetGPS extends CustomControl {
     super(options);
     
     this.ui = options.ui;
+    this.moveTo_ = false;
     this.ui.waitReady.then(() => {
       const ui = this.ui;
       const geolocation = ui.geolocation;
@@ -357,26 +357,27 @@ export class SetGPS extends CustomControl {
         const source = (overlayLayer ? overlayLayer.getSource() : firstLayer.getSource());
         const lnglat = geolocation.getPosition();
         const acc = geolocation.getAccuracy();
-        source.setGPSMarkerAsync({ lnglat, acc }, true).then((insideCheck) => {
+        source.setGPSMarkerAsync({ lnglat, acc }, !this.moveTo_).then((insideCheck) => {
+          this.moveTo_ = false;
           if (!insideCheck) {
             source.setGPSMarker();
           }
         });
       });
       geolocation.on("error", (evt) => {
-        console.log("Error");
-        console.log(evt);
-        geolocation.setTracking(false);
         const code = evt.code;
+        if (code === 3) return;
+        geolocation.setTracking(false);
         ui.core.mapDivDocument.querySelector(".modal_title").innerText = ui.core.t("app.gps_error");
-          //ui.core.t("app.out_of_map");
         ui.core.mapDivDocument.querySelector(".modal_gpsD_content").innerText = ui.core.t(code === 1 ? "app.user_gps_deny" :
           code === 2 ? "app.gps_miss" : "app.gps_timeout");
-          // ui.core.t("app.out_of_map_area");
         const modalElm = ui.core.mapDivDocument.querySelector(".modalBase");
         const modal = new bsn.Modal(modalElm, { root: ui.core.mapDivDocument });
         ui.modalSetting("gpsD");
         modal.show();
+        setTimeout(() =>{
+          modal.hide();
+        }, 3000);
       });
     });
 
@@ -442,7 +443,6 @@ export class CompassRotate extends Rotate {
           self.label_.style.webkitTransform = transform;
           self.label_.style.transform = transform;
           if (this.getMap().northUp) {
-            console.log(direction);
             const contains = self.element.classList.contains("disable");
             if (!contains && Math.abs(direction) < 0.1) {
               self.element.classList.add("disable");

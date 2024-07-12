@@ -62,7 +62,11 @@ export default {
         "out_of_map": "Out of map",
         "out_of_map_desc": "GPS result is out of map. GPS function turns off.",
         "out_of_map_area": "Showing area is out of map. The area moves to default position.",
-        "copy_toast": "Copied to clipboard"
+        "copy_toast": "Copied to clipboard",
+        "gps_error": "Position acquisition error",
+        "user_gps_deny": "User did not allow location data acquisition.",
+        "gps_miss": "System failed to acquire location.",
+        "gps_timeout": "Position acquisition process timed out."
       }
     }
   },
@@ -129,7 +133,11 @@ export default {
         "out_of_map": "地図範囲外",
         "out_of_map_desc": "GPSの取得結果が地図範囲外です。GPS機能をオフにします。",
         "out_of_map_area": "表示位置が地図範囲外です。地図標準位置に戻します。",
-        "copy_toast": "クリップボードにコピーされました"
+        "copy_toast": "クリップボードにコピーされました",
+        "gps_error": "位置取得エラー",
+        "user_gps_deny": "ユーザが位置取得を許可しませんでした。",
+        "gps_miss": "システムは位置取得に失敗しました。",
+        "gps_timeout": "位置取得処理がタイムアウトしました。"
       }
     }
   },
@@ -196,7 +204,11 @@ export default {
         "out_of_map": "지도 범위 외",
         "out_of_map_desc": "GPS 취득 결과가 지도 범위 외입니다. GPS 기능을 OFF로 합니다.",
         "out_of_map_area": "표시 위치가 지도 범위 외입니다. 지도 표준 위치로 되돌립니다.",
-        "copy_toast": "클릭보드로 복사되었습니다"
+        "copy_toast": "클릭보드로 복사되었습니다",
+        "gps_error": "위치 획득 오류",
+        "user_gps_deny": "사용자가 위치 정보 수집을 허용하지 않았습니다.",
+        "gps_miss": "시스템이 위치 획득에 실패했습니다.",
+        "gps_timeout": "위치 획득 처리가 시간 초과되었습니다."
       }
     }
   },
@@ -263,7 +275,11 @@ export default {
         "out_of_map": "超出地图范围",
         "out_of_map_desc": "GPS数据获取结果已超出地图范围外。GPS功能已关闭。",
         "out_of_map_area": "已经超出地图范围以外。请返回地图标准位置。",
-        "copy_toast": "已经复制到剪贴板。"
+        "copy_toast": "已经复制到剪贴板。",
+        "gps_error": "位置采集误差",
+        "user_gps_deny": "用户拒绝获取位置数据。",
+        "gps_miss": "系统获取位置失败。",
+        "gps_timeout": "位置获取过程超时。"
       }
     }
   },
@@ -330,7 +346,11 @@ export default {
         "out_of_map": "超出地圖範圍",
         "out_of_map_desc": "GPS數據獲取結果已超出地圖範圍外。 GPS功能已關閉。",
         "out_of_map_area": "已經超出地圖範圍以外。請返回地圖標準位置。",
-        "copy_toast": "已經復製到剪貼板。"
+        "copy_toast": "已經復製到剪貼板。",
+        "gps_error": "位置採集誤差",
+        "user_gps_deny": "使用者拒絕獲取位置數據。",
+        "gps_miss": "系統獲取位置失敗。",
+        "gps_timeout": "位置獲取過程超時。"
       }
     }
   }

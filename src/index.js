@@ -40,14 +40,10 @@ Swiper.use([Navigation, Pagination]);
 export class MaplatUi extends EventTarget {
   constructor(appOption) {
     super();
-    console.log("###############eeee");
-    console.log(appOption);
     appOption = normalizeArg(appOption);
     if (appOption.control) {
       setControlSettings(appOption.control);
     }
-    console.log("###############ffff");
-    console.log(appOption);
 
     const ui = this;
     ui.html_id_seed = `${Math.floor(Math.random() * 9000) + 1000}`;
@@ -136,8 +132,6 @@ export class MaplatUi extends EventTarget {
   async initializer(appOption) {
     const ui = this;
     appOption.translateUI = true;
-    console.log("Settings for Core");
-    console.log(appOption);
     ui.core = new Core(appOption);
     if (appOption.icon) {
       pointer["defaultpin.png"] = appOption.icon;
@@ -185,7 +179,6 @@ export class MaplatUi extends EventTarget {
       ui.core.mapDivDocument.classList.add("state_url");
     }
     if (appOption.alwaysGpsOn) {
-      console.log("#### alwaysGpsOn ####");
       ui.alwaysGpsOn = true;
     }
     if (ui.core.enableCache) {
@@ -527,7 +520,6 @@ export class MaplatUi extends EventTarget {
         options.initialValue = restoreTransparency / 100;
       }
       ui.sliderNew = new SliderNew(options);
-      console.log("Setup Controls");
       ui.core.appData.controls = [
         new Copyright({
           tipLabel: ui.core.t("control.info", { ns: "translation" })
@@ -1023,9 +1015,6 @@ enable-background="new 0 0 10 10" xml:space="preserve">
       const fakeGps = appOption.fake ? ui.core.appData.fakeGps : false;
       const fakeCenter = appOption.fake ? ui.core.appData.fakeCenter : false;
       const fakeRadius = appOption.fake ? ui.core.appData.fakeRadius : false;
-      console.log("FFFFFFFFFFFFFFFFFFFF");
-      console.log(appOption.fake);
-      console.log(ui.core.appData);
 
       const geolocation = new Geolocation({
         timerBase: appOption.fake,
@@ -1045,7 +1034,6 @@ enable-background="new 0 0 10 10" xml:space="preserve">
       const showGPSresult = ui.alwaysGpsOn ?
       (result) => {
         // 常時GPSオンの処理
-        console.log("always");
         if (result && result.error === "gps_error") {
           // GPS取得のエラーだけは、ケアする
 
@@ -1055,9 +1043,6 @@ enable-background="new 0 0 10 10" xml:space="preserve">
       } :
       (result) => {
         // デフォルトのGPS処理
-        console.log("notAlways");
-        console.log(result);
-        console.log(shown);
         if (result && result.error) {
           ui.core.currentPosition = null;
           if (result.error === "gps_out" && shown) {
@@ -1111,7 +1096,6 @@ enable-background="new 0 0 10 10" xml:space="preserve">
         });
       });
       ui.core.mapObject.on("gps_result", evt => {
-        console.log(evt);
         if (gpsWaitPromise === "gps_request") {
           gpsWaitPromise = evt.detail;
         } else if (gpsWaitPromise) {
