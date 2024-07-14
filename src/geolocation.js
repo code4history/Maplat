@@ -78,7 +78,7 @@ export class Geolocation extends BaseObject {
         if (allowGps) {
           this.task_id_ = setInterval(this.timerPositionChange_.bind(this), trackingOptions.maximumAge);
         } else {
-          setTimeout(this.timerPositionError_.bind(this), trackingOptions.maximumAge);
+          setTimeout(this.timerPositionError_.bind(this), trackingOptions.maximumAge * 10);
         }
       } else if (!tracking && this.task_id_ !== undefined) {
         clearInterval(this.task_id_);

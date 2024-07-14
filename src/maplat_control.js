@@ -325,6 +325,7 @@ export class SetGPS extends CustomControl {
         geolocation.once("change", () => {
           const lnglat = geolocation.getPosition();
           const acc = geolocation.getAccuracy();
+          if (!lnglat || !acc) return;
           source.setGPSMarker({ lnglat, acc }).then((insideCheck) => {
             if (!insideCheck) {
               source.setGPSMarker();
@@ -334,6 +335,7 @@ export class SetGPS extends CustomControl {
       } else {
         const lnglat = geolocation.getPosition();
         const acc = geolocation.getAccuracy();
+        if (!lnglat || !acc) return;
         source.setGPSMarkerAsync({ lnglat, acc }).then((insideCheck) => {
           if (!insideCheck) {
             source.setGPSMarker();
@@ -357,6 +359,7 @@ export class SetGPS extends CustomControl {
         const source = (overlayLayer ? overlayLayer.getSource() : firstLayer.getSource());
         const lnglat = geolocation.getPosition();
         const acc = geolocation.getAccuracy();
+        if (!lnglat || !acc) return;
         source.setGPSMarkerAsync({ lnglat, acc }, !this.moveTo_).then((insideCheck) => {
           this.moveTo_ = false;
           if (!insideCheck) {
@@ -378,6 +381,22 @@ export class SetGPS extends CustomControl {
         setTimeout(() =>{
           modal.hide();
         }, 3000);
+      });
+      ui.core.addEventListener("mapChanged", () => {
+        if (geolocation.getTracking()) {
+          const map = ui.core.mapObject;
+          const overlayLayer = map.getLayer("overlay").getLayers().item(0);
+          const firstLayer = map.getLayers().item(0);
+          const source = (overlayLayer ? overlayLayer.getSource() : firstLayer.getSource());
+          const lnglat = geolocation.getPosition();
+          const acc = geolocation.getAccuracy();
+          if (!lnglat || !acc) return;
+          source.setGPSMarkerAsync({ lnglat, acc }, true).then((insideCheck) => {
+            if (!insideCheck) {
+              source.setGPSMarker();
+            }
+          });
+        }
       });
     });
 
