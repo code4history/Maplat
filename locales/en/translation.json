@@ -61,8 +61,8 @@
         "out_of_map_desc": "GPS result is out of map. GPS function turns off.",
         "out_of_map_area": "Showing area is out of map. The area moves to default position.",
         "copy_toast": "Copied to clipboard",
-        "gps_error": "Position acquisition error",
-        "user_gps_deny": "User did not allow location data acquisition.",
+        "gps_error": "Location information is not available",
+        "user_gps_deny": "To display the current location, please enable \"Use Location\" in your web browser and read the QR code or URL again.",
         "gps_miss": "System failed to acquire location.",
         "gps_timeout": "Position acquisition process timed out."
     }

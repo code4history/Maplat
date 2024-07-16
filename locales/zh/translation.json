@@ -61,8 +61,8 @@
         "out_of_map_desc": "GPS数据获取结果已超出地图范围外。GPS功能已关闭。",
         "out_of_map_area": "已经超出地图范围以外。请返回地图标准位置。",
         "copy_toast": "已经复制到剪贴板。",
-        "gps_error": "位置采集误差",
-        "user_gps_deny": "用户拒绝获取位置数据。",
+        "gps_error": "位置信息不详",
+        "user_gps_deny": "要查看当前位置，请在网络浏览器中启用 \"使用位置\"，然后再次读取 QR 码或 URL。",
         "gps_miss": "系统获取位置失败。",
         "gps_timeout": "位置获取过程超时。"
     }
