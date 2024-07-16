@@ -566,7 +566,6 @@ export class Copyright extends CustomControl {
       : '<i class="fa fa-info-circle fa-lg"></i>';
     options.cls = "ol-copyright";
     options.callback = function () {
-      console.log("Copyright######################");
       const map = this.getMap();
       map.dispatchEvent(
         new MapEvent("click_control", map, { control: "copyright" })
