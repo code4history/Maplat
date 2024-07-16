@@ -11,6 +11,25 @@ const TerserPlugin = require("terser-webpack-plugin");
 const {InjectManifest} = require('workbox-webpack-plugin');
 
 const port = process.env.PORT || 8888;
+const dev = JSON.stringify(process.env.NODE_ENV !== "production");
+
+const injectManifest = new InjectManifest({
+  maximumFileSizeToCacheInBytes: 10485760,
+  swDest: "./service-worker.js",
+  swSrc: './src/service-worker.js'
+});
+
+if (dev) {
+  Object.defineProperty(injectManifest, "alreadyCalled", {
+    get() {
+      return false
+    },
+    set() {
+      // do nothing; the internals try to set it to true, which then results in a warning
+      // on the next run of webpack.
+    },
+  })
+}
 
 module.exports = {
   mode: 'production',
@@ -32,11 +51,7 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: "./assets/[name].css"
     }),
-    new InjectManifest({
-      swDest: "./service-worker.js",
-      swSrc: './src/service-worker.js'
-    })
-
+    injectManifest
   ],
 
   externals: [

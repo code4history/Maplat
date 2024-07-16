@@ -1109,12 +1109,14 @@ enable-background="new 0 0 10 10" xml:space="preserve">
       let qr_app;
       let qr_view;
       ui.core.mapObject.on("click_control", async evt => {
+        console.log("Click Control!!!!!!");
+        console.log(evt);
         const control = evt.frameState.control;
         const modalElm = ui.core.mapDivDocument.querySelector(".modalBase");
         const modal = new bsn.Modal(modalElm, { root: ui.core.mapDivDocument });
         if (control === "copyright") {
           const from = ui.core.getMapMeta();
-
+          console.log(from);
           if (
             !META_KEYS.reduce((prev, curr) => {
               if (curr === "title") return prev;
@@ -1122,6 +1124,7 @@ enable-background="new 0 0 10 10" xml:space="preserve">
             }, false)
           )
             return;
+          console.log("First gate!!!");
 
           ui.core.mapDivDocument.querySelector(".modal_title").innerText =
             ui.core.translate(from.officialTitle || from.title);
