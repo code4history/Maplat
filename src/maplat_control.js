@@ -378,9 +378,6 @@ export class SetGPS extends CustomControl {
         const modal = new bsn.Modal(modalElm, { root: ui.core.mapDivDocument });
         ui.modalSetting("gpsD");
         modal.show();
-        setTimeout(() =>{
-          modal.hide();
-        }, 3000);
       });
       ui.core.addEventListener("mapChanged", () => {
         if (geolocation.getTracking()) {

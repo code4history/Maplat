@@ -65,8 +65,8 @@ export default {
         "copy_toast": "Copied to clipboard",
         "gps_error": "Location information is not available",
         "user_gps_deny": "To display the current location, please enable \"Use Location\" in your web browser and read the QR code or URL again.",
-        "gps_miss": "System failed to acquire location.",
-        "gps_timeout": "Position acquisition process timed out."
+        "gps_miss": "System failed to acquire location. Please try again at a place where you can receive GPS satellite signals easily.",
+        "gps_timeout": "Position acquisition process timed out. Please try again at a place where you can receive GPS satellite signals easily."
       }
     }
   },
@@ -136,8 +136,8 @@ export default {
         "copy_toast": "クリップボードにコピーされました",
         "gps_error": "位置情報を使用できません",
         "user_gps_deny": "現在位置を表示するには、webブラウザの「位置情報の使用」を許可にして、QRコードかURLをもう一度読み込んでください。",
-        "gps_miss": "システムは位置取得に失敗しました。",
-        "gps_timeout": "位置取得処理がタイムアウトしました。"
+        "gps_miss": "システムは位置取得に失敗しました。GPS衛星の電波を受けやすい場所などで再度お試しください。",
+        "gps_timeout": "位置取得処理がタイムアウトしました。GPS衛星の電波を受けやすい場所などで再度お試しください。"
       }
     }
   },
@@ -207,8 +207,8 @@ export default {
         "copy_toast": "클릭보드로 복사되었습니다",
         "gps_error": "위치 정보를 사용할 수 없습니다",
         "user_gps_deny": "현재 위치를 표시하려면 웹 브라우저의 '위치 정보 사용'을 허용한 후 QR코드 또는 URL을 다시 불러오면 된다.",
-        "gps_miss": "시스템이 위치 획득에 실패했습니다.",
-        "gps_timeout": "위치 획득 처리가 시간 초과되었습니다."
+        "gps_miss": "시스템이 위치 획득에 실패했습니다. GPS 위성의 전파가 잘 잡히는 장소 등에서 다시 시도해 보세요.",
+        "gps_timeout": "위치 획득 처리가 시간 초과되었습니다. GPS 위성의 전파가 잘 잡히는 장소 등에서 다시 시도해 보세요."
       }
     }
   },
@@ -278,8 +278,8 @@ export default {
         "copy_toast": "已经复制到剪贴板。",
         "gps_error": "位置信息不详",
         "user_gps_deny": "要查看当前位置，请在网络浏览器中启用 \"使用位置\"，然后再次读取 QR 码或 URL。",
-        "gps_miss": "系统获取位置失败。",
-        "gps_timeout": "位置获取过程超时。"
+        "gps_miss": "系统获取位置失败。再试一次，例如在更容易接收 GPS 卫星信号的地方。",
+        "gps_timeout": "位置获取过程超时。再试一次，例如在更容易接收 GPS 卫星信号的地方。"
       }
     }
   },
@@ -349,8 +349,8 @@ export default {
         "copy_toast": "已經復製到剪貼板。",
         "gps_error": "位置資訊不詳",
         "user_gps_deny": "若要查看目前位置，請在網頁瀏覽器中啟用 \"使用位置\"，然後再次讀取 QR 碼或 URL。",
-        "gps_miss": "系統獲取位置失敗。",
-        "gps_timeout": "位置獲取過程超時。"
+        "gps_miss": "系統獲取位置失敗。再試一次，例如在更容易接收 GPS 衛星訊號的地方。",
+        "gps_timeout": "位置獲取過程超時。再試一次，例如在更容易接收 GPS 衛星訊號的地方。"
       }
     }
   }

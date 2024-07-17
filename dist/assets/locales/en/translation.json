@@ -63,7 +63,7 @@
         "copy_toast": "Copied to clipboard",
         "gps_error": "Location information is not available",
         "user_gps_deny": "To display the current location, please enable \"Use Location\" in your web browser and read the QR code or URL again.",
-        "gps_miss": "System failed to acquire location.",
-        "gps_timeout": "Position acquisition process timed out."
+        "gps_miss": "System failed to acquire location. Please try again at a place where you can receive GPS satellite signals easily.",
+        "gps_timeout": "Position acquisition process timed out. Please try again at a place where you can receive GPS satellite signals easily."
     }
 }
