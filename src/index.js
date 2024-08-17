@@ -306,18 +306,18 @@ export class MaplatUi extends EventTarget {
           <h4 din="html.share_app_title"></h4>
           <d id="___maplat_app_toast_${ui.html_id_seed}"></d> 
           <d c="recipient row">
-            <d c="form-group col-xs-4 text-center"><button title="Copy to clipboard" c="share btn btn-light" data="cp_app"><i c="fa fa-clipboard"></i>&nbsp;<small din="html.share_copy"></small></button></d> 
-            <d c="form-group col-xs-4 text-center"><button title="Twitter" c="share btn btn-light" data="tw_app"><i c="fa fa-twitter"></i>&nbsp;<small>Twitter</small></button></d> 
-            <d c="form-group col-xs-4 text-center"><button title="Facebook" c="share btn btn-light" data="fb_app"><i c="fa fa-facebook"></i>&nbsp;<small>Facebook</small></button></d> 
+            <d c="form-group col-xs-4 text-center"><button title="Copy to clipboard" c="share btn btn-light" data="cp_app"><i c="far fa-paste"></i>&nbsp;<small din="html.share_copy"></small></button></d> 
+            <d c="form-group col-xs-4 text-center"><button title="Twitter" c="share btn btn-light" data="tw_app"><i c="far fa-x-twitter"></i>&nbsp;<small>Twitter</small></button></d> 
+            <d c="form-group col-xs-4 text-center"><button title="Facebook" c="share btn btn-light" data="fb_app"><i c="far fa-facebook"></i>&nbsp;<small>Facebook</small></button></d> 
           </d> 
           <d c="qr_app center-block" style="width:128px;"></d> 
           <d c="modal_share_state">
             <h4 din="html.share_state_title"></h4>
             <d id="___maplat_view_toast_${ui.html_id_seed}"></d> 
             <d c="recipient row">
-              <d c="form-group col-xs-4 text-center"><button title="Copy to clipboard" c="share btn btn-light" data="cp_view"><i c="fa fa-clipboard"></i>&nbsp;<small din="html.share_copy"></small></button></d> 
-              <d c="form-group col-xs-4 text-center"><button title="Twitter" c="share btn btn-light" data="tw_view"><i c="fa fa-twitter"></i>&nbsp;<small>Twitter</small></button></d> 
-              <d c="form-group col-xs-4 text-center"><button title="Facebook" c="share btn btn-light" data="fb_view"><i c="fa fa-facebook"></i>&nbsp;<small>Facebook</small></button></d> 
+              <d c="form-group col-xs-4 text-center"><button title="Copy to clipboard" c="share btn btn-light" data="cp_view"><i c="far fa-paste"></i>&nbsp;<small din="html.share_copy"></small></button></d> 
+              <d c="form-group col-xs-4 text-center"><button title="Twitter" c="share btn btn-light" data="tw_view"><i c="far fa-x-twitter"></i>&nbsp;<small>Twitter</small></button></d> 
+              <d c="form-group col-xs-4 text-center"><button title="Facebook" c="share btn btn-light" data="fb_view"><i c="far fa-facebook"></i>&nbsp;<small>Facebook</small></button></d> 
             </d> 
             <d c="qr_view center-block" style="width:128px;"></d> 
           </d> 

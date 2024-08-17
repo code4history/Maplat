@@ -285,7 +285,7 @@ export class GoHome extends CustomControl {
     const options = optOptions || {};
     options.character = control_settings["home"]
       ? `<img src="${control_settings["home"]}">`
-      : '<i class="fa fa-home fa-lg"></i>';
+      : '<i class="far fa-house fa-lg"></i>';
     options.cls = "home";
     options.callback = function () {
       const source = this.getMap().getLayers().item(0).getSource();
@@ -304,7 +304,7 @@ export class SetGPS extends CustomControl {
     const options = optOptions || {};
     options.character = control_settings["gps"]
       ? `<img src="${control_settings["gps"]}">`
-      : '<i class="fa fa-crosshairs fa-lg"></i>';
+      : '<i class="far fa-location-crosshairs fa-lg"></i>';
     options.cls = "gps";
     options.render = function (mapEvent) {
       const frameState = mapEvent.frameState;
@@ -415,7 +415,7 @@ export class CompassRotate extends Rotate {
     const span = document.createElement("span"); // eslint-disable-line no-undef
     span.innerHTML = control_settings["compass"]
       ? `<img src="${control_settings["compass"]}">`
-      : '<i class="fa fa-compass fa-lg ol-compass-fa"></i>';
+      : '<i class="far fa-compass fa-lg ol-compass-fa"></i>';
     options.label = span;
     options.render = function (mapEvent) {
       const frameState = mapEvent.frameState;
@@ -494,7 +494,7 @@ export class Share extends CustomControl {
     const options = optOptions || {};
     options.character = control_settings["share"]
       ? `<img src="${control_settings["share"]}">`
-      : '<i class="fa fa-share-alt-square fa-lg"></i>';
+      : '<i class="far fa-share-from-square fa-lg"></i>';
     options.cls = "ol-share";
     options.callback = function () {
       const map = this.getMap();
@@ -516,7 +516,7 @@ export class Border extends CustomControl {
     const options = optOptions || {};
     options.character = control_settings["border"]
       ? `<img src="${control_settings["border"]}">`
-      : '<i class="fa fa-clone fa-lg"></i>';
+      : '<i class="far fa-layer-group fa-lg"></i>';
     options.cls = "ol-border";
     options.callback = function () {
       const map = this.getMap();
@@ -538,7 +538,7 @@ export class Maplat extends CustomControl {
     const options = optOptions || {};
     options.character = control_settings["help"]
       ? `<img src="${control_settings["help"]}">`
-      : '<i class="fa fa-question-circle fa-lg"></i>';
+      : '<i class="far fa-circle-question fa-lg"></i>';
     options.cls = "ol-maplat";
     options.callback = function () {
       const map = this.getMap();
@@ -560,7 +560,7 @@ export class Copyright extends CustomControl {
     const options = optOptions || {};
     options.character = control_settings["attr"]
       ? `<img src="${control_settings["attr"]}">`
-      : '<i class="fa fa-info-circle fa-lg"></i>';
+      : '<i class="far fa-circle-info fa-lg"></i>';
     options.cls = "ol-copyright";
     options.callback = function () {
       const map = this.getMap();
@@ -582,7 +582,7 @@ export class HideMarker extends CustomControl {
     const options = optOptions || {};
     options.character = control_settings["hide_marker"]
       ? `<img src="${control_settings["hide_marker"]}">`
-      : '<i class="fa fa-map-marker fa-lg"></i>';
+      : '<i class="far fa-map-pin fa-lg"></i>';
     options.cls = "ol-hide-marker";
     options.callback = function () {
       const map = this.getMap();
