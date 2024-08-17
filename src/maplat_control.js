@@ -590,7 +590,23 @@ export class HideMarker extends CustomControl {
         new MapEvent("click_control", map, { control: "hideMarker" })
       );
     };
-    options.long_callback = function () {
+
+    super(options);
+    if (control_settings["hide_marker"]) {
+      const button = this.element.querySelector("button");
+      button.style.backgroundColor = "rgba(0,0,0,0)";
+    }
+  }
+}
+
+export class MarkerList extends CustomControl {
+  constructor(optOptions) {
+    const options = optOptions || {};
+    options.character = control_settings["marker_list"]
+      ? `<img src="${control_settings["marker_list"]}">`
+      : '<i class="far fa-list fa-lg"></i>';
+    options.cls = "ol-marker-list";
+    options.callback = function () {
       const map = this.getMap();
       map.dispatchEvent(
         new MapEvent("click_control", map, { control: "hideLayer" })
@@ -598,7 +614,7 @@ export class HideMarker extends CustomControl {
     };
 
     super(options);
-    if (control_settings["hide_marker"]) {
+    if (control_settings["marker_list"]) {
       const button = this.element.querySelector("button");
       button.style.backgroundColor = "rgba(0,0,0,0)";
     }

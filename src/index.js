@@ -21,6 +21,7 @@ import {
   Maplat,
   Border,
   HideMarker,
+  MarkerList,
   SliderNew,
   Share,
   Zoom,
@@ -171,6 +172,10 @@ export class MaplatUi extends EventTarget {
     if (appOption.enableBorder) {
       ui.core.mapDivDocument.classList.add("enable_border");
       ui.enableBorder = true;
+    }
+    if (appOption.enableMarkerList) {
+      ui.core.mapDivDocument.classList.add("enable_marker_list");
+      ui.enableMarkerList = true;
     }
     if (appOption.disableNoimage) {
       ui.disableNoimage = true;
@@ -560,6 +565,13 @@ export class MaplatUi extends EventTarget {
         ui.core.appData.controls.push(
           new HideMarker({
             tipLabel: ui.core.t("control.hide_marker", { ns: "translation" })
+          })
+        );
+      }
+      if (ui.enableMarkerList) {
+        ui.core.appData.controls.push(
+          new MarkerList({
+            tipLabel: ui.core.t("control.marker_list", { ns: "translation" })
           })
         );
       }
