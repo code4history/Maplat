@@ -884,7 +884,7 @@ enable-background="new 0 0 10 10" xml:space="preserve">
             iconSVG = `data:image/svg+xml,${encodeURIComponent(iconSVG)}`;
             return {
               icon: iconSVG,
-              text: ui.core.translate(source.title),
+              text: ui.core.translate(source.get("title")),
               callback: () => {
                 const lis = [
                   ...ui.core.mapDivDocument.querySelectorAll(
