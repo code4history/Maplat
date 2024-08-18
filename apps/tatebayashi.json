@@ -1,20 +1,20 @@
 {
-    "app_name": {
+    "appName": {
         "ja": "ぷらっと館林 - 館林を楽しむ古地図/絵地図街歩きアプリ",
         "en": "Maplat Tatebayashi"
     },
     "description": "まち歩きの地図サービス「ぷらっと館林」を片手に館林城下を散策してみませんか。徳川綱吉が藩主だった頃の古地図、幕末の名君、秋元志朝の頃の古地図や観光地図を収録。今ここではない時代に思いを馳せながら、ぷらぷら歩くのはきっと楽しいですよ。",
     "splash": "tatebayashi_splash.png",
     "lang": "ja",
-    "fake_gps": true,
-    "fake_center": "千眼寺",
-    "fake_radius": 10,
-    "home_position": [
+    "fakeGps": true,
+    "fakeCenter": "千眼寺",
+    "fakeRadius": 10,
+    "homePosition": [
         139.532100,
         36.249302
     ],
-    "default_zoom": 17,
-    "start_from": "tatebayashi_ojozu",
+    "defaultZoom": 17,
+    "startFrom": "tatebayashi_ojozu",
     "sources": [
         {
             "mapID": "tatebayashi_ojozu",

@@ -1,15 +1,15 @@
 {
-    "app_name": "ぷらっと鴨川運河",
+    "appName": "ぷらっと鴨川運河",
     "lang": "ja",
-    "fake_gps": true,
-    "fake_center": "竹田駅",
-    "fake_radius": 10,
-    "home_position": [
+    "fakeGps": true,
+    "fakeCenter": "竹田駅",
+    "fakeRadius": 10,
+    "homePosition": [
         135.756170,
         34.955801
     ],
-    "default_zoom": 18,
-    "start_from": "kamogawa_unga",
+    "defaultZoom": 18,
+    "startFrom": "kamogawa_unga",
     "sources": [
         {
             "mapID": "kamogawa_unga",

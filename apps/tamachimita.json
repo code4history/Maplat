@@ -1,19 +1,19 @@
 {
-    "app_name": {
+    "appName": {
         "ja": "ぷらっと田町・三田 - 田町・三田を楽しむ古地図/絵地図街歩きアプリ",
         "en": "Maplat Tamachi/Mita"
     },
     "splash": "tamachimita_splash.png",
     "lang": "ja",
-    "fake_gps": true,
-    "fake_center": "慶應義塾大学",
-    "fake_radius": 10,
-    "home_position": [
+    "fakeGps": true,
+    "fakeCenter": "慶應義塾大学",
+    "fakeRadius": 10,
+    "homePosition": [
         139.74435981129648,
         35.64877451401093
     ],
-    "default_zoom": 17,
-    "start_from": "keio-mita",
+    "defaultZoom": 17,
+    "startFrom": "keio-mita",
     "sources": [
         {
             "mapID": "keio-mita",

@@ -1,21 +1,21 @@
 {
-    "app_name" : {
+    "appName" : {
         "ja" : "さんぷらっと",
         "en" : "Samplat"
     },
     "lang" : "ja",
-    "fake_gps" : true,
-    "fake_center" : {
+    "fakeGps" : true,
+    "fakeCenter" : {
         "ja" : "益田氏城館跡",
         "en" : "Masuda"
     },
-    "fake_radius" : 10,
-    "home_position" : [131.85712897753535, 34.67762991720673],
-    "default_zoom" : 17,
+    "fakeRadius" : 10,
+    "homePosition" : [131.85712897753535, 34.67762991720673],
+    "defaultZoom" : 17,
     "zoom_restriction" : true,
     "min_zoom" : 10,
     "max_zoom" : 18,
-    "start_from" : "sesshu_masuda",
+    "startFrom" : "sesshu_masuda",
     "sources" : [
         {
             "label": "益田",

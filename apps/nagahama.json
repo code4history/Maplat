@@ -1,22 +1,22 @@
 {
-    "app_name": {
+    "appName": {
         "ja": "ぷらっと長浜・竹生島 - 長浜・竹生島を楽しむ古地図/絵地図街歩きアプリ",
         "en": "Maplat Nagahama"
     },
     "splash": "nagahama_splash.png",
     "lang": "ja",
-    "fake_gps": true,
-    "fake_center": {
+    "fakeGps": true,
+    "fakeCenter": {
         "ja": "長浜",
         "en": "Naghama"
     },
-    "fake_radius": 10,
-    "home_position": [
+    "fakeRadius": 10,
+    "homePosition": [
         136.26709137564265,
         35.380642225972935
     ],
-    "default_zoom": 17,
-    "start_from": "nagahama-kanko",
+    "defaultZoom": 17,
+    "startFrom": "nagahama-kanko",
     "sources": [
         {
             "mapID": "nagahama-kanko",

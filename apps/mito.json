@@ -1,20 +1,20 @@
 {
-    "app_name": {
+    "appName": {
         "ja": "ぷらっと水戸 - 水戸を楽しむ古地図/絵地図街歩きアプリ",
         "en": "Maplat Mito"
     },
     "description": "まち歩きの地図サービス「ぷらっと水戸」をあなたのスマートフォンで、タブレットで！梅でおなじみの水戸は中世以来の歴史を持ち、水戸徳川家の本拠地として大規模な城下町が営まれていました。今でもその痕跡が各地にみられます。古地図は縮尺や方角が正確でないこともありますが、現代地図が自動的に合わせてくれるのでわかりやすい！大手門・隅櫓などの再建が進みより想像しやすくなった水戸のまちなみをぜひ訪ねてみてください。",
     "splash": "mito_splash.png",
     "lang": "ja",
-    "fake_gps": true,
-    "fake_center": "弘道館",
-    "fake_radius": 10,
-    "home_position": [
+    "fakeGps": true,
+    "fakeCenter": "弘道館",
+    "fakeRadius": 10,
+    "homePosition": [
         140.4773091747215,
         36.37532743309838
     ],
-    "default_zoom": 17,
-    "start_from": "mito_edo",
+    "defaultZoom": 17,
+    "startFrom": "mito_edo",
     "sources": [
         {
             "mapID": "mito_edo",

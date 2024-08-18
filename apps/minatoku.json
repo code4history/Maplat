@@ -1,19 +1,19 @@
 {
-    "app_name": {
+    "appName": {
         "ja": "ぷらっと東京港区 - 東京都港区を楽しむ古地図/絵地図街歩きアプリ",
         "en": "Maplat Tokyo Minatoku"
     },
     "splash": "minatoku_splash.png",
     "lang": "ja",
-    "fake_gps": true,
-    "fake_center": "芝公園",
-    "fake_radius": 10,
-    "home_position": [
+    "fakeGps": true,
+    "fakeCenter": "芝公園",
+    "fakeRadius": 10,
+    "homePosition": [
         139.74808838454965,
         35.655328336103935
     ],
-    "default_zoom": 17,
-    "start_from": "geoten_shiba",
+    "defaultZoom": 17,
+    "startFrom": "geoten_shiba",
     "sources": [
         {
             "mapID": "geoten_shiba",

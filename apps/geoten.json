@@ -1,19 +1,19 @@
 {
-    "app_name": {
+    "appName": {
         "ja": "Maplat ジオ展2023向けデモサイト",
         "en": "Maplat Geoten 2023"
     },
     "splash": "geoten_splash.png",
     "lang": "ja",
-    "fake_gps": true,
-    "fake_center": "JR八丁堀",
-    "fake_radius": 10,
-    "home_position": [
+    "fakeGps": true,
+    "fakeCenter": "JR八丁堀",
+    "fakeRadius": 10,
+    "homePosition": [
         139.777708,
         35.674717
     ],
-    "default_zoom": 17,
-    "start_from": "keio-mita",
+    "defaultZoom": 17,
+    "startFrom": "keio-mita",
     "sources": [
         {
             "mapID": "keio-mita",

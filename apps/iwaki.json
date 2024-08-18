@@ -1,22 +1,22 @@
 {
-    "app_name": {
+    "appName": {
         "ja": "ぷらっといわき - いわきを楽しむ古地図/絵地図街歩きアプリ",
         "en": "Maplat Iwaki"
     },
     "splash": "iwaki_splash.png",
     "lang": "ja",
-    "fake_gps": true,
-    "fake_center": {
+    "fakeGps": true,
+    "fakeCenter": {
         "ja": "いわき市",
         "en": "Iwaki"
     },
-    "fake_radius": 10,
-    "home_position": [
+    "fakeRadius": 10,
+    "homePosition": [
         140.890889,
         37.059067
     ],
-    "default_zoom": 17,
-    "start_from": "iwaki_taira_genna2",
+    "defaultZoom": 17,
+    "startFrom": "iwaki_taira_genna2",
     "sources": [
         {
             "mapID": "iwaki_taira_genna2",

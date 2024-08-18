@@ -1,20 +1,20 @@
 {
-    "app_name" : {
+    "appName" : {
         "ja" : "ぷらっと玉村",
         "en" : "Maplat Tamamura"
     },
     "description": "まち歩きの地図サービス「ぷらっと玉村」を片手に玉村宿を散策してみませんか。江戸時代、日光東照宮に幣帛を奉献するために、京都から例幣使が通った日光例幣使道で栄えた宿場町、玉村宿。玉村八幡宮周辺の賑わいを描いた古地図、観光地図、玉村宿で取り調べを受けた博徒国定忠治に家鴨の生き血を飲ませたという家鴨塚などの情報を収録。今ここではない時代に思いを馳せながら、ぷらぷら歩くのはきっと楽しいですよ。",
     "splash" : "tamamura_splash.png",
     "lang" : "ja",
-    "fake_gps" : true,
-    "fake_center" : {
+    "fakeGps" : true,
+    "fakeCenter" : {
         "ja" : "玉村八幡宮",
         "en" : "Tamamura Hachimangu Shrine"
     },
-    "fake_radius" : 10,
-    "home_position" : [139.10886127098468, 36.305064960111366],
-    "default_zoom" : 17,
-    "start_from" : "tamamura_bunsei12",
+    "fakeRadius" : 10,
+    "homePosition" : [139.10886127098468, 36.305064960111366],
+    "defaultZoom" : 17,
+    "startFrom" : "tamamura_bunsei12",
     "sources" : [
         {
             "label" : { "ja": "文政12年", "en": "Bunsei era" },

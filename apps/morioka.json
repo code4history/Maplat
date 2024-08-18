@@ -1,14 +1,14 @@
 {
-    "app_name": "盛岡市古地図アプリ",
+    "appName": "盛岡市古地図アプリ",
     "lang": "ja",
-    "fake_gps": true,
-    "fake_center": "盛岡市",
-    "fake_radius": 10,
-    "home_position": [
+    "fakeGps": true,
+    "fakeCenter": "盛岡市",
+    "fakeRadius": 10,
+    "homePosition": [
         141.149989,
         39.699952
     ],
-    "default_zoom": 17,
+    "defaultZoom": 17,
     "sources": [
         {
             "mapID": "morioka_ndl",

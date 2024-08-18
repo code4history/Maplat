@@ -1,22 +1,22 @@
 {
-    "app_name": {
+    "appName": {
         "ja": "ぷらっと津和野 - 津和野を楽しむ古地図/絵地図街歩きアプリ",
         "en": "Maplat Tsuwano"
     },
     "splash": "tsuwano_splash.png",
     "lang": "ja",
-    "fake_gps": true,
-    "fake_center": {
+    "fakeGps": true,
+    "fakeCenter": {
         "ja": "津和野市",
         "en": "tsuwano"
     },
-    "fake_radius": 10,
-    "home_position": [
+    "fakeRadius": 10,
+    "homePosition": [
         131.77395108351843,
         34.47255040428108        
     ],
-    "default_zoom": 17,
-    "start_from": "tsuwano_map",
+    "defaultZoom": 17,
+    "startFrom": "tsuwano_map",
     "sources": [
         {
             "mapID": "tsuwano_map",

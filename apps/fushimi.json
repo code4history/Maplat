@@ -1,19 +1,19 @@
 {
-    "app_name": {
+    "appName": {
         "ja": "ぷらっと伏見 - 伏見を楽しむ古地図/絵地図街歩きアプリ",
         "en": "Maplat Fushimi"
     },
     "splash": "fushimi_splash.png",
     "lang": "ja",
-    "fake_gps": true,
-    "fake_center": "伏見城",
-    "fake_radius": 10,
-    "home_position": [
+    "fakeGps": true,
+    "fakeCenter": "伏見城",
+    "fakeRadius": 10,
+    "homePosition": [
         139.929796,
         37.487708
     ],
-    "default_zoom": 18,
-    "start_from": "fushimijo_maplat",
+    "defaultZoom": 18,
+    "startFrom": "fushimijo_maplat",
     "sources": [
         {
             "mapID": "fushimijo_maplat",

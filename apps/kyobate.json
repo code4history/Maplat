@@ -1,15 +1,15 @@
 {
-    "app_name": "京終駅転車台",
+    "appName": "京終駅転車台",
     "lang": "ja",
-    "fake_gps": true,
-    "fake_center": "京終駅",
-    "fake_radius": 10,
-    "home_position": [
+    "fakeGps": true,
+    "fakeCenter": "京終駅",
+    "fakeRadius": 10,
+    "homePosition": [
         135.828772,
         34.669800
     ],
-    "default_zoom": 17,
-    "start_from": "kyobate_station",
+    "defaultZoom": 17,
+    "startFrom": "kyobate_station",
     "sources": [
         {
             "mapID": "kyobate_station",

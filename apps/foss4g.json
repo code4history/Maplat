@@ -1,15 +1,15 @@
 {
-    "app_name": "Maplat 2018秋発表",
+    "appName": "Maplat 2018秋発表",
     "lang": "ja",
-    "fake_gps": true,
-    "fake_center": "伏見城",
-    "fake_radius": 10,
-    "home_position": [
+    "fakeGps": true,
+    "fakeCenter": "伏見城",
+    "fakeRadius": 10,
+    "homePosition": [
         139.929796,
         37.487708
     ],
-    "default_zoom": 18,
-    "start_from": "maplat_2018_nov_1",
+    "defaultZoom": 18,
+    "startFrom": "maplat_2018_nov_1",
     "sources": [
         {
             "mapID": "maplat_2018_nov_1",

@@ -1,14 +1,14 @@
 {
-    "app_name": "上田城城下町アプリ",
+    "appName": "上田城城下町アプリ",
     "lang": "ja",
-    "fake_gps": true,
-    "fake_center": "上田城",
-    "fake_radius": 10,
-    "home_position": [
+    "fakeGps": true,
+    "fakeCenter": "上田城",
+    "fakeRadius": 10,
+    "homePosition": [
         138.244582,
         36.403664
     ],
-    "default_zoom": 17,
+    "defaultZoom": 17,
     "sources": [
         {
             "mapID": "sanada_genroku15_1702r",

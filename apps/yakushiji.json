@@ -1,20 +1,20 @@
 {
-    "app_name": {
+    "appName": {
         "ja": "ぷらっと薬師寺",
         "en": "Maplat Yakushiji Temple"
     },
     "description": "ぷらっと薬師寺",
     "lang": "ja",
     "splash": "yakushiji_splash.png",
-    "fake_gps": true,
-    "fake_center": "薬師寺",
-    "fake_radius": 10,
-    "home_position": [
+    "fakeGps": true,
+    "fakeCenter": "薬師寺",
+    "fakeRadius": 10,
+    "homePosition": [
         135.78431321019028,
         34.66834684304485
     ],
-    "default_zoom": 17,
-    "start_from": "yakushiji",
+    "defaultZoom": 17,
+    "startFrom": "yakushiji",
     "sources": [
         {
             "mapID": "yakushiji",

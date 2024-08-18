@@ -1,19 +1,19 @@
 {
-    "app_name": {
+    "appName": {
         "ja": "ぷらっと東京中央区 - 東京都中央区を楽しむ古地図/絵地図街歩きアプリ",
         "en": "Maplat Tokyo Chuoku"
     },
     "splash": "chuoku_splash.png",
     "lang": "ja",
-    "fake_gps": true,
-    "fake_center": "JR八丁堀",
-    "fake_radius": 10,
-    "home_position": [
+    "fakeGps": true,
+    "fakeCenter": "JR八丁堀",
+    "fakeRadius": 10,
+    "homePosition": [
         139.777708,
         35.674717
     ],
-    "default_zoom": 17,
-    "start_from": "miesan_kayabacho_map",
+    "defaultZoom": 17,
+    "startFrom": "miesan_kayabacho_map",
     "sources": [
         {
             "mapID": "edo_tsukiji_hacchobori_19c",

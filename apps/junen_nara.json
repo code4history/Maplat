@@ -1,20 +1,20 @@
 {
-    "app_name": {
+    "appName": {
         "ja": "ぷらっと奈良 - 奈良を楽しむ古地図/絵地図街歩きアプリ",
         "en": "Maplat Nara"
     },
     "description": "まち歩きの地図サービス「ぷらっと奈良」を片手にならまちを散策してみませんか。古刹元興寺・興福寺の歴史的境内図、奈良町奉行所支配時代の江戸の奈良町地図、大正時代の地図や楽しいならまちおもしろ絵図を収録。今ここではない時代に思いを馳せながら、ぷらぷら歩くのはきっと楽しいですよ。",
     "lang": "ja",
     "splash": "nara_splash.png",
-    "fake_gps": true,
-    "fake_center": "興福寺",
-    "fake_radius": 10,
-    "home_position": [
+    "fakeGps": true,
+    "fakeCenter": "興福寺",
+    "fakeRadius": 10,
+    "homePosition": [
         135.8311667,
         34.68325
     ],
-    "default_zoom": 17,
-    "start_from": "junen_nara",
+    "defaultZoom": 17,
+    "startFrom": "junen_nara",
     "sources": [
         {
             "mapID": "junen_nara",

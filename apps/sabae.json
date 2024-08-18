@@ -1,14 +1,14 @@
 {
-    "app_name": "鯖江市古地図アプリ",
+    "appName": "鯖江市古地図アプリ",
     "lang": "ja",
-    "fake_gps": true,
-    "fake_center": "鯖江市",
-    "fake_radius": 10,
-    "home_position": [
+    "fakeGps": true,
+    "fakeCenter": "鯖江市",
+    "fakeRadius": 10,
+    "homePosition": [
         136.188948,
         35.943469
     ],
-    "default_zoom": 17,
+    "defaultZoom": 17,
     "sources": [
         {
             "mapID": "sabae004",

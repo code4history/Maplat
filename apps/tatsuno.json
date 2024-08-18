@@ -1,14 +1,14 @@
 {
-    "app_name": "龍野城城下町アプリ",
+    "appName": "龍野城城下町アプリ",
     "lang": "ja",
-    "fake_gps": true,
-    "fake_center": "龍野町福の神",
-    "fake_radius": 10,
-    "home_position": [
+    "fakeGps": true,
+    "fakeCenter": "龍野町福の神",
+    "fakeRadius": 10,
+    "homePosition": [
         134.543495,
         34.865394
     ],
-    "default_zoom": 17,
+    "defaultZoom": 17,
     "sources": [
         {
             "mapID": "Tatsuno_Hassaki_Kochizu",

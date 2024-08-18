@@ -1,22 +1,22 @@
 {
-    "app_name": {
+    "appName": {
         "ja": "ぷらっと姫路 - 姫路を楽しむ古地図/絵地図街歩きアプリ",
         "en": "Maplat Himeji"
     },
     "splash": "himeji_splash.png",
     "lang": "ja",
-    "fake_gps": true,
-    "fake_center": {
+    "fakeGps": true,
+    "fakeCenter": {
         "ja": "姫路城",
         "en": "Himeji Castle"
     },
-    "fake_radius": 10,
-    "home_position": [
+    "fakeRadius": 10,
+    "homePosition": [
         134.69400739117089,
         34.83935275101559
     ],
-    "default_zoom": 17,
-    "start_from": "Jissoku_Himeji_Shigai",
+    "defaultZoom": 17,
+    "startFrom": "Jissoku_Himeji_Shigai",
     "sources": [
         {
             "mapID": "Jissoku_Himeji_Shigai",

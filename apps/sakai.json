@@ -1,22 +1,22 @@
 {
-    "app_name": {
+    "appName": {
         "ja": "ぷらっと堺 - 堺を楽しむ古地図/絵地図街歩きアプリ",
         "en": "Maplat Sakai"
     },
     "splash": "sakai_splash.png",
     "lang": "ja",
-    "fake_gps": true,
-    "fake_center": {
+    "fakeGps": true,
+    "fakeCenter": {
         "ja": "堺市",
         "en": "Sakai"
     },
-    "fake_radius": 10,
-    "home_position": [
+    "fakeRadius": 10,
+    "homePosition": [
         135.4719023951791,
         34.576412364864424
     ],
-    "default_zoom": 17,
-    "start_from": "sakai-1735",
+    "defaultZoom": 17,
+    "startFrom": "sakai-1735",
     "sources": [
         {
             "mapID": "sakai-1735",
