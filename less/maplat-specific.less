@@ -16,6 +16,10 @@
   display: none;
 }
 
+.close {
+  font-size: 32px;
+}
+
 .modal_poi_content, .modal_map_content, .modal_load_content, .modal_gpsW_content, .modal_gpsD_content,
 .modal_help_content, .modal_title, .modal_load_title, .modal_gpsW_title, .modal_help_title,
 .modal_share_content, .modal_share_title, .modal_hide_marker_content, .modal_hide_marker_title {
@@ -187,6 +191,13 @@ input[type="checkbox"].markerlist:checked + label.check > div {
   white-space: nowrap;
   text-overflow: ellipsis;
   font-size: 18px;
+}
+
+@media (max-width: 768px) {
+  .swiper-button-next,
+  .swiper-button-prev{
+    margin-top: -40px;
+    }
 }
 
 @media screen and (max-width: 600px) {
@@ -511,31 +522,49 @@ input[type="checkbox"].markerlist:checked + label.check > div {
   bottom: calc(115px + .5em + env(safe-area-inset-bottom));
 }
 
-.ol-border, .ol-hide-marker {
+.ol-border, .ol-hide-marker, .ol-marker-list {
   right: .5em;
   right: calc(.5em + constant(safe-area-inset-right));
   right: calc(.5em + env(safe-area-inset-right));
   bottom: calc(105px + .5em);
 }
 
-&.ol-touch .ol-border, &.ol-touch .ol-hide-marker {
+&.ol-touch .ol-border, &.ol-touch .ol-hide-marker, &.ol-touch .ol-marker-list {
   bottom: calc(115px + .5em);
   bottom: calc(115px + .5em + constant(safe-area-inset-bottom));
   bottom: calc(115px + .5em + env(safe-area-inset-bottom));
 }
 
-&.enable_border .ol-hide-marker {
+&.enable_border .ol-hide-marker, &.enable_border .ol-marker-list, &.enable_hide_marker .ol-marker-list {
   right: .5em;
   right: calc(.5em + constant(safe-area-inset-right));
   right: calc(.5em + env(safe-area-inset-right));
   bottom: calc(145px + .5em);
 }
 
-&.enable_border.ol-touch .ol-hide-marker {
+&.enable_border.ol-touch .ol-hide-marker, &.enable_border.ol-touch .ol-marker-list, &.enable_hide_marker.ol-touch .ol-marker-list {
   bottom: calc(165px + .5em);
   bottom: calc(165px + .5em + constant(safe-area-inset-bottom));
   bottom: calc(165px + .5em + env(safe-area-inset-bottom));
 }
+
+&.enable_border.enable_hide_marker .ol-marker-list {
+  right: .5em;
+  right: calc(.5em + constant(safe-area-inset-right));
+  right: calc(.5em + env(safe-area-inset-right));
+  bottom: calc(185px + .5em);
+}
+
+&.enable_border.enable_hide_marker.ol-touch .ol-marker-list {
+  bottom: calc(215px + .5em);
+  bottom: calc(215px + .5em + constant(safe-area-inset-bottom));
+  bottom: calc(215px + .5em + env(safe-area-inset-bottom));
+}
+
+
+
+
+
 
 .ol-copyright {
   right: .5em;

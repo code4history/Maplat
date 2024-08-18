@@ -6,6 +6,7 @@ import page from "../legacy/page";
 import bsn from "../legacy/bootstrap-native";
 import { MaplatApp as Core, createElement } from "@maplat/core";
 import ContextMenu from "./contextmenu";
+import { Geolocation } from "./geolocation";
 import iziToast from "../legacy/iziToast";
 import QRCode from "../legacy/qrcode";
 import { point, polygon } from "@turf/helpers";
@@ -20,6 +21,7 @@ import {
   Maplat,
   Border,
   HideMarker,
+  MarkerList,
   SliderNew,
   Share,
   Zoom,
@@ -156,7 +158,7 @@ export class MaplatUi extends EventTarget {
 
     const enableSplash = !ui.core.initialRestore.mapID;
     const restoreTransparency = ui.core.initialRestore.transparency;
-    const enableOutOfMap = !appOption.presentation_mode;
+    const enableOutOfMap = !appOption.presentationMode;
     const enablePoiHtmlNoScroll = appOption.enablePoiHtmlNoScroll;
 
     if (appOption.enableShare) {
@@ -171,11 +173,18 @@ export class MaplatUi extends EventTarget {
       ui.core.mapDivDocument.classList.add("enable_border");
       ui.enableBorder = true;
     }
+    if (appOption.enableMarkerList) {
+      ui.core.mapDivDocument.classList.add("enable_marker_list");
+      ui.enableMarkerList = true;
+    }
     if (appOption.disableNoimage) {
       ui.disableNoimage = true;
     }
     if (appOption.stateUrl) {
       ui.core.mapDivDocument.classList.add("state_url");
+    }
+    if (appOption.alwaysGpsOn) {
+      ui.alwaysGpsOn = true;
     }
     if (ui.core.enableCache) {
       ui.core.mapDivDocument.classList.add("enable_cache");
@@ -302,18 +311,18 @@ export class MaplatUi extends EventTarget {
           <h4 din="html.share_app_title"></h4>
           <d id="___maplat_app_toast_${ui.html_id_seed}"></d> 
           <d c="recipient row">
-            <d c="form-group col-xs-4 text-center"><button title="Copy to clipboard" c="share btn btn-light" data="cp_app"><i c="fa fa-clipboard"></i>&nbsp;<small din="html.share_copy"></small></button></d> 
-            <d c="form-group col-xs-4 text-center"><button title="Twitter" c="share btn btn-light" data="tw_app"><i c="fa fa-twitter"></i>&nbsp;<small>Twitter</small></button></d> 
-            <d c="form-group col-xs-4 text-center"><button title="Facebook" c="share btn btn-light" data="fb_app"><i c="fa fa-facebook"></i>&nbsp;<small>Facebook</small></button></d> 
+            <d c="form-group col-xs-4 text-center"><button title="Copy to clipboard" c="share btn btn-light" data="cp_app"><i c="far fa-paste"></i>&nbsp;<small din="html.share_copy"></small></button></d> 
+            <d c="form-group col-xs-4 text-center"><button title="Twitter" c="share btn btn-light" data="tw_app"><i c="far fa-x-twitter"></i>&nbsp;<small>Twitter</small></button></d> 
+            <d c="form-group col-xs-4 text-center"><button title="Facebook" c="share btn btn-light" data="fb_app"><i c="far fa-facebook"></i>&nbsp;<small>Facebook</small></button></d> 
           </d> 
           <d c="qr_app center-block" style="width:128px;"></d> 
           <d c="modal_share_state">
             <h4 din="html.share_state_title"></h4>
             <d id="___maplat_view_toast_${ui.html_id_seed}"></d> 
             <d c="recipient row">
-              <d c="form-group col-xs-4 text-center"><button title="Copy to clipboard" c="share btn btn-light" data="cp_view"><i c="fa fa-clipboard"></i>&nbsp;<small din="html.share_copy"></small></button></d> 
-              <d c="form-group col-xs-4 text-center"><button title="Twitter" c="share btn btn-light" data="tw_view"><i c="fa fa-twitter"></i>&nbsp;<small>Twitter</small></button></d> 
-              <d c="form-group col-xs-4 text-center"><button title="Facebook" c="share btn btn-light" data="fb_view"><i c="fa fa-facebook"></i>&nbsp;<small>Facebook</small></button></d> 
+              <d c="form-group col-xs-4 text-center"><button title="Copy to clipboard" c="share btn btn-light" data="cp_view"><i c="far fa-paste"></i>&nbsp;<small din="html.share_copy"></small></button></d> 
+              <d c="form-group col-xs-4 text-center"><button title="Twitter" c="share btn btn-light" data="tw_view"><i c="far fa-x-twitter"></i>&nbsp;<small>Twitter</small></button></d> 
+              <d c="form-group col-xs-4 text-center"><button title="Facebook" c="share btn btn-light" data="fb_view"><i c="far fa-facebook"></i>&nbsp;<small>Facebook</small></button></d> 
             </d> 
             <d c="qr_view center-block" style="width:128px;"></d> 
           </d> 
@@ -527,6 +536,7 @@ export class MaplatUi extends EventTarget {
           tipLabel: ui.core.t("control.zoom", { ns: "translation" })
         }),
         new SetGPS({
+          ui,
           tipLabel: ui.core.t("control.gps", { ns: "translation" })
         }),
         new GoHome({
@@ -558,6 +568,13 @@ export class MaplatUi extends EventTarget {
           })
         );
       }
+      if (ui.enableMarkerList) {
+        ui.core.appData.controls.push(
+          new MarkerList({
+            tipLabel: ui.core.t("control.marker_list", { ns: "translation" })
+          })
+        );
+      }
 
       // Contextmenu
       ui.contextMenu = new ContextMenu({
@@ -567,12 +584,6 @@ export class MaplatUi extends EventTarget {
         items: []
       });
       ui.core.appData.controls.push(ui.contextMenu);
-
-      if (ui.core.mapObject) {
-        ui.core.appData.controls.map(control => {
-          ui.core.mapObject.addControl(control);
-        });
-      }
 
       ui.sliderNew.on("propertychange", evt => {
         if (evt.key === "slidervalue") {
@@ -1013,13 +1024,37 @@ enable-background="new 0 0 10 10" xml:space="preserve">
     }
 
     ui.waitReady = ui.core.waitReady.then(() => {
-      const fakeGps = appOption.fake ? ui.core.appData.fake_gps : false;
-      const fakeCenter = appOption.fake ? ui.core.appData.fake_center : false;
-      const fakeRadius = appOption.fake ? ui.core.appData.fake_radius : false;
+      const fakeGps = appOption.fake ? ui.core.appData.fakeGps : false;
+      const fakeCenter = appOption.fake ? ui.core.appData.fakeCenter : false;
+      const fakeRadius = appOption.fake ? ui.core.appData.fakeRadius : false;
 
-      let shown = false;
+      const geolocation = new Geolocation({
+        timerBase: appOption.fake,
+        homePosition: ui.core.appData.homePosition
+      });
+      geolocation.setTracking(true);
+
+      ui.geolocation = geolocation;
+
+      /*let shown = false;
       let gpsWaitPromise = null;
-      function showGPSresult(result) {
+
+      if (ui.alwaysGpsOn) {
+        ui.core.mapObject.handleGPS(true);
+      }
+
+      const showGPSresult = ui.alwaysGpsOn ?
+      (result) => {
+        // 常時GPSオンの処理
+        if (result && result.error === "gps_error") {
+          // GPS取得のエラーだけは、ケアする
+
+        } else {
+
+        }
+      } :
+      (result) => {
+        // デフォルトのGPS処理
         if (result && result.error) {
           ui.core.currentPosition = null;
           if (result.error === "gps_out" && shown) {
@@ -1074,14 +1109,14 @@ enable-background="new 0 0 10 10" xml:space="preserve">
       });
       ui.core.mapObject.on("gps_result", evt => {
         if (gpsWaitPromise === "gps_request") {
-          gpsWaitPromise = evt.frameState;
+          gpsWaitPromise = evt.detail;
         } else if (gpsWaitPromise) {
-          gpsWaitPromise(evt.frameState);
+          gpsWaitPromise(evt.detail);
           gpsWaitPromise = null;
         } else if (!shown) {
-          showGPSresult(evt.frameState);
+          showGPSresult(evt.detail);
         }
-      });
+      });*/
 
       let qr_app;
       let qr_view;

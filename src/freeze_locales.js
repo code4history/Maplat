@@ -62,7 +62,11 @@ export default {
         "out_of_map": "Out of map",
         "out_of_map_desc": "GPS result is out of map. GPS function turns off.",
         "out_of_map_area": "Showing area is out of map. The area moves to default position.",
-        "copy_toast": "Copied to clipboard"
+        "copy_toast": "Copied to clipboard",
+        "gps_error": "Location information is not available",
+        "user_gps_deny": "To display the current location, please enable \"Use Location\" in your web browser and read the QR code or URL again.",
+        "gps_miss": "System failed to acquire location. Please try again at a place where you can receive GPS satellite signals easily.",
+        "gps_timeout": "Position acquisition process timed out. Please try again at a place where you can receive GPS satellite signals easily."
       }
     }
   },
@@ -129,7 +133,11 @@ export default {
         "out_of_map": "地図範囲外",
         "out_of_map_desc": "GPSの取得結果が地図範囲外です。GPS機能をオフにします。",
         "out_of_map_area": "表示位置が地図範囲外です。地図標準位置に戻します。",
-        "copy_toast": "クリップボードにコピーされました"
+        "copy_toast": "クリップボードにコピーされました",
+        "gps_error": "位置情報を使用できません",
+        "user_gps_deny": "現在位置を表示するには、webブラウザの「位置情報の使用」を許可にして、QRコードかURLをもう一度読み込んでください。",
+        "gps_miss": "システムは位置取得に失敗しました。GPS衛星の電波を受けやすい場所などで再度お試しください。",
+        "gps_timeout": "位置取得処理がタイムアウトしました。GPS衛星の電波を受けやすい場所などで再度お試しください。"
       }
     }
   },
@@ -196,7 +204,11 @@ export default {
         "out_of_map": "지도 범위 외",
         "out_of_map_desc": "GPS 취득 결과가 지도 범위 외입니다. GPS 기능을 OFF로 합니다.",
         "out_of_map_area": "표시 위치가 지도 범위 외입니다. 지도 표준 위치로 되돌립니다.",
-        "copy_toast": "클릭보드로 복사되었습니다"
+        "copy_toast": "클릭보드로 복사되었습니다",
+        "gps_error": "위치 정보를 사용할 수 없습니다",
+        "user_gps_deny": "현재 위치를 표시하려면 웹 브라우저의 '위치 정보 사용'을 허용한 후 QR코드 또는 URL을 다시 불러오면 된다.",
+        "gps_miss": "시스템이 위치 획득에 실패했습니다. GPS 위성의 전파가 잘 잡히는 장소 등에서 다시 시도해 보세요.",
+        "gps_timeout": "위치 획득 처리가 시간 초과되었습니다. GPS 위성의 전파가 잘 잡히는 장소 등에서 다시 시도해 보세요."
       }
     }
   },
@@ -263,7 +275,11 @@ export default {
         "out_of_map": "超出地图范围",
         "out_of_map_desc": "GPS数据获取结果已超出地图范围外。GPS功能已关闭。",
         "out_of_map_area": "已经超出地图范围以外。请返回地图标准位置。",
-        "copy_toast": "已经复制到剪贴板。"
+        "copy_toast": "已经复制到剪贴板。",
+        "gps_error": "位置信息不详",
+        "user_gps_deny": "要查看当前位置，请在网络浏览器中启用 \"使用位置\"，然后再次读取 QR 码或 URL。",
+        "gps_miss": "系统获取位置失败。再试一次，例如在更容易接收 GPS 卫星信号的地方。",
+        "gps_timeout": "位置获取过程超时。再试一次，例如在更容易接收 GPS 卫星信号的地方。"
       }
     }
   },
@@ -330,7 +346,11 @@ export default {
         "out_of_map": "超出地圖範圍",
         "out_of_map_desc": "GPS數據獲取結果已超出地圖範圍外。 GPS功能已關閉。",
         "out_of_map_area": "已經超出地圖範圍以外。請返回地圖標準位置。",
-        "copy_toast": "已經復製到剪貼板。"
+        "copy_toast": "已經復製到剪貼板。",
+        "gps_error": "位置資訊不詳",
+        "user_gps_deny": "若要查看目前位置，請在網頁瀏覽器中啟用 \"使用位置\"，然後再次讀取 QR 碼或 URL。",
+        "gps_miss": "系統獲取位置失敗。再試一次，例如在更容易接收 GPS 衛星訊號的地方。",
+        "gps_timeout": "位置獲取過程超時。再試一次，例如在更容易接收 GPS 衛星訊號的地方。"
       }
     }
   }

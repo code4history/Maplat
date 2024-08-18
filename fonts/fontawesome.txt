@@ -1,0 +1,39 @@
+v4                  v5                  Unicode character
+clipboard           paste               f0ea    
+twitter             New                 f099    
+facebook            facebook            f09a    
+home                house               f015    
+crosshairs          New                 f05b    
+compass             X                   f14e    
+share-alt-square    New                 f1e1    
+clone               New                 f24d    
+question-circle     circle-question     f059    
+info-circle         circle-info         f05a    
+map-marker          New                 f041    
+chevron-left        chevron-left        f053    
+chevron-right       chevron-right       f054    
+
+
+New                 x-twitter           e61b    
+New                 location-crosshairs f601    
+New                 share-from-square   f14d    
+New                 layer-group         f5fd    
+New                 map-pin             f276    
+New                 list                f03a    
+
+v4
+compass             X                   f14e    
+v6
+clipboard           paste               f0ea    
+facebook            facebook            f09a    
+home                house               f015    
+question-circle     circle-question     f059    
+info-circle         circle-info         f05a    
+chevron-left        chevron-left        f053    
+chevron-right       chevron-right       f054    
+New                 x-twitter           e61b    
+New                 location-crosshairs f601    
+New                 share-from-square   f14d    
+New                 layer-group         f5fd    
+New                 map-pin             f276    
+New                 list                f03a    

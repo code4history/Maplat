@@ -3,6 +3,7 @@ import { CLASS_UNSELECTABLE, CLASS_CONTROL } from "ol/css";
 import { MapEvent } from "ol";
 import pointer from "./pointer_images";
 import { createElement } from "@maplat/core";
+import bsn from "../legacy/bootstrap-native";
 
 let control_settings = {};
 const delegator = {
@@ -154,7 +155,6 @@ export class SliderNew extends Control {
   }
 
   setValue(res) {
-    console.log(`setValue: ${res}`);
     this.set("slidervalue", res);
     this.element.value = 1 - res;
   }
@@ -285,7 +285,7 @@ export class GoHome extends CustomControl {
     const options = optOptions || {};
     options.character = control_settings["home"]
       ? `<img src="${control_settings["home"]}">`
-      : '<i class="fa fa-home fa-lg"></i>';
+      : '<i class="far fa-house fa-lg"></i>';
     options.cls = "home";
     options.callback = function () {
       const source = this.getMap().getLayers().item(0).getSource();
@@ -304,38 +304,103 @@ export class SetGPS extends CustomControl {
     const options = optOptions || {};
     options.character = control_settings["gps"]
       ? `<img src="${control_settings["gps"]}">`
-      : '<i class="fa fa-crosshairs fa-lg"></i>';
+      : '<i class="far fa-location-crosshairs fa-lg"></i>';
     options.cls = "gps";
     options.render = function (mapEvent) {
       const frameState = mapEvent.frameState;
       if (!frameState) {
         return;
       }
-      const map = this.getMap();
-      if (map.geolocation) {
-        const tracking = map.geolocation.getTracking();
-        const receiving = this.element.classList.contains("disable");
-        if (receiving && !tracking) {
-          this.element.classList.remove("disable");
-        } else if (!receiving && tracking) {
-          this.element.classList.add("disable");
-        }
-      }
     };
-
     options.callback = function () {
-      const receiving = this.element.classList.contains("disable");
-      const map = this.getMap();
+      const ui = this.ui;
+      const map = ui.core.mapObject;
+      const overlayLayer = map.getLayer("overlay").getLayers().item(0);
+      const firstLayer = map.getLayers().item(0);
+      const source = (overlayLayer ? overlayLayer.getSource() : firstLayer.getSource());
+      const geolocation = ui.geolocation;
 
-      map.handleGPS(!receiving);
-      if (receiving) {
-        this.element.classList.remove("disable");
+      if (!geolocation.getTracking()) {
+        geolocation.setTracking(true);
+        geolocation.once("change", () => {
+          const lnglat = geolocation.getPosition();
+          const acc = geolocation.getAccuracy();
+          if (!lnglat || !acc) return;
+          source.setGPSMarker({ lnglat, acc }).then((insideCheck) => {
+            if (!insideCheck) {
+              source.setGPSMarker();
+            }
+          });
+        });
       } else {
-        this.element.classList.add("disable");
+        const lnglat = geolocation.getPosition();
+        const acc = geolocation.getAccuracy();
+        if (!lnglat || !acc) return;
+        source.setGPSMarkerAsync({ lnglat, acc }).then((insideCheck) => {
+          if (!insideCheck) {
+            source.setGPSMarker();
+          }
+        });
       }
     };
 
     super(options);
+    
+    this.ui = options.ui;
+    this.moveTo_ = false;
+    this.ui.waitReady.then(() => {
+      const ui = this.ui;
+      const geolocation = ui.geolocation;
+      
+      geolocation.on("change", () => {
+        const map = ui.core.mapObject;
+        const overlayLayer = map.getLayer("overlay").getLayers().item(0);
+        const firstLayer = map.getLayers().item(0);
+        const source = (overlayLayer ? overlayLayer.getSource() : firstLayer.getSource());
+        const lnglat = geolocation.getPosition();
+        const acc = geolocation.getAccuracy();
+        if (!lnglat || !acc) return;
+        source.setGPSMarkerAsync({ lnglat, acc }, !this.moveTo_).then((insideCheck) => {
+          this.moveTo_ = false;
+          if (!insideCheck) {
+            source.setGPSMarker();
+          }
+        });
+      });
+      geolocation.on("error", (evt) => {
+        const code = evt.code;
+        if (code === 3) return;
+        geolocation.setTracking(false);
+        ui.core.mapDivDocument.querySelector(".modal_title").innerText = ui.core.t("app.gps_error");
+        ui.core.mapDivDocument.querySelector(".modal_gpsD_content").innerText = ui.core.t(code === 1 ? "app.user_gps_deny" :
+          code === 2 ? "app.gps_miss" : "app.gps_timeout");
+        const modalElm = ui.core.mapDivDocument.querySelector(".modalBase");
+        const modal = new bsn.Modal(modalElm, { root: ui.core.mapDivDocument });
+        ui.modalSetting("gpsD");
+        modal.show();
+      });
+      ui.core.addEventListener("mapChanged", () => {
+        if (geolocation.getTracking()) {
+          const map = ui.core.mapObject;
+          const overlayLayer = map.getLayer("overlay").getLayers().item(0);
+          const firstLayer = map.getLayers().item(0);
+          const source = (overlayLayer ? overlayLayer.getSource() : firstLayer.getSource());
+          const lnglat = geolocation.getPosition();
+          const acc = geolocation.getAccuracy();
+          if (!lnglat || !acc) return;
+          source.setGPSMarkerAsync({ lnglat, acc }, true).then((insideCheck) => {
+            if (!insideCheck) {
+              source.setGPSMarker();
+            }
+          });
+        }
+      });
+    });
+
+    if (options.alwaysGpsOn) {
+      this.alwaysGpsOn = true;
+    }
+
     if (control_settings["gps"]) {
       const button = this.element.querySelector("button");
       button.style.backgroundColor = "rgba(0,0,0,0)";
@@ -350,7 +415,7 @@ export class CompassRotate extends Rotate {
     const span = document.createElement("span"); // eslint-disable-line no-undef
     span.innerHTML = control_settings["compass"]
       ? `<img src="${control_settings["compass"]}">`
-      : '<i class="fa fa-compass fa-lg ol-compass-fa"></i>';
+      : '<i class="far fa-compass fa-lg ol-compass-fa"></i>';
     options.label = span;
     options.render = function (mapEvent) {
       const frameState = mapEvent.frameState;
@@ -394,7 +459,6 @@ export class CompassRotate extends Rotate {
           self.label_.style.webkitTransform = transform;
           self.label_.style.transform = transform;
           if (this.getMap().northUp) {
-            console.log(direction);
             const contains = self.element.classList.contains("disable");
             if (!contains && Math.abs(direction) < 0.1) {
               self.element.classList.add("disable");
@@ -430,7 +494,7 @@ export class Share extends CustomControl {
     const options = optOptions || {};
     options.character = control_settings["share"]
       ? `<img src="${control_settings["share"]}">`
-      : '<i class="fa fa-share-alt-square fa-lg"></i>';
+      : '<i class="far fa-share-from-square fa-lg"></i>';
     options.cls = "ol-share";
     options.callback = function () {
       const map = this.getMap();
@@ -452,7 +516,7 @@ export class Border extends CustomControl {
     const options = optOptions || {};
     options.character = control_settings["border"]
       ? `<img src="${control_settings["border"]}">`
-      : '<i class="fa fa-clone fa-lg"></i>';
+      : '<i class="far fa-layer-group fa-lg"></i>';
     options.cls = "ol-border";
     options.callback = function () {
       const map = this.getMap();
@@ -474,7 +538,7 @@ export class Maplat extends CustomControl {
     const options = optOptions || {};
     options.character = control_settings["help"]
       ? `<img src="${control_settings["help"]}">`
-      : '<i class="fa fa-question-circle fa-lg"></i>';
+      : '<i class="far fa-circle-question fa-lg"></i>';
     options.cls = "ol-maplat";
     options.callback = function () {
       const map = this.getMap();
@@ -496,7 +560,7 @@ export class Copyright extends CustomControl {
     const options = optOptions || {};
     options.character = control_settings["attr"]
       ? `<img src="${control_settings["attr"]}">`
-      : '<i class="fa fa-info-circle fa-lg"></i>';
+      : '<i class="far fa-circle-info fa-lg"></i>';
     options.cls = "ol-copyright";
     options.callback = function () {
       const map = this.getMap();
@@ -518,7 +582,7 @@ export class HideMarker extends CustomControl {
     const options = optOptions || {};
     options.character = control_settings["hide_marker"]
       ? `<img src="${control_settings["hide_marker"]}">`
-      : '<i class="fa fa-map-marker fa-lg"></i>';
+      : '<i class="far fa-map-pin fa-lg"></i>';
     options.cls = "ol-hide-marker";
     options.callback = function () {
       const map = this.getMap();
@@ -526,7 +590,23 @@ export class HideMarker extends CustomControl {
         new MapEvent("click_control", map, { control: "hideMarker" })
       );
     };
-    options.long_callback = function () {
+
+    super(options);
+    if (control_settings["hide_marker"]) {
+      const button = this.element.querySelector("button");
+      button.style.backgroundColor = "rgba(0,0,0,0)";
+    }
+  }
+}
+
+export class MarkerList extends CustomControl {
+  constructor(optOptions) {
+    const options = optOptions || {};
+    options.character = control_settings["marker_list"]
+      ? `<img src="${control_settings["marker_list"]}">`
+      : '<i class="far fa-list fa-lg"></i>';
+    options.cls = "ol-marker-list";
+    options.callback = function () {
       const map = this.getMap();
       map.dispatchEvent(
         new MapEvent("click_control", map, { control: "hideLayer" })
@@ -534,7 +614,7 @@ export class HideMarker extends CustomControl {
     };
 
     super(options);
-    if (control_settings["hide_marker"]) {
+    if (control_settings["marker_list"]) {
       const button = this.element.querySelector("button");
       button.style.backgroundColor = "rgba(0,0,0,0)";
     }

@@ -14,8 +14,8 @@
     "locales/"
   ],
   "scripts": {
-    "server": "cross-env NODE_OPTIONS=--openssl-legacy-provider webpack-cli serve --config ./webpack_config/webpack.config.standard.dev.js --mode=development",
-    "server:packed": "cross-env NODE_OPTIONS=--openssl-legacy-provider npm run freeze && cross-env NODE_OPTIONS=--openssl-legacy-provider webpack-cli serve --config ./webpack_config/webpack.config.packed.dev.js --mode=development",
+    "server": "cross-env NODE_OPTIONS=--openssl-legacy-provider webpack-cli serve --config ./webpack_config/webpack.config.standard.dev.js --host=127.0.0.1 --mode=development",
+    "server:packed": "cross-env NODE_OPTIONS=--openssl-legacy-provider npm run freeze && cross-env NODE_OPTIONS=--openssl-legacy-provider webpack-cli serve --config ./webpack_config/webpack.config.packed.dev.js --host=127.0.0.1 --mode=development",
     "build": "npm run build:standard && npm run build:packed",
     "build:standard": "cross-env NODE_OPTIONS=--openssl-legacy-provider webpack --color --progress --config ./webpack_config/webpack.config.standard.js",
     "build:packed": "cross-env NODE_OPTIONS=--openssl-legacy-provider npm run freeze && cross-env NODE_OPTIONS=--openssl-legacy-provider webpack --config ./webpack_config/webpack.config.packed.js",
@@ -46,7 +46,7 @@
   },
   "homepage": "https://github.com/code4history/Maplat/wiki",
   "dependencies": {
-    "@maplat/core": "github:code4history/MaplatCore#ol9",
+    "@maplat/core": "file:../MaplatCore",
     "@maplat/tin": "^0.9.4",
     "@turf/turf": "^6.5.0",
     "caniuse-lite": "^1.0.30001591",
