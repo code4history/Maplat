@@ -96,6 +96,9 @@ export class MaplatUi extends EventTarget {
             case "hl":
               restore.hideLayer = line[1];
               break;
+            case "om":
+              restore.openedMarker = line[1];
+              break;
             case "c":
               if (ui.core) {
                 const modalElm =
@@ -142,6 +145,13 @@ export class MaplatUi extends EventTarget {
       ui.setShowBorder(appOption.restore.showBorder || false);
       if (appOption.restore.hideMarker) {
         ui.core.mapDivDocument.classList.add("hide-marker");
+      }
+      if (appOption.restore.openedMarker) {
+        console.log(appOption.restore.openedMarker);
+        ui.core.waitReady.then(() => {
+          console.log(`Timeout ${appOption.restore.openedMarker}`);
+          ui.handleMarkerActionById(appOption.restore.openedMarker);
+        });
       }
     } else if (appOption.restoreSession) {
       const lastEpoch = parseInt(localStorage.getItem("epoch") || 0); // eslint-disable-line no-undef
@@ -291,7 +301,7 @@ export class MaplatUi extends EventTarget {
           }">
             <iframe c="poi_iframe iframe_poi" frameborder="0" src=""${
               enablePoiHtmlNoScroll
-                ? ` onload="window.addEventListener('message', (e) =>{if (e.data[0] == 'setHeight') {console.log(this.style.height = e.data[1]);}});" scrolling="no"`
+                ? ` onload="window.addEventListener('message', (e) =>{if (e.data[0] == 'setHeight') {this.style.height = e.data[1];}});" scrolling="no"`
                 : ""
             }></iframe>
           </d> 
@@ -1017,6 +1027,7 @@ enable-background="new 0 0 10 10" xml:space="preserve">
         if (value.showBorder) link = `${link}/sb:${value.showBorder}`;
         if (value.hideMarker) link = `${link}/hm:${value.hideMarker}`;
         if (value.hideLayer) link = `${link}/hl:${value.hideLayer}`;
+        if (value.openedMarker) link = `${link}/om:${value.openedMarker}`;
 
         ui.pathThatSet = link;
         page(link);
@@ -1433,6 +1444,11 @@ enable-background="new 0 0 10 10" xml:space="preserve">
     );
   }
 
+  handleMarkerActionById(poiId) {
+    const data = this.core.getMarker(poiId);
+    this.handleMarkerAction(data);
+  }
+
   handleMarkerAction(data) {
     if (data.directgo) {
       let blank = false;
@@ -1547,9 +1563,12 @@ enable-background="new 0 0 10 10" xml:space="preserve">
     }
     const modal = new bsn.Modal(modalElm, { root: this.core.mapDivDocument });
     this.core.selectMarker(data.namespaceID);
+    this.core.requestUpdateState({openedMarker: data.namespaceID});
+
     const hideFunc = _event => {
       modalElm.removeEventListener("hide.bs.modal", hideFunc, false);
       this.core.unselectMarker();
+      this.core.requestUpdateState({openedMarker: undefined});
     };
     const hiddenFunc = _event => {
       modalElm.removeEventListener("hidden.bs.modal", hiddenFunc, false);
@@ -1661,9 +1680,7 @@ enable-background="new 0 0 10 10" xml:space="preserve">
       this.core.mapDivDocument.classList.remove("show-border");
     }
     if (this.core.restoreSession) {
-      const currentTime = Math.floor(new Date().getTime() / 1000);
-      localStorage.setItem("epoch", currentTime); // eslint-disable-line no-undef
-      localStorage.setItem("showBorder", flag ? 1 : 0); // eslint-disable-line no-undef
+      this.core.requestUpdateState({showBorder: flag ? 1 : 0});
     }
   }
 
