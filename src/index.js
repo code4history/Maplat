@@ -1410,6 +1410,31 @@ enable-background="new 0 0 10 10" xml:space="preserve">
             };
             modalElm.addEventListener("hide.bs.modal", hideFunc, false);
             checkbox.addEventListener("change", checkFunc, false);
+            const uls = createElement(`<ul c="aaa"></ul>`);
+            elem.appendChild(uls[0]);
+            layer.pois.map((poi, pindex) => {
+              const icon = poi.icon || layer.icon || pointer["defaultpin.png"];
+              const title = ui.core.translate(poi.name);
+              const check = !layer.hide;
+              const id = poi.namespaceID;
+              const newElems = createElement(`<li c="list-group-item">
+    <d c="row">
+      <d c="col-sm-1"><img c="markerlist" src="${icon}"></d> 
+      <d c="col-sm-9">${title}</d> 
+      <!--d c="col-sm-2">
+        <input type="checkbox" c="markerlist" data="${id}" id="___maplat_marker_${index}_${pindex}_${
+                ui.html_id_seed
+              }"${check ? " checked" : ""}/>
+        <label c="check" for="___maplat_marker_${index}_${pindex}_${
+                ui.html_id_seed
+              }"><d> </d> </label>
+      </d--> 
+    </d> 
+  </li>`);
+              for (let i = 0; i < newElems.length; i++) {
+                uls[0].appendChild(newElems[i]);
+              }
+            });
           });
           modal.show();
         }
