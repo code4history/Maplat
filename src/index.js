@@ -1594,8 +1594,10 @@ enable-background="new 0 0 10 10" xml:space="preserve">
         view = `${view}/om:${data.namespaceID}`;
       }
 
+      const qr2 = this.core.mapDivDocument.querySelector(".qr_view2");
+      qr2.innerHTML = "";
       const qr_view = new QRCode(
-        this.core.mapDivDocument.querySelector(".qr_view2"),
+        qr2,
         {
           text: view,
           width: 128,
