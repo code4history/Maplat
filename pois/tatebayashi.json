@@ -1,0 +1,282 @@
+{
+  "id": "tatebayashi_pois",
+  "type": "FeatureCollection",
+  "name": "館林市観光POI",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": {
+          "ja": "館林城(タテバヤシジョウ)",
+          "en": "Tatebayashi Castle"
+        },
+        "url": {
+          "ja": "https://ja.m.wikipedia.org/wiki/%E9%A4%A8%E6%9E%97%E5%9F%8E",
+          "en": "https://en.m.wikipedia.org/wiki/Tatebayashi_Castle"
+        }
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.543517,
+          36.243881
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": {
+          "ja": "茂林寺(モリンジ)",
+          "en": "Morinji Temple"
+        },
+        "url": "https://ja.m.wikipedia.org/wiki/%E8%8C%82%E6%9E%97%E5%AF%BA"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.5313667,
+          36.2248279
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": {
+          "ja": "群馬県館林市尾曳町10-1",
+          "en": "10-1, Obiki-cho, Tatebayashi, GUNMA"
+        },
+        "name": {
+          "ja": "尾曳稲荷神社(オビキイナリジンジャ)",
+          "en": "Obiki Inari Shrine"
+        },
+        "desc": {
+          "ja": "<b>館林城築城伝説『狐の尾曳伝説』の狐を祀る館林の守り神</b>\n地元では尾曳さまと呼ばれ親しまれている稲荷様です。城造りの伝説でも有名で、伝説によると、大袋城（城沼の対岸・花山の東側にあった）城主赤井照光が、近藤林で子供たちに捕らえられた狐の子を救いました。その夜更けに子狐の親で「稲荷新左衛門」と名乗る白髪の老人があらわれ、子狐が助けられた礼を述べ、大袋は不吉の地、館林が四神相応の吉地と説き移転を奨めて姿を消したといいます。はたしてその年の七夕の夜にふたたび老狐があらわれ、照光を館林へ誘い、白いフサフサとした尾を曳いて城郭の縄張り（設計図）を先導して夜が明けました。別れに際し老狐は「築城完成の暁は永く城の守護神に仕えよう。」と言い残しました。照光はこれに従って館林に築城し、城中鬼門の方角に稲荷郭を設け、鬼門鎮守社として尾曳稲荷神社を造営しました。このため、現在でも社殿は、本丸のある西側を向いています。\n\n参考: 『館林・邑楽の民話と伝説』川島維知著、<a href=\"http://w-concept.jp/tatebayashijou/gallery/obiki_inari.html\" target=\"_blank\">「館林城の再建をめざす会」サイト内記事</a>",
+          "en": "<b>The shrine that worships legendary fox related to the construction of Tatebayashi Castle</b>\nIn Tatebayashi, this Inari shrine is also called \"Obiki-sama\" and is familiar with people. According to the legend, long ago, Terumitsu Akai, who was the Lord of Obukuro Castle, rescued the child fox captured by children in Tatebayashi. On the evening of that day, an old man with a white hair who said he is the parent of the child fox, came to meet Terumitsu, and gave thanks for rescueing the child fox. And the old man told to Terumitsu that Obukuro is ominous land, Tatebayashi is a lucky place, so it is better for him to move to Tatebayashi. After that, the old man dragged his big white tail, and drew a solid castle design drawing on the ground. According to this design drawing, Terumitsu built a castle in Tatebayashi, and worshiped foxes at this Obiki Inari Shrine."
+        },
+        "image": "obiki_inari.jpg"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.547491,
+          36.244844
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": {
+          "ja": "群馬県館林市本町2丁目12",
+          "en": "12, 2Chome, Hon-cho, Tatebayashi, GUNMA"
+        },
+        "name": {
+          "ja": "初曳稲荷神社(ハツヒキイナリジンジャ)",
+          "en": "Hatsuhiki Inari Shrine"
+        },
+        "desc": {
+          "ja": "<b>館林城築城伝説『狐の尾曳伝説』曳き始めの神社</b>\n尾曳稲荷神社に祀られている狐が、尻尾を曳いて館林城の縄張りを描き始めた地点に祀られている神社です。\n\n参考: 『館林・邑楽の民話と伝説』川島維知著",
+          "en": "<b>The legendary fox dragged his tail from this place</b>\nThe legendary fox which is worshiped at Obiki Inari Shrine dragged his tail from this place and started drawing a design drawing of Tatebayashi Castle."
+        },
+        "image": "hatsuhiki_inari.jpg"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.533513,
+          36.245078
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": {
+          "ja": "群馬県館林市朝日町3",
+          "en": "3, Asahi-cho, Tatebayashi, GUNMA"
+        },
+        "name": {
+          "ja": "夜明稲荷神社(ヨアケイナリジンジャ)",
+          "en": "Yoake Inari Shrine"
+        },
+        "desc": {
+          "ja": "<b>館林城築城伝説『狐の尾曳伝説』曳き終わりの神社</b>\n尾曳稲荷神社に祀られている狐が、尻尾を曳いて館林城の縄張りを描いた際に、夜明けになり曳き終わった地点に祀られている神社です。\n\n参考: 『館林・邑楽の民話と伝説』川島維知著",
+          "en": "<b>The legendary fox dragged his tail from this place</b>\nThe legendary fox which is worshiped at Obiki Inari Shrine dragged his tail till this place and finished drawing a design drawing of Tatebayashi Castle."
+        },
+        "image": "yoake_inari.jpg"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.539898,
+          36.249671
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": {
+          "ja": "群馬県館林市西本町10-6",
+          "en": "10-6, Nishihon-cho, Tatebayashi, GUNMA"
+        },
+        "name": {
+          "ja": "法泉寺(ホウセンジ)",
+          "en": "Hosenji Temple"
+        },
+        "desc": {
+          "ja": "<b>黄金造りの亀伝説が伝わる室町時代からの古刹</b>\n館林城下の西門、太田口門に隣接する寺で、文明16年(1484年)に足利義政によって創建されたといいます。戦国時代に荒廃しましたが、館林城主榊原康政の助力で再興されました。寺にはかつて、黄金で造られた亀があり、近隣にめでたい出来事が起こる際には必ず前兆があると伝えられていました。山号の『瑞亀山』もこれにちなんでつけられたとも言われています。ある時周辺一帯に大水があり、人々がそれに気を取られている間に、金亀は寺を抜け出し姿を消してしまい、人々の懸命の捜索も甲斐なくみつからなかったといいます。寛文11年(1671年)、近隣の邑楽郡板倉町籾谷の地にこの金亀とそっくりな大亀があらわれたため、漁師たちが引き上げ安勝寺という寺に安置しましたが、既に金亀ではなく石亀に変わってしまっていました。\n\n参考: 『館林・邑楽の民話と伝説』川島維知著、<a href=\"http://w-concept.jp/tatebayashijou/joukamachi/housenji.html\" target=\"_blank\">「館林城の再建をめざす会」サイト内記事</a>",
+          "en": "<b>Old temple which is famous with golden turtle legend</b>\nThis temple is next to the Otaguchi-mon gate, the west gate of Tatebayashi town. It was founded by Yoshimasa Ashikaga in 1484, and once it was perished in Sengoku era, then it was re-founded by Yasumasa Sakakibara, the lord of Tatebayashi Castle. Once upon a time, there was an golden turtle in the temple, and the turtle predicted a good event of nearby area. But the turtle was lost from the temple because of heavy flood, and when it was rediscovered in a nearby town far after, it had changed into a stone turtle."
+        },
+        "image": "hosenji.jpg"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.529402,
+          36.253158
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": {
+          "ja": "群馬県館林市台宿町2",
+          "en": "2, Daishuku-cho, Tatebayashi, GUNMA"
+        },
+        "name": {
+          "ja": "熊野神社(クマノジンジャ)",
+          "en": "Kumano Shrine"
+        },
+        "desc": {
+          "ja": "<b>僧侶の夢から掘り当てた宝物が出土した神社</b>\n昔、この神社の場所には、延命院と呼ばれる真言宗の小さな寺がありました。元禄8年(1695年)、この寺の僧が不思議な夢を見ました。夢のいうことには、「この寺の境内にはありがたい物が埋められている。これを信じて掘り出し、大切に祀れば寺はますます栄えるだろう」と。僧が境内を掘り起こしてみると、はたして3個の古い素焼きの甕が発見されました。この出土地を熊野神社としてお祀りしましたが、甕は後世、延命院の住職が売ってしまいました。そのためでしょうか、寺はそのまま廃れてしまい、神社だけがこの地に残っています。\n\n参考: 『館林・邑楽の民話と伝説』川島維知著",
+          "en": "<b>A shrine with a legend which the treasures were excavated from here</b>\nOnce upon a time, there was a temple called \"Enmei-in\" in this place. In 1695, the priest of this temple saw a strange dream. The dream said, \"Digging the ground of this temple, sacred treasure will appear. If you carefully worship the treasure, the temple will prosper\". When the priest excavated the ground, three jugs were digged out. People worshiped this place as a \"Kumano Shrine\", but unfortunately, the jugs had been sold off by the priest. Hence, the temple has gone away, only the shrine remains."
+        },
+        "image": "kumano_shrine.jpg"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.535970,
+          36.251980
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": {
+          "ja": "群馬県館林市緑町1丁目3-7",
+          "en": "3-7, 1-chome, Midori-cho, Tatebayashi, GUNMA"
+        },
+        "name": {
+          "ja": "トウミギ地蔵尊(トウミギジゾウソン)",
+          "en": "Tomigi Jizo"
+        },
+        "desc": {
+          "ja": "<b>木彫りから石仏に変身したお地蔵様</b>\n「トウミギ」とはトウモロコシの事で、トウモロコシの旬である8月末ごろに縁日があったのでこの名がついたといいます。この地蔵様は昔はイチイの木を用い飛騨の名工が彫ったとされる立派な木彫りの地蔵様でした。地蔵様が汚されるのを恐れた堂守は、ある時この像を厨子に納め固く扉を閉ざし、人に見せない秘仏としました。そのまま数十年、お地蔵様は誰の目にも触れませんでしたが、その後この地域を暴風が襲い、地蔵堂も傷つき厨子も破壊されました。村人たちがお堂の修理のために確かめてみると、お地蔵様はなぜか石地蔵に変わってしまっていました。\n\n参考: 『館林・邑楽の民話と伝説』川島維知著",
+          "en": "<b>Wood carving Jizo statue changed into stone Jizo statue</b>\n\"Tomigi\" means maize, and this is named because the festival of this temple is held in the season of maize. Initially, this Jizo was a wooden Jizo statue carved by famous sculptor in Hida with Yew trees as a material. The priest of this temple wanted to keep this Jizo a secret, put it in a pagoda and locked it down. So no one had ever seen this Jizo for decades. After that, a heavy rain struck the area, the temple was damaged and the pagoda was also broken. People saw the Jizo for the first time in decades, but the Jizo turned into a stone statue."
+        },
+        "image": "tomigi_jizo.jpg"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.533041,
+          36.241156
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": {
+          "ja": "群馬県館林市西本町9-9",
+          "en": "9-9, Nishihon-cho, Tatebayashi, GUNMA"
+        },
+        "name": {
+          "ja": "愛宕神社(アタゴジンジャ)",
+          "en": "Atago Shrine"
+        },
+        "desc": {
+          "ja": "<b>梢から火を吹き老杉を守ろうとした不思議の社</b>\n役行者創建と伝わる古い神社で、江戸期は市中の総鎮守と定められて城主の手厚い保護を受けたといいます。ところが明治を過ぎると藩の庇護もなくなり、社殿も荒れ果てました。なんとか費用を工面し社を修理したいと思う神主に、悪徳商人がつけこみます。境内に十数本生えていた樹齢数百年の巨杉を二束三文で買い取り一儲けしようとしたのです。ところがいざ伐採しようとするとにわかに突風が巻き起こり、杉の梢が火を吹き始め、その火が神主の居宅に燃え移り全焼してしまいました。幸い梢は2、3本が焼けただけでしたが、この不思議を見た信徒たちは伐採中止を求め、老杉は難を逃れました。残念ながらその後、公害で老杉は枯れてしまい、今は1本も残っていません。\n\n参考: 『館林・邑楽の民話と伝説』川島維知著",
+          "en": "<b>A miracle shrine that burned fire from branches and protected cedars from logging</b>\nThis shrine was very old shrine established by \"En-no-gyoja\", and was under the protection of the lord of Tatebayashi Castle in Edo period. However in Meiji era, the protection from the lord was lost, the shrine was desolated. The Shinto priest wanted to repair the shrine by financing the money somehow, but an malicious merchant came to him and tried to deceive him. They tried to purchase sacred and huge cedars cheaply and to sell them. However, when the merchants tried to cut the cedars, the miracle that a flame spouted from the branches of the cedars, occurred disturbing trying to cut. As a result, the cedars were not cut, but those cedars later died due to air pollution."
+        },
+        "image": "atago_shrine.jpg"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.528562,
+          36.251630
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": {
+          "ja": "群馬県館林市西本町2-50",
+          "en": "2-50, Nishihon-cho, Tatebayashi, GUNMA"
+        },
+        "name": {
+          "ja": "応声寺(オウショウジ)",
+          "en": "Oshoji Temple"
+        },
+        "desc": {
+          "ja": "<b>ムジナの残した六字名号の残る寺</b>\n江戸時代には館林城下の時報係を務めていた時宗の寺院で、そのため天保3年(1683年)館林城が一時廃城となった際に、不要となった城鐘を預かり今日まで境内隣に残されています。天正の末期ごろ、当山中興覚阿上人が十日念仏を催したところ、「茂林寺の僧守鶴」と名乗る異様な風体の僧が訪れ、一心不乱に念仏を唱えていました。やがて十日念仏が終わると、その僧は「私は実は数千年の齢を経たムジナの化身である」と正体を明かし、「南無阿弥陀仏」の六字の名号を書き残して姿を消しました。その六字名号が今もこの寺に伝わっています。\n\n参考: 『館林・邑楽の民話と伝説』川島維知著、館林城鐘脇の案内板",
+          "en": "<b>The temple where the calligraphy written by raccoon dog is left</b>\nIn the Edo period, this temple was responsible for ringing the time bells in Tatebayashi Town, so a big bell for telling time has been left in the temple for now. In the past, a monk who named \"Morinji Temple's Shukaku\" carried out ten-day buddhist training at this temple. After ten-day training, the monk said in fact he is the incarnation of thousand-years aged racoon dog, and he wrote and left a calligraphy on which Buddhist prayers were written. The calligraphy still remains in this temple."
+        },
+        "image": "oshoji.jpg"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.527486,
+          36.250370
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": "群馬県館林市本町2-8",
+        "name": "青梅天満宮(アオウメテンマングウ)",
+        "desc": "<b>菅原道真が投げた梅の実が落ちたと伝わる、日本四社の1つ</b>\n江戸時代には宝幢寺境内に鎮座していました。菅原道真が大宰府に左遷された時に、楊枝の先に梅の実を刺し東西南北に投げたところ、北は出雲菅原天満宮の花久理梅、南は讃岐綱敷天満神社の四季梅、西は筑前大宰府天満宮の飛梅となり、東の1つがこの青梅天満宮に落ちたと言われており、この四つの神社を日本四社と呼びます。\n\n参考: 『館林の社寺』館林双書15巻",
+        "image": "aoume.jpg"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.532465,
+          36.246440
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": "群馬県館林市緑町1丁目2-15",
+        "name": "遍照寺(ヘンショウジ)",
+        "desc": "<b>高僧の怒りが墓石を捻り上げた、宥円のネジリ石伝説が伝わる寺</b>\n天正年間頃、この寺の住持は名僧と名も高い宥円という僧でした。ある日、館林城主御前で他宗の僧と宗論を行うこととなりました。論は終始宥円がリードしましたが、結果は城主の贔屓判定で宥円は負けとされました。それだけではなく、宥円が城を出ると、勝った僧の従者たちが宥円の法衣をはぎ取るという暴挙まで行いました。宥円はこの狼藉に抗議するには死ぬよりないと自害し、その墓石は恨みで捻れたネジリ石となって、今もこの寺に伝わっています。\n\n参考: 『館林・邑楽の民話と伝説』川島維知著",
+        "image": "nejiri.jpg"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.531622,
+          36.240803
+        ]
+      }
+    }
+  ]
+}
