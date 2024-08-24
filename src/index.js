@@ -315,6 +315,17 @@ export class MaplatUi extends EventTarget {
             <p c="recipient poi_address"></p>
             <p c="recipient poi_desc"></p>
           </d> 
+          <d c="modal_share_state">
+            <h4 din="html.share_state_title"></h4>
+            <d id="___maplat_view_toast_${ui.html_id_seed}"></d> 
+            <d c="recipient row">
+              <d c="form-group col-xs-4 text-center"><button title="Copy to clipboard" c="share btn btn-light" data="cp_view"><i c="far fa-paste"></i>&nbsp;<small din="html.share_copy"></small></button></d> 
+              <d c="form-group col-xs-4 text-center"><button title="Twitter" c="share btn btn-light" data="tw_view"><i c="far fa-x-twitter"></i>&nbsp;<small>Twitter</small></button></d> 
+              <d c="form-group col-xs-4 text-center"><button title="Facebook" c="share btn btn-light" data="fb_view"><i c="far fa-facebook"></i>&nbsp;<small>Facebook</small></button></d> 
+            </d> 
+            <d c="qr_view2 center-block" style="width:128px;"></d> 
+          </d> 
+          <p><img src="" height="0px" width="0px"></p>
         </d> 
 
         <d c="modal_share_content">
@@ -1561,6 +1572,42 @@ enable-background="new 0 0 10 10" xml:space="preserve">
         .translate(data.desc)
         .replace(/\n/g, "<br>");
     }
+
+    if (this.core.mapDivDocument.classList.contains("state_url")) {
+      const base = location.href; // eslint-disable-line no-undef
+      const div1 = base.split("#!");
+      const path = div1.length > 1 ? div1[1].split("?")[0] : "";
+      const div2 = div1[0].split("?");
+      let uri = div2[0];
+      const query =
+        div2.length > 1
+          ? div2[1]
+              .split("&")
+              .filter(qs => qs !== "pwa")
+              .join("&")
+          : "";
+
+      if (query) uri = `${uri}?${query}`;
+      let view = uri;
+      if (path) view = `${view}#!${path}`;
+      if (!view.match(/\/om:/)) {
+        view = `${view}/om:${data.namespaceID}`;
+      }
+
+      const qr_view = new QRCode(
+        this.core.mapDivDocument.querySelector(".qr_view2"),
+        {
+          text: view,
+          width: 128,
+          height: 128,
+          colorDark: "#000000",
+          colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.H
+        }
+      );
+      qr_view.makeCode(view);
+    }
+
     const modal = new bsn.Modal(modalElm, { root: this.core.mapDivDocument });
     this.core.selectMarker(data.namespaceID);
     this.core.requestUpdateState({openedMarker: data.namespaceID});
