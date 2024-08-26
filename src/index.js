@@ -1407,11 +1407,9 @@ enable-background="new 0 0 10 10" xml:space="preserve">
             layerElem.addEventListener("click", toggleLayerFunc, false);
 
             const poiSet = [];
-            layer.pois.map((poi, pindex) => {
+            layer.pois.map((poi) => {
               const icon = poi.icon || layer.icon || pointer["defaultpin.png"];
               const title = ui.core.translate(poi.name);
-              const check = !layer.hide;
-              const id = poi.namespaceID;
               const poiElem = createElement(`<li c="list-group-item poi">
     <d c="row">
       <d c="col-sm-1"><img c="markerlist" src="${icon}"></d> 
@@ -1437,6 +1435,11 @@ enable-background="new 0 0 10 10" xml:space="preserve">
                   });
                 }
               };
+              const hidePoiFunc = (_event) => {
+                modalElm.removeEventListener("hide.bs.modal", hidePoiFunc, false);
+                poiElem.removeEventListener("click", togglePoiFunc, false);
+              };
+              modalElm.addEventListener("hide.bs.modal", hidePoiFunc, false);
               poiElem.addEventListener("click", togglePoiFunc, false);
             });
           });
