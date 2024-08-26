@@ -1359,7 +1359,7 @@ enable-background="new 0 0 10 10" xml:space="preserve">
             const title = ui.core.translate(layer.name);
             const check = !layer.hide;
             const id = layer.namespaceID;
-            const layerElem = createElement(`<li c="list-group-item">
+            const layerElem = createElement(`<li c="list-group-item layer">
   <d c="row">
     <d c="col-sm-1"><img c="markerlist" src="${icon}"></d> 
     <d c="col-sm-9">${title}</d> 
@@ -1384,7 +1384,7 @@ enable-background="new 0 0 10 10" xml:space="preserve">
               if (checked) ui.core.showPoiLayer(id);
               else ui.core.hidePoiLayer(id);
             };
-            const togglePoiFunc = (_event) => {
+            const toggleLayerFunc = (_event) => {
               if (poiList.classList.contains("open")) {
                 poiList.classList.remove("open");
               } else {
@@ -1404,28 +1404,40 @@ enable-background="new 0 0 10 10" xml:space="preserve">
             };
             modalElm.addEventListener("hide.bs.modal", hideFunc, false);
             checkbox.addEventListener("change", checkFunc, false);
-            layerElem.addEventListener("click", togglePoiFunc, false);
+            layerElem.addEventListener("click", toggleLayerFunc, false);
 
+            const poiSet = [];
             layer.pois.map((poi, pindex) => {
               const icon = poi.icon || layer.icon || pointer["defaultpin.png"];
               const title = ui.core.translate(poi.name);
               const check = !layer.hide;
               const id = poi.namespaceID;
-              const poiElem = createElement(`<li c="list-group-item">
+              const poiElem = createElement(`<li c="list-group-item poi">
     <d c="row">
       <d c="col-sm-1"><img c="markerlist" src="${icon}"></d> 
-      <d c="col-sm-9">${title}</d> 
-      <!--d c="col-sm-2">
-        <input type="checkbox" c="markerlist" data="${id}" id="___maplat_marker_${index}_${pindex}_${
-                ui.html_id_seed
-              }"${check ? " checked" : ""}/>
-        <label c="check" for="___maplat_marker_${index}_${pindex}_${
-                ui.html_id_seed
-              }"><d> </d> </label>
-      </d--> 
-    </d> 
+      <d c="col-sm-11">${title}</d>
+    </d>
   </li>`)[0];
+              const poiContent = createElement(`<ul c="list_poicontent_div">
+    <li c="list-group-item"><d style="height:10px;background-color:black;"></d></li>
+  </ul>`)[0];
               poiList.appendChild(poiElem);
+              poiList.appendChild(poiContent);
+              poiSet.push(poiContent);
+              const togglePoiFunc = (_event) => {
+                if (poiContent.classList.contains("open")) {
+                  poiContent.classList.remove("open");
+                } else {
+                  poiSet.map(poi => {
+                    if (poi == poiContent) {
+                      poiContent.classList.add("open");
+                    } else {
+                      poi.classList.remove("open");
+                    }
+                  });
+                }
+              };
+              poiElem.addEventListener("click", togglePoiFunc, false);
             });
           });
           modal.show();

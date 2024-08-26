@@ -47,7 +47,6 @@
     "@maplat/core": "file:../MaplatCore",
     "@maplat/tin": "^0.9.4",
     "@turf/turf": "^6.5.0",
-    "caniuse-lite": "^1.0.30001591",
     "lodash.template": "^4.5.0",
     "ol": "^9.0.0",
     "swiper": "^6.7.1",
