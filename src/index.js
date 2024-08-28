@@ -1567,7 +1567,7 @@ enable-background="new 0 0 10 10" xml:space="preserve">
           swiperDiv.classList.add("hide");
         } else {
           swiperDiv.classList.remove("hide");
-          poiSwiper = new Swiper(".swiper-container.poi_img_swiper", {
+          poiSwiper = new Swiper(swiperDiv, {
             lazy: true,
             modules: [Navigation, Pagination],
             pagination: {
@@ -1583,16 +1583,16 @@ enable-background="new 0 0 10 10" xml:space="preserve">
         }
       };
 
-      if (poiSwiper) {
-        imgHideFunc = () => {
+      imgHideFunc = () => {
+        if (poiSwiper) {
           poiSwiper.removeAllSlides();
           poiSwiper = undefined;
         }
       }
   
-      this.core.mapDivDocument.querySelector(".poi_address").innerText =
+      htmlDiv.querySelector(".poi_address").innerText =
         this.core.translate(data.address);
-      this.core.mapDivDocument.querySelector(".poi_desc").innerHTML = this.core
+      htmlDiv.querySelector(".poi_desc").innerHTML = this.core
         .translate(data.desc)
         .replace(/\n/g, "<br>");
     }
