@@ -1426,11 +1426,31 @@ enable-background="new 0 0 10 10" xml:space="preserve">
                 if (poiContent.classList.contains("open")) {
                   poiContent.classList.remove("open");
                 } else {
-                  poiSet.map(poi => {
-                    if (poi == poiContent) {
+                  poiSet.map(poiCont => {
+                    if (poiCont == poiContent) {
+
+
+                      //const modalElm = this.core.mapDivDocument.querySelector(".modalBase");
+                      //const poiWebDiv = this.core.mapDivDocument.querySelector(".poi_web_div");
+                      const poiImgFunc = this.poiWebControl(poiContent, poi);
+                      if (poiImgFunc) {
+                        const poiImgShow = poiImgFunc[0], poiImgHide = poiImgFunc[1];
+                        //const poiImgShowWrap = () => {
+                          //poiContent.removeEventListener("shown.bs.modal", poiImgShowWrap, false);
+                          poiImgShow();
+                        //};
+                        //modalElm.addEventListener("shown.bs.modal", poiImgShowWrap, false);
+                        if (poiImgHide) {
+                          const poiImgHideWrap = () => {
+                            modalElm.removeEventListener("hidden.bs.modal", poiImgHideWrap, false);
+                            poiImgHide();
+                          };
+                          modalElm.addEventListener("hidden.bs.modal", poiImgHideWrap, false);
+                        }
+                      }
                       poiContent.classList.add("open");
                     } else {
-                      poi.classList.remove("open");
+                      poiCont.classList.remove("open");
                     }
                   });
                 }
@@ -1480,7 +1500,7 @@ enable-background="new 0 0 10 10" xml:space="preserve">
   <iframe c="poi_iframe iframe_poi" frameborder="0" src=""${ this.enablePoiHtmlNoScroll ? ` onload="window.addEventListener('message', (e) =>{if (e.data[0] == 'setHeight') {this.style.height = e.data[1];}});" scrolling="no"` : "" }></iframe>
   </d>`)[0];
       div.appendChild(htmlDiv);
-      const iframe = this.core.mapDivDocument.querySelector(".poi_iframe");
+      const iframe = htmlDiv.querySelector(".poi_iframe");
       if (data.html) {
         iframe.addEventListener("load", function loadEvent(event) {
           event.currentTarget.removeEventListener(event.type, loadEvent);
@@ -1540,7 +1560,7 @@ enable-background="new 0 0 10 10" xml:space="preserve">
       }
   
       imgShowFunc = _event => {
-        const swiperDiv = this.core.mapDivDocument.querySelector(
+        const swiperDiv = htmlDiv.querySelector(
           ".swiper-container.poi_img_swiper"
         );
         if (slides.length === 0) {
@@ -1633,7 +1653,7 @@ enable-background="new 0 0 10 10" xml:space="preserve">
       if (poiImgHide) {
         const poiImgHideWrap = () => {
           modalElm.removeEventListener("hidden.bs.modal", poiImgHideWrap, false);
-          poiImgShow();
+          poiImgHide();
         };
         modalElm.addEventListener("hidden.bs.modal", poiImgHideWrap, false);
       }
