@@ -169,8 +169,8 @@ export class MaplatUi extends EventTarget {
     const enableSplash = !ui.core.initialRestore.mapID;
     const restoreTransparency = ui.core.initialRestore.transparency;
     const enableOutOfMap = !appOption.presentationMode;
-    const enablePoiHtmlNoScroll = appOption.enablePoiHtmlNoScroll;
 
+    ui.enablePoiHtmlNoScroll = appOption.enablePoiHtmlNoScroll || false;
     if (appOption.enableShare) {
       ui.core.mapDivDocument.classList.add("enable_share");
       ui.enableShare = true;
@@ -294,27 +294,7 @@ export class MaplatUi extends EventTarget {
         </d> 
 
         <d c="modal_poi_content">
-          <d c="poi_web${
-            enablePoiHtmlNoScroll
-              ? ""
-              : " embed-responsive embed-responsive-60vh"
-          }">
-            <iframe c="poi_iframe iframe_poi" frameborder="0" src=""${
-              enablePoiHtmlNoScroll
-                ? ` onload="window.addEventListener('message', (e) =>{if (e.data[0] == 'setHeight') {this.style.height = e.data[1];}});" scrolling="no"`
-                : ""
-            }></iframe>
-          </d> 
-          <d c="poi_data hide">
-            <d c="col-xs-12 swiper-container poi_img_swiper">
-              <d c="swiper-wrapper"></d>
-              <d c="swiper-pagination poi-pagination"></d>
-              <d c="swiper-button-next poi-img-next"></d>
-              <d c="swiper-button-prev poi-img-prev"></d>
-            </d>
-            <p c="recipient poi_address"></p>
-            <p c="recipient poi_desc"></p>
-          </d> 
+          <d c="poi_web_div"></d> 
           <d c="modal_share_state">
             <h4 din="html.share_state_title"></h4>
             <d id="___maplat_view_toast_${ui.html_id_seed}"></d> 
@@ -1370,6 +1350,7 @@ enable-background="new 0 0 10 10" xml:space="preserve">
         } else if (control === "hideLayer") {
           ui.modalSetting("hide_marker");
           const layers = ui.core.listPoiLayers(false, true);
+          const poiLayerSet = [];
           const elem = ui.core.mapDivDocument.querySelector("ul.list-group");
           const modalElm = ui.core.mapDivDocument.querySelector(".modalBase");
           elem.innerHTML = "";
@@ -1378,7 +1359,7 @@ enable-background="new 0 0 10 10" xml:space="preserve">
             const title = ui.core.translate(layer.name);
             const check = !layer.hide;
             const id = layer.namespaceID;
-            const newElems = createElement(`<li c="list-group-item">
+            const layerElem = createElement(`<li c="list-group-item layer">
   <d c="row">
     <d c="col-sm-1"><img c="markerlist" src="${icon}"></d> 
     <d c="col-sm-9">${title}</d> 
@@ -1391,25 +1372,95 @@ enable-background="new 0 0 10 10" xml:space="preserve">
             }"><d> </d> </label>
     </d> 
   </d> 
-</li>`);
-            for (let i = 0; i < newElems.length; i++) {
-              elem.appendChild(newElems[i]);
-            }
-            const checkbox = ui.core.mapDivDocument.querySelector(
-              `#___maplat_marker_${index}_${ui.html_id_seed}`
-            );
-            const checkFunc = function (event) {
+</li>`)[0];
+            elem.appendChild(layerElem);
+            const checkbox = layerElem.querySelector("input.markerlist");
+            const poiList = createElement(`<ul c="list_poiitems_div"></ul>`)[0];
+            poiLayerSet.push(poiList);
+            elem.appendChild(poiList);
+            const checkFunc = (event) => {
               const id = event.target.getAttribute("data");
               const checked = event.target.checked;
               if (checked) ui.core.showPoiLayer(id);
               else ui.core.hidePoiLayer(id);
             };
-            const hideFunc = function (_event) {
+            const toggleLayerFunc = (_event) => {
+              if (poiList.classList.contains("open")) {
+                poiList.classList.remove("open");
+              } else {
+                poiLayerSet.map(layer => {
+                  if (layer == poiList) {
+                    poiList.classList.add("open");
+                  } else {
+                    layer.classList.remove("open");
+                  }
+                });
+              }
+            };
+            const hideFunc = (_event) => {
               modalElm.removeEventListener("hide.bs.modal", hideFunc, false);
               checkbox.removeEventListener("change", checkFunc, false);
+              layerElem.removeEventListener("click", togglePoiFunc, false);
             };
             modalElm.addEventListener("hide.bs.modal", hideFunc, false);
             checkbox.addEventListener("change", checkFunc, false);
+            layerElem.addEventListener("click", toggleLayerFunc, false);
+
+            const poiSet = [];
+            layer.pois.map((poi) => {
+              const icon = poi.icon || layer.icon || pointer["defaultpin.png"];
+              const title = ui.core.translate(poi.name);
+              const poiElem = createElement(`<li c="list-group-item poi">
+    <d c="row">
+      <d c="col-sm-1"><img c="markerlist" src="${icon}"></d> 
+      <d c="col-sm-11">${title}</d>
+    </d>
+  </li>`)[0];
+              const poiContent = createElement(`<ul c="list_poicontent_div"></ul>`)[0];
+              poiList.appendChild(poiElem);
+              poiList.appendChild(poiContent);
+              poiSet.push(poiContent);
+              const togglePoiFunc = (_event) => {
+                if (poiContent.classList.contains("open")) {
+                  poiContent.classList.remove("open");
+                  poiContent.dispatchEvent(new Event("poi_close"));
+                  poiContent.innerHTML = '';
+                  this.core.unselectMarker();
+                } else {
+                  poiSet.map(poiCont => {
+                    if (poiCont == poiContent) {
+                      const poiImgFunc = this.poiWebControl(poiContent, poi);
+                      if (poiImgFunc) {
+                        const poiImgShow = poiImgFunc[0], poiImgHide = poiImgFunc[1];
+
+                        poiImgShow();
+
+                        if (poiImgHide) {
+                          const poiImgHideWrap = () => {
+                            poiContent.removeEventListener("poi_close", poiImgHideWrap, false);
+                            poiImgHide();
+                          };
+                          poiContent.addEventListener("poi_close", poiImgHideWrap, false);
+                        }
+                      }
+                      poiContent.classList.add("open");
+                      this.core.selectMarker(poi.namespaceID);
+                    } else {
+                      poiCont.classList.remove("open");
+                      poiCont.dispatchEvent(new Event("poi_close"));
+                      poiCont.innerHTML = '';
+                    }
+                  });
+                }
+              };
+              const hidePoiFunc = (_event) => {
+                modalElm.removeEventListener("hide.bs.modal", hidePoiFunc, false);
+                poiElem.removeEventListener("click", togglePoiFunc, false);
+                this.core.unselectMarker();
+              };
+              modalElm.addEventListener("hide.bs.modal", hidePoiFunc, false);
+              poiElem.addEventListener("click", togglePoiFunc, false);
+            });
           });
           modal.show();
         }
@@ -1438,6 +1489,114 @@ enable-background="new 0 0 10 10" xml:space="preserve">
         delete ui.waitReadyBridge;
       }
     });
+  }
+
+  poiWebControl(div, data) {
+    let imgShowFunc, imgHideFunc, poiSwiper;
+    div.innerHTML = '';
+    if (data.url || data.html) {
+      const htmlDiv = createElement(`<d c="${ this.enablePoiHtmlNoScroll ? "" : " embed-responsive embed-responsive-60vh" }">
+  <iframe c="poi_iframe iframe_poi" frameborder="0" src=""${ this.enablePoiHtmlNoScroll ? ` onload="window.addEventListener('message', (e) =>{if (e.data[0] == 'setHeight') {this.style.height = e.data[1];}});" scrolling="no"` : "" }></iframe>
+  </d>`)[0];
+      div.appendChild(htmlDiv);
+      const iframe = htmlDiv.querySelector(".poi_iframe");
+      if (data.html) {
+        iframe.addEventListener("load", function loadEvent(event) {
+          event.currentTarget.removeEventListener(event.type, loadEvent);
+          const cssLink = createElement(
+            '<style type="text/css">html, body { height: 100vh; }\n img { width: 100%; }</style>'
+          );
+          const jsLink = createElement(
+            `<script>
+              const heightGetter = document.querySelector("#heightGetter");
+              const resizeObserver = new ResizeObserver(entries => {
+                window.parent.postMessage(["setHeight", (entries[0].target.clientHeight + 16) + "px"], "*");
+              });
+              resizeObserver.observe(heightGetter);
+            </script>`
+          );
+          iframe.contentDocument.head.appendChild(cssLink[0]);
+          iframe.contentDocument.head.appendChild(jsLink[0]);
+        });
+        iframe.removeAttribute("src");
+        iframe.setAttribute(
+          "srcdoc",
+          `<div id="heightGetter">${this.core.translate(data.html)}</div>`
+        );
+      } else {
+        iframe.removeAttribute("srcdoc");
+        iframe.setAttribute("src", this.core.translate(data.url));
+      }
+    } else {
+      const htmlDiv = createElement(`<d c="poi_data">
+  <d c="col-xs-12 swiper-container poi_img_swiper">
+    <d c="swiper-wrapper"></d>
+    <d c="swiper-pagination poi-pagination"></d>
+    <d c="swiper-button-next poi-img-next"></d>
+    <d c="swiper-button-prev poi-img-prev"></d>
+  </d>
+  <p c="recipient poi_address"></p>
+  <p c="recipient poi_desc"></p>
+  </d>`)[0];
+      div.appendChild(htmlDiv);
+  
+      const slides = [];
+      if (data.image && data.image !== "") {
+        const images = Array.isArray(data.image) ? data.image : [data.image];
+        images.forEach(image => {
+          if (typeof image === "string") {
+            image = { src: image };
+          }
+          const tmpImg = this.resolveRelativeLink(image.src, "img");
+          let slide = `<a target="_blank" href="${tmpImg}"><img src="${tmpImg}"></a>`;
+          if (image.desc) slide = `${slide}<div>${image.desc}</div>`;
+          slides.push(`<div class="swiper-slide">${slide}</div>`);
+        });
+      } else if (!this.disableNoimage) {
+        slides.push(
+          `<div class="swiper-slide"><img src="${pointer["no_image.png"]}"></div>`
+        );
+      }
+  
+      imgShowFunc = _event => {
+        const swiperDiv = htmlDiv.querySelector(
+          ".swiper-container.poi_img_swiper"
+        );
+        if (slides.length === 0) {
+          swiperDiv.classList.add("hide");
+        } else {
+          swiperDiv.classList.remove("hide");
+          poiSwiper = new Swiper(swiperDiv, {
+            lazy: true,
+            modules: [Navigation, Pagination],
+            pagination: {
+              el: ".poi-pagination",
+              clickable: true
+            },
+            navigation: {
+              nextEl: ".poi-img-next",
+              prevEl: ".poi-img-prev"
+            }
+          });
+          slides.forEach(slide => poiSwiper.appendSlide(slide));
+        }
+      };
+
+      imgHideFunc = () => {
+        if (poiSwiper) {
+          poiSwiper.removeAllSlides();
+          poiSwiper = undefined;
+        }
+      }
+  
+      htmlDiv.querySelector(".poi_address").innerText =
+        this.core.translate(data.address);
+      htmlDiv.querySelector(".poi_desc").innerHTML = this.core
+        .translate(data.desc)
+        .replace(/\n/g, "<br>");
+    }
+
+    return imgShowFunc ? [imgShowFunc, imgHideFunc] : undefined;
   }
 
   // Modal記述の動作を調整する関数
@@ -1481,96 +1640,22 @@ enable-background="new 0 0 10 10" xml:space="preserve">
     this.core.mapDivDocument.querySelector(".modal_title").innerText =
       this.core.translate(data.name);
     const modalElm = this.core.mapDivDocument.querySelector(".modalBase");
-    if (data.url || data.html) {
-      this.core.mapDivDocument
-        .querySelector(".poi_web")
-        .classList.remove("hide");
-      this.core.mapDivDocument.querySelector(".poi_data").classList.add("hide");
-      const iframe = this.core.mapDivDocument.querySelector(".poi_iframe");
-      if (data.html) {
-        iframe.addEventListener("load", function loadEvent(event) {
-          event.currentTarget.removeEventListener(event.type, loadEvent);
-          const cssLink = createElement(
-            '<style type="text/css">html, body { height: 100vh; }\n img { width: 100%; }</style>'
-          );
-          const jsLink = createElement(
-            `<script>
-              const heightGetter = document.querySelector("#heightGetter");
-              const resizeObserver = new ResizeObserver(entries => {
-                window.parent.postMessage(["setHeight", (entries[0].target.clientHeight + 16) + "px"], "*");
-              });
-              resizeObserver.observe(heightGetter);
-            </script>`
-          );
-          iframe.contentDocument.head.appendChild(cssLink[0]);
-          iframe.contentDocument.head.appendChild(jsLink[0]);
-        });
-        iframe.removeAttribute("src");
-        iframe.setAttribute(
-          "srcdoc",
-          `<div id="heightGetter">${this.core.translate(data.html)}</div>`
-        );
-      } else {
-        iframe.removeAttribute("srcdoc");
-        iframe.setAttribute("src", this.core.translate(data.url));
-      }
-    } else {
-      this.core.mapDivDocument
-        .querySelector(".poi_data")
-        .classList.remove("hide");
-      this.core.mapDivDocument.querySelector(".poi_web").classList.add("hide");
-
-      const slides = [];
-      if (data.image && data.image !== "") {
-        const images = Array.isArray(data.image) ? data.image : [data.image];
-        images.forEach(image => {
-          if (typeof image === "string") {
-            image = { src: image };
-          }
-          const tmpImg = this.resolveRelativeLink(image.src, "img");
-          let slide = `<a target="_blank" href="${tmpImg}"><img src="${tmpImg}"></a>`;
-          if (image.desc) slide = `${slide}<div>${image.desc}</div>`;
-          slides.push(`<div class="swiper-slide">${slide}</div>`);
-        });
-      } else if (!this.disableNoimage) {
-        slides.push(
-          `<div class="swiper-slide"><img src="${pointer["no_image.png"]}"></div>`
-        );
-      }
-
-      const imgShowFunc = _event => {
-        modalElm.removeEventListener("shown.bs.modal", imgShowFunc, false);
-        const swiperDiv = this.core.mapDivDocument.querySelector(
-          ".swiper-container.poi_img_swiper"
-        );
-        if (slides.length === 0) {
-          swiperDiv.classList.add("hide");
-        } else {
-          swiperDiv.classList.remove("hide");
-          if (!this.poiSwiper) {
-            this.poiSwiper = new Swiper(".swiper-container.poi_img_swiper", {
-              lazy: true,
-              modules: [Navigation, Pagination],
-              pagination: {
-                el: ".poi-pagination",
-                clickable: true
-              },
-              navigation: {
-                nextEl: ".poi-img-next",
-                prevEl: ".poi-img-prev"
-              }
-            });
-          }
-          slides.forEach(slide => this.poiSwiper.appendSlide(slide));
-        }
+    const poiWebDiv = this.core.mapDivDocument.querySelector(".poi_web_div");
+    const poiImgFunc = this.poiWebControl(poiWebDiv, data);
+    if (poiImgFunc) {
+      const poiImgShow = poiImgFunc[0], poiImgHide = poiImgFunc[1];
+      const poiImgShowWrap = () => {
+        modalElm.removeEventListener("shown.bs.modal", poiImgShowWrap, false);
+        poiImgShow();
       };
-      modalElm.addEventListener("shown.bs.modal", imgShowFunc, false);
-
-      this.core.mapDivDocument.querySelector(".poi_address").innerText =
-        this.core.translate(data.address);
-      this.core.mapDivDocument.querySelector(".poi_desc").innerHTML = this.core
-        .translate(data.desc)
-        .replace(/\n/g, "<br>");
+      modalElm.addEventListener("shown.bs.modal", poiImgShowWrap, false);
+      if (poiImgHide) {
+        const poiImgHideWrap = () => {
+          modalElm.removeEventListener("hidden.bs.modal", poiImgHideWrap, false);
+          poiImgHide();
+        };
+        modalElm.addEventListener("hidden.bs.modal", poiImgHideWrap, false);
+      }
     }
 
     if (this.core.mapDivDocument.classList.contains("state_url")) {
@@ -1619,15 +1704,7 @@ enable-background="new 0 0 10 10" xml:space="preserve">
       this.core.unselectMarker();
       this.core.requestUpdateState({openedMarker: undefined});
     };
-    const hiddenFunc = _event => {
-      modalElm.removeEventListener("hidden.bs.modal", hiddenFunc, false);
-      if (this.poiSwiper) {
-        this.poiSwiper.removeAllSlides();
-        this.poiSwiper = undefined;
-      }
-    };
     modalElm.addEventListener("hide.bs.modal", hideFunc, false);
-    modalElm.addEventListener("hidden.bs.modal", hiddenFunc, false);
     this.modalSetting("poi");
     modal.show();
   }

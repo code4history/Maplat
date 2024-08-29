@@ -1,7 +1,7 @@
 {
-  "name": "Maplat PWA Sample",
-  "short_name": "Maplat PWA",
-  "background_color": "#780508",
+  "name": "ぷらっと館林",
+  "short_name": "ぷら館林",
+  "background_color": "#f6f0d3",
   "icons": [
     {
       "src": "sample/manifest-icon-192.png",
@@ -16,8 +16,8 @@
       "purpose": "maskable any"
     }
   ],
-  "start_url": "https://s.maplat.jp/r/samplemap/",
-  "scope": "/r/samplemap/",
+  "start_url": "https://s.maplat.jp/r/tatebayashimap/",
+  "scope": "/r/tatebayashimap/",
   "display": "standalone",
-  "theme_color": "#780508"
+  "theme_color": "#f6f0d3"
 }

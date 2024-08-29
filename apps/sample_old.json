@@ -1,0 +1,47 @@
+{
+    "appName" : {
+        "ja" : "盛岡市古地図アプリ",
+        "en" : "Historical Map Application of Morioka"
+    },
+    "lang" : "ja",
+    "fakeGps" : true,
+    "fakeCenter" : {
+        "ja" : "盛岡市",
+        "en" : "Morioka"
+    },
+    "fakeRadius" : 10,
+    "homePosition" : [141.149989,39.699952],
+    "defaultZoom" : 17,
+    "zoomRestriction" : true,
+    "minZoom" : 10,
+    "maxZoom" : 15,
+    "startFrom" : "morioka_ndl2",
+    "sources" : [
+        {
+            "label": "1644 (TMS)",
+            "mapID": "morioka_ndl_affine"
+        },
+        {
+            "mapID": "morioka_ndl2",
+            "settingFile": "maps/morioka_ndl.json",
+            "label": "1644 (Maplat)",
+            "url": "tiles/morioka_ndl/{z}/{x}/{y}.jpg",
+            "thumbnail": "tmbs/morioka_ndl.jpg"
+        },
+        {
+            "label": "Morioka Castle",
+            "mapID": "morioka"
+        },
+        "gsi",
+        "osm",
+        {
+            "mapID": "mapbox",
+            "label" : "Mapbox"
+        },
+        {
+            "mapID": "google",
+            "label": "Google"
+        }
+    ], 
+    "pois" : "morioka_one_poi.json"
+}
