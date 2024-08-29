@@ -1416,41 +1416,39 @@ enable-background="new 0 0 10 10" xml:space="preserve">
       <d c="col-sm-11">${title}</d>
     </d>
   </li>`)[0];
-              const poiContent = createElement(`<ul c="list_poicontent_div">
-    <li c="list-group-item"><d style="height:10px;background-color:black;"></d></li>
-  </ul>`)[0];
+              const poiContent = createElement(`<ul c="list_poicontent_div"></ul>`)[0];
               poiList.appendChild(poiElem);
               poiList.appendChild(poiContent);
               poiSet.push(poiContent);
               const togglePoiFunc = (_event) => {
                 if (poiContent.classList.contains("open")) {
                   poiContent.classList.remove("open");
+                  poiContent.dispatchEvent(new Event("poi_close"));
+                  poiContent.innerHTML = '';
+                  this.core.unselectMarker();
                 } else {
                   poiSet.map(poiCont => {
                     if (poiCont == poiContent) {
-
-
-                      //const modalElm = this.core.mapDivDocument.querySelector(".modalBase");
-                      //const poiWebDiv = this.core.mapDivDocument.querySelector(".poi_web_div");
                       const poiImgFunc = this.poiWebControl(poiContent, poi);
                       if (poiImgFunc) {
                         const poiImgShow = poiImgFunc[0], poiImgHide = poiImgFunc[1];
-                        //const poiImgShowWrap = () => {
-                          //poiContent.removeEventListener("shown.bs.modal", poiImgShowWrap, false);
-                          poiImgShow();
-                        //};
-                        //modalElm.addEventListener("shown.bs.modal", poiImgShowWrap, false);
+
+                        poiImgShow();
+
                         if (poiImgHide) {
                           const poiImgHideWrap = () => {
-                            modalElm.removeEventListener("hidden.bs.modal", poiImgHideWrap, false);
+                            poiContent.removeEventListener("poi_close", poiImgHideWrap, false);
                             poiImgHide();
                           };
-                          modalElm.addEventListener("hidden.bs.modal", poiImgHideWrap, false);
+                          poiContent.addEventListener("poi_close", poiImgHideWrap, false);
                         }
                       }
                       poiContent.classList.add("open");
+                      this.core.selectMarker(poi.namespaceID);
                     } else {
                       poiCont.classList.remove("open");
+                      poiCont.dispatchEvent(new Event("poi_close"));
+                      poiCont.innerHTML = '';
                     }
                   });
                 }
@@ -1458,6 +1456,7 @@ enable-background="new 0 0 10 10" xml:space="preserve">
               const hidePoiFunc = (_event) => {
                 modalElm.removeEventListener("hide.bs.modal", hidePoiFunc, false);
                 poiElem.removeEventListener("click", togglePoiFunc, false);
+                this.core.unselectMarker();
               };
               modalElm.addEventListener("hide.bs.modal", hidePoiFunc, false);
               poiElem.addEventListener("click", togglePoiFunc, false);
