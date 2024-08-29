@@ -49,7 +49,7 @@
             "maptype": "overlay",
             "url": "https://boiledorange73.sakura.ne.jp/ws/tile/Tokyo5000-900913/{z}/{x}/{y}.jpg",
             "maxZoom": 17,
-            "envelopLngLats": [
+            "envelopeLngLats": [
                 [
                     139.6820454856718,
                     35.62595769911905
@@ -94,7 +94,7 @@
             "maptype": "overlay",
             "url": "https://boiledorange73.sakura.ne.jp/ws/tile/Kanto_Rapid-900913/{z}/{x}/{y}.jpg",
             "maxZoom": 17,
-            "envelopLngLats": [
+            "envelopeLngLats": [
                 [
                     139.6820454856718,
                     35.62595769911905

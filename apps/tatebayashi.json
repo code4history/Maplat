@@ -65,7 +65,7 @@
             "maxZoom": 17,
             "mercatorXShift": -3.26,
             "mercatorYShift": -57.01,
-            "envelopLngLats": [
+            "envelopeLngLats": [
                 [
                     139.454802,
                     36.209997
