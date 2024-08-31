@@ -1360,20 +1360,23 @@ enable-background="new 0 0 10 10" xml:space="preserve">
             const check = !layer.hide;
             const id = layer.namespaceID;
             const layerElem = createElement(`<li c="list-group-item layer">
-  <d c="row">
-    <d c="col-sm-1"><img c="markerlist" src="${icon}"></d> 
-    <d c="col-sm-9">${title}</d> 
-    <d c="col-sm-2">
+  <d c="row" style="display:flex; justify-content:space-between; align-items:center;">
+    <d style="text-align:left; flex-grow:1;">
+      <span class="dli-chevron"></span>
+      <img c="markerlist" style="display:inline-block;padding:20px;" src="${icon}">${title}
+    </d>
+    <d style="text-align:right;margin-right:20px;margin-top: 10px;">
       <input type="checkbox" c="markerlist" data="${id}" id="___maplat_marker_${index}_${
               ui.html_id_seed
             }"${check ? " checked" : ""}/>
       <label c="check" for="___maplat_marker_${index}_${
               ui.html_id_seed
             }"><d> </d> </label>
-    </d> 
+    </d>
   </d> 
 </li>`)[0];
             elem.appendChild(layerElem);
+            const layerChev = layerElem.querySelector(".dli-chevron");
             const checkbox = layerElem.querySelector("input.markerlist");
             const poiList = createElement(`<ul c="list_poiitems_div"></ul>`)[0];
             poiLayerSet.push(poiList);
@@ -1387,12 +1390,15 @@ enable-background="new 0 0 10 10" xml:space="preserve">
             const toggleLayerFunc = (_event) => {
               if (poiList.classList.contains("open")) {
                 poiList.classList.remove("open");
+                layerChev.classList.remove("down");
               } else {
                 poiLayerSet.map(layer => {
                   if (layer == poiList) {
                     poiList.classList.add("open");
+                    layerChev.classList.add("down");
                   } else {
                     layer.classList.remove("open");
+                    layerChev.classList.remove("down");
                   }
                 });
               }
@@ -1400,7 +1406,7 @@ enable-background="new 0 0 10 10" xml:space="preserve">
             const hideFunc = (_event) => {
               modalElm.removeEventListener("hide.bs.modal", hideFunc, false);
               checkbox.removeEventListener("change", checkFunc, false);
-              layerElem.removeEventListener("click", togglePoiFunc, false);
+              layerElem.removeEventListener("click", toggleLayerFunc, false);
             };
             modalElm.addEventListener("hide.bs.modal", hideFunc, false);
             checkbox.addEventListener("change", checkFunc, false);
@@ -1411,13 +1417,16 @@ enable-background="new 0 0 10 10" xml:space="preserve">
               const icon = poi.icon || layer.icon || pointer["defaultpin.png"];
               const title = ui.core.translate(poi.name);
               const poiElem = createElement(`<li c="list-group-item poi">
-    <d c="row">
-      <d c="col-sm-1"><img c="markerlist" src="${icon}"></d> 
-      <d c="col-sm-11">${title}</d>
+    <d c="row" style="display:flex; justify-content:space-between; align-items:center;">
+      <d style="text-align:left; flex-grow:1;">
+        <span class="dli-chevron"></span>
+        <img c="markerlist" style="display:inline-block;padding:20px;" src="${icon}">${title}</d>
+      </d>
     </d>
   </li>`)[0];
               const poiContent = createElement(`<ul c="list_poicontent_div"></ul>`)[0];
               poiList.appendChild(poiElem);
+              const poiChev = poiElem.querySelector(".dli-chevron");
               poiList.appendChild(poiContent);
               poiSet.push(poiContent);
               const togglePoiFunc = (_event) => {
