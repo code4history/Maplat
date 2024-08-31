@@ -1360,12 +1360,12 @@ enable-background="new 0 0 10 10" xml:space="preserve">
             const check = !layer.hide;
             const id = layer.namespaceID;
             const layerElem = createElement(`<li c="list-group-item layer">
-  <d c="row" style="display:flex; justify-content:space-between; align-items:center;">
-    <d style="text-align:left; flex-grow:1;">
+  <d c="row layer_row">
+    <d c="layer_label">
       <span class="dli-chevron"></span>
-      <img c="markerlist" style="display:inline-block;padding:20px;" src="${icon}">${title}
+      <img c="markerlist" src="${icon}">${title}
     </d>
-    <d style="text-align:right;margin-right:20px;margin-top: 10px;">
+    <d class="layer_onoff">
       <input type="checkbox" c="markerlist" data="${id}" id="___maplat_marker_${index}_${
               ui.html_id_seed
             }"${check ? " checked" : ""}/>
@@ -1417,10 +1417,10 @@ enable-background="new 0 0 10 10" xml:space="preserve">
               const icon = poi.icon || layer.icon || pointer["defaultpin.png"];
               const title = ui.core.translate(poi.name);
               const poiElem = createElement(`<li c="list-group-item poi">
-    <d c="row" style="display:flex; justify-content:space-between; align-items:center;">
-      <d style="text-align:left; flex-grow:1;">
+    <d c="row poi_row">
+      <d c="poi_label">
         <span class="dli-chevron"></span>
-        <img c="markerlist" style="display:inline-block;padding:20px;" src="${icon}">${title}</d>
+        <img c="markerlist" src="${icon}">${title}</d>
       </d>
     </d>
   </li>`)[0];

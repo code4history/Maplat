@@ -139,10 +139,27 @@ li:has(+ .open) .dli-chevron {
   }
 }
 @media (hover: none) {
-  .list-group-item.layer:active, .list-group-item.poi:active {
+  .list-group-item.layer:has(.layer_label:active), .list-group-item.poi:active {
     cursor: pointer;
     background-color: #ccc;
   }
+}
+
+.layer_row, .poi_row {
+  display:flex; 
+  justify-content:space-between; 
+  align-items:center;
+}
+
+.layer_label, .poi_label {
+  text-align:left; 
+  flex-grow:1;
+}
+
+.layer_onoff {
+  text-align:right;
+  margin-right:20px;
+  margin-top: 10px;
 }
 
 .list_poicontent_div {
@@ -163,6 +180,8 @@ img.markerlist {
   right: 0px;
   margin: auto;
   vertical-align: middle; /*IE7*/
+  display:inline-block;
+  padding:20px;
 }
 
 input[type="checkbox"].markerlist {
