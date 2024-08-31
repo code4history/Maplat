@@ -1,3 +1,22 @@
+.dli-chevron {
+  display: inline-block;
+  vertical-align: middle;
+  color: #333;
+  line-height: 1;
+  width: 1em;
+  height: 1em;
+  border: 0.1em solid currentColor;
+  border-left: 0;
+  border-bottom: 0;
+  box-sizing: border-box;
+  transform: translateX(-25%) rotate(45deg);
+  margin: 10px;
+}
+
+li:has(+ .open) .dli-chevron {
+  transform: translateY(-25%) rotate(135deg);
+}
+
 .ol-ctx-menu-container li {
   background-size: auto 20px;
   background-position: top 0px left 0px;
@@ -113,9 +132,34 @@
   display: block;
 }
 
-.list-group-item.layer:hover, .list-group-item.poi:hover {
-  cursor: pointer;
-  background-color: #ccc;
+@media (hover: hover) {
+  .list-group-item.layer:hover, .list-group-item.poi:hover {
+    cursor: pointer;
+    background-color: #ccc;
+  }
+}
+@media (hover: none) {
+  .list-group-item.layer:has(.layer_label:active), .list-group-item.poi:active {
+    cursor: pointer;
+    background-color: #ccc;
+  }
+}
+
+.layer_row, .poi_row {
+  display:flex; 
+  justify-content:space-between; 
+  align-items:center;
+}
+
+.layer_label, .poi_label {
+  text-align:left; 
+  flex-grow:1;
+}
+
+.layer_onoff {
+  text-align:right;
+  margin-right:20px;
+  margin-top: 10px;
 }
 
 .list_poicontent_div {
@@ -136,6 +180,8 @@ img.markerlist {
   right: 0px;
   margin: auto;
   vertical-align: middle; /*IE7*/
+  display:inline-block;
+  padding:20px;
 }
 
 input[type="checkbox"].markerlist {
@@ -639,11 +685,22 @@ input[type="checkbox"].markerlist:checked + label.check > div {
   background-color: rgba(120, 5, 8, .2);
 }
 
-.ol-control.disable button:focus, .ol-control.disable button:hover,
-&.show-border .ol-control.ol-border button:focus, &.show-border .ol-control.ol-border button:hover,
-&.hide-marker .ol-control.ol-hide-marker button:focus, &.hide-marker .ol-control.ol-hide-marker button:hover{
-  color: rgba(255, 255, 255, .7);
-  background-color: rgba(120, 5, 8, .2)
+@media (hover: hover) {
+  .ol-control.disable button:focus, .ol-control.disable button:hover,
+  &.show-border .ol-control.ol-border button:focus, &.show-border .ol-control.ol-border button:hover,
+  &.hide-marker .ol-control.ol-hide-marker button:focus, &.hide-marker .ol-control.ol-hide-marker button:hover{
+    color: rgba(255, 255, 255, .7);
+    background-color: rgba(120, 5, 8, .2)
+  }
+}
+
+@media (hover: none) {
+  .ol-control.disable button:focus, .ol-control.disable button:active,
+  &.show-border .ol-control.ol-border button:focus, &.show-border .ol-control.ol-border button:active,
+  &.hide-marker .ol-control.ol-hide-marker button:focus, &.hide-marker .ol-control.ol-hide-marker button:active{
+    color: rgba(255, 255, 255, .7);
+    background-color: rgba(120, 5, 8, .2)
+  }
 }
 
 .ol-control button {
@@ -713,10 +770,22 @@ input[type="checkbox"].markerlist:checked + label.check > div {
   }
 }
 
-&.with-opacity .ol-slidernew:not([disabled])::-webkit-slider-thumb:hover {
-  background-color: rgba(120, 5, 8, 0.7);
+@media (hover: hover) {
+  &.with-opacity .ol-slidernew:not([disabled])::-webkit-slider-thumb:hover {
+    background-color: rgba(120, 5, 8, 0.7);
+  }
+  
+  &.with-opacity .ol-slidernew:not([disabled])::-moz-range-thumb:hover {
+    background-color: rgba(120, 5, 8, 0.7);
+  }
 }
 
-&.with-opacity .ol-slidernew:not([disabled])::-moz-range-thumb:hover {
-  background-color: rgba(120, 5, 8, 0.7);
+@media (hover: none) {
+  &.with-opacity .ol-slidernew:not([disabled])::-webkit-slider-thumb:active {
+    background-color: rgba(120, 5, 8, 0.7);
+  }
+  
+  &.with-opacity .ol-slidernew:not([disabled])::-moz-range-thumb:active {
+    background-color: rgba(120, 5, 8, 0.7);
+  }
 }
