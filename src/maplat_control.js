@@ -609,7 +609,7 @@ export class MarkerList extends CustomControl {
     options.callback = function () {
       const map = this.getMap();
       map.dispatchEvent(
-        new MapEvent("click_control", map, { control: "hideLayer" })
+        new MapEvent("click_control", map, { control: "markerList" })
       );
     };
 
