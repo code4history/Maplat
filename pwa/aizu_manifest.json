@@ -16,7 +16,7 @@
       "purpose": "maskable any"
     }
   ],
-  "start_url": "https://s.maplat.jp/r/aizumap/",
+  "start_url": "https://t.maplat.jp/r/aizumap/",
   "scope": "/r/aizumap/",
   "display": "standalone",
   "theme_color": "#f6f0d3"

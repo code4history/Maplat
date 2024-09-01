@@ -16,7 +16,7 @@
       "purpose": "maskable any"
     }
   ],
-  "start_url": "https://s.maplat.jp/r/moriokamap/",
+  "start_url": "https://t.maplat.jp/r/moriokamap/",
   "scope": "/r/moriokamap/",
   "display": "standalone",
   "theme_color": "#780508"

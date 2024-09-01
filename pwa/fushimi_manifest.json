@@ -16,7 +16,7 @@
       "purpose": "maskable any"
     }
   ],
-  "start_url": "https://s.maplat.jp/r/fushimimap/",
+  "start_url": "https://t.maplat.jp/r/fushimimap/",
   "scope": "/r/fushimimap/",
   "display": "standalone",
   "theme_color": "#f6f0d3"

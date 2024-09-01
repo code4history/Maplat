@@ -2,7 +2,7 @@
 
 # 新聞記事を見て来られた方へ
 見てみたい内容で以下の遷移先へどうぞ！
-* 奈良の古地図アプリを見てみたい方は、[ぷらっと奈良](https://s.maplat.jp/r/naramap/)へ
+* 奈良の古地図アプリを見てみたい方は、[ぷらっと奈良](https://t.maplat.jp/r/naramap/)へ
 * Maplat技術の特徴を知りたい方は、[技術紹介pdf](https://code4history.github.io/maplat_flyer_ja.pdf)へ
 * Maplatライブラリの使い方を知りたい方は、[Qiitaの記事群](https://qiita.com/tags/maplat)へ
 * 開発元であるCode for Historyの活動を知りたい方は、[Code for Historyのページ](https://code4history.github.io/index_ja.html)へ
@@ -31,34 +31,34 @@ Please use [MaplatEditor](https://github.com/code4history/MaplatEditor/) for dat
 
 # Latest result
 Latest result is shown below:
-* https://s.maplat.jp/r/naramap/ (Maplat Nara)
-* https://s.maplat.jp/r/aizumap/ (Maplat Aizuwakamatsu)
-* https://s.maplat.jp/r/iwakimap/ (Maplat Iwaki)
-* https://s.maplat.jp/r/tatebayashimap/ (Maplat Tatebayashi)
-* https://s.maplat.jp/r/chuokumap/ (Maplat Tokyo Chuo-ku)
-* https://s.maplat.jp/r/uedamap/ (Ueda city)
-* https://s.maplat.jp/r/moriokamap/ (Morioka city)
-* https://s.maplat.jp/r/sabaemap/ (Sabae city)
-* https://s.maplat.jp/r/nobeokamap/ (Nobeoka city)
+* https://t.maplat.jp/r/naramap/ (Maplat Nara)
+* https://t.maplat.jp/r/aizumap/ (Maplat Aizuwakamatsu)
+* https://t.maplat.jp/r/iwakimap/ (Maplat Iwaki)
+* https://t.maplat.jp/r/tatebayashimap/ (Maplat Tatebayashi)
+* https://t.maplat.jp/r/chuokumap/ (Maplat Tokyo Chuo-ku)
+* https://t.maplat.jp/r/uedamap/ (Ueda city)
+* https://t.maplat.jp/r/moriokamap/ (Morioka city)
+* https://t.maplat.jp/r/sabaemap/ (Sabae city)
+* https://t.maplat.jp/r/nobeokamap/ (Nobeoka city)
 
 Documentation is undergoing.
 
 最新の成果物は以下で確認できます。
-* https://s.maplat.jp/r/naramap/ (ぷらっと奈良)
-* https://s.maplat.jp/r/aizumap/ (ぷらっと会津若松)
-* https://s.maplat.jp/r/iwakimap/ (ぷらっといわき)
-* https://s.maplat.jp/r/tatebayashimap/ (ぷらっと館林)
-* https://s.maplat.jp/r/chuokumap/ (ぷらっと東京中央区)
-* https://s.maplat.jp/r/uedamap/ (上田市版)
-* https://s.maplat.jp/r/moriokamap/ (盛岡市版)
-* https://s.maplat.jp/r/sabaemap/ (鯖江市版)
-* https://s.maplat.jp/r/nobeokamap/ (延岡市版)
+* https://t.maplat.jp/r/naramap/ (ぷらっと奈良)
+* https://t.maplat.jp/r/aizumap/ (ぷらっと会津若松)
+* https://t.maplat.jp/r/iwakimap/ (ぷらっといわき)
+* https://t.maplat.jp/r/tatebayashimap/ (ぷらっと館林)
+* https://t.maplat.jp/r/chuokumap/ (ぷらっと東京中央区)
+* https://t.maplat.jp/r/uedamap/ (上田市版)
+* https://t.maplat.jp/r/moriokamap/ (盛岡市版)
+* https://t.maplat.jp/r/sabaemap/ (鯖江市版)
+* https://t.maplat.jp/r/nobeokamap/ (延岡市版)
 
 成果物を他人がコンテンツ作れる形でまとめられていないですが、おいおい整理します。
 
 # Collaboration demo with Jizo project
 Code 4 NaraからUrban data challenge 2016に応募中のMaplatと[地蔵プロジェクト](https://github.com/code4history/JizoProject/wiki)をコラボレーションさせたデモを作りました。
-* https://s.maplat.jp/r/narajizomap/
+* https://t.maplat.jp/r/narajizomap/
 
 ## Contributors
 

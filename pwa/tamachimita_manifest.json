@@ -16,7 +16,7 @@
       "purpose": "maskable any"
     }
   ],
-  "start_url": "https://s.maplat.jp/r/tamachimitamap/",
+  "start_url": "https://t.maplat.jp/r/tamachimitamap/",
   "scope": "/r/tamachimitamap/",
   "display": "standalone",
   "theme_color": "#f6f0d3"

@@ -16,7 +16,7 @@
       "purpose": "maskable any"
     }
   ],
-  "start_url": "https://s.maplat.jp/r/himejimap/",
+  "start_url": "https://t.maplat.jp/r/himejimap/",
   "scope": "/r/himejimap/",
   "display": "standalone",
   "theme_color": "#f6f0d3"

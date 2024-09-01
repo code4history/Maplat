@@ -16,7 +16,7 @@
       "purpose": "maskable any"
     }
   ],
-  "start_url": "https://s.maplat.jp/r/kyobatemap/",
+  "start_url": "https://t.maplat.jp/r/kyobatemap/",
   "scope": "/r/kyobatemap/",
   "display": "standalone",
   "theme_color": "#780508"

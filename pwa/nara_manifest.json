@@ -16,7 +16,7 @@
       "purpose": "maskable any"
     }
   ],
-  "start_url": "https://s.maplat.jp/r/naramap/",
+  "start_url": "https://t.maplat.jp/r/naramap/",
   "scope": "/r/naramap/",
   "display": "standalone",
   "theme_color": "#f6f0d3"

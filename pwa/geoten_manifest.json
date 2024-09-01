@@ -16,7 +16,7 @@
       "purpose": "maskable any"
     }
   ],
-  "start_url": "https://s.maplat.jp/r/geotenmap/",
+  "start_url": "https://t.maplat.jp/r/geotenmap/",
   "scope": "/r/geotenmap/",
   "display": "standalone",
   "theme_color": "#ffffff"

@@ -16,7 +16,7 @@
       "purpose": "maskable any"
     }
   ],
-  "start_url": "https://s.maplat.jp/r/uedamap/",
+  "start_url": "https://t.maplat.jp/r/uedamap/",
   "scope": "/r/uedamap/",
   "display": "standalone",
   "theme_color": "#780508"

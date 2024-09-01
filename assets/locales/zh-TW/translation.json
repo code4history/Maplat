@@ -52,7 +52,7 @@
         "share_app_title": "分享此應用",
         "share_state_title": "分享現在所在位置",
         "share_copy": "複製",
-        "hide_marker_title": "標記項顯示切換"
+        "marker_list_title": "標記清單顯示"
     },
     "app": {
         "fake_explanation": "※以%1$s為中心，超出%2$dkm以上時、以%1$s為中心使用模糊經緯度表示周邊範圍。",

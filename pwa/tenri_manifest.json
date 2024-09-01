@@ -16,7 +16,7 @@
       "purpose": "maskable any"
     }
   ],
-  "start_url": "https://s.maplat.jp/r/tenrimap/",
+  "start_url": "https://t.maplat.jp/r/tenrimap/",
   "scope": "/r/tenrimap/",
   "display": "standalone",
   "theme_color": "#780508"

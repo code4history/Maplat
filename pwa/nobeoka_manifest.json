@@ -16,7 +16,7 @@
       "purpose": "maskable any"
     }
   ],
-  "start_url": "https://s.maplat.jp/r/nobeokamap/",
+  "start_url": "https://t.maplat.jp/r/nobeokamap/",
   "scope": "/r/nobeokamap/",
   "display": "standalone",
   "theme_color": "#780508"

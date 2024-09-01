@@ -16,7 +16,7 @@
       "purpose": "maskable any"
     }
   ],
-  "start_url": "https://s.maplat.jp/r/samplat/",
+  "start_url": "https://t.maplat.jp/r/samplat/",
   "scope": "/r/samplat/",
   "display": "standalone",
   "theme_color": "#FFFFFF"

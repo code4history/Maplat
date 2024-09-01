@@ -16,7 +16,7 @@
       "purpose": "maskable any"
     }
   ],
-  "start_url": "https://s.maplat.jp/r/sabaemap/",
+  "start_url": "https://t.maplat.jp/r/sabaemap/",
   "scope": "/r/sabaemap/",
   "display": "standalone",
   "theme_color": "#780508"

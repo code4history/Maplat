@@ -16,7 +16,7 @@
       "purpose": "maskable any"
     }
   ],
-  "start_url": "https://s.maplat.jp/r/sakaimap/",
+  "start_url": "https://t.maplat.jp/r/sakaimap/",
   "scope": "/r/sakaimap/",
   "display": "standalone",
   "theme_color": "#f6f0d3"

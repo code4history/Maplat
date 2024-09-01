@@ -106,14 +106,14 @@ gulp.task("publish:plat", async () => {
   const name = settings.name || options.name;
   const short = settings.short || options.short;
   const splash = !(settings.isSample || target === "sample") ?
-    `https://s.maplat.jp/r/${target}map/img/${target}_splash.png` :
-    `https://s.maplat.jp/r/${target}map/pwa/sample/apple-splash-1334-750.png`;
+    `https://t.maplat.jp/r/${target}map/img/${target}_splash.png` :
+    `https://t.maplat.jp/r/${target}map/pwa/sample/apple-splash-1334-750.png`;
   const manifest = Object.assign({}, manifest_template);
   manifest.name = name;
   manifest.short_name = short;
   manifest.background_color = color;
   manifest.theme_color = color;
-  manifest.start_url = `https://s.maplat.jp/r/${target}map/`;
+  manifest.start_url = `https://t.maplat.jp/r/${target}map/`;
   manifest.scope = `/r/${target}map/`;
   await new Promise((resolve, reject) => {
     gulp

@@ -16,7 +16,7 @@
       "purpose": "maskable any"
     }
   ],
-  "start_url": "https://s.maplat.jp/r/yakushijimap/",
+  "start_url": "https://t.maplat.jp/r/yakushijimap/",
   "scope": "/r/yakushijimap/",
   "display": "standalone",
   "theme_color": "#f6f0d3"

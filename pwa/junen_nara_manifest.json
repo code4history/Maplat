@@ -16,7 +16,7 @@
       "purpose": "maskable any"
     }
   ],
-  "start_url": "https://s.maplat.jp/r/junen_naramap/",
+  "start_url": "https://t.maplat.jp/r/junen_naramap/",
   "scope": "/r/junen_naramap/",
   "display": "standalone",
   "theme_color": "#f6f0d3"

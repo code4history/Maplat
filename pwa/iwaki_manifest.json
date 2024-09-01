@@ -16,7 +16,7 @@
       "purpose": "maskable any"
     }
   ],
-  "start_url": "https://s.maplat.jp/r/iwakimap/",
+  "start_url": "https://t.maplat.jp/r/iwakimap/",
   "scope": "/r/iwakimap/",
   "display": "standalone",
   "theme_color": "#f6f0d3"
