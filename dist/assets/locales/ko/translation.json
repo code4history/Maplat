@@ -52,7 +52,7 @@
         "share_app_title": "이 앱을 공유",
         "share_state_title": "현재 위치를 공유",
         "share_copy": "복사",
-        "hide_marker_title": "마커 레이어 표시 설정"
+        "marker_list_title": "마커 목록 보기"
     },
     "app": {
         "fake_explanation": "※%1$s 중심에서 %2$dkm 이상 떨어져 있을 때는 %1$s 중심 주변에 있는 의사 경위도를 출력합니다. ",

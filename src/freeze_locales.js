@@ -54,7 +54,7 @@ export default {
         "share_app_title": "Share this application",
         "share_state_title": "Share current viewpoint",
         "share_copy": "Copy",
-        "hide_marker_title": "Toggle marker layer display / hide"
+        "marker_list_title": "Marker list"
       },
       "app": {
         "fake_explanation": "NOTE: If GPS result is more than %2$f km away from %1$s, the system issue a pseudo-coordinate around %1$s.",
@@ -125,7 +125,7 @@ export default {
         "share_app_title": "このアプリを共有",
         "share_state_title": "現在の表示場所を共有",
         "share_copy": "コピー",
-        "hide_marker_title": "マーカーレイヤー表示切替"
+        "marker_list_title": "マーカー一覧表示"
       },
       "app": {
         "fake_explanation": "※%1$s中心より%2$dkm以上離れている場合は、%1$s中心周辺の疑似経緯度を発行します。",
@@ -196,7 +196,7 @@ export default {
         "share_app_title": "이 앱을 공유",
         "share_state_title": "현재 위치를 공유",
         "share_copy": "복사",
-        "hide_marker_title": "마커 레이어 표시 설정"
+        "marker_list_title": "마커 목록 보기"
       },
       "app": {
         "fake_explanation": "※%1$s 중심에서 %2$dkm 이상 떨어져 있을 때는 %1$s 중심 주변에 있는 의사 경위도를 출력합니다. ",
@@ -267,7 +267,7 @@ export default {
         "share_app_title": "分享此应用",
         "share_state_title": "分享现在所在位置",
         "share_copy": "复制",
-        "hide_marker_title": "标记项显示切换"
+        "marker_list_title": "标记列表显示"
       },
       "app": {
         "fake_explanation": "※以%1$s为中心，超出%2$dkm以上时、以%1$s为中心使用模糊经纬度表示周边范围。",
@@ -338,7 +338,7 @@ export default {
         "share_app_title": "分享此應用",
         "share_state_title": "分享現在所在位置",
         "share_copy": "複製",
-        "hide_marker_title": "標記項顯示切換"
+        "marker_list_title": "標記清單顯示"
       },
       "app": {
         "fake_explanation": "※以%1$s為中心，超出%2$dkm以上時、以%1$s為中心使用模糊經緯度表示周邊範圍。",
