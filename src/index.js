@@ -259,7 +259,7 @@ export class MaplatUi extends EventTarget {
           <s c="modal_gpsW_title" din="html.acquiring_gps"></s>
           <s c="modal_help_title" din="html.help_title"></s>
           <s c="modal_share_title" din="html.share_title"></s>
-          <s c="modal_hide_marker_title" din="html.hide_marker_title"></s>
+          <s c="modal_marker_list_title" din="html.marker_list_title"></s>
 
         </h4>
       </d> 
@@ -355,7 +355,7 @@ export class MaplatUi extends EventTarget {
           <p><img src="" height="0px" width="0px"></p>
         </d> 
 
-        <d c="modal_hide_marker_content">
+        <d c="modal_marker_list_content">
           <ul c="list-group"></ul>
         </d> 
 
@@ -1347,8 +1347,8 @@ enable-background="new 0 0 10 10" xml:space="preserve">
         } else if (control === "hideMarker") {
           const flag = !ui.core.stateBuffer.hideMarker;
           ui.setHideMarker(flag);
-        } else if (control === "hideLayer") {
-          ui.modalSetting("hide_marker");
+        } else if (control === "markerList") {
+          ui.modalSetting("marker_list");
           const layers = ui.core.listPoiLayers(false, true);
           const poiLayerSet = [];
           const elem = ui.core.mapDivDocument.querySelector("ul.list-group");
@@ -1611,7 +1611,7 @@ enable-background="new 0 0 10 10" xml:space="preserve">
   // Modal記述の動作を調整する関数
   modalSetting(target) {
     const modalElm = this.core.mapDivDocument.querySelector(".modalBase");
-    ["poi", "map", "load", "gpsW", "gpsD", "help", "share", "hide_marker"].map(
+    ["poi", "map", "load", "gpsW", "gpsD", "help", "share", "marker_list"].map(
       target_ => {
         const className = `modal_${target_}`;
         if (target === target_) {
