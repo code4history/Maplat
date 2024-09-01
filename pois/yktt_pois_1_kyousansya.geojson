@@ -1,0 +1,33 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.78226795095546,34.62836819477047]
+      },
+      "properties": {
+        "name": "藤本建設株式会社",
+        "html":"1964年創業の藤本建設は、マンション、公共施設、商業施設、寺社の修復など様々な分野の建築や、道路工事、河川築堤工事などの大規模な土木工事に対応する総合建設会社です。<br><a target=\"_blank\" href=\"http://fujimotokensetu.co.jp\">藤本建設 ホームページ</a><br><br><img src=\"img/yamato_koriyamajyou_hall.jpg\"><br>DMG MORI やまと郡山城ホール（2001年5月竣工）<br><br><img src=\"img/shiyakusyo_2023.jpg\"><br>大和郡山市役所（2023年7月竣工）"
+      }
+    },
+{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.78259798782648,34.64799309047989]
+      },
+      "properties": {
+        "name": "奈良信用金庫",
+        "html":"ならしんの愛称で親しまれる奈良信用金庫は、1928年9月に設立され、奈良県北部を中心に地域に密着した金融サービスを積極的に展開するコミュニティ・バンクです。<br><a target=\"_blank\" href=\"https://www.narashin.co.jp\">奈良信用金庫 ホームページ</a><br><br><img src=\"img/narashin_95th_logo.jpg\"><br>2023年には創立95周年を迎えました。<br><br><img src=\"img/narasin_kariga.jpg\"><br>奈良信用金庫 本店"
+      }
+    }
+
+  ],
+  "properties": {
+    "id": "yktt_pois_1_kyousansya",
+    "name": "協賛社",
+    "icon": "pois/yktt_pin_aka.png"
+  }
+}

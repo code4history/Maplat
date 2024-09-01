@@ -1,0 +1,35 @@
+{
+    "appName" : {
+        "ja" : "大和郡山タイムトリップマップ",
+        "en" : "Yamato Koriyama Time Trip Map"
+    },
+    "lang" : "ja",
+    "homePosition" : [135.77919696206305,34.65169871840611],
+    "defaultZoom" : 17,
+    "zoomRestriction" : true,
+    "minZoom" : 10,
+    "maxZoom" : 18,
+    "startFrom" : "yktt_ansei_nenkan",
+    "sources" : [
+		{
+            "label": "堀と郡山八口",
+            "mapID": "koriyama_hachikuchi"
+        }, 
+        {
+            "label" : "安政年間 1860年頃",
+            "mapID" : "yktt_ansei_nenkan"
+        },
+        "osm",
+        "gsi",
+        {
+            "mapID": "mapbox",
+            "label": "Mapbox"
+        }
+    ], 
+    "pois" :
+[
+"pois/yktt_pois_2_hachikuchi.geojson",
+"pois/yktt_pois_3_jyouka.geojson",
+"pois/yktt_pois_4_jyouseki.geojson"
+]
+}

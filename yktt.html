@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>大和郡山タイムトリップマップ</title>
+  <meta content="yes" name="apple-mobile-web-app-capable">
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <link rel="stylesheet" href="assets/maplat.css">
+  <style>
+    .mainview {
+        position: absolute;
+        top: 0px;
+        bottom: 0px;
+        left: 0px;
+        right: 0px;
+    }
+  </style>
+  <meta property="og:image" content="pwa/yktt_map/apple-splash-1334-750.png">
+  <meta name="twitter:card" content="summary">
+  <link rel="canonical" href="https://t.maplat.jp/r/yktt/">
+  <link rel="alternate" href="https://t.maplat.jp/r/yktt/?lang=ja" hreflang="ja">
+  <link rel="alternate" href="https://t.maplat.jp/r/yktt/?lang=en" hreflang="en">
+  <link rel="manifest" href="./pwa/yktt_map_manifest.json">
+  <meta property="og:title" content="">
+  <meta name="description" content="大和郡山タイムトリップマップ">
+  <meta property="og:description" content="大和郡山タイムトリップマップ">
+  <meta name="keywords" content="大和郡山,郡山城,安政年間 和州郡山藩家中図,お城,古地図,散歩,街歩き,観光,歴史">
+  <link rel="icon" type="image/png" sizes="196x196" href="pwa/yktt_map/favicon-196.png">
+  
+  <meta name="msapplication-square70x70logo" content="pwa/yktt_map/mstile-icon-128.png">
+  <meta name="msapplication-square150x150logo" content="pwa/yktt_map/mstile-icon-270.png">
+  <meta name="msapplication-square310x310logo" content="pwa/yktt_map/mstile-icon-558.png">
+  <meta name="msapplication-wide310x150logo" content="pwa/yktt_map/mstile-icon-558-270.png">
+  
+  <link rel="apple-touch-icon" href="pwa/yktt_map/apple-icon-180.png">
+  
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  
+  <link rel="apple-touch-startup-image" href="pwa/yktt_map/apple-splash-2048-2732.png"
+    media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="pwa/yktt_map/apple-splash-2732-2048.png"
+    media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
+  <link rel="apple-touch-startup-image" href="pwa/yktt_map/apple-splash-1668-2388.png"
+    media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="pwa/yktt_map/apple-splash-2388-1668.png"
+    media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
+  <link rel="apple-touch-startup-image" href="pwa/yktt_map/apple-splash-1536-2048.png"
+    media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="pwa/yktt_map/apple-splash-2048-1536.png"
+    media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
+  <link rel="apple-touch-startup-image" href="pwa/yktt_map/apple-splash-1668-2224.png"
+    media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="pwa/yktt_map/apple-splash-2224-1668.png"
+    media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
+  <link rel="apple-touch-startup-image" href="pwa/yktt_map/apple-splash-1620-2160.png"
+    media="(device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="pwa/yktt_map/apple-splash-2160-1620.png"
+    media="(device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
+  <link rel="apple-touch-startup-image" href="pwa/yktt_map/apple-splash-1284-2778.png"
+    media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="pwa/yktt_map/apple-splash-2778-1284.png"
+    media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)">
+  <link rel="apple-touch-startup-image" href="pwa/yktt_map/apple-splash-1170-2532.png"
+    media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="pwa/yktt_map/apple-splash-2532-1170.png"
+    media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)">
+  <link rel="apple-touch-startup-image" href="pwa/yktt_map/apple-splash-1125-2436.png"
+    media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="pwa/yktt_map/apple-splash-2436-1125.png"
+    media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)">
+  <link rel="apple-touch-startup-image" href="pwa/yktt_map/apple-splash-1242-2688.png"
+    media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="pwa/yktt_map/apple-splash-2688-1242.png"
+    media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)">
+  <link rel="apple-touch-startup-image" href="pwa/yktt_map/apple-splash-828-1792.png"
+    media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="pwa/yktt_map/apple-splash-1792-828.png"
+    media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
+  <link rel="apple-touch-startup-image" href="pwa/yktt_map/apple-splash-1242-2208.png"
+    media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="pwa/yktt_map/apple-splash-2208-1242.png"
+    media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)">
+  <link rel="apple-touch-startup-image" href="pwa/yktt_map/apple-splash-750-1334.png"
+    media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="pwa/yktt_map/apple-splash-1334-750.png"
+    media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
+  <link rel="apple-touch-startup-image" href="pwa/yktt_map/apple-splash-640-1136.png"
+    media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="pwa/yktt_map/apple-splash-1136-640.png"
+    media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
+</head>
+<body>
+  <div class="mainview">
+    <div id="map_div"></div>
+  </div>
+  <script src="assets/maplat.js"></script>
+  <script>
+    var option = {
+        appid: "yktt_map",
+        pwaManifest: false,
+		    enableMarkerList: true,
+        overlay: true,
+        enableHideMarker: true,
+        enableBorder: true,
+        enableCache: false,
+        stateUrl: true,
+        enableShare: true,
+        tapDuration: 60000,
+        homeMarginPixels: 250,
+        tapUIVanish: true,
+        enablePoiHtmlNoScroll: true,
+        mapboxToken: 'pk.eyJ1IjoibnN0dWRpbzIwMjMiLCJhIjoiY2xrcnhxNXFvMHRzNjN2cW9xOTNzbWJ0aSJ9.mbHBtR_zFjC_qGkFc758cg'
+    };
+    var hashes = (window.location.href.split('#!'))[0];
+    hashes = hashes.slice(window.location.href.indexOf('?') + 1).split('&');
+    for (var i = 0; i < hashes.length; i++) {
+        hash = hashes[i].split('=');
+        option[hash[0]] = hash[1] == 'true' ? true : hash[1] == 'false' ? false : hash[1];
+    }
+    Maplat.createObject(option).then(function(app){});
+  </script>
+</body>
+</html>

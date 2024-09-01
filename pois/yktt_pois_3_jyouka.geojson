@@ -1,0 +1,186 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.7841506382733,34.65082865048365]
+      },
+      "properties": {
+        "name": "春岳院",
+        "html": "<img src=\"img/syungakuin_1.jpg\"><br>春岳院（しゅんがくいん）は、大和・紀伊・和泉百万石の領主として郡山城と城下町を建設した豊臣秀長の菩提寺です。秀長が策定した郡山城下の商工業者特権は、江戸時代も引き継がれたため、春岳院は町人から篤い信仰を集めました。<br><br><img src=\"img/toyotomi_hidenaga_2.jpg\"style=\"pointer-events: none;\"><br>豊臣秀長（春岳院所蔵）"
+      }
+    },
+{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.77706436426394,34.648949468455015]
+      },
+      "properties": {
+        "name": "永慶寺",
+        "html": "<img src=\"img/eikeiji_1.jpg\"><br>永慶寺（えいけいじ）は、宝永7年（1710）甲府藩主だった柳澤吉保により甲斐国（山梨県甲府市）に建立された柳澤家の菩提寺で、黄檗宗のお寺です。享保9年（1724）子の柳澤吉里の転封に伴い甲府から郡山に移されました。<br><br><img src=\"img/eikeiji_sanmon.jpg\"><br>永慶寺山門は郡山城南門を移築したと伝えられる、現在唯一残る郡山城の建物です。"
+      }
+    },
+{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.7825392168696,34.644490178540224]
+      },
+      "properties": {
+        "name": "郡山八幡神社",
+        "html": "<img src=\"img/kooriyama_hachiman_yktt.jpg\"><br>郡山八幡神社は、古くからの郡山鎮守神で、歴代城主からも郡山城を鎮護する八幡宮として尊崇を受け、城下の人々が寄進した参道の石灯篭には「御城主様御武運長久」の文字が刻まれています。また、近年は野球少年が必勝祈願に訪れる「グラブ神社」としても有名です。本殿奥には郡山城外堀の御土居（土塁）が現在も残っています。<br><a target=\"_blank\" href=\"https://kooriyamahatimanjinjya.com\">郡山八幡神社ホームページ</a><br><br><img src=\"img/kooriyama_hachiman_ema_yktt.jpg\"><br>絵馬"
+      }
+    },
+{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.78560932246728,34.645556183621665]
+      },
+      "properties": {
+        "name": "源九郎稲荷神社",
+        "html": "<img src=\"img/genkurouinari_yktt.jpg\"><br>源九郎稲荷神社（げんくろういなりじんじゃ）は、人形浄瑠璃や歌舞伎の「義経千本桜」に登場する源九郎狐を祀る神社です。源義経が兄頼朝の討手から吉野に逃避した時、白狐が家臣に化けて義経と静御前を守り、感謝した義経が自身の名「源九郎」を贈ったと言われます。豊臣秀長が郡山城の守護神と定め、以降歴代藩主にも崇敬されてきました。⽇本三⼤稲荷の⼀つで、五穀豊穣、商売繁盛の神様として信仰を集めています。<br><a target=\"_blank\" href=\"https://gennkurouinari.jimdofree.com\">源九郎稲荷神社ホームページ</a><br><br><img src=\"img/genkurouinari_dorei_yktt.jpg\"><br>土鈴"
+      }
+    },
+{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.7869347930431,34.64654600071941]
+      },
+      "properties": {
+        "name": "薬園八幡神社",
+        "html": "<img src=\"img/yakuonhachiman_yktt.jpg\"><br>薬園八幡神社（やくおんはちまんじんじゃ）は、奈良時代749年、東大寺の大仏造顕を守護するため迎えられた宇佐の八幡大神（大分県）が、平城京羅城門近くの薬園庄で休まれたとき勧請されたと伝えられます。地元では「やこうさん」と呼び親しまれ、城下町の古社として厚く信仰を集めています。<br><br><img src=\"img/yakuonhachiman_manekinekomikuji_yktt.jpg\"><br>招きねこみくじ"
+      }
+    },
+{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.78328510020762,34.6488014481701]
+      },
+      "properties": {
+        "name": "本家 菊屋",
+        "html":"<img src=\"img/honke_kikuya_yktt.jpg\"><br>天正13年（1585）、店祖 菊屋治兵衛が豊臣秀長に連れられ大和郡山に来たと伝えられる、奈良県で最古の和菓子屋さんです。店頭では今も「ばったり床几」が使われています。<br>営業時間：9時～18時30分　年中無休（元日のみ休み）<br><a target=\"_blank\" href=\"https://kikuya.co.jp\">本家 菊屋 ホームページ</a><br><br><img src=\"img/honke_kikuya_tennai_yktt.jpg\"><br>江戸時代末期に建てられた店内には、沢山の菓子型が展示されています。<br><br><img src=\"img/oshironokuchimochi_yktt.jpg\"><br>御城之口餅（おしろのくちもち）<br>豊臣秀長が、茶会で兄秀吉をもてなすため菊屋治兵衛につくらせた粒餡きな粉餅です。"
+      }
+    },
+{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.7835112497627,34.647595350478625]
+      },
+      "properties": {
+        "name": "中谷酒造 柳町醸造所",
+        "html":"<img src=\"img/nakatanisyuzou_yktt.jpg\"><br>嘉永6年（1853）の創業で、郡山藩御用商人だった中谷酒造が、城下柳町に開業した日本酒のマイクロブルワリーです。醸造所内には、酒造りの古道具の展示や清酒BARがあります。また、予約制で体験醸造ができます。<br>営業時間：13：30～19：00<br>定休日：月曜・火曜（祝日は営業）<br><a target=\"_blank\" href=\"https://www.sake-asaka.co.jp\">中谷酒造 ホームページ</a><br><br><img src=\"img/nakatanisyuzou_taru_yktt.jpg\"><br>酒造りの古道具<br><br><img src=\"img/yamatokoriyama_nakatani_yktt.jpg\"><br>清酒BARでは、搾りたての日本酒やソフトドリンクを楽しむことができます。"
+      }
+    },
+{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.78526894044413,34.64783420656018]
+      },
+      "properties": {
+        "name": "箱本館「紺屋」",
+        "html":"<img src=\"img/hakomotokan_konya_yktt.jpg\"><br>江戸時代後期に作られた藍染商の町家を再生した観光施設です。館内には、「禁制」や「特許状」などの箱本十三町関連資料、金魚ゆかりの美術工芸品、藍染工房とショップなどがあります。また、予約制で約2時間で完成する藍染体験ができます。<br>入館無料<br>開館時間：9：00～17：00<br>休館日：月曜（祝日の場合は翌平日）・祝日の翌平日・年末年始<br><a target=\"_blank\" href=\"http://www.hakomoto.com\">箱本館「紺屋」ホームページ</a><br><br><img src=\"img/hakomotokan_konya_yktt_koubou.jpg\"><br>藍染工房<br><br><img src=\"img/hakomotokan_konya_yktt_aizome.jpg\"><br>オリジナルの藍染め商品"
+      }
+    },
+{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.78856788110645,34.6582030531184]
+      },
+      "properties": {
+        "name": "奈良口の川違え",
+        "html":"<img src=\"img/naraguchi_no_kawatagae.jpg\"><br>奈良口の川違え（ならぐちのかわたがえ）<br>16世紀末、増田長盛（ましたながもり）の普請で全長約5.5kmの郡山城外堀が完成しました。この工事では、奈良口の川違えで秋篠川の流路を東向きに直角に曲げて佐保川へ合流させ、その川跡を外堀の東側部分として利用しました。<br><br><img src=\"img/sotoboriryokuchi_kitagawa_3.jpg\"><br>外堀緑地（北側）<br>現在の外堀緑地（北側）あたりが、かつて秋篠川の流路だったようです。"
+      }
+    },
+{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.78867320944454,34.65348160900362]
+      },
+      "properties": {
+        "name": "ハモト プチ ミュージアム",
+        "html":"<img src=\"img/hamoto_petite_museum.jpg\"><br>奈良への街道沿いにある葉本家（ハモト プチ ミュージアム）は、もともと両替商で明治以降肥料商などを営んでいました。建物は、明治24年（1891）にできたもので、格子窓、ばったり床机、一文字瓦、卯建（うだつ）など、郡山城下町の町家の特徴が一望できる登録有形文化財です。現在は、私立博物館として建物内部を見学することができます。<br>ハモト プチ ミュージアム入館には、前日までに電話予約（0743-52-2122 受付時間10：00〜15：00）が必要です。入館料300円、開館時間10：00〜16：00、駐車場・トイレはありません。都合により休館の場合があります。<br><br><img src=\"img/hamoto_petite_museum_fundou.jpg\"><br>一文字瓦と虫籠窓の分銅印（両替商のしるし）。"
+      }
+    },
+{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.78754428415607,34.64787882357564]
+      },
+      "properties": {
+        "name": "外堀緑地（北側）",
+        "html":"<img src=\"img/sotoboriryokuchi_kitagawa.jpg\"><br>外堀緑地は、郡山城外堀跡を生かした全長約600mの公園です。16世紀末、増田長盛（ましたながもり）の外堀普請にともなう「奈良口の川違え」が行われるまで、このあたりを秋篠川が流れていました。<br><br><img src=\"img/sotoboriryokuchi_kitamon.jpg\"><br>冠木門（かぶきもん）様式で再建された外堀緑地北門"
+      }
+    },
+{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.7866577177397,34.64606718111848]
+      },
+      "properties": {
+        "name": "外堀緑地（南側）",
+        "html":"<img src=\"img/sotoboriryokuchi_minamigawa.jpg\"><br>外堀緑地は、郡山城外堀跡を生かした全長約600mの公園です。堀の向こう側に見える実相寺の鐘楼は、かつて外堀内側に築かれていた御土居（土塁）の上に建てられています。<br><br><img src=\"img/sotoboriryokuchi_minamimon.jpg\"><br>高麗門様式で再建された外堀緑地南門"
+      }
+    },
+{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.77297612826803,34.64964282326008]
+      },
+      "properties": {
+        "name": "大織冠のクスノキ",
+        "html":"<img src=\"img/taisyokukan_no_kusunoki.jpg\"><br>大織冠（たいしょくかん）のクスノキ<br>豊臣秀長城主の時代1588年から1590年まで、多武峰（現在の談山神社）は郡山城の鎮守として、このクスノキのある丘陵に遷座していました（今日正確な場所はわかりません）。現在もこのあたりは大織冠と呼ばれています。<br>樹齢500年以上のクスノキは、大和郡山のシンボルツリーです。"
+      }
+    },
+{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.77432868743495,34.64576420308576]
+      },
+      "properties": {
+        "name": "大納言塚",
+        "html":"<img src=\"img/dainagonduka.jpg\"style=\"pointer-events: none;\"><br>大納言塚（だいなごんづか）<br>天正19（1591）年1月、郡山城内で没した豊臣秀長は、ここに葬られ、兄秀吉は、菩提寺大光院を建立し墓地の管理をしました。豊臣家が滅んだ後、大光院は秀長の家臣であった藤堂高虎によって京都へと移築され、位牌は東光寺（のちの春岳院）に託されました。江戸時代に入り墓地は荒廃しましたが、安永6年（1777）春岳院の僧、英隆や訓祥が郡山町中（郡山城下の商工業者）の協力を得て復興しました。<br><br><img src=\"img/onegai_no_suna.jpg\"><br>お願いの砂<br>郡山繁栄の基礎を作った豊臣秀長は「学問の智将」として篤く崇拝され、墓前で名前と願い事をとなえながら石の箱へ3回砂を通すと願い事がかなう、と言われます。<br><br><img src=\"img/toyotomi_hidenaga_2.jpg\"style=\"pointer-events: none;\"><br>豊臣秀長（春岳院所蔵）"
+      }
+    },
+{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.78259798782648,34.64799309047989]
+      },
+      "properties": {
+        "name": "奈良信用金庫",
+        "html":"ならしんの愛称で親しまれる奈良信用金庫は、昭和3年（1928）9月有限責任郡山町信用組合として設立され、奈良県北部を中心として地域に密着した金融サービスを積極的に展開するコミュニティ・バンクです。<br><a target=\"_blank\" href=\"https://www.narashin.co.jp\">奈良信用金庫 ホームページ</a><br><br><img src=\"img/narashin_95th_logo.jpg\"><br>令和5年（2023）には創立95周年を迎えました。<br><br><img src=\"img/narashinyoukinko_honten.jpg\"><br>現在本店のある場所は、柳澤家藩主時代「御使者屋敷（重要な客をもてなす迎賓館的役割の屋敷）」だったようです。"
+      }
+    },
+{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.78601723021586,34.64854306561726]
+      },
+      "properties": {
+        "name": "株式会社 淺沼組 郡山出張所",
+        "html":"江戸時代淺沼家は、郡山藩主柳沢家の家臣で代々普請方を務めていました。明治維新後、大工の棟梁へ転身し、明治25年（1852年）にはここ郡山の地にて8代目当主淺沼幸吉が建築請負業淺沼組を創業しました。その後淺沼組は、業容拡大に伴い大阪へ進出し、現在全国で事業展開する総合建設会社へと発展しています。<br><a target=\"_blank\" href=\"https://www.asanuma.co.jp\">淺沼組 ホームページ</a><br><br><img src=\"img/asanumagumi_honten_imaichou.jpg\"><br>かつての淺沼組本店（大和郡山市今井町）<br><br><img src=\"img/asanumagumi_nagoya_kaisyuu_pj.jpg\"><br>2022年にSDGs建築賞やグッドデザインベスト100をはじめ国内外の賞を受賞したGOOD CYCLE BUILDING 001 淺沼組名古屋支店改修PJ"
+      }
+    }  
+  ],
+  "properties": {
+    "id": "yktt_pois_3_jyouka",
+    "name": "城下の見どころ",
+    "icon": "pois/yktt_pin_fukamidori.png"
+  }
+}

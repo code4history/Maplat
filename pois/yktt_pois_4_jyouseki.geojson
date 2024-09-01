@@ -1,0 +1,175 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.78183059590714,34.65263663581195]
+      },
+      "properties": {
+        "name": "桜門",
+        "html":"<img src=\"img/sakura_gomon.jpg\"><br>桜門は、写真中央あたりにありました。郡山城の入口である4つの門（柳門、桜門、南門、西門）の一つで、城の北東に位置します。城下町から郡山城への表門として、櫓門（城門の上に櫓を載せた二階建て門）による非常に堅固な構造とされ、この門から先は用件のある者しか入れませんでした。現在は内側を近鉄橿原線が通っており、桜門や五軒屋敷堀は電車から見える城跡として親しまれています。<br><br><img src=\"img/benkei_jyougyouishi.jpg\"><br>伝承 弁慶の定形石<br>桜門南側櫓台にある石の窪みは「弁慶の足跡」という伝説があります。"
+      }
+    },
+{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.78202578858065,34.648875732204736]
+      },
+      "properties": {
+        "name": "柳門",
+        "html":"<img src=\"img/yanagi_gomon.jpg\"><br>柳門は、写真中央奥にありました。郡山城の入口である4つの門（柳門、桜門、南門、西門）の一つで、城の南東に位置します。城下町から郡山城への表門として、枡形虎口と櫓門（城門の上に櫓を載せた二階建て門）による非常に堅固な構造とされ、この門から先は用件のある者しか入れませんでした。城主の屋形が二の丸に置かれるようになった江戸時代以降、柳門は大手門として扱われるようになり、このあたりは「大手前」「城ノ口」と称されました。<br><br><img src=\"img/shiyakusyo_2023.jpg\"><br>この周辺は今日も大和郡山の中心地であり、柳門北東側には大和郡山市役所が建っています。噴水のある手前の池は大手堀を元にしています。"
+      }
+    },
+{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.7778102479009,34.64973871007455]
+      },
+      "properties": {
+        "name": "南門",
+        "html":"<img src=\"img/minami_gomon.jpg\"><br>南門（正式には南御門）は、写真中央奥にありました。郡山城の入口である4つの門（柳門、桜門、南門、西門）の一つで、城の南西に位置します。南門は搦手（からめて：裏門）であり、また、南側侍屋敷から城内への通用口でもありました。ここから南へ100mほど進むと、現在も柳澤家の菩提寺である龍華山永慶寺があります。<br><br><img src=\"img/eikeiji_sanmon_syoumen.jpg\"><br>永慶寺山門は郡山城南門を移築したと伝えらる、現在唯一残る郡山城の建物です。"
+      }
+    },
+{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.77654530122769,34.65166304133107]
+      },
+      "properties": {
+        "name": "西門",
+        "html":"<img src=\"img/nishi_gomon.jpg\"><br>西門は、写真中央奥にありました。郡山城の入口である4つの門（柳門、桜門、南門、西門）の一つで、城の北西に位置します。西門は搦手（からめて：裏門）であり、また、西側侍屋敷から城内への通用口でもありました。明治以降、正面奥の麒麟曲輪には学校が設置され、平成30年（2018）3月末まで郡山高校城内学舎がありました。<br><br><img src=\"img/jyounaigakusya_koumon_181111.jpg\"><br>城内学舎校門（2018年11月11日撮影）"
+      }
+    },
+{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.78096006262746,34.65017430950317]
+      },
+      "properties": {
+        "name": "鉄門",
+        "html":"<img src=\"img/kurogane_gomon.jpg\"><br>鉄門（くろがねもん）は、上級家臣の屋敷があった五軒屋敷から郡山城中枢部への門でした。この門入って直進すれば、梅林門（追手門）から極楽橋を渡り本丸へ、左方向へ進めば、江戸時代城主の屋形があった二の丸（現在は郡山高校）へ至ります。ここには「下馬」の札が建っており、この門から内側へは全ての家臣が馬からおりました。明治の廃城時に西側の櫓台が失われ、現在は東側のみが残ります。<br><br><img src=\"img/VR_kurogane_gomon.jpg\"><br>鉄門のCG（VR郡山城より）"
+      }
+    },
+{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.77790157800166,34.650601127915586]
+      },
+      "properties": {
+        "name": "松陰門",
+        "html":"<img src=\"img/matsukage_gomon.jpg\"><br>松陰門（まつかげもん）は、郡山城南側・西側の侍屋敷から城内中枢部への門でした。この門を入って南側は松倉（二の丸・緑曲輪の米を備蓄する蔵）、北側は緑曲輪（城主の生母や子供の屋形）があり、さらに進むと南側に二の丸（城主の屋形）ありました。柳澤吉里は、郡山転封時に甲府城の名前を引き継ぐ形で曲輪・門・橋の名前を付け替えており、風雅な松陰門もその一つです。<br><br><img src=\"img/VR_matsukage_gomon.jpg\"><br>松陰門のCG（VR郡山城より）"
+      }
+    },
+{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.78050235173455,34.652033555461]
+      },
+      "properties": {
+        "name": "追手門（梅林門）",
+        "html":"<img src=\"img/ottemon.jpg\"><br>追手門（梅林門）<br><img src=\"img/otte_mukaiyagura.jpg\"><br>左：追手向櫓、右：追手東隅櫓<br>追手門は、発掘調査により豊臣秀長時代からここにあったと考えられています。柳澤吉里が甲府から転封してからは、梅林門と呼ばれました。昭和58年（1983）〜昭和62年（1987）に、大和郡山市民の寄付等により、追手門・追手東隅櫓・追手向櫓が、秀長築城当時に近い形で再建されました。<br><br><img src=\"img/jinpo_kuruwa.jpg\"><br>追手門から見た陣甫曲輪と内堀<br><br><img src=\"img/VR_jinpo_kuruwa.jpg\"><br>追手門から見た陣甫曲輪と内堀のCG（VR郡山城より）<br>藩主が参勤交代で江戸へ発駕する時、また有事の際、家臣達は陣甫曲輪で隊列を整えました。"
+      }
+    },
+{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.7799069512201,34.651348253263684]
+      },
+      "properties": {
+        "name": "極楽橋と白沢門",
+        "html":"<img src=\"img/gokurakubashi.jpg\"><br>極楽橋は、江戸時代本丸への正式な登城口として位置付けられた「表」の橋でした。明治初期に失われていましたが、2021年江戸時代の伝統的技法を参考にして再建されました。橋を渡った本丸側には白沢門（はくたくもん）の櫓台が残り、堅固な門の姿を今に伝えています。（極楽橋と白沢門の名称は柳澤家藩主時代のもの）<br><br><img src=\"img/VR_gokurakubashi_tensyudai.jpg\"><br>内堀東側から見た極楽橋と白沢門のCG（VR郡山城より）"
+      }
+    },
+{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.77907027457707,34.6518820570352]
+      },
+      "properties": {
+        "name": "天守台",
+        "html":"<img src=\"img/tensyudai.jpg\"><br>郡山城の天守閣は文献上の記録が非常に少なく近年まで「幻の天守」とも言われてきましたが、2014年の発掘調査で礎石が確認され、豊臣政権期に四層から五層の天守閣があったことが確実になりました。<br><br><img src=\"img/tensyudai_soseki_2014.jpg\"style=\"pointer-events: none;\"><br>天守台上の礎石（郡山城天守台発掘調査現地説明会資料 2014年9月より：大和郡山市提供）<br><br><img src=\"img/VR_tensyukaku.jpg\"><br>天守閣のCG（VR郡山城より）"
+      }
+    },
+{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.77968672283885,34.650499950810406]
+      },
+      "properties": {
+        "name": "竹林橋と竹林門",
+        "html":"<img src=\"img/chikurinbashi.jpg\"><br>現在は柳澤神社の参道になっている竹林橋（土橋）は、江戸時代には木の橋で、本丸側には竹林門があり本丸の防御をしていました。現在も竹林門の櫓台が残り、堅固な門の姿を今に伝えています。（竹林橋と竹林門の名称は柳澤家藩主時代のもの）<br><br><img src=\"img/VR_chikurinbashi.jpg\"><br>竹林橋と竹林門のCG（VR郡山城より）"
+      }
+    },
+{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.77938298078715,34.65129613398356]
+      },
+      "properties": {
+        "name": "柳澤神社",
+        "html": "<img src=\"img/yanagisawa_jinjya_yktt.jpg\"><br>江戸時代中期の享保9年（1724）柳澤吉里が甲府から転封して以来、郡山は明治維新まで140年あまり柳澤家のもとで安定した藩政が行われました。郡山城本丸跡にある柳澤神社は、吉里の父で五代将軍徳川綱吉の側用人として江戸幕府中枢で活躍した柳澤吉保を祭神としてお祀りしています。<br><br><img src=\"img/yanagisawa_jinjya_ema_yktt.jpg\"><br>絵馬"
+      }
+    },
+{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.78019135238574,34.651273163050355]
+      },
+      "properties": {
+        "name": "柳沢文庫",
+        "html":"<img src=\"img/yanagisawabunko_yktt.jpg\"><br>柳澤家から寄贈された歴代藩主の書画・和歌や古文書を所蔵し、郡山城主柳澤家ゆかりの展覧会を開催しています。<br>入館料：一般300円<br>開館時間：9：00～17：00（入館は16：30まで）<br>休館日：毎週月曜・第4火曜<br><a target=\"_blank\" href=\"https://www.yanagisawabunko.or.jp\">柳沢文庫 ホームページ</a><br><br><img src=\"img/gojyouin_yktt.jpg\"><br>御城印　300円<br><br><img src=\"img/koriyamajyou_ezu_yktt.jpg\"><br>郡山城絵図セット　500円"
+      }
+    },
+{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.77993359260162,34.651930869862916]
+      },
+      "properties": {
+        "name": "番屋カフェ",
+        "html":"<img src=\"img/banyacafe.jpg\"><br>柳澤家 果樹園の番屋として使われていた建物（元々は江戸時代末期の屋敷の長屋門の一部）を改修し、2022年オープンしたカフェです。お城ゆかりのメニューがあり、テラス席からは、本丸天守台を正面に望むことができます。<br>営業時間：10:00～16:00<br>定休日：月曜・火曜<br><a target=\"_blank\" href=\"https://www.instagram.com/banyacafe_shiroato/\">番屋カフェ インスタグラム</a><br><br><img src=\"img/VR_honmaru_uchibori_higasigawa_kara.jpg\"><br>内堀東側から見た本丸のCG（VR郡山城より）"
+      }
+    },
+{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.77822417,34.65131168]
+      },
+      "properties": {
+        "name": "郡山城情報館",
+        "html":"<img src=\"img/kouriyamajyou_jyouhoukan.jpg\"><br>郡山城跡公園の情報発信の場として、また、休憩所として2023年11月開館しました。館内には郡山城の歴史が展示されており、バリアフリートイレも完備しています。<br>柳澤家城主時代この一画は緑曲輪と呼ばれ、城主の生母や子息が居住する屋敷がありました。<br><br><img src=\"img/kouriyamajyou_jyouhoukan_kannai.jpg\"><br>郡山城の模型"
+      }
+    },
+{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [135.77955557462485,34.652331057090166]
+      },
+      "properties": {
+        "name": "本丸ビューポイント",
+        "html":"<img src=\"img/honmaru_view_point.jpg\"><br>豊臣秀長築城当時の雄大な郡山城をイメージさせるビューポイントです。<br><br><img src=\"img/VR_honmaru_view_point_2.jpg\"><br>本丸天守閣のCG（VR郡山城より）"
+      }
+    }
+  ],
+  "properties": {
+    "id": "yktt_pois_4_jyouseki",
+    "name": "郡山城跡の見どころ",
+    "icon": "pois/yktt_pin_kon.png"
+  }
+}
