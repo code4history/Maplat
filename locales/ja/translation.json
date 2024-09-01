@@ -9,6 +9,7 @@
         "trans": "地図透明度変更",
         "share": "共有",
         "hide_marker": "マーカー非表示",
+        "marker_list": "マーカー一覧表示",
         "border": "地図境界表示"
     },
     "html": {
@@ -46,7 +47,8 @@
         "help_etc_help": "<img src='${help.png}'>ボタン: このヘルプが表示されます。",
         "help_share_help": "<img src='${share.png}'>ボタン: SNS等へのアプリシェア画面が表示されます。",
         "help_etc_border": "<img src='${border.png}'>ボタン: 地図の境界を表示します。<br>境界の内側をクリックして地図を切り替えることもできます。<br>パソコンではマウスオーバーで地図を選びクリックで地図を切り替え、スマホではワンクリックで地図を選びもう一度クリックで地図を切り替えます。",
-        "help_etc_hide_marker": "<img src='${hide_marker.png}'>ボタン: マーカーの表示/非表示を切り替えます。<br>ボタンを長押しすると、マーカーのレイヤー毎に表示/非表示を切り替える画面が表示されます。",
+        "help_etc_hide_marker": "<img src='${hide_marker.png}'>ボタン: マーカーの表示/非表示を切り替えます。",
+        "help_etc_marker_list": "<img src='${marker_list.png}'>ボタン: マーカーのレイヤー毎に表示/非表示を切り替える画面が表示されます。",
         "help_etc_slider": "<img src='${slider.png}'>スライダ: 表示中の地図の透明度を切り替えて、背景の地図が透けて見えるようにします。<br>絵地図、古地図の表示中にのみ動作し、ベースマップ表示時は動作しません。",
         "share_title": "共有",
         "share_app_title": "このアプリを共有",

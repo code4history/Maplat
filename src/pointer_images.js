@@ -24,6 +24,7 @@ import gsi from "../parts/gsi.jpg";
 import ortho from "../parts/gsi_ortho.jpg";
 import help from "../parts/help.png";
 import hide from "../parts/hide_marker.png";
+import list from "../parts/marker_list.png";
 import home from "../parts/home.png";
 import loading from "../parts/loading.png";
 import loading_i from "../parts/loading_image.png";
@@ -65,6 +66,7 @@ export default {
   "gsi_ortho.jpg": ortho,
   "help.png": help,
   "hide_marker.png": hide,
+  "marker_list.png": list,
   "home.png": home,
   "loading.png": loading,
   "loading_image.png": loading_i,

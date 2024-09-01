@@ -16,6 +16,7 @@ const delegator = {
   help: "help.png",
   home: "home.png",
   hide_marker: "hide_marker.png",
+  marker_list: "marker_list.png",
   share: "share.png",
   slider_in_help: "slider.png",
   favicon: "favicon.png"

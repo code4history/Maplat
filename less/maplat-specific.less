@@ -62,7 +62,7 @@ li:has(+ .open) .dli-chevron {
   display: inline;
 }
 
-.modal_cache_content, .modal_share_state, .share_help, .border_help, .hide_marker_help {
+.modal_cache_content, .modal_share_state, .share_help, .border_help, .hide_marker_help, .marker_list_help {
   display: none;
 }
 
@@ -70,7 +70,10 @@ li:has(+ .open) .dli-chevron {
   display: block;
 }
 
-&.enable_share .share_help, &.enable_border .border_help, &.enable_hide_marker .hide_marker_help {
+&.enable_share .share_help, 
+&.enable_border .border_help, 
+&.enable_hide_marker .hide_marker_help, 
+&.enable_marker_list .marker_list_help {
   display: inline;
 }
 
