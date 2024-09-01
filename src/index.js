@@ -286,6 +286,7 @@ export class MaplatUi extends EventTarget {
               <s c="share_help"><li dinh="html.help_share_help" c="recipient"></li></s>
               <s c="border_help"><li dinh="html.help_etc_border" c="recipient"></li></s>
               <s c="hide_marker_help"><li dinh="html.help_etc_hide_marker" c="recipient"></li></s>
+              <s c="marker_list_help"><li dinh="html.help_etc_marker_list" c="recipient"></li></s>
               <li dinh="html.help_etc_slider" c="recipient"></li>
             </ul>
             <p><a href="https://github.com/code4history/Maplat/wiki" target="_blank">Maplat</a>

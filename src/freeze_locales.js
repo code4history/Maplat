@@ -11,6 +11,7 @@ export default {
         "trans": "Change Map Transparency",
         "share": "Share",
         "hide_marker": "Hide Markers",
+        "marker_list": "Marker list",
         "border": "Show Map Border"
       },
       "html": {
@@ -48,7 +49,8 @@ export default {
         "help_etc_help": "<img src='${help.png}'> Button: Showing this help.",
         "help_share_help": "<img src='${share.png}'> Button: You can share this application to SNS etc.",
         "help_etc_border": "<img src='${border.png}'> Button: Showing map border lines.<br>You can also switch the map by clicking inside the boundary. <br> On a PC, select a map with a mouse over and switch the map with a click, on a smartphone, select a map with a click and switch the map with one more click.",
-        "help_etc_hide_marker": "<img src='${hide_marker.png}'> Button: Toggles the display / hide of markers.<br>When you press and hold the button, a screen to display / hide for each marker layer is displayed.",
+        "help_etc_hide_marker": "<img src='${hide_marker.png}'> Button: Toggles the display / hide of markers.",
+        "help_etc_marker_list": "<img src='${marker_list.png}'> Button: A screen to display / hide for each marker layer is displayed.",
         "help_etc_slider": "<img src='${slider.png}'> Slider: Switch the transparency of the displayed map so that the background map can be seen through. <br>It operates only while displaying the historical/illustrated maps, it does not work when displaying the base maps.",
         "share_title": "Share",
         "share_app_title": "Share this application",
@@ -82,6 +84,7 @@ export default {
         "trans": "地図透明度変更",
         "share": "共有",
         "hide_marker": "マーカー非表示",
+        "marker_list": "マーカー一覧表示",
         "border": "地図境界表示"
       },
       "html": {
@@ -119,7 +122,8 @@ export default {
         "help_etc_help": "<img src='${help.png}'>ボタン: このヘルプが表示されます。",
         "help_share_help": "<img src='${share.png}'>ボタン: SNS等へのアプリシェア画面が表示されます。",
         "help_etc_border": "<img src='${border.png}'>ボタン: 地図の境界を表示します。<br>境界の内側をクリックして地図を切り替えることもできます。<br>パソコンではマウスオーバーで地図を選びクリックで地図を切り替え、スマホではワンクリックで地図を選びもう一度クリックで地図を切り替えます。",
-        "help_etc_hide_marker": "<img src='${hide_marker.png}'>ボタン: マーカーの表示/非表示を切り替えます。<br>ボタンを長押しすると、マーカーのレイヤー毎に表示/非表示を切り替える画面が表示されます。",
+        "help_etc_hide_marker": "<img src='${hide_marker.png}'>ボタン: マーカーの表示/非表示を切り替えます。",
+        "help_etc_marker_list": "<img src='${marker_list.png}'>ボタン: マーカーのレイヤー毎に表示/非表示を切り替える画面が表示されます。",
         "help_etc_slider": "<img src='${slider.png}'>スライダ: 表示中の地図の透明度を切り替えて、背景の地図が透けて見えるようにします。<br>絵地図、古地図の表示中にのみ動作し、ベースマップ表示時は動作しません。",
         "share_title": "共有",
         "share_app_title": "このアプリを共有",
@@ -153,6 +157,7 @@ export default {
         "trans": "지도 투명도 변경",
         "share": "공유",
         "hide_marker": "마커 숨기기",
+        "marker_list": "마커 목록 보기",
         "border": "지도 경계 표시"
       },
       "html": {
@@ -190,7 +195,8 @@ export default {
         "help_etc_help": "<img src='${help.png}'>버튼: 이 도움말이 표시됩니다.",
         "help_share_help": "<img src='${share.png}'>버튼: SNS 등에 앱 공유 화면이 표시됩니다.",
         "help_etc_border": "<img src='${border.png}'>버튼: 지도의 경계를 표시합니다. <br>경계 안쪽을 클릭해서 지도를 변경할 수도 있습니다.<br>PC의 경우는마우스 오버로 지도를 선택합니다. 스마트폰의 경우는 원클릭으로 지도를 선택해, 다시 한번 클릭하면 지도를 변경합니다.",
-        "help_etc_hide_marker": "<img src='${hide_marker.png}'>버튼: 마커의 표시하기/숨기기를 설정합니다.<br>버튼을 오래 누르면 마커의 레이어 별로 표시하기/숨기기를 설정하는 화면이 표시됩니다.",
+        "help_etc_hide_marker": "<img src='${hide_marker.png}'>버튼: 마커의 표시하기/숨기기를 설정합니다.",
+        "help_etc_marker_list": "<img src='${marker_list.png}'>버튼: 마커의 레이어 별로 표시하기/숨기기를 설정하는 화면이 표시됩니다.",
         "help_etc_slider": "<img src='${slider.png}'>슬라이더: 표시되어 있는 지도의 투명도를 변경, 배경에 있는 지도를 비쳐 보이게 합니다.<br>그림 지도, 고지도가 표시 중에만 작동하고 베이스 맵이 표시되어 있을 때는 작동하지 않습니다.",
         "share_title": "공유",
         "share_app_title": "이 앱을 공유",
@@ -224,6 +230,7 @@ export default {
         "trans": "调整地图透明度",
         "share": "分享",
         "hide_marker": "隐藏标记",
+        "marker_list": "标记列表显示",
         "border": "显示地图边界"
       },
       "html": {
@@ -261,7 +268,8 @@ export default {
         "help_etc_help": "<img src='${help.png}'>按钮: 显示这个帮助信息。",
         "help_share_help": "<img src='${share.png}'>按钮: 显示向SNS等其它应用分享的页面。",
         "help_etc_border": "<img src='${border.png}'>按钮: 地图的边界显示。<br>在边界内点击也可以切换地图显示。<br>在电脑上操作可以用鼠标在地图上上移动选择后点击进行地图切换显示，手机上在选中地图后，再一次点击后进行地图切换显示。",
-        "help_etc_hide_marker": "<img src='${hide_marker.png}'>按钮: 显示标记/隐藏标记 的功能切换。<br>长按按钮，会在画面上按顺序对每种标记进行显示/隐藏的切换操作。",
+        "help_etc_hide_marker": "<img src='${hide_marker.png}'>按钮: 显示标记/隐藏标记 的功能切换。",
+        "help_etc_marker_list": "<img src='${marker_list.png}'>按鈕: 会在画面上按顺序对每种标记进行显示/隐藏的切换操作。",
         "help_etc_slider": "<img src='${slider.png}'>侧边栏: 显示中的地图的透明度调整，可以将背景中的地图透明地看到。<br>只支持在手绘地图、历史地图中使用，基本地图显示时不可用。",
         "share_title": "分享",
         "share_app_title": "分享此应用",
@@ -295,6 +303,7 @@ export default {
         "trans": "調整地圖透明度",
         "share": "分享",
         "hide_marker": "隱藏標記",
+        "marker_list": "標記清單顯示",
         "border": "顯示地圖邊界"
       },
       "html": {
@@ -331,7 +340,8 @@ export default {
         "help_etc_attr": "<img src='${attr.png}'>按鈕 顯示中地圖的製作者、所有者、許可等各種信息顯示。",
         "help_etc_help": "<img src='${help.png}'>按鈕: 顯示這個幫助信息。",
         "help_share_help": "<img src='${share.png}'>按鈕: 顯示向SNS等其它應用分享的頁面。",
-        "help_etc_hide_marker": "<img src='${hide_marker.png}'>按鈕: 顯示標記/隱藏標記 的功能切換。 <br>長按按鈕，會在畫面上按順序對每種標記進行顯示/隱藏的切換操作。",
+        "help_etc_hide_marker": "<img src='${hide_marker.png}'>按鈕: 顯示標記/隱藏標記 的功能切換。",
+        "help_etc_marker_list": "<img src='${marker_list.png}'>按鈕: 會在畫面上按順序對每種標記進行顯示/隱藏的切換操作。",
         "help_etc_border": "<img src='${border.png}'>按鈕: 地圖的邊界顯示。 <br>在邊界內點擊也可以切換地圖顯示。 <br>在電腦上操作可以用鼠標在地圖上上移動選擇後點擊進行地圖切換顯示，手機上在選中地圖後，再一次點擊後進行地圖切換顯示。",
         "help_etc_slider": "<img src='${slider.png}'>側邊欄: 顯示中的地圖的透明度調整，可以將背景中的地圖透明地看到。 <br>只支持在手繪地圖、歷史地圖中使用，基本地圖顯示時不可用。",
         "share_title": "分享",

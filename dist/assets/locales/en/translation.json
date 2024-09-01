@@ -9,6 +9,7 @@
         "trans": "Change Map Transparency",
         "share": "Share",
         "hide_marker": "Hide Markers",
+        "marker_list": "Marker list",
         "border": "Show Map Border"
     },
     "html": {
@@ -46,7 +47,8 @@
         "help_etc_help": "<img src='${help.png}'> Button: Showing this help.",
         "help_share_help": "<img src='${share.png}'> Button: You can share this application to SNS etc.",
         "help_etc_border": "<img src='${border.png}'> Button: Showing map border lines.<br>You can also switch the map by clicking inside the boundary. <br> On a PC, select a map with a mouse over and switch the map with a click, on a smartphone, select a map with a click and switch the map with one more click.",
-        "help_etc_hide_marker": "<img src='${hide_marker.png}'> Button: Toggles the display / hide of markers.<br>When you press and hold the button, a screen to display / hide for each marker layer is displayed.",
+        "help_etc_hide_marker": "<img src='${hide_marker.png}'> Button: Toggles the display / hide of markers.",
+        "help_etc_marker_list": "<img src='${marker_list.png}'> Button: A screen to display / hide for each marker layer is displayed.",
         "help_etc_slider": "<img src='${slider.png}'> Slider: Switch the transparency of the displayed map so that the background map can be seen through. <br>It operates only while displaying the historical/illustrated maps, it does not work when displaying the base maps.",
         "share_title": "Share",
         "share_app_title": "Share this application",
