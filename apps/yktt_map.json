@@ -7,8 +7,6 @@
     "homePosition" : [135.77919696206305,34.65169871840611],
     "defaultZoom" : 17,
     "zoomRestriction" : true,
-    "minZoom" : 10,
-    "maxZoom" : 18,
     "startFrom" : "yktt_ansei_nenkan",
     "sources" : [
 		{
