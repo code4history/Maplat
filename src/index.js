@@ -35,6 +35,7 @@ import { GoogleMap } from "@maplat/core/lib/source/googlemap";
 import Weiwudi from "weiwudi";
 import { normalizeArg } from "./function";
 import pointer from "./pointer_images";
+import { getUniqueId } from "./contextmenu/helpers/mix";
 Swiper.use([Navigation, Pagination]);
 
 // Maplat UI Class
@@ -296,38 +297,13 @@ export class MaplatUi extends EventTarget {
 
         <d c="modal_poi_content">
           <d c="poi_web_div"></d> 
-          <d c="modal_share_state">
-            <h4 din="html.share_state_title"></h4>
-            <d id="___maplat_view_toast_${ui.html_id_seed}"></d> 
-            <d c="recipient row">
-              <d c="form-group col-xs-4 text-center"><button title="Copy to clipboard" c="share btn btn-light" data="cp_view"><i c="far fa-paste"></i>&nbsp;<small din="html.share_copy"></small></button></d> 
-              <d c="form-group col-xs-4 text-center"><button title="Twitter" c="share btn btn-light" data="tw_view"><i c="far fa-x-twitter"></i>&nbsp;<small>Twitter</small></button></d> 
-              <d c="form-group col-xs-4 text-center"><button title="Facebook" c="share btn btn-light" data="fb_view"><i c="far fa-facebook"></i>&nbsp;<small>Facebook</small></button></d> 
-            </d> 
-            <d c="qr_view2 center-block" style="width:128px;"></d> 
-          </d> 
+          <d c="modal_share_poi"></d> 
           <p><img src="" height="0px" width="0px"></p>
         </d> 
 
         <d c="modal_share_content">
-          <h4 din="html.share_app_title"></h4>
-          <d id="___maplat_app_toast_${ui.html_id_seed}"></d> 
-          <d c="recipient row">
-            <d c="form-group col-xs-4 text-center"><button title="Copy to clipboard" c="share btn btn-light" data="cp_app"><i c="far fa-paste"></i>&nbsp;<small din="html.share_copy"></small></button></d> 
-            <d c="form-group col-xs-4 text-center"><button title="Twitter" c="share btn btn-light" data="tw_app"><i c="far fa-x-twitter"></i>&nbsp;<small>Twitter</small></button></d> 
-            <d c="form-group col-xs-4 text-center"><button title="Facebook" c="share btn btn-light" data="fb_app"><i c="far fa-facebook"></i>&nbsp;<small>Facebook</small></button></d> 
-          </d> 
-          <d c="qr_app center-block" style="width:128px;"></d> 
-          <d c="modal_share_state">
-            <h4 din="html.share_state_title"></h4>
-            <d id="___maplat_view_toast_${ui.html_id_seed}"></d> 
-            <d c="recipient row">
-              <d c="form-group col-xs-4 text-center"><button title="Copy to clipboard" c="share btn btn-light" data="cp_view"><i c="far fa-paste"></i>&nbsp;<small din="html.share_copy"></small></button></d> 
-              <d c="form-group col-xs-4 text-center"><button title="Twitter" c="share btn btn-light" data="tw_view"><i c="far fa-x-twitter"></i>&nbsp;<small>Twitter</small></button></d> 
-              <d c="form-group col-xs-4 text-center"><button title="Facebook" c="share btn btn-light" data="fb_view"><i c="far fa-facebook"></i>&nbsp;<small>Facebook</small></button></d> 
-            </d> 
-            <d c="qr_view center-block" style="width:128px;"></d> 
-          </d> 
+          <d c="modal_share_app"></d>
+          <d c="modal_share_pos"></d> 
           <p><img src="" height="0px" width="0px"></p>
         </d> 
 
@@ -372,82 +348,6 @@ export class MaplatUi extends EventTarget {
         newElems[i],
         ui.core.mapDivDocument.firstChild
       );
-    }
-
-    const shareBtns = ui.core.mapDivDocument.querySelectorAll(".btn.share");
-    for (let i = 0; i < shareBtns.length; i++) {
-      const shareBtn = shareBtns[i];
-      shareBtn.addEventListener("click", evt => {
-        let btn = evt.target;
-        if (!btn.classList.contains("share")) btn = btn.parentElement;
-        const cmd = btn.getAttribute("data");
-        const cmds = cmd.split("_");
-        let base = evt.target.baseURI;
-        if (!base) base = window.location.href;
-        const div1 = base.split("#!");
-        const path = div1.length > 1 ? div1[1].split("?")[0] : "";
-        const div2 = div1[0].split("?");
-        let uri = div2[0];
-        const query =
-          div2.length > 1
-            ? div2[1]
-                .split("&")
-                .filter(qs => qs !== "pwa")
-                .join("&")
-            : "";
-
-        if (query) uri = `${uri}?${query}`;
-        if (cmds[1] === "view") {
-          if (path) uri = `${uri}#!${path}`;
-        }
-        if (cmds[0] === "cp") {
-          const copyFrom = document.createElement("textarea"); // eslint-disable-line no-undef
-          copyFrom.textContent = uri;
-
-          const bodyElm = document.querySelector("body"); // eslint-disable-line no-undef
-          bodyElm.appendChild(copyFrom);
-
-          if (/iP(hone|[oa]d)/.test(navigator.userAgent)) {
-            // eslint-disable-line no-undef
-            const range = document.createRange(); // eslint-disable-line no-undef
-            range.selectNode(copyFrom);
-            window.getSelection().addRange(range); // eslint-disable-line no-undef
-          } else {
-            copyFrom.select();
-          }
-
-          document.execCommand("copy"); // eslint-disable-line no-undef
-          bodyElm.removeChild(copyFrom);
-          const toastParent = `#___maplat_${cmds[1]}_toast_${ui.html_id_seed}`;
-          iziToast.show({
-            message: ui.core.t("app.copy_toast", { ns: "translation" }),
-            close: false,
-            pauseOnHover: false,
-            timeout: 1000,
-            progressBar: false,
-            target: toastParent
-          });
-        } else if (cmds[0] === "tw") {
-          const twuri = `https://twitter.com/share?url=${encodeURIComponent(
-            uri
-          )}&hashtags=Maplat`;
-          window.open(
-            twuri,
-            "_blank",
-            "width=650,height=450,menubar=no,toolbar=no,scrollbars=yes"
-          ); // eslint-disable-line no-undef
-        } else if (cmds[0] === "fb") {
-          // https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2Fshare-button%2F&display=popup&ref=plugin&src=like&kid_directed_site=0&app_id=113869198637480
-          const fburi = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-            uri
-          )}&display=popup&ref=plugin&src=like&kid_directed_site=0`;
-          window.open(
-            fburi,
-            "_blank",
-            "width=650,height=450,menubar=no,toolbar=no,scrollbars=yes"
-          ); // eslint-disable-line no-undef
-        }
-      });
     }
 
     // PWA対応: 非同期処理
@@ -1121,8 +1021,6 @@ enable-background="new 0 0 10 10" xml:space="preserve">
         }
       });*/
 
-      let qr_app;
-      let qr_view;
       ui.core.mapObject.on("click_control", async evt => {
         const control = evt.frameState.control;
         const modalElm = ui.core.mapDivDocument.querySelector(".modalBase");
@@ -1310,36 +1208,11 @@ enable-background="new 0 0 10 10" xml:space="preserve">
           if (query) uri = `${uri}?${query}`;
           let view = uri;
           if (path) view = `${view}#!${path}`;
-          if (!qr_app) {
-            qr_app = new QRCode(
-              ui.core.mapDivDocument.querySelector(".qr_app"),
-              {
-                text: uri,
-                width: 128,
-                height: 128,
-                colorDark: "#000000",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-              }
-            );
-          } else {
-            qr_app.makeCode(uri);
-          }
-          if (!qr_view) {
-            qr_view = new QRCode(
-              ui.core.mapDivDocument.querySelector(".qr_view"),
-              {
-                text: view,
-                width: 128,
-                height: 128,
-                colorDark: "#000000",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-              }
-            );
-          } else {
-            qr_view.makeCode(view);
-          }
+
+          const appDiv = document.querySelector(".modal_share_app");
+          const posDiv = document.querySelector(".modal_share_pos");
+          ui.shareQr(appDiv, uri, ui.core.t("html.share_app_title", { ns: "translation" }));
+          ui.shareQr(posDiv, view, ui.core.t("html.share_state_title", { ns: "translation" }));
 
           modal.show();
         } else if (control === "border") {
@@ -1499,6 +1372,84 @@ enable-background="new 0 0 10 10" xml:space="preserve">
         delete ui.waitReadyBridge;
       }
     });
+  }
+
+  shareQr(div, url, title) {
+    const modalElm = this.core.mapDivDocument.querySelector(".modalBase");
+    div.innerHTML = '';
+    const toast_id = `toast_${getUniqueId()}`;
+    const htmlDivs = createElement(`<h4>${title}</h4>
+      <d id="${toast_id}"></d>
+      <d c="recipient row">
+        <d c="form-group col-xs-4 text-center"><button title="Copy to clipboard" c="share btn btn-light cp"><i c="far fa-paste"></i>&nbsp;<small>${this.core.t("html.share_copy", { ns: "translation" })}</small></button></d>
+        <d c="form-group col-xs-4 text-center"><button title="Twitter" c="share btn btn-light tw"><i c="far fa-x-twitter"></i>&nbsp;<small>X (Twitter)</small></button></d>
+        <d c="form-group col-xs-4 text-center"><button title="Facebook" c="share btn btn-light fb"><i c="far fa-facebook"></i>&nbsp;<small>Facebook</small></button></d>
+      </d>
+      <d c="qr_view center-block" style="width:128px;"></d>`);
+    
+    htmlDivs.reverse().forEach(htmlDiv => {
+      div.insertBefore(htmlDiv, div.firstChild);
+    });
+    const divCp = div.querySelector(".btn.cp");
+    const divTw = div.querySelector(".btn.tw");
+    const divFb = div.querySelector(".btn.fb");
+    const divQr = div.querySelector(".qr_view");
+
+    const qr = new QRCode(
+      divQr,
+      {
+        text: url,
+        width: 128,
+        height: 128,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      }
+    );
+    qr.makeCode(url);
+
+    const cpUrl = () => {
+      navigator.clipboard.writeText(url);
+
+      iziToast.show({
+        message: this.core.t("app.copy_toast", { ns: "translation" }),
+        close: false,
+        pauseOnHover: false,
+        timeout: 1000,
+        progressBar: false,
+        target: `#${toast_id}`
+      });
+    };
+    const twUrl = () => {
+      const twurl = `https://twitter.com/share?url=${encodeURIComponent(url)}&hashtags=Maplat`;
+      window.open(
+        twurl,
+        "_blank",
+        "width=650,height=450,menubar=no,toolbar=no,scrollbars=yes"
+      ); // eslint-disable-line no-undef
+    };
+    const fbUrl = () => {
+      // https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2Fshare-button%2F&display=popup&ref=plugin&src=like&kid_directed_site=0&app_id=113869198637480
+      const fburl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&display=popup&ref=plugin&src=like&kid_directed_site=0`;
+      window.open(
+        fburl,
+        "_blank",
+        "width=650,height=450,menubar=no,toolbar=no,scrollbars=yes"
+      ); // eslint-disable-line no-undef
+    };
+
+    divCp.addEventListener('click', cpUrl);
+    divTw.addEventListener('click', twUrl);
+    divFb.addEventListener('click', fbUrl);
+
+    const hideFunc = (_event) => {
+      divCp.removeEventListener('click', cpUrl);
+      divTw.removeEventListener('click', twUrl);
+      divFb.removeEventListener('click', fbUrl);
+      modalElm.removeEventListener("hide.bs.modal", hideFunc, false);
+      div.innerHTML = '';
+    };
+    modalElm.addEventListener("hide.bs.modal", hideFunc, false);
   }
 
   poiWebControl(div, data) {
@@ -1689,20 +1640,8 @@ enable-background="new 0 0 10 10" xml:space="preserve">
         view = `${view}/om:${data.namespaceID}`;
       }
 
-      const qr2 = this.core.mapDivDocument.querySelector(".qr_view2");
-      qr2.innerHTML = "";
-      const qr_view = new QRCode(
-        qr2,
-        {
-          text: view,
-          width: 128,
-          height: 128,
-          colorDark: "#000000",
-          colorLight: "#ffffff",
-          correctLevel: QRCode.CorrectLevel.H
-        }
-      );
-      qr_view.makeCode(view);
+      const qrDiv = document.querySelector(".modal_share_poi");
+      this.shareQr(qrDiv, view, this.core.t("html.share_state_title", { ns: "translation" }));
     }
 
     const modal = new bsn.Modal(modalElm, { root: this.core.mapDivDocument });

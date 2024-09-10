@@ -28,7 +28,7 @@ export function contains(str_test, str) {
 }
 
 export function getUniqueId() {
-  return `_${Math.random().toString(36).substr(2, 9)}`;
+  return `_${Math.random().toString(36).substring(2, 11)}`;
 }
 
 export function isDefAndNotNull(val) {

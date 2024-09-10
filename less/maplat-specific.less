@@ -44,14 +44,15 @@ li:has(+ .open) .dli-chevron {
 
 .modal_poi_content, .modal_map_content, .modal_load_content, .modal_gpsW_content, .modal_gpsD_content,
 .modal_help_content, .modal_title, .modal_load_title, .modal_gpsW_title, .modal_help_title,
-.modal_share_content, .modal_share_title, .modal_marker_list_content, .modal_marker_list_title {
+.modal_share_content, .modal_share_title, .modal_share_poi, .modal_marker_list_content, .modal_marker_list_title {
   display: none;
 }
 
 .modal_poi .modal_poi_content, .modal_map .modal_map_content,
 .modal_load .modal_load_content, .modal_help .modal_help_content,
 .modal_gpsW .modal_gpsW_content, .modal_gpsD .modal_gpsD_content,
-.modal_share .modal_share_content, .modal_marker_list .modal_marker_list_content {
+.modal_share .modal_share_content, &.state_url .modal_share_poi,
+.modal_marker_list .modal_marker_list_content {
   display: block;
 }
 
@@ -62,11 +63,11 @@ li:has(+ .open) .dli-chevron {
   display: inline;
 }
 
-.modal_cache_content, .modal_share_state, .share_help, .border_help, .hide_marker_help, .marker_list_help {
+.modal_cache_content, .modal_share_pos, .share_help, .border_help, .hide_marker_help, .marker_list_help {
   display: none;
 }
 
-&.enable_cache .modal_cache_content, &.state_url .modal_share_state {
+&.enable_cache .modal_cache_content, &.state_url .modal_share_pos {
   display: block;
 }
 
