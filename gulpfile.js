@@ -99,7 +99,7 @@ gulp.task("publish:plat", async () => {
     settings = require(`./pwa/templates/${target}/settings.json`);
   } catch(e) {}
   const sample = settings.isSample ? "sample" : target;
-  const title = settings.title || (apps.app_name ? (apps.app_name.ja || apps.app_name) : "");
+  const title = settings.title || (apps.appName ? (apps.appName.ja || apps.appName) : "");
   let description = settings.description || (apps.description ? (apps.description.ja || apps.description) : "");
   if (!description) description = `古地図/絵地図街歩きアプリMaplat:「${title}」版`;
   const color = settings.isSample ? "#780508" : (settings.color || options.color);
