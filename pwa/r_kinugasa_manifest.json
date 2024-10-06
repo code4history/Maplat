@@ -1,0 +1,23 @@
+{
+  "name": "マップコンテスト受賞会場_立命館衣笠",
+  "short_name": "立命館衣笠",
+  "background_color": "#a61e32",
+  "icons": [
+    {
+      "src": "r_kinugasa/manifest-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "r_kinugasa/manifest-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "start_url": "https://t.maplat.jp/r/r_kinugasamap/",
+  "scope": "/r/r_kinugasamap/",
+  "display": "standalone",
+  "theme_color": "#a61e32"
+}

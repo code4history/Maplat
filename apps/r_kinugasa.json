@@ -1,140 +1,23 @@
 {
-    "appName": {
-        "ja": "Maplat ジオ展2023向けデモサイト",
-        "en": "Maplat Geoten 2023"
-    },
-    "splash": "geoten_splash.png",
+    "appName": "マップコンテスト受賞会場_立命館衣笠",
+    "splash": "18mapcon_ea.png",
     "lang": "ja",
     "fakeGps": true,
-    "fakeCenter": "JR八丁堀",
+    "fakeCenter": "衣笠キャンパス",
     "fakeRadius": 10,
     "homePosition": [
-        139.777708,
-        35.674717
+        135.72367536035452,
+        35.03285927635533
     ],
     "defaultZoom": 17,
-    "startFrom": "keio-mita",
+    "startFrom": "ritsumeikan-kinugasa",
     "sources": [
         {
-            "mapID": "keio-mita",
-            "label": "慶應三田"
-        },
-        {
-            "mapID": "geoten_shiba",
-            "label": "明治40芝區"
-        },
-        {
-            "mapID": "geoten_kojimachi",
-            "label": "明治40麹町區"
-        },
-        {
-            "mapID": "geoten_akasaka",
-            "label": "明治40赤坂區"
-        },
-        {
-            "mapID": "geoten_azabu",
-            "label": "明治40麻布區"
-        },
-        {
-            "attr": {
-                "ja": "出典: 農研機構 農研機構農業環境研究部門",
-                "en": "NARO"
-            },
-            "label": {
-                "ja": "東京原図",
-                "en": "Tokyo base"
-            },
-            "title": {
-                "ja": "東京図測量原図",
-                "en": "Tokyo Survey Base Map"
-            },
-            "contributor": {
-                "ja": "国土地理院",
-                "en": "Geospatial Information Authority of Japan"
-            },
-            "createdAt": "1883-1884",
-            "author": {
-                "ja": "大日本帝国陸軍参謀本部陸地測量部",
-                "en": "Japan Imperial Army Map Service"
-            },
-            "mapID": "Tokyo5000-900913",
-            "maptype": "overlay",
-            "url": "https://boiledorange73.sakura.ne.jp/ws/tile/Tokyo5000-900913/{z}/{x}/{y}.jpg",
-            "maxZoom": 17,
-            "envelopeLngLats": [
-                [
-                    139.6820454856718,
-                    35.62595769911905
-                ],
-                [
-                    139.7865530745962,
-                    35.62595769911905
-                ],
-                [
-                    139.7865530745962,
-                    35.706161177110666
-                ],
-                [
-                    139.6820454856718,
-                    35.706161177110666
-                ]
-            ]
-        },
-        {
-            "attr": {
-                "ja": "出典: 農研機構 農研機構農業環境研究部門",
-                "en": "NARO"
-            },
-            "label": {
-                "ja": "迅速測図",
-                "en": "Rapid Survey Map"
-            },
-            "title": {
-                "ja": "関東平野迅速測図",
-                "en": "Rapid Survey Map of Kanto Plain"
-            },
-            "contributor": {
-                "ja": "国土地理院",
-                "en": "Geospatial Information Authority of Japan"
-            },
-            "createdAt": "1880-1886",
-            "author": {
-                "ja": "大日本帝国陸軍参謀本部陸地測量部",
-                "en": "Japan Imperial Army Map Service"
-            },
-            "mapID": "kanto_rapid-900913",
-            "maptype": "overlay",
-            "url": "https://boiledorange73.sakura.ne.jp/ws/tile/Kanto_Rapid-900913/{z}/{x}/{y}.jpg",
-            "maxZoom": 17,
-            "envelopeLngLats": [
-                [
-                    139.6820454856718,
-                    35.62595769911905
-                ],
-                [
-                    139.7865530745962,
-                    35.62595769911905
-                ],
-                [
-                    139.7865530745962,
-                    35.706161177110666
-                ],
-                [
-                    139.6820454856718,
-                    35.706161177110666
-                ]
-            ]
+            "mapID": "ritsumeikan-kinugasa",
+            "label": "立命館衣笠キャンパス"
         },
         "gsi",
         "gsi_ortho",
-        {
-            "mapID": "mapbox",
-            "label": "Mapbox"
-        },
-        {
-            "mapID": "google",
-            "label": "Google"
-        },
         "osm"
     ],
     "pois": []
