@@ -16,8 +16,8 @@
             "mapID": "ritsumeikan-kinugasa",
             "label": "立命館衣笠キャンパス"
         },
-        "osm",
         "gsi",
+        "osm",
         "gsi_ortho"
     ],
     "pois": []
