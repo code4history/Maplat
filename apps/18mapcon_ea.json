@@ -16,9 +16,9 @@
             "mapID": "18th_mapcontest_ea",
             "label": "第18回優秀賞"
         },
+        "osm",
         "gsi",
-        "gsi_ortho",
-        "osm"
+        "gsi_ortho"
     ],
     "pois": []
 }

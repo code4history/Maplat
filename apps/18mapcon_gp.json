@@ -1,0 +1,24 @@
+{
+    "appName": "第18回みんなでつくる地域の安全安心マップコンテスト最優秀賞",
+    "splash": "18mapcon_gp.png",
+    "lang": "ja",
+    "fakeGps": true,
+    "fakeCenter": "小網町交差点",
+    "fakeRadius": 10,
+    "homePosition": [
+        132.4460275039871,
+        34.39215102536363
+    ],
+    "defaultZoom": 17,
+    "startFrom": "18th_mapcontest_gp",
+    "sources": [
+        {
+            "mapID": "18th_mapcontest_gp",
+            "label": "第18回最優秀賞"
+        },
+        "osm",
+        "gsi",
+        "gsi_ortho"
+    ],
+    "pois": []
+}

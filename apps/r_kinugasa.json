@@ -1,6 +1,6 @@
 {
     "appName": "マップコンテスト受賞会場_立命館衣笠",
-    "splash": "18mapcon_ea.png",
+    "splash": "r_kinugasa.png",
     "lang": "ja",
     "fakeGps": true,
     "fakeCenter": "衣笠キャンパス",
@@ -16,9 +16,9 @@
             "mapID": "ritsumeikan-kinugasa",
             "label": "立命館衣笠キャンパス"
         },
+        "osm",
         "gsi",
-        "gsi_ortho",
-        "osm"
+        "gsi_ortho"
     ],
     "pois": []
 }
