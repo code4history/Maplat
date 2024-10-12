@@ -1,0 +1,78 @@
+{
+  "properties": {
+    "id": "18mapcon_ea_story",
+    "name": "特集 地下を流れる千種台川<br>洪水を防ぐための川が地下を流れている。",
+    "icon": "images/f115726e6249018905cca51653e1262c.png"
+  },
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "id": "18",
+        "image": "18mapcon_ea_18.jpg",
+        "name": "猫ヶ洞池",
+        "desc": "晴れた日は釣人でにぎわう。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.972711,
+          35.17144
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "id": "17",
+        "image": "18mapcon_ea_17.jpg",
+        "name": "猫ヶ洞池にあるベルマウス。",
+        "desc": "池の水位が一定以上になると水が流れこむ。\n大雨の日に撮影"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.973827,
+          35.172879
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "name": "支流？地図に出ている川。",
+        "id": "16",
+        "image": "18mapcon_ea_16.jpg",
+        "desc": "ほとんど溝…。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.974277,
+          35.18128
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "name": "河口で地上に現れる。",
+        "id": "15",
+        "image": "18mapcon_ea_15.jpg",
+        "desc": "矢田川に合流"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.971059,
+          35.18954
+        ]
+      }
+    }
+  ]
+}

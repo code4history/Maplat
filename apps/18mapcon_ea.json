@@ -20,5 +20,8 @@
         "osm",
         "gsi_ortho"
     ],
-    "pois": []
+    "pois": [
+      "pois/18mapcon_ea_pois.geojson",
+      "pois/18mapcon_ea_story.geojson"
+    ]
 }
