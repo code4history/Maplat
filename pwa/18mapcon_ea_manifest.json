@@ -16,7 +16,7 @@
       "purpose": "maskable any"
     }
   ],
-  "start_url": "https://t.maplat.jp/r/18mapcon_eamap/",
+  "start_url": "https://s.maplat.jp/r/18mapcon_eamap/",
   "scope": "/r/18mapcon_eamap/",
   "display": "standalone",
   "theme_color": "#a61e32"
