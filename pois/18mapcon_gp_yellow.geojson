@@ -1,0 +1,192 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "ふくしま保育園",
+        "id": "1",
+        "image": ["18mapcon_gp_1.jpg"],
+        "address": "指定きん急ひなん場所[洪水][土砂災害・がけ崩れ・土石流および地すべり][高潮]",
+        "desc": " "
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.434033,
+          34.396194
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "西地域交流センター",
+        "id": "2",
+        "image": ["18mapcon_gp_2.jpg"],
+        "address": "指定きん急ひなん場所[洪水][土砂災害・がけ崩れ・土石流および地すべり][高潮]",
+        "desc": " "
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.434569,
+          34.39599
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "広島平和記念公園",
+        "id": "9",
+        "image": ["18mapcon_gp_9.jpg","18mapcon_gp_9_2.jpg"],
+        "address": "指定きん急ひなん場所[地震][火災]",
+        "desc": "平和記念公園も通学路にあります。公園の中央には原爆でなくなられた人々の名ぼが納められている、いれいひがあります。お母さんが子供のころはいれいひのしばふの所でボール遊びをしたり、ハトにえさをあげて遊んでいたと言っていました。ここは地震や火災の時に避難が出きます。（標高は3.3m）また給水きょ点にもなり安心安全です。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.452481,
+          34.392812
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "文化交流会館",
+        "id": "11",
+        "image": ["18mapcon_gp_11.jpg","18mapcon_gp_11_2.jpg"],
+        "address": "指定きん急ひなん場所[洪水][土砂災害・がけ崩れ・土石流および地すべり][高潮]",
+        "desc": "[受付の人にインタビューをして分かった事‼]\n①消防団と一ぱんの人で、防災訓練をする。\n②24時間フロントはあいている。上のロビーも開放している。（実さいに2名ほど来られた方はいる。）\n③災害時にてい電が起きた時もハンドルを回して自動はん売機に電力をきょうきゅうし、中の水が飲める。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.44842,
+          34.388412
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "袋町学区会館",
+        "id": "15",
+        "image": ["18mapcon_gp_15.jpg"],
+        "address": "指定きん急ひなん場所[洪水][土砂災害・がけ崩れ・土石流および地すべり]",
+        "desc": "[中区地域起こし推進課の人にインタビューをした‼]\n①和室があるので、高れいしゃの方もひなんしやすい。\n②建物は高いけれども、主に2階を使う。\n③津波の時は対しょう外。洪水や土砂災害に対応している。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.45607,
+          34.387513
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "東千田公園",
+        "id": "21",
+        "image": ["18mapcon_gp_21.jpg"],
+        "address": "指定きん急ひなん場所[火災]",
+        "desc": " "
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.457797,
+          34.381714
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "広島みらい創生高等学校",
+        "id": "23",
+        "image": ["18mapcon_gp_23.jpg"],
+        "address": "指定きん急ひなん場所[洪水][土砂災害・がけ崩れ・土石流および地すべり][高潮]",
+        "desc": " "
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.45151,
+          34.386159
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "①たかの橋職員会館②ゆいぽーと",
+        "id": "24",
+        "image": ["18mapcon_gp_24.jpg"],
+        "address": "指定きん急ひなん場所[洪水][土砂災害・がけ崩れ・土石流および地すべり][高潮]",
+        "desc": " "
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.453312,
+          34.383728
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "健康づくりセンター",
+        "id": "26",
+        "image": ["18mapcon_gp_26.jpg"],
+        "address": "指定きん急ひなん場所[洪水][土砂災害・がけ崩れ・土石流および地すべり][高潮]",
+        "desc": " "
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.45726,
+          34.376317
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "千田公園",
+        "id": "27",
+        "image": ["18mapcon_gp_27.jpg"],
+        "address": "指定きん急ひなん場所[地震]",
+        "desc": " "
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.455426,
+          34.376374
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "皆実西部集会所",
+        "id": "29",
+        "image": ["18mapcon_gp_29.jpg"],
+        "address": "指定きん急ひなん場所[洪水][土砂災害・がけ崩れ・土石流および地すべり][高潮]",
+        "desc": " "
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.46381,
+          34.373222
+        ]
+      }
+    }
+  ]
+}
