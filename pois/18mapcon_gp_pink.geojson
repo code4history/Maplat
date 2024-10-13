@@ -1,4 +1,9 @@
 {
+  "properties": {
+    "id": "18mapcon_gp_pink",
+    "name": "浸水時きん急たいひ施設",
+    "icon": "parts/pin_org.png"
+  },
   "type": "FeatureCollection",
   "features": [
     {

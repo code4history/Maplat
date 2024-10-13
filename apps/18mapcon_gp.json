@@ -17,10 +17,13 @@
             "label": "第18回最優秀賞"
         },
         "gsi",
-        "osm",
-        "gsi_ortho"
+        "gsi_ortho",
+        "osm"
     ],
     "pois": [
-        "pois/18mapcon_gp_pink.geojson"  
+        "pois/18mapcon_gp_wh.geojson",
+        "pois/18mapcon_gp_red.geojson",
+        "pois/18mapcon_gp_yellow.geojson",
+        "pois/18mapcon_gp_pink.geojson"
     ]
 }

@@ -1,4 +1,9 @@
 {
+  "properties": {
+    "id": "18mapcon_gp_yellow",
+    "name": "指定きん急ひなん場所",
+    "icon": "parts/pin_yel.png"
+  },
   "type": "FeatureCollection",
   "features": [
     {

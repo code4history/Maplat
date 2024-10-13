@@ -2,7 +2,7 @@
   "properties": {
     "id": "18mapcon_ea_story",
     "name": "特集 地下を流れる千種台川<br>洪水を防ぐための川が地下を流れている。",
-    "icon": "images/f115726e6249018905cca51653e1262c.png"
+    "icon": "parts/pin_grn.png"
   },
   "type": "FeatureCollection",
   "features": [

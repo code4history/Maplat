@@ -17,8 +17,8 @@
             "label": "第18回優秀賞"
         },
         "gsi",
-        "osm",
-        "gsi_ortho"
+        "gsi_ortho",
+        "osm"
     ],
     "pois": [
       "pois/18mapcon_ea_pois.geojson",

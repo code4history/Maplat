@@ -1,7 +1,8 @@
 {
   "properties": {
     "id": "18mapcon_ea_pois",
-    "name": "場所の情報"
+    "name": "場所の情報",
+    "icon": "parts/pin_blu.png"
   },
   "type": "FeatureCollection",
   "features": [
