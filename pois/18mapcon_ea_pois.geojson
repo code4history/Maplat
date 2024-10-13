@@ -1,0 +1,537 @@
+{
+  "properties": {
+    "id": "18mapcon_ea_pois",
+    "name": "場所の情報",
+    "icon": "parts/pin_blu.png"
+  },
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "name": "大幸エリア",
+        "id": "1",
+        "image": "18mapcon_ea_1.jpg",
+        "desc": "元の地形: 田んぼ\n今のすがた: 住宅地"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.949568,
+          35.191426
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "name": "私の学校（附小前）",
+        "id": "2",
+        "image": "18mapcon_ea_2.jpg",
+        "desc": "元の地形: 田んぼ\n今のすがた: 学校"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.952781,
+          35.189022
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "name": "浄水場",
+        "id": "3",
+        "image": "18mapcon_ea_3.jpg",
+        "desc": "元の地形: 浄水場\n今のすがた: 浄水場\n少し大きくなった。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.955553,
+          35.184982
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "name": "二ッ池跡",
+        "id": "4",
+        "image": "18mapcon_ea_4.jpg",
+        "desc": "元の地形: 池\n今のすがた: 住宅、道路"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.955802,
+          35.181315
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "name": "赤坂池跡",
+        "id": "5",
+        "image": "18mapcon_ea_5.jpg",
+        "desc": "元の地形: 池\n今のすがた: 公園、住宅"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.957819,
+          35.179105
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "name": "はざま池跡",
+        "id": "6",
+        "image": "18mapcon_ea_6.jpg",
+        "desc": "元の地形: 池\n今のすがた: 住宅、道路"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.958163,
+          35.177053
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "name": "弁天池跡",
+        "id": "7",
+        "image": "18mapcon_ea_7.jpg",
+        "desc": "元の地形: 池\n今のすがた: 公園"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.961188,
+          35.18135
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "name": "？池跡",
+        "id": "8",
+        "image": "18mapcon_ea_8.jpg",
+        "desc": "元の地形: 池\n今のすがた: 道路、住宅"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.96106,
+          35.178842
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "name": "茶屋ヶ坂池",
+        "id": "9",
+        "image": "18mapcon_ea_9.jpg",
+        "desc": "元の地形: 池\n今のすがた: 池、道路\n池が昔より小さくなった。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.964192,
+          35.181771
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "name": "茶屋ヶ坂池の暗きょ",
+        "id": "10",
+        "image": "18mapcon_ea_10.jpg",
+        "desc": " "
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.964085,
+          35.18135
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "name": "竹越エリア",
+        "id": "11",
+        "image": "18mapcon_ea_11.jpg",
+        "desc": "元の地形: 田んぼ\n今のすがた: 住宅地"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.976632,
+          35.188054
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "name": "ちょろちょろ弘法",
+        "id": "12",
+        "image": "18mapcon_ea_12.jpg",
+        "desc": "昔、水が湧いていたらしい。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.964386,
+          35.184805
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "name": "？池跡",
+        "id": "13",
+        "image": "18mapcon_ea_13.jpg",
+        "desc": "元の地形: 池\n今のすがた: 道路、住宅"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.978312,
+          35.185419
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "name": "？池跡",
+        "id": "14",
+        "image": "18mapcon_ea_14.jpg",
+        "desc": "元の地形: 池\n今のすがた: 駐車場、道路"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.982818,
+          35.179228
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "id": "19",
+        "image": "18mapcon_ea_19.jpg",
+        "name": "猫ヶ洞池上池跡",
+        "desc": "元の地形: 池\n今のすがた: ユーカリ栽培地\n東山動物園のコアラにあげる。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.9752,
+          35.174317
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "id": "20",
+        "image": "18mapcon_ea_20.jpg",
+        "name": "猫ヶ洞池上池跡",
+        "desc": "元の地形: 池\n今のすがた: 芝生広場\n一部埋め立てられた。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.974621,
+          35.170774
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "id": "21",
+        "image": "18mapcon_ea_21.jpg",
+        "name": "猫ヶ洞池下池跡",
+        "desc": "元の地形: 池\n今のすがた: 公園、住宅\n池の上にあるから池上公園？"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.970265,
+          35.170774
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "id": "22",
+        "image": "18mapcon_ea_22.jpg",
+        "name": "？川跡",
+        "desc": "元の地形: 川\n今のすがた: 道路、住宅"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.969578,
+          35.162758
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "id": "23",
+        "image": "18mapcon_ea_23.jpg",
+        "name": "？池跡",
+        "desc": "元の地形: 池\n今のすがた: 住宅、駐車場"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.963527,
+          35.180087
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "id": "24",
+        "image": "18mapcon_ea_24.jpg",
+        "name": "望来池跡",
+        "desc": "元の地形: 池\n今のすがた: 遊水池\n学校の下に遊水池！"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.964149,
+          35.170546
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "id": "25",
+        "image": "18mapcon_ea_25.jpg",
+        "name": "行者池跡",
+        "desc": "元の地形: 池\n今のすがた: 道路、住宅"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.961446,
+          35.172054
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "id": "26",
+        "image": "18mapcon_ea_26.jpg",
+        "name": "東どろあき池跡",
+        "desc": "元の地形: 池\n今のすがた: お店、駐車場"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.958141,
+          35.172089
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "id": "27",
+        "image": "18mapcon_ea_27.jpg",
+        "name": "姫ヶ池跡",
+        "desc": "元の地形: 池\n今のすがた: 道路、お店"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.957583,
+          35.168792
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "id": "28",
+        "image": "18mapcon_ea_28.jpg",
+        "name": "放生池跡",
+        "desc": "元の地形: 池\n今のすがた: 道路、マンション"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.956425,
+          35.172423
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "id": "29",
+        "image": "18mapcon_ea_29.jpg",
+        "name": "放生池跡の弘法堂",
+        "desc": "またもや弘法堂！"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.956425,
+          35.172019
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "id": "30",
+        "image": "18mapcon_ea_30.jpg",
+        "name": "？池跡",
+        "desc": "元の地形: 池\n今のすがた: 配水池"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.95827,
+          35.174808
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "id": "31",
+        "image": "18mapcon_ea_31.jpg",
+        "name": "？池跡",
+        "desc": "元の地形: 池\n今のすがた: 配水場"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.95488,
+          35.173265
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "id": "32",
+        "image": "18mapcon_ea_32.jpg",
+        "name": "蝮ヶ池跡",
+        "desc": "元の地形: 池\n今のすがた: 高層マンション"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.947842,
+          35.168002
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "id": "33",
+        "image": "18mapcon_ea_33.jpg",
+        "name": "古い地図の看板発見！",
+        "desc": " "
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.951924,
+          35.172668
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "id": "34",
+        "image": "18mapcon_ea_34.jpg",
+        "name": "鉄砲坂池跡",
+        "desc": "元の地形: 池\n今のすがた: 広場、住宅"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.95209,
+          35.173335
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "address": " ",
+        "id": "35",
+        "image": "18mapcon_ea_35.jpg",
+        "name": "振甫池跡",
+        "desc": "元の地形: 池\n今のすがた: 生涯学習センター\n15年前まで屋外プールだった。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.952927,
+          35.174405
+        ]
+      }
+    }
+  ]
+}

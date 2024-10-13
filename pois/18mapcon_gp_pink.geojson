@@ -1,0 +1,214 @@
+{
+  "properties": {
+    "id": "18mapcon_gp_pink",
+    "name": "浸水時きん急たいひ施設",
+    "icon": "parts/pin_org.png"
+  },
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "ありらんの家",
+        "id": "3",
+        "image": ["18mapcon_gp_3.jpg"],
+        "address": "浸水時きん急たいひ施設",
+        "desc": " "
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.432767,
+          34.394561
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "市営福島アパート１号棟",
+        "id": "4",
+        "image": ["18mapcon_gp_4.jpg"],
+        "address": "浸水時きん急たいひ施設",
+        "desc": " "
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.4334,
+          34.394321
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "広島市西区役所",
+        "id": "5",
+        "image": ["18mapcon_gp_5.jpg"],
+        "address": "浸水時きん急たいひ施設",
+        "desc": " "
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.434397,
+          34.39395
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "広島市西消防しょ",
+        "id": "6",
+        "image": ["18mapcon_gp_6.jpg"],
+        "address": "浸水時きん急たいひ施設",
+        "desc": " "
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.43664,
+          34.394658
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "第３セントラルビル",
+        "id": "7",
+        "image": ["18mapcon_gp_7.jpg"],
+        "address": "浸水時きん急たいひ施設",
+        "desc": " "
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.438029,
+          34.393109
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "平和大通り電気ビル",
+        "id": "8",
+        "image": ["18mapcon_gp_8.jpg"],
+        "address": "浸水時きん急たいひ施設",
+        "desc": " "
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.444756,
+          34.393255
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "中電病院別館",
+        "id": "14",
+        "image": ["18mapcon_gp_14.jpg"],
+        "address": "浸水時きん急たいひ施設",
+        "desc": " "
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.452888,
+          34.388558
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "広島市役所北庁舎（中区役所）",
+        "id": "16",
+        "image": ["18mapcon_gp_16.jpg"],
+        "address": "浸水時きん急たいひ施設",
+        "desc": " "
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.455013,
+          34.386305
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "広島市役所本庁舎",
+        "id": "17",
+        "image": ["18mapcon_gp_17.jpg"],
+        "address": "浸水時きん急たいひ施設",
+        "desc": " "
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.455324,
+          34.385269
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "たかの橋中央病院",
+        "id": "18",
+        "image": ["18mapcon_gp_18.jpg"],
+        "address": "浸水時きん急たいひ施設",
+        "desc": " "
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.454476,
+          34.383524
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "ロッコーたかの橋グランドマンション",
+        "id": "19",
+        "image": ["18mapcon_gp_19.jpg"],
+        "address": "浸水時きん急たいひ施設",
+        "desc": " "
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.454594,
+          34.38329
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "ひろしまガーデンガーデン（サウス　ノースタワー）",
+        "id": "20",
+        "image": ["18mapcon_gp_20.jpg"],
+        "address": "浸水時きん急たいひ施設",
+        "desc": " "
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.456257,
+          34.381776
+        ]
+      }
+    }
+  ]
+}
