@@ -290,7 +290,7 @@ export class MaplatUi extends EventTarget {
               <s c="marker_list_help"><li dinh="html.help_etc_marker_list" c="recipient"></li></s>
               <li dinh="html.help_etc_slider" c="recipient"></li>
             </ul>
-            <p><a href="https://github.com/code4history/Maplat/wiki" target="_blank">Maplat</a>
+            <p><a href="https://www.maplat.jp/" target="_blank">Maplat</a>
               © 2015- Kohei Otsuka, Code for History</p>
           </d> 
         </d> 
