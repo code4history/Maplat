@@ -319,7 +319,7 @@ export class SetGPS extends CustomControl {
       const overlayLayer = map.getLayer("overlay").getLayers().item(0);
       const firstLayer = map.getLayers().item(0);
       const source = (overlayLayer ? overlayLayer.getSource() : firstLayer.getSource());
-      const geolocation = ui.geolocation;
+      const geolocation = ui.core.geolocation;
 
       if (!geolocation.getTracking()) {
         geolocation.setTracking(true);
@@ -351,7 +351,7 @@ export class SetGPS extends CustomControl {
     this.moveTo_ = false;
     this.ui.waitReady.then(() => {
       const ui = this.ui;
-      const geolocation = ui.geolocation;
+      const geolocation = ui.core.geolocation;
       
       geolocation.on("change", () => {
         const map = ui.core.mapObject;
