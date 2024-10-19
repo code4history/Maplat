@@ -1,0 +1,32 @@
+{
+    "appName": "甲南大学 れきぶらまっぷ",
+    "lang": "ja",
+    "fakeGps": true,
+    "fakeCenter": "甲南大学 岡本キャンパス",
+    "fakeRadius": 10,
+    "homePosition": [
+        135.268637155036,
+        34.729788572240075
+    ],
+    "defaultZoom": 17,
+    "startFrom": "konan_rekipura_1",
+    "sources": [
+        {
+            "mapID": "konan_rekipura_1",
+            "label": "れきぶら①"
+        },
+        {
+            "mapID": "konan_rekipura_2",
+            "label": "れきぶら②"
+        },
+        {
+            "mapID": "konan_rekipura_ura",
+            "label": "れきぶら裏"
+        },
+        "gsi",
+        "gsi_ortho",
+        "osm"
+    ],
+    "pois": [
+    ]
+}
