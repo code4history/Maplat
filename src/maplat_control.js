@@ -349,53 +349,18 @@ export class SetGPS extends CustomControl {
     
     this.ui = options.ui;
     this.moveTo_ = false;
-    this.ui.waitReady.then(() => {
-      const ui = this.ui;
-      const geolocation = ui.core.geolocation;
-      
-      geolocation.on("change", () => {
-        const map = ui.core.mapObject;
-        const overlayLayer = map.getLayer("overlay").getLayers().item(0);
-        const firstLayer = map.getLayers().item(0);
-        const source = (overlayLayer ? overlayLayer.getSource() : firstLayer.getSource());
-        const lnglat = geolocation.getPosition();
-        const acc = geolocation.getAccuracy();
-        if (!lnglat || !acc) return;
-        source.setGPSMarkerAsync({ lnglat, acc }, !this.moveTo_).then((insideCheck) => {
-          this.moveTo_ = false;
-          if (!insideCheck) {
-            source.setGPSMarker();
-          }
-        });
-      });
-      geolocation.on("error", (evt) => {
-        const code = evt.code;
-        if (code === 3) return;
-        geolocation.setTracking(false);
-        ui.core.mapDivDocument.querySelector(".modal_title").innerText = ui.core.t("app.gps_error");
-        ui.core.mapDivDocument.querySelector(".modal_gpsD_content").innerText = ui.core.t(code === 1 ? "app.user_gps_deny" :
-          code === 2 ? "app.gps_miss" : "app.gps_timeout");
-        const modalElm = ui.core.mapDivDocument.querySelector(".modalBase");
-        const modal = new bsn.Modal(modalElm, { root: ui.core.mapDivDocument });
-        ui.modalSetting("gpsD");
-        modal.show();
-      });
-      ui.core.addEventListener("mapChanged", () => {
-        if (geolocation.getTracking()) {
-          const map = ui.core.mapObject;
-          const overlayLayer = map.getLayer("overlay").getLayers().item(0);
-          const firstLayer = map.getLayers().item(0);
-          const source = (overlayLayer ? overlayLayer.getSource() : firstLayer.getSource());
-          const lnglat = geolocation.getPosition();
-          const acc = geolocation.getAccuracy();
-          if (!lnglat || !acc) return;
-          source.setGPSMarkerAsync({ lnglat, acc }, true).then((insideCheck) => {
-            if (!insideCheck) {
-              source.setGPSMarker();
-            }
-          });
-        }
-      });
+
+    console.log("Add event listner");
+    this.ui.core.addEventListener("gps_error", (evt) => {
+      console.log(evt);
+      const code = 1;
+      this.ui.core.mapDivDocument.querySelector(".modal_title").innerText = this.ui.core.t("app.gps_error");
+      this.ui.core.mapDivDocument.querySelector(".modal_gpsD_content").innerText = this.ui.core.t(code === 1 ? "app.user_gps_deny" :
+        code === 2 ? "app.gps_miss" : "app.gps_timeout");
+      const modalElm = this.ui.core.mapDivDocument.querySelector(".modalBase");
+      const modal = new bsn.Modal(modalElm, { root: this.ui.core.mapDivDocument });
+      this.ui.modalSetting("gpsD");
+      modal.show();
     });
 
     if (options.alwaysGpsOn) {

@@ -931,14 +931,6 @@ enable-background="new 0 0 10 10" xml:space="preserve">
       const fakeCenter = appOption.fake ? ui.core.appData.fakeCenter : false;
       const fakeRadius = appOption.fake ? ui.core.appData.fakeRadius : false;
 
-      /*const geolocation = new Geolocation({
-        timerBase: appOption.fake,
-        homePosition: ui.core.appData.homePosition
-      });
-      geolocation.setTracking(true);
-
-      ui.geolocation = geolocation;*/
-
       /*let shown = false;
       let gpsWaitPromise = null;
 
