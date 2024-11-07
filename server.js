@@ -51,6 +51,11 @@ http.createServer(function(request, response) {
     var uri = url.parse(request.url).pathname
     , filename = path.join(process.cwd(), uri);
 
+    if (uri.includes('..')) {
+        response.writeHead(403);
+        response.end();
+        return;
+    }
     fs.exists(filename, function(exists){
         console.log(filename+" "+exists);
         if (!exists) { Response["404"](); return ; }
