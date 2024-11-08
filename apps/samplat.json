@@ -6,17 +6,21 @@
     "lang" : "ja",
     "fake_gps" : true,
     "fake_center" : {
-        "ja" : "益田氏城館跡",
-        "en" : "Masuda"
+        "ja" : "専修大学 生田キャンパス",
+        "en" : "Senshu University Ikuta Campus"
     },
     "fake_radius" : 10,
-    "home_position" : [131.85712897753535, 34.67762991720673],
+    "home_position" : [139.55367743450608, 35.611015284870234],
     "default_zoom" : 17,
     "zoom_restriction" : true,
     "min_zoom" : 10,
     "max_zoom" : 18,
-    "start_from" : "sesshu_masuda",
+    "start_from" : "senshu_univ_foss4g",
     "sources" : [
+        {
+            "label": "専修大学",
+            "map_id": "senshu_univ_foss4g"
+        },
         {
             "label": "益田",
             "map_id": "sesshu_masuda"
