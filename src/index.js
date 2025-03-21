@@ -16,7 +16,6 @@ import { META_KEYS } from "@maplat/core/lib/source/mixin";
 import {
   Copyright,
   CompassRotate,
-  SetGPS,
   GoHome,
   Maplat,
   Border,
@@ -27,6 +26,7 @@ import {
   Zoom,
   setControlSettings
 } from "./maplat_control";
+import { SetGPS } from "./maplat_control_gps";
 import { asArray } from "ol/color";
 import { HistMap } from "@maplat/core/lib/source/histmap";
 import { TmsMap } from "@maplat/core/lib/source/tmsmap";

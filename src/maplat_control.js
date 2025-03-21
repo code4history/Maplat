@@ -3,9 +3,8 @@ import { CLASS_UNSELECTABLE, CLASS_CONTROL } from "ol/css";
 import { MapEvent } from "ol";
 import pointer from "./pointer_images";
 import { createElement } from "@maplat/core";
-import bsn from "../legacy/bootstrap-native";
 
-let control_settings = {};
+export let control_settings = {};
 const delegator = {
   compass: "compass.png",
   border: "border.png",
@@ -294,80 +293,6 @@ export class GoHome extends CustomControl {
     };
     super(options);
     if (control_settings["home"]) {
-      const button = this.element.querySelector("button");
-      button.style.backgroundColor = "rgba(0,0,0,0)";
-    }
-  }
-}
-
-export class SetGPS extends CustomControl {
-  constructor(optOptions) {
-    const options = optOptions || {};
-    options.character = control_settings["gps"]
-      ? `<img src="${control_settings["gps"]}">`
-      : '<i class="far fa-location-crosshairs fa-lg"></i>';
-    options.cls = "gps";
-    options.render = function (mapEvent) {
-      const frameState = mapEvent.frameState;
-      if (!frameState) {
-        return;
-      }
-    };
-    options.callback = function () {
-      const ui = this.ui;
-      const map = ui.core.mapObject;
-      const overlayLayer = map.getLayer("overlay").getLayers().item(0);
-      const firstLayer = map.getLayers().item(0);
-      const source = (overlayLayer ? overlayLayer.getSource() : firstLayer.getSource());
-      const geolocation = ui.core.geolocation;
-
-      if (!geolocation.getTracking()) {
-        geolocation.setTracking(true);
-        geolocation.once("change", () => {
-          const lnglat = geolocation.getPosition();
-          const acc = geolocation.getAccuracy();
-          if (!lnglat || !acc) return;
-          source.setGPSMarker({ lnglat, acc }).then((insideCheck) => {
-            if (!insideCheck) {
-              source.setGPSMarker();
-            }
-          });
-        });
-      } else {
-        const lnglat = geolocation.getPosition();
-        const acc = geolocation.getAccuracy();
-        if (!lnglat || !acc) return;
-        source.setGPSMarkerAsync({ lnglat, acc }).then((insideCheck) => {
-          if (!insideCheck) {
-            source.setGPSMarker();
-          }
-        });
-      }
-    };
-
-    super(options);
-    
-    this.ui = options.ui;
-    this.moveTo_ = false;
-
-    console.log("Add event listner");
-    this.ui.core.addEventListener("gps_error", (evt) => {
-      console.log(evt);
-      const code = 1;
-      this.ui.core.mapDivDocument.querySelector(".modal_title").innerText = this.ui.core.t("app.gps_error");
-      this.ui.core.mapDivDocument.querySelector(".modal_gpsD_content").innerText = this.ui.core.t(code === 1 ? "app.user_gps_deny" :
-        code === 2 ? "app.gps_miss" : "app.gps_timeout");
-      const modalElm = this.ui.core.mapDivDocument.querySelector(".modalBase");
-      const modal = new bsn.Modal(modalElm, { root: this.ui.core.mapDivDocument });
-      this.ui.modalSetting("gpsD");
-      modal.show();
-    });
-
-    if (options.alwaysGpsOn) {
-      this.alwaysGpsOn = true;
-    }
-
-    if (control_settings["gps"]) {
       const button = this.element.querySelector("button");
       button.style.backgroundColor = "rgba(0,0,0,0)";
     }
