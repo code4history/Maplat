@@ -312,36 +312,30 @@ export class SetGPS extends CustomControl {
       if (!frameState) {
         return;
       }
+      // GPS状態とUI表示を同期
+      const core = this.ui.core;
+      if (core && core.getGPSEnabled) {
+        const enabled = core.getGPSEnabled();
+        const isDisabled = this.element.classList.contains("disable");
+        
+        if (enabled && isDisabled) {
+          this.element.classList.remove("disable");
+        } else if (!enabled && !isDisabled) {
+          this.element.classList.add("disable");
+        }
+      }
     };
     options.callback = function () {
-      const ui = this.ui;
-      const map = ui.core.mapObject;
-      const overlayLayer = map.getLayer("overlay").getLayers().item(0);
-      const firstLayer = map.getLayers().item(0);
-      const source = (overlayLayer ? overlayLayer.getSource() : firstLayer.getSource());
-      const geolocation = ui.core.geolocation;
-
-      if (!geolocation.getTracking()) {
-        geolocation.setTracking(true);
-        geolocation.once("change", () => {
-          const lnglat = geolocation.getPosition();
-          const acc = geolocation.getAccuracy();
-          if (!lnglat || !acc) return;
-          source.setGPSMarker({ lnglat, acc }).then((insideCheck) => {
-            if (!insideCheck) {
-              source.setGPSMarker();
-            }
-          });
-        });
+      const core = this.ui.core;
+      const currentlyEnabled = core.getGPSEnabled();
+      
+      // 本流モードではトグル、傍流モードでは位置移動のみ
+      if (core.alwaysGpsOn) {
+        // 傍流モード: GPSは常時有効、ボタンは位置移動のみ
+        core.handleGPS(true);
       } else {
-        const lnglat = geolocation.getPosition();
-        const acc = geolocation.getAccuracy();
-        if (!lnglat || !acc) return;
-        source.setGPSMarkerAsync({ lnglat, acc }).then((insideCheck) => {
-          if (!insideCheck) {
-            source.setGPSMarker();
-          }
-        });
+        // 本流モード: GPSオンオフ切り替え
+        core.handleGPS(!currentlyEnabled);
       }
     };
 
@@ -350,22 +344,30 @@ export class SetGPS extends CustomControl {
     this.ui = options.ui;
     this.moveTo_ = false;
 
-    console.log("Add event listner");
+    // GPSエラーイベントリスナーを設定
     this.ui.core.addEventListener("gps_error", (evt) => {
-      console.log(evt);
-      const code = 1;
+      console.log("GPS Error:", evt);
+      const errorMap = {
+        "user_gps_deny": "app.user_gps_deny",
+        "gps_miss": "app.gps_miss",
+        "gps_timeout": "app.gps_timeout"
+      };
+      
       this.ui.core.mapDivDocument.querySelector(".modal_title").innerText = this.ui.core.t("app.gps_error");
-      this.ui.core.mapDivDocument.querySelector(".modal_gpsD_content").innerText = this.ui.core.t(code === 1 ? "app.user_gps_deny" :
-        code === 2 ? "app.gps_miss" : "app.gps_timeout");
+      this.ui.core.mapDivDocument.querySelector(".modal_gpsD_content").innerText = this.ui.core.t(errorMap[evt.detail] || "app.gps_error");
       const modalElm = this.ui.core.mapDivDocument.querySelector(".modalBase");
       const modal = new bsn.Modal(modalElm, { root: this.ui.core.mapDivDocument });
       this.ui.modalSetting("gpsD");
       modal.show();
     });
+    
+    // GPS結果イベントリスナーを設定
+    this.ui.core.addEventListener("gps_result", (evt) => {
+      console.log("GPS Result:", evt);
+      // UI更新はrenderメソッドで処理
+    });
 
-    if (options.alwaysGpsOn) {
-      this.alwaysGpsOn = true;
-    }
+    // alwaysGpsOn設定はMaplatCore側で管理
 
     if (control_settings["gps"]) {
       const button = this.element.querySelector("button");
