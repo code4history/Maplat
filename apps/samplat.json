@@ -6,17 +6,21 @@
     "lang" : "ja",
     "fake_gps" : true,
     "fake_center" : {
-        "ja" : "専修大学 生田キャンパス",
-        "en" : "Senshu University Ikuta Campus"
+        "ja" : "Otemachi One タワー",
+        "en" : "Otemachi One Tower"
     },
     "fake_radius" : 10,
-    "home_position" : [139.55367743450608, 35.611015284870234],
+    "home_position" : [139.76328380286316, 35.687727615404015],
     "default_zoom" : 17,
     "zoom_restriction" : true,
     "min_zoom" : 10,
     "max_zoom" : 18,
-    "start_from" : "senshu_univ_foss4g",
+    "start_from" : "edo-ohtemachi",
     "sources" : [
+        {
+            "label": "江戸大手町",
+            "map_id": "edo-ohtemachi"
+        },
         {
             "label": "専修大学",
             "map_id": "senshu_univ_foss4g"
