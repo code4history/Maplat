@@ -6,17 +6,21 @@
     "lang" : "ja",
     "fake_gps" : true,
     "fake_center" : {
-        "ja" : "Otemachi One タワー",
-        "en" : "Otemachi One Tower"
+        "ja" : "七条河原町",
+        "en" : "Shichijo Kawaramachi"
     },
     "fake_radius" : 10,
-    "home_position" : [139.76328380286316, 35.687727615404015],
+    "home_position" : [135.7642089137608, 34.989257725125704],
     "default_zoom" : 17,
     "zoom_restriction" : true,
     "min_zoom" : 10,
     "max_zoom" : 18,
-    "start_from" : "edo-ohtemachi",
+    "start_from" : "kyoto_7joh",
     "sources" : [
+        {
+            "label": "京都七条",
+            "map_id": "kyoto_7joh"
+        },
         {
             "label": "江戸大手町",
             "map_id": "edo-ohtemachi"
