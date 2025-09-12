@@ -1,0 +1,39 @@
+{
+    "app_name": {
+        "ja": "ぷらっと京都 - 京都を楽しむ古地図/絵地図街歩きアプリ",
+        "en": "Maplat Kyoto"
+    },
+    "description": "まち歩きの地図サービス「ぷらっと京都」を片手に京都を散策してみませんか。今ここではない時代に思いを馳せながら、ぷらぷら歩くのはきっと楽しいですよ。",
+    "lang": "ja",
+    "splash": "kyoto_splash.png",
+    "fake_gps": true,
+    "fake_center": "蹴上",
+    "fake_radius": 10,
+    "home_position": [
+        135.78727733502132,
+        35.01160931108855
+    ],
+    "default_zoom": 17,
+    "start_from": "kyoto_1881",
+    "sources": [
+        {
+            "mapID": "kyoto_1881",
+            "label": {
+                "ja": "京都1881",
+                "en": "Kyoto (1881)"
+            }
+        },
+        "gsi",
+        "gsi_ortho",
+        {
+            "mapID": "mapbox",
+            "label": "Mapbox"
+        },
+        {
+            "mapID": "google",
+            "label": "Google"
+        },
+        "osm"
+    ],
+    "pois": []
+}
