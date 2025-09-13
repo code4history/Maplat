@@ -1,0 +1,10 @@
+{
+  "name": "ぷらっと京都",
+  "short_name": "ぷら京都",
+  "background_color": "#f6f0d3",
+  "icons": [],
+  "start_url": "https://s.maplat.jp/r/kyotomap/",
+  "scope": "/r/kyotomap/",
+  "display": "standalone",
+  "theme_color": "#f6f0d3"
+}
