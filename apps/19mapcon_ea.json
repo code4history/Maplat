@@ -1,0 +1,27 @@
+{
+    "appName": "第19回みんなでつくる地域の安全安心マップコンテスト優秀賞",
+    "splash": "19mapcon_ea.png",
+    "lang": "ja",
+    "fakeGps": true,
+    "fakeCenter": "自由ヶ丘駅",
+    "fakeRadius": 10,
+    "homePosition": [
+        136.96675923258377,
+        35.17551192262037
+    ],
+    "defaultZoom": 17,
+    "startFrom": "19th_mapcontest_ea",
+    "sources": [
+        {
+            "mapID": "19th_mapcontest_ea",
+            "label": "第19回優秀賞"
+        },
+        "gsi",
+        "gsi_ortho",
+        "osm"
+    ],
+    "pois": [
+      "pois/19mapcon_ea_pois.geojson",
+      "pois/19mapcon_ea_story.geojson"
+    ]
+}
