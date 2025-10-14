@@ -21,5 +21,8 @@
         "osm"
     ],
     "pois": [
+        "19mapcon_ea_yellow.geojson",
+        "19mapcon_ea_green.geojson",
+        "19mapcon_ea_blue.geojson"
     ]
 }

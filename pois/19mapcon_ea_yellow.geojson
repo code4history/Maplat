@@ -1,0 +1,172 @@
+{
+  "properties": {
+    "id": "19mapcon_ea_yellow",
+    "name": "一時避難場所",
+    "icon": "parts/pin_yel.png"
+  },
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "山内原(やまうちばる)公園",
+        "id": "1",
+        "image": [
+          "img/19ea/19mapcon_ea_1-1.jpg",
+          "img/19ea/19mapcon_ea_1-2.jpg",
+          "img/19ea/19mapcon_ea_1-3.jpg",
+          "img/19ea/19mapcon_ea_1-4.jpg",
+          "img/19ea/19mapcon_ea_1-5.jpg",
+          "img/19ea/19mapcon_ea_1-6.jpg"
+        ],
+        "address": "一時避難場所",
+        "desc": "<ul><li>広さ…中</li><li>街灯…2ヶ所あり</li><li>風通し…良</li><li>トイレ…なし</li>  <li>しげみ…公園周りにあり</li><li>日かげ…東屋1ヶ所と大きい木1ヶ所あり</li><li>設備</li><ul><li>スツールトイレあり</li><li>街灯は2つともソーラーパネル付き</li><li>水道あり</li></ul></ul><h5>気づいたこと</h5><ul><li>防災無線あり。</li><li>花が手入れされている。</li><li>周りは住たく街。</li><li>公園入口自販機あり。</li><li>夜は1つの街灯しかついていない。</li><li>夜は周りが住たく街で明るい。</li></ul><h5>安心度⭐️⭐️⭐️</h5><ul><li>理由: 花が手入れされていることでいごこちよくかんじ、少ないが木影あり。</li></ul>"    },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          127.769546,
+          26.257440 
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "ちゅらばる公園",
+        "id": "2",
+        "image": [
+          "img/19ea/19mapcon_ea_2-1.jpg",
+          "img/19ea/19mapcon_ea_2-2.jpg",
+          "img/19ea/19mapcon_ea_2-3.jpg",
+          "img/19ea/19mapcon_ea_2-4.jpg",
+          "img/19ea/19mapcon_ea_2-5.jpg"
+        ],
+        "address": "一時避難場所",
+        "desc": "<ul><li>広さ…中</li><li>街灯…4ヶ所あり</li><li>風通し…良</li><li>トイレ…なし</li>  <li>しげみ…少ない</li><li>日かげ…東屋1ヶ所とすべりだいの大きい木が1つ</li><li>設備</li><ul><li>水道あり</li></ul></ul><h5>気づいたこと</h5><ul><li>近くに自販機あり。</li><li>周りはじゅうたくがい。</li><li>近くに消火栓あり。</li><li>こわれたベンチがそのまま。</li><li>夜は街灯がついていたけど暗め。</li></ul><h5>安心度⭐️⭐️⭐️</h5><ul><li>理由: かげが少なく熱中症の危険ありで夜は街灯がついているけど暗め。こわれたベンチがそのままで危険。</li></ul>"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          127.776003,
+          26.254829 
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "石橋原(いしばしばる)公園",
+        "id": "3",
+        "image": [
+          "img/19ea/19mapcon_ea_3-1.jpg",
+          "img/19ea/19mapcon_ea_3-2.jpg",
+          "img/19ea/19mapcon_ea_3-3.jpg",
+          "img/19ea/19mapcon_ea_3-4.jpg",
+          "img/19ea/19mapcon_ea_3-5.jpg",
+          "img/19ea/19mapcon_ea_3-6.jpg"
+        ],
+        "address": "一時避難場所",
+        "desc": "<ul><li>広さ…中</li><li>街灯…4ヶ所あり</li><li>風通し…良</li><li>トイレ…なし</li>  <li>しげみ…多い</li><li>日かげ…大きい木1ヶ所と東屋1ヶ所あり</li><li>設備</li><ul><li>防災無線あり</li><li>水道あり</li><li>スツールトイレあり</li><li>ソーラーパネル付きの街灯あり</li></ul></ul><h5>気づいたこと</h5><ul><li>ベンチがあるが草がおいしげりすぎてすわれない。1ヶ月後くらいには草刈りされていた。</li><li>東屋の向かいの家に自販機1台あり。</li><li>街灯は、夜ついていない。</li><li>暗い時は、草で道がみえない。</li></ul><h5>安心度⭐️⭐️</h5><ul><li>理由: 草がのびすぎて公園内の道がみえない。街灯あるのに夜はついてなく真っ暗。何がでるか分からない。</li></ul>" 
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          127.770463,
+          26.253857
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "竹口原(たけぐちばる)公園",
+        "id": "6",
+        "image": [
+          "img/19ea/19mapcon_ea_6-1.jpg",
+          "img/19ea/19mapcon_ea_6-2.jpg",
+          "img/19ea/19mapcon_ea_6-3.jpg",
+          "img/19ea/19mapcon_ea_6-4.jpg",
+          "img/19ea/19mapcon_ea_6-5.jpg",
+          "img/19ea/19mapcon_ea_6-6.jpg"
+        ],
+        "address": "一時避難場所",
+        "desc": "<ul><li>広さ…小</li><li>街灯…2ヶ所あり</li><li>風通し…良</li><li>トイレ…なし</li>  <li>しげみ…少ない</li><li>日かげ…東屋1ヶ所とすべりだいの下の木</li><li>設備</li><ul><li>ソーラーパネルつきの街灯1ヶ所あり</li><li>水道あり</li><li>公園内に建物(わらびくらぶ)あり</li><li>スツールトイレあり</li><li>消火栓あり</li></ul></ul><h5>気づいたこと</h5><ul><li>周りはじゅうたくがい。</li><li>草かりされていてきれい。</li><li>夜は街灯が少ないから暗い。</li><li>春はしばふにハナが多い。</li><li>坂の間にある。</li><li>近くに自販機あり。</li></ul><h5>安心度⭐️⭐️</h5><ul><li>理由: かげは少なく熱中症の危険あり。夜は街灯が少ないが、周りは明るい。春はハナが多い。</li></ul>"      
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          127.770787,
+          26.249956
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "糸蒲(いとかま)公園",
+        "id": "8",
+        "image": [
+          "img/19ea/19mapcon_ea_8-1.jpg",
+          "img/19ea/19mapcon_ea_8-2.jpg",
+          "img/19ea/19mapcon_ea_8-3.jpg",
+          "img/19ea/19mapcon_ea_8-4.jpg",
+          "img/19ea/19mapcon_ea_8-5.jpg"
+        ],
+        "address": "一時避難場所",
+        "desc": "<ul><li>広さ…大</li><li>街灯…9ヶ所あり</li><li>風通し…良</li><li>トイレ…あり</li>  <li>しげみ…多い</li><li>日かげ…東屋3ヶ所あり</li><li>設備</li><ul><li>自販機7台あり</li><li>水道あり</li><li>防災倉庫あり</li><li>防はんカメラあり</li><li>AEDあり</li></ul></ul><h5>気づいたこと</h5><ul><li>時計があって時間がわかる。</li><li>がいとうが多くて夜は明るい。</li><li>草がおいしげってるところあり。</li></ul><h5>安心度⭐️⭐️⭐️⭐️</h5><ul><li>理由: しげみが多く、ハブがでそう。広いので多くの人が避難できる。トイレがあるので安心。</li></ul>"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          127.773018,
+          26.246727
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "赤森原(あかもりばる)公園",
+        "id": "9",
+        "image": [
+          "img/19ea/19mapcon_ea_9-1.jpg",
+          "img/19ea/19mapcon_ea_9-2.jpg",
+          "img/19ea/19mapcon_ea_9-3.jpg",
+          "img/19ea/19mapcon_ea_9-4.jpg",
+          "img/19ea/19mapcon_ea_9-5.jpg"
+        ],
+        "address": "一時避難場所",
+        "desc": "<ul><li>広さ…小</li><li>街灯…4ヶ所あり</li><li>風通し…良</li><li>トイレ…なし</li><li>しげみ…少ない</li><li>日かげ…東屋が1ヶ所あり</li><li>設備</li><ul><li>ソーラーパネル付き街灯が1本</li><li>近くに消火栓あり</li><li>近くに自動販売機1台</li><li>ベンチ4ヶ所</li><li>水道あり</li></ul></ul><h5>気づいたこと</h5><ul><li>近くにコンビニがある(LEDあり)。</li><li>くぼんでいるところがあって水がたまりやすそう。</li><li>夜は周りが明るい。</li></ul><h5>安心度⭐️⭐️⭐</h5><ul><li>理由: かげが少なく熱中症の危険あり。だけど夜停電しても明るさはありそう。</li></ul>"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          127.767960,
+          26.245690
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "南坂田原(みなみはんたばる)公園",
+        "id": "10",
+        "image": [
+          "img/19ea/19mapcon_ea_10-1.jpg",
+          "img/19ea/19mapcon_ea_10-2.jpg",
+          "img/19ea/19mapcon_ea_10-3.jpg",
+          "img/19ea/19mapcon_ea_10-4.jpg"
+        ],
+        "address": "一時避難場所",
+        "desc": "<ul><li>広さ…大</li><li>街灯…10ヶ所あり</li><li>風通し…良</li><li>トイレ…なし</li><li>しげみ…多い</li><li>日かげ…東屋1ヶ所と大きい木あり</li><li>設備</li><ul><li>ソーラーパネルつきの街灯あり</li><li>水道あり</li><li>消火栓あり</li></ul></ul><h5>気づいたこと</h5><ul><li>太陽時計あり。</li><li>遊歩道のがけがわは、しげみがたくさん。</li><li>じゅうたくがいとがけにはさまれている。</li><li>草がめっちゃのびている。→1ヶ月後には草刈りされていた。</li><li>ベンチが6ヶ所あるけどあつくてすわれない。</li></ul><h5>安心度⭐️⭐️</h5><ul><li>理由: かげが少なく熱中症の危険あり。しげみが多くハブがでてきそう。遊歩道のがけうらは要注意。</li></ul>"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          127.769048,
+          26.242918 
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "properties": {
+    "id": "19mapcon_ea_blue",
+    "name": "防災倉庫",
+    "icon": "parts/pin_blu.png"
+  },
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "防災倉庫",
+        "id": "11",
+        "image": [
+          "img/19ea/19mapcon_ea_11-1.jpg",
+          "img/19ea/19mapcon_ea_11-2.jpg",
+          "img/19ea/19mapcon_ea_11-3.jpg"
+        ],
+        "address": " ",
+        "desc": "<ul><li>発電機</li><li>水</li><li>仮設トイレ</li><li>食料</li></ul><h5>役場の人にききました</h5><ul><li>中城村の人口は約22000人で5%の人数が3日分すごせる食料がある。</li><li>薬はなし。</li></ul>"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          127.772784,
+          26.246970 
+        ]
+      }
+    }
+  ]
+}

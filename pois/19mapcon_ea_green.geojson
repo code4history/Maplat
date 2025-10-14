@@ -1,0 +1,54 @@
+{
+  "properties": {
+    "id": "19mapcon_ea_green",
+    "name": "指定避難所",
+    "icon": "parts/pin_grn.png"
+  },
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "南上原公民館/ゆらてぃく公園",
+        "id": "45",
+        "image": [
+          "img/19ea/19mapcon_ea_45-1.jpg",
+          "img/19ea/19mapcon_ea_45-2.jpg",
+          "img/19ea/19mapcon_ea_45-3.jpg",
+          "img/19ea/19mapcon_ea_45-4.jpg"
+        ],
+        "address": "指定避難所 (ゆらてぃく公園は一時)",
+        "desc": "<ul><li>広さ…中</li><li>トイレ…あり(公民館内)</li><li>風通し…良</li><li>しげみ…少ない</li><li>日かげ…大きい木が3つ(ゆらてぃく公園)</li><li>街灯…4ヶ所あり</li><li>設備</li><ul><li>防災無線あり</li><li>公民館には、クーラーとせんぷうきあり</li><li>水道あり</li></ul></ul><h5>気づいたこと</h5><ul><li>公民館はふだんはしまっている→自治会の人があける。</li><li>公民館はまどいっぱい。</li><li>公民館はクーラーもあるしせんぷうきもあってすずしそう。</li><li>ゆらてぃく公園の向かいに自販機1台と、公民館げんかん前に1台あり。</li></ul><h5>安心度⭐️⭐️⭐️⭐️</h5><ul><li>理由: 公民館は涼しくすごせそう。ふだんは、開いていない。多くは収ようできない。台風時は安心。</li></ul>"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          127.773211,
+          26.251198 
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "中城南小学校",
+        "id": "7",
+        "image": [
+          "img/19ea/19mapcon_ea_7-1.jpg",
+          "img/19ea/19mapcon_ea_7-2.jpg",
+          "img/19ea/19mapcon_ea_7-3.jpg",
+          "img/19ea/19mapcon_ea_7-4.jpg"
+        ],
+        "address": "指定避難所",
+        "desc": "<ul><li>教室</li><li>体育館</li><li>プール</li><li>運動場</li><li>設備</li><ul><li>エレベーター</li><li>トイレ</li><li>ガス</li><li>水道</li><li>電気</li><li>街灯</li><li>クーラー</li><li>せんぷうき</li><li>スロープ</li></ul></ul><h5>気づいたこと</h5><ul><li>多くの人が避難できそう。</li><li>設備が整えられている。</li><li>ふだん夜はしまっている。</li><li>街灯はあるけどついていない。</li><li>ガスがあるから、ご飯をたけそう。</li><li>スロープがあるから車いすの人が通れる。</li></ul><h5>役場の人にききました</h5><ul><li>Q: 避難のとき、ペットもちこみOK？</li><li>A: いいけどアレルギーの人がいるからはなれた場所ですごす</li></ul><h5>安心度⭐️⭐️⭐️⭐️⭐️</h5><ul><li>理由: 設備が整えられ、車いすの人も避難できる。大きな災害の時はたくさんの人が避難できる。</li></ul>"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          127.773580,
+          26.247961 
+        ]
+      }
+    }
+  ]
+}
