@@ -1,13 +1,13 @@
 {
     "appName": "第19回みんなでつくる地域の安全安心マップコンテスト最優秀賞",
-    "splash": "19mapcon_gp.png",
+    "splash": "18mapcon_gp.png",
     "lang": "ja",
     "fakeGps": true,
-    "fakeCenter": "小網町交差点",
+    "fakeCenter": "鍋屋上野浄水場",
     "fakeRadius": 10,
     "homePosition": [
-        132.4460275039871,
-        34.39215102536363
+        136.95642824900534,
+        35.18778086170457
     ],
     "defaultZoom": 17,
     "startFrom": "19th_mapcontest_gp",
@@ -21,9 +21,6 @@
         "osm"
     ],
     "pois": [
-        "pois/19mapcon_gp_wh.geojson",
-        "pois/19mapcon_gp_red.geojson",
-        "pois/19mapcon_gp_yellow.geojson",
-        "pois/19mapcon_gp_pink.geojson"
+        "19mapcon_gp.geojson"
     ]
 }

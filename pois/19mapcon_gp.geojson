@@ -1,0 +1,537 @@
+{
+  "properties": {
+    "id": "19mapcon_gp",
+    "name": "ピン表示場所",
+    "icon": "parts/pin_red.png"
+  },
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "近くに工事看板あり",
+        "id": "1",
+        "image": ["img/19gp/19mapcon_gp_1.jpg"],
+        "address": " ",
+        "desc": "終了予定が来年8月。長期間工事が続く。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.951768,
+          35.192217
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "やや古めの住宅街",
+        "id": "2",
+        "image": ["img/19gp/19mapcon_gp_2.jpg"],
+        "address": "",
+        "desc": "管を順番に交換していて、路面がガタガタになっている。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.952426,
+          35.191984
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "宮前橋のたもと",
+        "id": "3",
+        "image": ["img/19gp/19mapcon_gp_3.jpg"],
+        "address": "",
+        "desc": "一帯が耐震化済で路面もきれい。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.955826,
+          35.190986
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "宮前橋の水道橋",
+        "id": "4",
+        "image": ["img/19gp/19mapcon_gp_4.jpg"],
+        "address": "",
+        "desc": "ペンキがきれいなので、最近メンテナンスしたと思われる。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.956252,
+          35.191669
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "大雨の時に雨水を川に排水するところ",
+        "id": "5",
+        "image": ["img/19gp/19mapcon_gp_5.jpg"],
+        "address": "",
+        "desc": "となりのポンプ場でくみ上げる。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.956534,
+          35.191589
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "矢田川パークハウス",
+        "id": "6",
+        "image": ["img/19gp/19mapcon_gp_6.jpg"],
+        "address": "",
+        "desc": "巨大な団地。敷地内の管は市の管理外。築50年。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.957092,
+          35.190783 
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "砂田橋の交差点 (私の学校の目の前)",
+        "id": "7",
+        "image": ["img/19gp/19mapcon_gp_7.jpg"],
+        "address": "",
+        "desc": "太い管が集中している。すぐ北に橋があり、1日3万台以上車が通る。地下鉄の駅もある。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.955179,
+          35.188612
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "導水管が遊歩道の下を通っている",
+        "id": "8",
+        "image": ["img/19gp/19mapcon_gp_8.jpg"],
+        "address": "",
+        "desc": "工事もしやすい？"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.959127,
+          35.189344
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "旧大幸川の暗きょ",
+        "id": "9",
+        "image": ["img/19gp/19mapcon_gp_9.jpg"],
+        "address": "",
+        "desc": "歩道の下に2m×2mのボックスカルパートが埋まっている。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.959016,
+          35.187609
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "大幸北エリア",
+        "id": "10",
+        "image": ["img/19gp/19mapcon_gp_10.jpg"],
+        "address": "",
+        "desc": "やや古めの住宅や工場が並ぶ。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.951758,
+          35.190141
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "陶器管集中エリア",
+        "id": "11",
+        "image": ["img/19gp/19mapcon_gp_11.jpg"],
+        "address": "",
+        "desc": "この辺りは古い家と新しい家が入り混じっている。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.953237,
+          35.185223 
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "高架の根本にマンホール！",
+        "id": "12",
+        "image": ["img/19gp/19mapcon_gp_12.jpg"],
+        "address": "",
+        "desc": "地下ではどんな構造になっていて、どうやって工事するのかな？"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.953095,
+          35.189050
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "応急給水施設の看板",
+        "id": "13",
+        "image": ["img/19gp/19mapcon_gp_13.jpg"],
+        "address": "",
+        "desc": "(私の学校の門の横)"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.954817,
+          35.187716 
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "サンハイツ鍋屋上野",
+        "id": "14",
+        "image": ["img/19gp/19mapcon_gp_14.jpg"],
+        "address": "",
+        "desc": "団地内の管は市の管理外。築42年。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.953614,
+          35.186327
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "安全地帯にマンホールがある",
+        "id": "15",
+        "image": ["img/19gp/19mapcon_gp_15.jpg"],
+        "address": "",
+        "desc": ""
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.954069,
+          35.184537
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "浄水場の前の道",
+        "id": "16",
+        "image": ["img/19gp/19mapcon_gp_16.jpg"],
+        "address": "",
+        "desc": "太い管が何本もある。交通量が多く、バスもよく通る。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.954286,
+          35.184106 
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "地下に太い送水管があるところ",
+        "id": "17",
+        "image": ["img/19gp/19mapcon_gp_17.jpg"],
+        "address": "",
+        "desc": "「トンネル工事」と書いてある。シールド管きょにするのかな？"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.955535,
+          35.183063
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "地下に太い送水管があるところ",
+        "id": "17",
+        "image": ["img/19gp/19mapcon_gp_17.jpg"],
+        "address": "",
+        "desc": "「トンネル工事」と書いてある。シールド管きょにするのかな？"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.955535,
+          35.183063
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "谷口の交差点",
+        "id": "18",
+        "image": ["img/19gp/19mapcon_gp_18.jpg"],
+        "address": "",
+        "desc": "片側4車線の巨大道路。1日4万以上の交通量。[不明]"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.954863,
+          35.182926 
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "水の小径",
+        "id": "19",
+        "image": ["img/19gp/19mapcon_gp_19.jpg"],
+        "address": "",
+        "desc": "送水管の上に整備された遊歩道。昔のY字管などを見ることができる。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.956013,
+          35.182669
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "天満通の住宅街",
+        "id": "20",
+        "image": ["img/19gp/19mapcon_gp_20.jpg"],
+        "address": "",
+        "desc": "細い道の地下に1.2mの太い管が埋まっている。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.954727,
+          35.181952
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "道路に工事メモ",
+        "id": "21",
+        "image": ["img/19gp/19mapcon_gp_21.jpg"],
+        "address": "",
+        "desc": "1200mm = 1.2m H = ヒューム管"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.954782,
+          35.181805
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "天満通の工事現場",
+        "id": "22",
+        "image": ["img/19gp/19mapcon_gp_22.jpg"],
+        "address": "",
+        "desc": "地図を作っている期間に工事開始。1車線が通行止め。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.955644,
+          35.181443
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "県営住宅",
+        "id": "23",
+        "image": ["img/19gp/19mapcon_gp_23.jpg"],
+        "address": "",
+        "desc": "敷地内の管は市の管理外。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.957459,
+          35.187788
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "浄水場北の遊歩道",
+        "id": "24",
+        "image": ["img/19gp/19mapcon_gp_24.jpg"],
+        "address": "",
+        "desc": "太い雨水管が通っている。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.956157,
+          35.186426 
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "UR大幸東団地",
+        "id": "25",
+        "image": ["img/19gp/19mapcon_gp_25.jpg"],
+        "address": "",
+        "desc": "全11棟の巨大団地。団地内の管は市の管理外。築44〜46年。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.961545,
+          35.189062 
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "茶屋ヶ坂北エリア",
+        "id": "26",
+        "image": ["img/19gp/19mapcon_gp_26.jpg"],
+        "address": "",
+        "desc": "昔は田んぼだったエリア。平地。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.961688,
+          35.185453 
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "茶屋ヶ坂の東側",
+        "id": "27",
+        "image": ["img/19gp/19mapcon_gp_27.jpg"],
+        "address": "",
+        "desc": "新しめのマンションが多い。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.962346,
+          35.183677
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "茶屋ヶ坂から谷口方面",
+        "id": "28",
+        "image": ["img/19gp/19mapcon_gp_28.jpg"],
+        "address": "",
+        "desc": "店が多い。なだらかな上り坂で、茶屋ヶ坂が低い土地だと分かる。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.961611,
+          35.183428 
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "茶屋ヶ坂を南から",
+        "id": "29",
+        "image": ["img/19gp/19mapcon_gp_29.jpg"],
+        "address": "",
+        "desc": "大通りの南側は丘、北側は平地。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.962068,
+          35.183071
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "茶屋ヶ坂南エリア",
+        "id": "30",
+        "image": ["img/19gp/19mapcon_gp_30.jpg"],
+        "address": "",
+        "desc": "古い家と新しい家がまじっている。"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          136.958799,
+          35.181967
+        ]
+      }
+    }
+  ]
+}
