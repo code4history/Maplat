@@ -10,9 +10,8 @@
     "dist/",
     "legacy/",
     "less/",
-    "parts/",
-    "fonts/",
-    "locales/"
+    "less/",
+    "assets/"
   ],
   "scripts": {
     "dev": "concurrently \"npm run watch:sw\" \"vite\"",

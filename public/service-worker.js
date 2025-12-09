@@ -3,13 +3,13 @@
   // <define:self.__WB_MANIFEST>
   var define_self_WB_MANIFEST_default = [];
 
-  // node_modules/workbox-core/_version.js
+  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/_version.js
   try {
-    self["workbox:core:6.5.4"] && _();
+    self["workbox:core:6.6.0"] && _();
   } catch (e) {
   }
 
-  // node_modules/workbox-core/_private/logger.js
+  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/_private/logger.js
   var logger = false ? null : (() => {
     if (!("__WB_DISABLE_DEV_LOGS" in globalThis)) {
       self.__WB_DISABLE_DEV_LOGS = false;
@@ -61,7 +61,7 @@
     return api;
   })();
 
-  // node_modules/workbox-core/models/messages/messages.js
+  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/models/messages/messages.js
   var messages = {
     "invalid-value": ({ paramName, validValueDescription, value }) => {
       if (!paramName || !validValueDescription) {
@@ -225,7 +225,7 @@
     }
   };
 
-  // node_modules/workbox-core/models/messages/messageGenerator.js
+  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/models/messages/messageGenerator.js
   var generatorFunction = (code, details = {}) => {
     const message = messages[code];
     if (!message) {
@@ -235,7 +235,7 @@
   };
   var messageGenerator = false ? fallback : generatorFunction;
 
-  // node_modules/workbox-core/_private/WorkboxError.js
+  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/_private/WorkboxError.js
   var WorkboxError = class extends Error {
     /**
      *
@@ -253,7 +253,7 @@
     }
   };
 
-  // node_modules/workbox-core/_private/assert.js
+  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/_private/assert.js
   var isArray = (value, details) => {
     if (!Array.isArray(value)) {
       throw new WorkboxError("not-an-array", details);
@@ -304,10 +304,10 @@
     isArrayOfClass
   };
 
-  // node_modules/workbox-core/models/quotaErrorCallbacks.js
+  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/models/quotaErrorCallbacks.js
   var quotaErrorCallbacks = /* @__PURE__ */ new Set();
 
-  // node_modules/workbox-core/registerQuotaErrorCallback.js
+  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/registerQuotaErrorCallback.js
   function registerQuotaErrorCallback(callback) {
     if (true) {
       finalAssertExports.isType(callback, "function", {
@@ -322,7 +322,7 @@
     }
   }
 
-  // node_modules/workbox-core/_private/cacheNames.js
+  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/_private/cacheNames.js
   var _cacheNameDetails = {
     googleAnalytics: "googleAnalytics",
     precache: "precache-v2",
@@ -363,7 +363,7 @@
     }
   };
 
-  // node_modules/workbox-core/_private/cacheMatchIgnoreParams.js
+  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/_private/cacheMatchIgnoreParams.js
   function stripParams(fullURL, ignoreParams) {
     const strippedURL = new URL(fullURL);
     for (const param of ignoreParams) {
@@ -387,7 +387,7 @@
     return;
   }
 
-  // node_modules/workbox-core/_private/canConstructResponseFromBodyStream.js
+  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/_private/canConstructResponseFromBodyStream.js
   var supportStatus;
   function canConstructResponseFromBodyStream() {
     if (supportStatus === void 0) {
@@ -405,13 +405,13 @@
     return supportStatus;
   }
 
-  // node_modules/workbox-core/_private/dontWaitFor.js
+  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/_private/dontWaitFor.js
   function dontWaitFor(promise) {
     void promise.then(() => {
     });
   }
 
-  // node_modules/workbox-core/_private/Deferred.js
+  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/_private/Deferred.js
   var Deferred = class {
     /**
      * Creates a promise and exposes its resolve and reject functions as methods.
@@ -424,7 +424,7 @@
     }
   };
 
-  // node_modules/workbox-core/_private/executeQuotaErrorCallbacks.js
+  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/_private/executeQuotaErrorCallbacks.js
   async function executeQuotaErrorCallbacks() {
     if (true) {
       logger.log(`About to run ${quotaErrorCallbacks.size} callbacks to clean up caches.`);
@@ -440,25 +440,25 @@
     }
   }
 
-  // node_modules/workbox-core/_private/getFriendlyURL.js
+  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/_private/getFriendlyURL.js
   var getFriendlyURL = (url) => {
     const urlObj = new URL(String(url), location.href);
     return urlObj.href.replace(new RegExp(`^${location.origin}`), "");
   };
 
-  // node_modules/workbox-core/_private/timeout.js
+  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/_private/timeout.js
   function timeout(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  // node_modules/workbox-core/_private/waitUntil.js
+  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/_private/waitUntil.js
   function waitUntil(event, asyncFn) {
     const returnPromise = asyncFn();
     event.waitUntil(returnPromise);
     return returnPromise;
   }
 
-  // node_modules/workbox-core/copyResponse.js
+  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/copyResponse.js
   async function copyResponse(response, modifier) {
     let origin = null;
     if (response.url) {
@@ -479,12 +479,12 @@
     return new Response(body, modifiedResponseInit);
   }
 
-  // node_modules/workbox-core/clientsClaim.js
+  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/clientsClaim.js
   function clientsClaim() {
     self.addEventListener("activate", () => self.clients.claim());
   }
 
-  // node_modules/workbox-core/skipWaiting.js
+  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/skipWaiting.js
   function skipWaiting() {
     if (true) {
       logger.warn(`skipWaiting() from workbox-core is no longer recommended and will be removed in Workbox v7. Using self.skipWaiting() instead is equivalent.`);
@@ -492,13 +492,13 @@
     void self.skipWaiting();
   }
 
-  // node_modules/workbox-precaching/_version.js
+  // node_modules/.pnpm/workbox-precaching@6.6.1/node_modules/workbox-precaching/_version.js
   try {
-    self["workbox:precaching:6.5.4"] && _();
+    self["workbox:precaching:6.6.0"] && _();
   } catch (e) {
   }
 
-  // node_modules/workbox-precaching/utils/createCacheKey.js
+  // node_modules/.pnpm/workbox-precaching@6.6.1/node_modules/workbox-precaching/utils/createCacheKey.js
   var REVISION_SEARCH_PARAM = "__WB_REVISION__";
   function createCacheKey(entry) {
     if (!entry) {
@@ -531,7 +531,7 @@
     };
   }
 
-  // node_modules/workbox-precaching/utils/PrecacheInstallReportPlugin.js
+  // node_modules/.pnpm/workbox-precaching@6.6.1/node_modules/workbox-precaching/utils/PrecacheInstallReportPlugin.js
   var PrecacheInstallReportPlugin = class {
     constructor() {
       this.updatedURLs = [];
@@ -557,7 +557,7 @@
     }
   };
 
-  // node_modules/workbox-precaching/utils/PrecacheCacheKeyPlugin.js
+  // node_modules/.pnpm/workbox-precaching@6.6.1/node_modules/workbox-precaching/utils/PrecacheCacheKeyPlugin.js
   var PrecacheCacheKeyPlugin = class {
     constructor({ precacheController: precacheController2 }) {
       this.cacheKeyWillBeUsed = async ({ request, params }) => {
@@ -568,7 +568,7 @@
     }
   };
 
-  // node_modules/workbox-precaching/utils/printCleanupDetails.js
+  // node_modules/.pnpm/workbox-precaching@6.6.1/node_modules/workbox-precaching/utils/printCleanupDetails.js
   var logGroup = (groupTitle, deletedURLs) => {
     logger.groupCollapsed(groupTitle);
     for (const url of deletedURLs) {
@@ -585,7 +585,7 @@
     }
   }
 
-  // node_modules/workbox-precaching/utils/printInstallDetails.js
+  // node_modules/.pnpm/workbox-precaching@6.6.1/node_modules/workbox-precaching/utils/printInstallDetails.js
   function _nestedGroup(groupTitle, urls) {
     if (urls.length === 0) {
       return;
@@ -611,13 +611,13 @@
     }
   }
 
-  // node_modules/workbox-strategies/_version.js
+  // node_modules/.pnpm/workbox-strategies@6.6.1/node_modules/workbox-strategies/_version.js
   try {
-    self["workbox:strategies:6.5.4"] && _();
+    self["workbox:strategies:6.6.0"] && _();
   } catch (e) {
   }
 
-  // node_modules/workbox-strategies/StrategyHandler.js
+  // node_modules/.pnpm/workbox-strategies@6.6.1/node_modules/workbox-strategies/StrategyHandler.js
   function toRequest(input) {
     return typeof input === "string" ? new Request(input) : input;
   }
@@ -1032,7 +1032,7 @@
     }
   };
 
-  // node_modules/workbox-strategies/Strategy.js
+  // node_modules/.pnpm/workbox-strategies@6.6.1/node_modules/workbox-strategies/Strategy.js
   var Strategy = class {
     /**
      * Creates a new instance of the strategy and sets all documented option
@@ -1182,7 +1182,7 @@
     }
   };
 
-  // node_modules/workbox-precaching/PrecacheStrategy.js
+  // node_modules/.pnpm/workbox-precaching@6.6.1/node_modules/workbox-precaching/PrecacheStrategy.js
   var PrecacheStrategy = class _PrecacheStrategy extends Strategy {
     /**
      *
@@ -1340,7 +1340,7 @@
     }
   };
 
-  // node_modules/workbox-precaching/PrecacheController.js
+  // node_modules/.pnpm/workbox-precaching@6.6.1/node_modules/workbox-precaching/PrecacheController.js
   var PrecacheController = class {
     /**
      * Create a new PrecacheController.
@@ -1594,7 +1594,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // node_modules/workbox-precaching/utils/getOrCreatePrecacheController.js
+  // node_modules/.pnpm/workbox-precaching@6.6.1/node_modules/workbox-precaching/utils/getOrCreatePrecacheController.js
   var precacheController;
   var getOrCreatePrecacheController = () => {
     if (!precacheController) {
@@ -1603,13 +1603,13 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     return precacheController;
   };
 
-  // node_modules/workbox-routing/_version.js
+  // node_modules/.pnpm/workbox-routing@6.6.1/node_modules/workbox-routing/_version.js
   try {
-    self["workbox:routing:6.5.4"] && _();
+    self["workbox:routing:6.6.0"] && _();
   } catch (e) {
   }
 
-  // node_modules/workbox-routing/utils/constants.js
+  // node_modules/.pnpm/workbox-routing@6.6.1/node_modules/workbox-routing/utils/constants.js
   var defaultMethod = "GET";
   var validMethods = [
     "DELETE",
@@ -1620,7 +1620,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     "PUT"
   ];
 
-  // node_modules/workbox-routing/utils/normalizeHandler.js
+  // node_modules/.pnpm/workbox-routing@6.6.1/node_modules/workbox-routing/utils/normalizeHandler.js
   var normalizeHandler = (handler) => {
     if (handler && typeof handler === "object") {
       if (true) {
@@ -1645,7 +1645,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // node_modules/workbox-routing/Route.js
+  // node_modules/.pnpm/workbox-routing@6.6.1/node_modules/workbox-routing/Route.js
   var Route = class {
     /**
      * Constructor for Route class.
@@ -1684,7 +1684,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // node_modules/workbox-routing/RegExpRoute.js
+  // node_modules/.pnpm/workbox-routing@6.6.1/node_modules/workbox-routing/RegExpRoute.js
   var RegExpRoute = class extends Route {
     /**
      * If the regular expression contains
@@ -1725,7 +1725,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // node_modules/workbox-routing/Router.js
+  // node_modules/.pnpm/workbox-routing@6.6.1/node_modules/workbox-routing/Router.js
   var Router = class {
     /**
      * Initializes a new Router.
@@ -2038,7 +2038,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // node_modules/workbox-routing/utils/getOrCreateDefaultRouter.js
+  // node_modules/.pnpm/workbox-routing@6.6.1/node_modules/workbox-routing/utils/getOrCreateDefaultRouter.js
   var defaultRouter;
   var getOrCreateDefaultRouter = () => {
     if (!defaultRouter) {
@@ -2049,7 +2049,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     return defaultRouter;
   };
 
-  // node_modules/workbox-routing/registerRoute.js
+  // node_modules/.pnpm/workbox-routing@6.6.1/node_modules/workbox-routing/registerRoute.js
   function registerRoute(capture, handler, method) {
     let route;
     if (typeof capture === "string") {
@@ -2090,12 +2090,12 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
         paramName: "capture"
       });
     }
-    const defaultRouter3 = getOrCreateDefaultRouter();
-    defaultRouter3.registerRoute(route);
+    const defaultRouter2 = getOrCreateDefaultRouter();
+    defaultRouter2.registerRoute(route);
     return route;
   }
 
-  // node_modules/workbox-precaching/utils/removeIgnoredSearchParams.js
+  // node_modules/.pnpm/workbox-precaching@6.6.1/node_modules/workbox-precaching/utils/removeIgnoredSearchParams.js
   function removeIgnoredSearchParams(urlObject, ignoreURLParametersMatching = []) {
     for (const paramName of [...urlObject.searchParams.keys()]) {
       if (ignoreURLParametersMatching.some((regExp) => regExp.test(paramName))) {
@@ -2105,7 +2105,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     return urlObject;
   }
 
-  // node_modules/workbox-precaching/utils/generateURLVariations.js
+  // node_modules/.pnpm/workbox-precaching@6.6.1/node_modules/workbox-precaching/utils/generateURLVariations.js
   function* generateURLVariations(url, { ignoreURLParametersMatching = [/^utm_/, /^fbclid$/], directoryIndex = "index.html", cleanURLs = true, urlManipulation } = {}) {
     const urlObject = new URL(url, location.href);
     urlObject.hash = "";
@@ -2130,7 +2130,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   }
 
-  // node_modules/workbox-precaching/PrecacheRoute.js
+  // node_modules/.pnpm/workbox-precaching@6.6.1/node_modules/workbox-precaching/PrecacheRoute.js
   var PrecacheRoute = class extends Route {
     /**
      * @param {PrecacheController} precacheController A `PrecacheController`
@@ -2167,26 +2167,26 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // node_modules/workbox-precaching/addRoute.js
+  // node_modules/.pnpm/workbox-precaching@6.6.1/node_modules/workbox-precaching/addRoute.js
   function addRoute(options) {
     const precacheController2 = getOrCreatePrecacheController();
     const precacheRoute = new PrecacheRoute(precacheController2, options);
     registerRoute(precacheRoute);
   }
 
-  // node_modules/workbox-precaching/precache.js
+  // node_modules/.pnpm/workbox-precaching@6.6.1/node_modules/workbox-precaching/precache.js
   function precache(entries) {
     const precacheController2 = getOrCreatePrecacheController();
     precacheController2.precache(entries);
   }
 
-  // node_modules/workbox-precaching/precacheAndRoute.js
+  // node_modules/.pnpm/workbox-precaching@6.6.1/node_modules/workbox-precaching/precacheAndRoute.js
   function precacheAndRoute(entries, options) {
     precache(entries);
     addRoute(options);
   }
 
-  // node_modules/workbox-strategies/utils/messages.js
+  // node_modules/.pnpm/workbox-strategies@6.6.1/node_modules/workbox-strategies/utils/messages.js
   var messages2 = {
     strategyStart: (strategyName, request) => `Using ${strategyName} to respond to '${getFriendlyURL(request.url)}'`,
     printFinalResponse: (response) => {
@@ -2198,7 +2198,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // node_modules/workbox-strategies/plugins/cacheOkAndOpaquePlugin.js
+  // node_modules/.pnpm/workbox-strategies@6.6.1/node_modules/workbox-strategies/plugins/cacheOkAndOpaquePlugin.js
   var cacheOkAndOpaquePlugin = {
     /**
      * Returns a valid response (to allow caching) if the status is 200 (OK) or
@@ -2218,7 +2218,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // node_modules/workbox-strategies/StaleWhileRevalidate.js
+  // node_modules/.pnpm/workbox-strategies@6.6.1/node_modules/workbox-strategies/StaleWhileRevalidate.js
   var StaleWhileRevalidate = class extends Strategy {
     /**
      * @param {Object} [options]
@@ -2292,7 +2292,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // node_modules/idb/build/wrap-idb-value.js
+  // node_modules/.pnpm/idb@7.1.1/node_modules/idb/build/wrap-idb-value.js
   var instanceOfAny = (object, constructors) => constructors.some((c) => object instanceof c);
   var idbProxyableTypes;
   var cursorAdvanceMethods;
@@ -2435,7 +2435,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
   }
   var unwrap = (value) => reverseTransformCache.get(value);
 
-  // node_modules/idb/build/index.js
+  // node_modules/.pnpm/idb@7.1.1/node_modules/idb/build/index.js
   function openDB(name, version, { blocked, upgrade, blocking, terminated } = {}) {
     const request = indexedDB.open(name, version);
     const openPromise = wrap(request);
@@ -2510,13 +2510,13 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     has: (target, prop) => !!getMethod(target, prop) || oldTraps.has(target, prop)
   }));
 
-  // node_modules/workbox-expiration/_version.js
+  // node_modules/.pnpm/workbox-expiration@6.6.1/node_modules/workbox-expiration/_version.js
   try {
-    self["workbox:expiration:6.5.4"] && _();
+    self["workbox:expiration:6.6.0"] && _();
   } catch (e) {
   }
 
-  // node_modules/workbox-expiration/models/CacheTimestampsModel.js
+  // node_modules/.pnpm/workbox-expiration@6.6.1/node_modules/workbox-expiration/models/CacheTimestampsModel.js
   var DB_NAME = "workbox-expiration";
   var CACHE_OBJECT_STORE = "cache-entries";
   var normalizeURL = (unNormalizedUrl) => {
@@ -2657,7 +2657,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // node_modules/workbox-expiration/CacheExpiration.js
+  // node_modules/.pnpm/workbox-expiration@6.6.1/node_modules/workbox-expiration/CacheExpiration.js
   var CacheExpiration = class {
     /**
      * To construct a new CacheExpiration instance you must provide at least
@@ -2797,7 +2797,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // node_modules/workbox-expiration/ExpirationPlugin.js
+  // node_modules/.pnpm/workbox-expiration@6.6.1/node_modules/workbox-expiration/ExpirationPlugin.js
   var ExpirationPlugin = class {
     /**
      * @param {ExpirationPluginOptions} config
@@ -2966,807 +2966,8 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/_version.js
-  try {
-    self["workbox:core:6.6.0"] && _();
-  } catch (e) {
-  }
-
-  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/models/messages/messages.js
-  var messages3 = {
-    "invalid-value": ({ paramName, validValueDescription, value }) => {
-      if (!paramName || !validValueDescription) {
-        throw new Error(`Unexpected input to 'invalid-value' error.`);
-      }
-      return `The '${paramName}' parameter was given a value with an unexpected value. ${validValueDescription} Received a value of ${JSON.stringify(value)}.`;
-    },
-    "not-an-array": ({ moduleName, className, funcName, paramName }) => {
-      if (!moduleName || !className || !funcName || !paramName) {
-        throw new Error(`Unexpected input to 'not-an-array' error.`);
-      }
-      return `The parameter '${paramName}' passed into '${moduleName}.${className}.${funcName}()' must be an array.`;
-    },
-    "incorrect-type": ({ expectedType, paramName, moduleName, className, funcName }) => {
-      if (!expectedType || !paramName || !moduleName || !funcName) {
-        throw new Error(`Unexpected input to 'incorrect-type' error.`);
-      }
-      const classNameStr = className ? `${className}.` : "";
-      return `The parameter '${paramName}' passed into '${moduleName}.${classNameStr}${funcName}()' must be of type ${expectedType}.`;
-    },
-    "incorrect-class": ({ expectedClassName, paramName, moduleName, className, funcName, isReturnValueProblem }) => {
-      if (!expectedClassName || !moduleName || !funcName) {
-        throw new Error(`Unexpected input to 'incorrect-class' error.`);
-      }
-      const classNameStr = className ? `${className}.` : "";
-      if (isReturnValueProblem) {
-        return `The return value from '${moduleName}.${classNameStr}${funcName}()' must be an instance of class ${expectedClassName}.`;
-      }
-      return `The parameter '${paramName}' passed into '${moduleName}.${classNameStr}${funcName}()' must be an instance of class ${expectedClassName}.`;
-    },
-    "missing-a-method": ({ expectedMethod, paramName, moduleName, className, funcName }) => {
-      if (!expectedMethod || !paramName || !moduleName || !className || !funcName) {
-        throw new Error(`Unexpected input to 'missing-a-method' error.`);
-      }
-      return `${moduleName}.${className}.${funcName}() expected the '${paramName}' parameter to expose a '${expectedMethod}' method.`;
-    },
-    "add-to-cache-list-unexpected-type": ({ entry }) => {
-      return `An unexpected entry was passed to 'workbox-precaching.PrecacheController.addToCacheList()' The entry '${JSON.stringify(entry)}' isn't supported. You must supply an array of strings with one or more characters, objects with a url property or Request objects.`;
-    },
-    "add-to-cache-list-conflicting-entries": ({ firstEntry, secondEntry }) => {
-      if (!firstEntry || !secondEntry) {
-        throw new Error(`Unexpected input to 'add-to-cache-list-duplicate-entries' error.`);
-      }
-      return `Two of the entries passed to 'workbox-precaching.PrecacheController.addToCacheList()' had the URL ${firstEntry} but different revision details. Workbox is unable to cache and version the asset correctly. Please remove one of the entries.`;
-    },
-    "plugin-error-request-will-fetch": ({ thrownErrorMessage }) => {
-      if (!thrownErrorMessage) {
-        throw new Error(`Unexpected input to 'plugin-error-request-will-fetch', error.`);
-      }
-      return `An error was thrown by a plugins 'requestWillFetch()' method. The thrown error message was: '${thrownErrorMessage}'.`;
-    },
-    "invalid-cache-name": ({ cacheNameId, value }) => {
-      if (!cacheNameId) {
-        throw new Error(`Expected a 'cacheNameId' for error 'invalid-cache-name'`);
-      }
-      return `You must provide a name containing at least one character for setCacheDetails({${cacheNameId}: '...'}). Received a value of '${JSON.stringify(value)}'`;
-    },
-    "unregister-route-but-not-found-with-method": ({ method }) => {
-      if (!method) {
-        throw new Error(`Unexpected input to 'unregister-route-but-not-found-with-method' error.`);
-      }
-      return `The route you're trying to unregister was not  previously registered for the method type '${method}'.`;
-    },
-    "unregister-route-route-not-registered": () => {
-      return `The route you're trying to unregister was not previously registered.`;
-    },
-    "queue-replay-failed": ({ name }) => {
-      return `Replaying the background sync queue '${name}' failed.`;
-    },
-    "duplicate-queue-name": ({ name }) => {
-      return `The Queue name '${name}' is already being used. All instances of backgroundSync.Queue must be given unique names.`;
-    },
-    "expired-test-without-max-age": ({ methodName, paramName }) => {
-      return `The '${methodName}()' method can only be used when the '${paramName}' is used in the constructor.`;
-    },
-    "unsupported-route-type": ({ moduleName, className, funcName, paramName }) => {
-      return `The supplied '${paramName}' parameter was an unsupported type. Please check the docs for ${moduleName}.${className}.${funcName} for valid input types.`;
-    },
-    "not-array-of-class": ({ value, expectedClass, moduleName, className, funcName, paramName }) => {
-      return `The supplied '${paramName}' parameter must be an array of '${expectedClass}' objects. Received '${JSON.stringify(value)},'. Please check the call to ${moduleName}.${className}.${funcName}() to fix the issue.`;
-    },
-    "max-entries-or-age-required": ({ moduleName, className, funcName }) => {
-      return `You must define either config.maxEntries or config.maxAgeSecondsin ${moduleName}.${className}.${funcName}`;
-    },
-    "statuses-or-headers-required": ({ moduleName, className, funcName }) => {
-      return `You must define either config.statuses or config.headersin ${moduleName}.${className}.${funcName}`;
-    },
-    "invalid-string": ({ moduleName, funcName, paramName }) => {
-      if (!paramName || !moduleName || !funcName) {
-        throw new Error(`Unexpected input to 'invalid-string' error.`);
-      }
-      return `When using strings, the '${paramName}' parameter must start with 'http' (for cross-origin matches) or '/' (for same-origin matches). Please see the docs for ${moduleName}.${funcName}() for more info.`;
-    },
-    "channel-name-required": () => {
-      return `You must provide a channelName to construct a BroadcastCacheUpdate instance.`;
-    },
-    "invalid-responses-are-same-args": () => {
-      return `The arguments passed into responsesAreSame() appear to be invalid. Please ensure valid Responses are used.`;
-    },
-    "expire-custom-caches-only": () => {
-      return `You must provide a 'cacheName' property when using the expiration plugin with a runtime caching strategy.`;
-    },
-    "unit-must-be-bytes": ({ normalizedRangeHeader }) => {
-      if (!normalizedRangeHeader) {
-        throw new Error(`Unexpected input to 'unit-must-be-bytes' error.`);
-      }
-      return `The 'unit' portion of the Range header must be set to 'bytes'. The Range header provided was "${normalizedRangeHeader}"`;
-    },
-    "single-range-only": ({ normalizedRangeHeader }) => {
-      if (!normalizedRangeHeader) {
-        throw new Error(`Unexpected input to 'single-range-only' error.`);
-      }
-      return `Multiple ranges are not supported. Please use a  single start value, and optional end value. The Range header provided was "${normalizedRangeHeader}"`;
-    },
-    "invalid-range-values": ({ normalizedRangeHeader }) => {
-      if (!normalizedRangeHeader) {
-        throw new Error(`Unexpected input to 'invalid-range-values' error.`);
-      }
-      return `The Range header is missing both start and end values. At least one of those values is needed. The Range header provided was "${normalizedRangeHeader}"`;
-    },
-    "no-range-header": () => {
-      return `No Range header was found in the Request provided.`;
-    },
-    "range-not-satisfiable": ({ size, start, end }) => {
-      return `The start (${start}) and end (${end}) values in the Range are not satisfiable by the cached response, which is ${size} bytes.`;
-    },
-    "attempt-to-cache-non-get-request": ({ url, method }) => {
-      return `Unable to cache '${url}' because it is a '${method}' request and only 'GET' requests can be cached.`;
-    },
-    "cache-put-with-no-response": ({ url }) => {
-      return `There was an attempt to cache '${url}' but the response was not defined.`;
-    },
-    "no-response": ({ url, error }) => {
-      let message = `The strategy could not generate a response for '${url}'.`;
-      if (error) {
-        message += ` The underlying error is ${error}.`;
-      }
-      return message;
-    },
-    "bad-precaching-response": ({ url, status }) => {
-      return `The precaching request for '${url}' failed` + (status ? ` with an HTTP status of ${status}.` : `.`);
-    },
-    "non-precached-url": ({ url }) => {
-      return `createHandlerBoundToURL('${url}') was called, but that URL is not precached. Please pass in a URL that is precached instead.`;
-    },
-    "add-to-cache-list-conflicting-integrities": ({ url }) => {
-      return `Two of the entries passed to 'workbox-precaching.PrecacheController.addToCacheList()' had the URL ${url} with different integrity values. Please remove one of them.`;
-    },
-    "missing-precache-entry": ({ cacheName, url }) => {
-      return `Unable to find a precached response in ${cacheName} for ${url}.`;
-    },
-    "cross-origin-copy-response": ({ origin }) => {
-      return `workbox-core.copyResponse() can only be used with same-origin responses. It was passed a response with origin ${origin}.`;
-    },
-    "opaque-streams-source": ({ type }) => {
-      const message = `One of the workbox-streams sources resulted in an '${type}' response.`;
-      if (type === "opaqueredirect") {
-        return `${message} Please do not use a navigation request that results in a redirect as a source.`;
-      }
-      return `${message} Please ensure your sources are CORS-enabled.`;
-    }
-  };
-
-  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/models/messages/messageGenerator.js
-  var generatorFunction2 = (code, details = {}) => {
-    const message = messages3[code];
-    if (!message) {
-      throw new Error(`Unable to find message for code '${code}'.`);
-    }
-    return message(details);
-  };
-  var messageGenerator2 = false ? fallback : generatorFunction2;
-
-  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/_private/WorkboxError.js
-  var WorkboxError2 = class extends Error {
-    /**
-     *
-     * @param {string} errorCode The error code that
-     * identifies this particular error.
-     * @param {Object=} details Any relevant arguments
-     * that will help developers identify issues should
-     * be added as a key on the context object.
-     */
-    constructor(errorCode, details) {
-      const message = messageGenerator2(errorCode, details);
-      super(message);
-      this.name = errorCode;
-      this.details = details;
-    }
-  };
-
-  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/_private/assert.js
-  var isArray2 = (value, details) => {
-    if (!Array.isArray(value)) {
-      throw new WorkboxError2("not-an-array", details);
-    }
-  };
-  var hasMethod2 = (object, expectedMethod, details) => {
-    const type = typeof object[expectedMethod];
-    if (type !== "function") {
-      details["expectedMethod"] = expectedMethod;
-      throw new WorkboxError2("missing-a-method", details);
-    }
-  };
-  var isType2 = (object, expectedType, details) => {
-    if (typeof object !== expectedType) {
-      details["expectedType"] = expectedType;
-      throw new WorkboxError2("incorrect-type", details);
-    }
-  };
-  var isInstance2 = (object, expectedClass, details) => {
-    if (!(object instanceof expectedClass)) {
-      details["expectedClassName"] = expectedClass.name;
-      throw new WorkboxError2("incorrect-class", details);
-    }
-  };
-  var isOneOf2 = (value, validValues, details) => {
-    if (!validValues.includes(value)) {
-      details["validValueDescription"] = `Valid values are ${JSON.stringify(validValues)}.`;
-      throw new WorkboxError2("invalid-value", details);
-    }
-  };
-  var isArrayOfClass2 = (value, expectedClass, details) => {
-    const error = new WorkboxError2("not-array-of-class", details);
-    if (!Array.isArray(value)) {
-      throw error;
-    }
-    for (const item of value) {
-      if (!(item instanceof expectedClass)) {
-        throw error;
-      }
-    }
-  };
-  var finalAssertExports2 = false ? null : {
-    hasMethod: hasMethod2,
-    isArray: isArray2,
-    isInstance: isInstance2,
-    isOneOf: isOneOf2,
-    isType: isType2,
-    isArrayOfClass: isArrayOfClass2
-  };
-
-  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/_private/logger.js
-  var logger2 = false ? null : (() => {
-    if (!("__WB_DISABLE_DEV_LOGS" in globalThis)) {
-      self.__WB_DISABLE_DEV_LOGS = false;
-    }
-    let inGroup = false;
-    const methodToColorMap = {
-      debug: `#7f8c8d`,
-      log: `#2ecc71`,
-      warn: `#f39c12`,
-      error: `#c0392b`,
-      groupCollapsed: `#3498db`,
-      groupEnd: null
-      // No colored prefix on groupEnd
-    };
-    const print = function(method, args) {
-      if (self.__WB_DISABLE_DEV_LOGS) {
-        return;
-      }
-      if (method === "groupCollapsed") {
-        if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
-          console[method](...args);
-          return;
-        }
-      }
-      const styles = [
-        `background: ${methodToColorMap[method]}`,
-        `border-radius: 0.5em`,
-        `color: white`,
-        `font-weight: bold`,
-        `padding: 2px 0.5em`
-      ];
-      const logPrefix = inGroup ? [] : ["%cworkbox", styles.join(";")];
-      console[method](...logPrefix, ...args);
-      if (method === "groupCollapsed") {
-        inGroup = true;
-      }
-      if (method === "groupEnd") {
-        inGroup = false;
-      }
-    };
-    const api = {};
-    const loggerMethods = Object.keys(methodToColorMap);
-    for (const key of loggerMethods) {
-      const method = key;
-      api[method] = (...args) => {
-        print(method, args);
-      };
-    }
-    return api;
-  })();
-
-  // node_modules/.pnpm/workbox-routing@6.6.1/node_modules/workbox-routing/_version.js
-  try {
-    self["workbox:routing:6.6.0"] && _();
-  } catch (e) {
-  }
-
-  // node_modules/.pnpm/workbox-routing@6.6.1/node_modules/workbox-routing/utils/constants.js
-  var defaultMethod2 = "GET";
-  var validMethods2 = [
-    "DELETE",
-    "GET",
-    "HEAD",
-    "PATCH",
-    "POST",
-    "PUT"
-  ];
-
-  // node_modules/.pnpm/workbox-routing@6.6.1/node_modules/workbox-routing/utils/normalizeHandler.js
-  var normalizeHandler2 = (handler) => {
-    if (handler && typeof handler === "object") {
-      if (true) {
-        finalAssertExports2.hasMethod(handler, "handle", {
-          moduleName: "workbox-routing",
-          className: "Route",
-          funcName: "constructor",
-          paramName: "handler"
-        });
-      }
-      return handler;
-    } else {
-      if (true) {
-        finalAssertExports2.isType(handler, "function", {
-          moduleName: "workbox-routing",
-          className: "Route",
-          funcName: "constructor",
-          paramName: "handler"
-        });
-      }
-      return { handle: handler };
-    }
-  };
-
-  // node_modules/.pnpm/workbox-routing@6.6.1/node_modules/workbox-routing/Route.js
-  var Route2 = class {
-    /**
-     * Constructor for Route class.
-     *
-     * @param {workbox-routing~matchCallback} match
-     * A callback function that determines whether the route matches a given
-     * `fetch` event by returning a non-falsy value.
-     * @param {workbox-routing~handlerCallback} handler A callback
-     * function that returns a Promise resolving to a Response.
-     * @param {string} [method='GET'] The HTTP method to match the Route
-     * against.
-     */
-    constructor(match, handler, method = defaultMethod2) {
-      if (true) {
-        finalAssertExports2.isType(match, "function", {
-          moduleName: "workbox-routing",
-          className: "Route",
-          funcName: "constructor",
-          paramName: "match"
-        });
-        if (method) {
-          finalAssertExports2.isOneOf(method, validMethods2, { paramName: "method" });
-        }
-      }
-      this.handler = normalizeHandler2(handler);
-      this.match = match;
-      this.method = method;
-    }
-    /**
-     *
-     * @param {workbox-routing-handlerCallback} handler A callback
-     * function that returns a Promise resolving to a Response
-     */
-    setCatchHandler(handler) {
-      this.catchHandler = normalizeHandler2(handler);
-    }
-  };
-
-  // node_modules/.pnpm/workbox-routing@6.6.1/node_modules/workbox-routing/RegExpRoute.js
-  var RegExpRoute2 = class extends Route2 {
-    /**
-     * If the regular expression contains
-     * [capture groups]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp#grouping-back-references},
-     * the captured values will be passed to the
-     * {@link workbox-routing~handlerCallback} `params`
-     * argument.
-     *
-     * @param {RegExp} regExp The regular expression to match against URLs.
-     * @param {workbox-routing~handlerCallback} handler A callback
-     * function that returns a Promise resulting in a Response.
-     * @param {string} [method='GET'] The HTTP method to match the Route
-     * against.
-     */
-    constructor(regExp, handler, method) {
-      if (true) {
-        finalAssertExports2.isInstance(regExp, RegExp, {
-          moduleName: "workbox-routing",
-          className: "RegExpRoute",
-          funcName: "constructor",
-          paramName: "pattern"
-        });
-      }
-      const match = ({ url }) => {
-        const result = regExp.exec(url.href);
-        if (!result) {
-          return;
-        }
-        if (url.origin !== location.origin && result.index !== 0) {
-          if (true) {
-            logger2.debug(`The regular expression '${regExp.toString()}' only partially matched against the cross-origin URL '${url.toString()}'. RegExpRoute's will only handle cross-origin requests if they match the entire URL.`);
-          }
-          return;
-        }
-        return result.slice(1);
-      };
-      super(match, handler, method);
-    }
-  };
-
-  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/_private/getFriendlyURL.js
-  var getFriendlyURL2 = (url) => {
-    const urlObj = new URL(String(url), location.href);
-    return urlObj.href.replace(new RegExp(`^${location.origin}`), "");
-  };
-
-  // node_modules/.pnpm/workbox-routing@6.6.1/node_modules/workbox-routing/Router.js
-  var Router2 = class {
-    /**
-     * Initializes a new Router.
-     */
-    constructor() {
-      this._routes = /* @__PURE__ */ new Map();
-      this._defaultHandlerMap = /* @__PURE__ */ new Map();
-    }
-    /**
-     * @return {Map<string, Array<workbox-routing.Route>>} routes A `Map` of HTTP
-     * method name ('GET', etc.) to an array of all the corresponding `Route`
-     * instances that are registered.
-     */
-    get routes() {
-      return this._routes;
-    }
-    /**
-     * Adds a fetch event listener to respond to events when a route matches
-     * the event's request.
-     */
-    addFetchListener() {
-      self.addEventListener("fetch", (event) => {
-        const { request } = event;
-        const responsePromise = this.handleRequest({ request, event });
-        if (responsePromise) {
-          event.respondWith(responsePromise);
-        }
-      });
-    }
-    /**
-     * Adds a message event listener for URLs to cache from the window.
-     * This is useful to cache resources loaded on the page prior to when the
-     * service worker started controlling it.
-     *
-     * The format of the message data sent from the window should be as follows.
-     * Where the `urlsToCache` array may consist of URL strings or an array of
-     * URL string + `requestInit` object (the same as you'd pass to `fetch()`).
-     *
-     * ```
-     * {
-     *   type: 'CACHE_URLS',
-     *   payload: {
-     *     urlsToCache: [
-     *       './script1.js',
-     *       './script2.js',
-     *       ['./script3.js', {mode: 'no-cors'}],
-     *     ],
-     *   },
-     * }
-     * ```
-     */
-    addCacheListener() {
-      self.addEventListener("message", (event) => {
-        if (event.data && event.data.type === "CACHE_URLS") {
-          const { payload } = event.data;
-          if (true) {
-            logger2.debug(`Caching URLs from the window`, payload.urlsToCache);
-          }
-          const requestPromises = Promise.all(payload.urlsToCache.map((entry) => {
-            if (typeof entry === "string") {
-              entry = [entry];
-            }
-            const request = new Request(...entry);
-            return this.handleRequest({ request, event });
-          }));
-          event.waitUntil(requestPromises);
-          if (event.ports && event.ports[0]) {
-            void requestPromises.then(() => event.ports[0].postMessage(true));
-          }
-        }
-      });
-    }
-    /**
-     * Apply the routing rules to a FetchEvent object to get a Response from an
-     * appropriate Route's handler.
-     *
-     * @param {Object} options
-     * @param {Request} options.request The request to handle.
-     * @param {ExtendableEvent} options.event The event that triggered the
-     *     request.
-     * @return {Promise<Response>|undefined} A promise is returned if a
-     *     registered route can handle the request. If there is no matching
-     *     route and there's no `defaultHandler`, `undefined` is returned.
-     */
-    handleRequest({ request, event }) {
-      if (true) {
-        finalAssertExports2.isInstance(request, Request, {
-          moduleName: "workbox-routing",
-          className: "Router",
-          funcName: "handleRequest",
-          paramName: "options.request"
-        });
-      }
-      const url = new URL(request.url, location.href);
-      if (!url.protocol.startsWith("http")) {
-        if (true) {
-          logger2.debug(`Workbox Router only supports URLs that start with 'http'.`);
-        }
-        return;
-      }
-      const sameOrigin = url.origin === location.origin;
-      const { params, route } = this.findMatchingRoute({
-        event,
-        request,
-        sameOrigin,
-        url
-      });
-      let handler = route && route.handler;
-      const debugMessages = [];
-      if (true) {
-        if (handler) {
-          debugMessages.push([`Found a route to handle this request:`, route]);
-          if (params) {
-            debugMessages.push([
-              `Passing the following params to the route's handler:`,
-              params
-            ]);
-          }
-        }
-      }
-      const method = request.method;
-      if (!handler && this._defaultHandlerMap.has(method)) {
-        if (true) {
-          debugMessages.push(`Failed to find a matching route. Falling back to the default handler for ${method}.`);
-        }
-        handler = this._defaultHandlerMap.get(method);
-      }
-      if (!handler) {
-        if (true) {
-          logger2.debug(`No route found for: ${getFriendlyURL2(url)}`);
-        }
-        return;
-      }
-      if (true) {
-        logger2.groupCollapsed(`Router is responding to: ${getFriendlyURL2(url)}`);
-        debugMessages.forEach((msg) => {
-          if (Array.isArray(msg)) {
-            logger2.log(...msg);
-          } else {
-            logger2.log(msg);
-          }
-        });
-        logger2.groupEnd();
-      }
-      let responsePromise;
-      try {
-        responsePromise = handler.handle({ url, request, event, params });
-      } catch (err) {
-        responsePromise = Promise.reject(err);
-      }
-      const catchHandler = route && route.catchHandler;
-      if (responsePromise instanceof Promise && (this._catchHandler || catchHandler)) {
-        responsePromise = responsePromise.catch(async (err) => {
-          if (catchHandler) {
-            if (true) {
-              logger2.groupCollapsed(`Error thrown when responding to:  ${getFriendlyURL2(url)}. Falling back to route's Catch Handler.`);
-              logger2.error(`Error thrown by:`, route);
-              logger2.error(err);
-              logger2.groupEnd();
-            }
-            try {
-              return await catchHandler.handle({ url, request, event, params });
-            } catch (catchErr) {
-              if (catchErr instanceof Error) {
-                err = catchErr;
-              }
-            }
-          }
-          if (this._catchHandler) {
-            if (true) {
-              logger2.groupCollapsed(`Error thrown when responding to:  ${getFriendlyURL2(url)}. Falling back to global Catch Handler.`);
-              logger2.error(`Error thrown by:`, route);
-              logger2.error(err);
-              logger2.groupEnd();
-            }
-            return this._catchHandler.handle({ url, request, event });
-          }
-          throw err;
-        });
-      }
-      return responsePromise;
-    }
-    /**
-     * Checks a request and URL (and optionally an event) against the list of
-     * registered routes, and if there's a match, returns the corresponding
-     * route along with any params generated by the match.
-     *
-     * @param {Object} options
-     * @param {URL} options.url
-     * @param {boolean} options.sameOrigin The result of comparing `url.origin`
-     *     against the current origin.
-     * @param {Request} options.request The request to match.
-     * @param {Event} options.event The corresponding event.
-     * @return {Object} An object with `route` and `params` properties.
-     *     They are populated if a matching route was found or `undefined`
-     *     otherwise.
-     */
-    findMatchingRoute({ url, sameOrigin, request, event }) {
-      const routes = this._routes.get(request.method) || [];
-      for (const route of routes) {
-        let params;
-        const matchResult = route.match({ url, sameOrigin, request, event });
-        if (matchResult) {
-          if (true) {
-            if (matchResult instanceof Promise) {
-              logger2.warn(`While routing ${getFriendlyURL2(url)}, an async matchCallback function was used. Please convert the following route to use a synchronous matchCallback function:`, route);
-            }
-          }
-          params = matchResult;
-          if (Array.isArray(params) && params.length === 0) {
-            params = void 0;
-          } else if (matchResult.constructor === Object && // eslint-disable-line
-          Object.keys(matchResult).length === 0) {
-            params = void 0;
-          } else if (typeof matchResult === "boolean") {
-            params = void 0;
-          }
-          return { route, params };
-        }
-      }
-      return {};
-    }
-    /**
-     * Define a default `handler` that's called when no routes explicitly
-     * match the incoming request.
-     *
-     * Each HTTP method ('GET', 'POST', etc.) gets its own default handler.
-     *
-     * Without a default handler, unmatched requests will go against the
-     * network as if there were no service worker present.
-     *
-     * @param {workbox-routing~handlerCallback} handler A callback
-     * function that returns a Promise resulting in a Response.
-     * @param {string} [method='GET'] The HTTP method to associate with this
-     * default handler. Each method has its own default.
-     */
-    setDefaultHandler(handler, method = defaultMethod2) {
-      this._defaultHandlerMap.set(method, normalizeHandler2(handler));
-    }
-    /**
-     * If a Route throws an error while handling a request, this `handler`
-     * will be called and given a chance to provide a response.
-     *
-     * @param {workbox-routing~handlerCallback} handler A callback
-     * function that returns a Promise resulting in a Response.
-     */
-    setCatchHandler(handler) {
-      this._catchHandler = normalizeHandler2(handler);
-    }
-    /**
-     * Registers a route with the router.
-     *
-     * @param {workbox-routing.Route} route The route to register.
-     */
-    registerRoute(route) {
-      if (true) {
-        finalAssertExports2.isType(route, "object", {
-          moduleName: "workbox-routing",
-          className: "Router",
-          funcName: "registerRoute",
-          paramName: "route"
-        });
-        finalAssertExports2.hasMethod(route, "match", {
-          moduleName: "workbox-routing",
-          className: "Router",
-          funcName: "registerRoute",
-          paramName: "route"
-        });
-        finalAssertExports2.isType(route.handler, "object", {
-          moduleName: "workbox-routing",
-          className: "Router",
-          funcName: "registerRoute",
-          paramName: "route"
-        });
-        finalAssertExports2.hasMethod(route.handler, "handle", {
-          moduleName: "workbox-routing",
-          className: "Router",
-          funcName: "registerRoute",
-          paramName: "route.handler"
-        });
-        finalAssertExports2.isType(route.method, "string", {
-          moduleName: "workbox-routing",
-          className: "Router",
-          funcName: "registerRoute",
-          paramName: "route.method"
-        });
-      }
-      if (!this._routes.has(route.method)) {
-        this._routes.set(route.method, []);
-      }
-      this._routes.get(route.method).push(route);
-    }
-    /**
-     * Unregisters a route with the router.
-     *
-     * @param {workbox-routing.Route} route The route to unregister.
-     */
-    unregisterRoute(route) {
-      if (!this._routes.has(route.method)) {
-        throw new WorkboxError2("unregister-route-but-not-found-with-method", {
-          method: route.method
-        });
-      }
-      const routeIndex = this._routes.get(route.method).indexOf(route);
-      if (routeIndex > -1) {
-        this._routes.get(route.method).splice(routeIndex, 1);
-      } else {
-        throw new WorkboxError2("unregister-route-route-not-registered");
-      }
-    }
-  };
-
-  // node_modules/.pnpm/workbox-routing@6.6.1/node_modules/workbox-routing/utils/getOrCreateDefaultRouter.js
-  var defaultRouter2;
-  var getOrCreateDefaultRouter2 = () => {
-    if (!defaultRouter2) {
-      defaultRouter2 = new Router2();
-      defaultRouter2.addFetchListener();
-      defaultRouter2.addCacheListener();
-    }
-    return defaultRouter2;
-  };
-
-  // node_modules/.pnpm/workbox-routing@6.6.1/node_modules/workbox-routing/registerRoute.js
-  function registerRoute2(capture, handler, method) {
-    let route;
-    if (typeof capture === "string") {
-      const captureUrl = new URL(capture, location.href);
-      if (true) {
-        if (!(capture.startsWith("/") || capture.startsWith("http"))) {
-          throw new WorkboxError2("invalid-string", {
-            moduleName: "workbox-routing",
-            funcName: "registerRoute",
-            paramName: "capture"
-          });
-        }
-        const valueToCheck = capture.startsWith("http") ? captureUrl.pathname : capture;
-        const wildcards = "[*:?+]";
-        if (new RegExp(`${wildcards}`).exec(valueToCheck)) {
-          logger2.debug(`The '$capture' parameter contains an Express-style wildcard character (${wildcards}). Strings are now always interpreted as exact matches; use a RegExp for partial or wildcard matches.`);
-        }
-      }
-      const matchCallback = ({ url }) => {
-        if (true) {
-          if (url.pathname === captureUrl.pathname && url.origin !== captureUrl.origin) {
-            logger2.debug(`${capture} only partially matches the cross-origin URL ${url.toString()}. This route will only handle cross-origin requests if they match the entire URL.`);
-          }
-        }
-        return url.href === captureUrl.href;
-      };
-      route = new Route2(matchCallback, handler, method);
-    } else if (capture instanceof RegExp) {
-      route = new RegExpRoute2(capture, handler, method);
-    } else if (typeof capture === "function") {
-      route = new Route2(capture, handler, method);
-    } else if (capture instanceof Route2) {
-      route = capture;
-    } else {
-      throw new WorkboxError2("unsupported-route-type", {
-        moduleName: "workbox-routing",
-        funcName: "registerRoute",
-        paramName: "capture"
-      });
-    }
-    const defaultRouter3 = getOrCreateDefaultRouter2();
-    defaultRouter3.registerRoute(route);
-    return route;
-  }
-
   // node_modules/.pnpm/weiwudi@0.1.4_@types+babel__core@7.20.5_webpack@5.103.0/node_modules/weiwudi/src/weiwudi_gw_logic.js
-  function Weiwudi_Internal(registerRoute3) {
+  function Weiwudi_Internal(registerRoute2) {
     "use strict";
     const MERC_MAX = 20037508342789244e-9;
     const dbCache = {};
@@ -4339,11 +3540,11 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
       }
       if (retVal) return retVal;
     };
-    registerRoute3(/^https?:\/\/weiwudi.example.com/, handlerCb, "GET");
+    registerRoute2(/^https?:\/\/weiwudi.example.com/, handlerCb, "GET");
   }
 
   // node_modules/.pnpm/weiwudi@0.1.4_@types+babel__core@7.20.5_webpack@5.103.0/node_modules/weiwudi/src/weiwudi_gw.js
-  Weiwudi_Internal(registerRoute2);
+  Weiwudi_Internal(registerRoute);
 
   // src/service-worker.js
   skipWaiting();
