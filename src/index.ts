@@ -849,7 +849,7 @@ export class MaplatUi extends EventTarget {
 
     ui.core!.waitReady.then(() => {
       ui.core!.mapObject.on("click_control", (evt: any) => {
-        const control = evt.control;
+        const control = evt.control || (evt.frameState && evt.frameState.control);
         const modalElm = ui.core!.mapDivDocument!.querySelector(".modalBase")!;
         const modal = bsn.Modal.getInstance(modalElm) || new bsn.Modal(modalElm);
 
