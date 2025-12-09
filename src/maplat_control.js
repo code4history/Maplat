@@ -3,9 +3,8 @@ import { CLASS_UNSELECTABLE, CLASS_CONTROL } from "ol/css";
 import { MapEvent } from "ol";
 import pointer from "./pointer_images";
 import { createElement } from "@maplat/core";
-import bsn from "../legacy/bootstrap-native";
 
-let control_settings = {};
+export let control_settings = {};
 const delegator = {
   compass: "compass.png",
   border: "border.png",
@@ -59,7 +58,7 @@ export function setControlSettings(options) {
  * @api
  */
 export class SliderNew extends Control {
-  constructor(opt_options) { 
+  constructor(opt_options) {
     const options = opt_options ? opt_options : {};
     const containerElement = document.createElement("input"); // eslint-disable-line no-undef
     containerElement.type = "range";
@@ -89,7 +88,7 @@ export class SliderNew extends Control {
     });
 
     // eslint-disable-next-line no-unused-vars
-    containerElement.addEventListener("input", ev => { 
+    containerElement.addEventListener("input", ev => {
       this.set("slidervalue", 1 - this.element.value);
     });
 
@@ -317,7 +316,7 @@ export class SetGPS extends CustomControl {
       if (core && core.getGPSEnabled) {
         const enabled = core.getGPSEnabled();
         const isDisabled = this.element.classList.contains("disable");
-        
+
         if (enabled && isDisabled) {
           this.element.classList.remove("disable");
         } else if (!enabled && !isDisabled) {
@@ -328,7 +327,7 @@ export class SetGPS extends CustomControl {
     options.callback = function () {
       const core = this.ui.core;
       const currentlyEnabled = core.getGPSEnabled();
-      
+
       // 本流モードではトグル、傍流モードでは位置移動のみ
       if (core.alwaysGpsOn) {
         // 傍流モード: GPSは常時有効、ボタンは位置移動のみ
@@ -340,7 +339,7 @@ export class SetGPS extends CustomControl {
     };
 
     super(options);
-    
+
     this.ui = options.ui;
     this.moveTo_ = false;
 
@@ -352,7 +351,7 @@ export class SetGPS extends CustomControl {
         "gps_miss": "app.gps_miss",
         "gps_timeout": "app.gps_timeout"
       };
-      
+
       this.ui.core.mapDivDocument.querySelector(".modal_title").innerText = this.ui.core.t("app.gps_error");
       this.ui.core.mapDivDocument.querySelector(".modal_gpsD_content").innerText = this.ui.core.t(errorMap[evt.detail] || "app.gps_error");
       const modalElm = this.ui.core.mapDivDocument.querySelector(".modalBase");
@@ -360,7 +359,7 @@ export class SetGPS extends CustomControl {
       this.ui.modalSetting("gpsD");
       modal.show();
     });
-    
+
     // GPS結果イベントリスナーを設定
     this.ui.core.addEventListener("gps_result", (evt) => {
       console.log("GPS Result:", evt);
