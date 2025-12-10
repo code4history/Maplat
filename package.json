@@ -44,8 +44,13 @@
   },
   "homepage": "https://github.com/code4history/Maplat/wiki",
   "dependencies": {
+<<<<<<< Updated upstream
     "@maplat/core": "file:../MaplatCore",
     "@maplat/tin": "^0.9.4",
+=======
+    "@maplat/core": "0.11.1",
+    "@maplat/transform": "^0.3.0",
+>>>>>>> Stashed changes
     "@turf/turf": "^6.5.0",
     "lodash.template": "^4.5.0",
     "ol": "^9.0.0",
