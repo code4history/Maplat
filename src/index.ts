@@ -734,9 +734,14 @@ export class MaplatUi extends EventTarget {
           prevEl: ".base-prev"
         }
       }));
-      baseSwiper.on("slideChange", (_e: any) => {
-        const slide = baseSwiper.slides[baseSwiper.activeIndex];
+
+      baseSwiper.on("click", (_e: any) => {
+        if (!baseSwiper.clickedSlide) return;
+        const slide = baseSwiper.clickedSlide;
         ui.core!.changeMap(slide.getAttribute("data") || "");
+        baseSwiper.slideToLoop(
+          parseInt(slide.getAttribute("data-swiper-slide-index") || "0", 10)
+        );
       });
 
       if (baseSources.length < 2) {
