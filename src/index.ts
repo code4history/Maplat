@@ -753,170 +753,6 @@ export class MaplatUi extends EventTarget {
       ) || ""; // eslint-disable-line no-undef
     });
 
-    ui.core!.addEventListener("sourceLoaded", (evt: any) => {
-      const sources = evt.detail;
-
-      const colors = [
-        "maroon",
-        "deeppink",
-        "indigo",
-        "olive",
-        "royalblue",
-        "red",
-        "hotpink",
-        "green",
-        "yellow",
-        "navy",
-        "saddlebrown",
-        "fuchsia",
-        "darkslategray",
-        "yellowgreen",
-        "blue",
-        "mediumvioletred",
-        "purple",
-        "lime",
-        "darkorange",
-        "teal",
-        "crimson",
-        "darkviolet",
-        "darkolivegreen",
-        "steelblue",
-        "aqua"
-      ];
-      const appBbox: any[] = [];
-      let cIndex = 0;
-      for (let i = 0; i < sources.length; i++) {
-        const source = sources[i];
-        if (source.envelope) {
-          if (ui.appEnvelope)
-            source.envelope.geometry.coordinates[0].map((xy: any) => {
-              if (appBbox.length === 0) {
-                appBbox[0] = appBbox[2] = xy[0];
-                appBbox[1] = appBbox[3] = xy[1];
-              } else {
-                if (xy[0] < appBbox[0]) appBbox[0] = xy[0];
-                if (xy[0] > appBbox[2]) appBbox[2] = xy[0];
-                if (xy[1] < appBbox[1]) appBbox[1] = xy[1];
-                if (xy[1] > appBbox[3]) appBbox[3] = xy[1];
-              }
-            });
-          source.envelopeColor = colors[cIndex];
-          cIndex = cIndex + 1;
-          if (cIndex === colors.length) cIndex = 0;
-
-          const xys = source.envelope.geometry.coordinates[0];
-          // http://blog.arq.name/wp-content/uploads/2018/02/Rectangle_Area.pdf
-          source.envelopeAreaIndex = ui.areaIndex(xys);
-        }
-      }
-      if (ui.appEnvelope) console.log(`This app's envelope is: ${appBbox}`);
-
-      // Restore Sources definitions
-      const baseSources = Object.keys(ui.core!.cacheHash!)
-        .map((key: any) => ui.core!.cacheHash[key])
-        .filter(source => isBasemap(source));
-      const overlaySources = Object.keys(ui.core!.cacheHash!)
-        .map((key: any) => ui.core!.cacheHash[key])
-        .filter(source => !isBasemap(source));
-
-
-      if (ui.splashPromise) {
-        ui.splashPromise.then(() => {
-          const modalElm = ui.core!.mapDivDocument!.querySelector(".modalBase")!;
-          const modal = bsn.Modal.getInstance(modalElm) || new bsn.Modal(modalElm);
-          modal.hide();
-        });
-      } else {
-        const modalElm = ui.core!.mapDivDocument!.querySelector(".modalBase")!;
-        const modal = bsn.Modal.getInstance(modalElm) || new bsn.Modal(modalElm);
-        modal.hide();
-      }
-
-      // Reconstructed baseSwiper init
-      ui.core!.mapDivDocument!.querySelector(".base-swiper .swiper-wrapper")!.innerHTML = "";
-      const baseSwiper = (ui.baseSwiper = new Swiper(".base-swiper", {
-        slidesPerView: 1,
-        spaceBetween: 0,
-        loop: baseSources.length > 1,
-        navigation: {
-          nextEl: ".base-next",
-          prevEl: ".base-prev"
-        }
-      }));
-
-      baseSwiper.on("click", (_e: any) => {
-        if (!baseSwiper.clickedSlide) return;
-        const slide = baseSwiper.clickedSlide;
-        ui.core!.changeMap(slide.getAttribute("data") || "");
-        baseSwiper.slideToLoop(
-          parseInt(slide.getAttribute("data-swiper-slide-index") || "0", 10)
-        );
-      });
-
-      if (baseSources.length < 2) {
-        ui.core!.mapDivDocument!
-          .querySelector(".base-swiper")!
-          .classList.add("single-map");
-      }
-      ui.core!.mapDivDocument!.querySelector(".overlay-swiper .swiper-wrapper")!.innerHTML = "";
-      const overlaySwiper = (ui.overlaySwiper = new Swiper(".overlay-swiper", {
-        slidesPerView: 2,
-        spaceBetween: 15,
-        breakpoints: {
-          // when window width is <= 480px
-          480: {
-            slidesPerView: 1.4,
-            spaceBetween: 10
-          }
-        },
-        centeredSlides: true,
-        threshold: 2,
-        loop: overlaySources.length >= 2,
-        navigation: {
-          nextEl: ".overlay-next",
-          prevEl: ".overlay-prev"
-        }
-      }));
-      overlaySwiper.on("click", (_e: any) => {
-        if (!overlaySwiper.clickedSlide) return;
-        const slide = overlaySwiper.clickedSlide;
-        ui.core!.changeMap(slide.getAttribute("data") || "");
-        delete ui._selectCandidateSources;
-        overlaySwiper.setSlideIndexAsSelected(
-          parseInt(slide.getAttribute("data-swiper-slide-index") || "0", 10)
-        );
-      });
-      if (overlaySources.length < 2) {
-        ui.core!.mapDivDocument!
-          .querySelector(".overlay-swiper")!
-          .classList.add("single-map");
-      }
-
-      for (let i = 0; i < baseSources.length; i++) {
-        const source = baseSources[i];
-        baseSwiper.appendSlide(
-          `<div class="swiper-slide" data="${source.mapID}">` +
-          `<img crossorigin="anonymous" src="${source.thumbnail
-          }"><div> ${ui.core!.translate(source.label)}</div> </div> `
-        );
-      }
-      for (let i = 0; i < overlaySources.length; i++) {
-        const source = overlaySources[i];
-        const colorCss = source.envelope ? ` ${source.envelopeColor}` : "";
-        overlaySwiper.appendSlide(
-          `<div class="swiper-slide${colorCss}" data="${source.mapID}">` +
-          `<img crossorigin="anonymous" src="${source.thumbnail
-          }"><div> ${ui.core!.translate(source.label)}</div> </div> `
-        );
-      }
-
-      baseSwiper.on;
-      overlaySwiper.on;
-      baseSwiper.slideToLoop(0);
-      overlaySwiper.slideToLoop(0);
-      ui.ellips();
-
-    });
 
     ui.core!.addEventListener("mapChanged", (evt: any) => {
       const map = evt.detail;
@@ -1016,8 +852,7 @@ export class MaplatUi extends EventTarget {
       const overlaySources: any[] = [];
       for (let i = 0; i < sources.length; i++) {
         const source = sources[i];
-        // Use loose check as NowMap/TmsMap are not exported
-        if (source.constructor.name === 'NowMap' && source.constructor.name !== 'TmsMap') {
+        if (isBasemap(source)) {
           baseSources.push(source);
         } else {
           overlaySources.push(source);
@@ -1034,9 +869,11 @@ export class MaplatUi extends EventTarget {
           }
         },
         centeredSlides: true,
-        threshold: 20, // Increased from 2
+        threshold: 2,
         preventClicks: true,
         preventClicksPropagation: true,
+        observer: true,
+        observeParents: true,
         loop: baseSources.length >= 2,
         navigation: {
           nextEl: ".base-next",
@@ -1046,7 +883,7 @@ export class MaplatUi extends EventTarget {
       baseSwiper.on("click", (_e: any) => {
         if (!baseSwiper.clickedSlide) return;
         const slide = baseSwiper.clickedSlide;
-        ui.core!.changeMap(slide.getAttribute("data"));
+        ui.core!.changeMap(slide.getAttribute("data")!);
         delete ui._selectCandidateSources;
         baseSwiper.setSlideIndexAsSelected(
           parseInt(slide.getAttribute("data-swiper-slide-index") || "0", 10)
@@ -1067,6 +904,10 @@ export class MaplatUi extends EventTarget {
         },
         centeredSlides: true,
         threshold: 2,
+        preventClicks: true,
+        preventClicksPropagation: true,
+        observer: true,
+        observeParents: true,
         loop: overlaySources.length >= 2,
         navigation: {
           nextEl: ".overlay-next",
@@ -1076,7 +917,7 @@ export class MaplatUi extends EventTarget {
       overlaySwiper.on("click", (_e: any) => {
         if (!overlaySwiper.clickedSlide) return;
         const slide = overlaySwiper.clickedSlide;
-        ui.core!.changeMap(slide.getAttribute("data"));
+        ui.core!.changeMap(slide.getAttribute("data")!);
         delete ui._selectCandidateSources;
         overlaySwiper.setSlideIndexAsSelected(
           parseInt(slide.getAttribute("data-swiper-slide-index") || "0", 10)
