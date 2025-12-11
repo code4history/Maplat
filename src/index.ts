@@ -255,7 +255,9 @@ export class MaplatUi extends EventTarget {
     if (appOption.restore) {
       ui.setShowBorder(appOption.restore.showBorder || false);
       if (appOption.restore.hideMarker) {
-        ui.core!.mapDivDocument!.classList.add("hide-marker");
+        ui.core!.waitReady.then(() => {
+          ui.setHideMarker(appOption.restore.hideMarker);
+        });
       }
       if (appOption.restore.openedMarker) {
         console.log(appOption.restore.openedMarker);
@@ -273,7 +275,9 @@ export class MaplatUi extends EventTarget {
         ui.setShowBorder(!!parseInt(String(localStorage.getItem("showBorder") || "0") as any, 10)); // eslint-disable-line no-undef
       }
       if (ui.core!.initialRestore.hideMarker) {
-        ui.core!.mapDivDocument!.classList.add("hide-marker");
+        ui.core!.waitReady.then(() => {
+          ui.setHideMarker(true);
+        });
       }
     } else {
       ui.setShowBorder(false);
@@ -1026,8 +1030,14 @@ export class MaplatUi extends EventTarget {
   setHideMarker(flag: any) {
     this.core!.requestUpdateState({ hideMarker: flag ? 1 : 0 } as any);
     if (flag) {
+      if ((this.core as any).hideAllMarkers) {
+        (this.core as any).hideAllMarkers();
+      }
       this.core!.mapDivDocument!.classList.add("hide-marker");
     } else {
+      if ((this.core as any).showAllMarkers) {
+        (this.core as any).showAllMarkers();
+      }
       this.core!.mapDivDocument!.classList.remove("hide-marker");
     }
     if ((this.core!.restoreSession as any)) {
