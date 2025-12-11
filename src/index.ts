@@ -1,9 +1,11 @@
+
 import {
   MaplatApp as Core,
   createElement
 } from "@maplat/core";
 import "ol/ol.css";
 import EventTarget from "ol/events/Target.js";
+import * as QRCode from "qrcode";
 import { point, polygon, booleanPointInPolygon } from '@turf/turf';
 import Weiwudi from 'weiwudi';
 import ContextMenu from './contextmenu';
@@ -23,9 +25,9 @@ import {
 } from "./maplat_control";
 import absoluteUrl from "./absolute_url";
 import { Swiper } from "./swiper_ex";
+// @ts-ignore
 import { Navigation, Pagination } from "swiper";
-import "swiper/swiper-bundle.css";
-import "izitoast/dist/css/iziToast.css";
+import "swiper/dist/css/swiper.min.css";
 import page from "page";
 import * as bsn from "bootstrap.native";
 import "../less/ui.less";
@@ -98,17 +100,19 @@ export class MaplatUi extends EventTarget {
   appEnvelope: boolean = false;
   overlaySwiper: any;
   restoring: boolean = false;
+  html_id_seed: string;
 
   constructor(appOption: any) {
     super();
     const ui = this;
+    this.html_id_seed = `${Math.floor(Math.random() * 9000) + 1000}`;
     this.appOption = appOption;
 
     if (appOption.stateUrl) {
       page((ctx: any, _next: any) => {
         let pathes = ctx.canonicalPath.split("#!");
         let path = pathes.length > 1 ? pathes[1] : pathes[0];
-        console.log(`[Debug] Page callback. Canonical: ${ctx.canonicalPath}, Path: ${path}`);
+        console.log(`[Debug] Page callback.Canonical: ${ctx.canonicalPath}, Path: ${path} `);
 
         pathes = path.split("?");
         path = pathes[0];
@@ -126,7 +130,7 @@ export class MaplatUi extends EventTarget {
         path.split("/").forEach((state: any) => {
           if (!state) return;
           const line = state.split(":");
-          console.log(`[Debug] Parsing state: ${state}`, line);
+          console.log(`[Debug] Parsing state: ${state} `, line);
           switch (line[0]) {
             case "s":
               restore.mapID = line[1];
@@ -173,25 +177,25 @@ export class MaplatUi extends EventTarget {
         });
         if (!ui.core) {
           if (restore.mapID) {
-            console.log(`[Debug] Init with restore:`, JSON.parse(JSON.stringify(restore)));
+            console.log(`[Debug] Init with restore: `, JSON.parse(JSON.stringify(restore)));
             appOption.restore = restore;
             ui.restoring = true;
           }
           const preRot = restore.position ? restore.position.rotation : 'undefined';
-          console.log(`[Debug] Before initializer: rotation=${preRot}`);
+          console.log(`[Debug] Before initializer: rotation = ${preRot} `);
 
           ui.initializer(appOption).then(() => {
             ui.core!.waitReady.then(() => {
               // Fix: Manually apply rotation as Core 0.11.1 preserves it but fails to apply it view-side
               // if (restore.position && restore.position.rotation !== undefined) {
-              //   console.log(`[Debug] Manually applying rotation: ${restore.position.rotation}`);
+              //   console.log(`[Debug] Manually applying rotation: ${ restore.position.rotation } `);
               //   ui.core!.mapObject.getView().setRotation(restore.position.rotation);
               // }
               // Fix: Verify transparency state before updating URL
               if (ui.sliderNew) {
                 // Ensure map transparency matches restore if slider is ready
                 const currentTrans = ui.sliderNew.get("slidervalue") * 100;
-                console.log(`[Debug] Slider transparency: ${currentTrans}`);
+                console.log(`[Debug] Slider transparency: ${currentTrans} `);
               } else {
                 console.log(`[Debug] Slider not ready yet`);
               }
@@ -202,7 +206,7 @@ export class MaplatUi extends EventTarget {
             });
           });
         } else if (restore.mapID) {
-          console.log(`[Debug] ChangeMap with restore:`, JSON.parse(JSON.stringify(restore)));
+          console.log(`[Debug] ChangeMap with restore: `, JSON.parse(JSON.stringify(restore)));
           ui.restoring = true;
 
           ui.core.waitReady.then(() => {
@@ -210,7 +214,7 @@ export class MaplatUi extends EventTarget {
             Promise.resolve(ret).then(() => {
               // Fix: Manually apply rotation after changeMap
               // if (restore.position && restore.position.rotation !== undefined) {
-              //   console.log(`[Debug] Manually applying rotation after changeMap: ${restore.position.rotation}`);
+              //   console.log(`[Debug] Manually applying rotation after changeMap: ${ restore.position.rotation } `);
               //   ui.core!.mapObject.getView().setRotation(restore.position.rotation);
               // }
 
@@ -262,7 +266,7 @@ export class MaplatUi extends EventTarget {
       if (appOption.restore.openedMarker) {
         console.log(appOption.restore.openedMarker);
         ui.core!.waitReady.then(() => {
-          console.log(`Timeout ${appOption.restore.openedMarker}`);
+          console.log(`Timeout ${appOption.restore.openedMarker} `);
           ui.handleMarkerActionById(appOption.restore.openedMarker);
         });
       }
@@ -328,28 +332,99 @@ export class MaplatUi extends EventTarget {
       ui.appEnvelope = true;
     }
 
+    // Inject Custom Toast Styles
+    const style = document.createElement("style");
+    style.innerHTML = `
+      .custom-toast {
+        visibility: hidden;
+        min-width: 250px;
+        margin-left: -125px;
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        border-radius: 2px;
+        padding: 16px;
+        position: fixed;
+        z-index: 9999;
+        left: 50%;
+        bottom: 30px;
+        font-size: 17px;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .custom-toast.show {
+        visibility: visible;
+        opacity: 1;
+      }
+    `;
+    document.head.appendChild(style);
+
     let pwaManifest = appOption.pwaManifest;
     let pwaWorker = appOption.pwaWorker;
     let pwaScope = appOption.pwaScope;
 
+    // Inject FontAwesome CDN for reliable icons (REMOVED)
+    // Icons: Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0)
+
     // Add UI HTML Element
-    let newElems = createElement(`<d c="ol-control map-title"><s></s></d> 
-<d c="swiper-container ol-control base-swiper prevent-default-ui">
-  <d c="swiper-wrapper"></d> 
-  <d c="swiper-button-next base-next swiper-button-white"></d>
-  <d c="swiper-button-prev base-prev swiper-button-white"></d>
-</d> 
-<d c="swiper-container ol-control overlay-swiper prevent-default-ui">
-  <d c="swiper-wrapper"></d> 
-  <d c="swiper-button-next overlay-next swiper-button-white"></d>
-  <d c="swiper-button-prev overlay-prev swiper-button-white"></d>
-</d> `);
+    let newElems = createElement(`<d c="ol-control map-title"><s></s></d>
+  <d c="swiper-container ol-control base-swiper prevent-default-ui">
+    <d c="swiper-wrapper"> </d>
+      <d c="swiper-button-next base-next swiper-button-white"> </d>
+        <d c="swiper-button-prev base-prev swiper-button-white"> </d>
+          </d>
+          <d c="swiper-container ol-control overlay-swiper prevent-default-ui">
+            <d c="swiper-wrapper"> </d>
+              <d c="swiper-button-next overlay-next swiper-button-white"> </d>
+                <d c="swiper-button-prev overlay-prev swiper-button-white"> </d>
+                  </d> `);
     for (let i = newElems.length - 1; i >= 0; i--) {
       ui.core!.mapDivDocument!.insertBefore(
         newElems[i],
         ui.core!.mapDivDocument!.firstChild
       );
     }
+
+    // Delegated event listener for share buttons
+    ui.core!.mapDivDocument!.addEventListener("click", (evt: any) => {
+      const target = evt.target as HTMLElement;
+      const btn = target.closest(".share");
+      if (!btn) return;
+
+      console.log("Share button clicked:", btn);
+      const cmd = btn.getAttribute("data");
+      if (!cmd) return;
+      const cmds = cmd.split("_");
+      let uri = ui.getShareUrl(cmds[1] || "app");
+
+      console.log("Share URI:", uri);
+
+      if (cmds[0] === "cp") {
+        const bodyElm = document.querySelector("body")!;
+        const message = (ui.core as any).t ? (ui.core as any).t("app.copy_toast") : "URL Copied";
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(uri).then(() => {
+            ui.showToast(message, btn as HTMLElement);
+          });
+        } else {
+          const copyFrom = document.createElement("textarea");
+          copyFrom.textContent = uri;
+          bodyElm.appendChild(copyFrom);
+          copyFrom.select();
+          document.execCommand("copy");
+          bodyElm.removeChild(copyFrom);
+          ui.showToast(message, btn as HTMLElement);
+        }
+      } else if (cmds[0] === "tw") {
+        const text = document.title;
+        const twuri = `https://twitter.com/intent/tweet?url=${encodeURIComponent(uri)}&text=${encodeURIComponent(text)}&hashtags=Maplat`;
+        window.open(twuri, "_blank");
+      } else if (cmds[0] === "fb") {
+        const fburi = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(uri)}&display=popup&ref=plugin&src=like&kid_directed_site=0`;
+        window.open(fburi, "_blank", "width=650,height=450,menubar=no,toolbar=no,scrollbars=yes");
+      }
+    });
+
     const prevDefs = ui.core!.mapDivDocument!.querySelectorAll(
       ".prevent-default-ui"
     );
@@ -416,11 +491,27 @@ export class MaplatUi extends EventTarget {
           <p><img src="" height="0px" width="0px"></p>
         </d> 
 
-        <d c="modal_share_content">
-          <d c="modal_share_app"></d>
-          <d c="modal_share_pos"></d> 
+        <div class="modal_share_content">
+          <h4 din="html.share_app_title"></h4>
+          <div id="___maplat_app_toast_${ui.html_id_seed}"></div>
+          <div class="recipient row">
+            <div class="form-group col-xs-4 text-center"><button title="Copy to clipboard" class="share btn btn-light" data="cp_app"><svg style="width:14px;height:14px;vertical-align:text-bottom;" viewBox="0 0 512 512"><path fill="currentColor" d="M224 0c-35.3 0-64 28.7-64 64V96H96c-35.3 0-64 28.7-64 64V448c0 35.3 28.7 64 64 64H288c35.3 0 64-28.7 64-64V384h64c35.3 0 64-28.7 64-64V64c0-35.3-28.7-64-64-64H224zM288 384H96V160H224c0-17.7 14.3-32 32-32h64V256c0 17.7 14.3 32 32 32h96V384H288z"/></svg>&nbsp;<small din="html.share_copy"></small></button></div>
+            <div class="form-group col-xs-4 text-center"><button title="Twitter" class="share btn btn-light" data="tw_app"><svg style="width:14px;height:14px;vertical-align:text-bottom;" viewBox="0 0 512 512"><path fill="currentColor" d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"/></svg>&nbsp;<small>Twitter</small></button></div>
+            <div class="form-group col-xs-4 text-center"><button title="Facebook" class="share btn btn-light" data="fb_app"><svg style="width:14px;height:14px;vertical-align:text-bottom;" viewBox="0 0 512 512"><path fill="currentColor" d="M504 256C504 119 393 8 256 8S8 119 8 256c0 121.3 87.1 222.4 203 240.5V327.9h-61v-71.9h61V203c0-60.8 35.8-93.7 89.2-93.7 25.5 0 50.4 1.8 56.1 2.6v62.4h-35.4c-29.5 0-37.4 18.2-37.4 42.1v59.6h68.9l-11 71.9h-57.9V496.5C416.9 478.4 504 377.3 504 256z"/></svg>&nbsp;<small>Facebook</small></button></div>
+          </div>
+          <div class="qr_app center-block" style="width:128px;"></div>
+          <div class="modal_share_state">
+            <h4 din="html.share_state_title"></h4>
+            <div id="___maplat_view_toast_${ui.html_id_seed}"></div>
+            <div class="recipient row">
+              <div class="form-group col-xs-4 text-center"><button title="Copy to clipboard" class="share btn btn-light" data="cp_view"><svg style="width:14px;height:14px;vertical-align:text-bottom;" viewBox="0 0 512 512"><path fill="currentColor" d="M224 0c-35.3 0-64 28.7-64 64V96H96c-35.3 0-64 28.7-64 64V448c0 35.3 28.7 64 64 64H288c35.3 0 64-28.7 64-64V384h64c35.3 0 64-28.7 64-64V64c0-35.3-28.7-64-64-64H224zM288 384H96V160H224c0-17.7 14.3-32 32-32h64V256c0 17.7 14.3 32 32 32h96V384H288z"/></svg>&nbsp;<small din="html.share_copy"></small></button></div>
+              <div class="form-group col-xs-4 text-center"><button title="Twitter" class="share btn btn-light" data="tw_view"><svg style="width:14px;height:14px;vertical-align:text-bottom;" viewBox="0 0 512 512"><path fill="currentColor" d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"/></svg>&nbsp;<small>Twitter</small></button></div>
+              <div class="form-group col-xs-4 text-center"><button title="Facebook" class="share btn btn-light" data="fb_view"><svg style="width:14px;height:14px;vertical-align:text-bottom;" viewBox="0 0 512 512"><path fill="currentColor" d="M504 256C504 119 393 8 256 8S8 119 8 256c0 121.3 87.1 222.4 203 240.5V327.9h-61v-71.9h61V203c0-60.8 35.8-93.7 89.2-93.7 25.5 0 50.4 1.8 56.1 2.6v62.4h-35.4c-29.5 0-37.4 18.2-37.4 42.1v59.6h68.9l-11 71.9h-57.9V496.5C416.9 478.4 504 377.3 504 256z"/></svg>&nbsp;<small>Facebook</small></button></div>
+            </div>
+            <div class="qr_view center-block" style="width:128px;"></div>
+          </div>
           <p><img src="" height="0px" width="0px"></p>
-        </d> 
+        </div>
 
         <d c="modal_map_content">
             ${META_KEYS.map(key => {
@@ -729,6 +820,7 @@ export class MaplatUi extends EventTarget {
       }
 
       // Reconstructed baseSwiper init
+      ui.core!.mapDivDocument!.querySelector(".base-swiper .swiper-wrapper")!.innerHTML = "";
       const baseSwiper = (ui.baseSwiper = new Swiper(".base-swiper", {
         slidesPerView: 1,
         spaceBetween: 0,
@@ -753,6 +845,7 @@ export class MaplatUi extends EventTarget {
           .querySelector(".base-swiper")!
           .classList.add("single-map");
       }
+      ui.core!.mapDivDocument!.querySelector(".overlay-swiper .swiper-wrapper")!.innerHTML = "";
       const overlaySwiper = (ui.overlaySwiper = new Swiper(".overlay-swiper", {
         slidesPerView: 2,
         spaceBetween: 15,
@@ -912,6 +1005,33 @@ export class MaplatUi extends EventTarget {
           modal.show();
         } else if (control === "share") {
           ui.modalSetting("share");
+
+          const modalBody = modalElm.querySelector(".modal-body") as HTMLElement;
+
+          const baseUrl = ui.getShareUrl("app");
+          const viewUrl = ui.getShareUrl("view");
+
+          // Generate QR Codes
+          const qrAppDiv = modalBody.querySelector(".qr_app") as HTMLElement;
+          const qrViewDiv = modalBody.querySelector(".qr_view") as HTMLElement;
+
+          if (qrAppDiv) {
+            QRCode.toCanvas(baseUrl, { width: 128, margin: 1 }, (err: any, canvas: any) => {
+              if (!err) {
+                qrAppDiv.innerHTML = "";
+                qrAppDiv.appendChild(canvas);
+              }
+            });
+          }
+          if (qrViewDiv) {
+            QRCode.toCanvas(viewUrl, { width: 128, margin: 1 }, (err: any, canvas: any) => {
+              if (!err) {
+                qrViewDiv.innerHTML = "";
+                qrViewDiv.appendChild(canvas);
+              }
+            });
+          }
+
           modal.show();
         } else if (control === "markerList") {
           ui.modalSetting("marker_list");
@@ -1178,6 +1298,48 @@ export class MaplatUi extends EventTarget {
         }, 0)
       )
     );
+  }
+
+  getShareUrl(type: string) {
+    if (type === "view") {
+      return window.location.href;
+    }
+    // app
+    return window.location.href.split("?")[0].split("#")[0];
+  }
+
+  showToast(message: string, target?: HTMLElement) {
+    let toast = document.querySelector(".custom-toast") as HTMLElement;
+    if (!toast) {
+      toast = document.createElement("div");
+      toast.className = "custom-toast";
+      document.body.appendChild(toast);
+    }
+    (toast as HTMLElement).innerText = message;
+
+    if (target) {
+      const parent = target.closest(".recipient");
+      const rect = (parent || target).getBoundingClientRect();
+      toast.style.position = "fixed";
+      toast.style.left = (rect.left + rect.width / 2) + "px";
+      toast.style.top = (rect.top + rect.height / 2) + "px";
+      toast.style.transform = "translate(-50%, -50%)";
+      toast.style.bottom = "auto";
+      toast.style.margin = "0";
+    } else {
+      toast.style.position = "fixed";
+      toast.style.left = "50%";
+      toast.style.bottom = "30px";
+      toast.style.top = "auto";
+      toast.style.transform = "";
+      toast.style.marginLeft = "-125px";
+    }
+
+    toast.classList.add("show");
+
+    setTimeout(() => {
+      toast!.classList.remove("show");
+    }, 1500);
   }
 
   modalSetting(type: string) {

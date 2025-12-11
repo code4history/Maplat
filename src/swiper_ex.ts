@@ -1,3 +1,4 @@
+// @ts-ignore
 import { Swiper } from "swiper";
 
 Swiper.prototype.slideToMapID = function (mapID: any) {

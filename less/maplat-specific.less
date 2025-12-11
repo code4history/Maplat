@@ -916,3 +916,85 @@ input[type="checkbox"].markerlist:checked+label.check>div {
 .modal-body {
   overflow-y: auto;
 }
+
+
+/* Share Modal Styles */
+.modal_share .modal-body {
+  text-align: center;
+}
+
+.share_container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.share_section {
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.share_section h3 {
+  font-size: 1.1em;
+  margin-bottom: 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
+}
+
+.share_buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 15px;
+}
+
+.share_buttons button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.share_buttons button:hover {
+  background: #f0f0f0;
+}
+
+.qr_code_container {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.qr_code_container canvas,
+.qr_code_container img {
+  border: 1px solid #ddd;
+  padding: 5px;
+  background: white;
+  max-width: 100%;
+}
+
+/* Custom Toast Styles */
+.custom-toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 4px;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  pointer-events: none;
+}
+
+.custom-toast.show {
+  opacity: 1;
+}
