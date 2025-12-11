@@ -183,10 +183,10 @@ export class MaplatUi extends EventTarget {
           ui.initializer(appOption).then(() => {
             ui.core!.waitReady.then(() => {
               // Fix: Manually apply rotation as Core 0.11.1 preserves it but fails to apply it view-side
-              if (restore.position && restore.position.rotation !== undefined) {
-                console.log(`[Debug] Manually applying rotation: ${restore.position.rotation}`);
-                ui.core!.mapObject.getView().setRotation(restore.position.rotation);
-              }
+              // if (restore.position && restore.position.rotation !== undefined) {
+              //   console.log(`[Debug] Manually applying rotation: ${restore.position.rotation}`);
+              //   ui.core!.mapObject.getView().setRotation(restore.position.rotation);
+              // }
               // Fix: Verify transparency state before updating URL
               if (ui.sliderNew) {
                 // Ensure map transparency matches restore if slider is ready
@@ -209,9 +209,19 @@ export class MaplatUi extends EventTarget {
             const ret = ui.core!.changeMap(restore.mapID, restore);
             Promise.resolve(ret).then(() => {
               // Fix: Manually apply rotation after changeMap
-              if (restore.position && restore.position.rotation !== undefined) {
-                console.log(`[Debug] Manually applying rotation after changeMap: ${restore.position.rotation}`);
-                ui.core!.mapObject.getView().setRotation(restore.position.rotation);
+              // if (restore.position && restore.position.rotation !== undefined) {
+              //   console.log(`[Debug] Manually applying rotation after changeMap: ${restore.position.rotation}`);
+              //   ui.core!.mapObject.getView().setRotation(restore.position.rotation);
+              // }
+
+              // Update transparency slider if needed
+              if (ui.sliderNew) {
+                const t = restore.transparency || 0;
+                const val = t / 100;
+                ui.sliderNew.set("slidervalue", val);
+                if (ui.sliderNew.element) {
+                  ui.sliderNew.element.value = (1 - val).toString();
+                }
               }
 
               ui.restoring = false;
@@ -270,7 +280,7 @@ export class MaplatUi extends EventTarget {
     }
 
     const enableSplash = !ui.core!.initialRestore.mapID;
-    const restoreTransparency = ui.core!.initialRestore.transparency;
+    const restoreTransparency = ui.core!.initialRestore.transparency || (appOption.restore ? appOption.restore.transparency : undefined);
     const enableOutOfMap = !appOption.presentationMode;
 
     ui.enablePoiHtmlNoScroll = appOption.enablePoiHtmlNoScroll || false;
@@ -914,7 +924,7 @@ export class MaplatUi extends EventTarget {
     });
   }
 
-  xyToMapIDs(xy: any, threshold = 10) {
+  async xyToMapIDs(xy: any, threshold = 10) {
     const ui = this;
     const point_ = point(xy);
 
@@ -922,7 +932,7 @@ export class MaplatUi extends EventTarget {
     const size = map.getSize();
     const extent = [[0, 0], [size[0], 0], size, [0, size[1]], [0, 0]];
     const sysCoords = extent.map((pixel: any) => map.getCoordinateFromPixel(pixel));
-    const mercs = await(typeof ui.core!.from!.xy2SysCoord !== 'function'
+    const mercs = await (typeof ui.core!.from!.xy2SysCoord !== 'function'
       ? Promise.resolve(sysCoords)
       : Promise.all(
         sysCoords.map((sysCoord: any) => ui.core!.from!.sysCoord2MercAsync(sysCoord))
@@ -1045,7 +1055,7 @@ export class MaplatUi extends EventTarget {
     path += `/z:${zoom}`;
 
     if (rotation !== 0) {
-      path += `/r:${rotation}`;
+      path += `/r:${rotation * 180 / Math.PI}`;
     }
 
     // Options

@@ -22,11 +22,15 @@
     - [x] Fix broken modal buttons (Help, Share, etc.)
     - [x] Refactor modal logic to use CSS classes
     - [ ] Address Modal Internal Functionality (buttons not working correctly)
-    - [x] Debug URL Restoration (Blocked on Core Fix: View Rotation)
+    - [x] Debug URL Restoration (Completed)
         - [x] Confirmed rotation mutation fixed in 0.11.1
         - [x] Confirmed View rotation NOT applied in 0.11.1
         - [x] Created issue report for View Rotation failure
-        - [ ] Verify fix with @maplat/core (Next Version)
+        - [x] Verify fix with @maplat/core (Rotation Unit Mismatch Fixed)
+        - [x] Fix Transparency URL restoration (SliderNew initialization & URL persistance)
+    - [x] Report Package Dependencies Issues:
+        - [x] Create issue report for @maplat/core (ol v10 peerDep)
+        - [x] Create issue report for weiwudi (workbox v7 update)
 - [ ] 5. Documentation & Cleanup
     - [ ] 5.1 Update README.md to match MaplatCore style.
     - [ ] 5.2 Review and remove legacy files (`legacy/`, `webpack_config/`).

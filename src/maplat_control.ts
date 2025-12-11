@@ -52,7 +52,9 @@ export class SliderNew extends Control {
     containerElement.type = "range";
     containerElement.min = "0";
     containerElement.max = "1";
-    containerElement.value = "1";
+    containerElement.max = "1";
+    const initialValue = options.initialValue || 0;
+    containerElement.value = `${1 - initialValue}`;
     containerElement.step = "0.01";
     const render = options.render ? options.render : function (mapEvent: any) { if (!mapEvent.frameState) return; };
     super({
@@ -61,7 +63,7 @@ export class SliderNew extends Control {
     });
     const className =
       options.className !== undefined ? options.className : "ol-slidernew";
-    this.set("slidervalue", 0);
+    this.set("slidervalue", initialValue);
 
     containerElement.title = options.tipLabel;
     containerElement.className = `${className} ${CLASS_UNSELECTABLE} ${CLASS_CONTROL}`;
