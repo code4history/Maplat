@@ -21,7 +21,7 @@
       "type": "Feature",
       "properties": {
         "name": "六百遠忌報恩塔",
-        "image": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no260-DSC_7125.JPG",
+        "image": ["https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no260-DSC_7125.JPG","https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no260-DSC_7125.JPG"],
         "address": "朝日町 円教寺",
         "desc": "<b>年代:</b> 不明<br><b>備考:</b> 宝塔 供養→報恩へ変更<br><b>撮影日時:</b> 2021/01/04 10:14:56<br><b>参考文献:</b> 『文化財総合調査 館林市の石造文化財 館林・郷谷の石仏』(館林石仏調査研究会編 1979)<br>情報提供：ぐんま史料ネット"
       },

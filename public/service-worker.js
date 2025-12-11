@@ -1747,13 +1747,13 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
      * the event's request.
      */
     addFetchListener() {
-      self.addEventListener("fetch", (event) => {
+      self.addEventListener("fetch", ((event) => {
         const { request } = event;
         const responsePromise = this.handleRequest({ request, event });
         if (responsePromise) {
           event.respondWith(responsePromise);
         }
-      });
+      }));
     }
     /**
      * Adds a message event listener for URLs to cache from the window.
@@ -1778,7 +1778,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
      * ```
      */
     addCacheListener() {
-      self.addEventListener("message", (event) => {
+      self.addEventListener("message", ((event) => {
         if (event.data && event.data.type === "CACHE_URLS") {
           const { payload } = event.data;
           if (true) {
@@ -1796,7 +1796,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
             void requestPromises.then(() => event.ports[0].postMessage(true));
           }
         }
-      });
+      }));
     }
     /**
      * Apply the routing rules to a FetchEvent object to get a Response from an
@@ -2966,7 +2966,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // node_modules/.pnpm/weiwudi@0.1.4_@types+babel__core@7.20.5_webpack@5.103.0/node_modules/weiwudi/src/weiwudi_gw_logic.js
+  // node_modules/.pnpm/weiwudi@0.1.4_@types+babel__18649476068778b3020e61853c400c16/node_modules/weiwudi/src/weiwudi_gw_logic.js
   function Weiwudi_Internal(registerRoute2) {
     "use strict";
     const MERC_MAX = 20037508342789244e-9;
@@ -3543,7 +3543,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     registerRoute2(/^https?:\/\/weiwudi.example.com/, handlerCb, "GET");
   }
 
-  // node_modules/.pnpm/weiwudi@0.1.4_@types+babel__core@7.20.5_webpack@5.103.0/node_modules/weiwudi/src/weiwudi_gw.js
+  // node_modules/.pnpm/weiwudi@0.1.4_@types+babel__18649476068778b3020e61853c400c16/node_modules/weiwudi/src/weiwudi_gw.js
   Weiwudi_Internal(registerRoute);
 
   // src/service-worker.js

@@ -1,5 +1,5 @@
 // @ts-ignore
-import { Swiper } from "swiper";
+import Swiper from "swiper";
 
 Swiper.prototype.slideToMapID = function (mapID: any) {
   const slide = this.$el[0].querySelector(".swiper-slide-active");
