@@ -914,6 +914,35 @@ export class MaplatUi extends EventTarget {
           modal.show();
         } else if (control === "copyright") {
           ui.modalSetting("map");
+          const mapData = ui.core!.from!;
+          const modalRoot = ui.core!.mapDivDocument!;
+          const titleEl = modalRoot.querySelector(".modal_map .modal_title");
+          if (titleEl) {
+            const titleVal = (mapData as any).get ? (mapData as any).get('title') : (mapData as any).title;
+            (titleEl as HTMLElement).innerText = ui.core!.translate(titleVal) || "";
+          }
+
+          META_KEYS.forEach((key) => {
+            if (key === 'title' || key === 'officialTitle') return;
+            const val = (mapData as any).get ? (mapData as any).get(key) : (mapData as any)[key];
+            const container = modalRoot.querySelector(`.modal_map .${key}_div`);
+            if (container) {
+              if (val) {
+                (container as HTMLElement).style.display = "block";
+                const contentEl = container.querySelector(`.${key}_dd`);
+                if (contentEl) {
+                  if (key === 'license' || key === 'dataLicense') {
+                    const fileName = (val as string).toLowerCase().replace(/ /g, '_');
+                    (contentEl as HTMLElement).innerHTML = `<img src="assets/parts/${fileName}.png" class="license" />`;
+                  } else {
+                    (contentEl as HTMLElement).innerHTML = ui.core!.translate(val) || "";
+                  }
+                }
+              } else {
+                (container as HTMLElement).style.display = "none";
+              }
+            }
+          });
           modal.show();
         } else if (control === "border") {
           ui.setShowBorder(!(ui.core!.stateBuffer as any).showBorder);
