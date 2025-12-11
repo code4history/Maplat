@@ -3,7 +3,6 @@ import {
   createElement
 } from "@maplat/core";
 import "ol/ol.css";
-
 import EventTarget from "ol/events/Target.js";
 import { point, polygon, booleanPointInPolygon } from '@turf/turf';
 import Weiwudi from 'weiwudi';
@@ -250,7 +249,7 @@ export class MaplatUi extends EventTarget {
       }
       if (appOption.restore.openedMarker) {
         console.log(appOption.restore.openedMarker);
-        ui.core.waitReady.then(() => {
+        ui.core!.waitReady.then(() => {
           console.log(`Timeout ${appOption.restore.openedMarker}`);
           ui.handleMarkerActionById(appOption.restore.openedMarker);
         });
@@ -263,15 +262,15 @@ export class MaplatUi extends EventTarget {
         // @ts-ignore
         ui.setShowBorder(!!parseInt(String(localStorage.getItem("showBorder") || "0") as any, 10)); // eslint-disable-line no-undef
       }
-      if (ui.core.initialRestore.hideMarker) {
+      if (ui.core!.initialRestore.hideMarker) {
         ui.core!.mapDivDocument!.classList.add("hide-marker");
       }
     } else {
       ui.setShowBorder(false);
     }
 
-    const enableSplash = !ui.core.initialRestore.mapID;
-    const restoreTransparency = ui.core.initialRestore.transparency;
+    const enableSplash = !ui.core!.initialRestore.mapID;
+    const restoreTransparency = ui.core!.initialRestore.transparency;
     const enableOutOfMap = !appOption.presentationMode;
 
     ui.enablePoiHtmlNoScroll = appOption.enablePoiHtmlNoScroll || false;
@@ -300,7 +299,7 @@ export class MaplatUi extends EventTarget {
     if (appOption.alwaysGpsOn) {
       ui.alwaysGpsOn = true;
     }
-    if (ui.core.enableCache) {
+    if (ui.core!.enableCache) {
       ui.core!.mapDivDocument!.classList.add("enable_cache");
     }
     if ("ontouchstart" in window) {
@@ -454,7 +453,7 @@ export class MaplatUi extends EventTarget {
     // PWA
     if (pwaManifest) {
       if (pwaManifest === true) {
-        pwaManifest = `./pwa/${ui.core.appid}_manifest.json`;
+        pwaManifest = `./pwa/${ui.core!.appid}_manifest.json`;
       }
       if (!pwaWorker) {
         pwaWorker = "./service-worker.js";
@@ -730,6 +729,11 @@ export class MaplatUi extends EventTarget {
         ui.core!.changeMap(slide.getAttribute("data") || "");
       });
 
+      if (baseSources.length < 2) {
+        ui.core!.mapDivDocument!
+          .querySelector(".base-swiper")!
+          .classList.add("single-map");
+      }
       const overlaySwiper = (ui.overlaySwiper = new Swiper(".overlay-swiper", {
         slidesPerView: 2,
         spaceBetween: 15,
@@ -910,7 +914,7 @@ export class MaplatUi extends EventTarget {
     });
   }
 
-  async xyToMapIDs(xy: any, threshold = 10) {
+  xyToMapIDs(xy: any, threshold = 10) {
     const ui = this;
     const point_ = point(xy);
 
@@ -918,7 +922,7 @@ export class MaplatUi extends EventTarget {
     const size = map.getSize();
     const extent = [[0, 0], [size[0], 0], size, [0, size[1]], [0, 0]];
     const sysCoords = extent.map((pixel: any) => map.getCoordinateFromPixel(pixel));
-    const mercs = await (typeof ui.core!.from!.xy2SysCoord !== 'function'
+    const mercs = await(typeof ui.core!.from!.xy2SysCoord !== 'function'
       ? Promise.resolve(sysCoords)
       : Promise.all(
         sysCoords.map((sysCoord: any) => ui.core!.from!.sysCoord2MercAsync(sysCoord))

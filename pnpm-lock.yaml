@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@maplat/core':
-        specifier: 0.11.1
-        version: 0.11.1(@types/babel__core@7.20.5)(mapbox-gl@1.13.3)(ol@10.7.0)(webpack@5.103.0)
+        specifier: 0.11.2
+        version: 0.11.2(@types/babel__core@7.20.5)(mapbox-gl@1.13.3)(maplibre-gl@2.4.0)(ol@10.7.0)(webpack@5.103.0)
       '@maplat/transform':
         specifier: ^0.3.0
         version: 0.3.0
@@ -875,8 +875,8 @@ packages:
     resolution: {integrity: sha512-Es6WcD0nO5l+2BOQS4uLfNPYQaNDfbot3X1XUoloz+x0mPDS3eeORZJl06HXjwBG1fOGwCRnzK88LMdxKRrd6Q==}
     engines: {node: '>=6.0.0'}
 
-  '@maplat/core@0.11.1':
-    resolution: {integrity: sha512-UjJzfTZt3gmT5fBPyhMI0j7UEo2NJMzVGwsUtdnM1KyLNWiNHmKOeiOZgg9g6kzzy6Ck3hkSfBK67IdJnXpCjQ==}
+  '@maplat/core@0.11.2':
+    resolution: {integrity: sha512-yAJHXzNySfibJ3VWFKnzClRUkehyYkyGvYaWfD1gx9xYahVlr9NctRqOSXq1QQO0YLxaKEH03QSMQaP6F++RWw==}
     peerDependencies:
       mapbox-gl: ^1.0.0 || ^2.0.0 || ^3.0.0
       maplibre-gl: ^3.0.0 || ^4.0.0
@@ -4791,7 +4791,7 @@ snapshots:
 
   '@mapbox/whoots-js@3.1.0': {}
 
-  '@maplat/core@0.11.1(@types/babel__core@7.20.5)(mapbox-gl@1.13.3)(ol@10.7.0)(webpack@5.103.0)':
+  '@maplat/core@0.11.2(@types/babel__core@7.20.5)(mapbox-gl@1.13.3)(maplibre-gl@2.4.0)(ol@10.7.0)(webpack@5.103.0)':
     dependencies:
       '@maplat/transform': 0.3.0
       '@turf/area': 7.3.1
@@ -4830,6 +4830,7 @@ snapshots:
       whatwg-fetch: 3.6.20
     optionalDependencies:
       mapbox-gl: 1.13.3
+      maplibre-gl: 2.4.0
     transitivePeerDependencies:
       - '@types/babel__core'
       - supports-color
