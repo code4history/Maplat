@@ -19,7 +19,8 @@
         "url": {
           "ja": "https://ja.m.wikipedia.org/wiki/%E9%A4%A8%E6%9E%97%E5%9F%8E",
           "en": "https://en.m.wikipedia.org/wiki/Tatebayashi_Castle"
-        }
+        },
+        "icon": "img/stones.png"
       },
       "geometry": {
         "type": "Point",

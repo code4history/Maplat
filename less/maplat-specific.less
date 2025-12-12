@@ -99,6 +99,45 @@ li:has(+ .open) .dli-chevron {
   display: block;
 }
 
+// Fix POI Iframe Height
+.poi_iframe {
+  width: 100%;
+  height: 100%;
+  min-height: 50vh;
+  border: 0;
+}
+
+.poi_web {
+  width: 100%;
+  height: 100%;
+}
+
+// Fix Context Menu Wrapping
+.ol-ctx-menu-container {
+  width: auto !important;
+  min-width: 170px;
+  max-width: 300px; // Prevent overly wide menu but allow more space
+  z-index: 2000 !important; // Ensure it's above Modal (usually 1050)
+
+  li {
+    white-space: normal !important;
+    height: auto !important;
+    line-height: 1.3 !important;
+    text-overflow: clip !important;
+    overflow: visible !important;
+    padding: 8px 5px 8px 25px !important; // Ensure space for icon
+    background-position: left 5px center !important; // Center icon vertically
+  }
+}
+
+// Legacy-style Modal margins on mobile
+@media (max-width: 767px) {
+  .modal-dialog {
+    margin: 10px !important;
+    width: auto !important;
+  }
+}
+
 &.enable_share .share_help,
 &.enable_border .border_help,
 &.enable_hide_marker .hide_marker_help,
