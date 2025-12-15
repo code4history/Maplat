@@ -1,0 +1,6 @@
+- [ ] Update `package.json` with `vite-plugin-static-copy` <!-- id: 0 -->
+- [ ] Update `vite.config.js` for ESM/UMD and static copy <!-- id: 1 -->
+- [ ] Create `src/icons.ts` with SVG definitions <!-- id: 2 -->
+- [ ] Refactor `src/maplat_control.ts` to use SVGs <!-- id: 3 -->
+- [ ] Remove font files and LESS font-face references <!-- id: 4 -->
+- [ ] Verify locale loading and build outputs <!-- id: 5 -->

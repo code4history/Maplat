@@ -24,6 +24,13 @@
     "lint:eslint": "eslint \"{src,spec}/**/*.js\" --fix",
     "lint:prettier": "prettier \"./{src,spec}/**/*.js\" --write"
   },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "less",
+      "workbox-build"
+    ]
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/code4history/Maplat.git"
@@ -38,6 +45,10 @@
     "url": "https://github.com/code4history/Maplat/issues"
   },
   "homepage": "https://github.com/code4history/Maplat/wiki",
+  "engines": {
+    "npm": "use-pnpm-please",
+    "pnpm": ">=9.0.0"
+  },
   "dependencies": {
     "@maplat/core": "0.11.2",
     "@maplat/transform": "^0.3.0",
