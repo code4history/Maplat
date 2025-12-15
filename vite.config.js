@@ -1,9 +1,27 @@
 import { defineConfig } from 'vite';
 import path from 'path';
 import { VitePWA } from 'vite-plugin-pwa';
+import dts from 'vite-plugin-dts';
+
 
 export default defineConfig({
     plugins: [
+        {
+            name: 'copy-locales',
+            closeBundle() {
+                const fs = require('fs');
+                const path = require('path');
+                const srcDir = path.resolve(__dirname, 'assets/locales');
+                const destDir = path.resolve(__dirname, 'dist/assets/locales');
+                if (fs.existsSync(srcDir)) {
+                    if (!fs.existsSync(destDir)) {
+                        fs.mkdirSync(destDir, { recursive: true });
+                    }
+                    fs.cpSync(srcDir, destDir, { recursive: true, force: true });
+                    console.log('Copied assets/locales to dist/assets/locales');
+                }
+            }
+        },
         {
             name: 'serve-static-assets-files',
             configureServer(server) {
@@ -25,13 +43,17 @@ export default defineConfig({
                     next();
                 });
             }
-        }
+        },
+        dts({
+            insertTypesEntry: true,
+        })
     ],
     build: {
         lib: {
             entry: path.resolve(__dirname, 'src/index.ts'),
             name: 'MaplatUi',
-            fileName: (format) => `maplat-ui.${format}.js`
+            fileName: (format) => `maplat-ui.${format}.js`,
+            formats: ['es', 'umd']
         },
         rollupOptions: {
             external: [

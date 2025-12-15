@@ -725,18 +725,22 @@ export async function uiInit(ui: any, appOption: any) {
 
         for (let i = 0; i < baseSources.length; i++) {
             const source = baseSources[i];
+            const thumbKey = source.thumbnail ? source.thumbnail.split('/').pop() : "";
+            const thumbUrl = (pointer as any)[thumbKey] || source.thumbnail;
             baseSwiper.appendSlide(
                 `<div class="swiper-slide" data="${source.mapID}">` +
-                `<img crossorigin="anonymous" src="${source.thumbnail
+                `<img crossorigin="anonymous" src="${thumbUrl
                 }"><div> ${ui.core!.translate(source.label)}</div> </div> `
             );
         }
         for (let i = 0; i < overlaySources.length; i++) {
             const source = overlaySources[i];
             const colorCss = source.envelope ? ` ${source.envelopeColor}` : "";
+            const thumbKey = source.thumbnail ? source.thumbnail.split('/').pop() : "";
+            const thumbUrl = (pointer as any)[thumbKey] || source.thumbnail;
             overlaySwiper.appendSlide(
                 `<div class="swiper-slide${colorCss}" data="${source.mapID}">` +
-                `<img crossorigin="anonymous" src="${source.thumbnail
+                `<img crossorigin="anonymous" src="${thumbUrl
                 }"><div> ${ui.core!.translate(source.label)}</div> </div> `
             );
         }

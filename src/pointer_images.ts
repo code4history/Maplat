@@ -3,10 +3,6 @@ import Maplat from "../assets/parts/Maplat.png";
 import allright from "../assets/parts/all_right_reserved.png";
 import attr from "../assets/parts/attr.png";
 import basemap from "../assets/parts/basemap.png";
-import blueM from "../assets/parts/blue_marker.png";
-import blueD from "../assets/parts/bluedot.png";
-import blueD_s from "../assets/parts/bluedot_small.png";
-import blueD_t from "../assets/parts/bluedot_transparent.png";
 import border from "../assets/parts/border.png";
 import cc0 from "../assets/parts/cc0.png";
 import ccbnn from "../assets/parts/cc_by-nc-nd.png";
@@ -35,8 +31,6 @@ import osm from "../assets/parts/osm.jpg";
 import overlay from "../assets/parts/overlay.png";
 import pd from "../assets/parts/pd.png";
 import plus from "../assets/parts/plus.png";
-import redM from "../assets/parts/red_marker.png";
-import redC from "../assets/parts/redcircle.png";
 import share from "../assets/parts/share.png";
 import slider from "../assets/parts/slider.png";
 
@@ -45,10 +39,6 @@ export default {
   "all_right_reserved.png": allright,
   "attr.png": attr,
   "basemap.png": basemap,
-  "blue_marker.png": blueM,
-  "bluedot.png": blueD,
-  "bluedot_small.png": blueD_s,
-  "bluedot_transparent.png": blueD_t,
   "border.png": border,
   "cc0.png": cc0,
   "cc_by-nc-nd.png": ccbnn,
@@ -77,8 +67,6 @@ export default {
   "overlay.png": overlay,
   "pd.png": pd,
   "plus.png": plus,
-  "red_marker.png": redM,
-  "redcircle.png": redC,
   "share.png": share,
   "slider.png": slider
 };

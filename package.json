@@ -4,7 +4,7 @@
   "description": "Maplat is the cool Historical Map/Illustrated Map Viewer.\nIt can transform each map coordinates with nonlinear but homeomorphic projection and makes possible that the maps can collaborate with GPS/accurate maps, without distorting original maps.",
   "main": "dist/maplat-ui.umd.js",
   "module": "dist/maplat-ui.es.js",
-  "types": "src/index.ts",
+  "types": "dist/index.d.ts",
   "files": [
     "src/",
     "dist/",
@@ -81,6 +81,7 @@
     "prettier": "^3.0.0",
     "typescript": "^5.0.0",
     "vite": "^5.0.0",
+    "vite-plugin-dts": "^4.5.4",
     "vite-plugin-pwa": "^1.2.0",
     "vitest": "^1.0.0",
     "workbox-build": "^7.4.0",

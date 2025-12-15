@@ -4,6 +4,7 @@ import { MapEvent } from "ol";
 import pointer from "./pointer_images";
 import { createElement, MaplatApp } from "@maplat/core";
 import * as bsn from "bootstrap.native";
+import { getIcon } from "./icons";
 
 export let control_settings: any = {};
 const delegator: { [key: string]: string } = {
@@ -269,7 +270,7 @@ export class GoHome extends CustomControl {
     const options = optOptions || {};
     options.character = control_settings["home"]
       ? `<img src="${control_settings["home"]}">`
-      : '<i class="far fa-house fa-lg"></i>';
+      : getIcon('house', 'far fa-lg');
     options.cls = "home";
     options.callback = function () {
       const map = this.getMap();
@@ -293,7 +294,7 @@ export class SetGPS extends CustomControl {
     const options = optOptions || {};
     options.character = control_settings["gps"]
       ? `<img src="${control_settings["gps"]}">`
-      : '<i class="far fa-location-crosshairs fa-lg"></i>';
+      : getIcon('location-crosshairs', 'far fa-lg');
     options.cls = "gps";
     options.render = function (mapEvent: any) {
       const frameState = mapEvent.frameState;
@@ -369,7 +370,7 @@ export class CompassRotate extends Rotate {
     const span = document.createElement("span");
     span.innerHTML = control_settings["compass"]
       ? `<img src="${control_settings["compass"]}">`
-      : '<i class="far fa-compass fa-lg ol-compass-fa"></i>';
+      : getIcon('compass', 'far fa-lg ol-compass-fa');
     options.label = span;
     options.render = function (mapEvent: any) {
       const frameState = mapEvent.frameState;
@@ -439,7 +440,7 @@ export class Share extends CustomControl {
     const options = optOptions || {};
     options.character = control_settings["share"]
       ? `<img src="${control_settings["share"]}">`
-      : '<i class="far fa-share-from-square fa-lg"></i>';
+      : getIcon('share-from-square', 'far fa-lg');
     options.cls = "ol-share";
     options.callback = function () {
       const map = this.getMap();
@@ -461,7 +462,7 @@ export class Border extends CustomControl {
     const options = optOptions || {};
     options.character = control_settings["border"]
       ? `<img src="${control_settings["border"]}">`
-      : '<i class="far fa-layer-group fa-lg"></i>';
+      : getIcon('layer-group', 'far fa-lg');
     options.cls = "ol-border";
     options.callback = function () {
       const map = this.getMap();
@@ -483,7 +484,7 @@ export class Maplat extends CustomControl {
     const options = optOptions || {};
     options.character = control_settings["help"]
       ? `<img src="${control_settings["help"]}">`
-      : '<i class="far fa-circle-question fa-lg"></i>';
+      : getIcon('circle-question', 'far fa-lg');
     options.cls = "ol-maplat";
     options.callback = function () {
       const map = this.getMap();
@@ -505,7 +506,7 @@ export class Copyright extends CustomControl {
     const options = optOptions || {};
     options.character = control_settings["attr"]
       ? `<img src="${control_settings["attr"]}">`
-      : '<i class="far fa-circle-info fa-lg"></i>';
+      : getIcon('circle-info', 'far fa-lg');
     options.cls = "ol-copyright";
     options.callback = function () {
       const map = this.getMap();
@@ -527,7 +528,7 @@ export class HideMarker extends CustomControl {
     const options = optOptions || {};
     options.character = control_settings["hide_marker"]
       ? `<img src="${control_settings["hide_marker"]}">`
-      : '<i class="far fa-map-pin fa-lg"></i>';
+      : getIcon('map-pin', 'far fa-lg');
     options.cls = "ol-hide-marker";
     options.callback = function () {
       const map = this.getMap();
@@ -549,7 +550,7 @@ export class MarkerList extends CustomControl {
     const options = optOptions || {};
     options.character = control_settings["marker_list"]
       ? `<img src="${control_settings["marker_list"]}">`
-      : '<i class="far fa-list fa-lg"></i>';
+      : getIcon('list', 'far fa-lg');
     options.cls = "ol-marker-list";
     options.callback = function () {
       const map = this.getMap();

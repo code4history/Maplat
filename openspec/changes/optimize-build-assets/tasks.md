@@ -1,6 +1,8 @@
-- [ ] Update `package.json` with `vite-plugin-static-copy` <!-- id: 0 -->
-- [ ] Update `vite.config.js` for ESM/UMD and static copy <!-- id: 1 -->
-- [ ] Create `src/icons.ts` with SVG definitions <!-- id: 2 -->
-- [ ] Refactor `src/maplat_control.ts` to use SVGs <!-- id: 3 -->
-- [ ] Remove font files and LESS font-face references <!-- id: 4 -->
-- [ ] Verify locale loading and build outputs <!-- id: 5 -->
+- [x] Update `package.json` with `vite-plugin-static-copy` <!-- id: 0 -->
+- [x] Update `vite.config.js` for ESM/UMD and static copy <!-- id: 1 -->
+- [x] Create `src/icons.ts` with SVG definitions <!-- id: 2 -->
+- [x] Refactor `src/maplat_control.ts` to use SVGs <!-- id: 3 -->
+- [x] Remove font files and LESS font-face references <!-- id: 4 -->
+- [x] Refactor license images to use `import` instead of string paths <!-- id: 6 -->
+- [x] Remove unused images (e.g. bluedot) and move demo assets to `public/` <!-- id: 7 -->
+- [x] Verify locale loading and build outputs <!-- id: 5 -->
