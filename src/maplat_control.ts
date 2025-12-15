@@ -349,6 +349,22 @@ export class SetGPS extends CustomControl {
 
       this.ui.core.addEventListener("gps_result", (evt: any) => {
         console.log("GPS Result:", evt);
+        if (evt.detail && evt.detail.error) {
+          const errorMap: any = {
+            "user_gps_deny": "app.user_gps_deny",
+            "gps_miss": "app.gps_miss",
+            "gps_timeout": "app.gps_timeout",
+            "gps_off": "app.out_of_map"
+          };
+
+
+          this.ui.core.mapDivDocument.querySelector(".modal_title").innerText = this.ui.core.t("app.gps_error");
+          this.ui.core.mapDivDocument.querySelector(".modal_gpsD_content").innerText = this.ui.core.t(errorMap[evt.detail.error] || "app.gps_error");
+          const modalElm = this.ui.core.mapDivDocument.querySelector(".modalBase")!;
+          const modal = new bsn.Modal(modalElm, { root: this.ui.core.mapDivDocument });
+          this.ui.modalSetting("gpsD");
+          modal.show();
+        }
       });
     }
 
