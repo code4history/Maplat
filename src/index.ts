@@ -4,6 +4,8 @@ import {
 } from "@maplat/core";
 import "ol/ol.css";
 import EventTarget from "ol/events/Target.js";
+import { asArray } from 'ol/color';
+
 import { Swiper } from "./swiper_ex";
 // @ts-ignore
 import { Navigation, Pagination } from "swiper";
@@ -55,7 +57,7 @@ export class MaplatUi extends EventTarget {
   sliderCommon: any;
   contextMenu: any;
   splashPromise!: Promise<any>;
-  _selectCandidateSources?: any[];
+  _selectCandidateSources?: any;
   appEnvelope?: boolean;
   restoring: boolean = false;
   poiSwiper: any;
@@ -315,13 +317,32 @@ export class MaplatUi extends EventTarget {
     if (!ui.core!.mapObject) return;
 
     ui.core!.mapObject.resetEnvelope();
-    delete ui._selectCandidateSources;
+    if (ui._selectCandidateSources) {
+      Object.keys(ui._selectCandidateSources).forEach(key => {
+        if ((ui.core!.mapObject as any).removeEnvelope) {
+          console.log(`[Debug] Removing envelope for ${key}`);
+          (ui.core!.mapObject as any).removeEnvelope(ui._selectCandidateSources![key]);
+        }
+      });
+    }
+    ui._selectCandidateSources = {};
 
     if ((ui.core!.stateBuffer as any).showBorder) {
+      if (!ui.core!.from) return;
+
+      let activeOverlayId: string | null = null;
+      if (ui.overlaySwiper) {
+        const slide = ui.overlaySwiper.slides[ui.overlaySwiper.activeIndex];
+        if (slide) activeOverlayId = slide.getAttribute("data");
+      }
+
+
+
       Object.keys(ui.core!.cacheHash!)
         .filter((key: any) => ui.core!.cacheHash[key].envelope)
         .map((key: any) => {
           const source = ui.core!.cacheHash[key];
+          const isActive = key === activeOverlayId;
           const xyPromises =
             key === ui.core!.from!.mapID && typeof source.xy2SysCoord === 'function'
               ? [
@@ -336,11 +357,19 @@ export class MaplatUi extends EventTarget {
               );
 
           Promise.all(xyPromises).then(xys => {
-            ui.core!.mapObject.setEnvelope(xys, {
+            const options: any = {
               color: source.envelopeColor,
               width: 2,
               lineDash: [6, 6]
-            });
+            };
+            ui.core!.mapObject.setEnvelope(xys, options);
+            if (isActive && (ui.core!.mapObject as any).setFillEnvelope) {
+              console.log(`[Debug] Setting fill envelope for ${key}`);
+              const color = asArray(source.envelopeColor || '#000000');
+              color[3] = 0.4;
+              const fillHandle = (ui.core!.mapObject as any).setFillEnvelope(xys, null, { color });
+              ui._selectCandidateSources![key] = fillHandle;
+            }
           });
         });
     }

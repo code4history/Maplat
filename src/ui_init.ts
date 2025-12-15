@@ -594,14 +594,7 @@ export async function uiInit(ui: any, appOption: any) {
         }
     });
 
-    ui.core!.mapDivDocument!.addEventListener("mouseout", (_evt: any) => {
-        if (ui._selectCandidateSources) {
-            Object.keys(ui._selectCandidateSources).forEach((key: any) =>
-                ui.core!.mapObject.removeEnvelope(ui._selectCandidateSources![key])
-            );
-            delete ui._selectCandidateSources;
-        }
-    });
+
 
     ui.core!.addEventListener("sourceLoaded", (evt: any) => {
         const sources = evt.detail;
@@ -744,6 +737,10 @@ export async function uiInit(ui: any, appOption: any) {
                 }"><div> ${ui.core!.translate(source.label)}</div> </div> `
             );
         }
+
+        overlaySwiper.on("slideChange", () => {
+            ui.updateEnvelope();
+        });
 
         baseSwiper.slideToLoop(0);
         overlaySwiper.slideToLoop(0);

@@ -34,6 +34,7 @@ import plus from "../assets/parts/plus.png";
 import share from "../assets/parts/share.png";
 import slider from "../assets/parts/slider.png";
 
+
 export default {
   "Maplat.png": Maplat,
   "all_right_reserved.png": allright,

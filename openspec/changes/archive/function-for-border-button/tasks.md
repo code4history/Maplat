@@ -1,0 +1,5 @@
+- [x] Refactor `Border`, `HideMarker`, `MarkerList`, `Maplat`, `Copyright` to use `getIcon` <!-- id: 1 -->
+- [x] Refactor `Zoom` control to use `getIcon` (handle +/-) <!-- id: 2 -->
+- [x] Add `updateEnvelope` logic to fill active overlay <!-- id: 3 -->
+- [x] Hook Swiper `slideChange` to `updateEnvelope` <!-- id: 4 -->
+- [x] Verify persistence and restore of Border state <!-- id: 5 -->

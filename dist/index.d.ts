@@ -22,7 +22,7 @@ export declare class MaplatUi extends EventTarget {
     sliderCommon: any;
     contextMenu: any;
     splashPromise: Promise<any>;
-    _selectCandidateSources?: any[];
+    _selectCandidateSources?: any;
     appEnvelope?: boolean;
     restoring: boolean;
     poiSwiper: any;
