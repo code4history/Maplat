@@ -27,7 +27,7 @@ import absoluteUrl from "./absolute_url";
 import * as QRCode from "qrcode";
 import { ellips, isBasemap } from "./ui_utils";
 // @ts-ignore
-import { handleMarkerAction, showContextMenu } from "./ui_marker";
+import { handleMarkerAction, showContextMenu, poiWebControl } from "./ui_marker";
 
 Swiper.use([Navigation, Pagination]);
 
@@ -285,17 +285,7 @@ export async function uiInit(ui: any, appOption: any) {
         </d> 
 
         <d c="modal_poi_content">
-          <d c="poi_web poi_web_div hide"><iframe c="poi_iframe" frameborder="0"></iframe></d>
-          <d c="poi_data fade in">
-            <d c="swiper-container poi_img_swiper">
-              <d c="swiper-wrapper"></d>
-              <d c="swiper-button-next poi-img-next swiper-button-white"></d>
-              <d c="swiper-button-prev poi-img-prev swiper-button-white"></d>
-              <d c="swiper-pagination poi-pagination"></d>
-            </d>
-            <p c="poi_address"></p>
-            <d c="poi_desc"></d>
-          </d>
+          <d c="poi_web_div"></d>
           <d c="modal_share_poi"></d>
           <p><img src="" height="0px" width="0px"></p>
         </d> 
@@ -823,6 +813,98 @@ export async function uiInit(ui: any, appOption: any) {
             } else if (control === "markerList") {
                 ui.modalSetting("marker_list");
                 modal.show();
+
+                const listRoot = modalElm.querySelector(".modal_marker_list_content ul.list-group") as HTMLElement;
+                listRoot.innerHTML = "";
+
+                const layers = ui.core!.listPoiLayers(false, true);
+
+                layers.forEach((layer: any) => {
+                    // Create Layer Item
+                    const layerLi = createElement(`<li class="list-group-item layer">
+                        <div class="row layer_row">
+                           <div class="layer_label">
+                              <span class="dli-chevron"></span>
+                              <img src="${layer.icon || (pointer as any)["defaultpin.png"]}" class="markerlist"> ${ui.core!.translate(layer.name)}
+                           </div>
+                           <div class="layer_onoff">
+                              <input type="checkbox" class="markerlist" ${layer.hide ? "" : "checked"}>
+                              <label class="check"><div></div></label>
+                           </div>
+                        </div>
+                    </li>`)[0] as HTMLElement;
+
+                    const checkbox = layerLi.querySelector("input[type=checkbox]") as HTMLInputElement;
+                    const label = layerLi.querySelector("label.check") as HTMLElement;
+
+                    label.addEventListener("click", (e) => {
+                        e.stopPropagation();
+                        if (!checkbox.disabled) {
+                            checkbox.checked = !checkbox.checked;
+                            checkbox.dispatchEvent(new Event('change'));
+                        }
+                    });
+
+                    checkbox.addEventListener("click", (e) => e.stopPropagation());
+
+                    checkbox.addEventListener("change", (e: any) => {
+                        if (e.target.checked) {
+                            ui.core!.showPoiLayer(layer.id);
+                        } else {
+                            ui.core!.hidePoiLayer(layer.id);
+                        }
+                    });
+
+                    const poiListUl = createElement(`<ul class="list_poiitems_div"></ul>`)[0] as HTMLElement;
+
+                    layerLi.querySelector(".layer_label")!.addEventListener("click", () => {
+                        poiListUl.classList.toggle("open");
+                    });
+
+                    listRoot.appendChild(layerLi);
+                    listRoot.appendChild(poiListUl);
+
+                    if (layer.pois) {
+                        layer.pois.forEach((poi: any) => {
+                            const poiLi = createElement(`<li class="list-group-item poi">
+                                <div class="row poi_row">
+                                   <div class="poi_label">
+                                      <span class="dli-chevron"></span>
+                                      <img src="${poi.icon || layer.icon || (pointer as any)["defaultpin.png"]}" class="markerlist"> ${ui.core!.translate(poi.name)}
+                                   </div>
+                                </div>
+                            </li>`)[0] as HTMLElement;
+
+                            const poiContentDiv = createElement(`<div class="list_poicontent_div"></div>`)[0] as HTMLElement;
+
+                            let poiImgHide: any;
+
+                            poiLi.addEventListener("click", () => {
+                                if (!poiContentDiv.classList.contains("open")) {
+                                    poiContentDiv.classList.add("open");
+
+                                    const funcs = poiWebControl(ui, poiContentDiv, poi);
+                                    if (funcs) {
+                                        const [showFunc, hideFunc] = funcs;
+                                        poiImgHide = hideFunc;
+                                        if (showFunc) showFunc();
+                                    }
+
+                                    ui.core!.selectMarker?.(poi.namespaceID);
+                                } else {
+                                    poiContentDiv.classList.remove("open");
+
+                                    if (poiImgHide) poiImgHide();
+                                    poiContentDiv.innerHTML = "";
+                                    ui.core!.unselectMarker?.();
+                                }
+                            });
+
+                            poiListUl.appendChild(poiLi);
+                            poiListUl.appendChild(poiContentDiv);
+                        });
+                    }
+                });
             } else if (control === "copyright") {
                 ui.modalSetting("map");
                 const mapData = ui.core!.from!;
