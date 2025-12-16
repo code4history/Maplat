@@ -1,0 +1,3 @@
+src/ui_marker.ts(7,1): error TS6192: All imports in import declaration are unused.
+src/ui_marker.ts(184,13): error TS2722: Cannot invoke an object which is possibly 'undefined'.
+src/ui_marker.ts(190,13): error TS2722: Cannot invoke an object which is possibly 'undefined'.

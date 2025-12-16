@@ -1,0 +1,7 @@
+Change 'marker-list-function' has issues
+笨・[ERROR] marker-list/spec.md: ADDED "Marker Layer Interaction" is missing requirement text
+笨・[ERROR] marker-list/spec.md: ADDED "Marker List Interaction" is missing requirement text
+Next steps:
+  - Ensure change has deltas in specs/: use headers ## ADDED/MODIFIED/REMOVED/RENAMED Requirements
+  - Each requirement MUST include at least one #### Scenario: block
+  - Debug parsed deltas: openspec change show <id> --json --deltas-only

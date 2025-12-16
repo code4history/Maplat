@@ -1,3 +1,4 @@
+export declare function poiWebControl(ui: any, div: HTMLElement, data: any): (((_event?: any) => void) | undefined)[] | undefined;
 export declare function handleMarkerAction(ui: any, data: any): void;
 export declare function showContextMenu(ui: any, list: any[]): void;
 export declare function xyToMapIDs(ui: any, xy: any, threshold?: number): Promise<any>;
