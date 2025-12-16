@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { assets } from "@maplat/core";
 import Maplat from "../assets/parts/Maplat.png";
 import allright from "../assets/parts/all_right_reserved.png";
 import attr from "../assets/parts/attr.png";
@@ -12,13 +13,9 @@ import ccbnd from "../assets/parts/cc_by-nd.png";
 import ccbs from "../assets/parts/cc_by-sa.png";
 import ccb from "../assets/parts/cc_by.png";
 import compass from "../assets/parts/compass.png";
-import defPin from "../assets/parts/defaultpin.png";
-import defPin_s from "../assets/parts/defaultpin_selected.png";
 import favicon from "../assets/parts/favicon.png";
 import fullscreen from "../assets/parts/fullscreen.png";
 import gps from "../assets/parts/gps.png";
-import gsi from "../assets/parts/gsi.jpg";
-import ortho from "../assets/parts/gsi_ortho.jpg";
 import help from "../assets/parts/help.png";
 import hide from "../assets/parts/hide_marker.png";
 import list from "../assets/parts/marker_list.png";
@@ -27,7 +24,6 @@ import loading from "../assets/parts/loading.png";
 import loading_i from "../assets/parts/loading_image.png";
 import minus from "../assets/parts/minus.png";
 import noimg from "../assets/parts/no_image.png";
-import osm from "../assets/parts/osm.jpg";
 import overlay from "../assets/parts/overlay.png";
 import pd from "../assets/parts/pd.png";
 import plus from "../assets/parts/plus.png";
@@ -40,6 +36,9 @@ export default {
   "all_right_reserved.png": allright,
   "attr.png": attr,
   "basemap.png": basemap,
+  "bluedot.png": assets.bluedot,
+  "bluedot_transparent.png": assets.bluedot_transparent,
+  "bluedot_small.png": assets.bluedot_small,
   "border.png": border,
   "cc0.png": cc0,
   "cc_by-nc-nd.png": ccbnn,
@@ -49,13 +48,13 @@ export default {
   "cc_by-sa.png": ccbs,
   "cc_by.png": ccb,
   "compass.png": compass,
-  "defaultpin.png": defPin,
-  "defaultpin_selected.png": defPin_s,
+  "defaultpin.png": assets.defaultpin,
+  "defaultpin_selected.png": assets.defaultpin_selected,
   "favicon.png": favicon,
   "fullscreen.png": fullscreen,
   "gps.png": gps,
-  "gsi.jpg": gsi,
-  "gsi_ortho.jpg": ortho,
+  "gsi.jpg": assets.gsi,
+  "gsi_ortho.jpg": assets.gsi_ortho,
   "help.png": help,
   "hide_marker.png": hide,
   "marker_list.png": list,
@@ -64,10 +63,11 @@ export default {
   "loading_image.png": loading_i,
   "minus.png": minus,
   "no_image.png": noimg,
-  "osm.jpg": osm,
+  "osm.jpg": assets.osm,
   "overlay.png": overlay,
   "pd.png": pd,
   "plus.png": plus,
+  "redcircle.png": assets.redcircle,
   "share.png": share,
   "slider.png": slider
 };

@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@maplat/core':
-        specifier: 0.11.2
-        version: 0.11.2(@types/babel__core@7.20.5)(mapbox-gl@1.13.3)(maplibre-gl@4.7.1)(ol@10.7.0)(webpack@5.103.0(esbuild@0.27.1))
+        specifier: github:code4history/MaplatCore#f0321e53b1e2cc37bddf130f3a713a146dcc13fb
+        version: https://codeload.github.com/code4history/MaplatCore/tar.gz/f0321e53b1e2cc37bddf130f3a713a146dcc13fb(@types/babel__core@7.20.5)(mapbox-gl@1.13.3)(maplibre-gl@4.7.1)(ol@10.7.0)(webpack@5.103.0(esbuild@0.27.1))
       '@maplat/transform':
         specifier: ^0.3.0
         version: 0.3.0
@@ -1058,12 +1058,13 @@ packages:
     resolution: {integrity: sha512-Es6WcD0nO5l+2BOQS4uLfNPYQaNDfbot3X1XUoloz+x0mPDS3eeORZJl06HXjwBG1fOGwCRnzK88LMdxKRrd6Q==}
     engines: {node: '>=6.0.0'}
 
-  '@maplat/core@0.11.2':
-    resolution: {integrity: sha512-yAJHXzNySfibJ3VWFKnzClRUkehyYkyGvYaWfD1gx9xYahVlr9NctRqOSXq1QQO0YLxaKEH03QSMQaP6F++RWw==}
+  '@maplat/core@https://codeload.github.com/code4history/MaplatCore/tar.gz/f0321e53b1e2cc37bddf130f3a713a146dcc13fb':
+    resolution: {tarball: https://codeload.github.com/code4history/MaplatCore/tar.gz/f0321e53b1e2cc37bddf130f3a713a146dcc13fb}
+    version: 0.11.2
     peerDependencies:
       mapbox-gl: ^1.0.0 || ^2.0.0 || ^3.0.0
       maplibre-gl: ^3.0.0 || ^4.0.0
-      ol: ^9.0.0
+      ol: ^9.0.0 || ^10.0.0
     peerDependenciesMeta:
       mapbox-gl:
         optional: true
@@ -5617,7 +5618,7 @@ snapshots:
 
   '@mapbox/whoots-js@3.1.0': {}
 
-  '@maplat/core@0.11.2(@types/babel__core@7.20.5)(mapbox-gl@1.13.3)(maplibre-gl@4.7.1)(ol@10.7.0)(webpack@5.103.0(esbuild@0.27.1))':
+  '@maplat/core@https://codeload.github.com/code4history/MaplatCore/tar.gz/f0321e53b1e2cc37bddf130f3a713a146dcc13fb(@types/babel__core@7.20.5)(mapbox-gl@1.13.3)(maplibre-gl@4.7.1)(ol@10.7.0)(webpack@5.103.0(esbuild@0.27.1))':
     dependencies:
       '@maplat/transform': 0.3.0
       '@turf/area': 7.3.1

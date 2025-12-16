@@ -50,7 +50,7 @@
     "pnpm": ">=9.0.0"
   },
   "dependencies": {
-    "@maplat/core": "0.11.2",
+    "@maplat/core": "github:code4history/MaplatCore#f0321e53b1e2cc37bddf130f3a713a146dcc13fb",
     "@maplat/transform": "^0.3.0",
     "@turf/turf": "^6.5.0",
     "@types/page": "^1.11.9",

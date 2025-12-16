@@ -3,6 +3,9 @@ declare const _default: {
     "all_right_reserved.png": any;
     "attr.png": any;
     "basemap.png": any;
+    "bluedot.png": any;
+    "bluedot_transparent.png": any;
+    "bluedot_small.png": any;
     "border.png": any;
     "cc0.png": any;
     "cc_by-nc-nd.png": any;
@@ -31,6 +34,7 @@ declare const _default: {
     "overlay.png": any;
     "pd.png": any;
     "plus.png": any;
+    "redcircle.png": any;
     "share.png": any;
     "slider.png": any;
 };
