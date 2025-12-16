@@ -1,6 +1,0 @@
-Change 'marker-list-function' has issues
-笨・[ERROR] marker-list/spec.md: ADDED "Marker List Display Logic" must contain SHALL or MUST
-Next steps:
-  - Ensure change has deltas in specs/: use headers ## ADDED/MODIFIED/REMOVED/RENAMED Requirements
-  - Each requirement MUST include at least one #### Scenario: block
-  - Debug parsed deltas: openspec change show <id> --json --deltas-only

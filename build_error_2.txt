@@ -1,2 +1,0 @@
-src/ui_marker.ts(184,13): error TS2722: Cannot invoke an object which is possibly 'undefined'.
-src/ui_marker.ts(190,13): error TS2722: Cannot invoke an object which is possibly 'undefined'.
