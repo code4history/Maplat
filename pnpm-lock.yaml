@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@maplat/core':
-        specifier: github:code4history/MaplatCore#f0321e53b1e2cc37bddf130f3a713a146dcc13fb
-        version: https://codeload.github.com/code4history/MaplatCore/tar.gz/f0321e53b1e2cc37bddf130f3a713a146dcc13fb(@types/babel__core@7.20.5)(mapbox-gl@1.13.3)(maplibre-gl@4.7.1)(ol@10.7.0)(webpack@5.103.0(esbuild@0.27.1))
+        specifier: github:code4history/MaplatCore#23bce09708cf28475d9b14ced8b2399c0839b4f4
+        version: https://codeload.github.com/code4history/MaplatCore/tar.gz/23bce09708cf28475d9b14ced8b2399c0839b4f4(mapbox-gl@1.13.3)(maplibre-gl@4.7.1)(ol@10.7.0)
       '@maplat/transform':
         specifier: ^0.3.0
         version: 0.3.0
@@ -1058,8 +1058,8 @@ packages:
     resolution: {integrity: sha512-Es6WcD0nO5l+2BOQS4uLfNPYQaNDfbot3X1XUoloz+x0mPDS3eeORZJl06HXjwBG1fOGwCRnzK88LMdxKRrd6Q==}
     engines: {node: '>=6.0.0'}
 
-  '@maplat/core@https://codeload.github.com/code4history/MaplatCore/tar.gz/f0321e53b1e2cc37bddf130f3a713a146dcc13fb':
-    resolution: {tarball: https://codeload.github.com/code4history/MaplatCore/tar.gz/f0321e53b1e2cc37bddf130f3a713a146dcc13fb}
+  '@maplat/core@https://codeload.github.com/code4history/MaplatCore/tar.gz/23bce09708cf28475d9b14ced8b2399c0839b4f4':
+    resolution: {tarball: https://codeload.github.com/code4history/MaplatCore/tar.gz/23bce09708cf28475d9b14ced8b2399c0839b4f4}
     version: 0.11.2
     peerDependencies:
       mapbox-gl: ^1.0.0 || ^2.0.0 || ^3.0.0
@@ -4397,6 +4397,10 @@ packages:
   weiwudi@0.1.4:
     resolution: {integrity: sha512-tzFdjiSYz+0GNHk5WYsvns1ct8ly2Y5yJZHwRIxDVOaQjfhnBQNmj4NMSKimSgOlu0qz09I23b1ZZbZUROqYiA==}
 
+  weiwudi@https://codeload.github.com/code4history/Weiwudi/tar.gz/29c77a56fd43f67f35f82822a171419205542546:
+    resolution: {tarball: https://codeload.github.com/code4history/Weiwudi/tar.gz/29c77a56fd43f67f35f82822a171419205542546}
+    version: 0.1.4
+
   whatwg-encoding@3.1.1:
     resolution: {integrity: sha512-6qN4hJdMwfYBtE3YBTTHhoeuUrDBPZmbQaxWAqSALV/MeEnR5z1xd8UKud2RAkFoPkmB+hli1TZSnyi84xz1vQ==}
     engines: {node: '>=18'}
@@ -5618,7 +5622,7 @@ snapshots:
 
   '@mapbox/whoots-js@3.1.0': {}
 
-  '@maplat/core@https://codeload.github.com/code4history/MaplatCore/tar.gz/f0321e53b1e2cc37bddf130f3a713a146dcc13fb(@types/babel__core@7.20.5)(mapbox-gl@1.13.3)(maplibre-gl@4.7.1)(ol@10.7.0)(webpack@5.103.0(esbuild@0.27.1))':
+  '@maplat/core@https://codeload.github.com/code4history/MaplatCore/tar.gz/23bce09708cf28475d9b14ced8b2399c0839b4f4(mapbox-gl@1.13.3)(maplibre-gl@4.7.1)(ol@10.7.0)':
     dependencies:
       '@maplat/transform': 0.3.0
       '@turf/area': 7.3.1
@@ -5653,15 +5657,11 @@ snapshots:
       polygon-offset: 0.3.2
       simplify-js: 1.2.4
       sweetalert2: 11.26.4
-      weiwudi: 0.1.4(@types/babel__core@7.20.5)(webpack@5.103.0(esbuild@0.27.1))
+      weiwudi: https://codeload.github.com/code4history/Weiwudi/tar.gz/29c77a56fd43f67f35f82822a171419205542546
       whatwg-fetch: 3.6.20
     optionalDependencies:
       mapbox-gl: 1.13.3
       maplibre-gl: 4.7.1
-    transitivePeerDependencies:
-      - '@types/babel__core'
-      - supports-color
-      - webpack
 
   '@maplat/transform@0.3.0':
     dependencies:
@@ -10563,6 +10563,14 @@ snapshots:
       - '@types/babel__core'
       - supports-color
       - webpack
+
+  weiwudi@https://codeload.github.com/code4history/Weiwudi/tar.gz/29c77a56fd43f67f35f82822a171419205542546:
+    dependencies:
+      workbox-core: 6.6.1
+      workbox-expiration: 6.6.1
+      workbox-precaching: 6.6.1
+      workbox-routing: 6.6.1
+      workbox-strategies: 6.6.1
 
   whatwg-encoding@3.1.1:
     dependencies:

@@ -14,13 +14,13 @@
     "assets/"
   ],
   "scripts": {
-    "dev": "concurrently \"npm run watch:sw\" \"vite\"",
+    "dev": "concurrently \"pnpm watch:sw\" \"vite\"",
     "build:sw": "esbuild src/service-worker.js --bundle --outfile=public/service-worker.js --define:self.__WB_MANIFEST=[]",
     "watch:sw": "esbuild src/service-worker.js --bundle --outfile=public/service-worker.js --define:self.__WB_MANIFEST=[] --watch",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest",
-    "lint": "npm run lint:eslint && npm run lint:prettier",
+    "lint": "pnpm lint:eslint && pnpm lint:prettier",
     "lint:eslint": "eslint \"{src,spec}/**/*.js\" --fix",
     "lint:prettier": "prettier \"./{src,spec}/**/*.js\" --write"
   },
@@ -50,7 +50,7 @@
     "pnpm": ">=9.0.0"
   },
   "dependencies": {
-    "@maplat/core": "github:code4history/MaplatCore#f0321e53b1e2cc37bddf130f3a713a146dcc13fb",
+    "@maplat/core": "github:code4history/MaplatCore#23bce09708cf28475d9b14ced8b2399c0839b4f4",
     "@maplat/transform": "^0.3.0",
     "@turf/turf": "^6.5.0",
     "@types/page": "^1.11.9",
