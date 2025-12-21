@@ -2,6 +2,7 @@
   "name": "@maplat/ui",
   "version": "0.10.6",
   "description": "Maplat is the cool Historical Map/Illustrated Map Viewer.\nIt can transform each map coordinates with nonlinear but homeomorphic projection and makes possible that the maps can collaborate with GPS/accurate maps, without distorting original maps.",
+  "type": "module",
   "main": "dist/maplat-ui.umd.js",
   "module": "dist/maplat-ui.es.js",
   "types": "dist/index.d.ts",
@@ -50,16 +51,16 @@
     "pnpm": ">=9.0.0"
   },
   "dependencies": {
-    "@maplat/core": "github:code4history/MaplatCore#fc474542e7a80a9d0971c7742f9cf8efc5f0d2e2",
-    "@maplat/transform": "^0.3.0",
-    "@turf/turf": "^6.5.0",
+    "@maplat/core": "github:code4history/MaplatCore#210edbcf3ac7f3f85a2a7dbfcae17da78f267cba",
+    "@maplat/transform": "github:code4history/MaplatTransform#8e98b7ea5378302150ebbcf4d22a2c01f8f68e66",
+    "@turf/turf": "^7.3.1",
     "@types/page": "^1.11.9",
     "bootstrap.native": "^5.1.6",
     "page": "^1.11.6",
     "qrcode": "^1.5.0",
     "swiper": "^6.8.4",
     "tiny-emitter": "^2.1.0",
-    "weiwudi": "^0.1.4"
+    "weiwudi": "github:code4history/Weiwudi#1308232fb2f65afd4c5d2eba2277af86ccb80c69"
   },
   "peerDependencies": {
     "mapbox-gl": "^1.0.0 || ^2.0.0 || ^3.0.0",
@@ -67,19 +68,22 @@
     "ol": "^9.0.0 || ^10.0.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.2",
     "@types/node": "^20.0.0",
     "@types/ol": "^6.4.2",
     "@types/qrcode": "^1.5.0",
     "clean-webpack-plugin": "^3.0.0",
     "concurrently": "^9.2.1",
     "esbuild": "^0.27.1",
-    "eslint": "^9.0.0",
+    "eslint": "^9.39.2",
     "eslint-config-prettier": "^9.0.0",
+    "globals": "^16.5.0",
     "jsdom": "^24.0.0",
     "less": "^4.1.2",
     "ol": "^10.7.0",
     "prettier": "^3.0.0",
     "typescript": "^5.0.0",
+    "typescript-eslint": "^8.50.0",
     "vite": "^5.0.0",
     "vite-plugin-dts": "^4.5.4",
     "vite-plugin-pwa": "^1.2.0",

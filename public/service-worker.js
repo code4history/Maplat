@@ -2966,7 +2966,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // node_modules/.pnpm/weiwudi@0.1.4_@types+babel__18649476068778b3020e61853c400c16/node_modules/weiwudi/src/weiwudi_gw_logic.js
+  // node_modules/.pnpm/weiwudi@https+++codeload.gi_55d4fb482ff8f4049848277d786c1762/node_modules/weiwudi/src/weiwudi_gw_logic.js
   function Weiwudi_Internal(registerRoute2) {
     "use strict";
     const MERC_MAX = 20037508342789244e-9;
@@ -3172,7 +3172,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
         };
       });
     };
-    const handlerCb = async ({ url, request, event, params }) => {
+    const handlerCb = async ({ url, request, event, _params }) => {
       const client = event.clientId ? await self.clients.get(event.clientId) : void 0;
       const matched = url.pathname.match(/^\/api\/([\w\d]+)(?:\/(.+))?$/);
       if (matched) {
@@ -3364,8 +3364,8 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
           case "info":
             retVal = checkAttributes(query, ["mapID"]);
             if (!retVal) {
-              const db2 = await getDB("Weiwudi", "mapSetting", "mapID");
-              const setting = await getItem(db2, "mapSetting", query.mapID);
+              const db = await getDB("Weiwudi", "mapSetting", "mapID");
+              const setting = await getItem(db, "mapSetting", query.mapID);
               if (!setting) retVal = `Error: MapID "${query.mapID}" not found`;
               else {
                 retVal = new Response(JSON.stringify(setting), {
@@ -3376,7 +3376,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
               }
             }
             break;
-          case "add":
+          case "add": {
             const db = await getDB("Weiwudi", "mapSetting", "mapID");
             retVal = checkAttributes(query, ["mapID", "type", "url"]);
             if (!retVal) {
@@ -3451,6 +3451,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
               });
             }
             break;
+          }
           case "clean":
             retVal = checkAttributes(query, ["mapID"]);
             if (fetchAllBlocker && fetchAllBlocker.mapID == query.mapID) {
@@ -3467,8 +3468,8 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
               retVal = `Error: ${query.mapID} is under fetching process. Please cancel it first`;
             } else if (!retVal) {
               await deleteDB2(`Weiwudi_${query.mapID}`);
-              const db2 = await getDB("Weiwudi");
-              await deleteItem(db2, "mapSetting", query.mapID);
+              const db = await getDB("Weiwudi");
+              await deleteItem(db, "mapSetting", query.mapID);
               retVal = `Deleted: ${query.mapID}`;
             }
             break;
@@ -3480,11 +3481,12 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
             } else {
               retVal = `Error: There are no fetching process of ${query.mapID}`;
             }
+            break;
           case "stats":
             retVal = checkAttributes(query, ["mapID"]);
             if (!retVal) {
-              const db2 = await getDB("Weiwudi");
-              const setting = await getItem(db2, "mapSetting", query.mapID);
+              const db = await getDB("Weiwudi");
+              const setting = await getItem(db, "mapSetting", query.mapID);
               if (!setting) retVal = `Error: MapID "${query.mapID}" not found`;
               else {
                 const cacheDB = await getDB(`Weiwudi_${query.mapID}`);
@@ -3501,19 +3503,20 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
               }
             }
             break;
-          case "cache":
-            const matched = restPath.match(/^([^\/]+)\/(\d+)\/(\d+)\/(\d+)$/);
+          case "cache": {
+            const matched = restPath.match(/^([^/]+)\/(\d+)\/(\d+)\/(\d+)$/);
             if (matched) {
               retVal = await getImage(matched[1], parseInt(matched[2]), parseInt(matched[3]), parseInt(matched[4]));
             } else {
               retVal = 'Error: "cache" api needs mapID, zoom, x, y settings';
             }
             break;
+          }
           case "fetchAll":
             retVal = checkAttributes(query, ["mapID"]);
             if (!retVal) {
-              const db2 = await getDB("Weiwudi");
-              const setting = await getItem(db2, "mapSetting", query.mapID);
+              const db = await getDB("Weiwudi");
+              const setting = await getItem(db, "mapSetting", query.mapID);
               if (!setting) retVal = `Error: MapID "${query.mapID}" not found`;
               else if (!setting.totalTile) retVal = `Error: Map "${query.mapID}" cannot fetch all tiles`;
               else if (fetchAllBlocker) {
@@ -3543,7 +3546,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     registerRoute2(/^https?:\/\/weiwudi.example.com/, handlerCb, "GET");
   }
 
-  // node_modules/.pnpm/weiwudi@0.1.4_@types+babel__18649476068778b3020e61853c400c16/node_modules/weiwudi/src/weiwudi_gw.js
+  // node_modules/.pnpm/weiwudi@https+++codeload.gi_55d4fb482ff8f4049848277d786c1762/node_modules/weiwudi/src/weiwudi_gw.js
   Weiwudi_Internal(registerRoute);
 
   // src/service-worker.js
@@ -3552,11 +3555,9 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
   precacheAndRoute(define_self_WB_MANIFEST_default, {});
   registerRoute(
     /(?:maps\/.+\.json|pwa\/.+|pois\/.+\.json|apps\/.+\.json|tmbs\/.+\.jpg|images\/.+\.(?:png|jpg))$/,
-    // eslint-disable-next-line no-undef
     new StaleWhileRevalidate({
       cacheName: "resourcesCache",
       plugins: [
-        // eslint-disable-next-line no-undef
         new ExpirationPlugin({
           maxAgeSeconds: 86400,
           purgeOnQuotaError: false

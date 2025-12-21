@@ -1,16 +1,18 @@
 import { defineConfig } from 'vite';
 import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
 import { VitePWA } from 'vite-plugin-pwa';
 import dts from 'vite-plugin-dts';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export default defineConfig({
     plugins: [
         {
             name: 'copy-locales',
             closeBundle() {
-                const fs = require('fs');
-                const path = require('path');
                 const srcDir = path.resolve(__dirname, 'assets/locales');
                 const destDir = path.resolve(__dirname, 'dist/assets/locales');
                 if (fs.existsSync(srcDir)) {
@@ -28,7 +30,6 @@ export default defineConfig({
                 server.middlewares.use((req, res, next) => {
                     if (req.url.startsWith('/assets/')) {
                         const file = path.join(__dirname, req.url);
-                        const fs = require('fs');
                         if (fs.existsSync(file) && fs.statSync(file).isFile()) {
                             if (req.url.endsWith('.json')) res.setHeader('Content-Type', 'application/json');
                             if (req.url.endsWith('.woff')) res.setHeader('Content-Type', 'font/woff');

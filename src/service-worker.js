@@ -27,14 +27,13 @@ clientsClaim();
  * See https://goo.gl/S9QRab
  */
 precacheAndRoute(self.__WB_MANIFEST, {});
-// eslint-disable-next-line no-undef
+
 registerRoute(
   /(?:maps\/.+\.json|pwa\/.+|pois\/.+\.json|apps\/.+\.json|tmbs\/.+\.jpg|images\/.+\.(?:png|jpg))$/,
-  // eslint-disable-next-line no-undef
+
   new StaleWhileRevalidate({
     cacheName: "resourcesCache",
     plugins: [
-      // eslint-disable-next-line no-undef
       new ExpirationPlugin({
         maxAgeSeconds: 86400,
         purgeOnQuotaError: false
