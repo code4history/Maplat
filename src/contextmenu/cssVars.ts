@@ -1,4 +1,4 @@
-const namespace = 'ol-ctx-menu';
+const namespace = "ol-ctx-menu";
 
 export default {
   namespace,
@@ -9,5 +9,5 @@ export default {
   icon: `${namespace}-icon`,
   zoomIn: `${namespace}-zoom-in`,
   zoomOut: `${namespace}-zoom-out`,
-  unselectable: 'ol-unselectable',
+  unselectable: "ol-unselectable"
 };

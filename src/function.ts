@@ -1,6 +1,9 @@
+// @ts-expect-error - Module uses internal API - Module uses internal API
 import { normalizeArg as normalizeArg_ } from "@maplat/core/dist/functions";
 
-export function normalizeArg(options: Record<string, any>): Record<string, any> {
+export function normalizeArg(
+  options: Record<string, unknown>
+): Record<string, unknown> {
   const table: Record<string, string> = {
     state_url: "stateUrl",
     restore_session: "restoreSession",
@@ -13,16 +16,21 @@ export function normalizeArg(options: Record<string, any>): Record<string, any> 
   };
   options = normalizeArg_(options);
 
-  return Object.keys(table).reduce((opt: Record<string, any>, key: string) => {
-    if (opt[key] !== undefined) {
-      throw new Error(`Invalid Maplat option key: ${key}. Use "${table[key]}" instead.`);
-      //opt[table[key]] = opt[key];
-      //delete opt[key];
-    }
-    return opt;
-  }, options);
+  return Object.keys(table).reduce(
+    (opt: Record<string, unknown>, key: string) => {
+      if (opt[key] !== undefined) {
+        throw new Error(
+          `Invalid Maplat option key: ${key}. Use "${table[key]}" instead.`
+        );
+        //opt[table[key]] = opt[key];
+        //delete opt[key];
+      }
+      return opt;
+    },
+    options
+  );
 }
 
-export function getUniqueId(prefix: any = 'id_') {
+export function getUniqueId(prefix: string = "id_") {
   return prefix + Math.random().toString(36).substr(2, 9);
 }

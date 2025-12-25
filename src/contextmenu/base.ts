@@ -4,31 +4,33 @@
  * @license MIT
  **/
 
-import { CSS_VARS, DEFAULT_OPTIONS, DEFAULT_ITEMS } from './constants';
-import Control from 'ol/control/Control';
-import { Internal } from './internal';
-import { Html } from './html';
-import { assert, mergeOptions, isDefAndNotNull } from './helpers/mix';
+import { CSS_VARS, DEFAULT_OPTIONS, DEFAULT_ITEMS } from "./constants";
+import Control from "ol/control/Control";
+import { Internal } from "./internal";
+import { Html } from "./html";
+import { assert, mergeOptions } from "./helpers/mix";
+import { ContextMenuOptions, ContextMenuItem } from "../types";
 //import './sass/main.scss';
 
-export const createContainer = (hidden: any, width: any) => {
-  const container = document.createElement('div');
-  const ul = document.createElement('ul');
+export const createContainer = (hidden: boolean, width: number) => {
+  const container = document.createElement("div");
+  const ul = document.createElement("ul");
   const klasses = [CSS_VARS.container, CSS_VARS.unselectable];
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   hidden && klasses.push(CSS_VARS.hidden);
-  container.className = klasses.join(' ');
-  container.style.width = `${parseInt(/*this.Base.options.*/width, 10)}px`;
+  container.className = klasses.join(" ");
+  container.style.width = `${parseInt(String(width), 10)}px`;
   container.appendChild(ul);
   return container;
-}
+};
 
 /**
  * @class Base
  * @extends {ol.control.Control}
  */
 export default class Base extends Control {
-  options: any;
+  options: ContextMenuOptions;
   container: HTMLElement;
   disabled: boolean;
   Internal: Internal;
@@ -38,14 +40,15 @@ export default class Base extends Control {
    * @constructor
    * @param {object|undefined} opt_options Options.
    */
-  constructor(opt_options: any = {}) {
+  constructor(opt_options: ContextMenuOptions = {}) {
     assert(
-      typeof opt_options == 'object',
-      '@param `opt_options` should be object type!'
+      typeof opt_options == "object",
+      "@param `opt_options` should be object type!"
     );
 
-    const options = mergeOptions(DEFAULT_OPTIONS, opt_options);
-    const container = createContainer(true, (options as any).width);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const options = mergeOptions(DEFAULT_OPTIONS, opt_options) as any;
+    const container = createContainer(true, options.width!);
     super({ element: container });
 
     this.options = options;
@@ -105,8 +108,8 @@ export default class Base extends Control {
    * to the end of the menu.
    * @param {Array} arr Array.
    */
-  extend(arr: any[]) {
-    assert(Array.isArray(arr), '@param `arr` should be an Array.');
+  extend(arr: ContextMenuItem[]) {
+    assert(Array.isArray(arr), "@param `arr` should be an Array.");
     arr.forEach(this.push, this);
   }
 
@@ -117,8 +120,8 @@ export default class Base extends Control {
   /**
    * Update the menu's position.
    */
-  updatePosition(pixel: any) {
-    assert(Array.isArray(pixel), '@param `pixel` should be an Array.');
+  updatePosition(pixel: number[]) {
+    assert(Array.isArray(pixel), "@param `pixel` should be an Array.");
 
     if (this.isOpen()) {
       this.Internal.positionContainer(pixel);
@@ -137,9 +140,9 @@ export default class Base extends Control {
    * Insert the provided item at the end of the menu.
    * @param {Object|String} item Item.
    */
-  push(item: any) {
-    assert(isDefAndNotNull(item), '@param `item` must be informed.');
-    this.Html.addMenuEntry(item);
+  push(item: ContextMenuItem | string) {
+    // assert(isDefAndNotNull(item), '@param `item` must be informed.');
+    this.Html.addMenuEntry(item as ContextMenuItem);
   }
 
   /**
@@ -152,7 +155,8 @@ export default class Base extends Control {
   /**
    * Not supposed to be used on app.
    */
-  setMap(map: any) {
+
+  setMap(map: import("ol").Map) {
     Control.prototype.setMap.call(this, map);
 
     if (map) {

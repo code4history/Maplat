@@ -41,6 +41,6 @@ export default [
         }
     },
     {
-        ignores: ["dist/", "node_modules/", "public/", "legacy/", "less/", "assets/"]
+        ignores: ["dist/", "dist-demo/", "node_modules/", "public/", "legacy/", "less/", "assets/", "src/service-worker/"]
     }
 ];

@@ -1,12 +1,15 @@
 import { Control, Rotate, Zoom as BaseZoom } from "ol/control";
 import { CLASS_UNSELECTABLE, CLASS_CONTROL } from "ol/css";
 import { MapEvent } from "ol";
+
 import pointer from "./pointer_images";
 import { createElement, MaplatApp } from "@maplat/core";
 import * as bsn from "bootstrap.native";
 import { getIcon } from "./icons";
+import type { MaplatUi } from "./index";
+import type { ControlOptions } from "./types";
 
-export let control_settings: any = {};
+export let control_settings: Record<string, string> = {};
 const delegator: { [key: string]: string } = {
   compass: "compass.png",
   border: "border.png",
@@ -23,8 +26,12 @@ const delegator: { [key: string]: string } = {
   favicon: "favicon.png"
 };
 
-function hexRgb(hex: any) {
-  const ret: any = {};
+function hexRgb(hex: string) {
+  const ret: { red: number; green: number; blue: number } = {
+    red: 0,
+    green: 0,
+    blue: 0
+  };
   if (hex.match(/^#?([0-9A-F]{2})([0-9A-F]{2})([0-9A-F]{2})$/i)) {
     ret.red = parseInt(RegExp.$1, 16);
     ret.green = parseInt(RegExp.$2, 16);
@@ -37,27 +44,31 @@ function hexRgb(hex: any) {
   return ret;
 }
 
-export function setControlSettings(options: any) {
+export function setControlSettings(options: Record<string, string>) {
   control_settings = options;
   Object.keys(control_settings).forEach(key => {
     if (delegator[key]) {
-      (pointer as any)[delegator[key]] = control_settings[key];
+      (pointer as Record<string, string>)[delegator[key]] =
+        control_settings[key];
     }
   });
 }
 
 export class SliderNew extends Control {
-  constructor(opt_options: any) {
+  constructor(opt_options: ControlOptions) {
     const options = opt_options ? opt_options : {};
     const containerElement = document.createElement("input");
     containerElement.type = "range";
     containerElement.min = "0";
     containerElement.max = "1";
-    containerElement.max = "1";
     const initialValue = options.initialValue || 0;
     containerElement.value = `${1 - initialValue}`;
     containerElement.step = "0.01";
-    const render = options.render ? options.render : function (mapEvent: any) { if (!mapEvent.frameState) return; };
+    const render = options.render
+      ? options.render
+      : function (mapEvent: MapEvent) {
+          if (!mapEvent.frameState) return;
+        };
     super({
       element: containerElement,
       render
@@ -66,7 +77,7 @@ export class SliderNew extends Control {
       options.className !== undefined ? options.className : "ol-slidernew";
     this.set("slidervalue", initialValue);
 
-    containerElement.title = options.tipLabel;
+    containerElement.title = options.tipLabel || "";
     containerElement.className = `${className} ${CLASS_UNSELECTABLE} ${CLASS_CONTROL}`;
     containerElement.addEventListener("click", ev => {
       ev.stopPropagation();
@@ -79,7 +90,10 @@ export class SliderNew extends Control {
     });
 
     containerElement.addEventListener("input", _ev => {
-      this.set("slidervalue", 1 - parseFloat((this.element as HTMLInputElement).value));
+      this.set(
+        "slidervalue",
+        1 - parseFloat((this.element as HTMLInputElement).value)
+      );
     });
 
     if (control_settings["slider_color"]) {
@@ -88,43 +102,61 @@ export class SliderNew extends Control {
       const sheets = document.styleSheets;
       const sheet = sheets[sheets.length - 1] as CSSStyleSheet;
       try {
-        sheet.insertRule(`.maplat.with-opacity .ol-slider-originalcolor.${className}::-webkit-slider-thumb {
+        sheet.insertRule(
+          `.maplat.with-opacity .ol-slider-originalcolor.${className}::-webkit-slider-thumb {
           background: rgba(${rgb.red},${rgb.green},${rgb.blue}, 0.5);
-        }`, sheet.cssRules.length);
+        }`,
+          sheet.cssRules.length
+        );
 
-        sheet.insertRule(`.maplat.with-opacity .ol-slider-originalcolor.${className}::-moz-range-thumb {
+        sheet.insertRule(
+          `.maplat.with-opacity .ol-slider-originalcolor.${className}::-moz-range-thumb {
           background: rgba(${rgb.red},${rgb.green},${rgb.blue}, 0.5);
-        }`, sheet.cssRules.length);
+        }`,
+          sheet.cssRules.length
+        );
 
-        sheet.insertRule(`.maplat.with-opacity .ol-slider-originalcolor.${className}[disabled]::-webkit-slider-thumb {
+        sheet.insertRule(
+          `.maplat.with-opacity .ol-slider-originalcolor.${className}[disabled]::-webkit-slider-thumb {
           background: rgba(${rgb.red},${rgb.green},${rgb.blue}, 0.2);
-        }`, sheet.cssRules.length);
+        }`,
+          sheet.cssRules.length
+        );
 
-        sheet.insertRule(`.maplat.with-opacity .ol-slider-originalcolor.${className}[disabled]::-moz-range-thumb {
+        sheet.insertRule(
+          `.maplat.with-opacity .ol-slider-originalcolor.${className}[disabled]::-moz-range-thumb {
           background: rgba(${rgb.red},${rgb.green},${rgb.blue}, 0.2);
-        }`, sheet.cssRules.length);
+        }`,
+          sheet.cssRules.length
+        );
 
-        sheet.insertRule(`.maplat.with-opacity .ol-slider-originalcolor.${className}:not([disabled])::-webkit-slider-thumb:hover {
+        sheet.insertRule(
+          `.maplat.with-opacity .ol-slider-originalcolor.${className}:not([disabled])::-webkit-slider-thumb:hover {
           background: rgba(${rgb.red},${rgb.green},${rgb.blue}, 0.7);
-        }`, sheet.cssRules.length);
+        }`,
+          sheet.cssRules.length
+        );
 
-        sheet.insertRule(`.maplat.with-opacity .ol-slider-originalcolor.${className}:not([disabled])::-moz-range-thumb:hover {
+        sheet.insertRule(
+          `.maplat.with-opacity .ol-slider-originalcolor.${className}:not([disabled])::-moz-range-thumb:hover {
           background: rgba(${rgb.red},${rgb.green},${rgb.blue}, 0.7);
-        }`, sheet.cssRules.length);
+        }`,
+          sheet.cssRules.length
+        );
       } catch (e) {
         console.error(e);
       }
     }
   }
 
-  setMap(map: any) {
+  setMap(map: import("ol").Map) {
     super.setMap(map);
     if (map) {
       map.render();
     }
   }
 
-  setEnable(cond: any) {
+  setEnable(cond: boolean) {
     const elem = this.element as HTMLInputElement;
     if (cond) {
       elem.disabled = false;
@@ -133,23 +165,23 @@ export class SliderNew extends Control {
     }
   }
 
-  setValue(res: any) {
+  setValue(res: number) {
     this.set("slidervalue", res);
     (this.element as HTMLInputElement).value = (1 - res).toString();
   }
 }
 
 export class CustomControl extends Control {
-  center_: any;
-  zoom_: any;
-  callResetNorth_: any;
-  rotation_: any;
-  label_: any;
-  ui: any;
+  center_: import("ol/coordinate").Coordinate | undefined;
+  zoom_: number | undefined;
+  callResetNorth_: unknown;
+  lastRotation_: number = 0;
+  label_!: HTMLElement;
+  ui!: MaplatUi;
   moveTo_: boolean = false;
 
-  constructor(optOptions: any) {
-    const options = optOptions || {};
+  constructor(optOptions: ControlOptions) {
+    const options: ControlOptions = optOptions || {};
     const element = document.createElement("div");
 
     super({
@@ -160,13 +192,12 @@ export class CustomControl extends Control {
 
     const button = document.createElement("button");
     button.setAttribute("type", "button");
-    button.title = options.tipLabel;
+    button.title = options.tipLabel || "";
     const span = document.createElement("span");
-    span.innerHTML = options.character;
+    span.innerHTML = options.character || "";
     button.appendChild(span);
-    let timer: any;
-    let touchstart: any;
-    const self = this;
+    let timer: number | null | undefined | boolean;
+    let touchstart: boolean;
 
     button.addEventListener("click", e => {
       e.stopPropagation();
@@ -177,10 +208,10 @@ export class CustomControl extends Control {
         if (!touchstart) {
           if (timer) {
             if (options.long_callback) {
-              clearTimeout(timer);
+              clearTimeout(timer as number);
             }
             timer = null;
-            options.callback.apply(self);
+            if (options.callback) options.callback.apply(this);
           }
         }
         e.stopPropagation();
@@ -199,9 +230,9 @@ export class CustomControl extends Control {
       e => {
         if (!touchstart) {
           if (options.long_callback) {
-            timer = setTimeout(() => {
+            timer = window.setTimeout(() => {
               timer = null;
-              options.long_callback.apply(self);
+              if (options.long_callback) options.long_callback.apply(this);
             }, 1500);
           } else {
             timer = true;
@@ -216,9 +247,9 @@ export class CustomControl extends Control {
       e => {
         touchstart = true;
         if (options.long_callback) {
-          timer = setTimeout(() => {
+          timer = window.setTimeout(() => {
             timer = null;
-            options.long_callback.apply(self);
+            if (options.long_callback) options.long_callback.apply(this);
           }, 1500);
         } else {
           timer = true;
@@ -232,10 +263,10 @@ export class CustomControl extends Control {
       e => {
         if (timer) {
           if (options.long_callback) {
-            clearTimeout(timer);
+            clearTimeout(timer as number);
           }
           timer = null;
-          options.callback.apply(self);
+          if (options.callback) options.callback.apply(this);
         }
         e.stopPropagation();
       },
@@ -244,7 +275,7 @@ export class CustomControl extends Control {
     button.addEventListener(
       "mouseout",
       e => {
-        if (options.long_callback) {
+        if (options.long_callback && typeof timer === "number") {
           clearTimeout(timer);
         }
         timer = null;
@@ -266,17 +297,21 @@ export class CustomControl extends Control {
 }
 
 export class GoHome extends CustomControl {
-  constructor(optOptions: any) {
-    const options = optOptions || {};
+  constructor(optOptions: ControlOptions) {
+    const options: ControlOptions = optOptions || {};
     options.character = control_settings["home"]
       ? `<img src="${control_settings["home"]}">`
-      : getIcon('house', 'far fa-lg');
+      : getIcon("house", "far fa-lg");
     options.cls = "home";
-    options.callback = function () {
+    options.callback = function (this: Control) {
       const map = this.getMap();
       if (map) {
-        const source = map.getLayers().item(0).getSource();
+        const source = (
+          map.getLayers().item(0) as import("ol/layer").Layer
+        ).getSource();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         if (source && (source as any).goHome) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (source as any).goHome();
         }
       }
@@ -290,34 +325,35 @@ export class GoHome extends CustomControl {
 }
 
 export class SetGPS extends CustomControl {
-  constructor(optOptions: any) {
-    const options = optOptions || {};
+  constructor(optOptions: ControlOptions) {
+    const options: ControlOptions = optOptions || {};
     options.character = control_settings["gps"]
       ? `<img src="${control_settings["gps"]}">`
-      : getIcon('location-crosshairs', 'far fa-lg');
+      : getIcon("location-crosshairs", "far fa-lg");
     options.cls = "gps";
-    options.render = function (mapEvent: any) {
+    options.render = function (this: SetGPS, mapEvent: MapEvent) {
       const frameState = mapEvent.frameState;
       if (!frameState) {
         return;
       }
-      const self = this as any; // Cast to access ui
-      const core = self.ui.core as MaplatApp;
+      const core = this.ui!.core as MaplatApp;
       if (core && core.getGPSEnabled) {
         const enabled = core.getGPSEnabled();
-        const isDisabled = self.element.classList.contains("disable");
+        const isDisabled = this.element.classList.contains("disable");
 
         if (enabled && isDisabled) {
-          self.element.classList.remove("disable");
+          this.element.classList.remove("disable");
         } else if (!enabled && !isDisabled) {
-          self.element.classList.add("disable");
+          this.element.classList.add("disable");
         }
       }
     };
-    options.callback = function () {
-      const self = this as any;
+    options.callback = function (this: Control) {
+      const self = this as SetGPS;
       const core = self.ui.core as MaplatApp;
+
       const currentlyEnabled = core.getGPSEnabled();
+
       if (core.alwaysGpsOn) {
         core.handleGPS(true);
       } else {
@@ -327,41 +363,63 @@ export class SetGPS extends CustomControl {
 
     super(options);
 
-    this.ui = options.ui;
+    this.ui = options.ui!;
     this.moveTo_ = false;
 
     if (this.ui && this.ui.core) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.ui.core.addEventListener("gps_error", (evt: any) => {
         console.log("GPS Error:", evt);
-        const errorMap: any = {
-          "user_gps_deny": "app.user_gps_deny",
-          "gps_miss": "app.gps_miss",
-          "gps_timeout": "app.gps_timeout"
+        const errorMap: Record<string, string> = {
+          user_gps_deny: "app.user_gps_deny",
+          gps_miss: "app.gps_miss",
+          gps_timeout: "app.gps_timeout"
         };
 
-        this.ui.core.mapDivDocument.querySelector(".modal_title").innerText = this.ui.core.t("app.gps_error");
-        this.ui.core.mapDivDocument.querySelector(".modal_gpsD_content").innerText = this.ui.core.t(errorMap[evt.detail] || "app.gps_error");
-        const modalElm = this.ui.core.mapDivDocument.querySelector(".modalBase")!;
-        const modal = new bsn.Modal(modalElm, { root: this.ui.core.mapDivDocument });
+        if (!this.ui.core) return;
+        (this.ui.core.mapDivDocument!.querySelector(
+          ".modal_title"
+        ) as HTMLElement)!.innerText = this.ui.core.t("app.gps_error");
+        (this.ui.core.mapDivDocument!.querySelector(
+          ".modal_gpsD_content"
+        ) as HTMLElement)!.innerText = this.ui.core.t(
+          errorMap[evt.detail] || "app.gps_error"
+        );
+        const modalElm =
+          this.ui.core.mapDivDocument!.querySelector(".modalBase")!;
+        const modal = new bsn.Modal(modalElm, {
+          root: this.ui.core.mapDivDocument
+        });
         this.ui.modalSetting("gpsD");
         modal.show();
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.ui.core.addEventListener("gps_result", (evt: any) => {
         console.log("GPS Result:", evt);
         if (evt.detail && evt.detail.error) {
-          const errorMap: any = {
-            "user_gps_deny": "app.user_gps_deny",
-            "gps_miss": "app.gps_miss",
-            "gps_timeout": "app.gps_timeout",
-            "gps_off": "app.out_of_map"
+          const errorMap: Record<string, string> = {
+            user_gps_deny: "app.user_gps_deny",
+            gps_miss: "app.gps_miss",
+            gps_timeout: "app.gps_timeout",
+            gps_off: "app.out_of_map"
           };
 
+          if (!this.ui.core) return;
 
-          this.ui.core.mapDivDocument.querySelector(".modal_title").innerText = this.ui.core.t("app.gps_error");
-          this.ui.core.mapDivDocument.querySelector(".modal_gpsD_content").innerText = this.ui.core.t(errorMap[evt.detail.error] || "app.gps_error");
-          const modalElm = this.ui.core.mapDivDocument.querySelector(".modalBase")!;
-          const modal = new bsn.Modal(modalElm, { root: this.ui.core.mapDivDocument });
+          (this.ui.core.mapDivDocument!.querySelector(
+            ".modal_title"
+          ) as HTMLElement)!.innerText = this.ui.core.t("app.gps_error");
+          (this.ui.core.mapDivDocument!.querySelector(
+            ".modal_gpsD_content"
+          ) as HTMLElement)!.innerText = this.ui.core.t(
+            errorMap[evt.detail.error] || "app.gps_error"
+          );
+          const modalElm =
+            this.ui.core.mapDivDocument!.querySelector(".modalBase")!;
+          const modal = new bsn.Modal(modalElm, {
+            root: this.ui.core.mapDivDocument
+          });
           this.ui.modalSetting("gpsD");
           modal.show();
         }
@@ -376,93 +434,103 @@ export class SetGPS extends CustomControl {
 }
 
 export class CompassRotate extends Rotate {
-  center_: any;
-  zoom_: any;
-  customLabel_: any;
+  center_?: import("ol/coordinate").Coordinate;
+  zoom_?: number;
+  customLabel_: HTMLElement;
+  lastRotation_: number = 0;
 
-  constructor(optOptions: any) {
-    const options = optOptions || {};
+  constructor(optOptions: ControlOptions) {
+    const options: ControlOptions = optOptions || {};
     options.autoHide = false;
     const span = document.createElement("span");
     span.innerHTML = control_settings["compass"]
       ? `<img src="${control_settings["compass"]}">`
-      : getIcon('compass', 'far fa-lg ol-compass-fa');
+      : getIcon("compass", "far fa-lg ol-compass-fa");
     options.label = span;
-    options.render = function (mapEvent: any) {
+    options.render = function (this: CompassRotate, mapEvent: MapEvent) {
       const frameState = mapEvent.frameState;
+
       if (!frameState) {
         return;
       }
-      const self = this as any; // Cast for custom properties
-      const view = self.getMap().getView();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const view = (this.getMap() as any).getView();
       const rotation = frameState.viewState.rotation;
       const center = view.getCenter();
-      const zoom = view.getDecimalZoom();
+      const zoom = view.getDecimalZoom ? view.getDecimalZoom() : view.getZoom();
       if (
-        rotation != self.rotation_ ||
-        center[0] != self.center_[0] ||
-        center[1] != self.center_[1] ||
-        zoom != self.zoom_
+        rotation != this.lastRotation_ ||
+        (center &&
+          this.center_ &&
+          (center[0] != this.center_[0] || center[1] != this.center_[1])) ||
+        zoom != this.zoom_
       ) {
-        if (!self.getMap().northUp) {
-          const contains = self.element.classList.contains("disable");
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        if (!(this.getMap() as any).northUp) {
+          const contains = this.element.classList.contains("disable");
           if (!contains && rotation === 0) {
-            self.element.classList.add("disable");
+            this.element.classList.add("disable");
           } else if (contains && rotation !== 0) {
-            self.element.classList.remove("disable");
+            this.element.classList.remove("disable");
           }
         }
 
-        const layer = self.getMap().getLayers().item(0);
-        const source = layer.getSource
-          ? layer.getSource()
-          : layer.getLayers().item(0).getSource();
+        const layer = this.getMap()!.getLayers().item(0);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const source = (layer as any).getSource
+          ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (layer as any).getSource()
+          : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (layer as any).getLayers().item(0).getSource();
         if (!source) {
           const transform = "rotate(0rad)";
-          self.customLabel_.style.msTransform = transform;
-          self.customLabel_.style.webkitTransform = transform;
-          self.customLabel_.style.transform = transform;
+          this.customLabel_.style.transform = transform;
+
           return;
         }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         if ((source as any).viewpoint2MercsAsync) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (source as any).viewpoint2MercsAsync().then((mercs: any) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const direction = (source as any).mercs2MercViewpoint(mercs)[2];
             const transform = `rotate(${direction}rad)`;
-            self.customLabel_.style.msTransform = transform;
-            self.customLabel_.style.webkitTransform = transform;
-            self.customLabel_.style.transform = transform;
-            if (self.getMap().northUp) {
-              const contains = self.element.classList.contains("disable");
+            this.customLabel_.style.transform = transform;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            if ((this.getMap() as any).northUp) {
+              const contains = this.element.classList.contains("disable");
               if (!contains && Math.abs(direction) < 0.1) {
-                self.element.classList.add("disable");
+                this.element.classList.add("disable");
               } else if (contains && Math.abs(direction) >= 0.1) {
-                self.element.classList.remove("disable");
+                this.element.classList.remove("disable");
               }
             }
           });
         }
       }
-      self.rotation_ = rotation;
-      self.center_ = center;
-      self.zoom_ = zoom;
-    }
+      this.lastRotation_ = rotation;
+      this.center_ = center;
+      this.zoom_ = zoom;
+    };
     super(options);
     this.customLabel_ = span;
   }
 }
 
 export class Share extends CustomControl {
-  constructor(optOptions: any) {
-    const options = optOptions || {};
+  constructor(optOptions: ControlOptions) {
+    const options: ControlOptions = optOptions || {};
     options.character = control_settings["share"]
       ? `<img src="${control_settings["share"]}">`
-      : getIcon('share-from-square', 'far fa-lg');
+      : getIcon("share-from-square", "far fa-lg");
     options.cls = "ol-share";
-    options.callback = function () {
+    options.callback = function (this: Control) {
       const map = this.getMap();
-      if (map) map.dispatchEvent(
-        new MapEvent("click_control", map, { control: "share" } as any)
-      );
+      if (map)
+        map.dispatchEvent(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          new MapEvent("click_control", map, { control: "share" } as any)
+        );
     };
 
     super(options);
@@ -474,17 +542,20 @@ export class Share extends CustomControl {
 }
 
 export class Border extends CustomControl {
-  constructor(optOptions: any) {
-    const options = optOptions || {};
+  constructor(optOptions: ControlOptions) {
+    const options: ControlOptions = optOptions || {};
+
     options.character = control_settings["border"]
       ? `<img src="${control_settings["border"]}">`
-      : getIcon('layer-group', 'far fa-lg');
+      : getIcon("layer-group", "far fa-lg");
     options.cls = "ol-border";
-    options.callback = function () {
+    options.callback = function (this: Control) {
       const map = this.getMap();
-      if (map) map.dispatchEvent(
-        new MapEvent("click_control", map, { control: "border" } as any)
-      );
+      if (map)
+        map.dispatchEvent(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          new MapEvent("click_control", map, { control: "border" } as any)
+        );
     };
 
     super(options);
@@ -496,17 +567,19 @@ export class Border extends CustomControl {
 }
 
 export class Maplat extends CustomControl {
-  constructor(optOptions: any) {
-    const options = optOptions || {};
+  constructor(optOptions: ControlOptions) {
+    const options: ControlOptions = optOptions || {};
     options.character = control_settings["help"]
       ? `<img src="${control_settings["help"]}">`
-      : getIcon('circle-question', 'far fa-lg');
+      : getIcon("circle-question", "far fa-lg");
     options.cls = "ol-maplat";
-    options.callback = function () {
+    options.callback = function (this: Control) {
       const map = this.getMap();
-      if (map) map.dispatchEvent(
-        new MapEvent("click_control", map, { control: "help" } as any)
-      );
+      if (map)
+        map.dispatchEvent(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          new MapEvent("click_control", map, { control: "help" } as any)
+        );
     };
 
     super(options);
@@ -518,17 +591,19 @@ export class Maplat extends CustomControl {
 }
 
 export class Copyright extends CustomControl {
-  constructor(optOptions: any) {
-    const options = optOptions || {};
+  constructor(optOptions: ControlOptions) {
+    const options: ControlOptions = optOptions || {};
     options.character = control_settings["attr"]
       ? `<img src="${control_settings["attr"]}">`
-      : getIcon('circle-info', 'far fa-lg');
+      : getIcon("circle-info", "far fa-lg");
     options.cls = "ol-copyright";
-    options.callback = function () {
+    options.callback = function (this: Control) {
       const map = this.getMap();
-      if (map) map.dispatchEvent(
-        new MapEvent("click_control", map, { control: "copyright" } as any)
-      );
+      if (map)
+        map.dispatchEvent(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          new MapEvent("click_control", map, { control: "copyright" } as any)
+        );
     };
 
     super(options);
@@ -540,17 +615,19 @@ export class Copyright extends CustomControl {
 }
 
 export class HideMarker extends CustomControl {
-  constructor(optOptions: any) {
-    const options = optOptions || {};
+  constructor(optOptions: ControlOptions) {
+    const options: ControlOptions = optOptions || {};
     options.character = control_settings["hide_marker"]
       ? `<img src="${control_settings["hide_marker"]}">`
-      : getIcon('map-pin', 'far fa-lg');
+      : getIcon("map-pin", "far fa-lg");
     options.cls = "ol-hide-marker";
-    options.callback = function () {
+    options.callback = function (this: Control) {
       const map = this.getMap();
-      if (map) map.dispatchEvent(
-        new MapEvent("click_control", map, { control: "hideMarker" } as any)
-      );
+      if (map)
+        map.dispatchEvent(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          new MapEvent("click_control", map, { control: "hideMarker" } as any)
+        );
     };
 
     super(options);
@@ -562,17 +639,19 @@ export class HideMarker extends CustomControl {
 }
 
 export class MarkerList extends CustomControl {
-  constructor(optOptions: any) {
-    const options = optOptions || {};
+  constructor(optOptions: ControlOptions) {
+    const options: ControlOptions = optOptions || {};
     options.character = control_settings["marker_list"]
       ? `<img src="${control_settings["marker_list"]}">`
-      : getIcon('list', 'far fa-lg');
+      : getIcon("list", "far fa-lg");
     options.cls = "ol-marker-list";
-    options.callback = function () {
+    options.callback = function (this: Control) {
       const map = this.getMap();
-      if (map) map.dispatchEvent(
-        new MapEvent("click_control", map, { control: "markerList" } as any)
-      );
+      if (map)
+        map.dispatchEvent(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          new MapEvent("click_control", map, { control: "markerList" } as any)
+        );
     };
 
     super(options);
@@ -584,16 +663,16 @@ export class MarkerList extends CustomControl {
 }
 
 export class Zoom extends BaseZoom {
-  constructor(options: any = {}) {
+  constructor(options: ControlOptions = {}) {
     if (control_settings["zoom_plus"]) {
       options.zoomInLabel = createElement(
         `<img src="${control_settings["zoom_plus"]}">`
-      )[0];
+      )[0] as HTMLElement;
     }
     if (control_settings["zoom_minus"]) {
       options.zoomOutLabel = createElement(
         `<img src="${control_settings["zoom_minus"]}">`
-      )[0];
+      )[0] as HTMLElement;
     }
 
     super(options);

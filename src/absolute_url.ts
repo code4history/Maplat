@@ -1,4 +1,4 @@
-export default function absoluteUrl(base: any, relative: any) {
+export default function absoluteUrl(base: string, relative: string) {
   const stack = base.split("/");
   const parts = relative.split("/");
   stack.pop(); // remove current file name (or empty string)

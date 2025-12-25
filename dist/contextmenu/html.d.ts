@@ -1,17 +1,19 @@
+import { default as ContextMenuBase } from './base';
+import { ContextMenuItem } from '../types';
 /**
  * @class Html
  */
 export declare class Html {
-    Base: any;
-    container: any;
+    Base: ContextMenuBase;
+    container: HTMLElement;
     /**
      * @constructor
-     * @param {Function} base Base class.
+     * @param {ContextMenuBase} base Base class.
      */
-    constructor(base: any);
+    constructor(base: ContextMenuBase);
     createMenu(): false | undefined;
-    addMenuEntry(item: any): void;
-    generateHtmlAndPublish(parent: any, item: any, submenu?: any): HTMLLIElement;
-    removeMenuEntry(index: any): void;
+    addMenuEntry(item: ContextMenuItem): void;
+    generateHtmlAndPublish(parent: HTMLElement, item: ContextMenuItem | string, submenu?: boolean | undefined): HTMLElement;
+    removeMenuEntry(index: string): void;
     cloneAndGetLineHeight(): number;
 }

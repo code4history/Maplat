@@ -1,13 +1,13 @@
-import 'swiper';
+import "swiper";
 
-declare module 'swiper' {
-    interface Swiper {
-        slideToMapID(mapID: any): void;
-        setSlideMapID(mapID: any): void;
-        setSlideIndex(index: number): void;
-        setSlideIndexAsSelected(index: number): void;
-        setSlideMapIDAsSelected(mapID: any): void;
-        slideToIndex(index: number): void;
-        $el: any;
-    }
+declare module "swiper" {
+  interface Swiper {
+    slideToMapID(mapID: string): void;
+    setSlideMapID(mapID: string): void;
+    setSlideIndex(index: number): void;
+    setSlideIndexAsSelected(index: number): void;
+    setSlideMapIDAsSelected(mapID: string): void;
+    slideToIndex(index: number): void;
+    $el: HTMLElement[];
+  }
 }

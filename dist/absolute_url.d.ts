@@ -1,1 +1,1 @@
-export default function absoluteUrl(base: any, relative: any): any;
+export default function absoluteUrl(base: string, relative: string): string;

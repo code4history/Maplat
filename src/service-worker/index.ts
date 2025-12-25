@@ -12,7 +12,7 @@
  */
 
 import { skipWaiting, clientsClaim } from "workbox-core";
-import { precacheAndRoute } from "workbox-precaching";
+import { precacheAndRoute, PrecacheEntry } from "workbox-precaching";
 import { registerRoute } from "workbox-routing";
 import { StaleWhileRevalidate } from "workbox-strategies";
 import { ExpirationPlugin } from "workbox-expiration";
@@ -26,7 +26,7 @@ clientsClaim();
  * requests for URLs in the manifest.
  * See https://goo.gl/S9QRab
  */
-precacheAndRoute(self.__WB_MANIFEST, {});
+precacheAndRoute((self as any).__WB_MANIFEST as (string | PrecacheEntry)[], {});
 
 registerRoute(
   /(?:maps\/.+\.json|pwa\/.+|pois\/.+\.json|apps\/.+\.json|tmbs\/.+\.jpg|images\/.+\.(?:png|jpg))$/,

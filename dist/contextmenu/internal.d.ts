@@ -1,33 +1,41 @@
+import { Map, MapEvent } from 'ol';
+import { Coordinate } from 'ol/coordinate';
+import { Pixel } from 'ol/pixel';
 /**
  * @class Internal
  */
 export declare class Internal {
     Base: any;
-    map: any;
-    viewport: any;
-    coordinateClicked: any;
-    pixelClicked: any;
+    map: Map | undefined;
+    viewport: HTMLElement | undefined;
+    coordinateClicked: Coordinate | undefined;
+    pixelClicked: Pixel | undefined;
     lineHeight: number;
-    items: any;
+    items: Record<string, import('../types').ContextMenuInternalItem>;
     opened: boolean;
-    submenu: any;
-    eventHandler: any;
-    eventMapMoveHandler: any;
+    submenu: {
+        left: string;
+        top: string;
+        lastLeft: string;
+        lastTop: string;
+    };
+    eventHandler: (evt: Event) => void;
+    eventMapMoveHandler: (evt: MapEvent) => void;
     /**
      * @constructor
      * @param {Function} base Base class.
      */
     constructor(base: any);
-    init(map: any): void;
+    init(map: import('ol').Map): void;
     getItemsLength(): number;
-    getPixelClicked(): any;
-    getCoordinateClicked(): any;
-    positionContainer(pixel: any): void;
-    openMenu(pixel: any, coordinate: any): void;
+    getPixelClicked(): Pixel | undefined;
+    getCoordinateClicked(): Coordinate | undefined;
+    positionContainer(pixel: import('ol/pixel').Pixel): void;
+    openMenu(pixel: import('ol/pixel').Pixel, coordinate: import('ol/coordinate').Coordinate): void;
     closeMenu(): void;
     setListeners(): void;
     removeListeners(): void;
-    handleEvent(evt: any): void;
-    handleMapMoveEvent(_evt: any): void;
-    setItemListener(li: any, index: any): void;
+    handleEvent(evt: Event): void;
+    handleMapMoveEvent(_evt: import('ol').MapEvent): void;
+    setItemListener(li: HTMLElement, index: string): void;
 }

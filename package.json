@@ -25,8 +25,8 @@
     "test": "vitest",
     "typecheck": "tsc --noEmit",
     "lint": "pnpm lint:eslint && pnpm lint:prettier",
-    "lint:eslint": "eslint \"{src,spec}/**/*.js\" --fix",
-    "lint:prettier": "prettier \"./{src,spec}/**/*.js\" --write"
+    "lint:eslint": "eslint \"{src,spec,demo}/**/*.{ts,js}\" --fix",
+    "lint:prettier": "prettier \"./{src,spec,demo}/**/*.{ts,js}\" --write"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

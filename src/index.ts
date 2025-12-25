@@ -1,13 +1,9 @@
-
-import {
-  MaplatApp as Core
-} from "@maplat/core";
+import { MaplatApp as Core } from "@maplat/core";
 import "ol/ol.css";
 import EventTarget from "ol/events/Target.js";
-import { asArray } from 'ol/color';
+import { asArray } from "ol/color";
 
 import { Swiper } from "./swiper_ex";
-// @ts-ignore
 import { Navigation, Pagination } from "swiper";
 import "swiper/swiper-bundle.css";
 import page from "page";
@@ -23,44 +19,49 @@ import {
   checkOverlayID,
   handleMarkerActionById
 } from "./ui_marker";
-import {
-  resolveRelativeLink,
-  ellips
-} from "./ui_utils";
+import type { SliderNew } from "./maplat_control";
+import type ContextMenu from "./contextmenu";
+
+import type { Pixel } from "ol/pixel";
+import type { Coordinate } from "ol/coordinate";
+import { resolveRelativeLink, ellips } from "./ui_utils";
+import type { MaplatAppOption, RestoreState, SwiperInstance } from "./types";
 
 Swiper.use([Navigation, Pagination]);
 
-
 export class MaplatUi extends EventTarget {
-  static createObject(option: any) {
+  static createObject(option: MaplatAppOption) {
     const app = new MaplatUi(option);
     return app.waitReady.then(() => app);
   }
 
   core?: Core;
-  appOption: any;
-  waitReady!: Promise<any>;
-  waitReadyBridge: any;
+  appOption: MaplatAppOption;
+  waitReady!: Promise<void>;
+  waitReadyBridge: unknown;
   pathThatSet?: string;
-  swipers: any = {};
-  mobile_if: any;
-  ui_func: any;
-  datum: any;
-  selected_layer: any;
-  toms: any;
-  cache_messages: any;
+  swipers: Record<string, SwiperInstance> = {};
+  mobile_if: boolean = false;
+  ui_func: string = "default";
+  datum: string = "default";
+  selected_layer: string = "default";
+  toms: number = 0;
+  cache_messages: Record<string, string> = {};
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   last_toast: any;
   share_enable!: boolean;
-  sliderNew: any;
-  baseSwiper: any;
-  overlaySwiper: any;
+  sliderNew!: SliderNew;
+  baseSwiper!: SwiperInstance;
+  overlaySwiper!: SwiperInstance;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   sliderCommon: any;
-  contextMenu: any;
-  splashPromise!: Promise<any>;
-  _selectCandidateSources?: any;
+  contextMenu!: ContextMenu;
+  splashPromise!: Promise<void>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  _selectCandidateSources?: Record<string, any>;
   appEnvelope?: boolean;
   restoring: boolean = false;
-  poiSwiper: any;
+  poiSwiper: SwiperInstance | undefined;
   html!: string;
   enablePoiHtmlNoScroll: boolean = false;
   enableShare: boolean = false;
@@ -71,34 +72,37 @@ export class MaplatUi extends EventTarget {
   alwaysGpsOn: boolean = false;
   isTouch: boolean = false;
   html_id_seed: string;
-  lastClickPixel: any;
-  lastClickCoordinate: any;
+  lastClickPixel: Pixel | undefined;
+  lastClickCoordinate: Coordinate | undefined;
 
-  constructor(appOption: any) {
+  constructor(appOption: MaplatAppOption) {
     super();
-    const ui = this;
     this.html_id_seed = `${Math.floor(Math.random() * 9000) + 1000}`;
     this.appOption = appOption;
 
     if (appOption.stateUrl) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       page((ctx: any, _next: any) => {
         let pathes = ctx.canonicalPath.split("#!");
         let path = pathes.length > 1 ? pathes[1] : pathes[0];
-        console.log(`[Debug] Page callback.Canonical: ${ctx.canonicalPath}, Path: ${path} `);
+        console.log(
+          `[Debug] Page callback.Canonical: ${ctx.canonicalPath}, Path: ${path} `
+        );
 
         pathes = path.split("?");
         path = pathes[0];
-        if (path === ui.pathThatSet) {
-          delete ui.pathThatSet;
+        if (path === this.pathThatSet) {
+          delete this.pathThatSet;
           return;
         }
-        const restore: any = {
+        const restore: RestoreState = {
           transparency: 0,
           position: {
             rotation: 0
           }
         };
         // Parse "s:map/x:100/..."
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         path.split("/").forEach((state: any) => {
           if (!state) return;
           const line = state.split(":");
@@ -114,14 +118,16 @@ export class MaplatUi extends EventTarget {
               restore.transparency = parseFloat(line[1]);
               break;
             case "r":
-              restore.position.rotation = parseFloat(line[1]);
+              restore.position!.rotation = parseFloat(line[1]);
               break;
             case "z":
-              restore.position.zoom = parseFloat(line[1]);
+              restore.position!.zoom = parseFloat(line[1]);
               break;
             case "x":
+              restore.position!.x = parseFloat(line[1]);
+              break;
             case "y":
-              restore.position[line[0]] = parseFloat(line[1]);
+              restore.position!.y = parseFloat(line[1]);
               break;
             case "sb":
               restore.showBorder = !!parseInt(line[1]);
@@ -136,73 +142,87 @@ export class MaplatUi extends EventTarget {
               restore.openedMarker = line[1];
               break;
             case "c":
-              if (ui.core) {
+              if (this.core) {
                 const modalElm =
-                  ui.core!.mapDivDocument!.querySelector(".modalBase")!;
+                  this.core!.mapDivDocument!.querySelector(".modalBase")!;
                 const modal = new bsn.Modal(modalElm, {
-                  root: ui.core!.mapDivDocument!
+                  root: this.core!.mapDivDocument!
                 });
                 modal.hide();
               }
               break;
+            case "mobile_if":
+              this.mobile_if = line[1] === "true";
+              break;
           }
         });
-        if (!ui.core) {
+        if (!this.core) {
           if (restore.mapID) {
-            console.log(`[Debug] Init with restore: `, JSON.parse(JSON.stringify(restore)));
+            console.log(
+              `[Debug] Init with restore: `,
+              JSON.parse(JSON.stringify(restore))
+            );
             appOption.restore = restore;
-            ui.restoring = true;
+            this.restoring = true;
           }
-          const preRot = restore.position ? restore.position.rotation : 'undefined';
+          const preRot = restore.position
+            ? restore.position.rotation
+            : "undefined";
           console.log(`[Debug] Before initializer: rotation = ${preRot} `);
 
-          ui.initializer(appOption).then(() => {
-            ui.core!.waitReady.then(() => {
+          this.initializer(appOption).then(() => {
+            this.core!.waitReady.then(() => {
               // Fix: Manually apply rotation as Core 0.11.1 preserves it but fails to apply it view-side
               // if (restore.position && restore.position.rotation !== undefined) {
               //   console.log(`[Debug] Manually applying rotation: ${ restore.position.rotation } `);
-              //   ui.core!.mapObject.getView().setRotation(restore.position.rotation);
+              //   this.core!.mapObject.getView().setRotation(restore.position.rotation);
               // }
               // Fix: Verify transparency state before updating URL
-              if (ui.sliderNew) {
+              if (this.sliderNew) {
                 // Ensure map transparency matches restore if slider is ready
-                const currentTrans = ui.sliderNew.get("slidervalue") * 100;
+                const currentTrans = this.sliderNew.get("slidervalue") * 100;
                 console.log(`[Debug] Slider transparency: ${currentTrans} `);
               } else {
                 console.log(`[Debug] Slider not ready yet`);
               }
 
-              ui.restoring = false;
+              this.restoring = false;
               console.log(`[Debug] Calling updateUrl from Init`);
-              ui.updateUrl();
+              this.updateUrl();
             });
           });
         } else if (restore.mapID) {
-          console.log(`[Debug] ChangeMap with restore: `, JSON.parse(JSON.stringify(restore)));
-          ui.restoring = true;
+          console.log(
+            `[Debug] ChangeMap with restore: `,
+            JSON.parse(JSON.stringify(restore))
+          );
+          this.restoring = true;
 
-          ui.core!.waitReady.then(() => {
-            const ret = ui.core!.changeMap(restore.mapID, restore);
+          this.core!.waitReady.then(() => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const ret = this.core!.changeMap(restore.mapID!, restore as any);
             Promise.resolve(ret).then(() => {
               // Fix: Manually apply rotation after changeMap
               // if (restore.position && restore.position.rotation !== undefined) {
               //   console.log(`[Debug] Manually applying rotation after changeMap: ${ restore.position.rotation } `);
-              //   ui.core!.mapObject.getView().setRotation(restore.position.rotation);
+              //   this.core!.mapObject.getView().setRotation(restore.position.rotation);
               // }
 
               // Update transparency slider if needed
-              if (ui.sliderNew) {
+              if (this.sliderNew) {
                 const t = restore.transparency || 0;
                 const val = t / 100;
-                ui.sliderNew.set("slidervalue", val);
-                if (ui.sliderNew.element) {
-                  ui.sliderNew.element.value = (1 - val).toString();
+                this.sliderNew.set("slidervalue", val);
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                if ((this.sliderNew as any).element) {
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  (this.sliderNew as any).element.value = (1 - val).toString();
                 }
               }
 
-              ui.restoring = false;
+              this.restoring = false;
               console.log(`[Debug] Calling updateUrl from ChangeMap`);
-              ui.updateUrl();
+              this.updateUrl();
             });
           });
         }
@@ -211,31 +231,37 @@ export class MaplatUi extends EventTarget {
         hashbang: true
       });
       page();
-      ui.waitReady = new Promise((resolve, _reject) => {
-        ui.waitReadyBridge = resolve;
+      this.waitReady = new Promise((resolve, _reject) => {
+        this.waitReadyBridge = resolve;
       });
     } else {
-      ui.waitReady = ui.initializer(appOption);
+      this.waitReady = this.initializer(appOption);
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async initializer(appOption: any) {
     return uiInit(this, appOption);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   handleMarkerAction(data: any) {
     handleMarkerAction(this, data);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   showContextMenu(list: any[]) {
     showContextMenu(this, list);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async xyToMapIDs(xy: any, threshold = 10) {
     return xyToMapIDs(this, xy, threshold);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   setShowBorder(flag: any) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     this.core!.requestUpdateState({ showBorder: flag ? 1 : 0 } as any);
     this.updateEnvelope();
     if (flag) {
@@ -243,11 +269,14 @@ export class MaplatUi extends EventTarget {
     } else {
       this.core!.mapDivDocument!.classList.remove("show-border");
     }
-    if ((this.core!.restoreSession as any)) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (this.core!.restoreSession as any) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.core!.requestUpdateState({ showBorder: flag ? 1 : 0 } as any);
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   setHideMarker(flag: any) {
     setHideMarker(this, flag);
   }
@@ -257,30 +286,32 @@ export class MaplatUi extends EventTarget {
   }
 
   updateUrl() {
-    const ui = this;
-    if (!ui.appOption.stateUrl) return;
-    if (ui.restoring) return;
+    if (!this.appOption.stateUrl) return;
+    if (this.restoring) return;
 
-    const map = ui.core!.mapObject;
+    const map = this.core!.mapObject;
     if (!map) return;
     const view = map.getView();
     const center = view.getCenter();
     const zoom = view.getZoom();
     const rotation = view.getRotation();
 
-    const currentMap = ui.core!.from ? ui.core!.from.mapID : "";
+    const currentMap = this.core!.from ? this.core!.from.mapID : "";
     if (!currentMap) return;
 
     // Background ID
     let backMap = "";
-    if (ui.baseSwiper) {
-      const slide = ui.baseSwiper.slides[ui.baseSwiper.activeIndex];
+    if (this.baseSwiper) {
+      const slide = this.baseSwiper.slides[this.baseSwiper.activeIndex];
+
       if (slide) {
         backMap = slide.getAttribute("data") || "";
       }
     }
 
-    const transparency = ui.sliderNew ? ui.sliderNew.get("slidervalue") * 100 : 0;
+    const transparency = this.sliderNew
+      ? this.sliderNew.get("slidervalue") * 100
+      : 0;
 
     // Legacy format: s:map/b:back/... (no leading slash, prepended with #!)
     let path = `s:${currentMap}`;
@@ -298,95 +329,120 @@ export class MaplatUi extends EventTarget {
     path += `/z:${zoom}`;
 
     if (rotation !== 0) {
-      path += `/r:${rotation * 180 / Math.PI}`;
+      path += `/r:${(rotation * 180) / Math.PI}`;
     }
 
     // Options
-    if ((ui.core!.stateBuffer as any).showBorder) path += `/sb:1`;
-    if ((ui.core!.mapDivDocument!.classList.contains("hide-marker"))) path += `/hm:1`;
-    if (ui.enableMarkerList && (ui.core!.stateBuffer as any).markerList) path += `/om:${(ui.core!.stateBuffer as any).markerList}`;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if ((this.core!.stateBuffer as any).showBorder) path += `/sb:1`;
+    if (this.core!.mapDivDocument!.classList.contains("hide-marker"))
+      path += `/hm:1`;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (this.enableMarkerList && (this.core!.stateBuffer as any).markerList)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      path += `/om:${(this.core!.stateBuffer as any).markerList}`;
 
-    if (ui.pathThatSet !== path) {
-      ui.pathThatSet = path;
+    if (this.pathThatSet !== path) {
+      this.pathThatSet = path;
       page(`#!${path}`);
     }
   }
 
   updateEnvelope() {
-    const ui = this;
-    if (!ui.core!.mapObject) return;
+    if (!this.core!.mapObject) return;
 
-    ui.core!.mapObject.resetEnvelope();
-    if (ui._selectCandidateSources) {
-      Object.keys(ui._selectCandidateSources).forEach(key => {
-        if ((ui.core!.mapObject as any).removeEnvelope) {
+    this.core!.mapObject.resetEnvelope();
+    if (this._selectCandidateSources) {
+      Object.keys(this._selectCandidateSources).forEach(key => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        if ((this.core!.mapObject as any).removeEnvelope) {
           console.log(`[Debug] Removing envelope for ${key}`);
-          (ui.core!.mapObject as any).removeEnvelope(ui._selectCandidateSources![key]);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (this.core!.mapObject as any).removeEnvelope(
+            this._selectCandidateSources![key]
+          );
         }
       });
     }
-    ui._selectCandidateSources = {};
 
-    if ((ui.core!.stateBuffer as any).showBorder) {
-      if (!ui.core!.from) return;
+    this._selectCandidateSources = {};
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if ((this.core!.stateBuffer as any).showBorder) {
+      if (!this.core!.from) return;
 
       let activeOverlayId: string | null = null;
-      if (ui.overlaySwiper) {
-        const slide = ui.overlaySwiper.slides[ui.overlaySwiper.activeIndex];
+      if (this.overlaySwiper) {
+        const slide = this.overlaySwiper.slides[this.overlaySwiper.activeIndex];
         if (slide) activeOverlayId = slide.getAttribute("data");
       }
 
-
-
-      Object.keys(ui.core!.cacheHash!)
-        .filter((key: any) => ui.core!.cacheHash[key].envelope)
+      Object.keys(this.core!.cacheHash!)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .filter((key: any) => this.core!.cacheHash[key].envelope)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .map((key: any) => {
-          const source = ui.core!.cacheHash[key];
+          const source = this.core!.cacheHash[key];
           const isActive = key === activeOverlayId;
+
           const xyPromises =
-            key === ui.core!.from!.mapID && typeof source.xy2SysCoord === 'function'
+            key === this.core!.from!.mapID &&
+            typeof source.xy2SysCoord === "function"
               ? [
-                [0, 0],
-                [source.width, 0],
-                [source.width, source.height],
-                [0, source.height],
-                [0, 0]
-              ].map(xy => Promise.resolve(source.xy2SysCoord(xy)))
-              : source.envelope.geometry.coordinates[0].map((coord: any) =>
-                ui.core!.from!.merc2SysCoordAsync(coord)
-              );
+                  [0, 0],
+                  [source.width, 0],
+                  [source.width, source.height],
+                  [0, source.height],
+                  [0, 0]
+                ].map(xy => Promise.resolve(source.xy2SysCoord(xy)))
+              : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                source.envelope.geometry.coordinates[0].map((coord: any) =>
+                  this.core!.from!.merc2SysCoordAsync(coord)
+                );
 
           Promise.all(xyPromises).then(xys => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const options: any = {
               color: source.envelopeColor,
               width: 2,
               lineDash: [6, 6]
             };
-            ui.core!.mapObject.setEnvelope(xys, options);
-            if (isActive && (ui.core!.mapObject as any).setFillEnvelope) {
+            this.core!.mapObject.setEnvelope(xys, options);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            if (isActive && (this.core!.mapObject as any).setFillEnvelope) {
               console.log(`[Debug] Setting fill envelope for ${key}`);
-              const color = asArray(source.envelopeColor || '#000000');
+
+              const color = asArray(source.envelopeColor || "#000000");
+
               color[3] = 0.4;
-              const fillHandle = (ui.core!.mapObject as any).setFillEnvelope(xys, null, { color });
-              ui._selectCandidateSources![key] = fillHandle;
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const fillHandle = (this.core!.mapObject as any).setFillEnvelope(
+                xys,
+                null,
+                { color }
+              );
+              this._selectCandidateSources![key] = fillHandle;
             }
           });
         });
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   resolveRelativeLink(file: any, fallbackPath: any) {
     return resolveRelativeLink(file, fallbackPath);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   checkOverlayID(mapID: any) {
     return checkOverlayID(this, mapID);
   }
 
-  areaIndex(xys: any) {
+  areaIndex(xys: number[][]) {
     return (
       0.5 *
       Math.abs(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         [0, 1, 2, 3].reduce((prev: any, _curr: any, i: any) => {
           const xy1 = xys[i];
           const xy2 = xys[i + 1];
@@ -417,8 +473,8 @@ export class MaplatUi extends EventTarget {
       const parent = target.closest(".recipient");
       const rect = (parent || target).getBoundingClientRect();
       toast.style.position = "fixed";
-      toast.style.left = (rect.left + rect.width / 2) + "px";
-      toast.style.top = (rect.top + rect.height / 2) + "px";
+      toast.style.left = `${rect.left + rect.width / 2}px`;
+      toast.style.top = `${rect.top + rect.height / 2}px`;
       toast.style.transform = "translate(-50%, -50%)";
       toast.style.bottom = "auto";
       toast.style.margin = "0";
@@ -438,10 +494,18 @@ export class MaplatUi extends EventTarget {
     }, 1500);
   }
 
-
   modalSetting(type: string) {
     const modalElm = this.core!.mapDivDocument!.querySelector(".modalBase")!;
-    modalElm.classList.remove("modal_load", "modal_poi", "modal_share", "modal_help", "modal_gpsW", "modal_gpsD", "modal_map", "modal_marker_list");
+    modalElm.classList.remove(
+      "modal_load",
+      "modal_poi",
+      "modal_share",
+      "modal_help",
+      "modal_gpsW",
+      "modal_gpsD",
+      "modal_map",
+      "modal_marker_list"
+    );
     modalElm.classList.add(`modal_${type}`);
   }
 

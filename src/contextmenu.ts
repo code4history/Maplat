@@ -1,28 +1,39 @@
 import ContextMenuBase from "./contextmenu/base";
+import { ContextMenuOptions } from "./types";
 
 export default class ContextMenu extends ContextMenuBase {
-  constructor(options: any = {}) {
+  constructor(options: ContextMenuOptions = {}) {
     super(options);
-    (this.Internal as any).setItemListener = function (li: any, index: any) {
-      const this_ = this;
-      if (li && typeof this.items[index].callback === "function") {
+    const internal = this.Internal;
+
+    internal.setItemListener = (li: HTMLElement, index: string) => {
+      const this_ = internal;
+      if (
+        li &&
+        internal.items[index] &&
+        typeof internal.items[index].callback === "function"
+      ) {
         (function (callback) {
-          li.addEventListener("pointerdown", (evt: any) => {
+          li.addEventListener("pointerdown", (evt: Event) => {
             evt.stopPropagation();
           });
           li.addEventListener(
             "click",
-            (evt: any) => {
+            (evt: Event) => {
               evt.preventDefault();
               const obj = {
-                coordinate: this_.getCoordinateClicked(),
+                coordinate: this_.getCoordinateClicked() || [],
                 data: this_.items[index].data || null
               };
-              if (!callback(obj, this_.map)) this_.closeMenu();
+              if (callback) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const result: any = callback(obj, this_.map);
+                if (!result) this_.closeMenu();
+              }
             },
             false
           );
-        })(this.items[index].callback);
+        })(internal.items[index].callback);
       }
     };
   }

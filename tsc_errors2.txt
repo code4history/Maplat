@@ -1,0 +1,6 @@
+src/maplat_control.ts(308,5): error TS2322: Type '(mapEvent: RenderEvent) => void' is not assignable to type '(event: MapEvent) => void'.
+  Types of parameters 'mapEvent' and 'event' are incompatible.
+    Type 'MapEvent' is missing the following properties from type 'RenderEvent': inversePixelTransform, context
+src/maplat_control.ts(401,5): error TS2322: Type '(mapEvent: RenderEvent) => void' is not assignable to type '(event: MapEvent) => void'.
+  Types of parameters 'mapEvent' and 'event' are incompatible.
+    Type 'MapEvent' is missing the following properties from type 'RenderEvent': inversePixelTransform, context

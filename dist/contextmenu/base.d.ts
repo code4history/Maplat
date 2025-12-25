@@ -1,13 +1,14 @@
 import { default as Control } from 'ol/control/Control';
 import { Internal } from './internal';
 import { Html } from './html';
-export declare const createContainer: (hidden: any, width: any) => HTMLDivElement;
+import { ContextMenuOptions, ContextMenuItem } from '../types';
+export declare const createContainer: (hidden: boolean, width: number) => HTMLDivElement;
 /**
  * @class Base
  * @extends {ol.control.Control}
  */
 export default class Base extends Control {
-    options: any;
+    options: ContextMenuOptions;
     container: HTMLElement;
     disabled: boolean;
     Internal: Internal;
@@ -16,7 +17,7 @@ export default class Base extends Control {
      * @constructor
      * @param {object|undefined} opt_options Options.
      */
-    constructor(opt_options?: any);
+    constructor(opt_options?: ContextMenuOptions);
     /**
      * Remove all elements from the menu.
      */
@@ -50,12 +51,12 @@ export default class Base extends Control {
      * to the end of the menu.
      * @param {Array} arr Array.
      */
-    extend(arr: any[]): void;
+    extend(arr: ContextMenuItem[]): void;
     isOpen(): boolean;
     /**
      * Update the menu's position.
      */
-    updatePosition(pixel: any): void;
+    updatePosition(pixel: number[]): void;
     /**
      * Remove the last item of the menu.
      */
@@ -64,7 +65,7 @@ export default class Base extends Control {
      * Insert the provided item at the end of the menu.
      * @param {Object|String} item Item.
      */
-    push(item: any): void;
+    push(item: ContextMenuItem | string): void;
     /**
      * Remove the first item of the menu.
      */
@@ -72,5 +73,5 @@ export default class Base extends Control {
     /**
      * Not supposed to be used on app.
      */
-    setMap(map: any): void;
+    setMap(map: import('ol').Map): void;
 }

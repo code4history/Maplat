@@ -1,32 +1,37 @@
-import { CSS_VARS, EVENT_TYPE } from './constants';
+import { CSS_VARS, EVENT_TYPE } from "./constants";
 import {
   find,
   addClass,
   removeClass,
   getViewportSize,
-  offset,
-} from './helpers/dom';
+  offset
+} from "./helpers/dom";
+import { Map, MapEvent } from "ol";
+import { Coordinate } from "ol/coordinate";
+import { Pixel } from "ol/pixel";
 
 /**
  * @class Internal
  */
 export class Internal {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   Base: any;
-  map: any;
-  viewport: any;
-  coordinateClicked: any;
-  pixelClicked: any;
+  map: Map | undefined;
+  viewport: HTMLElement | undefined;
+  coordinateClicked: Coordinate | undefined;
+  pixelClicked: Pixel | undefined;
   lineHeight: number;
-  items: any;
+  items: Record<string, import("../types").ContextMenuInternalItem>;
   opened: boolean;
-  submenu: any;
-  eventHandler: any;
-  eventMapMoveHandler: any;
+  submenu: { left: string; top: string; lastLeft: string; lastTop: string };
+  eventHandler: (evt: Event) => void;
+  eventMapMoveHandler: (evt: MapEvent) => void;
 
   /**
    * @constructor
    * @param {Function} base Base class.
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(base: any) {
     /**
      * @type {ol.control.Control}
@@ -65,20 +70,25 @@ export class Internal {
      */
     this.submenu = {
       left: `${base.options.width - 15}px`,
-      lastLeft: '', // string + px
+      lastLeft: "", // string + px
+      top: "0px",
+      lastTop: ""
     };
     /**
      * @type {Function}
      */
-    this.eventHandler = this.handleEvent.bind(this);
+    this.eventHandler = this.handleEvent.bind(this) as unknown as (
+      evt: Event
+    ) => void;
     /**
      * @type {Function}
      */
     this.eventMapMoveHandler = this.handleMapMoveEvent.bind(this);
+
     return this;
   }
 
-  init(map: any) {
+  init(map: import("ol").Map) {
     this.map = map;
     this.viewport = map.getViewport();
     this.setListeners();
@@ -107,9 +117,10 @@ export class Internal {
     return this.coordinateClicked;
   }
 
-  positionContainer(pixel: any) {
-    const container = this.Base.container;
-    const mapSize = this.map.getSize();
+  positionContainer(pixel: import("ol/pixel").Pixel) {
+    const container = this.Base.container as HTMLElement;
+    const mapSize = this.map!.getSize();
+    if (!mapSize) return;
     // how much (width) space left over
     const space_left_h = mapSize[1] - pixel[1];
     // how much (height) space left over
@@ -119,25 +130,29 @@ export class Internal {
       w: container.offsetWidth,
       // a cheap way to recalculate container height
       // since offsetHeight is like cached
-      h: Math.round(this.lineHeight * this.getItemsLength()),
+      h: Math.round(this.lineHeight * this.getItemsLength())
     };
     // submenus
-    const subs = find(`li.${CSS_VARS.submenu}>div`, container, true);
+    const subs = find(
+      `li.${CSS_VARS.submenu}>div`,
+      container,
+      true
+    ) as HTMLElement[];
 
     if (space_left_w >= menuSize.w) {
-      container.style.right = 'auto';
+      container.style.right = "auto";
       container.style.left = `${pixel[0] + 5}px`;
     } else {
-      container.style.left = 'auto';
-      container.style.right = '15px';
+      container.style.left = "auto";
+      container.style.right = "15px";
     }
     // set top or bottom
     if (space_left_h >= menuSize.h) {
-      container.style.bottom = 'auto';
+      container.style.bottom = "auto";
       container.style.top = `${pixel[1] - 10}px`;
     } else {
-      container.style.top = 'auto';
-      container.style.bottom = 0;
+      container.style.top = "auto";
+      container.style.bottom = "0px";
     }
 
     removeClass(container, CSS_VARS.hidden, null);
@@ -150,7 +165,7 @@ export class Internal {
       } else {
         this.submenu.lastLeft = this.submenu.left;
       }
-      subs.forEach((sub: any) => {
+      subs.forEach((sub: HTMLElement) => {
         // is there enough space for submenu height?
         const viewport = getViewportSize();
         const sub_offset = offset(sub);
@@ -166,11 +181,14 @@ export class Internal {
     }
   }
 
-  openMenu(pixel: any, coordinate: any) {
+  openMenu(
+    pixel: import("ol/pixel").Pixel,
+    coordinate: import("ol/coordinate").Coordinate
+  ) {
     this.Base.dispatchEvent({
       type: EVENT_TYPE.OPEN,
       pixel,
-      coordinate,
+      coordinate
     });
     this.opened = true;
     this.positionContainer(pixel);
@@ -180,40 +198,43 @@ export class Internal {
     this.opened = false;
     addClass(this.Base.container, CSS_VARS.hidden, null);
     this.Base.dispatchEvent({
-      type: EVENT_TYPE.CLOSE,
+      type: EVENT_TYPE.CLOSE
     });
   }
 
   setListeners() {
-    this.viewport.addEventListener(
+    this.viewport!.addEventListener(
       this.Base.options.eventType,
       this.eventHandler,
       false
     );
 
-    this.map.on('movestart', this.eventMapMoveHandler);
+    if (this.map) this.map.on("movestart", this.eventMapMoveHandler);
   }
 
   removeListeners() {
-    this.viewport.removeEventListener(
+    this.viewport!.removeEventListener(
       this.Base.options.eventType,
       this.eventHandler,
+
       false
     );
 
-    this.map.un('movestart', this.eventMapMoveHandler);
+    if (this.map) this.map.un("movestart", this.eventMapMoveHandler);
   }
 
-  handleEvent(evt: any) {
+  handleEvent(evt: Event) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const this_ = this;
+    if (!this.map) return;
 
-    this.coordinateClicked = this.map.getEventCoordinate(evt);
-    this.pixelClicked = this.map.getEventPixel(evt);
+    this.coordinateClicked = this.map.getEventCoordinate(evt as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+    this.pixelClicked = this.map.getEventPixel(evt as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
     this.Base.dispatchEvent({
       type: EVENT_TYPE.BEFOREOPEN,
       pixel: this.pixelClicked,
-      coordinate: this.coordinateClicked,
+      coordinate: this.coordinateClicked
     });
 
     if (this.Base.disabled) return;
@@ -227,36 +248,39 @@ export class Internal {
     this.openMenu(this.pixelClicked, this.coordinateClicked);
 
     //one-time fire
-    evt.target.addEventListener(
-      'pointerdown',
-      {
-        handleEvent: (e: any) => {
-          if (this_.opened) {
-            this_.closeMenu();
-            e.stopPropagation();
-            evt.target.removeEventListener(e.type, this, false);
+    if (evt.target)
+      evt.target.addEventListener(
+        "pointerdown",
+        {
+          handleEvent: (e: Event) => {
+            if (this_.opened) {
+              this_.closeMenu();
+              e.stopPropagation();
+              if (evt.target)
+                evt.target.removeEventListener(e.type, this, false);
+            }
           }
         },
-      },
-      false
-    );
+        false
+      );
   }
 
-  handleMapMoveEvent(_evt: any) {
+  handleMapMoveEvent(_evt: import("ol").MapEvent) {
     this.closeMenu();
   }
 
-  setItemListener(li: any, index: any) {
+  setItemListener(li: HTMLElement, index: string) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const this_ = this;
-    if (li && typeof this.items[index].callback === 'function') {
+    if (li && typeof this.items[index].callback === "function") {
       (function (callback) {
         li.addEventListener(
-          'click',
-          (evt: any) => {
+          "click",
+          (evt: Event) => {
             evt.preventDefault();
             const obj = {
-              coordinate: this_.getCoordinateClicked(),
-              data: this_.items[index].data || null,
+              coordinate: this_.getCoordinateClicked()!,
+              data: this_.items[index].data || null
             };
             this_.closeMenu();
             callback(obj, this_.map);
