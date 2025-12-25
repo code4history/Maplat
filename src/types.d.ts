@@ -1,6 +1,6 @@
 declare module '@maplat/core/dist/*';
 declare module '@maplat/core/lib/*';
-declare module 'weiwudi';
+declare module '@c4h/weiwudi';
 declare module 'izitoast';
 declare module 'page';
 declare module 'qrcode';

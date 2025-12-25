@@ -16,7 +16,7 @@ import { precacheAndRoute } from "workbox-precaching";
 import { registerRoute } from "workbox-routing";
 import { StaleWhileRevalidate } from "workbox-strategies";
 import { ExpirationPlugin } from "workbox-expiration";
-import "weiwudi/src/weiwudi_gw";
+import "@c4h/weiwudi/sw";
 
 skipWaiting();
 clientsClaim();

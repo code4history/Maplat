@@ -22,7 +22,7 @@ import {
     MarkerList
 } from "./maplat_control";
 import ContextMenu from './contextmenu';
-import Weiwudi from 'weiwudi';
+import Weiwudi from '@c4h/weiwudi';
 import absoluteUrl from "./absolute_url";
 import * as QRCode from "qrcode";
 import { ellips, isBasemap } from "./ui_utils";

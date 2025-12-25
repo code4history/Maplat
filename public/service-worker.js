@@ -3,13 +3,13 @@
   // <define:self.__WB_MANIFEST>
   var define_self_WB_MANIFEST_default = [];
 
-  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/_version.js
+  // node_modules/.pnpm/workbox-core@7.4.0/node_modules/workbox-core/_version.js
   try {
-    self["workbox:core:6.6.0"] && _();
+    self["workbox:core:7.3.0"] && _();
   } catch (e) {
   }
 
-  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/_private/logger.js
+  // node_modules/.pnpm/workbox-core@7.4.0/node_modules/workbox-core/_private/logger.js
   var logger = false ? null : (() => {
     if (!("__WB_DISABLE_DEV_LOGS" in globalThis)) {
       self.__WB_DISABLE_DEV_LOGS = false;
@@ -61,7 +61,7 @@
     return api;
   })();
 
-  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/models/messages/messages.js
+  // node_modules/.pnpm/workbox-core@7.4.0/node_modules/workbox-core/models/messages/messages.js
   var messages = {
     "invalid-value": ({ paramName, validValueDescription, value }) => {
       if (!paramName || !validValueDescription) {
@@ -225,7 +225,7 @@
     }
   };
 
-  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/models/messages/messageGenerator.js
+  // node_modules/.pnpm/workbox-core@7.4.0/node_modules/workbox-core/models/messages/messageGenerator.js
   var generatorFunction = (code, details = {}) => {
     const message = messages[code];
     if (!message) {
@@ -235,7 +235,7 @@
   };
   var messageGenerator = false ? fallback : generatorFunction;
 
-  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/_private/WorkboxError.js
+  // node_modules/.pnpm/workbox-core@7.4.0/node_modules/workbox-core/_private/WorkboxError.js
   var WorkboxError = class extends Error {
     /**
      *
@@ -253,7 +253,7 @@
     }
   };
 
-  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/_private/assert.js
+  // node_modules/.pnpm/workbox-core@7.4.0/node_modules/workbox-core/_private/assert.js
   var isArray = (value, details) => {
     if (!Array.isArray(value)) {
       throw new WorkboxError("not-an-array", details);
@@ -304,10 +304,10 @@
     isArrayOfClass
   };
 
-  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/models/quotaErrorCallbacks.js
+  // node_modules/.pnpm/workbox-core@7.4.0/node_modules/workbox-core/models/quotaErrorCallbacks.js
   var quotaErrorCallbacks = /* @__PURE__ */ new Set();
 
-  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/registerQuotaErrorCallback.js
+  // node_modules/.pnpm/workbox-core@7.4.0/node_modules/workbox-core/registerQuotaErrorCallback.js
   function registerQuotaErrorCallback(callback) {
     if (true) {
       finalAssertExports.isType(callback, "function", {
@@ -322,7 +322,7 @@
     }
   }
 
-  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/_private/cacheNames.js
+  // node_modules/.pnpm/workbox-core@7.4.0/node_modules/workbox-core/_private/cacheNames.js
   var _cacheNameDetails = {
     googleAnalytics: "googleAnalytics",
     precache: "precache-v2",
@@ -363,7 +363,7 @@
     }
   };
 
-  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/_private/cacheMatchIgnoreParams.js
+  // node_modules/.pnpm/workbox-core@7.4.0/node_modules/workbox-core/_private/cacheMatchIgnoreParams.js
   function stripParams(fullURL, ignoreParams) {
     const strippedURL = new URL(fullURL);
     for (const param of ignoreParams) {
@@ -387,7 +387,7 @@
     return;
   }
 
-  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/_private/canConstructResponseFromBodyStream.js
+  // node_modules/.pnpm/workbox-core@7.4.0/node_modules/workbox-core/_private/canConstructResponseFromBodyStream.js
   var supportStatus;
   function canConstructResponseFromBodyStream() {
     if (supportStatus === void 0) {
@@ -405,13 +405,13 @@
     return supportStatus;
   }
 
-  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/_private/dontWaitFor.js
+  // node_modules/.pnpm/workbox-core@7.4.0/node_modules/workbox-core/_private/dontWaitFor.js
   function dontWaitFor(promise) {
     void promise.then(() => {
     });
   }
 
-  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/_private/Deferred.js
+  // node_modules/.pnpm/workbox-core@7.4.0/node_modules/workbox-core/_private/Deferred.js
   var Deferred = class {
     /**
      * Creates a promise and exposes its resolve and reject functions as methods.
@@ -424,7 +424,7 @@
     }
   };
 
-  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/_private/executeQuotaErrorCallbacks.js
+  // node_modules/.pnpm/workbox-core@7.4.0/node_modules/workbox-core/_private/executeQuotaErrorCallbacks.js
   async function executeQuotaErrorCallbacks() {
     if (true) {
       logger.log(`About to run ${quotaErrorCallbacks.size} callbacks to clean up caches.`);
@@ -440,25 +440,25 @@
     }
   }
 
-  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/_private/getFriendlyURL.js
+  // node_modules/.pnpm/workbox-core@7.4.0/node_modules/workbox-core/_private/getFriendlyURL.js
   var getFriendlyURL = (url) => {
     const urlObj = new URL(String(url), location.href);
     return urlObj.href.replace(new RegExp(`^${location.origin}`), "");
   };
 
-  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/_private/timeout.js
+  // node_modules/.pnpm/workbox-core@7.4.0/node_modules/workbox-core/_private/timeout.js
   function timeout(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/_private/waitUntil.js
+  // node_modules/.pnpm/workbox-core@7.4.0/node_modules/workbox-core/_private/waitUntil.js
   function waitUntil(event, asyncFn) {
     const returnPromise = asyncFn();
     event.waitUntil(returnPromise);
     return returnPromise;
   }
 
-  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/copyResponse.js
+  // node_modules/.pnpm/workbox-core@7.4.0/node_modules/workbox-core/copyResponse.js
   async function copyResponse(response, modifier) {
     let origin = null;
     if (response.url) {
@@ -479,12 +479,12 @@
     return new Response(body, modifiedResponseInit);
   }
 
-  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/clientsClaim.js
+  // node_modules/.pnpm/workbox-core@7.4.0/node_modules/workbox-core/clientsClaim.js
   function clientsClaim() {
     self.addEventListener("activate", () => self.clients.claim());
   }
 
-  // node_modules/.pnpm/workbox-core@6.6.1/node_modules/workbox-core/skipWaiting.js
+  // node_modules/.pnpm/workbox-core@7.4.0/node_modules/workbox-core/skipWaiting.js
   function skipWaiting() {
     if (true) {
       logger.warn(`skipWaiting() from workbox-core is no longer recommended and will be removed in Workbox v7. Using self.skipWaiting() instead is equivalent.`);
@@ -492,13 +492,13 @@
     void self.skipWaiting();
   }
 
-  // node_modules/.pnpm/workbox-precaching@6.6.1/node_modules/workbox-precaching/_version.js
+  // node_modules/.pnpm/workbox-precaching@7.4.0/node_modules/workbox-precaching/_version.js
   try {
-    self["workbox:precaching:6.6.0"] && _();
+    self["workbox:precaching:7.3.0"] && _();
   } catch (e) {
   }
 
-  // node_modules/.pnpm/workbox-precaching@6.6.1/node_modules/workbox-precaching/utils/createCacheKey.js
+  // node_modules/.pnpm/workbox-precaching@7.4.0/node_modules/workbox-precaching/utils/createCacheKey.js
   var REVISION_SEARCH_PARAM = "__WB_REVISION__";
   function createCacheKey(entry) {
     if (!entry) {
@@ -531,7 +531,7 @@
     };
   }
 
-  // node_modules/.pnpm/workbox-precaching@6.6.1/node_modules/workbox-precaching/utils/PrecacheInstallReportPlugin.js
+  // node_modules/.pnpm/workbox-precaching@7.4.0/node_modules/workbox-precaching/utils/PrecacheInstallReportPlugin.js
   var PrecacheInstallReportPlugin = class {
     constructor() {
       this.updatedURLs = [];
@@ -557,7 +557,7 @@
     }
   };
 
-  // node_modules/.pnpm/workbox-precaching@6.6.1/node_modules/workbox-precaching/utils/PrecacheCacheKeyPlugin.js
+  // node_modules/.pnpm/workbox-precaching@7.4.0/node_modules/workbox-precaching/utils/PrecacheCacheKeyPlugin.js
   var PrecacheCacheKeyPlugin = class {
     constructor({ precacheController: precacheController2 }) {
       this.cacheKeyWillBeUsed = async ({ request, params }) => {
@@ -568,7 +568,7 @@
     }
   };
 
-  // node_modules/.pnpm/workbox-precaching@6.6.1/node_modules/workbox-precaching/utils/printCleanupDetails.js
+  // node_modules/.pnpm/workbox-precaching@7.4.0/node_modules/workbox-precaching/utils/printCleanupDetails.js
   var logGroup = (groupTitle, deletedURLs) => {
     logger.groupCollapsed(groupTitle);
     for (const url of deletedURLs) {
@@ -585,7 +585,7 @@
     }
   }
 
-  // node_modules/.pnpm/workbox-precaching@6.6.1/node_modules/workbox-precaching/utils/printInstallDetails.js
+  // node_modules/.pnpm/workbox-precaching@7.4.0/node_modules/workbox-precaching/utils/printInstallDetails.js
   function _nestedGroup(groupTitle, urls) {
     if (urls.length === 0) {
       return;
@@ -611,13 +611,13 @@
     }
   }
 
-  // node_modules/.pnpm/workbox-strategies@6.6.1/node_modules/workbox-strategies/_version.js
+  // node_modules/.pnpm/workbox-strategies@7.4.0/node_modules/workbox-strategies/_version.js
   try {
-    self["workbox:strategies:6.6.0"] && _();
+    self["workbox:strategies:7.3.0"] && _();
   } catch (e) {
   }
 
-  // node_modules/.pnpm/workbox-strategies@6.6.1/node_modules/workbox-strategies/StrategyHandler.js
+  // node_modules/.pnpm/workbox-strategies@7.4.0/node_modules/workbox-strategies/StrategyHandler.js
   function toRequest(input) {
     return typeof input === "string" ? new Request(input) : input;
   }
@@ -749,8 +749,8 @@
      * defined on the strategy object.
      *
      * The following plugin lifecycle methods are invoked when using this method:
-     * - cacheKeyWillByUsed()
-     * - cachedResponseWillByUsed()
+     * - cacheKeyWillBeUsed()
+     * - cachedResponseWillBeUsed()
      *
      * @param {Request|string} key The Request or URL to use as the cache key.
      * @return {Promise<Response|undefined>} A matching response, if found.
@@ -786,7 +786,7 @@
      * the strategy object.
      *
      * The following plugin lifecycle methods are invoked when using this method:
-     * - cacheKeyWillByUsed()
+     * - cacheKeyWillBeUsed()
      * - cacheWillUpdate()
      * - cacheDidUpdate()
      *
@@ -951,7 +951,7 @@
     /**
      * Adds a promise to the
      * [extend lifetime promises]{@link https://w3c.github.io/ServiceWorker/#extendableevent-extend-lifetime-promises}
-     * of the event event associated with the request being handled (usually a
+     * of the event associated with the request being handled (usually a
      * `FetchEvent`).
      *
      * Note: you can await
@@ -972,13 +972,17 @@
      *
      * Note: any work done after `doneWaiting()` settles should be manually
      * passed to an event's `waitUntil()` method (not this handler's
-     * `waitUntil()` method), otherwise the service worker thread my be killed
+     * `waitUntil()` method), otherwise the service worker thread may be killed
      * prior to your work completing.
      */
     async doneWaiting() {
-      let promise;
-      while (promise = this._extendLifetimePromises.shift()) {
-        await promise;
+      while (this._extendLifetimePromises.length) {
+        const promises = this._extendLifetimePromises.splice(0);
+        const result = await Promise.allSettled(promises);
+        const firstRejection = result.find((i) => i.status === "rejected");
+        if (firstRejection) {
+          throw firstRejection.reason;
+        }
       }
     }
     /**
@@ -1032,7 +1036,7 @@
     }
   };
 
-  // node_modules/.pnpm/workbox-strategies@6.6.1/node_modules/workbox-strategies/Strategy.js
+  // node_modules/.pnpm/workbox-strategies@7.4.0/node_modules/workbox-strategies/Strategy.js
   var Strategy = class {
     /**
      * Creates a new instance of the strategy and sets all documented option
@@ -1182,7 +1186,7 @@
     }
   };
 
-  // node_modules/.pnpm/workbox-precaching@6.6.1/node_modules/workbox-precaching/PrecacheStrategy.js
+  // node_modules/.pnpm/workbox-precaching@7.4.0/node_modules/workbox-precaching/PrecacheStrategy.js
   var PrecacheStrategy = class _PrecacheStrategy extends Strategy {
     /**
      *
@@ -1340,7 +1344,7 @@
     }
   };
 
-  // node_modules/.pnpm/workbox-precaching@6.6.1/node_modules/workbox-precaching/PrecacheController.js
+  // node_modules/.pnpm/workbox-precaching@7.4.0/node_modules/workbox-precaching/PrecacheController.js
   var PrecacheController = class {
     /**
      * Create a new PrecacheController.
@@ -1594,7 +1598,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // node_modules/.pnpm/workbox-precaching@6.6.1/node_modules/workbox-precaching/utils/getOrCreatePrecacheController.js
+  // node_modules/.pnpm/workbox-precaching@7.4.0/node_modules/workbox-precaching/utils/getOrCreatePrecacheController.js
   var precacheController;
   var getOrCreatePrecacheController = () => {
     if (!precacheController) {
@@ -1603,13 +1607,13 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     return precacheController;
   };
 
-  // node_modules/.pnpm/workbox-routing@6.6.1/node_modules/workbox-routing/_version.js
+  // node_modules/.pnpm/workbox-routing@7.4.0/node_modules/workbox-routing/_version.js
   try {
-    self["workbox:routing:6.6.0"] && _();
+    self["workbox:routing:7.3.0"] && _();
   } catch (e) {
   }
 
-  // node_modules/.pnpm/workbox-routing@6.6.1/node_modules/workbox-routing/utils/constants.js
+  // node_modules/.pnpm/workbox-routing@7.4.0/node_modules/workbox-routing/utils/constants.js
   var defaultMethod = "GET";
   var validMethods = [
     "DELETE",
@@ -1620,7 +1624,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     "PUT"
   ];
 
-  // node_modules/.pnpm/workbox-routing@6.6.1/node_modules/workbox-routing/utils/normalizeHandler.js
+  // node_modules/.pnpm/workbox-routing@7.4.0/node_modules/workbox-routing/utils/normalizeHandler.js
   var normalizeHandler = (handler) => {
     if (handler && typeof handler === "object") {
       if (true) {
@@ -1645,7 +1649,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // node_modules/.pnpm/workbox-routing@6.6.1/node_modules/workbox-routing/Route.js
+  // node_modules/.pnpm/workbox-routing@7.4.0/node_modules/workbox-routing/Route.js
   var Route = class {
     /**
      * Constructor for Route class.
@@ -1684,7 +1688,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // node_modules/.pnpm/workbox-routing@6.6.1/node_modules/workbox-routing/RegExpRoute.js
+  // node_modules/.pnpm/workbox-routing@7.4.0/node_modules/workbox-routing/RegExpRoute.js
   var RegExpRoute = class extends Route {
     /**
      * If the regular expression contains
@@ -1725,7 +1729,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // node_modules/.pnpm/workbox-routing@6.6.1/node_modules/workbox-routing/Router.js
+  // node_modules/.pnpm/workbox-routing@7.4.0/node_modules/workbox-routing/Router.js
   var Router = class {
     /**
      * Initializes a new Router.
@@ -2038,7 +2042,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // node_modules/.pnpm/workbox-routing@6.6.1/node_modules/workbox-routing/utils/getOrCreateDefaultRouter.js
+  // node_modules/.pnpm/workbox-routing@7.4.0/node_modules/workbox-routing/utils/getOrCreateDefaultRouter.js
   var defaultRouter;
   var getOrCreateDefaultRouter = () => {
     if (!defaultRouter) {
@@ -2049,7 +2053,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     return defaultRouter;
   };
 
-  // node_modules/.pnpm/workbox-routing@6.6.1/node_modules/workbox-routing/registerRoute.js
+  // node_modules/.pnpm/workbox-routing@7.4.0/node_modules/workbox-routing/registerRoute.js
   function registerRoute(capture, handler, method) {
     let route;
     if (typeof capture === "string") {
@@ -2095,7 +2099,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     return route;
   }
 
-  // node_modules/.pnpm/workbox-precaching@6.6.1/node_modules/workbox-precaching/utils/removeIgnoredSearchParams.js
+  // node_modules/.pnpm/workbox-precaching@7.4.0/node_modules/workbox-precaching/utils/removeIgnoredSearchParams.js
   function removeIgnoredSearchParams(urlObject, ignoreURLParametersMatching = []) {
     for (const paramName of [...urlObject.searchParams.keys()]) {
       if (ignoreURLParametersMatching.some((regExp) => regExp.test(paramName))) {
@@ -2105,7 +2109,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     return urlObject;
   }
 
-  // node_modules/.pnpm/workbox-precaching@6.6.1/node_modules/workbox-precaching/utils/generateURLVariations.js
+  // node_modules/.pnpm/workbox-precaching@7.4.0/node_modules/workbox-precaching/utils/generateURLVariations.js
   function* generateURLVariations(url, { ignoreURLParametersMatching = [/^utm_/, /^fbclid$/], directoryIndex = "index.html", cleanURLs = true, urlManipulation } = {}) {
     const urlObject = new URL(url, location.href);
     urlObject.hash = "";
@@ -2130,7 +2134,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   }
 
-  // node_modules/.pnpm/workbox-precaching@6.6.1/node_modules/workbox-precaching/PrecacheRoute.js
+  // node_modules/.pnpm/workbox-precaching@7.4.0/node_modules/workbox-precaching/PrecacheRoute.js
   var PrecacheRoute = class extends Route {
     /**
      * @param {PrecacheController} precacheController A `PrecacheController`
@@ -2167,26 +2171,26 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // node_modules/.pnpm/workbox-precaching@6.6.1/node_modules/workbox-precaching/addRoute.js
+  // node_modules/.pnpm/workbox-precaching@7.4.0/node_modules/workbox-precaching/addRoute.js
   function addRoute(options) {
     const precacheController2 = getOrCreatePrecacheController();
     const precacheRoute = new PrecacheRoute(precacheController2, options);
     registerRoute(precacheRoute);
   }
 
-  // node_modules/.pnpm/workbox-precaching@6.6.1/node_modules/workbox-precaching/precache.js
+  // node_modules/.pnpm/workbox-precaching@7.4.0/node_modules/workbox-precaching/precache.js
   function precache(entries) {
     const precacheController2 = getOrCreatePrecacheController();
     precacheController2.precache(entries);
   }
 
-  // node_modules/.pnpm/workbox-precaching@6.6.1/node_modules/workbox-precaching/precacheAndRoute.js
+  // node_modules/.pnpm/workbox-precaching@7.4.0/node_modules/workbox-precaching/precacheAndRoute.js
   function precacheAndRoute(entries, options) {
     precache(entries);
     addRoute(options);
   }
 
-  // node_modules/.pnpm/workbox-strategies@6.6.1/node_modules/workbox-strategies/utils/messages.js
+  // node_modules/.pnpm/workbox-strategies@7.4.0/node_modules/workbox-strategies/utils/messages.js
   var messages2 = {
     strategyStart: (strategyName, request) => `Using ${strategyName} to respond to '${getFriendlyURL(request.url)}'`,
     printFinalResponse: (response) => {
@@ -2198,7 +2202,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // node_modules/.pnpm/workbox-strategies@6.6.1/node_modules/workbox-strategies/plugins/cacheOkAndOpaquePlugin.js
+  // node_modules/.pnpm/workbox-strategies@7.4.0/node_modules/workbox-strategies/plugins/cacheOkAndOpaquePlugin.js
   var cacheOkAndOpaquePlugin = {
     /**
      * Returns a valid response (to allow caching) if the status is 200 (OK) or
@@ -2218,7 +2222,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // node_modules/.pnpm/workbox-strategies@6.6.1/node_modules/workbox-strategies/StaleWhileRevalidate.js
+  // node_modules/.pnpm/workbox-strategies@7.4.0/node_modules/workbox-strategies/StaleWhileRevalidate.js
   var StaleWhileRevalidate = class extends Strategy {
     /**
      * @param {Object} [options]
@@ -2510,13 +2514,13 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     has: (target, prop) => !!getMethod(target, prop) || oldTraps.has(target, prop)
   }));
 
-  // node_modules/.pnpm/workbox-expiration@6.6.1/node_modules/workbox-expiration/_version.js
+  // node_modules/.pnpm/workbox-expiration@7.4.0/node_modules/workbox-expiration/_version.js
   try {
-    self["workbox:expiration:6.6.0"] && _();
+    self["workbox:expiration:7.3.0"] && _();
   } catch (e) {
   }
 
-  // node_modules/.pnpm/workbox-expiration@6.6.1/node_modules/workbox-expiration/models/CacheTimestampsModel.js
+  // node_modules/.pnpm/workbox-expiration@7.4.0/node_modules/workbox-expiration/models/CacheTimestampsModel.js
   var DB_NAME = "workbox-expiration";
   var CACHE_OBJECT_STORE = "cache-entries";
   var normalizeURL = (unNormalizedUrl) => {
@@ -2657,7 +2661,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // node_modules/.pnpm/workbox-expiration@6.6.1/node_modules/workbox-expiration/CacheExpiration.js
+  // node_modules/.pnpm/workbox-expiration@7.4.0/node_modules/workbox-expiration/CacheExpiration.js
   var CacheExpiration = class {
     /**
      * To construct a new CacheExpiration instance you must provide at least
@@ -2797,7 +2801,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // node_modules/.pnpm/workbox-expiration@6.6.1/node_modules/workbox-expiration/ExpirationPlugin.js
+  // node_modules/.pnpm/workbox-expiration@7.4.0/node_modules/workbox-expiration/ExpirationPlugin.js
   var ExpirationPlugin = class {
     /**
      * @param {ExpirationPluginOptions} config
@@ -2966,485 +2970,293 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // node_modules/.pnpm/weiwudi@https+++codeload.gi_55d4fb482ff8f4049848277d786c1762/node_modules/weiwudi/src/weiwudi_gw_logic.js
-  function Weiwudi_Internal(registerRoute2) {
-    "use strict";
-    const MERC_MAX = 20037508342789244e-9;
-    const dbCache = {};
-    let fetchAllBlocker;
-    const extractTemplate = (template, z, x, y) => {
-      const result = template.replace("{z}", z).replace("{x}", x).replace("{y}", y).replace("{-y}", Math.pow(2, z) - y - 1);
-      return result;
-    };
-    const b64toBlob = (b64Data, contentType = "", sliceSize = 512) => {
-      const byteCharacters = atob(b64Data);
-      const byteArrays = [];
-      for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-        const slice = byteCharacters.slice(offset, offset + sliceSize);
-        const byteNumbers = new Array(slice.length);
-        for (let i = 0; i < slice.length; i++) {
-          byteNumbers[i] = slice.charCodeAt(i);
-        }
-        const byteArray = new Uint8Array(byteNumbers);
-        byteArrays.push(byteArray);
+  // node_modules/.pnpm/@c4h+weiwudi@https+++codelo_b988430679ec08720e7d86409cc97067/node_modules/@c4h/weiwudi/dist/weiwudi-sw.es.js
+  function v(_2) {
+    const I = 20037508342789244e-9, x = {};
+    let m;
+    const S = (l, t, c, i) => l.replace("{z}", String(t)).replace("{x}", String(c)).replace("{y}", String(i)).replace("{-y}", String(Math.pow(2, t) - i - 1)), T = (l, t = "", c = 512) => {
+      const i = atob(l), o = [];
+      for (let a = 0; a < i.length; a += c) {
+        const e = i.slice(a, a + c), n = new Array(e.length);
+        for (let A = 0; A < e.length; A++)
+          n[A] = e.charCodeAt(A);
+        const s = new Uint8Array(n);
+        o.push(s);
       }
-      const blob = new Blob(byteArrays, { type: contentType });
-      return blob;
-    };
-    const getDB = async (dbname, table, key) => {
-      return new Promise((resolve, reject) => {
-        try {
-          if (dbCache[dbname]) resolve(dbCache[dbname]);
-          else {
-            const openDB2 = indexedDB.open(dbname);
-            openDB2.onupgradeneeded = function(event) {
-              const db = event.target.result;
-              db.createObjectStore(table, { keyPath: key });
-            };
-            openDB2.onsuccess = function(event) {
-              const db = event.target.result;
-              dbCache[dbname] = db;
-              resolve(db);
-            };
-            openDB2.onerror = function(error) {
-              reject(error);
-            };
-          }
-        } catch (e) {
-          reject(e);
-        }
-      });
-    };
-    const deleteDB2 = async (dbname) => {
-      if (dbCache[dbname]) {
-        const db = dbCache[dbname];
-        db.close();
-        delete dbCache[dbname];
-      }
-      return new Promise((resolve, reject) => {
-        try {
-          const deleteReq = indexedDB.deleteDatabase(dbname);
-          deleteReq.onsuccess = async (event) => {
-            resolve();
-          };
-          deleteReq.onerror = function(error) {
-            reject(error);
-          };
-        } catch (e) {
-          reject(e);
-        }
-      });
-    };
-    const cleanDB = async (db, table) => {
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction([table], "readwrite");
-        const store = tx.objectStore(table);
-        const clearReq = store.clear();
-        clearReq.onsuccess = function(e) {
-        };
-        clearReq.onerror = function(e) {
-          reject(e);
-        };
-        tx.oncomplete = function(e) {
-          resolve();
-        };
-        tx.onabort = function(e) {
-          reject(e);
-        };
-        tx.onerror = function(e) {
-          reject(e);
-        };
-      });
-    };
-    const countDB = async (db, table) => {
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction([table], "readonly");
-        const store = tx.objectStore(table);
-        const cursorReq = store.openCursor();
-        let count = 0;
-        let size = 0;
-        cursorReq.onsuccess = function(e) {
-          const cursor = cursorReq.result;
-          if (cursor) {
-            count++;
-            size = size + cursor.value.blob.size;
-            cursor.continue();
-          }
-        };
-        cursorReq.onerror = function(e) {
-          reject(e);
-        };
-        tx.oncomplete = function(e) {
-          resolve({
-            count,
-            size
-          });
-        };
-        tx.onabort = function(e) {
-          reject(e);
-        };
-        tx.onerror = function(e) {
-          reject(e);
-        };
-      });
-    };
-    const getItem = async (db, table, key, dry) => {
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction([table], "readonly");
-        const store = tx.objectStore(table);
-        const getReq = dry ? store.getKey(key) : store.get(key);
-        getReq.onsuccess = function(e) {
-        };
-        getReq.onerror = function(e) {
-          reject(e);
-        };
-        tx.oncomplete = function(e) {
-          resolve(getReq.result);
-        };
-        tx.onabort = function(e) {
-          reject(e);
-        };
-        tx.onerror = function(e) {
-          reject(e);
-        };
-      });
-    };
-    const putItem = async (db, table, item) => {
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction([table], "readwrite");
-        const store = tx.objectStore(table);
-        const putReq = store.put(item);
-        putReq.onsuccess = function(e) {
-        };
-        putReq.onerror = function(e) {
-          reject(e);
-        };
-        tx.oncomplete = function(e) {
-          resolve();
-        };
-        tx.onabort = function(e) {
-          reject(e);
-        };
-        tx.onerror = function(e) {
-          reject(e);
-        };
-      });
-    };
-    const deleteItem = async (db, table, key) => {
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction([table], "readwrite");
-        const store = tx.objectStore(table);
-        const delReq = store.delete(key);
-        delReq.onsuccess = function(e) {
-        };
-        delReq.onerror = function(e) {
-          reject(e);
-        };
-        tx.oncomplete = function(e) {
-          resolve();
-        };
-        tx.onabort = function(e) {
-          reject(e);
-        };
-        tx.onerror = function(e) {
-          reject(e);
-        };
-      });
-    };
-    const getAllKeys = async (db, table) => {
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction([table], "readwrite");
-        const store = tx.objectStore(table);
-        const getReq = store.getAllKeys();
-        getReq.onsuccess = function(e) {
-        };
-        getReq.onerror = function(e) {
-          reject(e);
-        };
-        tx.oncomplete = function(e) {
-          resolve(getReq.result);
-        };
-        tx.onabort = function(e) {
-          reject(e);
-        };
-        tx.onerror = function(e) {
-          reject(e);
-        };
-      });
-    };
-    const handlerCb = async ({ url, request, event, _params }) => {
-      const client = event.clientId ? await self.clients.get(event.clientId) : void 0;
-      const matched = url.pathname.match(/^\/api\/([\w\d]+)(?:\/(.+))?$/);
-      if (matched) {
-        const query = [...url.searchParams.entries()].reduce((obj, e) => {
-          const values = url.searchParams.getAll(e[0]);
-          if (values.length === 1) obj[e[0]] = values[0];
-          else obj[e[0]] = values;
-          return obj;
-        }, {});
-        const apiName = matched[1];
-        const restPath = matched[2];
-        let res = await apiFunc(apiName, query, restPath, client);
-        if (res) {
-          if (!(res instanceof Response)) res = new Response(res);
-          return res;
-        }
-      }
-    };
-    const getImage = async (mapID, z, x, y, noOutput) => {
-      let outExtent;
-      const db = await getDB("Weiwudi");
-      const setting = await getItem(db, "mapSetting", mapID);
-      if (!noOutput) {
-        if (!setting) return `Error: MapID "${mapID}" not found`;
-        if (z < setting.minZoom || z > setting.maxZoom) outExtent = "zoom";
-        else {
-          const minXatZ = Math.floor(setting.minX / Math.pow(2, setting.maxZoom - z));
-          const maxXatZ = Math.floor(setting.maxX / Math.pow(2, setting.maxZoom - z));
-          const minYatZ = Math.floor(setting.minY / Math.pow(2, setting.maxZoom - z));
-          const maxYatZ = Math.floor(setting.maxY / Math.pow(2, setting.maxZoom - z));
-          if (x < minXatZ || x > maxXatZ || y < minYatZ || y > maxYatZ) outExtent = "extent";
-        }
-      }
-      let headers = {};
-      let blob;
-      let status = 200;
-      let statusText = "OK";
-      if (outExtent) {
-        if (outExtent === "zoom") {
-          status = 404;
-          statusText = "Not Found";
-        } else {
-          headers = {
-            "content-type": "image/png"
-          };
-          blob = b64toBlob("iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAMAAABrrFhUAAAAB3RJTUUH3QgIBToaSbAjlwAAABd0RVh0U29mdHdhcmUAR0xEUE5HIHZlciAzLjRxhaThAAAACHRwTkdHTEQzAAAAAEqAKR8AAAAEZ0FNQQAAsY8L/GEFAAAAA1BMVEX///+nxBvIAAAAAXRSTlMAQObYZgAAAFRJREFUeNrtwQEBAAAAgJD+r+4ICgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABgBDwABHHIJwwAAAABJRU5ErkJggg==", headers["content-type"]);
-        }
-      } else {
-        const cacheDB = await getDB(`Weiwudi_${mapID}`);
-        const cached = await getItem(cacheDB, "tileCache", `${z}_${x}_${y}`, noOutput);
-        const nowEpoch = (/* @__PURE__ */ new Date()).getTime();
-        if (!cached || !cached.epoch || nowEpoch - cached.epoch > 864e5) {
-          const template = setting.url instanceof Array ? setting.url[Math.floor(Math.random() * setting.url.length)] : setting.url;
-          const url = extractTemplate(template, z, x, y);
-          try {
-            const resp = await fetch(url);
-            if (resp.ok) {
-              headers = [...resp.headers.entries()].reduce((obj, e) => ({ ...obj, [e[0]]: e[1] }), {});
-              blob = await resp.blob();
-              await putItem(cacheDB, "tileCache", {
-                "z_x_y": `${z}_${x}_${y}`,
-                headers,
-                blob,
-                epoch: nowEpoch
-              });
-            } else {
-              if (cached) {
-                headers = cached.headers;
-                blob = cached.blob;
-              } else {
-                status = resp.status;
-                statusText = resp.statusText;
-                headers = [...resp.headers.entries()].reduce((obj, e) => ({ ...obj, [e[0]]: e[1] }), {});
-                blob = await resp.blob();
-              }
-              if (fetchAllBlocker) fetchAllBlocker.error++;
-            }
-          } catch (e) {
-            if (cached) {
-              headers = cached.headers;
-              blob = cached.blob;
-            } else {
-              status = 404;
-              statusText = "Not Found";
-            }
-            if (fetchAllBlocker) fetchAllBlocker.error++;
-          }
-        } else if (!noOutput) {
-          headers = cached.headers;
-          blob = cached.blob;
-        }
-      }
-      return noOutput ? void 0 : new Response(blob, {
-        status,
-        statusText,
-        headers: new Headers(headers)
-      });
-    };
-    const fetchAll = async (client, setting) => {
-      let processed = 0;
-      let error = 0;
-      let percent = 0;
-      const db = await getDB(`Weiwudi_${setting.mapID}`);
-      const allKeys = await getAllKeys(db, "tileCache");
+      return new Blob(o, { type: t });
+    }, w = async (l, t, c) => new Promise((i, o) => {
       try {
-        const allTasks = [];
-        for (let z = setting.minZoom; z <= setting.maxZoom; z++) {
-          const maxXatZ = Math.floor(setting.maxX / Math.pow(2, setting.maxZoom - z));
-          const minXatZ = Math.floor(setting.minX / Math.pow(2, setting.maxZoom - z));
-          const maxYatZ = Math.floor(setting.maxY / Math.pow(2, setting.maxZoom - z));
-          const minYatZ = Math.floor(setting.minY / Math.pow(2, setting.maxZoom - z));
-          for (let x = minXatZ; x <= maxXatZ; x++) {
-            for (let y = minYatZ; y <= maxYatZ; y++) {
-              allTasks.push([z, x, y]);
-            }
-          }
+        if (x[l]) i(x[l]);
+        else {
+          const r = indexedDB.open(l);
+          r.onupgradeneeded = function(a) {
+            const e = a.target.result;
+            t && c && e.createObjectStore(t, { keyPath: c });
+          }, r.onsuccess = function(a) {
+            const e = a.target.result;
+            x[l] = e, i(e);
+          }, r.onerror = function(a) {
+            o(r.error);
+          };
         }
-        if (allTasks.length != setting.totalTile) console.log("Number of tiles is different");
-        let subTasks = allTasks.splice(0, 5);
-        while (subTasks.length) {
-          const checkClient = await self.clients.get(client.id);
-          if (!checkClient) {
-            fetchAllBlocker = void 0;
+      } catch (r) {
+        o(r);
+      }
+    }), R = async (l) => (x[l] && (x[l].close(), delete x[l]), new Promise((t, c) => {
+      try {
+        const i = indexedDB.deleteDatabase(l);
+        i.onsuccess = async (o) => {
+          t();
+        }, i.onerror = function(o) {
+          c(o);
+        };
+      } catch (i) {
+        c(i);
+      }
+    })), X = async (l, t) => new Promise((c, i) => {
+      const o = l.transaction([t], "readwrite"), a = o.objectStore(t).clear();
+      a.onsuccess = function(e) {
+      }, a.onerror = function(e) {
+        i(e);
+      }, o.oncomplete = function(e) {
+        c();
+      }, o.onabort = function(e) {
+        i(e);
+      }, o.onerror = function(e) {
+        i(e);
+      };
+    }), B = async (l, t) => new Promise((c, i) => {
+      const o = l.transaction([t], "readonly"), a = o.objectStore(t).openCursor();
+      let e = 0, n = 0;
+      a.onsuccess = function(s) {
+        const A = a.result;
+        A && (e++, n = n + A.value.blob.size, A.continue());
+      }, a.onerror = function(s) {
+        i(s);
+      }, o.oncomplete = function(s) {
+        c({
+          count: e,
+          size: n
+        });
+      }, o.onabort = function(s) {
+        i(s);
+      }, o.onerror = function(s) {
+        i(s);
+      };
+    }), M = async (l, t, c, i) => new Promise((o, r) => {
+      const a = l.transaction([t], "readonly"), e = a.objectStore(t), n = i ? e.getKey(c) : e.get(c);
+      n.onsuccess = function(s) {
+      }, n.onerror = function(s) {
+        r(s);
+      }, a.oncomplete = function(s) {
+        o(n.result);
+      }, a.onabort = function(s) {
+        r(s);
+      }, a.onerror = function(s) {
+        r(s);
+      };
+    }), Z = async (l, t, c) => new Promise((i, o) => {
+      const r = l.transaction([t], "readwrite"), e = r.objectStore(t).put(c);
+      e.onsuccess = function(n) {
+      }, e.onerror = function(n) {
+        o(n);
+      }, r.oncomplete = function(n) {
+        i();
+      }, r.onabort = function(n) {
+        o(n);
+      }, r.onerror = function(n) {
+        o(n);
+      };
+    }), Y = async (l, t, c) => new Promise((i, o) => {
+      const r = l.transaction([t], "readwrite"), e = r.objectStore(t).delete(c);
+      e.onsuccess = function(n) {
+      }, e.onerror = function(n) {
+        o(n);
+      }, r.oncomplete = function(n) {
+        i();
+      }, r.onabort = function(n) {
+        o(n);
+      }, r.onerror = function(n) {
+        o(n);
+      };
+    }), C = async (l, t) => new Promise((c, i) => {
+      const o = l.transaction([t], "readwrite"), a = o.objectStore(t).getAllKeys();
+      a.onsuccess = function(e) {
+      }, a.onerror = function(e) {
+        i(e);
+      }, o.oncomplete = function(e) {
+        c(a.result);
+      }, o.onabort = function(e) {
+        i(e);
+      }, o.onerror = function(e) {
+        i(e);
+      };
+    }), F = async ({ url: l, event: t }) => {
+      const c = t instanceof FetchEvent ? t : void 0, i = c && c.clientId ? await self.clients.get(c.clientId) : void 0, o = l.pathname.match(/^\/api\/([\w\d]+)(?:\/(.+))?$/);
+      if (o) {
+        const r = [...l.searchParams.entries()].reduce((s, A) => {
+          const h = l.searchParams.getAll(A[0]);
+          return h.length === 1 ? s[A[0]] = h[0] : s[A[0]] = h, s;
+        }, {}), a = o[1], e = o[2];
+        let n = await L(a, r, e, i);
+        if (n)
+          return n instanceof Response || (n = new Response(n)), n;
+      }
+      return new Response("Not Found", { status: 404 });
+    }, E = async (l, t, c, i, o) => {
+      let r;
+      const a = await w("Weiwudi"), e = await M(a, "mapSetting", l);
+      if (!o) {
+        if (!e) return `Error: MapID "${l}" not found`;
+        if (t < (e.minZoom || 0) || t > (e.maxZoom || 0)) r = "zoom";
+        else if (e.minX !== void 0 && e.maxX !== void 0 && e.minY !== void 0 && e.maxY !== void 0) {
+          const f = Math.pow(2, (e.maxZoom || 0) - t), p = Math.floor((e.minX || 0) / f), b = Math.floor((e.maxX || 0) / f), g = Math.floor((e.minY || 0) / f), u = Math.floor((e.maxY || 0) / f);
+          (c < p || c > b || i < g || i > u) && (r = "extent");
+        }
+      }
+      let n = {}, s, A = 200, h = "OK";
+      if (r)
+        r === "zoom" ? (A = 404, h = "Not Found") : (n = {
+          "content-type": "image/png"
+        }, s = T("iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAMAAABrrFhUAAAAB3RJTUUH3QgIBToaSbAjlwAAABd0RVh0U29mdHdhcmUAR0xEUE5HIHZlciAzLjRxhaThAAAACHRwTkdHTEQzAAAAAEqAKR8AAAAEZ0FNQQAAsY8L/GEFAAAAA1BMVEX///+nxBvIAAAAAXRSTlMAQObYZgAAAFRJREFUeNrtwQEBAAAAgJD+r+4ICgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABgBDwABHHIJwwAAAABJRU5ErkJggg==", n["content-type"]));
+      else {
+        const f = await w(`Weiwudi_${l}`), p = await M(f, "tileCache", `${t}_${c}_${i}`, o), b = (/* @__PURE__ */ new Date()).getTime();
+        if (!p || !p.epoch || b - p.epoch > 864e5) {
+          let g = "";
+          e.url instanceof Array ? g = e.url[Math.floor(Math.random() * e.url.length)] : typeof e.url == "string" && (g = e.url);
+          const u = S(g, t, c, i);
+          try {
+            const d = await fetch(u);
+            d.ok ? (n = {}, d.headers.forEach((D, $) => {
+              n[$] = D;
+            }), s = await d.blob(), await Z(f, "tileCache", {
+              z_x_y: `${t}_${c}_${i}`,
+              headers: n,
+              blob: s,
+              epoch: b
+            })) : (p ? (n = p.headers, s = p.blob) : (A = d.status, h = d.statusText, n = {}, d.headers.forEach((D, $) => {
+              n[$] = D;
+            }), s = await d.blob()), m && m.error++);
+          } catch {
+            p ? (n = p.headers, s = p.blob) : (A = 404, h = "Not Found"), m && m.error++;
+          }
+        } else o || (n = p.headers, s = p.blob);
+      }
+      return o ? void 0 : new Response(s, {
+        status: A,
+        statusText: h,
+        headers: new Headers(n)
+      });
+    }, P = async (l, t) => {
+      let c = 0, i = 0;
+      const o = await w(`Weiwudi_${t.mapID}`), r = await C(o, "tileCache");
+      try {
+        const a = [], e = t.minZoom || 0, n = t.maxZoom || 0;
+        for (let h = e; h <= n; h++) {
+          const f = Math.pow(2, n - h), p = Math.floor((t.maxX || 0) / f), b = Math.floor((t.minX || 0) / f), g = Math.floor((t.maxY || 0) / f), u = Math.floor((t.minY || 0) / f);
+          for (let d = b; d <= p; d++)
+            for (let D = u; D <= g; D++)
+              a.push([h, d, D]);
+        }
+        a.length != t.totalTile && console.log("Number of tiles is different");
+        let s = a.splice(0, 5);
+        for (; s.length; ) {
+          if (!await self.clients.get(l.id)) {
+            m = void 0;
             return;
           }
-          if (fetchAllBlocker.cancel) {
-            fetchAllBlocker = void 0;
-            client.postMessage({
+          if (m && m.cancel) {
+            m = void 0, l.postMessage({
               type: "canceled",
-              message: `Fetching tile of ${setting.mapID} is canceled`,
-              mapID: setting.mapID
+              message: `Fetching tile of ${t.mapID} is canceled`,
+              mapID: t.mapID
             });
             return;
           }
-          const promises = subTasks.map((task) => {
-            if (allKeys.indexOf(`${task[0]}_${task[1]}_${task[2]}`) >= 0) return;
-            return getImage(setting.mapID, task[0], task[1], task[2], true);
+          const f = s.map((p) => {
+            if (!(r.indexOf(`${p[0]}_${p[1]}_${p[2]}`) >= 0))
+              return E(t.mapID, p[0], p[1], p[2], true);
           });
-          await Promise.all(promises);
-          processed += promises.length;
-          fetchAllBlocker.count = processed;
-          percent = Math.floor(processed * 100 / setting.totalTile);
-          client.postMessage({
+          await Promise.all(f), c += f.length, m && (m.count = c), i = Math.floor(c * 100 / (t.totalTile || 1)), l.postMessage({
             type: "proceed",
-            message: `Proceeding the tile fetching: ${setting.mapID} ${percent}% (${processed} / ${setting.totalTile})`,
-            percent,
-            processed,
-            error: fetchAllBlocker.error,
-            total: setting.totalTile,
-            mapID: setting.mapID
-          });
-          subTasks = allTasks.splice(0, 5);
+            message: `Proceeding the tile fetching: ${t.mapID} ${i}% (${c} / ${t.totalTile})`,
+            percent: i,
+            processed: c,
+            error: m ? m.error : 0,
+            total: t.totalTile,
+            mapID: t.mapID
+          }), s = a.splice(0, 5);
         }
-        const error2 = fetchAllBlocker.error;
-        fetchAllBlocker = void 0;
-        client.postMessage({
+        const A = m ? m.error : 0;
+        m = void 0, l.postMessage({
           type: "finish",
-          message: `Fetched all tiles of ${setting.mapID}${error2 ? ` with ${error2} error cases` : ""}`,
-          total: setting.totalTile,
-          mapID: setting.mapID,
-          error: error2
+          message: `Fetched all tiles of ${t.mapID}${A ? ` with ${A} error cases` : ""}`,
+          total: t.totalTile,
+          mapID: t.mapID,
+          error: A
         });
-      } catch (e) {
-        fetchAllBlocker = void 0;
-        client.postMessage({
+      } catch (a) {
+        m = void 0, l.postMessage({
           type: "stop",
-          message: `Fetching stopped: ${setting.mapID} ${processed} / ${setting.totalTile}`,
-          reason: e,
-          processed,
-          total: setting.totalTile,
-          mapID: setting.mapID
+          message: `Fetching stopped: ${t.mapID} ${c} / ${t.totalTile}`,
+          reason: a,
+          processed: c,
+          total: t.totalTile,
+          mapID: t.mapID
         });
       }
-    };
-    const apiFunc = async (apiName, query, restPath, client) => {
-      let retVal;
-      const checkAttributes = (query2, targets) => {
-        return targets.reduce((prev, target) => {
-          if (prev) return prev;
-          if (query2[target] === void 0) return `Error: Attribute "${target}" is missing`;
-          return prev;
-        }, void 0);
-      };
+    }, L = async (l, t, c, i) => {
+      let o;
+      const r = (a, e) => e.reduce((n, s) => n || (a[s] === void 0 ? `Error: Attribute "${s}" is missing` : n), void 0);
       try {
-        switch (apiName) {
+        switch (l) {
           case "ping":
-            retVal = "Implemented";
+            o = "Implemented";
             break;
           case "info":
-            retVal = checkAttributes(query, ["mapID"]);
-            if (!retVal) {
-              const db = await getDB("Weiwudi", "mapSetting", "mapID");
-              const setting = await getItem(db, "mapSetting", query.mapID);
-              if (!setting) retVal = `Error: MapID "${query.mapID}" not found`;
-              else {
-                retVal = new Response(JSON.stringify(setting), {
-                  headers: new Headers({
-                    "content-type": "application/json"
-                  })
-                });
-              }
+            if (o = r(t, ["mapID"]), !o) {
+              const a = await w("Weiwudi", "mapSetting", "mapID"), e = await M(a, "mapSetting", t.mapID);
+              e ? o = new Response(JSON.stringify(e), {
+                headers: new Headers({
+                  "content-type": "application/json"
+                })
+              }) : o = `Error: MapID "${t.mapID}" not found`;
             }
             break;
           case "add": {
-            const db = await getDB("Weiwudi", "mapSetting", "mapID");
-            retVal = checkAttributes(query, ["mapID", "type", "url"]);
-            if (!retVal) {
-              query.tileSize = parseInt(query.tileSize || 256);
-              switch (query.type) {
+            const a = await w("Weiwudi", "mapSetting", "mapID");
+            if (o = r(t, ["mapID", "type", "url"]), !o)
+              switch (t.tileSize = parseInt(t.tileSize || 256), t.type) {
                 case "xyz":
-                  retVal = checkAttributes(query, ["width", "height"]);
-                  if (!retVal) {
-                    query.width = parseInt(query.width);
-                    query.height = parseInt(query.height);
-                    const calcZoom = (v) => {
-                      return Math.ceil(Math.log(v / query.tileSize) / Math.log(2));
-                    };
-                    query.maxZoom = Math.max(calcZoom(query.width), calcZoom(query.height));
-                    query.minZoom = query.minZoom ? parseInt(query.minZoom) : 0;
-                    query.minX = 0;
-                    query.minY = 0;
-                    query.maxX = Math.ceil(query.width / query.tileSize) - 1;
-                    query.maxY = Math.ceil(query.height / query.tileSize) - 1;
+                  if (o = r(t, ["width", "height"]), !o) {
+                    t.width = parseInt(t.width), t.height = parseInt(t.height);
+                    const e = (n) => Math.ceil(Math.log(n / t.tileSize) / Math.log(2));
+                    t.maxZoom = Math.max(e(t.width), e(t.height)), t.minZoom = t.minZoom ? parseInt(t.minZoom) : 0, t.minX = 0, t.minY = 0, t.maxX = Math.ceil(t.width / t.tileSize) - 1, t.maxY = Math.ceil(t.height / t.tileSize) - 1;
                   }
                   break;
                 case "wmts":
-                  if (!retVal) {
-                    const lng2MercX = (lng) => {
-                      return 6378137 * lng * Math.PI / 180;
-                    };
-                    const lat2MercY = (lat) => {
-                      return 6378137 * Math.log(Math.tan(Math.PI / 360 * (90 + lat)));
-                    };
-                    if (query.maxZoom) query.maxZoom = parseInt(query.maxZoom);
-                    if (query.minZoom) query.minZoom = parseInt(query.minZoom);
-                    if (query.maxLng && query.minLng && query.maxLat && query.minLat) {
-                      query.maxLng = parseFloat(query.maxLng);
-                      query.minLng = parseFloat(query.minLng);
-                      query.maxLat = parseFloat(query.maxLat);
-                      query.minLat = parseFloat(query.minLat);
-                      const maxMercX = lng2MercX(query.maxLng);
-                      const minMercX = lng2MercX(query.minLng);
-                      const maxMercY = lat2MercY(query.maxLat);
-                      const minMercY = lat2MercY(query.minLat);
-                      query.minX = Math.floor((MERC_MAX + minMercX) / (2 * MERC_MAX) * Math.pow(2, query.maxZoom));
-                      query.maxX = Math.floor((MERC_MAX + maxMercX) / (2 * MERC_MAX) * Math.pow(2, query.maxZoom));
-                      query.minY = Math.floor((MERC_MAX - maxMercY) / (2 * MERC_MAX) * Math.pow(2, query.maxZoom));
-                      query.maxY = Math.floor((MERC_MAX - minMercY) / (2 * MERC_MAX) * Math.pow(2, query.maxZoom));
+                  if (!o) {
+                    const e = (s) => 6378137 * s * Math.PI / 180, n = (s) => 6378137 * Math.log(Math.tan(Math.PI / 360 * (90 + s)));
+                    if (t.maxZoom && (t.maxZoom = parseInt(t.maxZoom)), t.minZoom && (t.minZoom = parseInt(t.minZoom)), t.maxLng && t.minLng && t.maxLat && t.minLat) {
+                      t.maxLng = parseFloat(t.maxLng), t.minLng = parseFloat(t.minLng), t.maxLat = parseFloat(t.maxLat), t.minLat = parseFloat(t.minLat);
+                      const s = e(t.maxLng), A = e(t.minLng), h = n(t.maxLat), f = n(t.minLat);
+                      t.minX = Math.floor((I + A) / (2 * I) * Math.pow(2, t.maxZoom)), t.maxX = Math.floor((I + s) / (2 * I) * Math.pow(2, t.maxZoom)), t.minY = Math.floor((I - h) / (2 * I) * Math.pow(2, t.maxZoom)), t.maxY = Math.floor((I - f) / (2 * I) * Math.pow(2, t.maxZoom));
                     }
                   }
                   break;
                 default:
-                  retVal = 'Error: Unknown "type" value';
+                  o = 'Error: Unknown "type" value';
               }
-            }
-            if (!retVal) {
-              if (!checkAttributes(query, ["maxX", "minX", "maxY", "minY", "minZoom", "maxZoom"])) {
-                query.totalTile = 0;
-                const calcTileCoord = (atMaxZoom, zoom) => {
-                  return Math.floor(atMaxZoom / Math.pow(2, query.maxZoom - zoom));
-                };
-                for (let z = query.minZoom; z <= query.maxZoom; z++) {
-                  const minX = calcTileCoord(query.minX, z);
-                  const minY = calcTileCoord(query.minY, z);
-                  const maxX = calcTileCoord(query.maxX, z);
-                  const maxY = calcTileCoord(query.maxY, z);
-                  query.totalTile += (maxX - minX + 1) * (maxY - minY + 1);
+            if (!o) {
+              if (!r(t, ["maxX", "minX", "maxY", "minY", "minZoom", "maxZoom"])) {
+                t.totalTile = 0;
+                const e = (n, s) => Math.floor(n / Math.pow(2, t.maxZoom - s));
+                for (let n = t.minZoom; n <= t.maxZoom; n++) {
+                  const s = e(t.minX, n), A = e(t.minY, n), h = e(t.maxX, n), f = e(t.maxY, n);
+                  t.totalTile += (h - s + 1) * (f - A + 1);
                 }
               }
-              await putItem(db, "mapSetting", query);
-              await getDB(`Weiwudi_${query.mapID}`, "tileCache", "z_x_y");
-              retVal = new Response(JSON.stringify(query), {
+              await Z(a, "mapSetting", t), await w(`Weiwudi_${t.mapID}`, "tileCache", "z_x_y"), o = new Response(JSON.stringify(t), {
                 headers: new Headers({
                   "content-type": "application/json"
                 })
@@ -3453,49 +3265,32 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
             break;
           }
           case "clean":
-            retVal = checkAttributes(query, ["mapID"]);
-            if (fetchAllBlocker && fetchAllBlocker.mapID == query.mapID) {
-              retVal = `Error: ${query.mapID} is under fetching process. Please cancel it first`;
-            } else if (!retVal) {
-              const cacheDB = await getDB(`Weiwudi_${query.mapID}`);
-              await cleanDB(cacheDB, "tileCache");
-              retVal = `Cleaned: ${query.mapID}`;
+            if (o = r(t, ["mapID"]), m && m.mapID == t.mapID)
+              o = `Error: ${t.mapID} is under fetching process. Please cancel it first`;
+            else if (!o) {
+              const a = await w(`Weiwudi_${t.mapID}`);
+              await X(a, "tileCache"), o = `Cleaned: ${t.mapID}`;
             }
             break;
           case "delete":
-            retVal = checkAttributes(query, ["mapID"]);
-            if (fetchAllBlocker && fetchAllBlocker.mapID == query.mapID) {
-              retVal = `Error: ${query.mapID} is under fetching process. Please cancel it first`;
-            } else if (!retVal) {
-              await deleteDB2(`Weiwudi_${query.mapID}`);
-              const db = await getDB("Weiwudi");
-              await deleteItem(db, "mapSetting", query.mapID);
-              retVal = `Deleted: ${query.mapID}`;
+            if (o = r(t, ["mapID"]), m && m.mapID == t.mapID)
+              o = `Error: ${t.mapID} is under fetching process. Please cancel it first`;
+            else if (!o) {
+              await R(`Weiwudi_${t.mapID}`);
+              const a = await w("Weiwudi");
+              await Y(a, "mapSetting", t.mapID), o = `Deleted: ${t.mapID}`;
             }
             break;
           case "cancel":
-            retVal = checkAttributes(query, ["mapID"]);
-            if (fetchAllBlocker && fetchAllBlocker.mapID == query.mapID) {
-              fetchAllBlocker.cancel = true;
-              retVal = `Fetching process of ${fetchAllBlocker.mapID} is canceled`;
-            } else {
-              retVal = `Error: There are no fetching process of ${query.mapID}`;
-            }
+            o = r(t, ["mapID"]), m && m.mapID == t.mapID ? (m.cancel = true, o = `Fetching process of ${m.mapID} is canceled`) : o = `Error: There are no fetching process of ${t.mapID}`;
             break;
           case "stats":
-            retVal = checkAttributes(query, ["mapID"]);
-            if (!retVal) {
-              const db = await getDB("Weiwudi");
-              const setting = await getItem(db, "mapSetting", query.mapID);
-              if (!setting) retVal = `Error: MapID "${query.mapID}" not found`;
+            if (o = r(t, ["mapID"]), !o) {
+              const a = await w("Weiwudi"), e = await M(a, "mapSetting", t.mapID);
+              if (!e) o = `Error: MapID "${t.mapID}" not found`;
               else {
-                const cacheDB = await getDB(`Weiwudi_${query.mapID}`);
-                const ret = await countDB(cacheDB, "tileCache");
-                if (setting.totalTile) {
-                  ret.total = setting.totalTile;
-                  ret.percent = Math.floor(ret.count / ret.total * 100);
-                }
-                retVal = new Response(JSON.stringify(ret), {
+                const n = await w(`Weiwudi_${t.mapID}`), s = await B(n, "tileCache");
+                e.totalTile && (s.total = e.totalTile, s.percent = Math.floor(s.count / s.total * 100)), o = new Response(JSON.stringify(s), {
                   headers: new Headers({
                     "content-type": "application/json"
                   })
@@ -3504,52 +3299,36 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
             }
             break;
           case "cache": {
-            const matched = restPath.match(/^([^/]+)\/(\d+)\/(\d+)\/(\d+)$/);
-            if (matched) {
-              retVal = await getImage(matched[1], parseInt(matched[2]), parseInt(matched[3]), parseInt(matched[4]));
-            } else {
-              retVal = 'Error: "cache" api needs mapID, zoom, x, y settings';
-            }
+            const a = c?.match(/^([^/]+)\/(\d+)\/(\d+)\/(\d+)$/);
+            a ? o = await E(a[1], parseInt(a[2]), parseInt(a[3]), parseInt(a[4])) : o = 'Error: "cache" api needs mapID, zoom, x, y settings';
             break;
           }
           case "fetchAll":
-            retVal = checkAttributes(query, ["mapID"]);
-            if (!retVal) {
-              const db = await getDB("Weiwudi");
-              const setting = await getItem(db, "mapSetting", query.mapID);
-              if (!setting) retVal = `Error: MapID "${query.mapID}" not found`;
-              else if (!setting.totalTile) retVal = `Error: Map "${query.mapID}" cannot fetch all tiles`;
-              else if (fetchAllBlocker) {
-                retVal = `Error: Another fetching process is running: "${fetchAllBlocker.mapID}" (${fetchAllBlocker.count} / ${fetchAllBlocker.total})`;
-              } else {
-                setTimeout(() => {
-                  fetchAllBlocker = {
-                    mapID: query.mapID,
-                    total: setting.totalTile,
-                    count: 0,
-                    error: 0
-                  };
-                  fetchAll(client, setting);
-                }, 1);
-                retVal = `Fetching task start: ${query.mapID}`;
-              }
+            if (o = r(t, ["mapID"]), !o && i) {
+              const a = await w("Weiwudi"), e = await M(a, "mapSetting", t.mapID);
+              e ? e.totalTile ? m ? o = `Error: Another fetching process is running: "${m.mapID}" (${m.count} / ${m.total})` : (setTimeout(() => {
+                m = {
+                  mapID: t.mapID,
+                  total: e.totalTile || 0,
+                  count: 0,
+                  error: 0
+                }, P(i, e);
+              }, 1), o = `Fetching task start: ${t.mapID}`) : o = `Error: Map "${t.mapID}" cannot fetch all tiles` : o = `Error: MapID "${t.mapID}" not found`;
             }
             break;
           default:
-            retVal = `Error: API ${apiName} not found`;
+            o = `Error: API ${l} not found`;
         }
-      } catch (e) {
-        retVal = `Error: ${e}`;
+      } catch (a) {
+        o = `Error: ${a}`;
       }
-      if (retVal) return retVal;
+      if (o) return o;
     };
-    registerRoute2(/^https?:\/\/weiwudi.example.com/, handlerCb, "GET");
+    _2(/^https?:\/\/weiwudi.example.com/, F, "GET");
   }
+  v(registerRoute);
 
-  // node_modules/.pnpm/weiwudi@https+++codeload.gi_55d4fb482ff8f4049848277d786c1762/node_modules/weiwudi/src/weiwudi_gw.js
-  Weiwudi_Internal(registerRoute);
-
-  // src/service-worker.js
+  // src/service-worker/index.ts
   skipWaiting();
   clientsClaim();
   precacheAndRoute(define_self_WB_MANIFEST_default, {});

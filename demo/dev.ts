@@ -1,4 +1,8 @@
-import { MaplatUi } from './index';
+import { MaplatUi } from '../src/index';
+// Import styles - Vite will process these automatically
+import '../less/maplat-specific.less';
+import '../less/contextmenu.css';
+import '../less/swiper4.css';
 
 // @ts-ignore
 const mapboxgl = window.mapboxgl;

@@ -6410,15 +6410,6 @@ class Tp extends Sp {
 }
 const Qe = "https://weiwudi.example.com/api/";
 let Zi, Dt;
-(function() {
-  if (typeof window.CustomEvent == "function") return !1;
-  function t(e, n) {
-    n = n || { bubbles: !1, cancelable: !1, detail: void 0 };
-    var i = document.createEvent("CustomEvent");
-    return i.initCustomEvent(e, n.bubbles, n.cancelable, n.detail), i;
-  }
-  t.prototype = window.Event.prototype, window.CustomEvent = t;
-})();
 class zp {
   constructor() {
     this.listeners = {};
@@ -6472,28 +6463,28 @@ class Ue extends zp {
   }
   static async registerMap(e, n) {
     if (!await Ue.swCheck()) throw "Weiwudi service worker is not implemented.";
-    let r;
-    const s = ["type", "url", "width", "height", "tileSize", "minZoom", "maxZoom", "maxLng", "maxLat", "minLng", "minLat"].reduce((l, c) => (typeof n[c] < "u" && (n[c] instanceof Array ? n[c].map((d) => {
-      l.append(c, d);
-    }) : l.append(c, n[c])), l), new URLSearchParams());
-    s.append("mapID", e);
-    const a = new URL(`${Qe}add`);
-    if (a.search = s, r = await (await fetch(a.href)).text(), r.match(/^Error: /))
-      throw r;
-    return new Ue(e, JSON.parse(r));
+    let i;
+    const r = ["type", "url", "width", "height", "tileSize", "minZoom", "maxZoom", "maxLng", "maxLat", "minLng", "minLat"].reduce((a, o) => (typeof n[o] < "u" && (n[o] instanceof Array ? n[o].map((l) => {
+      a.append(o, l);
+    }) : a.append(o, String(n[o]))), a), new URLSearchParams());
+    r.append("mapID", e);
+    const s = new URL(`${Qe}add`);
+    if (s.search = r.toString(), i = await (await fetch(s.href)).text(), i.match(/^Error: /))
+      throw i;
+    return new Ue(e, JSON.parse(i));
   }
   static async retrieveMap(e) {
     if (!await Ue.swCheck()) throw "Weiwudi service worker is not implemented.";
-    let i;
-    if (i = await (await fetch(`${Qe}info?mapID=${e}`)).text(), i.match(/^Error: /))
-      throw i;
-    return console.log(i), new Ue(e, JSON.parse(i));
+    let n;
+    if (n = await (await fetch(`${Qe}info?mapID=${e}`)).text(), n.match(/^Error: /))
+      throw n;
+    return console.log(n), new Ue(e, JSON.parse(n));
   }
   static async removeMap(e) {
     if (!await Ue.swCheck()) throw "Weiwudi service worker is not implemented.";
-    let i;
-    if (i = await (await fetch(`${Qe}delete?mapID=${e}`)).text(), i.match(/^Error: /))
-      throw i;
+    let n;
+    if (n = await (await fetch(`${Qe}delete?mapID=${e}`)).text(), n.match(/^Error: /))
+      throw n;
   }
   constructor(e, n) {
     if (super(), !e) throw "MapID is necessary.";
@@ -6524,7 +6515,7 @@ class Ue extends zp {
       throw e;
   }
   async remove() {
-    this.checkAspect(), await Ue.removeMap(this.mapID), this.release();
+    this.checkAspect(), this.mapID && await Ue.removeMap(this.mapID), this.release();
   }
   async cancel() {
     let e;

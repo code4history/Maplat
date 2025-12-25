@@ -29,6 +29,44 @@ Please use [MaplatEditor](https://github.com/code4history/MaplatEditor/) for dat
 
 データの作成には[MaplatEditor](https://github.com/code4history/MaplatEditor/)を利用してください。
 
+# Development
+
+## Prerequisites
+- Node.js 20 or 22
+- pnpm 9.0.0 or higher
+
+## Build Commands
+
+This project supports separate builds for the npm package and the demo application:
+
+### Development
+```bash
+pnpm dev          # Start development server with hot reload
+```
+The dev server will be accessible at `http://localhost:5173/`
+
+### Building
+
+```bash
+pnpm build              # Build the npm package (output: dist/)
+pnpm build:demo         # Build the demo app (output: dist-demo/)
+```
+
+**Build outputs:**
+- **`dist/`** - npm package files (ES/UMD modules, TypeScript definitions, locales)
+- **`dist-demo/`** - Demo application for GitHub Pages deployment
+
+### Testing & Quality
+```bash
+pnpm test         # Run tests
+pnpm typecheck    # Run TypeScript type checking
+pnpm lint         # Run linter and formatter
+```
+
+## CI/CD
+The project uses GitHub Actions for automated testing:
+- **All branches**: Runs tests, linting, type checking, and builds on Node 20 & 22
+
 # Latest result
 Latest result is shown below:
 * https://s.maplat.jp/r/naramap/ (Maplat Nara)
