@@ -296,27 +296,27 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
           <p><img src="" height="0px" width="0px"></p>
         </d> 
 
-        <div class="modal_share_content">
+        <d c="modal_share_content">
           <h4 din="html.share_app_title"></h4>
-          <div id="___maplat_app_toast_${ui.html_id_seed}"></div>
-          <div class="recipient row">
-            <div class="form-group col-xs-4 text-center"><button title="Copy to clipboard" class="share btn btn-light" data="cp_app"><svg style="width:14px;height:14px;vertical-align:text-bottom;" viewBox="0 0 512 512"><path fill="currentColor" d="M224 0c-35.3 0-64 28.7-64 64V96H96c-35.3 0-64 28.7-64 64V448c0 35.3 28.7 64 64 64H288c35.3 0 64-28.7 64-64V384h64c35.3 0 64-28.7 64-64V64c0-35.3-28.7-64-64-64H224zM288 384H96V160H224c0-17.7 14.3-32 32-32h64V256c0 17.7 14.3 32 32 32h96V384H288z"/></svg>&nbsp;<small din="html.share_copy"></small></button></div>
-            <div class="form-group col-xs-4 text-center"><button title="Twitter" class="share btn btn-light" data="tw_app"><svg style="width:14px;height:14px;vertical-align:text-bottom;" viewBox="0 0 512 512"><path fill="currentColor" d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"/></svg>&nbsp;<small>Twitter</small></button></div>
-            <div class="form-group col-xs-4 text-center"><button title="Facebook" class="share btn btn-light" data="fb_app"><svg style="width:14px;height:14px;vertical-align:text-bottom;" viewBox="0 0 512 512"><path fill="currentColor" d="M504 256C504 119 393 8 256 8S8 119 8 256c0 121.3 87.1 222.4 203 240.5V327.9h-61v-71.9h61V203c0-60.8 35.8-93.7 89.2-93.7 25.5 0 50.4 1.8 56.1 2.6v62.4h-35.4c-29.5 0-37.4 18.2-37.4 42.1v59.6h68.9l-11 71.9h-57.9V496.5C416.9 478.4 504 377.3 504 256z"/></svg>&nbsp;<small>Facebook</small></button></div>
-          </div>
-          <div class="qr_app center-block" style="width:128px;"></div>
-          <div class="modal_share_state">
+          <d id="___maplat_app_toast_${ui.html_id_seed}"></d>
+          <d c="recipient row">
+            <d c="form-group col-xs-4 text-center"><button title="Copy to clipboard" class="share btn btn-light" data="cp_app"><svg style="width:14px;height:14px;vertical-align:text-bottom;" viewBox="0 0 512 512"><path fill="currentColor" d="M224 0c-35.3 0-64 28.7-64 64V96H96c-35.3 0-64 28.7-64 64V448c0 35.3 28.7 64 64 64H288c35.3 0 64-28.7 64-64V384h64c35.3 0 64-28.7 64-64V64c0-35.3-28.7-64-64-64H224zM288 384H96V160H224c0-17.7 14.3-32 32-32h64V256c0 17.7 14.3 32 32 32h96V384H288z"/></svg>&nbsp;<small din="html.share_copy"></small></button></d>
+            <d c="form-group col-xs-4 text-center"><button title="Twitter" class="share btn btn-light" data="tw_app"><svg style="width:14px;height:14px;vertical-align:text-bottom;" viewBox="0 0 512 512"><path fill="currentColor" d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"/></svg>&nbsp;<small>Twitter</small></button></d>
+            <d c="form-group col-xs-4 text-center"><button title="Facebook" class="share btn btn-light" data="fb_app"><svg style="width:14px;height:14px;vertical-align:text-bottom;" viewBox="0 0 512 512"><path fill="currentColor" d="M504 256C504 119 393 8 256 8S8 119 8 256c0 121.3 87.1 222.4 203 240.5V327.9h-61v-71.9h61V203c0-60.8 35.8-93.7 89.2-93.7 25.5 0 50.4 1.8 56.1 2.6v62.4h-35.4c-29.5 0-37.4 18.2-37.4 42.1v59.6h68.9l-11 71.9h-57.9V496.5C416.9 478.4 504 377.3 504 256z"/></svg>&nbsp;<small>Facebook</small></button></d>
+          </d>
+          <d c="qr_app center-block" style="width:128px;"></d>
+          <d c="modal_share_state">
             <h4 din="html.share_state_title"></h4>
-            <div id="___maplat_view_toast_${ui.html_id_seed}"></div>
-            <div class="recipient row">
-              <div class="form-group col-xs-4 text-center"><button title="Copy to clipboard" class="share btn btn-light" data="cp_view"><svg style="width:14px;height:14px;vertical-align:text-bottom;" viewBox="0 0 512 512"><path fill="currentColor" d="M224 0c-35.3 0-64 28.7-64 64V96H96c-35.3 0-64 28.7-64 64V448c0 35.3 28.7 64 64 64H288c35.3 0 64-28.7 64-64V384h64c35.3 0 64-28.7 64-64V64c0-35.3-28.7-64-64-64H224zM288 384H96V160H224c0-17.7 14.3-32 32-32h64V256c0 17.7 14.3 32 32 32h96V384H288z"/></svg>&nbsp;<small din="html.share_copy"></small></button></div>
-              <div class="form-group col-xs-4 text-center"><button title="Twitter" class="share btn btn-light" data="tw_view"><svg style="width:14px;height:14px;vertical-align:text-bottom;" viewBox="0 0 512 512"><path fill="currentColor" d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"/></svg>&nbsp;<small>Twitter</small></button></div>
-              <div class="form-group col-xs-4 text-center"><button title="Facebook" class="share btn btn-light" data="fb_view"><svg style="width:14px;height:14px;vertical-align:text-bottom;" viewBox="0 0 512 512"><path fill="currentColor" d="M504 256C504 119 393 8 256 8S8 119 8 256c0 121.3 87.1 222.4 203 240.5V327.9h-61v-71.9h61V203c0-60.8 35.8-93.7 89.2-93.7 25.5 0 50.4 1.8 56.1 2.6v62.4h-35.4c-29.5 0-37.4 18.2-37.4 42.1v59.6h68.9l-11 71.9h-57.9V496.5C416.9 478.4 504 377.3 504 256z"/></svg>&nbsp;<small>Facebook</small></button></div>
-            </div>
-            <div class="qr_view center-block" style="width:128px;"></div>
-          </div>
+            <d id="___maplat_view_toast_${ui.html_id_seed}"></d>
+            <d c="recipient row">
+              <d c="form-group col-xs-4 text-center"><button title="Copy to clipboard" c="share btn btn-light" data="cp_view"><svg style="width:14px;height:14px;vertical-align:text-bottom;" viewBox="0 0 512 512"><path fill="currentColor" d="M224 0c-35.3 0-64 28.7-64 64V96H96c-35.3 0-64 28.7-64 64V448c0 35.3 28.7 64 64 64H288c35.3 0 64-28.7 64-64V384h64c35.3 0 64-28.7 64-64V64c0-35.3-28.7-64-64-64H224zM288 384H96V160H224c0-17.7 14.3-32 32-32h64V256c0 17.7 14.3 32 32 32h96V384H288z"/></svg>&nbsp;<small din="html.share_copy"></small></button></d>
+              <d c="form-group col-xs-4 text-center"><button title="Twitter" c="share btn btn-light" data="tw_view"><svg style="width:14px;height:14px;vertical-align:text-bottom;" viewBox="0 0 512 512"><path fill="currentColor" d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"/></svg>&nbsp;<small>Twitter</small></button></d>
+              <d c="form-group col-xs-4 text-center"><button title="Facebook" c="share btn btn-light" data="fb_view"><svg style="width:14px;height:14px;vertical-align:text-bottom;" viewBox="0 0 512 512"><path fill="currentColor" d="M504 256C504 119 393 8 256 8S8 119 8 256c0 121.3 87.1 222.4 203 240.5V327.9h-61v-71.9h61V203c0-60.8 35.8-93.7 89.2-93.7 25.5 0 50.4 1.8 56.1 2.6v62.4h-35.4c-29.5 0-37.4 18.2-37.4 42.1v59.6h68.9l-11 71.9h-57.9V496.5C416.9 478.4 504 377.3 504 256z"/></svg>&nbsp;<small>Facebook</small></button></d>
+            </d>
+            <d c="qr_view center-block" style="width:128px;"></d>
+          </d>
           <p><img src="" height="0px" width="0px"></p>
-        </div>
+        </d>
 
         <d c="modal_map_content">
             ${META_KEYS.map(key => {
