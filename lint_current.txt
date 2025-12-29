@@ -1,1 +1,0 @@
-/mnt/c/Users/kochi/AppData/Local/Volta/bin/pnpm: line 2: volta: command not found
