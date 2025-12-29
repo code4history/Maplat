@@ -54,8 +54,9 @@
     "pnpm": ">=9.0.0"
   },
   "dependencies": {
+    "@c4h/chuci": "0.2.4",
     "@c4h/weiwudi": "^0.2.0",
-    "@maplat/core": "github:code4history/MaplatCore#5e2072f",
+    "@maplat/core": "0.12.0",
     "@maplat/transform": "^0.4.0",
     "@turf/turf": "^7.3.1",
     "@types/page": "^1.11.9",

@@ -1,19 +1,37 @@
 import { createElement } from "@maplat/core";
 import * as bsn from "bootstrap.native";
-import { Swiper } from "./swiper_ex";
+// import { Swiper } from "./swiper_ex";
+import "@c4h/chuci";
 import { point, polygon, booleanPointInPolygon } from "@turf/turf";
 import { resolveRelativeLink } from "./ui_utils";
+
+function detectMediaType(src: string): string {
+  if (src.includes("youtube.com") || src.includes("youtu.be")) {
+    return "youtube";
+  }
+  const ext = src.split(".").pop()?.toLowerCase();
+  switch (ext) {
+    case "mp4":
+    case "webm":
+      return "video";
+    case "obj":
+      return "3dmodel";
+    case "splat":
+    case "ply":
+      return "gaussian";
+    default:
+      return "image";
+  }
+}
 import type { MaplatUi } from "./index";
-import type { MarkerData, SwiperInstance } from "./types";
+import type { MarkerData, MediaSetting, MediaObject } from "./types";
 
 export function poiWebControl(
   ui: MaplatUi,
   div: HTMLElement,
   data: MarkerData
 ) {
-  let imgShowFunc: ((_event?: Event) => void) | undefined;
-  let imgHideFunc: (() => void) | undefined;
-  let poiSwiper: SwiperInstance | undefined;
+  // let poiSwiper: SwiperInstance | undefined;
   div.innerHTML = "";
 
   if (data.url || data.html) {
@@ -54,82 +72,81 @@ export function poiWebControl(
       iframe.setAttribute("src", ui.core!.translate(data.url) || "");
     }
   } else {
+    const slides: string[] = [];
+    const mediaList = (data.media || data.image) as MediaSetting[] | undefined;
+
+    if (mediaList) {
+      const inputs = Array.isArray(mediaList) ? mediaList : [mediaList];
+
+      inputs.forEach((item: MediaSetting) => {
+        let mediaObj: MediaObject;
+        if (typeof item === "string") {
+          mediaObj = {
+            src: item,
+            type: detectMediaType(item)
+          };
+        } else {
+          mediaObj = { ...item }; // Clone to avoid mutation if needed
+          if (!mediaObj.type) {
+            mediaObj.type = detectMediaType(mediaObj.src);
+          }
+          // desc compatibility for caption
+          if (mediaObj.desc && !mediaObj.caption) {
+            mediaObj.caption = mediaObj.desc;
+          }
+        }
+
+        const tmpSrc = resolveRelativeLink(mediaObj.src, "img"); // Assume 'img' type resolve works for most media assets or general path
+
+        let slideAttrs = `image-url="${tmpSrc}" image-type="${mediaObj.type}"`;
+
+        if (mediaObj.thumbnail) {
+          slideAttrs += ` thumbnail-url="${resolveRelativeLink(mediaObj.thumbnail, "img")}"`;
+        } else {
+          // Default thumbnail to src for images, but for others (video etc) this might fail if no explicit thumb provided.
+          // Legacy behavior was image-only so src was thumb.
+          // For non-image types without thumbnail, Chuci might handle or show placeholder.
+          // Let's use src as thumb for images or if nothing else.
+          if (mediaObj.type === "image") {
+            slideAttrs += ` thumbnail-url="${tmpSrc}"`;
+          }
+        }
+
+        // Map other attributes
+        Object.keys(mediaObj).forEach(key => {
+          if (["src", "type", "thumbnail", "desc"].includes(key)) return;
+          const val = mediaObj[key];
+          if (typeof val === "boolean") {
+            if (val) slideAttrs += ` ${key}`;
+          } else if (val !== undefined && val !== null) {
+            slideAttrs += ` ${key}="${val}"`;
+          }
+        });
+
+        slides.push(`<cc-swiper-slide ${slideAttrs}></cc-swiper-slide>`);
+      });
+    }
+    // Logic for noimage skipped/simplified as requested in previous interactions
+
     const htmlDiv = createElement(`<div class="poi_data">
-    <div class="col-xs-12 swiper-container poi_img_swiper">
-      <div class="swiper-wrapper"></div>
-      <div class="swiper-pagination poi-pagination"></div>
-      <div class="swiper-button-next poi-img-next"></div>
-      <div class="swiper-button-prev poi-img-prev"></div>
+    <div class="col-xs-12 poi_img_swiper">
+      <cc-swiper>${slides.join("")}</cc-swiper>
     </div>
     <p class="recipient poi_address"></p>
     <p class="recipient poi_desc"></p>
     </div>`)[0] as HTMLElement;
     div.appendChild(htmlDiv);
 
-    const slides: string[] = [];
-    if (data.image && data.image !== "") {
-      const images = Array.isArray(data.image) ? data.image : [data.image];
-      images.forEach((image: string | { src: string; desc?: string }) => {
-        if (typeof image === "string") {
-          image = { src: image };
-        }
-        const tmpImg = resolveRelativeLink(image.src, "img");
-        let slide = `<a target="_blank" href="${tmpImg}"><img src="${tmpImg}"></a>`;
-        if (image.desc) slide = `${slide}<div>${image.desc}</div>`;
-        slides.push(`<div class="swiper-slide">${slide}</div>`);
-      });
+    // Inject custom CSS for Swiper if not exists (global check)
+    if (!document.getElementById("poi-swiper-style")) {
+      const style = document.createElement("style");
+      style.id = "poi-swiper-style";
+      style.innerHTML = `
+            cc-swiper { --cc-slider-theme-color: #007aff; --cc-slider-navigation-color: #007aff; height: 300px; }
+            cc-viewer { --cc-viewer-z-index: 100000; }
+          `;
+      document.head.appendChild(style);
     }
-    // Logic for noimage skipped/simplified as requested in previous interactions
-
-    imgShowFunc = (_event?: Event) => {
-      const swiperDiv = htmlDiv.querySelector(
-        ".swiper-container.poi_img_swiper"
-      ) as HTMLElement;
-      if (slides.length === 0) {
-        swiperDiv.classList.add("hide");
-      } else {
-        swiperDiv.classList.remove("hide");
-
-        // Ensure unique classes for multiple swipers if needed, but scoping to div helps
-        // Actually legacy uses new Swiper(swiperDiv...) so element reference is fine
-
-        // Inject custom CSS for Swiper if not exists (global check)
-        if (!document.getElementById("poi-swiper-style")) {
-          const style = document.createElement("style");
-          style.id = "poi-swiper-style";
-          style.innerHTML = `
-                .poi_img_swiper { --swiper-theme-color: #007aff; }
-                .poi_img_swiper .swiper-button-next, .poi_img_swiper .swiper-button-prev { color: #007aff !important; }
-                .poi_img_swiper .swiper-button-disabled { opacity: 0.35 !important; filter: blur(2px) !important; color: #007aff !important; pointer-events: none; }
-                .poi_img_swiper .swiper-pagination-bullet { background: #007aff !important; opacity: 0.4 !important; filter: blur(1px); }
-                .poi_img_swiper .swiper-pagination-bullet-active { opacity: 1 !important; filter: none !important; }
-              `;
-          document.head.appendChild(style);
-        }
-
-        poiSwiper = new Swiper(swiperDiv, {
-          lazy: true,
-          pagination: {
-            el: htmlDiv.querySelector(".poi-pagination") as HTMLElement,
-            clickable: true
-          },
-          navigation: {
-            nextEl: htmlDiv.querySelector(".poi-img-next") as HTMLElement,
-            prevEl: htmlDiv.querySelector(".poi-img-prev") as HTMLElement
-          },
-          observer: true,
-          observeParents: true
-        });
-        slides.forEach(slide => poiSwiper!.appendSlide(slide));
-      }
-    };
-
-    imgHideFunc = () => {
-      if (poiSwiper) {
-        poiSwiper.destroy(true, true);
-        poiSwiper = undefined;
-      }
-    };
 
     (htmlDiv.querySelector(".poi_address") as HTMLElement).innerText =
       ui.core!.translate(data.address) || "";
@@ -138,7 +155,7 @@ export function poiWebControl(
     ).replace(/\n/g, "<br>");
   }
 
-  return imgShowFunc ? [imgShowFunc, imgHideFunc] : undefined;
+  return undefined;
 }
 
 export function handleMarkerAction(ui: MaplatUi, data: MarkerData) {
@@ -194,32 +211,14 @@ export function handleMarkerAction(ui: MaplatUi, data: MarkerData) {
     }
   }
 
-  const poiImgFunc = poiWebControl(ui, poiWebDiv as HTMLElement, data);
+  poiWebControl(ui, poiWebDiv as HTMLElement, data);
 
-  if (poiImgFunc) {
-    const poiImgShow = poiImgFunc[0],
-      poiImgHide = poiImgFunc[1];
-    const poiImgShowWrap = () => {
-      modalElm.removeEventListener("shown.bs.modal", poiImgShowWrap, false);
-      if (poiImgShow) poiImgShow();
-    };
-    modalElm.addEventListener("shown.bs.modal", poiImgShowWrap, false);
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const hiddenFunc = (_event: any) => {
-      modalElm.removeEventListener("hidden.bs.modal", hiddenFunc, false);
-      if (poiImgHide) poiImgHide();
-      ui.core!.unselectMarker();
-    };
-    modalElm.addEventListener("hidden.bs.modal", hiddenFunc, false);
-  } else {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const hiddenFunc = (_event: any) => {
-      modalElm.removeEventListener("hidden.bs.modal", hiddenFunc, false);
-      ui.core!.unselectMarker();
-    };
-    modalElm.addEventListener("hidden.bs.modal", hiddenFunc, false);
-  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const hiddenFunc = (_event: any) => {
+    modalElm.removeEventListener("hidden.bs.modal", hiddenFunc, false);
+    ui.core!.unselectMarker();
+  };
+  modalElm.addEventListener("hidden.bs.modal", hiddenFunc, false);
 
   ui.core!.selectMarker(data.namespaceID);
   ui.modalSetting("poi");

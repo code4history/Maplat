@@ -985,25 +985,19 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
                 `<div class="list_poicontent_div"></div>`
               )[0] as HTMLElement;
 
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              let poiImgHide: any;
+              // let poiImgHide: any;
 
               poiLi.addEventListener("click", () => {
                 if (!poiContentDiv.classList.contains("open")) {
                   poiContentDiv.classList.add("open");
 
-                  const funcs = poiWebControl(ui, poiContentDiv, poi);
-                  if (funcs) {
-                    const [showFunc, hideFunc] = funcs;
-                    poiImgHide = hideFunc;
-                    if (showFunc) showFunc();
-                  }
+                  poiWebControl(ui, poiContentDiv, poi);
 
                   ui.core!.selectMarker?.(poi.namespaceID);
                 } else {
                   poiContentDiv.classList.remove("open");
 
-                  if (poiImgHide) poiImgHide();
+                  // if (poiImgHide) poiImgHide();
                   poiContentDiv.innerHTML = "";
                   ui.core!.unselectMarker?.();
                 }
