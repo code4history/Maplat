@@ -1,5 +1,5 @@
 import { MaplatApp as Core, createElement } from "@maplat/core";
-import * as bsn from "bootstrap.native";
+
 import pointer from "./pointer_images";
 import { Swiper } from "./swiper_ex";
 import { Navigation, Pagination } from "swiper";
@@ -88,12 +88,6 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
     ui.setShowBorder(false);
   }
 
-  const enableSplash = !ui.core!.initialRestore.mapID;
-  const restoreTransparency =
-    ui.core!.initialRestore.transparency ||
-    (appOption.restore ? appOption.restore.transparency : undefined);
-  const enableOutOfMap = !appOption.presentationMode;
-
   ui.enablePoiHtmlNoScroll = appOption.enablePoiHtmlNoScroll || false;
   if (appOption.enableShare) {
     ui.core!.mapDivDocument!.classList.add("enable_share");
@@ -134,58 +128,387 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
     ui.appEnvelope = true;
   }
 
-  // Inject Custom Toast Styles
-  const style = document.createElement("style");
-  style.innerHTML = `
-      .custom-toast {
-        visibility: hidden;
-        min-width: 250px;
-        margin-left: -125px;
-        background-color: #333;
-        color: #fff;
-        text-align: center;
-        border-radius: 2px;
-        padding: 16px;
-        position: fixed;
-        z-index: 9999;
-        left: 50%;
-        bottom: 30px;
-        font-size: 17px;
-        opacity: 0;
-        transition: opacity 0.3s;
+  initDom(ui, appOption);
+  initModalHandlers(ui, appOption);
+  initMapEventListeners(ui);
+  initGpsHandlers(ui, appOption);
+}
+
+function initGpsHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
+  const enableOutOfMap = !appOption.presentationMode;
+
+  ui.core!.addEventListener("outOfMap", (_evt: unknown) => {
+    console.log("Event: outOfMap");
+    if (enableOutOfMap) {
+      (
+        ui.core!.mapDivDocument!.querySelector(".modal_title") as HTMLElement
+      ).innerText = ui.core!.t("app.out_of_map") || "";
+      (
+        ui.core!.mapDivDocument!.querySelector(
+          ".modal_gpsD_content"
+        ) as HTMLElement
+      ).innerText = ui.core!.t("app.out_of_map_area") || "";
+      const modalElm = ui.core!.mapDivDocument!.querySelector(".modalBase")!;
+      ui.modalSetting("gpsD");
+      prepareModal(modalElm, { root: ui.core!.mapDivDocument! }).show();
+    }
+  });
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ui.core!.addEventListener("gps_error", (evt: any) => {
+    console.log("GPS Error:", evt);
+    const errorMap: Record<string, string> = {
+      user_gps_deny: "app.user_gps_deny",
+      gps_miss: "app.gps_miss",
+      gps_timeout: "app.gps_timeout"
+    };
+
+    if (!ui.core) return;
+    (ui.core.mapDivDocument!.querySelector(
+      ".modal_title"
+    ) as HTMLElement)!.innerText = ui.core.t("app.gps_error") || "";
+    (ui.core.mapDivDocument!.querySelector(
+      ".modal_gpsD_content"
+    ) as HTMLElement)!.innerText =
+      ui.core.t(errorMap[evt.detail] || "app.gps_error") || "";
+    const modalElm = ui.core.mapDivDocument!.querySelector(".modalBase")!;
+    ui.modalSetting("gpsD");
+    prepareModal(modalElm, {
+      root: ui.core.mapDivDocument
+    }).show();
+  });
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ui.core!.addEventListener("gps_result", (evt: any) => {
+    console.log("GPS Result:", evt);
+    if (evt.detail && evt.detail.error) {
+      const error = evt.detail.error;
+      if (error === "gps_off") {
+        ui.lastGPSError = undefined;
+        return;
       }
-      .custom-toast.show {
-        visibility: visible;
-        opacity: 1;
+
+      ui.lastGPSError = error;
+      if (ui.alwaysGpsOn && error === "gps_out") return;
+
+      if (!ui.core) return;
+
+      const modalElm = ui.core.mapDivDocument!.querySelector(".modalBase")!;
+      const modal = prepareModal(modalElm, {
+        root: ui.core.mapDivDocument
+      });
+
+      if (error === "gps_out") {
+        (ui.core.mapDivDocument!.querySelector(
+          ".modal_title"
+        ) as HTMLElement)!.innerText = ui.core.t("app.out_of_map") || "";
+        (ui.core.mapDivDocument!.querySelector(
+          ".modal_gpsD_content"
+        ) as HTMLElement)!.innerText = ui.core.t("app.out_of_map_area") || "";
+      } else {
+        const errorMap: Record<string, string> = {
+          user_gps_deny: "app.user_gps_deny",
+          gps_miss: "app.gps_miss",
+          gps_timeout: "app.gps_timeout"
+        };
+
+        (ui.core.mapDivDocument!.querySelector(
+          ".modal_title"
+        ) as HTMLElement)!.innerText = ui.core.t("app.gps_error") || "";
+        (ui.core.mapDivDocument!.querySelector(
+          ".modal_gpsD_content"
+        ) as HTMLElement)!.innerText =
+          ui.core.t(errorMap[error] || "app.gps_error") || "";
       }
-    `;
-  document.head.appendChild(style);
 
-  let pwaManifest = appOption.pwaManifest;
-  let pwaWorker = appOption.pwaWorker;
-  let pwaScope = appOption.pwaScope;
+      ui.modalSetting("gpsD");
+      modal.show();
+    } else {
+      ui.lastGPSError = undefined;
+    }
+  });
+}
 
-  // Inject FontAwesome CDN for reliable icons (REMOVED)
-  // Icons: Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function initSwipers(ui: MaplatUi, sources: any[]) {
+  const colors = [
+    "maroon",
+    "deeppink",
+    "indigo",
+    "olive",
+    "royalblue",
+    "red",
+    "hotpink",
+    "green",
+    "yellow",
+    "navy",
+    "saddlebrown",
+    "fuchsia",
+    "darkslategray",
+    "yellowgreen",
+    "blue",
+    "mediumvioletred",
+    "purple",
+    "lime",
+    "darkorange",
+    "teal",
+    "crimson",
+    "darkviolet",
+    "darkolivegreen",
+    "steelblue",
+    "aqua"
+  ];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const appBbox: any[] = [];
+  let cIndex = 0;
 
-  // Add UI HTML Element
-  let newElems = createElement(`<d c="ol-control map-title"><s></s></d>
-  <d c="swiper-container ol-control base-swiper prevent-default-ui">
-    <d c="swiper-wrapper"> </d>
-      <d c="swiper-button-next base-next swiper-button-white"> </d>
-        <d c="swiper-button-prev base-prev swiper-button-white"> </d>
-          </d>
-          <d c="swiper-container ol-control overlay-swiper prevent-default-ui">
-            <d c="swiper-wrapper"> </d>
-              <d c="swiper-button-next overlay-next swiper-button-white"> </d>
-                <d c="swiper-button-prev overlay-prev swiper-button-white"> </d>
-                  </d> `);
-  for (let i = newElems.length - 1; i >= 0; i--) {
-    ui.core!.mapDivDocument!.insertBefore(
-      newElems[i],
-      ui.core!.mapDivDocument!.firstChild
+  for (let i = 0; i < sources.length; i++) {
+    const source = sources[i];
+    if (source.envelope) {
+      if (ui.appEnvelope) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        source.envelope.geometry.coordinates[0].map((xy: any) => {
+          if (appBbox.length === 0) {
+            appBbox[0] = appBbox[2] = xy[0];
+            appBbox[1] = appBbox[3] = xy[1];
+          } else {
+            if (xy[0] < appBbox[0]) appBbox[0] = xy[0];
+            if (xy[0] > appBbox[2]) appBbox[2] = xy[0];
+
+            if (xy[1] < appBbox[1]) appBbox[1] = xy[1];
+            if (xy[1] > appBbox[3]) appBbox[3] = xy[1];
+          }
+        });
+      }
+      source.envelopeColor = colors[cIndex];
+      cIndex++;
+      if (cIndex === colors.length) cIndex = 0;
+
+      const xys = source.envelope.geometry.coordinates[0];
+      source.envelopeAreaIndex = ui.areaIndex(xys);
+    }
+  }
+  if (ui.appEnvelope) console.log(`This app's envelope is: ${appBbox}`);
+
+  if (ui.splashPromise) {
+    ui.splashPromise.then(() => {
+      const modalElm = ui.core!.mapDivDocument!.querySelector(".modalBase")!;
+      prepareModal(modalElm, { root: ui.core!.mapDivDocument! }).hide();
+    });
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const baseSources: any[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const overlaySources: any[] = [];
+  for (let i = 0; i < sources.length; i++) {
+    const source = sources[i];
+    if (isBasemap(source)) {
+      baseSources.push(source);
+    } else {
+      overlaySources.push(source);
+    }
+  }
+
+  const baseSwiper = (ui.baseSwiper = new Swiper(".base-swiper", {
+    slidesPerView: 2,
+    spaceBetween: 15,
+    breakpoints: {
+      480: {
+        slidesPerView: 1.4,
+        spaceBetween: 10
+      }
+    },
+    centeredSlides: true,
+    threshold: 2,
+    preventClicks: true,
+    preventClicksPropagation: true,
+    observer: true,
+    observeParents: true,
+    loop: baseSources.length >= 2,
+    navigation: {
+      nextEl: ".base-next",
+      prevEl: ".base-prev"
+    }
+  }));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  baseSwiper.on("click", (_e: any) => {
+    if (!baseSwiper.clickedSlide) return;
+    const slide = baseSwiper.clickedSlide;
+    ui.core!.changeMap(slide.getAttribute("data")!);
+    delete ui._selectCandidateSources;
+    baseSwiper.setSlideIndexAsSelected(
+      parseInt(slide.getAttribute("data-swiper-slide-index") || "0", 10)
+    );
+  });
+  if (baseSources.length < 2) {
+    ui.core!.mapDivDocument!.querySelector(".base-swiper")!.classList.add(
+      "single-map"
     );
   }
+
+  const overlaySwiper = (ui.overlaySwiper = new Swiper(".overlay-swiper", {
+    slidesPerView: 2,
+    spaceBetween: 15,
+    breakpoints: {
+      480: {
+        slidesPerView: 1.4,
+        spaceBetween: 10
+      }
+    },
+    centeredSlides: true,
+    threshold: 2,
+    preventClicks: true,
+    preventClicksPropagation: true,
+    observer: true,
+    observeParents: true,
+    loop: overlaySources.length >= 2,
+    navigation: {
+      nextEl: ".overlay-next",
+      prevEl: ".overlay-prev"
+    }
+  }));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  overlaySwiper.on("click", (_e: any) => {
+    if (!overlaySwiper.clickedSlide) return;
+    const slide = overlaySwiper.clickedSlide;
+    ui.core!.changeMap(slide.getAttribute("data")!);
+    delete ui._selectCandidateSources;
+    overlaySwiper.setSlideIndexAsSelected(
+      parseInt(slide.getAttribute("data-swiper-slide-index") || "0", 10)
+    );
+  });
+  if (overlaySources.length < 2) {
+    ui.core!.mapDivDocument!.querySelector(".overlay-swiper")!.classList.add(
+      "single-map"
+    );
+  }
+
+  for (let i = 0; i < baseSources.length; i++) {
+    const source = baseSources[i];
+    const thumbKey = source.thumbnail ? source.thumbnail.split("/").pop() : "";
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const thumbUrl = (pointer as any)[thumbKey] || source.thumbnail;
+    baseSwiper.appendSlide(
+      `<div class="swiper-slide" data="${source.mapID}">` +
+        `<img crossorigin="anonymous" src="${
+          thumbUrl
+        }"><div> ${ui.core!.translate(source.label)}</div> </div> `
+    );
+  }
+  for (let i = 0; i < overlaySources.length; i++) {
+    const source = overlaySources[i];
+    const colorCss = source.envelope ? ` ${source.envelopeColor}` : "";
+    const thumbKey = source.thumbnail ? source.thumbnail.split("/").pop() : "";
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const thumbUrl = (pointer as any)[thumbKey] || source.thumbnail;
+    overlaySwiper.appendSlide(
+      `<div class="swiper-slide${colorCss}" data="${source.mapID}">` +
+        `<img crossorigin="anonymous" src="${
+          thumbUrl
+        }"><div> ${ui.core!.translate(source.label)}</div> </div> `
+    );
+  }
+
+  overlaySwiper.on("slideChange", () => {
+    ui.updateEnvelope();
+  });
+
+  baseSwiper.slideToLoop(0);
+  overlaySwiper.slideToLoop(0);
+  ellips(ui.core!.mapDivDocument!);
+}
+
+function initMapEventListeners(ui: MaplatUi) {
+  ui.core!.addEventListener("mapChanged", (evt: unknown) => {
+    const map = (evt as CustomEvent).detail;
+
+    ui.baseSwiper.setSlideMapID(map.mapID);
+    ui.overlaySwiper.setSlideMapID(map.mapID);
+
+    const title = map.officialTitle || map.title || map.label;
+    (
+      ui.core!.mapDivDocument!.querySelector(".map-title span") as HTMLElement
+    ).innerText = ui.core!.translate(title) || "";
+
+    if (ui.checkOverlayID(map.mapID)) {
+      ui.sliderNew.setEnable(true);
+    } else {
+      ui.sliderNew.setEnable(false);
+    }
+    const transparency = ui.sliderNew.get("slidervalue") * 100;
+    ui.core!.mapObject.setTransparency(transparency);
+
+    ui.updateEnvelope();
+    ui.updateUrl();
+  });
+
+  ui.core!.addEventListener("poi_number", (evt: unknown) => {
+    const number = (evt as CustomEvent).detail;
+    if (number) {
+      ui.core!.mapDivDocument!.classList.remove("no_poi");
+    } else {
+      ui.core!.mapDivDocument!.classList.add("no_poi");
+    }
+  });
+
+  ui.core!.addEventListener("sourceLoaded", (evt: unknown) => {
+    const sources = (evt as CustomEvent).detail;
+    initSwipers(ui, sources);
+  });
+
+  ui.core!.waitReady.then(() => {
+    // Capture pointerdown at viewport level to ensure we get pixel before any stopPropagation
+
+    ui.core!.mapObject.getViewport().addEventListener(
+      "pointerdown",
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (evt: any) => {
+        ui.lastClickPixel = ui.core!.mapObject.getEventPixel(evt);
+        ui.lastClickCoordinate = ui.core!.mapObject.getCoordinateFromPixel(
+          ui.lastClickPixel
+        );
+      },
+      true
+    );
+  });
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ui.core!.addEventListener("clickMarkers", (evt: any) => {
+    const data = evt.detail;
+    if (data.length === 1) {
+      ui.handleMarkerAction(data[0]);
+    } else {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const list: any[] = [];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      data.forEach((datum: any) => {
+        list.push({
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          icon: datum.icon || (pointer as any)["defaultpin.png"],
+          text: ui.core!.translate(datum.name),
+          callback: () => {
+            ui.handleMarkerAction(datum);
+          }
+        });
+      });
+      ui.showContextMenu(list);
+    }
+  });
+
+  ui.core!.waitReady.then(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ui.core!.mapObject.on("moveend", (_evt: any) => {
+      ui.updateUrl();
+    });
+  });
+}
+
+function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
+  const restoreTransparency =
+    ui.core!.initialRestore.transparency ||
+    (appOption.restore ? appOption.restore.transparency : undefined);
+  const enableSplash = !ui.core!.initialRestore.mapID;
 
   // Delegated event listener for share buttons
   ui.core!.mapDivDocument!.addEventListener("click", (evt: Event) => {
@@ -239,172 +562,6 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
     target.addEventListener("touchstart", (evt: Event) => {
       evt.preventDefault();
     });
-  }
-
-  newElems = createElement(`<d c="modal modalBase" tabindex="-1" role="dialog"
-    aria-labelledby="staticModalLabel" aria-hidden="true" data-show="true" data-keyboard="false"
-    data-backdrop="static">
-  <d c="modal-dialog">
-    <d c="modal-content">
-      <d c="modal-header">
-        <button type="button" c="close" data-dismiss="modal">
-          <s aria-hidden="true">&#215;</s><s c="sr-only" din="html.close"></s>
-        </button>
-        <h4 c="modal-title">
-
-          <s c="modal_title"></s>
-          <s c="modal_load_title"></s>
-          <s c="modal_gpsW_title" din="html.acquiring_gps"></s>
-          <s c="modal_help_title" din="html.help_title"></s>
-          <s c="modal_share_title" din="html.share_title"></s>
-          <s c="modal_marker_list_title" din="html.marker_list_title"></s>
-
-        </h4>
-      </d> 
-      <d c="modal-body">
-
-        <d c="modal_help_content">
-          <d c="help_content">
-            <s dinh="html.help_using_maplat"></s>
-            <p c="col-xs-12 help_img"><img src="${pointer["fullscreen.png"]}"></p>
-            <h4 din="html.help_operation_title"></h4>
-            <p dinh="html.help_operation_content" c="recipient"></p>
-            <h4 din="html.help_selection_title"></h4>
-            <p dinh="html.help_selection_content" c="recipient"></p>
-            <h4 din="html.help_gps_title"></h4>
-            <p dinh="html.help_gps_content" c="recipient"></p>
-            <h4 din="html.help_poi_title"></h4>
-            <p dinh="html.help_poi_content" c="recipient"></p>
-            <h4 din="html.help_etc_title"></h4>
-            <ul>
-              <li dinh="html.help_etc_attr" c="recipient"></li>
-              <li dinh="html.help_etc_help" c="recipient"></li>
-              <s c="share_help"><li dinh="html.help_share_help" c="recipient"></li></s>
-              <s c="border_help"><li dinh="html.help_etc_border" c="recipient"></li></s>
-              <s c="hide_marker_help"><li dinh="html.help_etc_hide_marker" c="recipient"></li></s>
-              <s c="marker_list_help"><li dinh="html.help_etc_marker_list" c="recipient"></li></s>
-              <li dinh="html.help_etc_slider" c="recipient"></li>
-            </ul>
-            <p><a href="https://www.maplat.jp/" target="_blank">Maplat</a>
-              © 2015- Kohei Otsuka, Code for History</p>
-          </d> 
-        </d> 
-
-        <d c="modal_poi_content">
-          <d c="poi_web_div"></d>
-          <d c="modal_share_poi"></d>
-          <p><img src="" height="0px" width="0px"></p>
-        </d> 
-
-        <d c="modal_share_content">
-          <h4 din="html.share_app_title"></h4>
-          <d id="___maplat_app_toast_${ui.html_id_seed}"></d>
-          <d c="recipient row">
-            <d c="form-group col-xs-4 text-center"><button title="Copy to clipboard" class="share btn btn-light" data="cp_app"><svg style="width:14px;height:14px;vertical-align:text-bottom;" viewBox="0 0 512 512"><path fill="currentColor" d="M224 0c-35.3 0-64 28.7-64 64V96H96c-35.3 0-64 28.7-64 64V448c0 35.3 28.7 64 64 64H288c35.3 0 64-28.7 64-64V384h64c35.3 0 64-28.7 64-64V64c0-35.3-28.7-64-64-64H224zM288 384H96V160H224c0-17.7 14.3-32 32-32h64V256c0 17.7 14.3 32 32 32h96V384H288z"/></svg>&nbsp;<small din="html.share_copy"></small></button></d>
-            <d c="form-group col-xs-4 text-center"><button title="Twitter" class="share btn btn-light" data="tw_app"><svg style="width:14px;height:14px;vertical-align:text-bottom;" viewBox="0 0 512 512"><path fill="currentColor" d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"/></svg>&nbsp;<small>Twitter</small></button></d>
-            <d c="form-group col-xs-4 text-center"><button title="Facebook" class="share btn btn-light" data="fb_app"><svg style="width:14px;height:14px;vertical-align:text-bottom;" viewBox="0 0 512 512"><path fill="currentColor" d="M504 256C504 119 393 8 256 8S8 119 8 256c0 121.3 87.1 222.4 203 240.5V327.9h-61v-71.9h61V203c0-60.8 35.8-93.7 89.2-93.7 25.5 0 50.4 1.8 56.1 2.6v62.4h-35.4c-29.5 0-37.4 18.2-37.4 42.1v59.6h68.9l-11 71.9h-57.9V496.5C416.9 478.4 504 377.3 504 256z"/></svg>&nbsp;<small>Facebook</small></button></d>
-          </d>
-          <d c="qr_app center-block" style="width:128px;"></d>
-          <d c="modal_share_state">
-            <h4 din="html.share_state_title"></h4>
-            <d id="___maplat_view_toast_${ui.html_id_seed}"></d>
-            <d c="recipient row">
-              <d c="form-group col-xs-4 text-center"><button title="Copy to clipboard" c="share btn btn-light" data="cp_view"><svg style="width:14px;height:14px;vertical-align:text-bottom;" viewBox="0 0 512 512"><path fill="currentColor" d="M224 0c-35.3 0-64 28.7-64 64V96H96c-35.3 0-64 28.7-64 64V448c0 35.3 28.7 64 64 64H288c35.3 0 64-28.7 64-64V384h64c35.3 0 64-28.7 64-64V64c0-35.3-28.7-64-64-64H224zM288 384H96V160H224c0-17.7 14.3-32 32-32h64V256c0 17.7 14.3 32 32 32h96V384H288z"/></svg>&nbsp;<small din="html.share_copy"></small></button></d>
-              <d c="form-group col-xs-4 text-center"><button title="Twitter" c="share btn btn-light" data="tw_view"><svg style="width:14px;height:14px;vertical-align:text-bottom;" viewBox="0 0 512 512"><path fill="currentColor" d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"/></svg>&nbsp;<small>Twitter</small></button></d>
-              <d c="form-group col-xs-4 text-center"><button title="Facebook" c="share btn btn-light" data="fb_view"><svg style="width:14px;height:14px;vertical-align:text-bottom;" viewBox="0 0 512 512"><path fill="currentColor" d="M504 256C504 119 393 8 256 8S8 119 8 256c0 121.3 87.1 222.4 203 240.5V327.9h-61v-71.9h61V203c0-60.8 35.8-93.7 89.2-93.7 25.5 0 50.4 1.8 56.1 2.6v62.4h-35.4c-29.5 0-37.4 18.2-37.4 42.1v59.6h68.9l-11 71.9h-57.9V496.5C416.9 478.4 504 377.3 504 256z"/></svg>&nbsp;<small>Facebook</small></button></d>
-            </d>
-            <d c="qr_view center-block" style="width:128px;"></d>
-          </d>
-          <p><img src="" height="0px" width="0px"></p>
-        </d>
-
-        <d c="modal_map_content">
-            ${META_KEYS.map(key => {
-              if (key == "title" || key == "officialTitle") return "";
-              return `<d c="recipients ${key}_div"><dl c="dl-horizontal">
-                      <dt din="html.${key}"></dt>
-                      <dd c="${key}_dd"></dd>
-                    </dl></d> `;
-            }).join("")}
-          <d c="recipients modal_cache_content"><dl c="dl-horizontal">
-            <dt din="html.cache_handle"></dt>
-            <dd><s c="cache_size"></s></dd>
-            <dt></dt>
-            <dd><s c="pull-right"><button c="cache_fetch btn btn-default" href="#" din="html.cache_fetch"></button>
-              <button c="cache_delete btn btn-default" href="#" din="html.cache_delete"></button></s></dd>
-          </dl></d> 
-        </d>
-
-        <d c="modal_load_content">
-          <p c="recipient"><img src="${pointer["loading.png"]}"><s din="html.app_loading_body"></s></p>
-          <d c="splash_div hide row"><p c="col-xs-12 poi_img"><img c="splash_img" src=""></p></d> 
-          <p><img src="" height="0px" width="0px"></p>
-        </d> 
-
-        <d c="modal_marker_list_content">
-          <ul c="list-group"></ul>
-        </d> 
-
-        <p c="modal_gpsD_content" c="recipient"></p>
-        <p c="modal_gpsW_content" c="recipient"></p>
-
-      </d> 
-    </d> 
-  </d> 
-</d> `);
-  for (let i = newElems.length - 1; i >= 0; i--) {
-    ui.core!.mapDivDocument!.insertBefore(
-      newElems[i],
-      ui.core!.mapDivDocument!.firstChild
-    );
-  }
-
-  // PWA
-  if (pwaManifest) {
-    if (pwaManifest === true) {
-      pwaManifest = `./pwa/${ui.core!.appid}_manifest.json`;
-    }
-    if (!pwaWorker) {
-      pwaWorker = "./service-worker.js";
-    }
-    if (!pwaScope) {
-      pwaScope = "./";
-    }
-
-    const head = document.querySelector("head");
-    if (head) {
-      if (!head.querySelector('link[rel="manifest"]')) {
-        head.appendChild(
-          createElement(`<link rel="manifest" href="${pwaManifest}">`)[0]
-        );
-      }
-    }
-    try {
-      Weiwudi.registerSW(pwaWorker, { scope: pwaScope });
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (_e) {} // eslint-disable-line no-empty
-
-    if (head && !head.querySelector('link[rel="apple-touch-icon"]')) {
-      const xhr = new XMLHttpRequest();
-      xhr.open("GET", pwaManifest, true);
-      xhr.responseType = "json";
-
-      xhr.onload = function (_e: ProgressEvent) {
-        let value = this.response;
-        if (!value) return;
-        if (typeof value != "object") value = JSON.parse(value);
-
-        if (value.icons) {
-          for (let i = 0; i < value.icons.length; i++) {
-            const src = absoluteUrl(pwaManifest as string, value.icons[i].src);
-            const sizes = value.icons[i].sizes;
-            const tag = `<link rel="apple-touch-icon" sizes="${sizes}" href="${src}">`;
-            head.appendChild(createElement(tag)[0]);
-          }
-        }
-      };
-      xhr.send();
-    }
   }
 
   ui.core!.addEventListener("uiPrepare", (_evt: unknown) => {
@@ -530,7 +687,9 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
       if ((ui.core!.appData as any).splash) splash = true;
 
       const modalElm = ui.core!.mapDivDocument!.querySelector(".modalBase")!;
-      const modal = new bsn.Modal(modalElm, { root: ui.core!.mapDivDocument! });
+      // const modal = new bsn.Modal(modalElm, { root: ui.core!.mapDivDocument! });
+      const modal = prepareModal(modalElm, { root: ui.core!.mapDivDocument! });
+
       (
         ui.core!.mapDivDocument!.querySelector(
           ".modal_load_title"
@@ -558,366 +717,6 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
 
     document.querySelector("title")!.innerHTML =
       ui.core!.translate(ui.core!.appName) || "";
-  });
-
-  ui.core!.addEventListener("mapChanged", (evt: unknown) => {
-    const map = (evt as CustomEvent).detail;
-
-    ui.baseSwiper.setSlideMapID(map.mapID);
-    ui.overlaySwiper.setSlideMapID(map.mapID);
-
-    const title = map.officialTitle || map.title || map.label;
-    (
-      ui.core!.mapDivDocument!.querySelector(".map-title span") as HTMLElement
-    ).innerText = ui.core!.translate(title) || "";
-
-    if (ui.checkOverlayID(map.mapID)) {
-      ui.sliderNew.setEnable(true);
-    } else {
-      ui.sliderNew.setEnable(false);
-    }
-    const transparency = ui.sliderNew.get("slidervalue") * 100;
-    ui.core!.mapObject.setTransparency(transparency);
-
-    ui.updateEnvelope();
-    ui.updateUrl();
-  });
-
-  ui.core!.addEventListener("poi_number", (evt: unknown) => {
-    const number = (evt as CustomEvent).detail;
-    if (number) {
-      ui.core!.mapDivDocument!.classList.remove("no_poi");
-    } else {
-      ui.core!.mapDivDocument!.classList.add("no_poi");
-    }
-  });
-
-  ui.core!.addEventListener("outOfMap", (_evt: unknown) => {
-    console.log("Event: outOfMap");
-    if (enableOutOfMap) {
-      (
-        ui.core!.mapDivDocument!.querySelector(".modal_title") as HTMLElement
-      ).innerText = ui.core!.t("app.out_of_map") || "";
-      (
-        ui.core!.mapDivDocument!.querySelector(
-          ".modal_gpsD_content"
-        ) as HTMLElement
-      ).innerText = ui.core!.t("app.out_of_map_area") || "";
-      const modalElm = ui.core!.mapDivDocument!.querySelector(".modalBase")!;
-      ui.modalSetting("gpsD");
-      prepareModal(modalElm, { root: ui.core!.mapDivDocument! }).show();
-    }
-  });
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ui.core!.addEventListener("gps_error", (evt: any) => {
-    console.log("GPS Error:", evt);
-    const errorMap: Record<string, string> = {
-      user_gps_deny: "app.user_gps_deny",
-      gps_miss: "app.gps_miss",
-      gps_timeout: "app.gps_timeout"
-    };
-
-    if (!ui.core) return;
-    (ui.core.mapDivDocument!.querySelector(
-      ".modal_title"
-    ) as HTMLElement)!.innerText = ui.core.t("app.gps_error") || "";
-    (ui.core.mapDivDocument!.querySelector(
-      ".modal_gpsD_content"
-    ) as HTMLElement)!.innerText =
-      ui.core.t(errorMap[evt.detail] || "app.gps_error") || "";
-    const modalElm = ui.core.mapDivDocument!.querySelector(".modalBase")!;
-    ui.modalSetting("gpsD");
-    prepareModal(modalElm, {
-      root: ui.core.mapDivDocument
-    }).show();
-  });
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ui.core!.addEventListener("gps_result", (evt: any) => {
-    console.log("GPS Result:", evt);
-    if (evt.detail && evt.detail.error) {
-      const error = evt.detail.error;
-      if (error === "gps_off") {
-        ui.lastGPSError = undefined;
-        return;
-      }
-
-      ui.lastGPSError = error;
-      if (ui.alwaysGpsOn && error === "gps_out") return;
-
-      if (!ui.core) return;
-
-      const modalElm = ui.core.mapDivDocument!.querySelector(".modalBase")!;
-      const modal = prepareModal(modalElm, {
-        root: ui.core.mapDivDocument
-      });
-
-      if (error === "gps_out") {
-        (ui.core.mapDivDocument!.querySelector(
-          ".modal_title"
-        ) as HTMLElement)!.innerText = ui.core.t("app.out_of_map") || "";
-        (ui.core.mapDivDocument!.querySelector(
-          ".modal_gpsD_content"
-        ) as HTMLElement)!.innerText = ui.core.t("app.out_of_map_area") || "";
-      } else {
-        const errorMap: Record<string, string> = {
-          user_gps_deny: "app.user_gps_deny",
-          gps_miss: "app.gps_miss",
-          gps_timeout: "app.gps_timeout"
-        };
-
-        (ui.core.mapDivDocument!.querySelector(
-          ".modal_title"
-        ) as HTMLElement)!.innerText = ui.core.t("app.gps_error") || "";
-        (ui.core.mapDivDocument!.querySelector(
-          ".modal_gpsD_content"
-        ) as HTMLElement)!.innerText =
-          ui.core.t(errorMap[error] || "app.gps_error") || "";
-      }
-
-      ui.modalSetting("gpsD");
-      modal.show();
-    } else {
-      ui.lastGPSError = undefined;
-    }
-  });
-
-  ui.core!.addEventListener("sourceLoaded", (evt: unknown) => {
-    const sources = (evt as CustomEvent).detail;
-    const colors = [
-      "maroon",
-      "deeppink",
-      "indigo",
-      "olive",
-      "royalblue",
-      "red",
-      "hotpink",
-      "green",
-      "yellow",
-      "navy",
-      "saddlebrown",
-      "fuchsia",
-      "darkslategray",
-      "yellowgreen",
-      "blue",
-      "mediumvioletred",
-      "purple",
-      "lime",
-      "darkorange",
-      "teal",
-      "crimson",
-      "darkviolet",
-      "darkolivegreen",
-      "steelblue",
-      "aqua"
-    ];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const appBbox: any[] = [];
-    let cIndex = 0;
-
-    for (let i = 0; i < sources.length; i++) {
-      const source = sources[i];
-      if (source.envelope) {
-        if (ui.appEnvelope) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          source.envelope.geometry.coordinates[0].map((xy: any) => {
-            if (appBbox.length === 0) {
-              appBbox[0] = appBbox[2] = xy[0];
-              appBbox[1] = appBbox[3] = xy[1];
-            } else {
-              if (xy[0] < appBbox[0]) appBbox[0] = xy[0];
-              if (xy[0] > appBbox[2]) appBbox[2] = xy[0];
-
-              if (xy[1] < appBbox[1]) appBbox[1] = xy[1];
-              if (xy[1] > appBbox[3]) appBbox[3] = xy[1];
-            }
-          });
-        }
-        source.envelopeColor = colors[cIndex];
-        cIndex++;
-        if (cIndex === colors.length) cIndex = 0;
-
-        const xys = source.envelope.geometry.coordinates[0];
-        source.envelopeAreaIndex = ui.areaIndex(xys);
-      }
-    }
-    if (ui.appEnvelope) console.log(`This app's envelope is: ${appBbox}`);
-
-    if (ui.splashPromise) {
-      ui.splashPromise.then(() => {
-        const modalElm = ui.core!.mapDivDocument!.querySelector(".modalBase")!;
-        const modal =
-          bsn.Modal.getInstance(modalElm) ||
-          new bsn.Modal(modalElm, { root: ui.core!.mapDivDocument! });
-        ui.modalSetting("load");
-        modal.hide();
-      });
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const baseSources: any[] = [];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const overlaySources: any[] = [];
-    for (let i = 0; i < sources.length; i++) {
-      const source = sources[i];
-      if (isBasemap(source)) {
-        baseSources.push(source);
-      } else {
-        overlaySources.push(source);
-      }
-    }
-
-    const baseSwiper = (ui.baseSwiper = new Swiper(".base-swiper", {
-      slidesPerView: 2,
-      spaceBetween: 15,
-      breakpoints: {
-        480: {
-          slidesPerView: 1.4,
-          spaceBetween: 10
-        }
-      },
-      centeredSlides: true,
-      threshold: 2,
-      preventClicks: true,
-      preventClicksPropagation: true,
-      observer: true,
-      observeParents: true,
-      loop: baseSources.length >= 2,
-      navigation: {
-        nextEl: ".base-next",
-        prevEl: ".base-prev"
-      }
-    }));
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    baseSwiper.on("click", (_e: any) => {
-      if (!baseSwiper.clickedSlide) return;
-      const slide = baseSwiper.clickedSlide;
-      ui.core!.changeMap(slide.getAttribute("data")!);
-      delete ui._selectCandidateSources;
-      baseSwiper.setSlideIndexAsSelected(
-        parseInt(slide.getAttribute("data-swiper-slide-index") || "0", 10)
-      );
-    });
-    if (baseSources.length < 2) {
-      ui.core!.mapDivDocument!.querySelector(".base-swiper")!.classList.add(
-        "single-map"
-      );
-    }
-
-    const overlaySwiper = (ui.overlaySwiper = new Swiper(".overlay-swiper", {
-      slidesPerView: 2,
-      spaceBetween: 15,
-      breakpoints: {
-        480: {
-          slidesPerView: 1.4,
-          spaceBetween: 10
-        }
-      },
-      centeredSlides: true,
-      threshold: 2,
-      preventClicks: true,
-      preventClicksPropagation: true,
-      observer: true,
-      observeParents: true,
-      loop: overlaySources.length >= 2,
-      navigation: {
-        nextEl: ".overlay-next",
-        prevEl: ".overlay-prev"
-      }
-    }));
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    overlaySwiper.on("click", (_e: any) => {
-      if (!overlaySwiper.clickedSlide) return;
-      const slide = overlaySwiper.clickedSlide;
-      ui.core!.changeMap(slide.getAttribute("data")!);
-      delete ui._selectCandidateSources;
-      overlaySwiper.setSlideIndexAsSelected(
-        parseInt(slide.getAttribute("data-swiper-slide-index") || "0", 10)
-      );
-    });
-    if (overlaySources.length < 2) {
-      ui.core!.mapDivDocument!.querySelector(".overlay-swiper")!.classList.add(
-        "single-map"
-      );
-    }
-
-    for (let i = 0; i < baseSources.length; i++) {
-      const source = baseSources[i];
-      const thumbKey = source.thumbnail
-        ? source.thumbnail.split("/").pop()
-        : "";
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const thumbUrl = (pointer as any)[thumbKey] || source.thumbnail;
-      baseSwiper.appendSlide(
-        `<div class="swiper-slide" data="${source.mapID}">` +
-          `<img crossorigin="anonymous" src="${
-            thumbUrl
-          }"><div> ${ui.core!.translate(source.label)}</div> </div> `
-      );
-    }
-    for (let i = 0; i < overlaySources.length; i++) {
-      const source = overlaySources[i];
-      const colorCss = source.envelope ? ` ${source.envelopeColor}` : "";
-      const thumbKey = source.thumbnail
-        ? source.thumbnail.split("/").pop()
-        : "";
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const thumbUrl = (pointer as any)[thumbKey] || source.thumbnail;
-      overlaySwiper.appendSlide(
-        `<div class="swiper-slide${colorCss}" data="${source.mapID}">` +
-          `<img crossorigin="anonymous" src="${
-            thumbUrl
-          }"><div> ${ui.core!.translate(source.label)}</div> </div> `
-      );
-    }
-
-    overlaySwiper.on("slideChange", () => {
-      ui.updateEnvelope();
-    });
-
-    baseSwiper.slideToLoop(0);
-    overlaySwiper.slideToLoop(0);
-    ellips(ui.core!.mapDivDocument!);
-  });
-
-  ui.core!.waitReady.then(() => {
-    // Capture pointerdown at viewport level to ensure we get pixel before any stopPropagation
-
-    ui.core!.mapObject.getViewport().addEventListener(
-      "pointerdown",
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (evt: any) => {
-        ui.lastClickPixel = ui.core!.mapObject.getEventPixel(evt);
-        ui.lastClickCoordinate = ui.core!.mapObject.getCoordinateFromPixel(
-          ui.lastClickPixel
-        );
-      },
-      true
-    );
-  });
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ui.core!.addEventListener("clickMarkers", (evt: any) => {
-    const data = evt.detail;
-    if (data.length === 1) {
-      ui.handleMarkerAction(data[0]);
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const list: any[] = [];
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      data.forEach((datum: any) => {
-        list.push({
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          icon: datum.icon || (pointer as any)["defaultpin.png"],
-          text: ui.core!.translate(datum.name),
-          callback: () => {
-            ui.handleMarkerAction(datum);
-          }
-        });
-      });
-      ui.showContextMenu(list);
-    }
   });
 
   ui.core!.waitReady.then(() => {
@@ -1325,9 +1124,224 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
       }
       ui.updateUrl();
     });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ui.core!.mapObject.on("moveend", (_evt: any) => {
-      ui.updateUrl();
-    });
   });
+}
+
+function initDom(ui: MaplatUi, appOption: MaplatAppOption) {
+  // Inject Custom Toast Styles
+  const style = document.createElement("style");
+  style.innerHTML = `
+      .custom-toast {
+        visibility: hidden;
+        min-width: 250px;
+        margin-left: -125px;
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        border-radius: 2px;
+        padding: 16px;
+        position: fixed;
+        z-index: 9999;
+        left: 50%;
+        bottom: 30px;
+        font-size: 17px;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .custom-toast.show {
+        visibility: visible;
+        opacity: 1;
+      }
+    `;
+  document.head.appendChild(style);
+
+  let pwaManifest = appOption.pwaManifest;
+  let pwaWorker = appOption.pwaWorker;
+  let pwaScope = appOption.pwaScope;
+
+  // Add UI HTML Element
+  let newElems = createElement(`<d c="ol-control map-title"><s></s></d>
+  <d c="swiper-container ol-control base-swiper prevent-default-ui">
+    <d c="swiper-wrapper"> </d>
+      <d c="swiper-button-next base-next swiper-button-white"> </d>
+        <d c="swiper-button-prev base-prev swiper-button-white"> </d>
+          </d>
+          <d c="swiper-container ol-control overlay-swiper prevent-default-ui">
+            <d c="swiper-wrapper"> </d>
+              <d c="swiper-button-next overlay-next swiper-button-white"> </d>
+                <d c="swiper-button-prev overlay-prev swiper-button-white"> </d>
+                  </d> `);
+  for (let i = newElems.length - 1; i >= 0; i--) {
+    ui.core!.mapDivDocument!.insertBefore(
+      newElems[i],
+      ui.core!.mapDivDocument!.firstChild
+    );
+  }
+
+  newElems = createElement(`<d c="modal modalBase" tabindex="-1" role="dialog"
+    aria-labelledby="staticModalLabel" aria-hidden="true" data-show="true" data-keyboard="false"
+    data-backdrop="static">
+  <d c="modal-dialog">
+    <d c="modal-content">
+      <d c="modal-header">
+        <button type="button" c="close" data-dismiss="modal">
+          <s aria-hidden="true">&#215;</s><s c="sr-only" din="html.close"></s>
+        </button>
+        <h4 c="modal-title">
+
+          <s c="modal_title"></s>
+          <s c="modal_load_title"></s>
+          <s c="modal_gpsW_title" din="html.acquiring_gps"></s>
+          <s c="modal_help_title" din="html.help_title"></s>
+          <s c="modal_share_title" din="html.share_title"></s>
+          <s c="modal_marker_list_title" din="html.marker_list_title"></s>
+
+        </h4>
+      </d> 
+      <d c="modal-body">
+
+        <d c="modal_help_content">
+          <d c="help_content">
+            <s dinh="html.help_using_maplat"></s>
+            <p c="col-xs-12 help_img"><img src="${pointer["fullscreen.png"]}"></p>
+            <h4 din="html.help_operation_title"></h4>
+            <p dinh="html.help_operation_content" c="recipient"></p>
+            <h4 din="html.help_selection_title"></h4>
+            <p dinh="html.help_selection_content" c="recipient"></p>
+            <h4 din="html.help_gps_title"></h4>
+            <p dinh="html.help_gps_content" c="recipient"></p>
+            <h4 din="html.help_poi_title"></h4>
+            <p dinh="html.help_poi_content" c="recipient"></p>
+            <h4 din="html.help_etc_title"></h4>
+            <ul>
+              <li dinh="html.help_etc_attr" c="recipient"></li>
+              <li dinh="html.help_etc_help" c="recipient"></li>
+              <s c="share_help"><li dinh="html.help_share_help" c="recipient"></li></s>
+              <s c="border_help"><li dinh="html.help_etc_border" c="recipient"></li></s>
+              <s c="hide_marker_help"><li dinh="html.help_etc_hide_marker" c="recipient"></li></s>
+              <s c="marker_list_help"><li dinh="html.help_etc_marker_list" c="recipient"></li></s>
+              <li dinh="html.help_etc_slider" c="recipient"></li>
+            </ul>
+            <p><a href="https://www.maplat.jp/" target="_blank">Maplat</a>
+              © 2015- Kohei Otsuka, Code for History</p>
+          </d> 
+        </d> 
+
+        <d c="modal_poi_content">
+          <d c="poi_web_div"></d>
+          <d c="modal_share_poi"></d>
+          <p><img src="" height="0px" width="0px"></p>
+        </d> 
+
+        <d c="modal_share_content">
+          <h4 din="html.share_app_title"></h4>
+          <d id="___maplat_app_toast_${ui.html_id_seed}"></d>
+          <d c="recipient row">
+            <d c="form-group col-xs-4 text-center"><button title="Copy to clipboard" class="share btn btn-light" data="cp_app"><svg style="width:14px;height:14px;vertical-align:text-bottom;" viewBox="0 0 512 512"><path fill="currentColor" d="M224 0c-35.3 0-64 28.7-64 64V96H96c-35.3 0-64 28.7-64 64V448c0 35.3 28.7 64 64 64H288c35.3 0 64-28.7 64-64V384h64c35.3 0 64-28.7 64-64V64c0-35.3-28.7-64-64-64H224zM288 384H96V160H224c0-17.7 14.3-32 32-32h64V256c0 17.7 14.3 32 32 32h96V384H288z"/></svg>&nbsp;<small din="html.share_copy"></small></button></d>
+            <d c="form-group col-xs-4 text-center"><button title="Twitter" class="share btn btn-light" data="tw_app"><svg style="width:14px;height:14px;vertical-align:text-bottom;" viewBox="0 0 512 512"><path fill="currentColor" d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"/></svg>&nbsp;<small>Twitter</small></button></d>
+            <d c="form-group col-xs-4 text-center"><button title="Facebook" class="share btn btn-light" data="fb_app"><svg style="width:14px;height:14px;vertical-align:text-bottom;" viewBox="0 0 512 512"><path fill="currentColor" d="M504 256C504 119 393 8 256 8S8 119 8 256c0 121.3 87.1 222.4 203 240.5V327.9h-61v-71.9h61V203c0-60.8 35.8-93.7 89.2-93.7 25.5 0 50.4 1.8 56.1 2.6v62.4h-35.4c-29.5 0-37.4 18.2-37.4 42.1v59.6h68.9l-11 71.9h-57.9V496.5C416.9 478.4 504 377.3 504 256z"/></svg>&nbsp;<small>Facebook</small></button></d>
+          </d>
+          <d c="qr_app center-block" style="width:128px;"></d>
+          <d c="modal_share_state">
+            <h4 din="html.share_state_title"></h4>
+            <d id="___maplat_view_toast_${ui.html_id_seed}"></d>
+            <d c="recipient row">
+              <d c="form-group col-xs-4 text-center"><button title="Copy to clipboard" c="share btn btn-light" data="cp_view"><svg style="width:14px;height:14px;vertical-align:text-bottom;" viewBox="0 0 512 512"><path fill="currentColor" d="M224 0c-35.3 0-64 28.7-64 64V96H96c-35.3 0-64 28.7-64 64V448c0 35.3 28.7 64 64 64H288c35.3 0 64-28.7 64-64V384h64c35.3 0 64-28.7 64-64V64c0-35.3-28.7-64-64-64H224zM288 384H96V160H224c0-17.7 14.3-32 32-32h64V256c0 17.7 14.3 32 32 32h96V384H288z"/></svg>&nbsp;<small din="html.share_copy"></small></button></d>
+              <d c="form-group col-xs-4 text-center"><button title="Twitter" c="share btn btn-light" data="tw_view"><svg style="width:14px;height:14px;vertical-align:text-bottom;" viewBox="0 0 512 512"><path fill="currentColor" d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"/></svg>&nbsp;<small>Twitter</small></button></d>
+              <d c="form-group col-xs-4 text-center"><button title="Facebook" c="share btn btn-light" data="fb_view"><svg style="width:14px;height:14px;vertical-align:text-bottom;" viewBox="0 0 512 512"><path fill="currentColor" d="M504 256C504 119 393 8 256 8S8 119 8 256c0 121.3 87.1 222.4 203 240.5V327.9h-61v-71.9h61V203c0-60.8 35.8-93.7 89.2-93.7 25.5 0 50.4 1.8 56.1 2.6v62.4h-35.4c-29.5 0-37.4 18.2-37.4 42.1v59.6h68.9l-11 71.9h-57.9V496.5C416.9 478.4 504 377.3 504 256z"/></svg>&nbsp;<small>Facebook</small></button></d>
+            </d>
+            <d c="qr_view center-block" style="width:128px;"></d>
+          </d>
+          <p><img src="" height="0px" width="0px"></p>
+        </d>
+
+        <d c="modal_map_content">
+            ${META_KEYS.map(key => {
+              if (key == "title" || key == "officialTitle") return "";
+              return `<d c="recipients ${key}_div"><dl c="dl-horizontal">
+                      <dt din="html.${key}"></dt>
+                      <dd c="${key}_dd"></dd>
+                    </dl></d> `;
+            }).join("")}
+          <d c="recipients modal_cache_content"><dl c="dl-horizontal">
+            <dt din="html.cache_handle"></dt>
+            <dd><s c="cache_size"></s></dd>
+            <dt></dt>
+            <dd><s c="pull-right"><button c="cache_fetch btn btn-default" href="#" din="html.cache_fetch"></button>
+              <button c="cache_delete btn btn-default" href="#" din="html.cache_delete"></button></s></dd>
+          </dl></d> 
+        </d>
+
+        <d c="modal_load_content">
+          <p c="recipient"><img src="${pointer["loading.png"]}"><s din="html.app_loading_body"></s></p>
+          <d c="splash_div hide row"><p c="col-xs-12 poi_img"><img c="splash_img" src=""></p></d> 
+          <p><img src="" height="0px" width="0px"></p>
+        </d> 
+
+        <d c="modal_marker_list_content">
+          <ul c="list-group"></ul>
+        </d> 
+
+        <p c="modal_gpsD_content" c="recipient"></p>
+        <p c="modal_gpsW_content" c="recipient"></p>
+
+      </d> 
+    </d> 
+  </d> 
+</d> `);
+
+  for (let i = newElems.length - 1; i >= 0; i--) {
+    ui.core!.mapDivDocument!.insertBefore(
+      newElems[i],
+      ui.core!.mapDivDocument!.firstChild
+    );
+  }
+
+  // PWA
+  if (pwaManifest) {
+    if (pwaManifest === true) {
+      pwaManifest = `./pwa/${ui.core!.appid}_manifest.json`;
+    }
+    if (!pwaWorker) {
+      pwaWorker = "./service-worker.js";
+    }
+    if (!pwaScope) {
+      pwaScope = "./";
+    }
+
+    const head = document.querySelector("head");
+    if (head) {
+      if (!head.querySelector('link[rel="manifest"]')) {
+        head.appendChild(
+          createElement(`<link rel="manifest" href="${pwaManifest}">`)[0]
+        );
+      }
+    }
+    try {
+      Weiwudi.registerSW(pwaWorker, { scope: pwaScope });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_e) {} // eslint-disable-line no-empty
+
+    if (head && !head.querySelector('link[rel="apple-touch-icon"]')) {
+      const xhr = new XMLHttpRequest();
+      xhr.open("GET", pwaManifest, true);
+      xhr.responseType = "json";
+
+      xhr.onload = function (_e: ProgressEvent) {
+        let value = this.response;
+        if (!value) return;
+        if (typeof value != "object") value = JSON.parse(value);
+
+        if (value.icons) {
+          for (let i = 0; i < value.icons.length; i++) {
+            const src = absoluteUrl(pwaManifest as string, value.icons[i].src);
+            const sizes = value.icons[i].sizes;
+            const tag = `<link rel="apple-touch-icon" sizes="${sizes}" href="${src}">`;
+            head.appendChild(createElement(tag)[0]);
+          }
+        }
+      };
+      xhr.send();
+    }
+  }
 }
