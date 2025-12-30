@@ -505,6 +505,8 @@ function initMapEventListeners(ui: MaplatUi) {
 }
 
 function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
+  let cachedMarkerListMapID: string | undefined;
+
   const restoreTransparency =
     ui.core!.initialRestore.transparency ||
     (appOption.restore ? appOption.restore.transparency : undefined);
@@ -772,6 +774,11 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
       } else if (control === "markerList") {
         ui.modalSetting("marker_list");
         modal.show();
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const currentMapID = (ui.core!.from as any).mapID;
+        if (cachedMarkerListMapID === currentMapID) return;
+        cachedMarkerListMapID = currentMapID;
 
         const listRoot = modalElm.querySelector(
           ".modal_marker_list_content ul.list-group"
