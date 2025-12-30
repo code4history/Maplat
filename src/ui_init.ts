@@ -593,6 +593,7 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
   });
 
   ui.core!.addEventListener("outOfMap", (_evt: unknown) => {
+    console.log("Event: outOfMap");
     if (enableOutOfMap) {
       (
         ui.core!.mapDivDocument!.querySelector(".modal_title") as HTMLElement
@@ -603,9 +604,117 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
         ) as HTMLElement
       ).innerText = ui.core!.t("app.out_of_map_area") || "";
       const modalElm = ui.core!.mapDivDocument!.querySelector(".modalBase")!;
-      const modal = new bsn.Modal(modalElm, { root: ui.core!.mapDivDocument! });
+      const modal =
+        bsn.Modal.getInstance(modalElm) ||
+        new bsn.Modal(modalElm, { root: ui.core!.mapDivDocument! });
+
+      const closeBtns = modalElm.querySelectorAll(
+        ".close, .modal-footer button"
+      );
+      for (let i = 0; i < closeBtns.length; i++) {
+        closeBtns[i].addEventListener("click", () => {
+          modal.hide();
+        });
+      }
+
       ui.modalSetting("gpsD");
       modal.show();
+    }
+  });
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ui.core!.addEventListener("gps_error", (evt: any) => {
+    console.log("GPS Error:", evt);
+    const errorMap: Record<string, string> = {
+      user_gps_deny: "app.user_gps_deny",
+      gps_miss: "app.gps_miss",
+      gps_timeout: "app.gps_timeout"
+    };
+
+    if (!ui.core) return;
+    (ui.core.mapDivDocument!.querySelector(
+      ".modal_title"
+    ) as HTMLElement)!.innerText = ui.core.t("app.gps_error") || "";
+    (ui.core.mapDivDocument!.querySelector(
+      ".modal_gpsD_content"
+    ) as HTMLElement)!.innerText =
+      ui.core.t(errorMap[evt.detail] || "app.gps_error") || "";
+    const modalElm = ui.core.mapDivDocument!.querySelector(".modalBase")!;
+    const modal =
+      bsn.Modal.getInstance(modalElm) ||
+      new bsn.Modal(modalElm, {
+        root: ui.core.mapDivDocument
+      });
+
+    const closeBtns = modalElm.querySelectorAll(".close, .modal-footer button");
+    for (let i = 0; i < closeBtns.length; i++) {
+      closeBtns[i].addEventListener("click", () => {
+        modal.hide();
+      });
+    }
+
+    ui.modalSetting("gpsD");
+    modal.show();
+  });
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ui.core!.addEventListener("gps_result", (evt: any) => {
+    console.log("GPS Result:", evt);
+    if (evt.detail && evt.detail.error) {
+      const error = evt.detail.error;
+      if (error === "gps_off") {
+        ui.lastGPSError = undefined;
+        return;
+      }
+
+      ui.lastGPSError = error;
+      if (ui.alwaysGpsOn && error === "gps_out") return;
+
+      if (!ui.core) return;
+
+      const modalElm = ui.core.mapDivDocument!.querySelector(".modalBase")!;
+      const modal =
+        bsn.Modal.getInstance(modalElm) ||
+        new bsn.Modal(modalElm, {
+          root: ui.core.mapDivDocument
+        });
+
+      const closeBtns = modalElm.querySelectorAll(
+        ".close, .modal-footer button"
+      );
+      for (let i = 0; i < closeBtns.length; i++) {
+        closeBtns[i].addEventListener("click", () => {
+          modal.hide();
+        });
+      }
+
+      if (error === "gps_out") {
+        (ui.core.mapDivDocument!.querySelector(
+          ".modal_title"
+        ) as HTMLElement)!.innerText = ui.core.t("app.out_of_map") || "";
+        (ui.core.mapDivDocument!.querySelector(
+          ".modal_gpsD_content"
+        ) as HTMLElement)!.innerText = ui.core.t("app.out_of_map_area") || "";
+      } else {
+        const errorMap: Record<string, string> = {
+          user_gps_deny: "app.user_gps_deny",
+          gps_miss: "app.gps_miss",
+          gps_timeout: "app.gps_timeout"
+        };
+
+        (ui.core.mapDivDocument!.querySelector(
+          ".modal_title"
+        ) as HTMLElement)!.innerText = ui.core.t("app.gps_error") || "";
+        (ui.core.mapDivDocument!.querySelector(
+          ".modal_gpsD_content"
+        ) as HTMLElement)!.innerText =
+          ui.core.t(errorMap[error] || "app.gps_error") || "";
+      }
+
+      ui.modalSetting("gpsD");
+      modal.show();
+    } else {
+      ui.lastGPSError = undefined;
     }
   });
 

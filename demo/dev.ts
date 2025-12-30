@@ -7,6 +7,20 @@ import "../less/swiper4.css";
 const mapboxgl = window.mapboxgl;
 const maplibregl = window.maplibregl;
 
+/*const geolocate = (window as any).geolocate;
+if (geolocate) {
+  console.log(geolocate);
+  geolocate.use();
+  navigator.geolocation.getCurrentPosition(function(position) {
+    console.log("###### Coords ######");
+    console.log(position.coords);
+  });
+  setTimeout(() => {
+    geolocate.send({ lat: 36.246206, lng: 139.528399 }); // Tatebayashi Station
+    geolocate.restore();
+  }, 30000);
+}*/
+
 const option = {
   enableCache: true,
   restoreSession: true,

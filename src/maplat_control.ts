@@ -4,7 +4,6 @@ import { MapEvent } from "ol";
 
 import pointer from "./pointer_images";
 import { createElement, MaplatApp } from "@maplat/core";
-import * as bsn from "bootstrap.native";
 import { getIcon } from "./icons";
 import type { MaplatUi } from "./index";
 import type { ControlOptions } from "./types";
@@ -356,6 +355,10 @@ export class SetGPS extends CustomControl {
 
       if (core.alwaysGpsOn) {
         core.handleGPS(true);
+        if (self.ui.lastGPSError === "gps_out") {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          self.ui.core!.dispatchEvent(new CustomEvent("outOfMap") as any);
+        }
       } else {
         core.handleGPS(!currentlyEnabled);
       }
@@ -365,66 +368,6 @@ export class SetGPS extends CustomControl {
 
     this.ui = options.ui!;
     this.moveTo_ = false;
-
-    if (this.ui && this.ui.core) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      this.ui.core.addEventListener("gps_error", (evt: any) => {
-        console.log("GPS Error:", evt);
-        const errorMap: Record<string, string> = {
-          user_gps_deny: "app.user_gps_deny",
-          gps_miss: "app.gps_miss",
-          gps_timeout: "app.gps_timeout"
-        };
-
-        if (!this.ui.core) return;
-        (this.ui.core.mapDivDocument!.querySelector(
-          ".modal_title"
-        ) as HTMLElement)!.innerText = this.ui.core.t("app.gps_error");
-        (this.ui.core.mapDivDocument!.querySelector(
-          ".modal_gpsD_content"
-        ) as HTMLElement)!.innerText = this.ui.core.t(
-          errorMap[evt.detail] || "app.gps_error"
-        );
-        const modalElm =
-          this.ui.core.mapDivDocument!.querySelector(".modalBase")!;
-        const modal = new bsn.Modal(modalElm, {
-          root: this.ui.core.mapDivDocument
-        });
-        this.ui.modalSetting("gpsD");
-        modal.show();
-      });
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      this.ui.core.addEventListener("gps_result", (evt: any) => {
-        console.log("GPS Result:", evt);
-        if (evt.detail && evt.detail.error) {
-          const errorMap: Record<string, string> = {
-            user_gps_deny: "app.user_gps_deny",
-            gps_miss: "app.gps_miss",
-            gps_timeout: "app.gps_timeout",
-            gps_off: "app.out_of_map"
-          };
-
-          if (!this.ui.core) return;
-
-          (this.ui.core.mapDivDocument!.querySelector(
-            ".modal_title"
-          ) as HTMLElement)!.innerText = this.ui.core.t("app.gps_error");
-          (this.ui.core.mapDivDocument!.querySelector(
-            ".modal_gpsD_content"
-          ) as HTMLElement)!.innerText = this.ui.core.t(
-            errorMap[evt.detail.error] || "app.gps_error"
-          );
-          const modalElm =
-            this.ui.core.mapDivDocument!.querySelector(".modalBase")!;
-          const modal = new bsn.Modal(modalElm, {
-            root: this.ui.core.mapDivDocument
-          });
-          this.ui.modalSetting("gpsD");
-          modal.show();
-        }
-      });
-    }
 
     if (control_settings["gps"]) {
       const button = this.element.querySelector("button");

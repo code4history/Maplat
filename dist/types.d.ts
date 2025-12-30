@@ -65,6 +65,20 @@ export interface MapSource {
     xy2SysCoord?: (xy: number[]) => Promise<number[]> | number[];
     thumbnail?: string;
 }
+export type MediaObject = {
+    src: string;
+    thumbnail?: string;
+    type?: string;
+    caption?: string;
+    desc?: string;
+    "fit-to-container"?: boolean;
+    "debug-mode"?: boolean;
+    "camera-position"?: string;
+    "camera-target"?: string;
+    "show-texture"?: boolean;
+    [key: string]: unknown;
+};
+export type MediaSetting = string | MediaObject;
 export interface MarkerData {
     markerId: string;
     lnglat?: number[];
@@ -72,10 +86,8 @@ export interface MarkerData {
     icon?: string;
     description?: string;
     images?: string[];
-    image?: string | string[] | {
-        src: string;
-        desc?: string;
-    }[];
+    image?: MediaSetting | MediaSetting[];
+    media?: MediaSetting | MediaSetting[];
     address?: string;
     desc?: string;
     url?: string;

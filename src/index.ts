@@ -74,6 +74,7 @@ export class MaplatUi extends EventTarget {
   html_id_seed: string;
   lastClickPixel: Pixel | undefined;
   lastClickCoordinate: Coordinate | undefined;
+  lastGPSError: string | undefined;
 
   constructor(appOption: MaplatAppOption) {
     super();
