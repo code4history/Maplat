@@ -136,21 +136,20 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
 
 function initGpsHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
   const enableOutOfMap = !appOption.presentationMode;
+  const mapDiv = ui.core!.mapDivDocument!;
+  const modalBase = mapDiv.querySelector(".modalBase")!;
+  const modalTitle = mapDiv.querySelector(".modal_title") as HTMLElement;
+  const modalGpsDContent = mapDiv.querySelector(
+    ".modal_gpsD_content"
+  ) as HTMLElement;
 
   ui.core!.addEventListener("outOfMap", (_evt: unknown) => {
     console.log("Event: outOfMap");
     if (enableOutOfMap) {
-      (
-        ui.core!.mapDivDocument!.querySelector(".modal_title") as HTMLElement
-      ).innerText = ui.core!.t("app.out_of_map") || "";
-      (
-        ui.core!.mapDivDocument!.querySelector(
-          ".modal_gpsD_content"
-        ) as HTMLElement
-      ).innerText = ui.core!.t("app.out_of_map_area") || "";
-      const modalElm = ui.core!.mapDivDocument!.querySelector(".modalBase")!;
+      modalTitle.innerText = ui.core!.t("app.out_of_map") || "";
+      modalGpsDContent.innerText = ui.core!.t("app.out_of_map_area") || "";
       ui.modalSetting("gpsD");
-      prepareModal(modalElm, { root: ui.core!.mapDivDocument! }).show();
+      prepareModal(modalBase, { root: mapDiv }).show();
     }
   });
 
@@ -164,17 +163,12 @@ function initGpsHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
     };
 
     if (!ui.core) return;
-    (ui.core.mapDivDocument!.querySelector(
-      ".modal_title"
-    ) as HTMLElement)!.innerText = ui.core.t("app.gps_error") || "";
-    (ui.core.mapDivDocument!.querySelector(
-      ".modal_gpsD_content"
-    ) as HTMLElement)!.innerText =
+    modalTitle.innerText = ui.core.t("app.gps_error") || "";
+    modalGpsDContent.innerText =
       ui.core.t(errorMap[evt.detail] || "app.gps_error") || "";
-    const modalElm = ui.core.mapDivDocument!.querySelector(".modalBase")!;
     ui.modalSetting("gpsD");
-    prepareModal(modalElm, {
-      root: ui.core.mapDivDocument
+    prepareModal(modalBase, {
+      root: mapDiv
     }).show();
   });
 
@@ -193,18 +187,13 @@ function initGpsHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
 
       if (!ui.core) return;
 
-      const modalElm = ui.core.mapDivDocument!.querySelector(".modalBase")!;
-      const modal = prepareModal(modalElm, {
-        root: ui.core.mapDivDocument
+      const modal = prepareModal(modalBase, {
+        root: mapDiv
       });
 
       if (error === "gps_out") {
-        (ui.core.mapDivDocument!.querySelector(
-          ".modal_title"
-        ) as HTMLElement)!.innerText = ui.core.t("app.out_of_map") || "";
-        (ui.core.mapDivDocument!.querySelector(
-          ".modal_gpsD_content"
-        ) as HTMLElement)!.innerText = ui.core.t("app.out_of_map_area") || "";
+        modalTitle.innerText = ui.core.t("app.out_of_map") || "";
+        modalGpsDContent.innerText = ui.core.t("app.out_of_map_area") || "";
       } else {
         const errorMap: Record<string, string> = {
           user_gps_deny: "app.user_gps_deny",
@@ -212,12 +201,8 @@ function initGpsHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
           gps_timeout: "app.gps_timeout"
         };
 
-        (ui.core.mapDivDocument!.querySelector(
-          ".modal_title"
-        ) as HTMLElement)!.innerText = ui.core.t("app.gps_error") || "";
-        (ui.core.mapDivDocument!.querySelector(
-          ".modal_gpsD_content"
-        ) as HTMLElement)!.innerText =
+        modalTitle.innerText = ui.core.t("app.gps_error") || "";
+        modalGpsDContent.innerText =
           ui.core.t(errorMap[error] || "app.gps_error") || "";
       }
 
@@ -506,6 +491,8 @@ function initMapEventListeners(ui: MaplatUi) {
 
 function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
   let cachedMarkerListMapID: string | undefined;
+  const mapDiv = ui.core!.mapDivDocument!;
+  const modalBase = mapDiv.querySelector(".modalBase") as HTMLElement;
 
   const restoreTransparency =
     ui.core!.initialRestore.transparency ||
@@ -513,7 +500,7 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
   const enableSplash = !ui.core!.initialRestore.mapID;
 
   // Delegated event listener for share buttons
-  ui.core!.mapDivDocument!.addEventListener("click", (evt: Event) => {
+  mapDiv.addEventListener("click", (evt: Event) => {
     const target = evt.target as HTMLElement;
     const btn = target.closest(".share");
     if (!btn) return;
@@ -556,9 +543,7 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
     }
   });
 
-  const prevDefs = ui.core!.mapDivDocument!.querySelectorAll(
-    ".prevent-default-ui"
-  );
+  const prevDefs = mapDiv.querySelectorAll(".prevent-default-ui");
   for (let i = 0; i < prevDefs.length; i++) {
     const target = prevDefs[i];
     target.addEventListener("touchstart", (evt: Event) => {
@@ -578,17 +563,15 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
       }
       return ret;
     };
-    let i18nTargets =
-      ui.core!.mapDivDocument!.querySelectorAll("[data-i18n], [din]");
+
+    let i18nTargets = mapDiv.querySelectorAll("[data-i18n], [din]");
     for (let i = 0; i < i18nTargets.length; i++) {
       const target = i18nTargets[i];
       const key =
         target.getAttribute("data-i18n") || target.getAttribute("din");
       (target as HTMLElement).innerText = imageExtractor(ui.core!.t(key));
     }
-    i18nTargets = ui.core!.mapDivDocument!.querySelectorAll(
-      "[data-i18n-html], [dinh]"
-    );
+    i18nTargets = mapDiv.querySelectorAll("[data-i18n-html], [dinh]");
     for (let i = 0; i < i18nTargets.length; i++) {
       const target = i18nTargets[i];
       const key =
@@ -596,7 +579,7 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
       target.innerHTML = imageExtractor(ui.core!.t(key));
     }
     // Explicitly fix app_loading_body with a more robust selector if needed, or re-run translation for it
-    const appLoadingBody = ui.core!.mapDivDocument!.querySelector(
+    const appLoadingBody = mapDiv.querySelector(
       '[data-i18n="html.app_loading_body"], [din="html.app_loading_body"]'
     );
     if (appLoadingBody) {
@@ -688,22 +671,17 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       if ((ui.core!.appData as any).splash) splash = true;
 
-      const modalElm = ui.core!.mapDivDocument!.querySelector(".modalBase")!;
-      // const modal = new bsn.Modal(modalElm, { root: ui.core!.mapDivDocument! });
-      const modal = prepareModal(modalElm, { root: ui.core!.mapDivDocument! });
+      // const modal = new bsn.Modal(modalElm, { root: mapDiv });
+      const modal = prepareModal(modalBase, { root: mapDiv });
 
-      (
-        ui.core!.mapDivDocument!.querySelector(
-          ".modal_load_title"
-        ) as HTMLElement
-      ).innerText = ui.core!.translate(ui.core!.appData!.appName) || "";
+      (mapDiv.querySelector(".modal_load_title") as HTMLElement).innerText =
+        ui.core!.translate(ui.core!.appData!.appName) || "";
       if (splash) {
-        ui.core!.mapDivDocument!.querySelector(".splash_img")!
+        mapDiv
+          .querySelector(".splash_img")!
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           .setAttribute("src", `img/${(ui.core!.appData as any).splash}`);
-        ui.core!.mapDivDocument!.querySelector(".splash_div")!.classList.remove(
-          "hide"
-        );
+        mapDiv.querySelector(".splash_div")!.classList.remove("hide");
       }
       ui.modalSetting("load");
       modal.show();
@@ -725,8 +703,7 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ui.core!.mapObject.on("click_control", (evt: any) => {
       const control = evt.control || (evt.frameState && evt.frameState.control);
-      const modalElm = ui.core!.mapDivDocument!.querySelector(".modalBase")!;
-      const modal = prepareModal(modalElm);
+      const modal = prepareModal(modalBase);
 
       if (control === "help") {
         ui.modalSetting("help");
@@ -734,7 +711,7 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
       } else if (control === "share") {
         ui.modalSetting("share");
 
-        const modalBody = modalElm.querySelector(".modal-body") as HTMLElement;
+        const modalBody = modalBase.querySelector(".modal-body") as HTMLElement;
 
         const baseUrl = ui.getShareUrl("app");
         const viewUrl = ui.getShareUrl("view");
@@ -780,7 +757,7 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
         if (cachedMarkerListMapID === currentMapID) return;
         cachedMarkerListMapID = currentMapID;
 
-        const listRoot = modalElm.querySelector(
+        const listRoot = modalBase.querySelector(
           ".modal_marker_list_content ul.list-group"
         ) as HTMLElement;
         listRoot.innerHTML = "";
@@ -883,8 +860,7 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
       } else if (control === "copyright") {
         ui.modalSetting("map");
         const mapData = ui.core!.from!;
-        const modalRoot = ui.core!.mapDivDocument!;
-        const titleEl = modalRoot.querySelector(".modal_map .modal_title");
+        const titleEl = mapDiv.querySelector(".modal_map .modal_title");
         if (titleEl) {
           const titleVal = mapData.get ? mapData.get("title") : mapData.title;
           (titleEl as HTMLElement).innerText =
@@ -897,7 +873,7 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
             ? mapData.get(key)
             : // eslint-disable-next-line @typescript-eslint/no-explicit-any
               (mapData as any)[key];
-          const container = modalRoot.querySelector(`.modal_map .${key}_div`);
+          const container = mapDiv.querySelector(`.modal_map .${key}_div`);
           if (container) {
             if (val) {
               (container as HTMLElement).style.display = "block";
@@ -920,7 +896,7 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
           }
         });
 
-        const cacheDiv = modalRoot.querySelector(
+        const cacheDiv = mapDiv.querySelector(
           ".modal_cache_content"
         ) as HTMLElement;
         const cacheSize = cacheDiv.querySelector(".cache_size") as HTMLElement;
@@ -1070,15 +1046,14 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
           // And weiwudi_gw_logic sends type: 'canceled'.
           weiwudi.addEventListener("canceled", fetchHandler);
 
-          const modalEl = modalRoot.querySelector(".modalBase") as HTMLElement;
           const removeListeners = () => {
             weiwudi.removeEventListener("proceed", fetchHandler);
             weiwudi.removeEventListener("finish", fetchHandler);
             weiwudi.removeEventListener("stop", fetchHandler);
             weiwudi.removeEventListener("canceled", fetchHandler);
-            modalEl.removeEventListener("hidden.bs.modal", removeListeners);
+            modalBase.removeEventListener("hidden.bs.modal", removeListeners);
           };
-          modalEl.addEventListener("hidden.bs.modal", removeListeners);
+          modalBase.addEventListener("hidden.bs.modal", removeListeners);
 
           const newElem = cacheFetch.cloneNode(true);
           cacheFetch.parentNode!.replaceChild(newElem, cacheFetch);
@@ -1125,8 +1100,7 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ui.setShowBorder(!(ui.core!.stateBuffer as any).showBorder);
       } else if (control === "hideMarker") {
-        const current =
-          ui.core!.mapDivDocument!.classList.contains("hide-marker");
+        const current = mapDiv.classList.contains("hide-marker");
         ui.setHideMarker(!current);
       }
       ui.updateUrl();
