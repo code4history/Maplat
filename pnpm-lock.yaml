@@ -15,8 +15,8 @@ importers:
         specifier: ^0.2.0
         version: 0.2.0(workbox-routing@7.4.0)
       '@maplat/core':
-        specifier: 0.12.1
-        version: 0.12.1(mapbox-gl@3.17.0)(maplibre-gl@4.7.1)(ol@10.7.0)(workbox-routing@7.4.0)
+        specifier: 0.12.2
+        version: 0.12.2(mapbox-gl@3.17.0)(maplibre-gl@4.7.1)(ol@10.7.0)(workbox-routing@7.4.0)
       '@maplat/transform':
         specifier: ^0.4.0
         version: 0.4.0
@@ -1104,8 +1104,8 @@ packages:
     resolution: {integrity: sha512-Es6WcD0nO5l+2BOQS4uLfNPYQaNDfbot3X1XUoloz+x0mPDS3eeORZJl06HXjwBG1fOGwCRnzK88LMdxKRrd6Q==}
     engines: {node: '>=6.0.0'}
 
-  '@maplat/core@0.12.1':
-    resolution: {integrity: sha512-uMxh5S9IuKlujzTezzznngGIVt+6j3bechQo99L9ufMvUQr3he+tjeIq48n7OtXrcZ2TfxqH/7JQgK0rFUo8PQ==}
+  '@maplat/core@0.12.2':
+    resolution: {integrity: sha512-GEVsPQ0Gj5M1p+EmpISfIOKAJowN8ND7oMV649NqxpGveQou2KEdBIjBKmMCjk11Cj7FXPEwe0hqGCzsvXQILA==}
     engines: {pnpm: '>=9'}
     peerDependencies:
       mapbox-gl: ^1.0.0 || ^2.0.0 || ^3.0.0
@@ -4981,7 +4981,7 @@ snapshots:
 
   '@mapbox/whoots-js@3.1.0': {}
 
-  '@maplat/core@0.12.1(mapbox-gl@3.17.0)(maplibre-gl@4.7.1)(ol@10.7.0)(workbox-routing@7.4.0)':
+  '@maplat/core@0.12.2(mapbox-gl@3.17.0)(maplibre-gl@4.7.1)(ol@10.7.0)(workbox-routing@7.4.0)':
     dependencies:
       '@c4h/weiwudi': 0.2.0(workbox-routing@7.4.0)
       '@maplat/transform': 0.4.0
