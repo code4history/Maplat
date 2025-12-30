@@ -1,3 +1,28 @@
+import * as bsn from "bootstrap.native";
+
+const MODAL_CLOSE_ATTACHED = "data-maplat-close-attached";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function prepareModal(modalElm: Element | HTMLElement, options?: any) {
+  const el = modalElm as HTMLElement;
+  let modal = bsn.Modal.getInstance(el);
+  if (!modal) {
+    modal = new bsn.Modal(el, options);
+  }
+
+  if (!el.hasAttribute(MODAL_CLOSE_ATTACHED)) {
+    const closeBtns = el.querySelectorAll(".close, .modal-footer button");
+    for (let i = 0; i < closeBtns.length; i++) {
+      closeBtns[i].addEventListener("click", () => {
+        modal.hide();
+      });
+    }
+    el.setAttribute(MODAL_CLOSE_ATTACHED, "true");
+  }
+
+  return modal;
+}
+
 export function resolveRelativeLink(
   file: string,
   fallbackPath: string | null

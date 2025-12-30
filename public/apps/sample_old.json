@@ -1,22 +1,25 @@
 {
-    "appName" : {
-        "ja" : "盛岡市古地図アプリ",
-        "en" : "Historical Map Application of Morioka"
+    "appName": {
+        "ja": "盛岡市古地図アプリ",
+        "en": "Historical Map Application of Morioka"
     },
-    "lang" : "ja",
-    "fakeGps" : true,
-    "fakeCenter" : {
-        "ja" : "盛岡市",
-        "en" : "Morioka"
+    "lang": "ja",
+    "fakeGps": true,
+    "fakeCenter": {
+        "ja": "盛岡市",
+        "en": "Morioka"
     },
-    "fakeRadius" : 10,
-    "homePosition" : [141.149989,39.699952],
-    "defaultZoom" : 17,
-    "zoomRestriction" : true,
-    "minZoom" : 10,
-    "maxZoom" : 15,
-    "startFrom" : "morioka_ndl2",
-    "sources" : [
+    "fakeRadius": 10,
+    "homePosition": [
+        141.149989,
+        39.699952
+    ],
+    "defaultZoom": 17,
+    "zoomRestriction": true,
+    "minZoom": 10,
+    "maxZoom": 15,
+    "startFrom": "morioka_ndl2",
+    "sources": [
         {
             "label": "1644 (TMS)",
             "mapID": "morioka_ndl_affine"
@@ -33,15 +36,29 @@
             "mapID": "morioka"
         },
         "gsi",
-        "osm",
+        {
+            "mapID": "osm",
+            "title": {
+                "ja": "オープンストリートマップ",
+                "en": "OpenStreetMap"
+            },
+            "label": {
+                "ja": "OSM(現在)",
+                "en": "OSM(Now)"
+            },
+            "attr": "©︎ OpenStreetMap contributors",
+            "url": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+            "maxZoom": 19,
+            "maptype": "base"
+        },
         {
             "mapID": "mapbox",
-            "label" : "Mapbox"
+            "label": "Mapbox"
         },
         {
             "mapID": "google",
             "label": "Google"
         }
-    ], 
-    "pois" : "morioka_one_poi.json"
+    ],
+    "pois": "morioka_one_poi.json"
 }

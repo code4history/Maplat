@@ -21,7 +21,7 @@ import ContextMenu from "./contextmenu";
 import Weiwudi from "@c4h/weiwudi";
 import absoluteUrl from "./absolute_url";
 import * as QRCode from "qrcode";
-import { ellips, isBasemap, encBytes } from "./ui_utils";
+import { ellips, encBytes, isBasemap, prepareModal } from "./ui_utils";
 
 import { poiWebControl } from "./ui_marker";
 
@@ -604,21 +604,8 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
         ) as HTMLElement
       ).innerText = ui.core!.t("app.out_of_map_area") || "";
       const modalElm = ui.core!.mapDivDocument!.querySelector(".modalBase")!;
-      const modal =
-        bsn.Modal.getInstance(modalElm) ||
-        new bsn.Modal(modalElm, { root: ui.core!.mapDivDocument! });
-
-      const closeBtns = modalElm.querySelectorAll(
-        ".close, .modal-footer button"
-      );
-      for (let i = 0; i < closeBtns.length; i++) {
-        closeBtns[i].addEventListener("click", () => {
-          modal.hide();
-        });
-      }
-
       ui.modalSetting("gpsD");
-      modal.show();
+      prepareModal(modalElm, { root: ui.core!.mapDivDocument! }).show();
     }
   });
 
@@ -640,21 +627,10 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
     ) as HTMLElement)!.innerText =
       ui.core.t(errorMap[evt.detail] || "app.gps_error") || "";
     const modalElm = ui.core.mapDivDocument!.querySelector(".modalBase")!;
-    const modal =
-      bsn.Modal.getInstance(modalElm) ||
-      new bsn.Modal(modalElm, {
-        root: ui.core.mapDivDocument
-      });
-
-    const closeBtns = modalElm.querySelectorAll(".close, .modal-footer button");
-    for (let i = 0; i < closeBtns.length; i++) {
-      closeBtns[i].addEventListener("click", () => {
-        modal.hide();
-      });
-    }
-
     ui.modalSetting("gpsD");
-    modal.show();
+    prepareModal(modalElm, {
+      root: ui.core.mapDivDocument
+    }).show();
   });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -673,20 +649,9 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
       if (!ui.core) return;
 
       const modalElm = ui.core.mapDivDocument!.querySelector(".modalBase")!;
-      const modal =
-        bsn.Modal.getInstance(modalElm) ||
-        new bsn.Modal(modalElm, {
-          root: ui.core.mapDivDocument
-        });
-
-      const closeBtns = modalElm.querySelectorAll(
-        ".close, .modal-footer button"
-      );
-      for (let i = 0; i < closeBtns.length; i++) {
-        closeBtns[i].addEventListener("click", () => {
-          modal.hide();
-        });
-      }
+      const modal = prepareModal(modalElm, {
+        root: ui.core.mapDivDocument
+      });
 
       if (error === "gps_out") {
         (ui.core.mapDivDocument!.querySelector(
@@ -960,16 +925,7 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
     ui.core!.mapObject.on("click_control", (evt: any) => {
       const control = evt.control || (evt.frameState && evt.frameState.control);
       const modalElm = ui.core!.mapDivDocument!.querySelector(".modalBase")!;
-      const modal = bsn.Modal.getInstance(modalElm) || new bsn.Modal(modalElm);
-
-      const closeBtns = modalElm.querySelectorAll(
-        ".close, .modal-footer button"
-      );
-      for (let i = 0; i < closeBtns.length; i++) {
-        closeBtns[i].addEventListener("click", () => {
-          modal.hide();
-        });
-      }
+      const modal = prepareModal(modalElm);
 
       if (control === "help") {
         ui.modalSetting("help");

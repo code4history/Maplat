@@ -1,9 +1,9 @@
 import { createElement } from "@maplat/core";
-import * as bsn from "bootstrap.native";
+
 // import { Swiper } from "./swiper_ex";
 import "@c4h/chuci";
 import { point, polygon, booleanPointInPolygon } from "@turf/turf";
-import { resolveRelativeLink } from "./ui_utils";
+import { resolveRelativeLink, prepareModal } from "./ui_utils";
 
 function detectMediaType(src: string): string {
   if (src.includes("youtube.com") || src.includes("youtu.be")) {
@@ -160,14 +160,7 @@ export function poiWebControl(
 
 export function handleMarkerAction(ui: MaplatUi, data: MarkerData) {
   const modalElm = ui.core!.mapDivDocument!.querySelector(".modalBase")!;
-  const modal = bsn.Modal.getInstance(modalElm) || new bsn.Modal(modalElm);
-
-  const closeBtns = modalElm.querySelectorAll(".close, .modal-footer button");
-  for (let i = 0; i < closeBtns.length; i++) {
-    closeBtns[i].addEventListener("click", () => {
-      modal.hide();
-    });
-  }
+  const modal = prepareModal(modalElm);
 
   if (data.directgo) {
     let blank = false;

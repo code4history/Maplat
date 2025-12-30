@@ -136,7 +136,21 @@
             "mapID": "google",
             "label": "Google"
         },
-        "osm"
+        {
+            "mapID": "osm",
+            "title": {
+                "ja": "オープンストリートマップ",
+                "en": "OpenStreetMap"
+            },
+            "label": {
+                "ja": "OSM(現在)",
+                "en": "OSM(Now)"
+            },
+            "attr": "©︎ OpenStreetMap contributors",
+            "url": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+            "maxZoom": 19,
+            "maptype": "base"
+        }
     ],
     "pois": [
         "tatebayashi.json",
