@@ -85,3 +85,14 @@ export function isBasemap(source: unknown): boolean {
   if (source.constructor && source.constructor.isBasemap_ === true) return true;
   return true;
 }
+
+export function encBytes(bytes: number): string {
+  const suffixes = ["Bytes", "KBytes", "MBytes", "GBytes"];
+  let suffix = "Bytes";
+  for (let i = 0; i < suffixes.length; i++) {
+    suffix = suffixes[i];
+    if (bytes < 1000) break;
+    bytes = bytes / 1000;
+  }
+  return `${Math.floor(bytes * 10) / 10} ${suffix}`;
+}

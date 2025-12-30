@@ -7,3 +7,4 @@ export declare function isMaplatSource(source: unknown): source is {
     };
 };
 export declare function isBasemap(source: unknown): boolean;
+export declare function encBytes(bytes: number): string;

@@ -21,7 +21,7 @@ import ContextMenu from "./contextmenu";
 import Weiwudi from "@c4h/weiwudi";
 import absoluteUrl from "./absolute_url";
 import * as QRCode from "qrcode";
-import { ellips, isBasemap } from "./ui_utils";
+import { ellips, isBasemap, encBytes } from "./ui_utils";
 
 import { poiWebControl } from "./ui_marker";
 
@@ -1117,6 +1117,7 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
             });
           }
         });
+        modal.show();
       } else if (control === "copyright") {
         ui.modalSetting("map");
         const mapData = ui.core!.from!;
@@ -1156,6 +1157,207 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
             }
           }
         });
+
+        const cacheDiv = modalRoot.querySelector(
+          ".modal_cache_content"
+        ) as HTMLElement;
+        const cacheSize = cacheDiv.querySelector(".cache_size") as HTMLElement;
+        let cacheFetch = cacheDiv.querySelector(
+          ".cache_fetch"
+        ) as HTMLButtonElement;
+        let cacheDelete = cacheDiv.querySelector(
+          ".cache_delete"
+        ) as HTMLButtonElement;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const weiwudi = (mapData as any).weiwudi;
+        if (
+          ui.core!.enableCache &&
+          weiwudi &&
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          !(mapData as any).vector
+        ) {
+          cacheDiv.style.display = "block";
+          cacheFetch.style.display = "none";
+          cacheDelete.style.display = "none";
+          const totalTile = weiwudi.totalTile;
+          let isFetching = false;
+
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          let currentStats: any = undefined;
+
+          const updateButtons = () => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const coreAny = ui.core as any;
+            const t = coreAny.t
+              ? coreAny.t.bind(ui.core)
+              : ui.core!.translate.bind(ui.core);
+
+            if (totalTile) {
+              cacheFetch.style.display = "inline-block";
+              if (isFetching) {
+                cacheFetch.innerHTML =
+                  t("html.cache_cancel") || "Cancel download";
+                cacheFetch.classList.remove("btn-default");
+                cacheFetch.classList.add("btn-danger");
+                if (!cacheFetch.classList.contains("btn-default"))
+                  cacheFetch.classList.add("btn-default");
+                cacheFetch.disabled = false;
+              } else {
+                cacheFetch.innerHTML = t("html.cache_fetch") || "Bulk download";
+                if (!cacheFetch.classList.contains("btn-default"))
+                  cacheFetch.classList.add("btn-default");
+                cacheFetch.classList.remove("btn-danger");
+
+                // Disable if 100%
+                if (currentStats && currentStats.count === currentStats.total) {
+                  cacheFetch.disabled = true;
+                  // User requested disabled, not hidden
+                  cacheFetch.style.display = "inline-block";
+                } else {
+                  cacheFetch.disabled = false;
+                  cacheFetch.style.display = "inline-block";
+                }
+              }
+            } else {
+              cacheFetch.style.display = "none";
+            }
+
+            if (currentStats && currentStats.size > 0) {
+              cacheDelete.style.display = "inline-block";
+              // Disable if fetching
+              cacheDelete.disabled = isFetching;
+            } else {
+              // User requested disabled, not hidden
+              cacheDelete.style.display = "inline-block";
+              cacheDelete.disabled = true;
+            }
+            if (isFetching) cacheDelete.disabled = true; // Double ensure
+          };
+
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const showStats = async (stats: any | undefined = undefined) => {
+            if (!stats) stats = await weiwudi.stats();
+            currentStats = stats;
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const coreAny = ui.core as any;
+            const t = coreAny.t
+              ? coreAny.t.bind(ui.core)
+              : ui.core!.translate.bind(ui.core);
+
+            const sizeStr = isFetching
+              ? t("html.cache_processing") || "Calculating..."
+              : encBytes(stats.size || 0);
+
+            if (totalTile) {
+              const count = stats.count || 0;
+              const percent = Math.floor((1000 * count) / totalTile);
+              cacheSize.innerText = `${sizeStr} (${
+                count
+              } / ${totalTile} tiles [${percent / 10}%])`;
+            } else {
+              cacheSize.innerText = `${sizeStr} (${stats.count || 0} tiles)`;
+            }
+            updateButtons();
+          };
+          showStats();
+
+          let updateFrame = 0;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          let latestStats: any = null;
+
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const fetchHandler = (evt: any) => {
+            if (evt.type === "proceed") {
+              isFetching = true;
+              latestStats = {
+                size: evt.detail.size || currentStats?.size || 0,
+                count: evt.detail.processed || evt.detail.count || 0,
+                total: evt.detail.total || totalTile || 0
+              };
+
+              if (!updateFrame) {
+                updateFrame = requestAnimationFrame(() => {
+                  updateFrame = 0;
+                  try {
+                    if (latestStats) showStats(latestStats);
+                  } catch (e) {
+                    console.error("Error in showStats:", e);
+                  }
+                });
+              }
+            } else if (
+              evt.type === "finish" ||
+              evt.type === "stop" ||
+              evt.type === "canceled"
+            ) {
+              if (updateFrame) {
+                cancelAnimationFrame(updateFrame);
+                updateFrame = 0;
+              }
+              isFetching = false;
+              latestStats = null;
+              showStats();
+            }
+          };
+          // Weiwudi might dispatch 'proceed', 'finish', 'stop', 'canceled'
+          weiwudi.addEventListener("proceed", fetchHandler);
+          weiwudi.addEventListener("finish", fetchHandler);
+          weiwudi.addEventListener("stop", fetchHandler);
+          // Check if weiwudi dispatches 'canceled'. Based on my read, it does dispatch e.data.type
+          // And weiwudi_gw_logic sends type: 'canceled'.
+          weiwudi.addEventListener("canceled", fetchHandler);
+
+          const modalEl = modalRoot.querySelector(".modalBase") as HTMLElement;
+          const removeListeners = () => {
+            weiwudi.removeEventListener("proceed", fetchHandler);
+            weiwudi.removeEventListener("finish", fetchHandler);
+            weiwudi.removeEventListener("stop", fetchHandler);
+            weiwudi.removeEventListener("canceled", fetchHandler);
+            modalEl.removeEventListener("hidden.bs.modal", removeListeners);
+          };
+          modalEl.addEventListener("hidden.bs.modal", removeListeners);
+
+          const newElem = cacheFetch.cloneNode(true);
+          cacheFetch.parentNode!.replaceChild(newElem, cacheFetch);
+          // Initial update handled by showStats -> updateButtons
+          cacheFetch = newElem as HTMLButtonElement;
+
+          cacheFetch.addEventListener("click", async () => {
+            if (isFetching) {
+              await weiwudi.cancel();
+            } else {
+              isFetching = true; // Set immediately to update UI
+              updateButtons();
+              try {
+                await weiwudi.fetchAll();
+              } catch {
+                isFetching = false;
+                updateButtons();
+              }
+            }
+            await showStats();
+          });
+
+          const newElem2 = cacheDelete.cloneNode(true);
+          cacheDelete.parentNode!.replaceChild(newElem2, cacheDelete);
+          cacheDelete = newElem2 as HTMLButtonElement;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const t = (ui.core as any).t;
+          cacheDelete.innerHTML =
+            (t ? t.call(ui.core, "html.cache_delete") : undefined) ||
+            ui.core!.translate("html.cache_delete") ||
+            "Clear";
+
+          cacheDelete.addEventListener("click", async () => {
+            if (isFetching) return; // Should be disabled, but safety check
+            await weiwudi.clean();
+            await showStats();
+          });
+        } else {
+          cacheDiv.style.display = "none";
+        }
+
         modal.show();
       } else if (control === "border") {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
