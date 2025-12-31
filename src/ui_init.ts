@@ -286,14 +286,13 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
   const baseSources: any[] = [];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const overlaySources: any[] = [];
-  for (let i = 0; i < sources.length; i++) {
-    const source = sources[i];
+  sources.forEach(source => {
     if (isBasemap(source)) {
       baseSources.push(source);
     } else {
       overlaySources.push(source);
     }
-  }
+  });
 
   const baseSwiper = (ui.baseSwiper = new Swiper(".base-swiper", {
     slidesPerView: 2,
@@ -369,8 +368,7 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
     );
   }
 
-  for (let i = 0; i < baseSources.length; i++) {
-    const source = baseSources[i];
+  baseSources.forEach(source => {
     const thumbKey = source.thumbnail ? source.thumbnail.split("/").pop() : "";
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const thumbUrl = (pointer as any)[thumbKey] || source.thumbnail;
@@ -380,9 +378,8 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
           thumbUrl
         }"><div> ${ui.core!.translate(source.label)}</div> </div> `
     );
-  }
-  for (let i = 0; i < overlaySources.length; i++) {
-    const source = overlaySources[i];
+  });
+  overlaySources.forEach(source => {
     const colorCss = source.envelope ? ` ${source.envelopeColor}` : "";
     const thumbKey = source.thumbnail ? source.thumbnail.split("/").pop() : "";
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -393,7 +390,7 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
           thumbUrl
         }"><div> ${ui.core!.translate(source.label)}</div> </div> `
     );
-  }
+  });
 
   overlaySwiper.on("slideChange", () => {
     ui.updateEnvelope();
@@ -562,12 +559,11 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
   });
 
   const prevDefs = mapDiv.querySelectorAll(".prevent-default-ui");
-  for (let i = 0; i < prevDefs.length; i++) {
-    const target = prevDefs[i];
+  prevDefs.forEach(target => {
     target.addEventListener("touchstart", (evt: Event) => {
       evt.preventDefault();
     });
-  }
+  });
 
   ui.core!.addEventListener("uiPrepare", (_evt: unknown) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -583,19 +579,17 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
     };
 
     let i18nTargets = mapDiv.querySelectorAll("[data-i18n], [din]");
-    for (let i = 0; i < i18nTargets.length; i++) {
-      const target = i18nTargets[i];
+    i18nTargets.forEach(target => {
       const key =
         target.getAttribute("data-i18n") || target.getAttribute("din");
       (target as HTMLElement).innerText = imageExtractor(ui.core!.t(key));
-    }
+    });
     i18nTargets = mapDiv.querySelectorAll("[data-i18n-html], [dinh]");
-    for (let i = 0; i < i18nTargets.length; i++) {
-      const target = i18nTargets[i];
+    i18nTargets.forEach(target => {
       const key =
         target.getAttribute("data-i18n-html") || target.getAttribute("dinh");
       target.innerHTML = imageExtractor(ui.core!.t(key));
-    }
+    });
     // Explicitly fix app_loading_body with a more robust selector if needed, or re-run translation for it
     const appLoadingBody = mapDiv.querySelector(
       '[data-i18n="html.app_loading_body"], [din="html.app_loading_body"]'

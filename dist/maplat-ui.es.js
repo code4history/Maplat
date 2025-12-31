@@ -8136,15 +8136,11 @@ const Bx = /* @__PURE__ */ dx(Ps), Dx = /* @__PURE__ */ q0({
 function kn(r, e) {
   const t = r;
   let i = Hs.getInstance(t);
-  if (i || (i = new Hs(t, e)), !t.hasAttribute(Gf)) {
-    const n = t.querySelectorAll(".close, .modal-footer button");
-    for (let a = 0; a < n.length; a++)
-      n[a].addEventListener("click", () => {
-        i.hide();
-      });
-    t.setAttribute(Gf, "true");
-  }
-  return i;
+  return i || (i = new Hs(t, e)), t.hasAttribute(Gf) || (t.querySelectorAll(".close, .modal-footer button").forEach((a) => {
+    a.addEventListener("click", () => {
+      i.hide();
+    });
+  }), t.setAttribute(Gf, "true")), i;
 }
 function ch(r, e) {
   return e || (e = "."), r.match(/\//) ? r : `${e}/${r}`;
@@ -8176,11 +8172,11 @@ function Dv(r) {
     }
     for (let p = d; p < s.length - 1; p++)
       s[p].style.display = "none";
-  }, a = r.querySelectorAll(".swiper-slide div");
-  for (let o = 0; o < a.length; o++) {
-    const s = a[o];
+  };
+  r.querySelectorAll(".swiper-slide div").forEach((o) => {
+    const s = o;
     i(s), n(s);
-  }
+  });
 }
 function Qx(r) {
   return !!r && typeof r.setGPSMarkerAsync == "function";
@@ -32747,10 +32743,9 @@ function UD(r, e) {
     kn(c, { root: r.core.mapDivDocument }).hide();
   });
   const a = [], o = [];
-  for (let c = 0; c < e.length; c++) {
-    const d = e[c];
-    Nx(d) ? a.push(d) : o.push(d);
-  }
+  e.forEach((c) => {
+    Nx(c) ? a.push(c) : o.push(c);
+  });
   const s = r.baseSwiper = new Hi(".base-swiper", {
     slidesPerView: 2,
     spaceBetween: 15,
@@ -32810,20 +32805,17 @@ function UD(r, e) {
     );
   }), o.length < 2 && r.core.mapDivDocument.querySelector(".overlay-swiper").classList.add(
     "single-map"
-  );
-  for (let c = 0; c < a.length; c++) {
-    const d = a[c], u = d.thumbnail ? d.thumbnail.split("/").pop() : "", h = Lr[u] || d.thumbnail;
+  ), a.forEach((c) => {
+    const d = c.thumbnail ? c.thumbnail.split("/").pop() : "", u = Lr[d] || c.thumbnail;
     s.appendSlide(
-      `<div class="swiper-slide" data="${d.mapID}"><img crossorigin="anonymous" src="${h}"><div> ${r.core.translate(d.label)}</div> </div> `
+      `<div class="swiper-slide" data="${c.mapID}"><img crossorigin="anonymous" src="${u}"><div> ${r.core.translate(c.label)}</div> </div> `
     );
-  }
-  for (let c = 0; c < o.length; c++) {
-    const d = o[c], u = d.envelope ? ` ${d.envelopeColor}` : "", h = d.thumbnail ? d.thumbnail.split("/").pop() : "", p = Lr[h] || d.thumbnail;
+  }), o.forEach((c) => {
+    const d = c.envelope ? ` ${c.envelopeColor}` : "", u = c.thumbnail ? c.thumbnail.split("/").pop() : "", h = Lr[u] || c.thumbnail;
     l.appendSlide(
-      `<div class="swiper-slide${u}" data="${d.mapID}"><img crossorigin="anonymous" src="${p}"><div> ${r.core.translate(d.label)}</div> </div> `
+      `<div class="swiper-slide${d}" data="${c.mapID}"><img crossorigin="anonymous" src="${h}"><div> ${r.core.translate(c.label)}</div> </div> `
     );
-  }
-  l.on("slideChange", () => {
+  }), l.on("slideChange", () => {
     r.updateEnvelope();
   }), s.slideToLoop(0), l.slideToLoop(0), Dv(r.core.mapDivDocument);
 }
@@ -32915,13 +32907,11 @@ function TD(r, e) {
         }
       );
     }
-  });
-  const s = i.querySelectorAll(".prevent-default-ui");
-  for (let l = 0; l < s.length; l++)
-    s[l].addEventListener("touchstart", (d) => {
-      d.preventDefault();
+  }), i.querySelectorAll(".prevent-default-ui").forEach((l) => {
+    l.addEventListener("touchstart", (c) => {
+      c.preventDefault();
     });
-  r.core.addEventListener("uiPrepare", (l) => {
+  }), r.core.addEventListener("uiPrepare", (l) => {
     const c = function(p) {
       const g = /\$\{([a-zA-Z0-9_\.\/\-]+)\}/g;
       let A = p, m;
@@ -32930,15 +32920,13 @@ function TD(r, e) {
       return A;
     };
     let d = i.querySelectorAll("[data-i18n], [din]");
-    for (let p = 0; p < d.length; p++) {
-      const g = d[p], A = g.getAttribute("data-i18n") || g.getAttribute("din");
-      g.innerText = c(r.core.t(A));
-    }
-    d = i.querySelectorAll("[data-i18n-html], [dinh]");
-    for (let p = 0; p < d.length; p++) {
-      const g = d[p], A = g.getAttribute("data-i18n-html") || g.getAttribute("dinh");
-      g.innerHTML = c(r.core.t(A));
-    }
+    d.forEach((p) => {
+      const g = p.getAttribute("data-i18n") || p.getAttribute("din");
+      p.innerText = c(r.core.t(g));
+    }), d = i.querySelectorAll("[data-i18n-html], [dinh]"), d.forEach((p) => {
+      const g = p.getAttribute("data-i18n-html") || p.getAttribute("dinh");
+      p.innerHTML = c(r.core.t(g));
+    });
     const u = i.querySelector(
       '[data-i18n="html.app_loading_body"], [din="html.app_loading_body"]'
     );

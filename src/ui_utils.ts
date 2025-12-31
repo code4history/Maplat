@@ -12,11 +12,11 @@ export function prepareModal(modalElm: Element | HTMLElement, options?: any) {
 
   if (!el.hasAttribute(MODAL_CLOSE_ATTACHED)) {
     const closeBtns = el.querySelectorAll(".close, .modal-footer button");
-    for (let i = 0; i < closeBtns.length; i++) {
-      closeBtns[i].addEventListener("click", () => {
+    closeBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
         modal.hide();
       });
-    }
+    });
     el.setAttribute(MODAL_CLOSE_ATTACHED, "true");
   }
 
@@ -85,11 +85,11 @@ export function ellips(mapDivDocument: HTMLElement) {
     }
   };
   const swiperItems = mapDivDocument.querySelectorAll(".swiper-slide div");
-  for (let i = 0; i < swiperItems.length; i++) {
-    const swiperItem = swiperItems[i] as HTMLElement;
+  swiperItems.forEach(item => {
+    const swiperItem = item as HTMLElement;
     stringSplit(swiperItem);
     omitCheck(swiperItem);
-  }
+  });
 }
 
 export function isMaplatSource(source: unknown): source is {
