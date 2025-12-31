@@ -360,7 +360,7 @@ export class MaplatUi extends EventTarget {
 
     this.core!.mapObject.resetEnvelope();
     if (this._selectCandidateSources) {
-      Object.keys(this._selectCandidateSources).forEach(key => {
+      for (const key of Object.keys(this._selectCandidateSources)) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         if ((this.core!.mapObject as any).removeEnvelope) {
           console.log(`[Debug] Removing envelope for ${key}`);
@@ -369,7 +369,7 @@ export class MaplatUi extends EventTarget {
             this._selectCandidateSources![key]
           );
         }
-      });
+      }
     }
 
     this._selectCandidateSources = {};

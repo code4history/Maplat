@@ -45,12 +45,12 @@ function hexRgb(hex: string) {
 
 export function setControlSettings(options: Record<string, string>) {
   control_settings = options;
-  Object.keys(control_settings).forEach(key => {
+  for (const key of Object.keys(control_settings)) {
     if (delegator[key]) {
       (pointer as Record<string, string>)[delegator[key]] =
         control_settings[key];
     }
-  });
+  }
 }
 
 export class SliderNew extends Control {

@@ -102,10 +102,10 @@ export class Internal {
 
   getItemsLength() {
     let count = 0;
-    Object.keys(this.items).forEach(k => {
-      if (this.items[k].submenu || this.items[k].separator) return;
+    for (const k of Object.keys(this.items)) {
+      if (this.items[k].submenu || this.items[k].separator) continue;
       count++;
-    });
+    }
     return count;
   }
 

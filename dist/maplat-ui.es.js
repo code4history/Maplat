@@ -6203,9 +6203,9 @@ class nx {
   }
   getItemsLength() {
     let e = 0;
-    return Object.keys(this.items).forEach((t) => {
+    for (const t of Object.keys(this.items))
       this.items[t].submenu || this.items[t].separator || e++;
-    }), e;
+    return e;
   }
   getPixelClicked() {
     return this.pixelClicked;
@@ -6388,10 +6388,8 @@ class sx extends Za {
    * Remove all elements from the menu.
    */
   clear() {
-    Object.keys(this.Internal.items).forEach(
-      this.Html.removeMenuEntry,
-      this.Html
-    );
+    for (const t of Object.keys(this.Internal.items))
+      this.Html.removeMenuEntry(t);
   }
   /**
    * Close the menu programmatically.
@@ -32498,11 +32496,13 @@ function k0(r, e, t, i = !0) {
       } : (u = { ...d }, u.type || (u.type = Gm(u.src)), u.desc && !u.caption && (u.caption = u.desc));
       const h = ch(u.src, "img");
       let p = `image-url="${h}" image-type="${u.type}"`;
-      u.thumbnail ? p += ` thumbnail-url="${ch(u.thumbnail, "img")}"` : u.type === "image" && (p += ` thumbnail-url="${h}"`), Object.keys(u).forEach((g) => {
-        if (["src", "type", "thumbnail", "desc"].includes(g)) return;
+      u.thumbnail ? p += ` thumbnail-url="${ch(u.thumbnail, "img")}"` : u.type === "image" && (p += ` thumbnail-url="${h}"`);
+      for (const g of Object.keys(u)) {
+        if (["src", "type", "thumbnail", "desc"].includes(g)) continue;
         const A = u[g];
         typeof A == "boolean" ? A && (p += ` ${g}`) : A != null && (p += ` ${g}="${A}"`);
-      }), n.push(`<cc-swiper-slide ${p}></cc-swiper-slide>`);
+      }
+      n.push(`<cc-swiper-slide ${p}></cc-swiper-slide>`);
     });
     const o = pi(`<div class="poi_data">
     <div class="col-xs-12 poi_img_swiper">
@@ -32616,11 +32616,8 @@ function yD(r, e) {
   r.core.requestUpdateState({ hideMarker: e ? 1 : 0 }), e ? (r.core.hideAllMarkers && r.core.hideAllMarkers(), r.core.mapDivDocument.classList.add("hide-marker")) : (r.core.showAllMarkers && r.core.showAllMarkers(), r.core.mapDivDocument.classList.remove("hide-marker")), r.core.restoreSession && r.core.requestUpdateState({ hideMarker: e ? 1 : 0 });
 }
 function SD(r, e) {
-  const i = r.overlaySwiper.$el[0].querySelectorAll(".swiper-slide");
-  for (let n = 0; n < i.length; n++)
-    if (i[n].getAttribute("data") === e)
-      return !0;
-  return !1;
+  const t = r.overlaySwiper;
+  return Array.from(t.$el[0].querySelectorAll(".swiper-slide")).some((n) => n.getAttribute("data") === e);
 }
 function xD(r, e) {
   const t = r.core.getMarker(e);
@@ -33564,49 +33561,52 @@ class G0 extends Hm {
     l && l !== s && (d += `/b:${l}`), c > 0 && (d += `/t:${c}`), d += `/x:${n[0]}`, d += `/y:${n[1]}`, d += `/z:${a}`, o !== 0 && (d += `/r:${o * 180 / Math.PI}`), this.core.stateBuffer.showBorder && (d += "/sb:1"), this.core.mapDivDocument.classList.contains("hide-marker") && (d += "/hm:1"), this.enableMarkerList && this.core.stateBuffer.markerList && (d += `/om:${this.core.stateBuffer.markerList}`), this.selectedMarkerNamespaceID && (d += `/om:${this.selectedMarkerNamespaceID}`), this.pathThatSet !== d && (this.pathThatSet = d, Ms(`#!${d}`));
   }
   updateEnvelope() {
-    if (this.core.mapObject && (this.core.mapObject.resetEnvelope(), this._selectCandidateSources && Object.keys(this._selectCandidateSources).forEach((t) => {
-      this.core.mapObject.removeEnvelope && (console.log(`[Debug] Removing envelope for ${t}`), this.core.mapObject.removeEnvelope(
-        this._selectCandidateSources[t]
-      ));
-    }), this._selectCandidateSources = {}, this.core.stateBuffer.showBorder)) {
-      if (!this.core.from) return;
-      let t = null;
-      if (this.overlaySwiper) {
-        const i = this.overlaySwiper.slides[this.overlaySwiper.activeIndex];
-        i && (t = i.getAttribute("data"));
-      }
-      Object.keys(this.core.cacheHash).filter((i) => this.core.cacheHash[i].envelope).map((i) => {
-        const n = this.core.cacheHash[i], a = i === t, o = i === this.core.from.mapID && typeof n.xy2SysCoord == "function" ? [
-          [0, 0],
-          [n.width, 0],
-          [n.width, n.height],
-          [0, n.height],
-          [0, 0]
-        ].map((s) => Promise.resolve(n.xy2SysCoord(s))) : (
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          n.envelope.geometry.coordinates[0].map(
-            (s) => this.core.from.merc2SysCoordAsync(s)
-          )
-        );
-        Promise.all(o).then((s) => {
-          const l = {
-            color: n.envelopeColor,
-            width: 2,
-            lineDash: [6, 6]
-          };
-          if (this.core.mapObject.setEnvelope(s, l), a && this.core.mapObject.setFillEnvelope) {
-            console.log(`[Debug] Setting fill envelope for ${i}`);
-            const c = ub(n.envelopeColor || "#000000");
-            c[3] = 0.4;
-            const d = this.core.mapObject.setFillEnvelope(
-              s,
-              null,
-              { color: c }
-            );
-            this._selectCandidateSources[i] = d;
-          }
+    if (this.core.mapObject) {
+      if (this.core.mapObject.resetEnvelope(), this._selectCandidateSources)
+        for (const t of Object.keys(this._selectCandidateSources))
+          this.core.mapObject.removeEnvelope && (console.log(`[Debug] Removing envelope for ${t}`), this.core.mapObject.removeEnvelope(
+            this._selectCandidateSources[t]
+          ));
+      if (this._selectCandidateSources = {}, this.core.stateBuffer.showBorder) {
+        if (!this.core.from) return;
+        let t = null;
+        if (this.overlaySwiper) {
+          const i = this.overlaySwiper.slides[this.overlaySwiper.activeIndex];
+          i && (t = i.getAttribute("data"));
+        }
+        Object.keys(this.core.cacheHash).filter((i) => this.core.cacheHash[i].envelope).map((i) => {
+          const n = this.core.cacheHash[i], a = i === t, o = i === this.core.from.mapID && typeof n.xy2SysCoord == "function" ? [
+            [0, 0],
+            [n.width, 0],
+            [n.width, n.height],
+            [0, n.height],
+            [0, 0]
+          ].map((s) => Promise.resolve(n.xy2SysCoord(s))) : (
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            n.envelope.geometry.coordinates[0].map(
+              (s) => this.core.from.merc2SysCoordAsync(s)
+            )
+          );
+          Promise.all(o).then((s) => {
+            const l = {
+              color: n.envelopeColor,
+              width: 2,
+              lineDash: [6, 6]
+            };
+            if (this.core.mapObject.setEnvelope(s, l), a && this.core.mapObject.setFillEnvelope) {
+              console.log(`[Debug] Setting fill envelope for ${i}`);
+              const c = ub(n.envelopeColor || "#000000");
+              c[3] = 0.4;
+              const d = this.core.mapObject.setFillEnvelope(
+                s,
+                null,
+                { color: c }
+              );
+              this._selectCandidateSources[i] = d;
+            }
+          });
         });
-      });
+      }
     }
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

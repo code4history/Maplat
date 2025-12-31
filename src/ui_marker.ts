@@ -114,15 +114,15 @@ export function poiWebControl(
         }
 
         // Map other attributes
-        Object.keys(mediaObj).forEach(key => {
-          if (["src", "type", "thumbnail", "desc"].includes(key)) return;
+        for (const key of Object.keys(mediaObj)) {
+          if (["src", "type", "thumbnail", "desc"].includes(key)) continue;
           const val = mediaObj[key];
           if (typeof val === "boolean") {
             if (val) slideAttrs += ` ${key}`;
           } else if (val !== undefined && val !== null) {
             slideAttrs += ` ${key}="${val}"`;
           }
-        });
+        }
 
         slides.push(`<cc-swiper-slide ${slideAttrs}></cc-swiper-slide>`);
       });
@@ -393,14 +393,8 @@ export function setHideMarker(ui: MaplatUi, flag: boolean) {
 
 export function checkOverlayID(ui: MaplatUi, mapID: string) {
   const swiper = ui.overlaySwiper;
-  const sliders = swiper.$el[0].querySelectorAll(".swiper-slide");
-  for (let i = 0; i < sliders.length; i++) {
-    const slider = sliders[i];
-    if (slider.getAttribute("data") === mapID) {
-      return true;
-    }
-  }
-  return false;
+  const sliders = Array.from(swiper.$el[0].querySelectorAll(".swiper-slide"));
+  return sliders.some(slider => slider.getAttribute("data") === mapID);
 }
 
 export function handleMarkerActionById(ui: MaplatUi, markerId: string) {

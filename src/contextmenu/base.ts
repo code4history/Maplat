@@ -62,10 +62,9 @@ export default class Base extends Control {
    * Remove all elements from the menu.
    */
   clear() {
-    Object.keys(this.Internal.items).forEach(
-      this.Html.removeMenuEntry,
-      this.Html
-    );
+    for (const key of Object.keys(this.Internal.items)) {
+      this.Html.removeMenuEntry(key);
+    }
   }
 
   /**

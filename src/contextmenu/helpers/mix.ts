@@ -111,10 +111,9 @@ export function anyItemHasValue(
   obj: Record<string, unknown>,
   has: boolean = false
 ) {
-  const keys = Object.keys(obj);
-  keys.forEach(key => {
+  for (const key of Object.keys(obj)) {
     const value = obj[key];
     if (!isEmpty(typeof value === "string" ? value : null)) has = true;
-  });
+  }
   return has;
 }
