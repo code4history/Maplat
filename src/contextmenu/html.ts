@@ -97,7 +97,7 @@ export class Html {
       if (cItem.icon) {
         if (cItem.classname === "") {
           cItem.classname = CSS_VARS.icon;
-        } else if (cItem.classname.indexOf(CSS_VARS.icon) === -1) {
+        } else if (!cItem.classname.includes(CSS_VARS.icon)) {
           cItem.classname += ` ${CSS_VARS.icon}`;
         }
         element.setAttribute("style", `background-image:url(${cItem.icon})`);

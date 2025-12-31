@@ -6083,7 +6083,7 @@ function yc(r, e = "Assertion failed") {
     throw typeof Error < "u" ? new Error(e) : e;
 }
 function $S(r, e) {
-  return !!~e.indexOf(r);
+  return e.includes(r);
 }
 function ex(r = "id_") {
   return `${r}${Math.random().toString(36).substring(2, 11)}`;
@@ -6327,7 +6327,7 @@ class ax {
       a = `<li id="${n}" class="${Bi.separator}"><hr></li>`, o = wo(a), s = [].slice.call(o.childNodes, 0)[0], e.firstChild ? e.firstChild.appendChild(o) : e.appendChild(o), l = !0;
     else {
       const d = t;
-      d.classname = d.classname || "", a = `<span>${d.text}</span>`, o = wo(a), s = document.createElement("li"), d.icon && (d.classname === "" ? d.classname = Bi.icon : d.classname.indexOf(Bi.icon) === -1 && (d.classname += ` ${Bi.icon}`), s.setAttribute("style", `background-image:url(${d.icon})`)), s.id = n, s.className = d.classname, s.appendChild(o), e.firstChild ? e.firstChild.appendChild(s) : e.appendChild(s);
+      d.classname = d.classname || "", a = `<span>${d.text}</span>`, o = wo(a), s = document.createElement("li"), d.icon && (d.classname === "" ? d.classname = Bi.icon : d.classname.includes(Bi.icon) || (d.classname += ` ${Bi.icon}`), s.setAttribute("style", `background-image:url(${d.icon})`)), s.id = n, s.className = d.classname, s.appendChild(o), e.firstChild ? e.firstChild.appendChild(s) : e.appendChild(s);
     }
     const c = t;
     return this.Base.Internal.items[n] = {

@@ -33,7 +33,7 @@ export function assert(
  * @returns Boolean
  */
 export function contains(str_test: string, str: string) {
-  return !!~str.indexOf(str_test);
+  return str.includes(str_test);
 }
 
 export function getUniqueId(prefix: string = "id_") {
@@ -100,11 +100,11 @@ export function emptyArray(array: unknown[]) {
 }
 
 export function anyMatchInArray(source: unknown[], target: unknown[]) {
-  return source.some((each: unknown) => target.indexOf(each) >= 0);
+  return source.some((each: unknown) => target.includes(each));
 }
 
 export function everyMatchInArray(arr1: unknown[], arr2: unknown[]) {
-  return arr2.every((each: unknown) => arr1.indexOf(each) >= 0);
+  return arr2.every((each: unknown) => arr1.includes(each));
 }
 
 export function anyItemHasValue(
