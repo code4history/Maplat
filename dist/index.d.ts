@@ -44,6 +44,7 @@ export declare class MaplatUi extends EventTarget {
     lastClickPixel: Pixel | undefined;
     lastClickCoordinate: Coordinate | undefined;
     lastGPSError: string | undefined;
+    selectedMarkerNamespaceID: string | undefined;
     constructor(appOption: MaplatAppOption);
     initializer(appOption: any): Promise<void>;
     handleMarkerAction(data: any): void;

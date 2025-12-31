@@ -376,9 +376,8 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
     const thumbUrl = (pointer as any)[thumbKey] || source.thumbnail;
     baseSwiper.appendSlide(
       `<div class="swiper-slide" data="${source.mapID}">` +
-        `<img crossorigin="anonymous" src="${
-          thumbUrl
-        }"><div> ${ui.core!.translate(source.label)}</div> </div> `
+      `<img crossorigin="anonymous" src="${thumbUrl
+      }"><div> ${ui.core!.translate(source.label)}</div> </div> `
     );
   }
   for (let i = 0; i < overlaySources.length; i++) {
@@ -389,9 +388,8 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
     const thumbUrl = (pointer as any)[thumbKey] || source.thumbnail;
     overlaySwiper.appendSlide(
       `<div class="swiper-slide${colorCss}" data="${source.mapID}">` +
-        `<img crossorigin="anonymous" src="${
-          thumbUrl
-        }"><div> ${ui.core!.translate(source.label)}</div> </div> `
+      `<img crossorigin="anonymous" src="${thumbUrl
+      }"><div> ${ui.core!.translate(source.label)}</div> </div> `
     );
   }
 
@@ -502,7 +500,7 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
   // Delegated event listener for share buttons
   mapDiv.addEventListener("click", (evt: Event) => {
     const target = evt.target as HTMLElement;
-    const btn = target.closest(".share");
+    const btn = target.closest(".share") || target.closest(".share_button");
     if (!btn) return;
 
     console.log("Share button clicked:", btn);
@@ -540,6 +538,23 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
         "_blank",
         "width=650,height=450,menubar=no,toolbar=no,scrollbars=yes"
       );
+    } else if (cmds[0] === "qr") {
+      const qrDiv =
+        mapDiv.querySelector(".qr_view_poi") || mapDiv.querySelector(".qr_view");
+
+      if (qrDiv) {
+        QRCode.toCanvas(
+          uri,
+          { width: 128, margin: 1 },
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (err: any, canvas: any) => {
+            if (!err) {
+              qrDiv.innerHTML = "";
+              qrDiv.appendChild(canvas);
+            }
+          }
+        );
+      }
     }
   });
 
@@ -839,15 +854,16 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
                 if (!poiContentDiv.classList.contains("open")) {
                   poiContentDiv.classList.add("open");
 
-                  poiWebControl(ui, poiContentDiv, poi);
-
-                  ui.core!.selectMarker?.(poi.namespaceID);
+                  poiWebControl(ui, poiContentDiv, poi, false);
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  (ui.core as any).selectMarker?.(poi.namespaceID);
                 } else {
                   poiContentDiv.classList.remove("open");
 
                   // if (poiImgHide) poiImgHide();
                   poiContentDiv.innerHTML = "";
-                  ui.core!.unselectMarker?.();
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  (ui.core as any).unselectMarker?.();
                 }
               });
 
@@ -872,7 +888,7 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
           const val = mapData.get
             ? mapData.get(key)
             : // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              (mapData as any)[key];
+            (mapData as any)[key];
           const container = mapDiv.querySelector(`.modal_map .${key}_div`);
           if (container) {
             if (val) {
@@ -990,9 +1006,8 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
             if (totalTile) {
               const count = stats.count || 0;
               const percent = Math.floor((1000 * count) / totalTile);
-              cacheSize.innerText = `${sizeStr} (${
-                count
-              } / ${totalTile} tiles [${percent / 10}%])`;
+              cacheSize.innerText = `${sizeStr} (${count
+                } / ${totalTile} tiles [${percent / 10}%])`;
             } else {
               cacheSize.innerText = `${sizeStr} (${stats.count || 0} tiles)`;
             }
@@ -1210,6 +1225,12 @@ function initDom(ui: MaplatUi, appOption: MaplatAppOption) {
 
         <d c="modal_poi_content">
           <d c="poi_web_div"></d>
+          <d c="poi_share_buttons recipient row">
+            <d c="form-group col-xs-4 text-center"><button title="Copy to clipboard" class="share btn btn-light" data="cp_view"><svg style="width:14px;height:14px;vertical-align:text-bottom;" viewBox="0 0 512 512"><path fill="currentColor" d="M224 0c-35.3 0-64 28.7-64 64V96H96c-35.3 0-64 28.7-64 64V448c0 35.3 28.7 64 64 64H288c35.3 0 64-28.7 64-64V384h64c35.3 0 64-28.7 64-64V64c0-35.3-28.7-64-64-64H224zM288 384H96V160H224c0-17.7 14.3-32 32-32h64V256c0 17.7 14.3 32 32 32h96V384H288z"/></svg>&nbsp;<small din="html.share_copy"></small></button></d>
+            <d c="form-group col-xs-4 text-center"><button title="Twitter" class="share btn btn-light" data="tw_view"><svg style="width:14px;height:14px;vertical-align:text-bottom;" viewBox="0 0 512 512"><path fill="currentColor" d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"/></svg>&nbsp;<small>Twitter</small></button></d>
+            <d c="form-group col-xs-4 text-center"><button title="Facebook" class="share btn btn-light" data="fb_view"><svg style="width:14px;height:14px;vertical-align:text-bottom;" viewBox="0 0 512 512"><path fill="currentColor" d="M504 256C504 119 393 8 256 8S8 119 8 256c0 121.3 87.1 222.4 203 240.5V327.9h-61v-71.9h61V203c0-60.8 35.8-93.7 89.2-93.7 25.5 0 50.4 1.8 56.1 2.6v62.4h-35.4c-29.5 0-37.4 18.2-37.4 42.1v59.6h68.9l-11 71.9h-57.9V496.5C416.9 478.4 504 377.3 504 256z"/></svg>&nbsp;<small>Facebook</small></button></d>
+          </d>
+          <d c="qr_view_poi center-block" style="width:128px;"></d>
           <d c="modal_share_poi"></d>
           <p><img src="" height="0px" width="0px"></p>
         </d> 
@@ -1238,12 +1259,12 @@ function initDom(ui: MaplatUi, appOption: MaplatAppOption) {
 
         <d c="modal_map_content">
             ${META_KEYS.map(key => {
-              if (key == "title" || key == "officialTitle") return "";
-              return `<d c="recipients ${key}_div"><dl c="dl-horizontal">
+    if (key == "title" || key == "officialTitle") return "";
+    return `<d c="recipients ${key}_div"><dl c="dl-horizontal">
                       <dt din="html.${key}"></dt>
                       <dd c="${key}_dd"></dd>
                     </dl></d> `;
-            }).join("")}
+  }).join("")}
           <d c="recipients modal_cache_content"><dl c="dl-horizontal">
             <dt din="html.cache_handle"></dt>
             <dd><s c="cache_size"></s></dd>
@@ -1301,7 +1322,7 @@ function initDom(ui: MaplatUi, appOption: MaplatAppOption) {
     try {
       Weiwudi.registerSW(pwaWorker, { scope: pwaScope });
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (_e) {} // eslint-disable-line no-empty
+    } catch (_e) { } // eslint-disable-line no-empty
 
     if (head && !head.querySelector('link[rel="apple-touch-icon"]')) {
       const xhr = new XMLHttpRequest();

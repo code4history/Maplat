@@ -29,7 +29,8 @@ import type { MarkerData, MediaSetting, MediaObject } from "./types";
 export function poiWebControl(
   ui: MaplatUi,
   div: HTMLElement,
-  data: MarkerData
+  data: MarkerData,
+  showShare: boolean = true
 ) {
   // let poiSwiper: SwiperInstance | undefined;
   div.innerHTML = "";
@@ -153,6 +154,35 @@ export function poiWebControl(
     (htmlDiv.querySelector(".poi_desc") as HTMLElement).innerHTML = (
       ui.core!.translate(data.desc) || ""
     ).replace(/\n/g, "<br>");
+
+    // Show/hide share buttons based on showShare parameter
+    const shareButtons = ui.core!.mapDivDocument!.querySelector(".poi_share_buttons");
+    const qrDiv = ui.core!.mapDivDocument!.querySelector(".qr_view_poi");
+
+    if (showShare) {
+      shareButtons?.classList.remove("hide");
+      qrDiv?.classList.remove("hide");
+
+      // Auto-generate QR code
+      if (qrDiv) {
+        import("qrcode").then((QRCode) => {
+          QRCode.toCanvas(
+            window.location.href,
+            { width: 128, margin: 1 },
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (err: any, canvas: any) => {
+              if (!err) {
+                qrDiv.innerHTML = "";
+                qrDiv.appendChild(canvas);
+              }
+            }
+          );
+        });
+      }
+    } else {
+      shareButtons?.classList.add("hide");
+      qrDiv?.classList.add("hide");
+    }
   }
 
   return undefined;
@@ -209,13 +239,19 @@ export function handleMarkerAction(ui: MaplatUi, data: MarkerData) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const hiddenFunc = (_event: any) => {
     modalElm.removeEventListener("hidden.bs.modal", hiddenFunc, false);
-    ui.core!.unselectMarker();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (ui.core as any).unselectMarker?.();
+    ui.selectedMarkerNamespaceID = undefined;
+    ui.updateUrl();
   };
   modalElm.addEventListener("hidden.bs.modal", hiddenFunc, false);
 
-  ui.core!.selectMarker(data.namespaceID);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (ui.core as any).selectMarker?.(data.namespaceID);
+  ui.selectedMarkerNamespaceID = data.namespaceID;
   ui.modalSetting("poi");
   modal.show();
+  ui.updateUrl();
 }
 
 export function showContextMenu(ui: MaplatUi, list: MarkerData[]) {
@@ -278,11 +314,11 @@ export async function xyToMapIDs(ui: MaplatUi, xy: any, threshold = 10) {
   const mercs = await (typeof ui.core!.from!.xy2SysCoord !== "function" // ERROR HERE - wait, index.ts line 1273 - checking source
     ? Promise.resolve(sysCoords)
     : Promise.all(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        sysCoords.map((sysCoord: any) =>
-          ui.core!.from!.sysCoord2MercAsync(sysCoord)
-        )
-      ));
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      sysCoords.map((sysCoord: any) =>
+        ui.core!.from!.sysCoord2MercAsync(sysCoord)
+      )
+    ));
   const areaIndex = ui.areaIndex(mercs);
 
   return Promise.all(
@@ -364,6 +400,10 @@ export function checkOverlayID(ui: MaplatUi, mapID: string) {
   return false;
 }
 
-export function handleMarkerActionById(_ui: MaplatUi, markerId: string) {
-  console.log(`Open marker: ${markerId}`);
+export function handleMarkerActionById(ui: MaplatUi, markerId: string) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const data = (ui.core as any).getMarker(markerId);
+  if (data) {
+    handleMarkerAction(ui, data);
+  }
 }
