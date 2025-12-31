@@ -33344,17 +33344,14 @@ function FD(r, e) {
       Rr.registerSW(n, { scope: a });
     } catch {
     }
-    if (s && !s.querySelector('link[rel="apple-touch-icon"]')) {
-      const l = new XMLHttpRequest();
-      l.open("GET", i, !0), l.responseType = "json", l.onload = function(c) {
-        let d = this.response;
-        if (d && (typeof d != "object" && (d = JSON.parse(d)), d.icons))
-          for (let u = 0; u < d.icons.length; u++) {
-            const h = cx(i, d.icons[u].src), g = `<link rel="apple-touch-icon" sizes="${d.icons[u].sizes}" href="${h}">`;
-            s.appendChild(pi(g)[0]);
-          }
-      }, l.send();
-    }
+    s && !s.querySelector('link[rel="apple-touch-icon"]') && fetch(i).then((l) => l.json()).then((l) => {
+      l.icons && l.icons.forEach((c) => {
+        const d = cx(i, c.src), h = `<link rel="apple-touch-icon" sizes="${c.sizes}" href="${d}">`;
+        s.appendChild(pi(h)[0]);
+      });
+    }).catch((l) => {
+      console.error("Failed to fetch PWA manifest:", l);
+    });
   }
 }
 Hi.use([qm, _m]);
@@ -33404,9 +33401,7 @@ class G0 extends Hm {
     J(this, "selectedMarkerNamespaceID");
     this.html_id_seed = `${Math.floor(Math.random() * 9e3) + 1e3}`, this.appOption = t, t.stateUrl ? (Ms((i, n) => {
       let a = i.canonicalPath.split("#!"), o = a.length > 1 ? a[1] : a[0];
-      if (console.log(
-        `[Debug] Page callback.Canonical: ${i.canonicalPath}, Path: ${o} `
-      ), a = o.split("?"), o = a[0], o === this.pathThatSet) {
+      if (a = o.split("?"), o = a[0], o === this.pathThatSet) {
         delete this.pathThatSet;
         return;
       }
@@ -33416,10 +33411,10 @@ class G0 extends Hm {
           rotation: 0
         }
       };
-      if (o.split("/").forEach((l) => {
+      o.split("/").forEach((l) => {
         if (!l) return;
         const c = l.split(":");
-        switch (console.log(`[Debug] Parsing state: ${l} `, c), c[0]) {
+        switch (c[0]) {
           case "s":
             s.mapID = c[1];
             break;
@@ -33465,37 +33460,20 @@ class G0 extends Hm {
             this.mobile_if = c[1] === "true";
             break;
         }
-      }), this.core)
-        s.mapID && (console.log(
-          "[Debug] ChangeMap with restore: ",
-          JSON.parse(JSON.stringify(s))
-        ), this.restoring = !0, this.core.waitReady.then(() => {
-          const l = this.core.changeMap(s.mapID, s);
-          Promise.resolve(l).then(() => {
-            if (this.sliderNew) {
-              const d = (s.transparency || 0) / 100;
-              this.sliderNew.set("slidervalue", d), this.sliderNew.element && (this.sliderNew.element.value = (1 - d).toString());
-            }
-            this.restoring = !1, console.log("[Debug] Calling updateUrl from ChangeMap"), this.updateUrl();
-          });
-        }));
-      else {
-        s.mapID && (console.log(
-          "[Debug] Init with restore: ",
-          JSON.parse(JSON.stringify(s))
-        ), t.restore = s, this.restoring = !0);
-        const l = s.position ? s.position.rotation : "undefined";
-        console.log(`[Debug] Before initializer: rotation = ${l} `), this.initializer(t).then(() => {
-          this.core.waitReady.then(() => {
-            if (this.sliderNew) {
-              const c = this.sliderNew.get("slidervalue") * 100;
-              console.log(`[Debug] Slider transparency: ${c} `);
-            } else
-              console.log("[Debug] Slider not ready yet");
-            this.restoring = !1, console.log("[Debug] Calling updateUrl from Init"), this.updateUrl();
-          });
+      }), this.core ? s.mapID && (this.restoring = !0, this.core.waitReady.then(() => {
+        const l = this.core.changeMap(s.mapID, s);
+        Promise.resolve(l).then(() => {
+          if (this.sliderNew) {
+            const d = (s.transparency || 0) / 100;
+            this.sliderNew.set("slidervalue", d), this.sliderNew.element && (this.sliderNew.element.value = (1 - d).toString());
+          }
+          this.restoring = !1, console.log("[Debug] Calling updateUrl from ChangeMap"), this.updateUrl();
         });
-      }
+      })) : (s.mapID && (t.restore = s, this.restoring = !0), this.initializer(t).then(() => {
+        this.core.waitReady.then(() => {
+          this.restoring = !1, this.updateUrl();
+        });
+      }));
     }), Ms({
       hashbang: !0
     }), Ms(), this.waitReady = new Promise((i, n) => {

@@ -1323,25 +1323,21 @@ function initDom(ui: MaplatUi, appOption: MaplatAppOption) {
     } catch (_e) {} // eslint-disable-line no-empty
 
     if (head && !head.querySelector('link[rel="apple-touch-icon"]')) {
-      const xhr = new XMLHttpRequest();
-      xhr.open("GET", pwaManifest, true);
-      xhr.responseType = "json";
-
-      xhr.onload = function (_e: ProgressEvent) {
-        let value = this.response;
-        if (!value) return;
-        if (typeof value != "object") value = JSON.parse(value);
-
-        if (value.icons) {
-          for (let i = 0; i < value.icons.length; i++) {
-            const src = absoluteUrl(pwaManifest as string, value.icons[i].src);
-            const sizes = value.icons[i].sizes;
-            const tag = `<link rel="apple-touch-icon" sizes="${sizes}" href="${src}">`;
-            head.appendChild(createElement(tag)[0]);
+      fetch(pwaManifest)
+        .then(response => response.json())
+        .then(value => {
+          if (value.icons) {
+            value.icons.forEach((icon: { src: string; sizes: string }) => {
+              const src = absoluteUrl(pwaManifest as string, icon.src);
+              const sizes = icon.sizes;
+              const tag = `<link rel="apple-touch-icon" sizes="${sizes}" href="${src}">`;
+              head.appendChild(createElement(tag)[0]);
+            });
           }
-        }
-      };
-      xhr.send();
+        })
+        .catch(err => {
+          console.error("Failed to fetch PWA manifest:", err);
+        });
     }
   }
 }

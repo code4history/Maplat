@@ -87,9 +87,6 @@ export class MaplatUi extends EventTarget {
       page((ctx: any, _next: any) => {
         let pathes = ctx.canonicalPath.split("#!");
         let path = pathes.length > 1 ? pathes[1] : pathes[0];
-        console.log(
-          `[Debug] Page callback.Canonical: ${ctx.canonicalPath}, Path: ${path} `
-        );
 
         pathes = path.split("?");
         path = pathes[0];
@@ -108,7 +105,6 @@ export class MaplatUi extends EventTarget {
         path.split("/").forEach((state: any) => {
           if (!state) return;
           const line = state.split(":");
-          console.log(`[Debug] Parsing state: ${state} `, line);
           switch (line[0]) {
             case "s":
               restore.mapID = line[1];
@@ -160,44 +156,17 @@ export class MaplatUi extends EventTarget {
         });
         if (!this.core) {
           if (restore.mapID) {
-            console.log(
-              `[Debug] Init with restore: `,
-              JSON.parse(JSON.stringify(restore))
-            );
             appOption.restore = restore;
             this.restoring = true;
           }
-          const preRot = restore.position
-            ? restore.position.rotation
-            : "undefined";
-          console.log(`[Debug] Before initializer: rotation = ${preRot} `);
 
           this.initializer(appOption).then(() => {
             this.core!.waitReady.then(() => {
-              // Fix: Manually apply rotation as Core 0.11.1 preserves it but fails to apply it view-side
-              // if (restore.position && restore.position.rotation !== undefined) {
-              //   console.log(`[Debug] Manually applying rotation: ${ restore.position.rotation } `);
-              //   this.core!.mapObject.getView().setRotation(restore.position.rotation);
-              // }
-              // Fix: Verify transparency state before updating URL
-              if (this.sliderNew) {
-                // Ensure map transparency matches restore if slider is ready
-                const currentTrans = this.sliderNew.get("slidervalue") * 100;
-                console.log(`[Debug] Slider transparency: ${currentTrans} `);
-              } else {
-                console.log(`[Debug] Slider not ready yet`);
-              }
-
               this.restoring = false;
-              console.log(`[Debug] Calling updateUrl from Init`);
               this.updateUrl();
             });
           });
         } else if (restore.mapID) {
-          console.log(
-            `[Debug] ChangeMap with restore: `,
-            JSON.parse(JSON.stringify(restore))
-          );
           this.restoring = true;
 
           this.core!.waitReady.then(() => {
