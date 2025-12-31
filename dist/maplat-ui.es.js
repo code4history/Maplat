@@ -32533,28 +32533,29 @@ function k0(r, e, t, i = !0) {
   }
 }
 function z0(r, e) {
-  var s, l;
+  var l, c;
   const t = r.core.mapDivDocument.querySelector(".modalBase"), i = kn(t);
   if (e.directgo) {
-    let c = !1, d = "";
-    typeof e.directgo == "string" ? d = e.directgo : (d = e.directgo.href, c = e.directgo.blank || !1), c ? window.open(d, "_blank") : window.location.href = d;
+    let d = !1, u = "";
+    typeof e.directgo == "string" ? u = e.directgo : (u = e.directgo.href, d = e.directgo.blank || !1), d ? window.open(u, "_blank") : window.location.href = u;
     return;
   }
   const n = r.core.mapDivDocument.querySelector(".modal_poi_title") || r.core.mapDivDocument.querySelector(".modal_title");
   n && (n.innerText = r.core.translate(e.name) || "");
   let a = r.core.mapDivDocument.querySelector(".poi_web_div");
   if (!a) {
-    const c = r.core.mapDivDocument.querySelector(".modal_poi_content");
-    c && (a = pi(
+    const d = r.core.mapDivDocument.querySelector(".modal_poi_content");
+    d && (a = pi(
       '<div class="poi_web_div"></div>'
-    )[0], c.insertBefore(a, c.firstChild));
+    )[0], d.insertBefore(a, d.firstChild));
   }
-  k0(r, a, e);
-  const o = (c) => {
-    var d, u;
-    t.removeEventListener("hidden.bs.modal", o, !1), (u = (d = r.core).unselectMarker) == null || u.call(d), r.selectedMarkerNamespaceID = void 0, r.updateUrl();
+  const o = r.enableShare && !!r.appOption.stateUrl;
+  k0(r, a, e, o);
+  const s = (d) => {
+    var u, h;
+    t.removeEventListener("hidden.bs.modal", s, !1), (h = (u = r.core).unselectMarker) == null || h.call(u), r.selectedMarkerNamespaceID = void 0, r.updateUrl();
   };
-  t.addEventListener("hidden.bs.modal", o, !1), (l = (s = r.core).selectMarker) == null || l.call(s, e.namespaceID), r.selectedMarkerNamespaceID = e.namespaceID, r.modalSetting("poi"), i.show(), r.updateUrl();
+  t.addEventListener("hidden.bs.modal", s, !1), (c = (l = r.core).selectMarker) == null || c.call(l, e.namespaceID), r.selectedMarkerNamespaceID = e.namespaceID, r.modalSetting("poi"), i.show(), r.updateUrl();
 }
 function wD(r, e) {
   var s;

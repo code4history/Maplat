@@ -376,8 +376,9 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
     const thumbUrl = (pointer as any)[thumbKey] || source.thumbnail;
     baseSwiper.appendSlide(
       `<div class="swiper-slide" data="${source.mapID}">` +
-      `<img crossorigin="anonymous" src="${thumbUrl
-      }"><div> ${ui.core!.translate(source.label)}</div> </div> `
+        `<img crossorigin="anonymous" src="${
+          thumbUrl
+        }"><div> ${ui.core!.translate(source.label)}</div> </div> `
     );
   }
   for (let i = 0; i < overlaySources.length; i++) {
@@ -388,8 +389,9 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
     const thumbUrl = (pointer as any)[thumbKey] || source.thumbnail;
     overlaySwiper.appendSlide(
       `<div class="swiper-slide${colorCss}" data="${source.mapID}">` +
-      `<img crossorigin="anonymous" src="${thumbUrl
-      }"><div> ${ui.core!.translate(source.label)}</div> </div> `
+        `<img crossorigin="anonymous" src="${
+          thumbUrl
+        }"><div> ${ui.core!.translate(source.label)}</div> </div> `
     );
   }
 
@@ -540,7 +542,8 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
       );
     } else if (cmds[0] === "qr") {
       const qrDiv =
-        mapDiv.querySelector(".qr_view_poi") || mapDiv.querySelector(".qr_view");
+        mapDiv.querySelector(".qr_view_poi") ||
+        mapDiv.querySelector(".qr_view");
 
       if (qrDiv) {
         QRCode.toCanvas(
@@ -888,7 +891,7 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
           const val = mapData.get
             ? mapData.get(key)
             : // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (mapData as any)[key];
+              (mapData as any)[key];
           const container = mapDiv.querySelector(`.modal_map .${key}_div`);
           if (container) {
             if (val) {
@@ -1006,8 +1009,9 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
             if (totalTile) {
               const count = stats.count || 0;
               const percent = Math.floor((1000 * count) / totalTile);
-              cacheSize.innerText = `${sizeStr} (${count
-                } / ${totalTile} tiles [${percent / 10}%])`;
+              cacheSize.innerText = `${sizeStr} (${
+                count
+              } / ${totalTile} tiles [${percent / 10}%])`;
             } else {
               cacheSize.innerText = `${sizeStr} (${stats.count || 0} tiles)`;
             }
@@ -1259,12 +1263,12 @@ function initDom(ui: MaplatUi, appOption: MaplatAppOption) {
 
         <d c="modal_map_content">
             ${META_KEYS.map(key => {
-    if (key == "title" || key == "officialTitle") return "";
-    return `<d c="recipients ${key}_div"><dl c="dl-horizontal">
+              if (key == "title" || key == "officialTitle") return "";
+              return `<d c="recipients ${key}_div"><dl c="dl-horizontal">
                       <dt din="html.${key}"></dt>
                       <dd c="${key}_dd"></dd>
                     </dl></d> `;
-  }).join("")}
+            }).join("")}
           <d c="recipients modal_cache_content"><dl c="dl-horizontal">
             <dt din="html.cache_handle"></dt>
             <dd><s c="cache_size"></s></dd>
@@ -1322,7 +1326,7 @@ function initDom(ui: MaplatUi, appOption: MaplatAppOption) {
     try {
       Weiwudi.registerSW(pwaWorker, { scope: pwaScope });
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (_e) { } // eslint-disable-line no-empty
+    } catch (_e) {} // eslint-disable-line no-empty
 
     if (head && !head.querySelector('link[rel="apple-touch-icon"]')) {
       const xhr = new XMLHttpRequest();

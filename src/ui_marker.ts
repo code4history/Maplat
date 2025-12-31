@@ -156,7 +156,8 @@ export function poiWebControl(
     ).replace(/\n/g, "<br>");
 
     // Show/hide share buttons based on showShare parameter
-    const shareButtons = ui.core!.mapDivDocument!.querySelector(".poi_share_buttons");
+    const shareButtons =
+      ui.core!.mapDivDocument!.querySelector(".poi_share_buttons");
     const qrDiv = ui.core!.mapDivDocument!.querySelector(".qr_view_poi");
 
     if (showShare) {
@@ -165,7 +166,7 @@ export function poiWebControl(
 
       // Auto-generate QR code
       if (qrDiv) {
-        import("qrcode").then((QRCode) => {
+        import("qrcode").then(QRCode => {
           QRCode.toCanvas(
             window.location.href,
             { width: 128, margin: 1 },
@@ -234,7 +235,9 @@ export function handleMarkerAction(ui: MaplatUi, data: MarkerData) {
     }
   }
 
-  poiWebControl(ui, poiWebDiv as HTMLElement, data);
+  // Show share buttons only if both enableShare and stateUrl are true
+  const showShare = ui.enableShare && !!ui.appOption.stateUrl;
+  poiWebControl(ui, poiWebDiv as HTMLElement, data, showShare);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const hiddenFunc = (_event: any) => {
@@ -314,11 +317,11 @@ export async function xyToMapIDs(ui: MaplatUi, xy: any, threshold = 10) {
   const mercs = await (typeof ui.core!.from!.xy2SysCoord !== "function" // ERROR HERE - wait, index.ts line 1273 - checking source
     ? Promise.resolve(sysCoords)
     : Promise.all(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      sysCoords.map((sysCoord: any) =>
-        ui.core!.from!.sysCoord2MercAsync(sysCoord)
-      )
-    ));
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        sysCoords.map((sysCoord: any) =>
+          ui.core!.from!.sysCoord2MercAsync(sysCoord)
+        )
+      ));
   const areaIndex = ui.areaIndex(mercs);
 
   return Promise.all(

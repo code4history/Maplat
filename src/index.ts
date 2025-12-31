@@ -394,18 +394,18 @@ export class MaplatUi extends EventTarget {
 
           const xyPromises =
             key === this.core!.from!.mapID &&
-              typeof source.xy2SysCoord === "function"
+            typeof source.xy2SysCoord === "function"
               ? [
-                [0, 0],
-                [source.width, 0],
-                [source.width, source.height],
-                [0, source.height],
-                [0, 0]
-              ].map(xy => Promise.resolve(source.xy2SysCoord(xy)))
+                  [0, 0],
+                  [source.width, 0],
+                  [source.width, source.height],
+                  [0, source.height],
+                  [0, 0]
+                ].map(xy => Promise.resolve(source.xy2SysCoord(xy)))
               : // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              source.envelope.geometry.coordinates[0].map((coord: any) =>
-                this.core!.from!.merc2SysCoordAsync(coord)
-              );
+                source.envelope.geometry.coordinates[0].map((coord: any) =>
+                  this.core!.from!.merc2SysCoordAsync(coord)
+                );
 
           Promise.all(xyPromises).then(xys => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
