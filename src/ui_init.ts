@@ -1,4 +1,4 @@
-import { MaplatApp as Core, createElement } from "@maplat/core";
+import { MaplatApp as Core, createElement, MaplatApp } from "@maplat/core";
 
 import pointer from "./pointer_images";
 import { Swiper } from "./swiper_ex";
@@ -764,14 +764,45 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
         ui.modalSetting("marker_list");
         modal.show();
 
+        const listRoot = modalBase.querySelector(
+          ".modal_marker_list_content ul.list-group"
+        ) as HTMLElement;
+
+        // Reset all panel states when modal is closed
+        const resetPanels = () => {
+          // Close all Layer panels
+          const allLayerPanels =
+            listRoot.querySelectorAll(".list_poiitems_div");
+          allLayerPanels.forEach(panel => {
+            panel.classList.remove("open");
+          });
+
+          // Close and reset all POI Content panels
+          const allPoiContentDivs = listRoot.querySelectorAll(
+            ".list_poicontent_div"
+          );
+          allPoiContentDivs.forEach(contentDiv => {
+            contentDiv.classList.remove("open");
+            contentDiv.innerHTML = "";
+          });
+
+          // Unselect marker
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (ui.core as any).unselectMarker?.();
+
+          // Remove this event listener after execution
+          modalBase.removeEventListener("hidden.bs.modal", resetPanels);
+        };
+
+        // Remove old listener if exists and add new one
+        modalBase.removeEventListener("hidden.bs.modal", resetPanels);
+        modalBase.addEventListener("hidden.bs.modal", resetPanels);
+
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const currentMapID = (ui.core!.from as any).mapID;
         if (cachedMarkerListMapID === currentMapID) return;
         cachedMarkerListMapID = currentMapID;
 
-        const listRoot = modalBase.querySelector(
-          ".modal_marker_list_content ul.list-group"
-        ) as HTMLElement;
         listRoot.innerHTML = "";
 
         const layers = ui.core!.listPoiLayers(false, true);
@@ -823,7 +854,40 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
           layerLi
             .querySelector(".layer_label")!
             .addEventListener("click", () => {
-              poiListUl.classList.toggle("open");
+              const isCurrentlyOpen = poiListUl.classList.contains("open");
+
+              // Close all other Layer panels at the same level
+              const allLayerPanels =
+                listRoot.querySelectorAll(".list_poiitems_div");
+              allLayerPanels.forEach(panel => {
+                if (panel !== poiListUl) {
+                  panel.classList.remove("open");
+                  // Reset all child POI Content panels
+                  const poiContentDivs = panel.parentElement!.querySelectorAll(
+                    ".list_poicontent_div"
+                  );
+                  poiContentDivs.forEach(contentDiv => {
+                    contentDiv.classList.remove("open");
+                    contentDiv.innerHTML = "";
+                  });
+                }
+              });
+
+              // Toggle current panel
+              if (isCurrentlyOpen) {
+                poiListUl.classList.remove("open");
+                // Reset all child POI Content panels in this Layer
+                const poiContentDivs = poiListUl.querySelectorAll(
+                  ".list_poicontent_div"
+                );
+                poiContentDivs.forEach(contentDiv => {
+                  contentDiv.classList.remove("open");
+                  contentDiv.innerHTML = "";
+                });
+                (ui.core as MaplatApp).unselectMarker?.();
+              } else {
+                poiListUl.classList.add("open");
+              }
             });
 
           listRoot.appendChild(layerLi);
@@ -848,19 +912,34 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
               // let poiImgHide: any;
 
               poiLi.addEventListener("click", () => {
-                if (!poiContentDiv.classList.contains("open")) {
-                  poiContentDiv.classList.add("open");
+                const isCurrentlyOpen =
+                  poiContentDiv.classList.contains("open");
 
-                  poiWebControl(ui, poiContentDiv, poi, false);
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  (ui.core as any).selectMarker?.(poi.namespaceID);
-                } else {
+                // Close all other POI panels at the same level (within the same Layer)
+                const allPoiContentDivs = poiListUl.querySelectorAll(
+                  ".list_poicontent_div"
+                );
+                allPoiContentDivs.forEach(contentDiv => {
+                  if (
+                    contentDiv !== poiContentDiv &&
+                    contentDiv.classList.contains("open")
+                  ) {
+                    contentDiv.classList.remove("open");
+                    contentDiv.innerHTML = "";
+                  }
+                });
+
+                // Toggle current panel
+                if (isCurrentlyOpen) {
                   poiContentDiv.classList.remove("open");
-
-                  // if (poiImgHide) poiImgHide();
                   poiContentDiv.innerHTML = "";
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   (ui.core as any).unselectMarker?.();
+                } else {
+                  poiContentDiv.classList.add("open");
+                  poiWebControl(ui, poiContentDiv, poi, false);
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  (ui.core as any).selectMarker?.(poi.namespaceID);
                 }
               });
 
@@ -869,7 +948,6 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
             });
           }
         });
-        modal.show();
       } else if (control === "copyright") {
         ui.modalSetting("map");
         const mapData = ui.core!.from!;
