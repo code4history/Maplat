@@ -81,7 +81,7 @@ For usage directly in the browser without a bundler, you must load OpenLayers be
 <script src="https://cdn.jsdelivr.net/npm/ol@10/dist/ol.min.js"></script>
 
 <!-- Maplat UI -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@maplat/ui@0.11.5/dist/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@maplat/ui@0.11.5/dist/ui.css">
 <script src="https://cdn.jsdelivr.net/npm/@maplat/ui@0.11.5/dist/maplat-ui.umd.js"></script>
 
 <div id="map_div"></div>
@@ -102,7 +102,7 @@ For usage directly in the browser without a bundler, you must load OpenLayers be
 ### ESM (EcmaScript Modules)
 ```javascript
 import { MaplatUi } from '@maplat/ui';
-import '@maplat/ui/dist/style.css'; // Import styles
+import '@maplat/ui/dist/ui.css'; // Import styles
 
 const option = {
   appid: 'myMark',
