@@ -69,6 +69,9 @@ importers:
       '@types/qrcode':
         specifier: ^1.5.6
         version: 1.5.6
+      bootstrap-sass:
+        specifier: ^3.4.3
+        version: 3.4.3
       concurrently:
         specifier: ^9.2.1
         version: 9.2.1
@@ -99,6 +102,9 @@ importers:
       prettier:
         specifier: ^3.7.4
         version: 3.7.4
+      sass:
+        specifier: ^1.97.1
+        version: 1.97.1
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2082,6 +2088,9 @@ packages:
 
   bignumber.js@9.3.1:
     resolution: {integrity: sha512-Ko0uX15oIUS7wJ3Rb30Fs6SkVbLmPBAKdlm7q9+ak9bbIeFf0MwuBsQV6z7+X768/cHsfg+WlysDWJcmthjsjQ==}
+
+  bootstrap-sass@3.4.3:
+    resolution: {integrity: sha512-vPgFnGMp1jWZZupOND65WS6mkR8rxhJxndT/AcMbqcq1hHMdkcH4sMPhznLzzoHOHkSCrd6J9F8pWBriPCKP2Q==}
 
   bootstrap.native@5.1.6:
     resolution: {integrity: sha512-bLveDBWhNLoFLsPctVo6yxSRQ1ysmKHBa+1FFMTQuruzTb3y7/InGSoe5lZdOiqZ4L0UOzpdbXMsI+bA5DoRew==}
@@ -6892,6 +6901,8 @@ snapshots:
 
   bignumber.js@9.3.1: {}
 
+  bootstrap-sass@3.4.3: {}
+
   bootstrap.native@5.1.6:
     dependencies:
       '@thednp/event-listener': 2.0.12
@@ -6967,7 +6978,6 @@ snapshots:
   chokidar@4.0.3:
     dependencies:
       readdirp: 4.1.2
-    optional: true
 
   cliui@6.0.0:
     dependencies:
@@ -7630,8 +7640,7 @@ snapshots:
   image-size@0.5.5:
     optional: true
 
-  immutable@5.1.4:
-    optional: true
+  immutable@5.1.4: {}
 
   import-fresh@3.3.1:
     dependencies:
@@ -8287,8 +8296,7 @@ snapshots:
     dependencies:
       quickselect: 3.0.0
 
-  readdirp@4.1.2:
-    optional: true
+  readdirp@4.1.2: {}
 
   reflect.getprototypeof@1.0.10:
     dependencies:
@@ -8427,7 +8435,6 @@ snapshots:
       source-map-js: 1.2.1
     optionalDependencies:
       '@parcel/watcher': 2.5.1
-    optional: true
 
   sax@1.4.3:
     optional: true

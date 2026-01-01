@@ -2,6 +2,7 @@ import { createElement } from "@maplat/core";
 
 // import { Swiper } from "./swiper_ex";
 import "@c4h/chuci";
+import QRCode from "qrcode";
 import { point, polygon, booleanPointInPolygon } from "@turf/turf";
 import { resolveRelativeLink, prepareModal } from "./ui_utils";
 
@@ -166,19 +167,17 @@ export function poiWebControl(
 
       // Auto-generate QR code
       if (qrDiv) {
-        import("qrcode").then(QRCode => {
-          QRCode.toCanvas(
-            window.location.href,
-            { width: 128, margin: 1 },
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (err: any, canvas: any) => {
-              if (!err) {
-                qrDiv.innerHTML = "";
-                qrDiv.appendChild(canvas);
-              }
+        QRCode.toCanvas(
+          window.location.href,
+          { width: 128, margin: 1 },
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (err: any, canvas: any) => {
+            if (!err) {
+              qrDiv.innerHTML = "";
+              qrDiv.appendChild(canvas);
             }
-          );
-        });
+          }
+        );
       }
     } else {
       shareButtons?.classList.add("hide");

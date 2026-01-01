@@ -60,6 +60,14 @@ export default defineConfig(({ command }) => ({
             })
         ] : [])
     ],
+    css: {
+        preprocessorOptions: {
+            scss: {
+                silenceDeprecations: ['legacy-js-api', 'import', 'color-functions', 'global-builtin', 'if-function'],
+                api: 'modern-compiler'
+            }
+        }
+    },
     build: {
         outDir: isPackageBuild ? 'dist' : 'dist-demo',
         copyPublicDir: !isPackageBuild,

@@ -8,7 +8,7 @@ import { Navigation, Pagination } from "swiper";
 import "swiper/swiper-bundle.css";
 import page from "page";
 import * as bsn from "bootstrap.native";
-import "../less/ui.less";
+import "./styles/ui.scss";
 
 import { uiInit } from "./ui_init";
 import {

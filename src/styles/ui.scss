@@ -1,0 +1,7 @@
+$icon-font-path: "../../node_modules/bootstrap-sass/assets/fonts/bootstrap/";
+
+.maplat {
+  @import "../../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss";
+  @import "maplat-specific";
+  @import "contextmenu";
+}
