@@ -54,9 +54,9 @@
     "pnpm": ">=9.0.0"
   },
   "dependencies": {
-    "@c4h/chuci": "0.2.4",
-    "@c4h/weiwudi": "^0.2.0",
-    "@maplat/core": "0.12.3",
+    "@c4h/chuci": "0.2.5",
+    "@c4h/weiwudi": "^0.2.1",
+    "@maplat/core": "0.12.4",
     "@turf/turf": "^7.3.1",
     "@types/page": "^1.11.9",
     "bootstrap.native": "^5.1.6",

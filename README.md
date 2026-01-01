@@ -1,102 +1,184 @@
 ![Maplat Logo](https://code4history.github.io/Maplat/page_imgs/maplat.png)
 
-# 新聞記事を見て来られた方へ
-見てみたい内容で以下の遷移先へどうぞ！
-* 奈良の古地図アプリを見てみたい方は、[ぷらっと奈良](https://s.maplat.jp/r/naramap/)へ
-* Maplat技術の特徴を知りたい方は、[技術紹介pdf](https://code4history.github.io/maplat_flyer_ja.pdf)へ
-* Maplatライブラリの使い方を知りたい方は、[Qiitaの記事群](https://qiita.com/tags/maplat)へ
-* 開発元であるCode for Historyの活動を知りたい方は、[Code for Historyのページ](https://code4history.github.io/index_ja.html)へ
+[![CI](https://github.com/code4history/Maplat/actions/workflows/ci.yml/badge.svg)](https://github.com/code4history/Maplat/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/@maplat/ui)](https://www.npmjs.com/package/@maplat/ui)
+[![License](https://img.shields.io/npm/l/@maplat/ui)](LICENSE)
 
+# Maplat
 Maplat is the cool Historical Map/Illustrated Map Viewer.  
 It can transform each map coordinates with nonlinear but homeomorphic projection and makes possible that the maps can collaborate with GPS/accurate maps, without distorting original maps.  
 Data editor of this solution is provided as another project, [MaplatEditor](https://github.com/code4history/MaplatEditor/).  
 This project won Grand Prize / Educational Effectiveness Prize / Visitors Selection Prize on Geo-Activity Contest 2018 held by Ministry of Land, Infrastructure, Transport and Tourism.
 
-Maplatは古地図/絵地図を歪める事なくGPSや正確な地図と連携させられるオープンソースプラットフォームです。  
-他のソリューションにない特徴として、各地図の座標変換において非線形かつ同相な投影変換が定義可能という点が挙げられます。  
-このプロジェクトは国土交通省主催の2018年ジオアクティビティコンテストにおいて、最優秀賞、教育効果賞、来場者賞をいただきました。
+**[Read this document in Japanese / 日本語で読む](README.ja.md)**
 
-# Introduction slide (In English, ICC Tokyo 2019)
-<a href="https://www.slideshare.net/kokogiko/maplat-historical-map-viewer-technology-that-guarantees-nonlinear-bijective-conversion-without-distortion">![Introduction of Maplat](https://code4history.github.io/Maplat/page_imgs/maplat_slide.png)</a>
-
-# <a href="https://www.slideshare.net/kokogiko/maplat-historical-viewer-technology-that-guarantees-nonlinear-bijective-conversion-without-distortion">ICC Tokyo 2019 paper</a>
-
-# Introduction slide (In Japanese, FOSS4G Tokyo 2017)
-<a href="https://www.slideshare.net/kokogiko/maplat">![Introduction of Maplat](https://code4history.github.io/Maplat/page_imgs/maplat_slide.png)</a>
-
-# Data Editor
-Please use [MaplatEditor](https://github.com/code4history/MaplatEditor/) for data creation.
-
-データの作成には[MaplatEditor](https://github.com/code4history/MaplatEditor/)を利用してください。
-
-# Development
+## Table of Contents
+- [Maplat](#maplat)
+  - [Table of Contents](#table-of-contents)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+    - [Using npm/pnpm](#using-npmpnpm)
+      - [Peer Dependencies](#peer-dependencies)
+    - [Using CDN in Browser](#using-cdn-in-browser)
+  - [Usage](#usage)
+    - [ESM (EcmaScript Modules)](#esm-ecmascript-modules)
+  - [API Documentation](#api-documentation)
+    - [MaplatUi](#maplatui)
+      - [Static Methods](#static-methods)
+      - [Constructor](#constructor)
+      - [Methods](#methods)
+    - [MaplatAppOption](#maplatappoption)
+  - [Data Editor](#data-editor)
+  - [Development](#development)
+    - [Setup](#setup)
+    - [Development Server](#development-server)
+    - [Build](#build)
+    - [Test](#test)
+  - [Contributors](#contributors)
+  - [Backers](#backers)
+  - [Sponsors](#sponsors)
 
 ## Prerequisites
-- Node.js 20 or 22
-- pnpm 9.0.0 or higher
+Based on the `engines` field in `package.json`:
 
-## Build Commands
+- **Node.js**: v20 or v22 (Recommended)
+- **pnpm**: v9.0.0 or higher
 
-This project supports separate builds for the npm package and the demo application:
+## Installation
 
-### Development
-```bash
-pnpm dev          # Start development server with hot reload
-```
-The dev server will be accessible at `http://localhost:5173/`
-
-### Building
+### Using npm/pnpm
+This project recommends **pnpm**.
 
 ```bash
-pnpm build              # Build the npm package (output: dist/)
-pnpm build:demo         # Build the demo app (output: dist-demo/)
+pnpm add @maplat/ui
 ```
-
-**Build outputs:**
-- **`dist/`** - npm package files (ES/UMD modules, TypeScript definitions, locales)
-- **`dist-demo/`** - Demo application for GitHub Pages deployment
-
-### Testing & Quality
+Or if you use npm:
 ```bash
-pnpm test         # Run tests
-pnpm typecheck    # Run TypeScript type checking
-pnpm lint         # Run linter and formatter
+npm install @maplat/ui
 ```
 
-## CI/CD
-The project uses GitHub Actions for automated testing:
-- **All branches**: Runs tests, linting, type checking, and builds on Node 20 & 22
+#### Peer Dependencies
+Maplat UI depends on the following libraries as peer dependencies. You must install them manually.
 
-# Latest result
-Latest result is shown below:
-* https://s.maplat.jp/r/naramap/ (Maplat Nara)
-* https://s.maplat.jp/r/aizumap/ (Maplat Aizuwakamatsu)
-* https://s.maplat.jp/r/iwakimap/ (Maplat Iwaki)
-* https://s.maplat.jp/r/tatebayashimap/ (Maplat Tatebayashi)
-* https://s.maplat.jp/r/chuokumap/ (Maplat Tokyo Chuo-ku)
-* https://s.maplat.jp/r/uedamap/ (Ueda city)
-* https://s.maplat.jp/r/moriokamap/ (Morioka city)
-* https://s.maplat.jp/r/sabaemap/ (Sabae city)
-* https://s.maplat.jp/r/nobeokamap/ (Nobeoka city)
+- **ol** (OpenLayers): v9.0.0 or v10.0.0+
 
-Documentation is undergoing.
+```bash
+pnpm add ol
+```
 
-最新の成果物は以下で確認できます。
-* https://s.maplat.jp/r/naramap/ (ぷらっと奈良)
-* https://s.maplat.jp/r/aizumap/ (ぷらっと会津若松)
-* https://s.maplat.jp/r/iwakimap/ (ぷらっといわき)
-* https://s.maplat.jp/r/tatebayashimap/ (ぷらっと館林)
-* https://s.maplat.jp/r/chuokumap/ (ぷらっと東京中央区)
-* https://s.maplat.jp/r/uedamap/ (上田市版)
-* https://s.maplat.jp/r/moriokamap/ (盛岡市版)
-* https://s.maplat.jp/r/sabaemap/ (鯖江市版)
-* https://s.maplat.jp/r/nobeokamap/ (延岡市版)
+If you use Vector Tiles, you may also need Mapbox GL JS or MapLibre GL JS:
 
-成果物を他人がコンテンツ作れる形でまとめられていないですが、おいおい整理します。
+- mapbox-gl: ^1.0.0 || ^2.0.0 || ^3.0.0
+- maplibre-gl: ^3.0.0 || ^4.0.0
 
-# Collaboration demo with Jizo project
-Code 4 NaraからUrban data challenge 2016に応募中のMaplatと[地蔵プロジェクト](https://github.com/code4history/JizoProject/wiki)をコラボレーションさせたデモを作りました。
-* https://s.maplat.jp/r/narajizomap/
+### Using CDN in Browser
+
+For usage directly in the browser without a bundler, you must load OpenLayers before loading Maplat UI. Maplat Core is bundled, so you do not need to load it separately.
+
+```html
+<!-- OpenLayers -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@10/ol.min.css">
+<script src="https://cdn.jsdelivr.net/npm/ol@10/dist/ol.min.js"></script>
+
+<!-- Maplat UI -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@maplat/ui@0.11.5/dist/style.css">
+<script src="https://cdn.jsdelivr.net/npm/@maplat/ui@0.11.5/dist/maplat-ui.umd.js"></script>
+
+<div id="map_div"></div>
+<script>
+  var appOption = {
+    appid: "tm",
+    // ... options
+  };
+  MaplatUi.createObject(appOption).then(function(app) {
+    console.log("Maplat initialized");
+  });
+</script>
+```
+*Note: Make sure to use the latest compatible versions.*
+
+## Usage
+
+### ESM (EcmaScript Modules)
+```javascript
+import { MaplatUi } from '@maplat/ui';
+import '@maplat/ui/dist/style.css'; // Import styles
+
+const option = {
+  appid: 'myMark',
+  // ...
+};
+
+MaplatUi.createObject(option).then(app => {
+  // Application initialized
+});
+```
+
+## API Documentation
+
+### MaplatUi
+The main class.
+
+#### Static Methods
+- **`createObject(option: MaplatAppOption): Promise<MaplatUi>`**
+  Creates a MaplatUi instance and returns a Promise that resolves when initialization is complete. This is the recommended way to create an instance.
+
+#### Constructor
+- **`new MaplatUi(option: MaplatAppOption)`**
+  Creates an instance but does not wait for initialization. You should wait for the `waitReady` property.
+
+#### Methods
+- **`remove()`**: Destroys the application and releases resources.
+- **`updateUrl()`**: Updates the URL to reflect current state (if `stateUrl` is enabled).
+
+### MaplatAppOption
+Key properties of the option object passed during initialization.
+
+| Property           | Type                | Description                         |
+| ------------------ | ------------------- | ----------------------------------- |
+| `appid`            | `string`            | Application ID (Required)           |
+| `pwaManifest`      | `boolean \| string` | Enable PWA manifest or specify path |
+| `pwaWorker`        | `string`            | Service Worker path                 |
+| `overlay`          | `boolean`           | Enable overlay mode                 |
+| `enableHideMarker` | `boolean`           | Enable marker hiding                |
+| `enableMarkerList` | `boolean`           | Enable marker list                  |
+| `enableBorder`     | `boolean`           | Enable border display               |
+| `stateUrl`         | `boolean`           | Enable URL state management         |
+| `enableShare`      | `boolean`           | Enable share feature                |
+| `mapboxToken`      | `string`            | Access token for Mapbox             |
+
+## Data Editor
+Please use [MaplatEditor](https://github.com/code4history/MaplatEditor/) for data creation.
+
+## Development
+
+### Setup
+Clone the repository and install dependencies.
+```bash
+git clone https://github.com/code4history/Maplat.git
+cd Maplat
+pnpm install
+```
+
+### Development Server
+Start the development server with hot reload.
+```bash
+pnpm dev
+```
+Access `http://localhost:5173/` in your browser.
+
+### Build
+```bash
+pnpm build        # Build npm package (dist/)
+pnpm build:demo   # Build demo application (dist-demo/)
+```
+
+### Test
+```bash
+pnpm test         # Run tests (Vitest)
+pnpm typecheck    # Run type checks (TypeScript)
+pnpm lint         # Run linter and formatter (ESLint/Prettier)
+```
 
 ## Contributors
 
@@ -113,7 +195,6 @@ Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com
 
 ## Sponsors
 Maplat is supported by 
-<a href="https://www.jetbrains.com/" target="_blank"><img src="https://code4history.github.io/Maplat/img/jetbrains-variant-4.png" width="150"></a>
 <a href="https://www.locazing.com/" target="_blank"><img src="https://code4history.github.io/Maplat/img/locazing.png" width="150"></a>
 <a href="https://www.thedesignium.com/" target="_blank"><img src="https://code4history.github.io/Maplat/img/logo_TheDesignium.png" width="150"></a>
 <a href="https://www.browserstack.com/" target="_blank"><img src="https://code4history.github.io/Maplat/img/browserstack-logo-600x315.png" width="150"></a>
@@ -122,7 +203,4 @@ Maplat is supported by
 
 Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/maplat#sponsor)]
 
-
-
-
-
+Copyright (c) 2024-2026 Code for History

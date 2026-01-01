@@ -2970,7 +2970,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // node_modules/.pnpm/@c4h+weiwudi@0.2.0_workbox-routing@7.4.0/node_modules/@c4h/weiwudi/dist/weiwudi-sw.es.js
+  // node_modules/.pnpm/@c4h+weiwudi@0.2.1_workbox-routing@7.4.0/node_modules/@c4h/weiwudi/dist/weiwudi-sw.es.js
   function v(_2) {
     const I = 20037508342789244e-9, x = {};
     let m;
