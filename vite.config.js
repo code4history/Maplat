@@ -83,18 +83,15 @@ export default defineConfig(({ command }) => ({
                     'ol',
                     'mapbox-gl',
                     'maplibre-gl',
-                    '@maplat/core',
-                    '@maplat/transform',
                     /^.*\/service-worker\// // Exclude service-worker from library build
                 ],
                 output: {
                     globals: {
                         ol: 'ol',
                         'mapbox-gl': 'mapboxgl',
-                        'maplibre-gl': 'maplibregl',
-                        '@maplat/core': 'MaplatCore',
-                        '@maplat/transform': 'MaplatTransform'
-                    }
+                        'maplibre-gl': 'maplibregl'
+                    },
+                    footer: 'if (typeof window !== "undefined" && window.MaplatUi && window.MaplatUi.MaplatUi) { window.MaplatUi = window.MaplatUi.MaplatUi; }'
                 }
             }
         } : {

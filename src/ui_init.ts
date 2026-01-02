@@ -974,8 +974,12 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
                   const fileName = (val as string)
                     .toLowerCase()
                     .replace(/ /g, "_");
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  const iconUrl =
+                    (pointer as any)[`${fileName}.png`] ||
+                    `assets/parts/${fileName}.png`;
                   (contentEl as HTMLElement).innerHTML =
-                    `<img src="assets/parts/${fileName}.png" class="license" />`;
+                    `<img src="${iconUrl}" class="license" />`;
                 } else {
                   (contentEl as HTMLElement).innerHTML =
                     ui.core!.translate(val) || "";
