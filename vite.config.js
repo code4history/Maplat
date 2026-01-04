@@ -75,7 +75,7 @@ export default defineConfig(({ command }) => ({
             lib: {
                 entry: path.resolve(__dirname, 'src/index.ts'),
                 name: 'MaplatUi',
-                fileName: (format) => `maplat-ui.${format}.js`,
+                fileName: (format) => `maplat_ui.${format}.js`,
                 formats: ['es', 'umd']
             },
             rollupOptions: {
@@ -86,6 +86,10 @@ export default defineConfig(({ command }) => ({
                     /^.*\/service-worker\// // Exclude service-worker from library build
                 ],
                 output: {
+                    assetFileNames: (assetInfo) => {
+                        if (assetInfo.name && assetInfo.name.endsWith('.css')) return 'maplat_ui.css';
+                        return assetInfo.name;
+                    },
                     globals: {
                         ol: 'ol',
                         'mapbox-gl': 'mapboxgl',

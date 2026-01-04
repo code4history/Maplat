@@ -79,8 +79,8 @@ pnpm add ol
 <script src="https://cdn.jsdelivr.net/npm/ol@10/dist/ol.min.js"></script>
 
 <!-- Maplat UI -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@maplat/ui@0.11.5/dist/ui.css">
-<script src="https://cdn.jsdelivr.net/npm/@maplat/ui@0.11.5/dist/maplat-ui.umd.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@maplat/ui@0.11.5/dist/maplat_ui.css">
+<script src="https://cdn.jsdelivr.net/npm/@maplat/ui@0.11.5/dist/maplat_ui.umd.js"></script>
 
 <div id="map_div"></div>
 <script>
@@ -100,7 +100,7 @@ pnpm add ol
 ### ESM (EcmaScript Modules)
 ```javascript
 import { MaplatUi } from '@maplat/ui';
-import '@maplat/ui/dist/ui.css'; // スタイルのインポート
+import '@maplat/ui/dist/maplat_ui.css'; // スタイルのインポート
 
 const option = {
   appid: 'myMark',
