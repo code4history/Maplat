@@ -17,8 +17,8 @@
   ],
   "scripts": {
     "dev": "concurrently \"pnpm watch:sw\" \"vite --host\"",
-    "build:sw": "esbuild src/service-worker/index.ts --bundle --outfile=dist/service-worker.js --format=iife --define:self.__WB_MANIFEST=[] && node -e \"require('fs').copyFileSync('dist/service-worker.js', 'public/service-worker.js')\"",
-    "watch:sw": "esbuild src/service-worker/index.ts --bundle --outfile=public/service-worker.js --format=iife --define:self.__WB_MANIFEST=[] --watch",
+    "build:sw": "node scripts/build-sw.js",
+    "watch:sw": "node scripts/build-sw.js --watch",
     "build": "cross-env BUILD_MODE=package tsc && cross-env BUILD_MODE=package vite build && pnpm build:sw",
     "build:demo": "pnpm build:sw && vite build",
     "preview": "vite preview",

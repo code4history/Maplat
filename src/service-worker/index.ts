@@ -28,11 +28,13 @@ clientsClaim();
  */
 precacheAndRoute((self as any).__WB_MANIFEST as (string | PrecacheEntry)[], {});
 
+declare const SW_VERSION: string;
+
 registerRoute(
   /(?:maps\/.+\.json|pwa\/.+|pois\/.+\.json|apps\/.+\.json|tmbs\/.+\.jpg|images\/.+\.(?:png|jpg))$/,
 
   new StaleWhileRevalidate({
-    cacheName: "resourcesCache",
+    cacheName: `resourcesCache-${SW_VERSION}`,
     plugins: [
       new ExpirationPlugin({
         maxAgeSeconds: 86400,
