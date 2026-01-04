@@ -62793,47 +62793,48 @@ function kU(n, e, t, i = !0) {
     } else
       s.removeAttribute("srcdoc"), s.setAttribute("src", n.core.translate(t.url) || "");
   } else {
-    const r = [], s = t.media || t.image;
-    s && (Array.isArray(s) ? s : [s]).forEach((h) => {
-      let u;
-      typeof h == "string" ? u = {
-        src: h,
-        type: Sx(h)
-      } : (u = { ...h }, u.type || (u.type = Sx(u.src)), u.desc && !u.caption && (u.caption = u.desc));
-      const d = wC(u.src, "img");
-      let g = `image-url="${d}" image-type="${u.type}"`;
-      u.thumbnail ? g += ` thumbnail-url="${wC(u.thumbnail, "img")}"` : u.type === "image" && (g += ` thumbnail-url="${d}"`);
-      for (const A of Object.keys(u)) {
-        if (["src", "type", "thumbnail", "desc"].includes(A)) continue;
-        const m = u[A];
-        typeof m == "boolean" ? m && (g += ` ${A}`) : m != null && (g += ` ${A}="${m}"`);
+    const r = [], s = t.media || t.image, a = s ? Array.isArray(s) ? s : [s] : [];
+    let o = "";
+    a.length > 0 && (a.forEach((u) => {
+      let d;
+      typeof u == "string" ? d = {
+        src: u,
+        type: Sx(u)
+      } : (d = { ...u }, d.type || (d.type = Sx(d.src)), d.desc && !d.caption && (d.caption = d.desc));
+      const g = wC(d.src, "img");
+      let A = `image-url="${g}" image-type="${d.type}"`;
+      d.thumbnail ? A += ` thumbnail-url="${wC(d.thumbnail, "img")}"` : d.type === "image" && (A += ` thumbnail-url="${g}"`);
+      for (const m of Object.keys(d)) {
+        if (["src", "type", "thumbnail", "desc"].includes(m)) continue;
+        const f = d[m];
+        typeof f == "boolean" ? f && (A += ` ${m}`) : f != null && (A += ` ${m}="${f}"`);
       }
-      r.push(`<cc-swiper-slide ${g}></cc-swiper-slide>`);
-    });
-    const a = Ai(`<div class="poi_data">
-    <div class="col-xs-12 poi_img_swiper">
+      r.push(`<cc-swiper-slide ${A}></cc-swiper-slide>`);
+    }), o = `    <div class="col-xs-12 poi_img_swiper">
       <cc-swiper>${r.join("")}</cc-swiper>
-    </div>
+    </div>`);
+    const l = Ai(`<div class="poi_data">
+      ${o}
     <p class="recipient poi_address"></p>
     <p class="recipient poi_desc"></p>
     </div>`)[0];
-    if (e.appendChild(a), !document.getElementById("poi-swiper-style")) {
-      const c = document.createElement("style");
-      c.id = "poi-swiper-style", c.innerHTML = `
+    if (e.appendChild(l), !document.getElementById("poi-swiper-style")) {
+      const u = document.createElement("style");
+      u.id = "poi-swiper-style", u.innerHTML = `
             cc-swiper { --cc-slider-theme-color: #007aff; --cc-slider-navigation-color: #007aff; height: 300px; }
             cc-viewer { --cc-viewer-z-index: 100000; }
-          `, document.head.appendChild(c);
+          `, document.head.appendChild(u);
     }
-    a.querySelector(".poi_address").innerText = n.core.translate(t.address) || "", a.querySelector(".poi_desc").innerHTML = (n.core.translate(t.desc) || "").replace(/\n/g, "<br>");
-    const o = n.core.mapDivDocument.querySelector(".poi_share_buttons"), l = n.core.mapDivDocument.querySelector(".qr_view_poi");
-    i ? (o == null || o.classList.remove("hide"), l == null || l.classList.remove("hide"), l && a5.toCanvas(
+    l.querySelector(".poi_address").innerText = n.core.translate(t.address) || "", l.querySelector(".poi_desc").innerHTML = (n.core.translate(t.desc) || "").replace(/\n/g, "<br>");
+    const c = n.core.mapDivDocument.querySelector(".poi_share_buttons"), h = n.core.mapDivDocument.querySelector(".qr_view_poi");
+    i ? (c == null || c.classList.remove("hide"), h == null || h.classList.remove("hide"), h && a5.toCanvas(
       window.location.href,
       { width: 128, margin: 1 },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (c, h) => {
-        c || (l.innerHTML = "", l.appendChild(h));
+      (u, d) => {
+        u || (h.innerHTML = "", h.appendChild(d));
       }
-    )) : (o == null || o.classList.add("hide"), l == null || l.classList.add("hide"));
+    )) : (c == null || c.classList.add("hide"), h == null || h.classList.add("hide"));
   }
 }
 function OU(n, e) {

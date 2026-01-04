@@ -76,10 +76,14 @@ export function poiWebControl(
   } else {
     const slides: string[] = [];
     const mediaList = (data.media || data.image) as MediaSetting[] | undefined;
+    const inputs = mediaList
+      ? Array.isArray(mediaList)
+        ? mediaList
+        : [mediaList]
+      : [];
+    let swiperStr = "";
 
-    if (mediaList) {
-      const inputs = Array.isArray(mediaList) ? mediaList : [mediaList];
-
+    if (inputs.length > 0) {
       inputs.forEach((item: MediaSetting) => {
         let mediaObj: MediaObject;
         if (typeof item === "string") {
@@ -127,13 +131,15 @@ export function poiWebControl(
 
         slides.push(`<cc-swiper-slide ${slideAttrs}></cc-swiper-slide>`);
       });
+
+      swiperStr = `    <div class="col-xs-12 poi_img_swiper">
+      <cc-swiper>${slides.join("")}</cc-swiper>
+    </div>`;
     }
     // Logic for noimage skipped/simplified as requested in previous interactions
 
     const htmlDiv = createElement(`<div class="poi_data">
-    <div class="col-xs-12 poi_img_swiper">
-      <cc-swiper>${slides.join("")}</cc-swiper>
-    </div>
+      ${swiperStr}
     <p class="recipient poi_address"></p>
     <p class="recipient poi_desc"></p>
     </div>`)[0] as HTMLElement;
