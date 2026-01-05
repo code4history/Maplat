@@ -48,6 +48,7 @@ export const META_KEYS = [
 ];
 
 export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
+  console.log("### UI init");
   appOption.translateUI = true;
   ui.core = new Core(appOption);
   if (appOption.icon) {

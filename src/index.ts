@@ -30,15 +30,15 @@ import type { MaplatAppOption, RestoreState, SwiperInstance } from "./types";
 Swiper.use([Navigation, Pagination]);
 
 export class MaplatUi extends EventTarget {
-  static createObject(option: MaplatAppOption) {
+  static async createObject(option: MaplatAppOption) {
     const app = new MaplatUi(option);
-    return app.waitReady.then(() => app);
+    return app.waitReady!();
   }
 
   core?: Core;
   appOption: MaplatAppOption;
-  waitReady!: Promise<void>;
-  waitReadyBridge: unknown;
+  waitReady?: () => Promise<MaplatUi>;
+  waitReadyBridge?: (arg: MaplatUi) => void;
   pathThatSet?: string;
   swipers: Record<string, SwiperInstance> = {};
   mobile_if: boolean = false;
@@ -84,7 +84,7 @@ export class MaplatUi extends EventTarget {
 
     if (appOption.stateUrl) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      page((ctx: any, _next: any) => {
+      page(async (ctx: any, _next: any) => {
         let pathes = ctx.canonicalPath.split("#!");
         let path = pathes.length > 1 ? pathes[1] : pathes[0];
 
@@ -160,59 +160,67 @@ export class MaplatUi extends EventTarget {
             this.restoring = true;
           }
 
-          this.initializer(appOption).then(() => {
-            this.core!.waitReady.then(() => {
-              this.restoring = false;
-              this.updateUrl();
-            });
-          });
+          console.log("### Page without core => call initializer");
+          await this.initializer(appOption);
+          await this.core!.waitReady;
+          this.restoring = false;
+          this.updateUrl();
+          //this.waitReadyBridge(this);
+
         } else if (restore.mapID) {
           this.restoring = true;
 
-          this.core!.waitReady.then(() => {
+          console.log("### Core's waitReady => page with mapID");
+          await this.core!.waitReady;
+
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const ret = this.core!.changeMap(restore.mapID!, restore as any);
+          // Fix: Manually apply rotation after changeMap
+          // if (restore.position && restore.position.rotation !== undefined) {
+          //   console.log(`[Debug] Manually applying rotation after changeMap: ${ restore.position.rotation } `);
+          //   this.core!.mapObject.getView().setRotation(restore.position.rotation);
+          // }
+
+          // Update transparency slider if needed
+          if (this.sliderNew) {
+            const t = restore.transparency || 0;
+            const val = t / 100;
+            this.sliderNew.set("slidervalue", val);
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const ret = this.core!.changeMap(restore.mapID!, restore as any);
-            Promise.resolve(ret).then(() => {
-              // Fix: Manually apply rotation after changeMap
-              // if (restore.position && restore.position.rotation !== undefined) {
-              //   console.log(`[Debug] Manually applying rotation after changeMap: ${ restore.position.rotation } `);
-              //   this.core!.mapObject.getView().setRotation(restore.position.rotation);
-              // }
+            if ((this.sliderNew as any).element) {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (this.sliderNew as any).element.value = (1 - val).toString();
+            }
+          }
 
-              // Update transparency slider if needed
-              if (this.sliderNew) {
-                const t = restore.transparency || 0;
-                const val = t / 100;
-                this.sliderNew.set("slidervalue", val);
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                if ((this.sliderNew as any).element) {
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  (this.sliderNew as any).element.value = (1 - val).toString();
-                }
-              }
-
-              this.restoring = false;
-              console.log(`[Debug] Calling updateUrl from ChangeMap`);
-              this.updateUrl();
-            });
-          });
+          this.restoring = false;
+          console.log(`[Debug] Calling updateUrl from ChangeMap`);
+          this.updateUrl();
+        }
+        if (this.waitReadyBridge) {
+          this.waitReadyBridge(this);
+          delete this.waitReadyBridge;
         }
       });
       page({
         hashbang: true
       });
       page();
-      this.waitReady = new Promise((resolve, _reject) => {
+      this.waitReady = () => new Promise<MaplatUi>((resolve: (arg: MaplatUi) => void , _reject) => {
+        console.log("### Deadend logic");
         this.waitReadyBridge = resolve;
       });
     } else {
-      this.waitReady = this.initializer(appOption);
+      console.log("### Ideal initialize path");
+      this.waitReady = async () =>this.initializer(appOption);
     }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async initializer(appOption: any) {
-    return uiInit(this, appOption);
+    console.log("### Initializer called");
+    await uiInit(this, appOption);
+    return this as MaplatUi;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
