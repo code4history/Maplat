@@ -77,6 +77,12 @@ export class MaplatUi extends EventTarget {
   lastGPSError: string | undefined;
   selectedMarkerNamespaceID: string | undefined;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  t?: any;
+  translate?: (
+    dataFragment?: string | Record<string, string> | undefined
+  ) => string | undefined;
+
   constructor(appOption: MaplatAppOption) {
     super();
     this.html_id_seed = `${Math.floor(Math.random() * 9000) + 1000}`;
@@ -166,7 +172,6 @@ export class MaplatUi extends EventTarget {
           this.restoring = false;
           this.updateUrl();
           //this.waitReadyBridge(this);
-
         } else if (restore.mapID) {
           this.restoring = true;
 
@@ -174,7 +179,7 @@ export class MaplatUi extends EventTarget {
           await this.core!.waitReady;
 
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const ret = this.core!.changeMap(restore.mapID!, restore as any);
+          this.core!.changeMap(restore.mapID!, restore as any);
           // Fix: Manually apply rotation after changeMap
           // if (restore.position && restore.position.rotation !== undefined) {
           //   console.log(`[Debug] Manually applying rotation after changeMap: ${ restore.position.rotation } `);
@@ -206,13 +211,14 @@ export class MaplatUi extends EventTarget {
         hashbang: true
       });
       page();
-      this.waitReady = () => new Promise<MaplatUi>((resolve: (arg: MaplatUi) => void , _reject) => {
-        console.log("### Deadend logic");
-        this.waitReadyBridge = resolve;
-      });
+      this.waitReady = () =>
+        new Promise<MaplatUi>((resolve: (arg: MaplatUi) => void, _reject) => {
+          console.log("### Deadend logic");
+          this.waitReadyBridge = resolve;
+        });
     } else {
       console.log("### Ideal initialize path");
-      this.waitReady = async () =>this.initializer(appOption);
+      this.waitReady = async () => this.initializer(appOption);
     }
   }
 

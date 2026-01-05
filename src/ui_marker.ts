@@ -1,10 +1,8 @@
-import { createElement } from "@maplat/core";
-
 // import { Swiper } from "./swiper_ex";
 import "@c4h/chuci";
 import QRCode from "qrcode";
 import { point, polygon, booleanPointInPolygon } from "@turf/turf";
-import { resolveRelativeLink, prepareModal } from "./ui_utils";
+import { createElement, resolveRelativeLink, prepareModal } from "./ui_utils";
 
 function detectMediaType(src: string): string {
   if (src.includes("youtube.com") || src.includes("youtu.be")) {
@@ -67,11 +65,11 @@ export function poiWebControl(
       iframe.removeAttribute("src");
       iframe.setAttribute(
         "srcdoc",
-        `<div id="heightGetter">${ui.core!.translate(data.html) || ""}</div>`
+        `<div id="heightGetter">${ui.translate!(data.html) || ""}</div>`
       );
     } else {
       iframe.removeAttribute("srcdoc");
-      iframe.setAttribute("src", ui.core!.translate(data.url) || "");
+      iframe.setAttribute("src", ui.translate!(data.url) || "");
     }
   } else {
     const slides: string[] = [];
@@ -157,9 +155,9 @@ export function poiWebControl(
     }
 
     (htmlDiv.querySelector(".poi_address") as HTMLElement).innerText =
-      ui.core!.translate(data.address) || "";
+      ui.translate!(data.address) || "";
     (htmlDiv.querySelector(".poi_desc") as HTMLElement).innerHTML = (
-      ui.core!.translate(data.desc) || ""
+      ui.translate!(data.desc) || ""
     ).replace(/\n/g, "<br>");
 
     // Show/hide share buttons based on showShare parameter
@@ -219,7 +217,7 @@ export function handleMarkerAction(ui: MaplatUi, data: MarkerData) {
     ui.core!.mapDivDocument!.querySelector(".modal_poi_title") ||
     ui.core!.mapDivDocument!.querySelector(".modal_title");
   if (titleEl)
-    (titleEl as HTMLElement).innerText = ui.core!.translate(data.name) || "";
+    (titleEl as HTMLElement).innerText = ui.translate!(data.name) || "";
 
   // Prepare container - ensure poi_web_div exists or target it
   let poiWebDiv = ui.core!.mapDivDocument!.querySelector(".poi_web_div");

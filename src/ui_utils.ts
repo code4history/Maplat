@@ -1,6 +1,17 @@
 import * as bsn from "bootstrap.native";
+import { createElement as createPureElement } from "@maplat/core";
 
 const MODAL_CLOSE_ATTACHED = "data-maplat-close-attached";
+
+export function createElement(domStr: string) {
+  domStr = domStr
+    .replace(/(<\/?)d([ >])/g, "$1div$2")
+    .replace(/(<\/?)s([ >])/g, "$1span$2")
+    .replace(/ din="/g, ' data-i18n="')
+    .replace(/ dinh="/g, ' data-i18n-html="')
+    .replace(/ c="/g, ' class="');
+  return createPureElement(domStr);
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function prepareModal(modalElm: Element | HTMLElement, options?: any) {

@@ -3,7 +3,8 @@ import { CLASS_UNSELECTABLE, CLASS_CONTROL } from "ol/css";
 import { MapEvent } from "ol";
 
 import pointer from "./pointer_images";
-import { createElement, MaplatApp } from "@maplat/core";
+import { MaplatApp } from "@maplat/core";
+import { createElement } from "./ui_utils";
 import { getIcon } from "./icons";
 import type { MaplatUi } from "./index";
 import type { ControlOptions } from "./types";

@@ -1,5 +1,4 @@
-import { MaplatApp as Core, createElement, MaplatApp } from "@maplat/core";
-
+import { MaplatApp as Core, MaplatApp } from "@maplat/core";
 import pointer from "./pointer_images";
 import { Swiper } from "./swiper_ex";
 import { Navigation, Pagination } from "swiper";
@@ -21,7 +20,13 @@ import ContextMenu from "./contextmenu";
 import Weiwudi from "@c4h/weiwudi";
 import absoluteUrl from "./absolute_url";
 import * as QRCode from "qrcode";
-import { ellips, encBytes, isBasemap, prepareModal } from "./ui_utils";
+import {
+  createElement,
+  ellips,
+  encBytes,
+  isBasemap,
+  prepareModal
+} from "./ui_utils";
 
 import { poiWebControl } from "./ui_marker";
 
@@ -147,8 +152,8 @@ function initGpsHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
   ui.core!.addEventListener("outOfMap", (_evt: unknown) => {
     console.log("Event: outOfMap");
     if (enableOutOfMap) {
-      modalTitle.innerText = ui.core!.t("app.out_of_map") || "";
-      modalGpsDContent.innerText = ui.core!.t("app.out_of_map_area") || "";
+      modalTitle.innerText = ui.t("app.out_of_map") || "";
+      modalGpsDContent.innerText = ui.t("app.out_of_map_area") || "";
       ui.modalSetting("gpsD");
       prepareModal(modalBase, { root: mapDiv }).show();
     }
@@ -377,7 +382,7 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
       `<div class="swiper-slide" data="${source.mapID}">` +
         `<img crossorigin="anonymous" src="${
           thumbUrl
-        }"><div> ${ui.core!.translate(source.label)}</div> </div> `
+        }"><div> ${ui.translate!(source.label)}</div> </div> `
     );
   });
   overlaySources.forEach(source => {
@@ -389,7 +394,7 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
       `<div class="swiper-slide${colorCss}" data="${source.mapID}">` +
         `<img crossorigin="anonymous" src="${
           thumbUrl
-        }"><div> ${ui.core!.translate(source.label)}</div> </div> `
+        }"><div> ${ui.translate!(source.label)}</div> </div> `
     );
   });
 
@@ -412,7 +417,7 @@ function initMapEventListeners(ui: MaplatUi) {
     const title = map.officialTitle || map.title || map.label;
     (
       ui.core!.mapDivDocument!.querySelector(".map-title span") as HTMLElement
-    ).innerText = ui.core!.translate(title) || "";
+    ).innerText = ui.translate!(title) || "";
 
     if (ui.checkOverlayID(map.mapID)) {
       ui.sliderNew.setEnable(true);
@@ -469,7 +474,7 @@ function initMapEventListeners(ui: MaplatUi) {
         list.push({
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           icon: datum.icon || (pointer as any)["defaultpin.png"],
-          text: ui.core!.translate(datum.name),
+          text: ui.translate!(datum.name),
           callback: () => {
             ui.handleMarkerAction(datum);
           }
@@ -513,7 +518,7 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
 
     if (cmds[0] === "cp") {
       const bodyElm = document.querySelector("body")!;
-      const message = ui.core!.t ? ui.core!.t("app.copy_toast") : "URL Copied";
+      const message = ui.t ? ui.t("app.copy_toast") : "URL Copied";
       if (navigator.clipboard) {
         navigator.clipboard.writeText(uri).then(() => {
           ui.showToast(message, btn as HTMLElement);
@@ -567,6 +572,44 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
   });
 
   ui.core!.addEventListener("uiPrepare", (_evt: unknown) => {
+    ui.t = (x: string) => ui.core!.t(x);
+    ui.translate = (
+      dataFragment?: Record<string, string> | string
+    ): string | undefined => {
+      if (!dataFragment || typeof dataFragment === "string")
+        return dataFragment as string;
+      const langs = Object.keys(dataFragment);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let key = langs.reduce((prev: any, curr, idx, arr) => {
+        if (curr == ui.core!.appLang) {
+          prev = [dataFragment[curr], true];
+        } else if (!prev || (curr == "en" && !prev[1])) {
+          prev = [dataFragment[curr], false];
+        }
+        if (idx == arr.length - 1) return prev[0];
+        return prev;
+      }, undefined);
+
+      key = typeof key === "string" ? key : `${key}`;
+      if (
+        ui.core!.i18n!.exists(key, {
+          ns: "translation",
+          nsSeparator: "__X__yX__X__"
+        })
+      )
+        return ui.t!(key, { ns: "translation", nsSeparator: "__X__yX__X__" });
+
+      for (let i = 0; i < langs.length; i++) {
+        const lang = langs[i];
+        ui.core!.i18n!.addResource(
+          lang,
+          "translation",
+          key,
+          dataFragment[lang]
+        );
+      }
+      return ui.t!(key, { ns: "translation", nsSeparator: "__X__yX__X__" });
+    };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const imageExtractor = function (text: any) {
       const regexp = /\$\{([a-zA-Z0-9_\.\/\-]+)\}/g; // eslint-disable-line no-useless-escape
@@ -583,13 +626,13 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
     i18nTargets.forEach(target => {
       const key =
         target.getAttribute("data-i18n") || target.getAttribute("din");
-      (target as HTMLElement).innerText = imageExtractor(ui.core!.t(key));
+      (target as HTMLElement).innerText = imageExtractor(ui.t(key));
     });
     i18nTargets = mapDiv.querySelectorAll("[data-i18n-html], [dinh]");
     i18nTargets.forEach(target => {
       const key =
         target.getAttribute("data-i18n-html") || target.getAttribute("dinh");
-      target.innerHTML = imageExtractor(ui.core!.t(key));
+      target.innerHTML = imageExtractor(ui.t(key));
     });
     // Explicitly fix app_loading_body with a more robust selector if needed, or re-run translation for it
     const appLoadingBody = mapDiv.querySelector(
@@ -597,14 +640,14 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
     );
     if (appLoadingBody) {
       (appLoadingBody as HTMLElement).innerHTML = imageExtractor(
-        ui.core!.t("html.app_loading_body")
+        ui.t("html.app_loading_body")
       );
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const options: any = {
       reverse: true,
-      tipLabel: ui.core!.t("control.trans", { ns: "translation" })
+      tipLabel: ui.t("control.trans", { ns: "translation" })
     };
     if (restoreTransparency) {
       options.initialValue = restoreTransparency / 100;
@@ -612,51 +655,51 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
     ui.sliderNew = new SliderNew(options);
     ui.core!.appData!.controls = [
       new Copyright({
-        tipLabel: ui.core!.t("control.info", { ns: "translation" })
+        tipLabel: ui.t("control.info", { ns: "translation" })
       }),
       new CompassRotate({
-        tipLabel: ui.core!.t("control.compass", { ns: "translation" })
+        tipLabel: ui.t("control.compass", { ns: "translation" })
       }),
       new Zoom({
-        tipLabel: ui.core!.t("control.zoom", { ns: "translation" })
+        tipLabel: ui.t("control.zoom", { ns: "translation" })
       }),
       new SetGPS({
         ui,
-        tipLabel: ui.core!.t("control.gps", { ns: "translation" })
+        tipLabel: ui.t("control.gps", { ns: "translation" })
       }),
       new GoHome({
-        tipLabel: ui.core!.t("control.home", { ns: "translation" })
+        tipLabel: ui.t("control.home", { ns: "translation" })
       }),
       ui.sliderNew,
       new Maplat({
-        tipLabel: ui.core!.t("control.help", { ns: "translation" })
+        tipLabel: ui.t("control.help", { ns: "translation" })
       })
     ];
     if (ui.enableShare) {
       ui.core!.appData!.controls.push(
         new Share({
-          tipLabel: ui.core!.t("control.share", { ns: "translation" })
+          tipLabel: ui.t("control.share", { ns: "translation" })
         })
       );
     }
     if (ui.enableBorder) {
       ui.core!.appData!.controls.push(
         new Border({
-          tipLabel: ui.core!.t("control.border", { ns: "translation" })
+          tipLabel: ui.t("control.border", { ns: "translation" })
         })
       );
     }
     if (ui.enableHideMarker) {
       ui.core!.appData!.controls.push(
         new HideMarker({
-          tipLabel: ui.core!.t("control.hide_marker", { ns: "translation" })
+          tipLabel: ui.t("control.hide_marker", { ns: "translation" })
         })
       );
     }
     if (ui.enableMarkerList) {
       ui.core!.appData!.controls.push(
         new MarkerList({
-          tipLabel: ui.core!.t("control.marker_list", { ns: "translation" })
+          tipLabel: ui.t("control.marker_list", { ns: "translation" })
         })
       );
     }
@@ -688,7 +731,7 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
       const modal = prepareModal(modalBase, { root: mapDiv });
 
       (mapDiv.querySelector(".modal_load_title") as HTMLElement).innerText =
-        ui.core!.translate(ui.core!.appData!.appName) || "";
+        ui.translate(ui.core!.appData!.appName) || "";
       if (splash) {
         mapDiv
           .querySelector(".splash_img")!
@@ -709,7 +752,7 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
     }
 
     document.querySelector("title")!.innerHTML =
-      ui.core!.translate(ui.core!.appName) || "";
+      ui.translate(ui.core!.appName) || "";
   });
 
   ui.core!.waitReady.then(() => {
@@ -815,7 +858,7 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
                         <div class="row layer_row">
                            <div class="layer_label">
                               <span class="dli-chevron"></span>
-                              <img src="${layer.icon || pointer["defaultpin.png"]}" class="markerlist"> ${ui.core!.translate(layer.name)}
+                              <img src="${layer.icon || pointer["defaultpin.png"]}" class="markerlist"> ${ui.translate!(layer.name)}
                            </div>
                            <div class="layer_onoff">
                               <input type="checkbox" class="markerlist" ${layer.hide ? "" : "checked"}>
@@ -901,7 +944,7 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
                                 <div class="row poi_row">
                                    <div class="poi_label">
                                       <span class="dli-chevron"></span>
-                                      <img src="${poi.icon || layer.icon || pointer["defaultpin.png"]}" class="markerlist"> ${ui.core!.translate(poi.name)}
+                                      <img src="${poi.icon || layer.icon || pointer["defaultpin.png"]}" class="markerlist"> ${ui.translate!(poi.name)}
                                    </div>
                                 </div>
                             </li>`)[0] as HTMLElement;
@@ -955,8 +998,7 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
         const titleEl = mapDiv.querySelector(".modal_map .modal_title");
         if (titleEl) {
           const titleVal = mapData.get ? mapData.get("title") : mapData.title;
-          (titleEl as HTMLElement).innerText =
-            ui.core!.translate(titleVal) || "";
+          (titleEl as HTMLElement).innerText = ui.translate!(titleVal) || "";
         }
 
         META_KEYS.forEach(key => {
@@ -983,7 +1025,7 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
                     `<img src="${iconUrl}" class="license" />`;
                 } else {
                   (contentEl as HTMLElement).innerHTML =
-                    ui.core!.translate(val) || "";
+                    ui.translate!(val) || "";
                 }
               }
             } else {
@@ -1020,11 +1062,7 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
           let currentStats: any = undefined;
 
           const updateButtons = () => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const coreAny = ui.core as any;
-            const t = coreAny.t
-              ? coreAny.t.bind(ui.core)
-              : ui.core!.translate.bind(ui.core);
+            const t = ui.t ? ui.t.bind(ui) : ui.translate!.bind(ui);
 
             if (totalTile) {
               cacheFetch.style.display = "inline-block";
@@ -1073,11 +1111,7 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
             if (!stats) stats = await weiwudi.stats();
             currentStats = stats;
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const coreAny = ui.core as any;
-            const t = coreAny.t
-              ? coreAny.t.bind(ui.core)
-              : ui.core!.translate.bind(ui.core);
+            const t = ui.t ? ui.t.bind(ui) : ui.translate!.bind(ui);
 
             const sizeStr = isFetching
               ? t("html.cache_processing") || "Calculating..."
@@ -1179,7 +1213,7 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
           const t = (ui.core as any).t;
           cacheDelete.innerHTML =
             (t ? t.call(ui.core, "html.cache_delete") : undefined) ||
-            ui.core!.translate("html.cache_delete") ||
+            ui.translate!("html.cache_delete") ||
             "Clear";
 
           cacheDelete.addEventListener("click", async () => {
