@@ -239,7 +239,7 @@ export class MaplatUi extends EventTarget {
   }
 
   translate(dataFragment?: Record<string, string> | string): string | undefined {
-    console.log("############## Maplat translate");
+    console.log("############## Maplat translate2");
     if (!dataFragment || typeof dataFragment === "string")
       return dataFragment as string;
     const langs = Object.keys(dataFragment);
@@ -255,12 +255,12 @@ export class MaplatUi extends EventTarget {
     }, undefined);
 
     key = typeof key === "string" ? key : `${key}`;
-    if (this.core!.i18n!.exists(key, { ns: "translation", nsSeparator: "__X__yX__X__" }))
+    if (this.i18n!.exists(key, { ns: "translation", nsSeparator: "__X__yX__X__" }))
       return this.t(key, { ns: "translation", nsSeparator: "__X__yX__X__" });
 
     for (let i = 0; i < langs.length; i++) {
       const lang = langs[i];
-      this.core!.i18n!.addResource(lang, "translation", key, dataFragment[lang]);
+      this.i18n!.addResource(lang, "translation", key, dataFragment[lang]);
     }
     return this.t(key, { ns: "translation", nsSeparator: "__X__yX__X__" });
   }

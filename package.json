@@ -54,7 +54,7 @@
     "pnpm": ">=9.0.0"
   },
   "dependencies": {
-    "@c4h/chuci": "0.2.5",
+    "@c4h/chuci": "^0.2.5",
     "@c4h/weiwudi": "^0.2.1",
     "@maplat/core": "file:../MaplatCore",
     "@turf/turf": "^7.3.1",

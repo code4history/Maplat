@@ -9,7 +9,7 @@ importers:
   .:
     dependencies:
       '@c4h/chuci':
-        specifier: 0.2.5
+        specifier: ^0.2.5
         version: 0.2.5
       '@c4h/weiwudi':
         specifier: ^0.2.1

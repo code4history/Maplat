@@ -9,8 +9,8 @@ export declare class MaplatUi extends EventTarget {
     static createObject(option: MaplatAppOption): Promise<MaplatUi>;
     core?: Core;
     appOption: MaplatAppOption;
-    waitReady: Promise<void>;
-    waitReadyBridge: unknown;
+    waitReady?: () => Promise<MaplatUi>;
+    waitReadyBridge?: (arg: MaplatUi) => void;
     pathThatSet?: string;
     swipers: Record<string, SwiperInstance>;
     mobile_if: boolean;
@@ -45,8 +45,12 @@ export declare class MaplatUi extends EventTarget {
     lastClickCoordinate: Coordinate | undefined;
     lastGPSError: string | undefined;
     selectedMarkerNamespaceID: string | undefined;
+    _t?: any;
+    i18n?: any;
     constructor(appOption: MaplatAppOption);
-    initializer(appOption: any): Promise<void>;
+    initializer(appOption: any): Promise<MaplatUi>;
+    t(x: string, option?: any): any;
+    translate(dataFragment?: Record<string, string> | string): string | undefined;
     handleMarkerAction(data: any): void;
     showContextMenu(list: any[]): void;
     xyToMapIDs(xy: any, threshold?: number): Promise<any>;

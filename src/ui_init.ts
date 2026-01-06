@@ -612,13 +612,13 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
     i18nTargets.forEach(target => {
       const key =
         target.getAttribute("data-i18n") || target.getAttribute("din");
-      (target as HTMLElement).innerText = imageExtractor(ui.t(key));
+      (target as HTMLElement).innerText = imageExtractor(ui.t(key as any));
     });
     i18nTargets = mapDiv.querySelectorAll("[data-i18n-html], [dinh]");
     i18nTargets.forEach(target => {
       const key =
         target.getAttribute("data-i18n-html") || target.getAttribute("dinh");
-      target.innerHTML = imageExtractor(ui.t(key));
+      target.innerHTML = imageExtractor(ui.t(key as any));
     });
     // Explicitly fix app_loading_body with a more robust selector if needed, or re-run translation for it
     const appLoadingBody = mapDiv.querySelector(
