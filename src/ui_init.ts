@@ -32,6 +32,8 @@ import { poiWebControl } from "./ui_marker";
 
 import type { MaplatUi } from "./index";
 import type { MaplatAppOption } from "./types";
+import i18n from "i18next";
+import i18nHttpBackend from "i18next-http-backend";
 
 Swiper.use([Navigation, Pagination]);
 
@@ -52,6 +54,24 @@ export const META_KEYS = [
   "description"
 ];
 
+async function i18nLoader(ui: MaplatUi) {
+  return new Promise<void>((resolve, _reject) => {
+    const translib = i18n.use(i18nHttpBackend);
+    translib.init({
+      lng: ui.core!.lang,
+      fallbackLng: ["en"],
+      backend: {
+        loadPath: "assets/locales/{{lng}}/{{ns}}.json"
+      }
+    },
+    (_err, t) => {
+      ui._t = t;
+      ui.i18n = i18n;
+      resolve();
+    });
+  });
+}
+
 export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
   console.log("### UI init");
   appOption.translateUI = true;
@@ -59,6 +79,7 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
   if (appOption.icon) {
     (pointer as Record<string, string>)["defaultpin.png"] = appOption.icon;
   }
+  await i18nLoader(ui);
 
   if (appOption.restore) {
     ui.setShowBorder(appOption.restore.showBorder || false);

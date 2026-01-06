@@ -79,6 +79,7 @@ export class MaplatUi extends EventTarget {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _t?: any;
+  i18n?: any;
 
   constructor(appOption: MaplatAppOption) {
     super();
