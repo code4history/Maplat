@@ -65,6 +65,7 @@ async function i18nLoader(ui: MaplatUi) {
       }
     },
     (_err, t) => {
+      console.log("### i18nLoader initialized");
       ui._t = t;
       ui.i18n = i18n;
       resolve();
