@@ -78,7 +78,7 @@ export class MaplatUi extends EventTarget {
   selectedMarkerNamespaceID: string | undefined;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  t?: any;
+  _t?: any;
   translate?: (
     dataFragment?: string | Record<string, string> | undefined
   ) => string | undefined;
@@ -227,6 +227,11 @@ export class MaplatUi extends EventTarget {
     console.log("### Initializer called");
     await uiInit(this, appOption);
     return this as MaplatUi;
+  }
+
+  t(x:string, option?:any):any {
+    console.log("############## Maplat t");
+    return this.core!.t(x, option);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

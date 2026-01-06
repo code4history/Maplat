@@ -572,7 +572,7 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
   });
 
   ui.core!.addEventListener("uiPrepare", (_evt: unknown) => {
-    ui.t = (x: string) => ui.core!.t(x);
+    //ui.t = (x: string) => ui.core!.t(x);
     ui.translate = (
       dataFragment?: Record<string, string> | string
     ): string | undefined => {
