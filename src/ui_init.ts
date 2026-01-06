@@ -191,9 +191,9 @@ function initGpsHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
     };
 
     if (!ui.core) return;
-    modalTitle.innerText = ui.core.t("app.gps_error") || "";
+    modalTitle.innerText = ui.t("app.gps_error") || "";
     modalGpsDContent.innerText =
-      ui.core.t(errorMap[evt.detail] || "app.gps_error") || "";
+      ui.t(errorMap[evt.detail] || "app.gps_error") || "";
     ui.modalSetting("gpsD");
     prepareModal(modalBase, {
       root: mapDiv
@@ -220,8 +220,8 @@ function initGpsHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
       });
 
       if (error === "gps_out") {
-        modalTitle.innerText = ui.core.t("app.out_of_map") || "";
-        modalGpsDContent.innerText = ui.core.t("app.out_of_map_area") || "";
+        modalTitle.innerText = ui.t("app.out_of_map") || "";
+        modalGpsDContent.innerText = ui.t("app.out_of_map_area") || "";
       } else {
         const errorMap: Record<string, string> = {
           user_gps_deny: "app.user_gps_deny",
@@ -229,9 +229,9 @@ function initGpsHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
           gps_timeout: "app.gps_timeout"
         };
 
-        modalTitle.innerText = ui.core.t("app.gps_error") || "";
+        modalTitle.innerText = ui.t("app.gps_error") || "";
         modalGpsDContent.innerText =
-          ui.core.t(errorMap[error] || "app.gps_error") || "";
+          ui.t(errorMap[error] || "app.gps_error") || "";
       }
 
       ui.modalSetting("gpsD");
@@ -594,8 +594,6 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
   });
 
   ui.core!.addEventListener("uiPrepare", (_evt: unknown) => {
-    //ui.t = (x: string) => ui.core!.t(x);
-
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const imageExtractor = function (text: any) {
       const regexp = /\$\{([a-zA-Z0-9_\.\/\-]+)\}/g; // eslint-disable-line no-useless-escape
@@ -1195,12 +1193,7 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
           const newElem2 = cacheDelete.cloneNode(true);
           cacheDelete.parentNode!.replaceChild(newElem2, cacheDelete);
           cacheDelete = newElem2 as HTMLButtonElement;
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const t = (ui.core as any).t;
-          cacheDelete.innerHTML =
-            (t ? t.call(ui.core, "html.cache_delete") : undefined) ||
-            ui.translate!("html.cache_delete") ||
-            "Clear";
+          cacheDelete.innerHTML = ui.t("html.cache_delete");
 
           cacheDelete.addEventListener("click", async () => {
             if (isFetching) return; // Should be disabled, but safety check

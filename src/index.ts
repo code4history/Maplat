@@ -227,11 +227,6 @@ export class MaplatUi extends EventTarget {
     return this as MaplatUi;
   }
 
-  /*__t(x:string, option?:any):any {
-    console.log("############## Maplat t");
-    return this.core!.t(x, option);
-  }*/
-
   t(x:string, option?:any):any {
     console.log("############## Maplat t2");
     if (this._t) return this._t(x, option);
