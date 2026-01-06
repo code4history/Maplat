@@ -573,43 +573,7 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
 
   ui.core!.addEventListener("uiPrepare", (_evt: unknown) => {
     //ui.t = (x: string) => ui.core!.t(x);
-    ui.translate = (
-      dataFragment?: Record<string, string> | string
-    ): string | undefined => {
-      if (!dataFragment || typeof dataFragment === "string")
-        return dataFragment as string;
-      const langs = Object.keys(dataFragment);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let key = langs.reduce((prev: any, curr, idx, arr) => {
-        if (curr == ui.core!.appLang) {
-          prev = [dataFragment[curr], true];
-        } else if (!prev || (curr == "en" && !prev[1])) {
-          prev = [dataFragment[curr], false];
-        }
-        if (idx == arr.length - 1) return prev[0];
-        return prev;
-      }, undefined);
 
-      key = typeof key === "string" ? key : `${key}`;
-      if (
-        ui.core!.i18n!.exists(key, {
-          ns: "translation",
-          nsSeparator: "__X__yX__X__"
-        })
-      )
-        return ui.t!(key, { ns: "translation", nsSeparator: "__X__yX__X__" });
-
-      for (let i = 0; i < langs.length; i++) {
-        const lang = langs[i];
-        ui.core!.i18n!.addResource(
-          lang,
-          "translation",
-          key,
-          dataFragment[lang]
-        );
-      }
-      return ui.t!(key, { ns: "translation", nsSeparator: "__X__yX__X__" });
-    };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const imageExtractor = function (text: any) {
       const regexp = /\$\{([a-zA-Z0-9_\.\/\-]+)\}/g; // eslint-disable-line no-useless-escape

@@ -79,9 +79,6 @@ export class MaplatUi extends EventTarget {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _t?: any;
-  translate?: (
-    dataFragment?: string | Record<string, string> | undefined
-  ) => string | undefined;
 
   constructor(appOption: MaplatAppOption) {
     super();
@@ -232,6 +229,33 @@ export class MaplatUi extends EventTarget {
   t(x:string, option?:any):any {
     console.log("############## Maplat t");
     return this.core!.t(x, option);
+  }
+
+  translate(dataFragment?: Record<string, string> | string): string | undefined {
+    console.log("############## Maplat translate");
+    if (!dataFragment || typeof dataFragment === "string")
+      return dataFragment as string;
+    const langs = Object.keys(dataFragment);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let key = langs.reduce((prev: any, curr, idx, arr) => {
+      if (curr == this.core!.appLang) {
+        prev = [dataFragment[curr], true];
+      } else if (!prev || (curr == "en" && !prev[1])) {
+        prev = [dataFragment[curr], false];
+      }
+      if (idx == arr.length - 1) return prev[0];
+      return prev;
+    }, undefined);
+
+    key = typeof key === "string" ? key : `${key}`;
+    if (this.core!.i18n!.exists(key, { ns: "translation", nsSeparator: "__X__yX__X__" }))
+      return this.t(key, { ns: "translation", nsSeparator: "__X__yX__X__" });
+
+    for (let i = 0; i < langs.length; i++) {
+      const lang = langs[i];
+      this.core!.i18n!.addResource(lang, "translation", key, dataFragment[lang]);
+    }
+    return this.t(key, { ns: "translation", nsSeparator: "__X__yX__X__" });
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
