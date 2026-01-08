@@ -5,6 +5,7 @@ import { default as ContextMenu } from './contextmenu';
 import { Pixel } from 'ol/pixel';
 import { Coordinate } from 'ol/coordinate';
 import { MaplatAppOption, SwiperInstance } from './types';
+import { i18n, TFunction } from 'i18next';
 export declare class MaplatUi extends EventTarget {
     static createObject(option: MaplatAppOption): Promise<MaplatUi>;
     core?: Core;
@@ -45,11 +46,11 @@ export declare class MaplatUi extends EventTarget {
     lastClickCoordinate: Coordinate | undefined;
     lastGPSError: string | undefined;
     selectedMarkerNamespaceID: string | undefined;
-    _t?: any;
-    i18n?: any;
+    _t?: TFunction<"translation", undefined>;
+    i18n?: i18n;
     constructor(appOption: MaplatAppOption);
     initializer(appOption: any): Promise<MaplatUi>;
-    t(x: string, option?: any): any;
+    t(x: string, option?: any): string;
     translate(dataFragment?: Record<string, string> | string): string | undefined;
     handleMarkerAction(data: any): void;
     showContextMenu(list: any[]): void;

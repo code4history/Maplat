@@ -26,6 +26,7 @@ import type { Pixel } from "ol/pixel";
 import type { Coordinate } from "ol/coordinate";
 import { resolveRelativeLink, ellips } from "./ui_utils";
 import type { MaplatAppOption, RestoreState, SwiperInstance } from "./types";
+import { i18n, TFunction } from "i18next";
 
 Swiper.use([Navigation, Pagination]);
 
@@ -77,9 +78,8 @@ export class MaplatUi extends EventTarget {
   lastGPSError: string | undefined;
   selectedMarkerNamespaceID: string | undefined;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  _t?: any;
-  i18n?: any;
+  _t?: TFunction<"translation", undefined>;
+  i18n?: i18n;
 
   constructor(appOption: MaplatAppOption) {
     super();
@@ -104,9 +104,8 @@ export class MaplatUi extends EventTarget {
             rotation: 0
           }
         };
-        // Parse "s:map/x:100/..."
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        path.split("/").forEach((state: any) => {
+
+        path.split("/").forEach((state: string) => {
           if (!state) return;
           const line = state.split(":");
           switch (line[0]) {
@@ -163,26 +162,15 @@ export class MaplatUi extends EventTarget {
             appOption.restore = restore;
             this.restoring = true;
           }
-
-          console.log("### Page without core => call initializer");
           await this.initializer(appOption);
           await this.core!.waitReady;
           this.restoring = false;
           this.updateUrl();
-          //this.waitReadyBridge(this);
         } else if (restore.mapID) {
           this.restoring = true;
-
-          console.log("### Core's waitReady => page with mapID");
           await this.core!.waitReady;
-
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           this.core!.changeMap(restore.mapID!, restore as any);
-          // Fix: Manually apply rotation after changeMap
-          // if (restore.position && restore.position.rotation !== undefined) {
-          //   console.log(`[Debug] Manually applying rotation after changeMap: ${ restore.position.rotation } `);
-          //   this.core!.mapObject.getView().setRotation(restore.position.rotation);
-          // }
 
           // Update transparency slider if needed
           if (this.sliderNew) {
@@ -208,33 +196,30 @@ export class MaplatUi extends EventTarget {
       page({
         hashbang: true
       });
-      page();
       this.waitReady = () =>
         new Promise<MaplatUi>((resolve: (arg: MaplatUi) => void, _reject) => {
-          console.log("### Deadend logic");
           this.waitReadyBridge = resolve;
         });
     } else {
-      console.log("### Ideal initialize path");
       this.waitReady = async () => this.initializer(appOption);
     }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async initializer(appOption: any) {
-    console.log("### Initializer called");
     await uiInit(this, appOption);
     return this as MaplatUi;
   }
 
-  t(x:string, option?:any):any {
-    console.log("############## Maplat t2");
-    if (this._t) return this._t(x, option);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  t(x: string, option?: any): string {
+    if (this._t) return this._t(x, option) as string;
     return x;
   }
 
-  translate(dataFragment?: Record<string, string> | string): string | undefined {
-    console.log("############## Maplat translate2");
+  translate(
+    dataFragment?: Record<string, string> | string
+  ): string | undefined {
     if (!dataFragment || typeof dataFragment === "string")
       return dataFragment as string;
     const langs = Object.keys(dataFragment);
@@ -250,7 +235,9 @@ export class MaplatUi extends EventTarget {
     }, undefined);
 
     key = typeof key === "string" ? key : `${key}`;
-    if (this.i18n!.exists(key, { ns: "translation", nsSeparator: "__X__yX__X__" }))
+    if (
+      this.i18n!.exists(key, { ns: "translation", nsSeparator: "__X__yX__X__" })
+    )
       return this.t(key, { ns: "translation", nsSeparator: "__X__yX__X__" });
 
     for (let i = 0; i < langs.length; i++) {

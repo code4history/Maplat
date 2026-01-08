@@ -15,8 +15,8 @@ importers:
         specifier: ^0.2.1
         version: 0.2.1(workbox-routing@7.4.0)
       '@maplat/core':
-        specifier: file:../MaplatCore
-        version: file:../MaplatCore(mapbox-gl@3.17.0)(maplibre-gl@4.7.1)(ol@10.7.0)(workbox-routing@7.4.0)
+        specifier: ^0.12.6
+        version: 0.12.6(mapbox-gl@3.17.0)(maplibre-gl@4.7.1)(ol@10.7.0)(workbox-routing@7.4.0)
       '@turf/turf':
         specifier: ^7.3.1
         version: 7.3.1
@@ -1104,8 +1104,8 @@ packages:
     resolution: {integrity: sha512-Es6WcD0nO5l+2BOQS4uLfNPYQaNDfbot3X1XUoloz+x0mPDS3eeORZJl06HXjwBG1fOGwCRnzK88LMdxKRrd6Q==}
     engines: {node: '>=6.0.0'}
 
-  '@maplat/core@file:../MaplatCore':
-    resolution: {directory: ../MaplatCore, type: directory}
+  '@maplat/core@0.12.6':
+    resolution: {integrity: sha512-r+Ne9iwjVsdphcmT3OUbdEi8cNGnycsvLUAbqO6VueygwJXrMCbtKb2Ish5OPDSQMnoNsPa+o7a8yyUD5D0B6A==}
     engines: {pnpm: '>=9'}
     peerDependencies:
       mapbox-gl: ^1.0.0 || ^2.0.0 || ^3.0.0
@@ -2679,9 +2679,6 @@ packages:
 
   i18next-http-backend@3.0.2:
     resolution: {integrity: sha512-PdlvPnvIp4E1sYi46Ik4tBYh/v/NbYfFFgTjkwFl0is8A18s7/bx9aXqsrOax9WUbeNS6mD2oix7Z0yGGf6m5g==}
-
-  i18next@21.10.0:
-    resolution: {integrity: sha512-YeuIBmFsGjUfO3qBmMOc0rQaun4mIpGKET5WDwvu8lU7gvwpcariZLNtL0Fzj+zazcHUrlXHiptcFhBMFaxzfg==}
 
   i18next@25.7.3:
     resolution: {integrity: sha512-2XaT+HpYGuc2uTExq9TVRhLsso+Dxym6PWaKpn36wfBmTI779OQ7iP/XaZHzrnGyzU4SHpFrTYLKfVyBfAhVNA==}
@@ -5110,13 +5107,11 @@ snapshots:
 
   '@mapbox/whoots-js@3.1.0': {}
 
-  '@maplat/core@file:../MaplatCore(mapbox-gl@3.17.0)(maplibre-gl@4.7.1)(ol@10.7.0)(workbox-routing@7.4.0)':
+  '@maplat/core@0.12.6(mapbox-gl@3.17.0)(maplibre-gl@4.7.1)(ol@10.7.0)(workbox-routing@7.4.0)':
     dependencies:
       '@c4h/weiwudi': 0.2.1(workbox-routing@7.4.0)
       '@maplat/transform': 0.4.1
       '@turf/turf': 7.3.1
-      i18next: 21.10.0
-      i18next-http-backend: 3.0.2
       lodash.template: 4.5.0
       ol: 10.7.0
       whatwg-fetch: 3.6.20
@@ -5124,7 +5119,6 @@ snapshots:
       mapbox-gl: 3.17.0
       maplibre-gl: 4.7.1
     transitivePeerDependencies:
-      - encoding
       - workbox-routing
 
   '@maplat/transform@0.4.1':
@@ -7630,10 +7624,6 @@ snapshots:
       cross-fetch: 4.0.0
     transitivePeerDependencies:
       - encoding
-
-  i18next@21.10.0:
-    dependencies:
-      '@babel/runtime': 7.28.4
 
   i18next@25.7.3(typescript@5.9.3):
     dependencies:

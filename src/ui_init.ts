@@ -57,30 +57,29 @@ export const META_KEYS = [
 async function i18nLoader(ui: MaplatUi) {
   return new Promise<void>((resolve, _reject) => {
     const translib = i18n.use(i18nHttpBackend);
-    translib.init({
-      lng: ui.core!.lang,
-      fallbackLng: ["en"],
-      backend: {
-        loadPath: "assets/locales/{{lng}}/{{ns}}.json"
+    translib.init(
+      {
+        lng: "ja", //ui.core!.lang,
+        fallbackLng: ["en"],
+        backend: {
+          loadPath: "assets/locales/{{lng}}/{{ns}}.json"
+        }
+      },
+      (_err, t) => {
+        ui._t = t;
+        ui.i18n = i18n;
+        resolve();
       }
-    },
-    (_err, t) => {
-      console.log("### i18nLoader initialized");
-      ui._t = t;
-      ui.i18n = i18n;
-      resolve();
-    });
+    );
   });
 }
 
 export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
-  console.log("### UI init");
-  appOption.translateUI = true;
+  await i18nLoader(ui);
   ui.core = new Core(appOption);
   if (appOption.icon) {
     (pointer as Record<string, string>)["defaultpin.png"] = appOption.icon;
   }
-  await i18nLoader(ui);
 
   if (appOption.restore) {
     ui.setShowBorder(appOption.restore.showBorder || false);
@@ -610,13 +609,13 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
     i18nTargets.forEach(target => {
       const key =
         target.getAttribute("data-i18n") || target.getAttribute("din");
-      (target as HTMLElement).innerText = imageExtractor(ui.t(key as any));
+      (target as HTMLElement).innerText = imageExtractor(ui.t(key as string));
     });
     i18nTargets = mapDiv.querySelectorAll("[data-i18n-html], [dinh]");
     i18nTargets.forEach(target => {
       const key =
         target.getAttribute("data-i18n-html") || target.getAttribute("dinh");
-      target.innerHTML = imageExtractor(ui.t(key as any));
+      target.innerHTML = imageExtractor(ui.t(key as string));
     });
     // Explicitly fix app_loading_body with a more robust selector if needed, or re-run translation for it
     const appLoadingBody = mapDiv.querySelector(
