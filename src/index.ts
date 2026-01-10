@@ -27,6 +27,7 @@ import type { Coordinate } from "ol/coordinate";
 import { resolveRelativeLink, ellips } from "./ui_utils";
 import type { MaplatAppOption, RestoreState, SwiperInstance } from "./types";
 import { i18n, TFunction } from "i18next";
+import browserLanguage from "./browserlanguage";
 
 Swiper.use([Navigation, Pagination]);
 
@@ -77,6 +78,7 @@ export class MaplatUi extends EventTarget {
   lastClickCoordinate: Coordinate | undefined;
   lastGPSError: string | undefined;
   selectedMarkerNamespaceID: string | undefined;
+  lang = "ja";
 
   _t?: TFunction<"translation", undefined>;
   i18n?: i18n;
@@ -163,11 +165,13 @@ export class MaplatUi extends EventTarget {
             this.restoring = true;
           }
           await this.initializer(appOption);
+          console.log("Core 1");
           await this.core!.waitReady;
           this.restoring = false;
           this.updateUrl();
         } else if (restore.mapID) {
           this.restoring = true;
+          console.log("Core 2");
           await this.core!.waitReady;
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           this.core!.changeMap(restore.mapID!, restore as any);
@@ -205,6 +209,10 @@ export class MaplatUi extends EventTarget {
     }
   }
 
+  setLang() {
+    
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async initializer(appOption: any) {
     await uiInit(this, appOption);
@@ -224,6 +232,7 @@ export class MaplatUi extends EventTarget {
       return dataFragment as string;
     const langs = Object.keys(dataFragment);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    console.log(`translate: ${this.core!.appLang}`);
     let key = langs.reduce((prev: any, curr, idx, arr) => {
       if (curr == this.core!.appLang) {
         prev = [dataFragment[curr], true];

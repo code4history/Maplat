@@ -34,6 +34,7 @@ import type { MaplatUi } from "./index";
 import type { MaplatAppOption } from "./types";
 import i18n from "i18next";
 import i18nHttpBackend from "i18next-http-backend";
+import browserLanguage from "./browserlanguage";
 
 Swiper.use([Navigation, Pagination]);
 
@@ -59,7 +60,7 @@ async function i18nLoader(ui: MaplatUi) {
     const translib = i18n.use(i18nHttpBackend);
     translib.init(
       {
-        lng: "ja", //ui.core!.lang,
+        lng: "ja",
         fallbackLng: ["en"],
         backend: {
           loadPath: "assets/locales/{{lng}}/{{ns}}.json"
@@ -76,7 +77,7 @@ async function i18nLoader(ui: MaplatUi) {
 
 export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
   await i18nLoader(ui);
-  ui.core = new Core(appOption);
+  const core = ui.core = new Core(appOption);
   if (appOption.icon) {
     (pointer as Record<string, string>)["defaultpin.png"] = appOption.icon;
   }
@@ -84,16 +85,12 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
   if (appOption.restore) {
     ui.setShowBorder(appOption.restore.showBorder || false);
     if (appOption.restore.hideMarker) {
-      ui.core!.waitReady.then(() => {
-        ui.setHideMarker(appOption.restore!.hideMarker);
-      });
+      await core.waitReady;
+      ui.setHideMarker(appOption.restore!.hideMarker);
     }
     if (appOption.restore.openedMarker) {
-      console.log(appOption.restore.openedMarker);
-      ui.core!.waitReady.then(() => {
-        console.log(`Timeout ${appOption.restore!.openedMarker} `);
-        ui.handleMarkerActionById(appOption.restore!.openedMarker!);
-      });
+      await core.waitReady;
+      ui.handleMarkerActionById(appOption.restore!.openedMarker!);
     }
   } else if (appOption.restoreSession) {
     const lastEpoch = parseInt(
@@ -106,46 +103,46 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
         !!parseInt(String(localStorage.getItem("showBorder") || "0"), 10)
       );
     }
-    if (ui.core!.initialRestore.hideMarker) {
-      ui.core!.waitReady.then(() => {
-        ui.setHideMarker(true);
-      });
+    if (core.initialRestore.hideMarker) {
+      await core.waitReady;
+      ui.setHideMarker(true);
     }
   } else {
     ui.setShowBorder(false);
   }
 
+  const mapDivDocument = core.mapDivDocument!;
   ui.enablePoiHtmlNoScroll = appOption.enablePoiHtmlNoScroll || false;
   if (appOption.enableShare) {
-    ui.core!.mapDivDocument!.classList.add("enable_share");
+    mapDivDocument.classList.add("enable_share");
     ui.enableShare = true;
   }
   if (appOption.enableHideMarker) {
-    ui.core!.mapDivDocument!.classList.add("enable_hide_marker");
+    mapDivDocument.classList.add("enable_hide_marker");
     ui.enableHideMarker = true;
   }
   if (appOption.enableBorder) {
-    ui.core!.mapDivDocument!.classList.add("enable_border");
+    mapDivDocument.classList.add("enable_border");
     ui.enableBorder = true;
   }
   if (appOption.enableMarkerList) {
-    ui.core!.mapDivDocument!.classList.add("enable_marker_list");
+    mapDivDocument.classList.add("enable_marker_list");
     ui.enableMarkerList = true;
   }
   if (appOption.disableNoimage) {
     ui.disableNoimage = true;
   }
   if (appOption.stateUrl) {
-    ui.core!.mapDivDocument!.classList.add("state_url");
+    mapDivDocument.classList.add("state_url");
   }
   if (appOption.alwaysGpsOn) {
     ui.alwaysGpsOn = true;
   }
-  if (ui.core!.enableCache) {
-    ui.core!.mapDivDocument!.classList.add("enable_cache");
+  if (core.enableCache) {
+    mapDivDocument.classList.add("enable_cache");
   }
   if ("ontouchstart" in window) {
-    ui.core!.mapDivDocument!.classList.add("ol-touch");
+    mapDivDocument.classList.add("ol-touch");
     ui.isTouch = true;
   }
   if (appOption.mobileIF) {
@@ -157,20 +154,21 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
 
   initDom(ui, appOption);
   initModalHandlers(ui, appOption);
-  initMapEventListeners(ui);
+  await initMapEventListeners(ui);
   initGpsHandlers(ui, appOption);
 }
 
 function initGpsHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
+  const core = ui.core!;
   const enableOutOfMap = !appOption.presentationMode;
-  const mapDiv = ui.core!.mapDivDocument!;
+  const mapDiv = core.mapDivDocument!;
   const modalBase = mapDiv.querySelector(".modalBase")!;
   const modalTitle = mapDiv.querySelector(".modal_title") as HTMLElement;
   const modalGpsDContent = mapDiv.querySelector(
     ".modal_gpsD_content"
   ) as HTMLElement;
 
-  ui.core!.addEventListener("outOfMap", (_evt: unknown) => {
+  core.addEventListener("outOfMap", (_evt: unknown) => {
     console.log("Event: outOfMap");
     if (enableOutOfMap) {
       modalTitle.innerText = ui.t("app.out_of_map") || "";
@@ -181,7 +179,7 @@ function initGpsHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
   });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ui.core!.addEventListener("gps_error", (evt: any) => {
+  core.addEventListener("gps_error", (evt: any) => {
     console.log("GPS Error:", evt);
     const errorMap: Record<string, string> = {
       user_gps_deny: "app.user_gps_deny",
@@ -189,7 +187,6 @@ function initGpsHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
       gps_timeout: "app.gps_timeout"
     };
 
-    if (!ui.core) return;
     modalTitle.innerText = ui.t("app.gps_error") || "";
     modalGpsDContent.innerText =
       ui.t(errorMap[evt.detail] || "app.gps_error") || "";
@@ -200,7 +197,7 @@ function initGpsHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
   });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ui.core!.addEventListener("gps_result", (evt: any) => {
+  core.addEventListener("gps_result", (evt: any) => {
     console.log("GPS Result:", evt);
     if (evt.detail && evt.detail.error) {
       const error = evt.detail.error;
@@ -273,6 +270,7 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const appBbox: any[] = [];
   let cIndex = 0;
+  const core = ui.core!;
 
   for (let i = 0; i < sources.length; i++) {
     const source = sources[i];
@@ -304,8 +302,8 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
 
   if (ui.splashPromise) {
     ui.splashPromise.then(() => {
-      const modalElm = ui.core!.mapDivDocument!.querySelector(".modalBase")!;
-      prepareModal(modalElm, { root: ui.core!.mapDivDocument! }).hide();
+      const modalElm = core.mapDivDocument!.querySelector(".modalBase")!;
+      prepareModal(modalElm, { root: core.mapDivDocument! }).hide();
     });
   }
 
@@ -346,14 +344,14 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
   baseSwiper.on("click", (_e: any) => {
     if (!baseSwiper.clickedSlide) return;
     const slide = baseSwiper.clickedSlide;
-    ui.core!.changeMap(slide.getAttribute("data")!);
+    core.changeMap(slide.getAttribute("data")!);
     delete ui._selectCandidateSources;
     baseSwiper.setSlideIndexAsSelected(
       parseInt(slide.getAttribute("data-swiper-slide-index") || "0", 10)
     );
   });
   if (baseSources.length < 2) {
-    ui.core!.mapDivDocument!.querySelector(".base-swiper")!.classList.add(
+    core.mapDivDocument!.querySelector(".base-swiper")!.classList.add(
       "single-map"
     );
   }
@@ -383,14 +381,14 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
   overlaySwiper.on("click", (_e: any) => {
     if (!overlaySwiper.clickedSlide) return;
     const slide = overlaySwiper.clickedSlide;
-    ui.core!.changeMap(slide.getAttribute("data")!);
+    core.changeMap(slide.getAttribute("data")!);
     delete ui._selectCandidateSources;
     overlaySwiper.setSlideIndexAsSelected(
       parseInt(slide.getAttribute("data-swiper-slide-index") || "0", 10)
     );
   });
   if (overlaySources.length < 2) {
-    ui.core!.mapDivDocument!.querySelector(".overlay-swiper")!.classList.add(
+    core.mapDivDocument!.querySelector(".overlay-swiper")!.classList.add(
       "single-map"
     );
   }
@@ -425,11 +423,13 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
 
   baseSwiper.slideToLoop(0);
   overlaySwiper.slideToLoop(0);
-  ellips(ui.core!.mapDivDocument!);
+  ellips(core.mapDivDocument!);
 }
 
-function initMapEventListeners(ui: MaplatUi) {
-  ui.core!.addEventListener("mapChanged", (evt: unknown) => {
+async function initMapEventListeners(ui: MaplatUi) {
+  const core = ui.core!;
+
+  core.addEventListener("mapChanged", (evt: unknown) => {
     const map = (evt as CustomEvent).detail;
 
     ui.baseSwiper.setSlideMapID(map.mapID);
@@ -437,7 +437,7 @@ function initMapEventListeners(ui: MaplatUi) {
 
     const title = map.officialTitle || map.title || map.label;
     (
-      ui.core!.mapDivDocument!.querySelector(".map-title span") as HTMLElement
+      core.mapDivDocument!.querySelector(".map-title span") as HTMLElement
     ).innerText = ui.translate!(title) || "";
 
     if (ui.checkOverlayID(map.mapID)) {
@@ -446,44 +446,27 @@ function initMapEventListeners(ui: MaplatUi) {
       ui.sliderNew.setEnable(false);
     }
     const transparency = ui.sliderNew.get("slidervalue") * 100;
-    ui.core!.mapObject.setTransparency(transparency);
+    core.mapObject.setTransparency(transparency);
 
     ui.updateEnvelope();
     ui.updateUrl();
   });
 
-  ui.core!.addEventListener("poi_number", (evt: unknown) => {
+  core.addEventListener("poi_number", (evt: unknown) => {
     const number = (evt as CustomEvent).detail;
     if (number) {
-      ui.core!.mapDivDocument!.classList.remove("no_poi");
+      core.mapDivDocument!.classList.remove("no_poi");
     } else {
-      ui.core!.mapDivDocument!.classList.add("no_poi");
+      core.mapDivDocument!.classList.add("no_poi");
     }
   });
 
-  ui.core!.addEventListener("sourceLoaded", (evt: unknown) => {
+  core.addEventListener("sourceLoaded", (evt: unknown) => {
     const sources = (evt as CustomEvent).detail;
     initSwipers(ui, sources);
   });
 
-  ui.core!.waitReady.then(() => {
-    // Capture pointerdown at viewport level to ensure we get pixel before any stopPropagation
-
-    ui.core!.mapObject.getViewport().addEventListener(
-      "pointerdown",
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (evt: any) => {
-        ui.lastClickPixel = ui.core!.mapObject.getEventPixel(evt);
-        ui.lastClickCoordinate = ui.core!.mapObject.getCoordinateFromPixel(
-          ui.lastClickPixel
-        );
-      },
-      true
-    );
-  });
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ui.core!.addEventListener("clickMarkers", (evt: any) => {
+  core.addEventListener("clickMarkers", (evt: any) => {
     const data = evt.detail;
     if (data.length === 1) {
       ui.handleMarkerAction(data[0]);
@@ -505,23 +488,37 @@ function initMapEventListeners(ui: MaplatUi) {
     }
   });
 
-  ui.core!.waitReady.then(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ui.core!.mapObject.on("moveend", (_evt: any) => {
-      ui.updateUrl();
-    });
+  await core.waitReady;
+  const mapObject = core.mapObject;
+  
+  mapObject.on("moveend", (_evt: any) => {
+    ui.updateUrl();
   });
+
+  // Capture pointerdown at viewport level to ensure we get pixel before any stopPropagation
+  mapObject.getViewport().addEventListener(
+    "pointerdown",
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (evt: any) => {
+      ui.lastClickPixel = core.mapObject.getEventPixel(evt);
+      ui.lastClickCoordinate = core.mapObject.getCoordinateFromPixel(
+        ui.lastClickPixel
+      );
+    },
+    true
+  );
 }
 
 function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
   let cachedMarkerListMapID: string | undefined;
-  const mapDiv = ui.core!.mapDivDocument!;
+  const core = ui.core!;
+  const mapDiv = core.mapDivDocument!;
   const modalBase = mapDiv.querySelector(".modalBase") as HTMLElement;
 
   const restoreTransparency =
-    ui.core!.initialRestore.transparency ||
+    core.initialRestore.transparency ||
     (appOption.restore ? appOption.restore.transparency : undefined);
-  const enableSplash = !ui.core!.initialRestore.mapID;
+  const enableSplash = !core.initialRestore.mapID;
 
   // Delegated event listener for share buttons
   mapDiv.addEventListener("click", (evt: Event) => {
@@ -592,7 +589,7 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
     });
   });
 
-  ui.core!.addEventListener("uiPrepare", (_evt: unknown) => {
+  core.addEventListener("uiPrepare", (_evt: unknown) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const imageExtractor = function (text: any) {
       const regexp = /\$\{([a-zA-Z0-9_\.\/\-]+)\}/g; // eslint-disable-line no-useless-escape
@@ -636,7 +633,7 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
       options.initialValue = restoreTransparency / 100;
     }
     ui.sliderNew = new SliderNew(options);
-    ui.core!.appData!.controls = [
+    core.appData!.controls = [
       new Copyright({
         tipLabel: ui.t("control.info", { ns: "translation" })
       }),
@@ -659,28 +656,28 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
       })
     ];
     if (ui.enableShare) {
-      ui.core!.appData!.controls.push(
+      core.appData!.controls.push(
         new Share({
           tipLabel: ui.t("control.share", { ns: "translation" })
         })
       );
     }
     if (ui.enableBorder) {
-      ui.core!.appData!.controls.push(
+      core.appData!.controls.push(
         new Border({
           tipLabel: ui.t("control.border", { ns: "translation" })
         })
       );
     }
     if (ui.enableHideMarker) {
-      ui.core!.appData!.controls.push(
+      core.appData!.controls.push(
         new HideMarker({
           tipLabel: ui.t("control.hide_marker", { ns: "translation" })
         })
       );
     }
     if (ui.enableMarkerList) {
-      ui.core!.appData!.controls.push(
+      core.appData!.controls.push(
         new MarkerList({
           tipLabel: ui.t("control.marker_list", { ns: "translation" })
         })
@@ -694,12 +691,12 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
       defaultItems: false,
       items: []
     });
-    ui.core!.appData!.controls.push(ui.contextMenu);
+    core.appData!.controls.push(ui.contextMenu);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ui.sliderNew.on("propertychange", (evt: any) => {
       if (evt.key === "slidervalue") {
-        ui.core!.setTransparency(ui.sliderNew.get(evt.key) * 100);
+        core.setTransparency(ui.sliderNew.get(evt.key) * 100);
         ui.updateUrl();
       }
     });
@@ -708,18 +705,18 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
       // Check Splash data
       let splash = false;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      if ((ui.core!.appData as any).splash) splash = true;
+      if ((core.appData as any).splash) splash = true;
 
       // const modal = new bsn.Modal(modalElm, { root: mapDiv });
       const modal = prepareModal(modalBase, { root: mapDiv });
 
       (mapDiv.querySelector(".modal_load_title") as HTMLElement).innerText =
-        ui.translate(ui.core!.appData!.appName) || "";
+        ui.translate(core.appData!.appName) || "";
       if (splash) {
         mapDiv
           .querySelector(".splash_img")!
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          .setAttribute("src", `img/${(ui.core!.appData as any).splash}`);
+          .setAttribute("src", `img/${(core.appData as any).splash}`);
         mapDiv.querySelector(".splash_div")!.classList.remove("hide");
       }
       ui.modalSetting("load");
@@ -735,12 +732,12 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
     }
 
     document.querySelector("title")!.innerHTML =
-      ui.translate(ui.core!.appName) || "";
+      ui.translate(core.appName) || "";
   });
 
-  ui.core!.waitReady.then(() => {
+  core.waitReady.then(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ui.core!.mapObject.on("click_control", (evt: any) => {
+    core.mapObject.on("click_control", (evt: any) => {
       const control = evt.control || (evt.frameState && evt.frameState.control);
       const modal = prepareModal(modalBase);
 
@@ -826,13 +823,13 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
         modalBase.addEventListener("hidden.bs.modal", resetPanels);
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const currentMapID = (ui.core!.from as any).mapID;
+        const currentMapID = (core.from as any).mapID;
         if (cachedMarkerListMapID === currentMapID) return;
         cachedMarkerListMapID = currentMapID;
 
         listRoot.innerHTML = "";
 
-        const layers = ui.core!.listPoiLayers(false, true);
+        const layers = core.listPoiLayers(false, true);
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         layers.forEach((layer: any) => {
@@ -868,9 +865,9 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           checkbox.addEventListener("change", (e: any) => {
             if (e.target.checked) {
-              ui.core!.showPoiLayer(layer.id);
+              core.showPoiLayer(layer.id);
             } else {
-              ui.core!.hidePoiLayer(layer.id);
+              core.hidePoiLayer(layer.id);
             }
           });
 
@@ -977,7 +974,7 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
         });
       } else if (control === "copyright") {
         ui.modalSetting("map");
-        const mapData = ui.core!.from!;
+        const mapData = core.from!;
         const titleEl = mapDiv.querySelector(".modal_map .modal_title");
         if (titleEl) {
           const titleVal = mapData.get ? mapData.get("title") : mapData.title;
@@ -1030,7 +1027,7 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const weiwudi = (mapData as any).weiwudi;
         if (
-          ui.core!.enableCache &&
+          core.enableCache &&
           weiwudi &&
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           !(mapData as any).vector
@@ -1206,7 +1203,7 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
         modal.show();
       } else if (control === "border") {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ui.setShowBorder(!(ui.core!.stateBuffer as any).showBorder);
+        ui.setShowBorder(!(core.stateBuffer as any).showBorder);
       } else if (control === "hideMarker") {
         const current = mapDiv.classList.contains("hide-marker");
         ui.setHideMarker(!current);
@@ -1217,6 +1214,7 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
 }
 
 function initDom(ui: MaplatUi, appOption: MaplatAppOption) {
+  const core = ui.core!;
   // Inject Custom Toast Styles
   const style = document.createElement("style");
   style.innerHTML = `
@@ -1261,9 +1259,9 @@ function initDom(ui: MaplatUi, appOption: MaplatAppOption) {
                 <d c="swiper-button-prev overlay-prev swiper-button-white"> </d>
                   </d> `);
   for (let i = newElems.length - 1; i >= 0; i--) {
-    ui.core!.mapDivDocument!.insertBefore(
+    core.mapDivDocument!.insertBefore(
       newElems[i],
-      ui.core!.mapDivDocument!.firstChild
+      core.mapDivDocument!.firstChild
     );
   }
 
@@ -1386,16 +1384,16 @@ function initDom(ui: MaplatUi, appOption: MaplatAppOption) {
 </d> `);
 
   for (let i = newElems.length - 1; i >= 0; i--) {
-    ui.core!.mapDivDocument!.insertBefore(
+    core.mapDivDocument!.insertBefore(
       newElems[i],
-      ui.core!.mapDivDocument!.firstChild
+      core.mapDivDocument!.firstChild
     );
   }
 
   // PWA
   if (pwaManifest) {
     if (pwaManifest === true) {
-      pwaManifest = `./pwa/${ui.core!.appid}_manifest.json`;
+      pwaManifest = `./pwa/${core.appid}_manifest.json`;
     }
     if (!pwaWorker) {
       pwaWorker = "./service-worker.js";
