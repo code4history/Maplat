@@ -130,7 +130,6 @@ async function appDataLoaded(ui: MaplatUi, appOption: MaplatAppOption) {
       );
     }
     if (core.initialRestore.hideMarker) {
-      await core.waitReady;
       ui.setHideMarker(true);
     }
   } else {
@@ -1302,7 +1301,7 @@ function initDom(ui: MaplatUi, appOption: MaplatAppOption) {
   for (let i = newElems.length - 1; i >= 0; i--) {
     core.mapDivDocument!.insertBefore(
       newElems[i],
-      core.mapDivDocument!.firstChild
+      core.mapDivDocument!.lastChild
     );
   }
 
