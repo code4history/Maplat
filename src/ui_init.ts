@@ -55,13 +55,22 @@ export const META_KEYS = [
   "description"
 ];
 
-async function i18nLoader(ui: MaplatUi) {
+async function i18nLoader(ui: MaplatUi, appOption: MaplatAppOption) {
   console.log("######### i18nLoader");
+  const appData = ui.core!.appData!;
+  const lang = appOption.lang || appData.lang || browserLanguage();
+  if (lang) ui.lang = lang;
+  if (
+    ui.lang.toLowerCase() == "zh-hk" ||
+    ui.lang.toLowerCase() == "zh-hant"
+  )
+    ui.lang = "zh-TW";
+
   return new Promise<void>((resolve, _reject) => {
     const translib = i18n.use(i18nHttpBackend);
     translib.init(
       {
-        lng: "ja",
+        lng: ui.lang,
         fallbackLng: ["en"],
         backend: {
           loadPath: "assets/locales/{{lng}}/{{ns}}.json"
@@ -79,21 +88,22 @@ async function i18nLoader(ui: MaplatUi) {
 export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
   console.log("######### uiInit");
   const core = ui.core = new Core(appOption);
-  core.addEventListener("appdata", async (_evt: unknown) => {
+  core.addEventListener("appdata", (_evt: unknown) =>{(async () => {
     const i18nReady = (async () => {
-      await i18nLoader(ui);
+      await i18nLoader(ui, appOption);
     })();
-    core.addEventListener("uiPrepare", async (_evt: unknown) => {
+    core.addEventListener("uiPrepare", (_evt: unknown) =>{(async () => {
       await i18nReady;
       uiPrepare(ui, appOption);
-    });
+    })()});
     console.log("######### appdata");
     await i18nReady;
     await appDataLoaded(ui, appOption);
-  });
+  })()});
 }
 
 async function appDataLoaded(ui: MaplatUi, appOption: MaplatAppOption) {
+  console.log("######### appDataLoaded");
   const core = ui.core!;
   if (appOption.icon) {
     (pointer as Record<string, string>)["defaultpin.png"] = appOption.icon;
@@ -537,11 +547,6 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
   const mapDiv = core.mapDivDocument!;
   const modalBase = mapDiv.querySelector(".modalBase") as HTMLElement;
 
-  const restoreTransparency =
-    core.initialRestore.transparency ||
-    (appOption.restore ? appOption.restore.transparency : undefined);
-  const enableSplash = !core.initialRestore.mapID;
-
   // Delegated event listener for share buttons
   mapDiv.addEventListener("click", (evt: Event) => {
     const target = evt.target as HTMLElement;
@@ -612,6 +617,7 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
   });
 
   core.waitReady.then(() => {
+    console.log("######### Core waitReady");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     core.mapObject.on("click_control", (evt: any) => {
       const control = evt.control || (evt.frameState && evt.frameState.control);
@@ -1140,6 +1146,7 @@ function uiPrepare(ui: MaplatUi, appOption: MaplatAppOption) {
   if (restoreTransparency) {
     options.initialValue = restoreTransparency / 100;
   }
+  console.log("######### SliderNew");
   ui.sliderNew = new SliderNew(options);
   core.appData!.controls = [
     new Copyright({
@@ -1200,6 +1207,10 @@ function uiPrepare(ui: MaplatUi, appOption: MaplatAppOption) {
     items: []
   });
   core.appData!.controls.push(ui.contextMenu);
+
+  core.appData!.controls.forEach(control => {
+    core.mapObject.addControl(control);
+  });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ui.sliderNew.on("propertychange", (evt: any) => {
