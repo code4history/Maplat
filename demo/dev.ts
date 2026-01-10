@@ -21,7 +21,7 @@ if (geolocate) {
 
 const option = {
   enableCache: true,
-  restoreSession: true,
+  restoreSession: false,
   stateUrl: true,
   markerList: true,
   enableShare: true,

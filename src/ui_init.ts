@@ -56,6 +56,7 @@ export const META_KEYS = [
 ];
 
 async function i18nLoader(ui: MaplatUi) {
+  console.log("######### i18nLoader");
   return new Promise<void>((resolve, _reject) => {
     const translib = i18n.use(i18nHttpBackend);
     translib.init(
@@ -76,12 +77,27 @@ async function i18nLoader(ui: MaplatUi) {
 }
 
 export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
-  await i18nLoader(ui);
+  console.log("######### uiInit");
   const core = ui.core = new Core(appOption);
+  core.addEventListener("appdata", async (_evt: unknown) => {
+    const i18nReady = (async () => {
+      await i18nLoader(ui);
+    })();
+    core.addEventListener("uiPrepare", async (_evt: unknown) => {
+      await i18nReady;
+      uiPrepare(ui, appOption);
+    });
+    console.log("######### appdata");
+    await i18nReady;
+    await appDataLoaded(ui, appOption);
+  });
+}
+
+async function appDataLoaded(ui: MaplatUi, appOption: MaplatAppOption) {
+  const core = ui.core!;
   if (appOption.icon) {
     (pointer as Record<string, string>)["defaultpin.png"] = appOption.icon;
   }
-
   if (appOption.restore) {
     ui.setShowBorder(appOption.restore.showBorder || false);
     if (appOption.restore.hideMarker) {
@@ -159,6 +175,7 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
 }
 
 function initGpsHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
+  console.log("######### initGpsHandlers");
   const core = ui.core!;
   const enableOutOfMap = !appOption.presentationMode;
   const mapDiv = core.mapDivDocument!;
@@ -240,6 +257,7 @@ function initGpsHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function initSwipers(ui: MaplatUi, sources: any[]) {
+  console.log("######### initSwipers");
   const colors = [
     "maroon",
     "deeppink",
@@ -427,9 +445,11 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
 }
 
 async function initMapEventListeners(ui: MaplatUi) {
+  console.log("######### initMapEventListeners");
   const core = ui.core!;
 
   core.addEventListener("mapChanged", (evt: unknown) => {
+    console.log("######### mapChanged");
     const map = (evt as CustomEvent).detail;
 
     ui.baseSwiper.setSlideMapID(map.mapID);
@@ -462,6 +482,7 @@ async function initMapEventListeners(ui: MaplatUi) {
   });
 
   core.addEventListener("sourceLoaded", (evt: unknown) => {
+    console.log("######### sourceLoaded");
     const sources = (evt as CustomEvent).detail;
     initSwipers(ui, sources);
   });
@@ -510,6 +531,7 @@ async function initMapEventListeners(ui: MaplatUi) {
 }
 
 function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
+  console.log("######### initModalHandlers");
   let cachedMarkerListMapID: string | undefined;
   const core = ui.core!;
   const mapDiv = core.mapDivDocument!;
@@ -587,152 +609,6 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
     target.addEventListener("touchstart", (evt: Event) => {
       evt.preventDefault();
     });
-  });
-
-  core.addEventListener("uiPrepare", (_evt: unknown) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const imageExtractor = function (text: any) {
-      const regexp = /\$\{([a-zA-Z0-9_\.\/\-]+)\}/g; // eslint-disable-line no-useless-escape
-      let ret = text;
-      let match;
-      while ((match = regexp.exec(text)) != null) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ret = ret.replace(match[0], (pointer as any)[match[1]]);
-      }
-      return ret;
-    };
-
-    let i18nTargets = mapDiv.querySelectorAll("[data-i18n], [din]");
-    i18nTargets.forEach(target => {
-      const key =
-        target.getAttribute("data-i18n") || target.getAttribute("din");
-      (target as HTMLElement).innerText = imageExtractor(ui.t(key as string));
-    });
-    i18nTargets = mapDiv.querySelectorAll("[data-i18n-html], [dinh]");
-    i18nTargets.forEach(target => {
-      const key =
-        target.getAttribute("data-i18n-html") || target.getAttribute("dinh");
-      target.innerHTML = imageExtractor(ui.t(key as string));
-    });
-    // Explicitly fix app_loading_body with a more robust selector if needed, or re-run translation for it
-    const appLoadingBody = mapDiv.querySelector(
-      '[data-i18n="html.app_loading_body"], [din="html.app_loading_body"]'
-    );
-    if (appLoadingBody) {
-      (appLoadingBody as HTMLElement).innerHTML = imageExtractor(
-        ui.t("html.app_loading_body")
-      );
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const options: any = {
-      reverse: true,
-      tipLabel: ui.t("control.trans", { ns: "translation" })
-    };
-    if (restoreTransparency) {
-      options.initialValue = restoreTransparency / 100;
-    }
-    ui.sliderNew = new SliderNew(options);
-    core.appData!.controls = [
-      new Copyright({
-        tipLabel: ui.t("control.info", { ns: "translation" })
-      }),
-      new CompassRotate({
-        tipLabel: ui.t("control.compass", { ns: "translation" })
-      }),
-      new Zoom({
-        tipLabel: ui.t("control.zoom", { ns: "translation" })
-      }),
-      new SetGPS({
-        ui,
-        tipLabel: ui.t("control.gps", { ns: "translation" })
-      }),
-      new GoHome({
-        tipLabel: ui.t("control.home", { ns: "translation" })
-      }),
-      ui.sliderNew,
-      new Maplat({
-        tipLabel: ui.t("control.help", { ns: "translation" })
-      })
-    ];
-    if (ui.enableShare) {
-      core.appData!.controls.push(
-        new Share({
-          tipLabel: ui.t("control.share", { ns: "translation" })
-        })
-      );
-    }
-    if (ui.enableBorder) {
-      core.appData!.controls.push(
-        new Border({
-          tipLabel: ui.t("control.border", { ns: "translation" })
-        })
-      );
-    }
-    if (ui.enableHideMarker) {
-      core.appData!.controls.push(
-        new HideMarker({
-          tipLabel: ui.t("control.hide_marker", { ns: "translation" })
-        })
-      );
-    }
-    if (ui.enableMarkerList) {
-      core.appData!.controls.push(
-        new MarkerList({
-          tipLabel: ui.t("control.marker_list", { ns: "translation" })
-        })
-      );
-    }
-
-    // Contextmenu
-    ui.contextMenu = new ContextMenu({
-      eventType: "__dummy__",
-      width: 170,
-      defaultItems: false,
-      items: []
-    });
-    core.appData!.controls.push(ui.contextMenu);
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ui.sliderNew.on("propertychange", (evt: any) => {
-      if (evt.key === "slidervalue") {
-        core.setTransparency(ui.sliderNew.get(evt.key) * 100);
-        ui.updateUrl();
-      }
-    });
-
-    if (enableSplash) {
-      // Check Splash data
-      let splash = false;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      if ((core.appData as any).splash) splash = true;
-
-      // const modal = new bsn.Modal(modalElm, { root: mapDiv });
-      const modal = prepareModal(modalBase, { root: mapDiv });
-
-      (mapDiv.querySelector(".modal_load_title") as HTMLElement).innerText =
-        ui.translate(core.appData!.appName) || "";
-      if (splash) {
-        mapDiv
-          .querySelector(".splash_img")!
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          .setAttribute("src", `img/${(core.appData as any).splash}`);
-        mapDiv.querySelector(".splash_div")!.classList.remove("hide");
-      }
-      ui.modalSetting("load");
-      modal.show();
-
-      const fadeTime = splash ? 1000 : 200;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ui.splashPromise = new Promise((resolve: any) => {
-        setTimeout(() => {
-          resolve();
-        }, fadeTime);
-      });
-    }
-
-    document.querySelector("title")!.innerHTML =
-      ui.translate(core.appName) || "";
   });
 
   core.waitReady.then(() => {
@@ -1213,7 +1089,161 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
   });
 }
 
+function uiPrepare(ui: MaplatUi, appOption: MaplatAppOption) {
+  console.log("######### uiPrepare");
+  const core = ui.core!;
+  const mapDiv = core.mapDivDocument!;
+  const modalBase = mapDiv.querySelector(".modalBase") as HTMLElement;
+
+  const restoreTransparency =
+    core.initialRestore.transparency ||
+    (appOption.restore ? appOption.restore.transparency : undefined);
+  const enableSplash = !core.initialRestore.mapID;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const imageExtractor = function (text: any) {
+    const regexp = /\$\{([a-zA-Z0-9_\.\/\-]+)\}/g; // eslint-disable-line no-useless-escape
+    let ret = text;
+    let match;
+    while ((match = regexp.exec(text)) != null) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ret = ret.replace(match[0], (pointer as any)[match[1]]);
+    }
+    return ret;
+  };
+
+  let i18nTargets = mapDiv.querySelectorAll("[data-i18n], [din]");
+  i18nTargets.forEach(target => {
+    const key = target.getAttribute("data-i18n") || target.getAttribute("din");
+    (target as HTMLElement).innerText = imageExtractor(ui.t(key as string));
+  });
+  i18nTargets = mapDiv.querySelectorAll("[data-i18n-html], [dinh]");
+  i18nTargets.forEach(target => {
+    const key =
+      target.getAttribute("data-i18n-html") || target.getAttribute("dinh");
+    target.innerHTML = imageExtractor(ui.t(key as string));
+  });
+  // Explicitly fix app_loading_body with a more robust selector if needed, or re-run translation for it
+  const appLoadingBody = mapDiv.querySelector(
+    '[data-i18n="html.app_loading_body"], [din="html.app_loading_body"]'
+  );
+  if (appLoadingBody) {
+    (appLoadingBody as HTMLElement).innerHTML = imageExtractor(
+      ui.t("html.app_loading_body")
+    );
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const options: any = {
+    reverse: true,
+    tipLabel: ui.t("control.trans", { ns: "translation" })
+  };
+  if (restoreTransparency) {
+    options.initialValue = restoreTransparency / 100;
+  }
+  ui.sliderNew = new SliderNew(options);
+  core.appData!.controls = [
+    new Copyright({
+      tipLabel: ui.t("control.info", { ns: "translation" })
+    }),
+    new CompassRotate({
+      tipLabel: ui.t("control.compass", { ns: "translation" })
+    }),
+    new Zoom({
+      tipLabel: ui.t("control.zoom", { ns: "translation" })
+    }),
+    new SetGPS({
+      ui,
+      tipLabel: ui.t("control.gps", { ns: "translation" })
+    }),
+    new GoHome({
+      tipLabel: ui.t("control.home", { ns: "translation" })
+    }),
+    ui.sliderNew,
+    new Maplat({
+      tipLabel: ui.t("control.help", { ns: "translation" })
+    })
+  ];
+  if (ui.enableShare) {
+    core.appData!.controls.push(
+      new Share({
+        tipLabel: ui.t("control.share", { ns: "translation" })
+      })
+    );
+  }
+  if (ui.enableBorder) {
+    core.appData!.controls.push(
+      new Border({
+        tipLabel: ui.t("control.border", { ns: "translation" })
+      })
+    );
+  }
+  if (ui.enableHideMarker) {
+    core.appData!.controls.push(
+      new HideMarker({
+        tipLabel: ui.t("control.hide_marker", { ns: "translation" })
+      })
+    );
+  }
+  if (ui.enableMarkerList) {
+    core.appData!.controls.push(
+      new MarkerList({
+        tipLabel: ui.t("control.marker_list", { ns: "translation" })
+      })
+    );
+  }
+
+  // Contextmenu
+  ui.contextMenu = new ContextMenu({
+    eventType: "__dummy__",
+    width: 170,
+    defaultItems: false,
+    items: []
+  });
+  core.appData!.controls.push(ui.contextMenu);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ui.sliderNew.on("propertychange", (evt: any) => {
+    if (evt.key === "slidervalue") {
+      core.setTransparency(ui.sliderNew.get(evt.key) * 100);
+      ui.updateUrl();
+    }
+  });
+
+  if (enableSplash) {
+    // Check Splash data
+    let splash = false;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if ((core.appData as any).splash) splash = true;
+
+    // const modal = new bsn.Modal(modalElm, { root: mapDiv });
+    const modal = prepareModal(modalBase, { root: mapDiv });
+
+    (mapDiv.querySelector(".modal_load_title") as HTMLElement).innerText =
+      ui.translate(core.appData!.appName) || "";
+    if (splash) {
+      mapDiv
+        .querySelector(".splash_img")!
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .setAttribute("src", `img/${(core.appData as any).splash}`);
+      mapDiv.querySelector(".splash_div")!.classList.remove("hide");
+    }
+    ui.modalSetting("load");
+    modal.show();
+
+    const fadeTime = splash ? 1000 : 200;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ui.splashPromise = new Promise((resolve: any) => {
+      setTimeout(() => {
+        resolve();
+      }, fadeTime);
+    });
+  }
+  document.querySelector("title")!.innerHTML =
+    ui.translate(core.appName) || "";
+}
+
 function initDom(ui: MaplatUi, appOption: MaplatAppOption) {
+  console.log("######### initDom");
   const core = ui.core!;
   // Inject Custom Toast Styles
   const style = document.createElement("style");

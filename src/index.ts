@@ -209,12 +209,9 @@ export class MaplatUi extends EventTarget {
     }
   }
 
-  setLang() {
-    
-  }
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async initializer(appOption: any) {
+    console.log("######### Initializer");
     await uiInit(this, appOption);
     return this as MaplatUi;
   }
@@ -298,6 +295,7 @@ export class MaplatUi extends EventTarget {
   }
 
   updateUrl() {
+    console.log("######### updateUrl");
     if (!this.appOption.stateUrl) return;
     if (this.restoring) return;
 
