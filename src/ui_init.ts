@@ -124,6 +124,14 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
         return existingUiHooks.onUiDomReady(context);
       }
       return undefined;
+    },
+    onCoreReady: async (context: unknown) => {
+      console.log("######### onCoreReady");
+      await initMapEventListeners(ui, { skipWaitReady: true });
+      if (existingUiHooks?.onCoreReady) {
+        return existingUiHooks.onCoreReady(context);
+      }
+      return undefined;
     }
   };
   const core = ui.core = new Core(appOption);
@@ -214,7 +222,6 @@ async function appDataLoaded(ui: MaplatUi, appOption: MaplatAppOption) {
   }
 
   initDom(ui, appOption);
-  await initMapEventListeners(ui);
   initGpsHandlers(ui, appOption);
 }
 
@@ -488,14 +495,14 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
   ellips(core.mapDivDocument!);
 }
 
-async function initMapEventListeners(ui: MaplatUi) {
+async function initMapEventListeners(
+  ui: MaplatUi,
+  options: { skipWaitReady?: boolean } = {}
+) {
   console.log("######### initMapEventListeners");
   const core = ui.core!;
-
-  core.addEventListener("mapChanged", (evt: unknown) => {
-    console.log("######### mapChanged");
-    const map = (evt as CustomEvent).detail;
-
+  const handleMapChanged = (map: any) => {
+    if (!ui.baseSwiper || !ui.overlaySwiper) return;
     ui.baseSwiper.setSlideMapID(map.mapID);
     ui.overlaySwiper.setSlideMapID(map.mapID);
 
@@ -514,6 +521,12 @@ async function initMapEventListeners(ui: MaplatUi) {
 
     ui.updateEnvelope();
     ui.updateUrl();
+  };
+
+  core.addEventListener("mapChanged", (evt: unknown) => {
+    console.log("######### mapChanged");
+    const map = (evt as CustomEvent).detail;
+    handleMapChanged(map);
   });
 
   core.addEventListener("poi_number", (evt: unknown) => {
@@ -528,7 +541,9 @@ async function initMapEventListeners(ui: MaplatUi) {
   core.addEventListener("sourceLoaded", (evt: unknown) => {
     console.log("######### sourceLoaded");
     const sources = (evt as CustomEvent).detail;
-    initSwipers(ui, sources);
+    if (!ui.baseSwiper) {
+      initSwipers(ui, sources);
+    }
   });
 
   core.addEventListener("clickMarkers", (evt: any) => {
@@ -553,7 +568,19 @@ async function initMapEventListeners(ui: MaplatUi) {
     }
   });
 
-  await core.waitReady;
+  if (!options.skipWaitReady) {
+    await core.waitReady;
+  }
+  if (!ui.baseSwiper) {
+    const sources = Object.values((core as any).cacheHash || {});
+    if (sources.length) {
+      initSwipers(ui, sources);
+    }
+  }
+  const currentMap = (core as any).getMapMeta?.();
+  if (currentMap) {
+    handleMapChanged(currentMap);
+  }
   const mapObject = core.mapObject;
   
   mapObject.on("moveend", (_evt: any) => {
