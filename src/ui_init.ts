@@ -119,6 +119,7 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
     onUiDomReady: async (context: unknown) => {
       await i18nReady;
       translateDom(ui);
+      initModalHandlers(ui, appOption);
       if (existingUiHooks?.onUiDomReady) {
         return existingUiHooks.onUiDomReady(context);
       }
@@ -213,7 +214,6 @@ async function appDataLoaded(ui: MaplatUi, appOption: MaplatAppOption) {
   }
 
   initDom(ui, appOption);
-  initModalHandlers(ui, appOption);
   await initMapEventListeners(ui);
   initGpsHandlers(ui, appOption);
 }
