@@ -87,11 +87,38 @@ async function i18nLoader(ui: MaplatUi, appOption: MaplatAppOption) {
 
 export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
   console.log("######### uiInit");
+  let resolveI18nReady: (() => void) | undefined;
+  let rejectI18nReady: ((error: unknown) => void) | undefined;
+  let i18nResolved = false;
+  const i18nReady = new Promise<void>((resolve, reject) => {
+    resolveI18nReady = resolve;
+    rejectI18nReady = reject;
+  });
+  const existingUiHooks = appOption.uiHooks;
+  appOption.uiHooks = {
+    ...existingUiHooks,
+    onUiConfigure: async (context: unknown) => {
+      try {
+        await i18nLoader(ui, appOption);
+        if (!i18nResolved) {
+          i18nResolved = true;
+          resolveI18nReady?.();
+        }
+      } catch (error) {
+        if (!i18nResolved) {
+          i18nResolved = true;
+          rejectI18nReady?.(error);
+        }
+        throw error;
+      }
+      if (existingUiHooks?.onUiConfigure) {
+        return existingUiHooks.onUiConfigure(context);
+      }
+      return undefined;
+    }
+  };
   const core = ui.core = new Core(appOption);
   core.addEventListener("appdata", (_evt: unknown) =>{(async () => {
-    const i18nReady = (async () => {
-      await i18nLoader(ui, appOption);
-    })();
     core.addEventListener("uiPrepare", (_evt: unknown) =>{(async () => {
       await i18nReady;
       uiPrepare(ui, appOption);

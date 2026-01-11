@@ -34,6 +34,17 @@ export interface MaplatAppOption {
   markerList?: boolean;
   icon?: string;
   translateUI?: boolean;
+  uiHooks?: MaplatUiHooks;
+}
+
+export interface MaplatUiHooks {
+  onSettingLoaded?: (context: unknown) => Promise<unknown> | unknown;
+  onAppdataReady?: (context: unknown) => Promise<unknown> | unknown;
+  onUiConfigure?: (context: unknown) => Promise<unknown> | unknown;
+  onCoreDomReady?: (context: unknown) => Promise<unknown> | unknown;
+  onUiDomReady?: (context: unknown) => Promise<unknown> | unknown;
+  onCoreReady?: (context: unknown) => Promise<unknown> | unknown;
+  onUiReady?: (context: unknown) => Promise<unknown> | unknown;
 }
 
 export interface RestoreState {
