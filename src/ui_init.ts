@@ -225,6 +225,7 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
       console.log("######### onCoreReady");
       initControls(ui, appOption);
       await initMapEventListeners(ui);
+      initGpsHandlers(ui, appOption);
       if (existingUiHooks?.onCoreReady) {
         return existingUiHooks.onCoreReady(context);
       }
@@ -329,7 +330,6 @@ async function appDataLoaded(ui: MaplatUi, appOption: MaplatAppOption) {
   }
 
   initDom(ui, appOption);
-  initGpsHandlers(ui, appOption);
 }
 
 function initGpsHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
