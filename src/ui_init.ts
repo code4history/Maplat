@@ -212,10 +212,18 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
       }
       return undefined;
     },
+    onAppdataReady: async (context: unknown) => {
+      await appDataLoaded(ui, appOption);
+      if (existingUiHooks?.onAppdataReady) {
+        return existingUiHooks.onAppdataReady(context);
+      }
+      return undefined;
+    },
     onUiDomReady: async (context: unknown) => {
       await i18nReady;
       translateDom(ui);
       initModalHandlers(ui, appOption);
+      initSplash(ui, appOption);
       if (existingUiHooks?.onUiDomReady) {
         return existingUiHooks.onUiDomReady(context);
       }
@@ -247,8 +255,6 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
       uiPrepare(ui, appOption);
     })()});
     console.log("######### appdata");
-    await i18nReady;
-    await appDataLoaded(ui, appOption);
   })()});
 }
 
@@ -1271,44 +1277,44 @@ function uiPrepare(ui: MaplatUi, appOption: MaplatAppOption) {
   console.log("######### uiPrepare");
   const core = ui.core!;
   const mapDiv = core.mapDivDocument!;
-  const modalBase = mapDiv.querySelector(".modalBase") as HTMLElement;
-
-  const restoreTransparency =
-    core.initialRestore.transparency ||
-    (appOption.restore ? appOption.restore.transparency : undefined);
   const enableSplash = !core.initialRestore.mapID;
-
-  if (enableSplash) {
-    // Check Splash data
-    let splash = false;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if ((core.appData as any).splash) splash = true;
-
-    // const modal = new bsn.Modal(modalElm, { root: mapDiv });
-    const modal = prepareModal(modalBase, { root: mapDiv });
-
-    (mapDiv.querySelector(".modal_load_title") as HTMLElement).innerText =
-      ui.translate(core.appData!.appName) || "";
-    if (splash) {
-      mapDiv
-        .querySelector(".splash_img")!
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .setAttribute("src", `img/${(core.appData as any).splash}`);
-      mapDiv.querySelector(".splash_div")!.classList.remove("hide");
-    }
-    ui.modalSetting("load");
-    modal.show();
-
-    const fadeTime = splash ? 1000 : 200;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ui.splashPromise = new Promise((resolve: any) => {
-      setTimeout(() => {
-        resolve();
-      }, fadeTime);
-    });
-  }
   document.querySelector("title")!.innerHTML =
     ui.translate(core.appName) || "";
+}
+
+function initSplash(ui: MaplatUi, appOption: MaplatAppOption) {
+  const core = ui.core!;
+  const mapDiv = core.mapDivDocument!;
+  const modalBase = mapDiv.querySelector(".modalBase") as HTMLElement;
+  const enableSplash = !core.initialRestore.mapID;
+  if (!enableSplash) return;
+
+  // Check Splash data
+  let splash = false;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  if ((core.appData as any).splash) splash = true;
+
+  const modal = prepareModal(modalBase, { root: mapDiv });
+
+  (mapDiv.querySelector(".modal_load_title") as HTMLElement).innerText =
+    ui.translate(core.appData!.appName) || "";
+  if (splash) {
+    mapDiv
+      .querySelector(".splash_img")!
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .setAttribute("src", `img/${(core.appData as any).splash}`);
+    mapDiv.querySelector(".splash_div")!.classList.remove("hide");
+  }
+  ui.modalSetting("load");
+  modal.show();
+
+  const fadeTime = splash ? 1000 : 200;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ui.splashPromise = new Promise((resolve: any) => {
+    setTimeout(() => {
+      resolve();
+    }, fadeTime);
+  });
 }
 
 function initControls(ui: MaplatUi, appOption: MaplatAppOption) {
