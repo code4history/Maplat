@@ -127,7 +127,7 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
     },
     onCoreReady: async (context: unknown) => {
       console.log("######### onCoreReady");
-      await initMapEventListeners(ui, { skipWaitReady: true });
+      await initMapEventListeners(ui);
       if (existingUiHooks?.onCoreReady) {
         return existingUiHooks.onCoreReady(context);
       }
@@ -495,10 +495,7 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
   ellips(core.mapDivDocument!);
 }
 
-async function initMapEventListeners(
-  ui: MaplatUi,
-  options: { skipWaitReady?: boolean } = {}
-) {
+async function initMapEventListeners(ui: MaplatUi) {
   console.log("######### initMapEventListeners");
   const core = ui.core!;
   const handleMapChanged = (map: any) => {
@@ -538,14 +535,6 @@ async function initMapEventListeners(
     }
   });
 
-  core.addEventListener("sourceLoaded", (evt: unknown) => {
-    console.log("######### sourceLoaded");
-    const sources = (evt as CustomEvent).detail;
-    if (!ui.baseSwiper) {
-      initSwipers(ui, sources);
-    }
-  });
-
   core.addEventListener("clickMarkers", (evt: any) => {
     const data = evt.detail;
     if (data.length === 1) {
@@ -568,18 +557,11 @@ async function initMapEventListeners(
     }
   });
 
-  if (!options.skipWaitReady) {
-    await core.waitReady;
-  }
   if (!ui.baseSwiper) {
     const sources = Object.values((core as any).cacheHash || {});
     if (sources.length) {
       initSwipers(ui, sources);
     }
-  }
-  const currentMap = (core as any).getMapMeta?.();
-  if (currentMap) {
-    handleMapChanged(currentMap);
   }
   const mapObject = core.mapObject;
   
