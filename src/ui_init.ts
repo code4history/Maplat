@@ -115,6 +115,14 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
         return existingUiHooks.onUiConfigure(context);
       }
       return undefined;
+    },
+    onUiDomReady: async (context: unknown) => {
+      await i18nReady;
+      translateDom(ui);
+      if (existingUiHooks?.onUiDomReady) {
+        return existingUiHooks.onUiDomReady(context);
+      }
+      return undefined;
     }
   };
   const core = ui.core = new Core(appOption);
@@ -1121,16 +1129,9 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
   });
 }
 
-function uiPrepare(ui: MaplatUi, appOption: MaplatAppOption) {
-  console.log("######### uiPrepare");
+function translateDom(ui: MaplatUi) {
   const core = ui.core!;
   const mapDiv = core.mapDivDocument!;
-  const modalBase = mapDiv.querySelector(".modalBase") as HTMLElement;
-
-  const restoreTransparency =
-    core.initialRestore.transparency ||
-    (appOption.restore ? appOption.restore.transparency : undefined);
-  const enableSplash = !core.initialRestore.mapID;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const imageExtractor = function (text: any) {
     const regexp = /\$\{([a-zA-Z0-9_\.\/\-]+)\}/g; // eslint-disable-line no-useless-escape
@@ -1154,7 +1155,6 @@ function uiPrepare(ui: MaplatUi, appOption: MaplatAppOption) {
       target.getAttribute("data-i18n-html") || target.getAttribute("dinh");
     target.innerHTML = imageExtractor(ui.t(key as string));
   });
-  // Explicitly fix app_loading_body with a more robust selector if needed, or re-run translation for it
   const appLoadingBody = mapDiv.querySelector(
     '[data-i18n="html.app_loading_body"], [din="html.app_loading_body"]'
   );
@@ -1163,6 +1163,18 @@ function uiPrepare(ui: MaplatUi, appOption: MaplatAppOption) {
       ui.t("html.app_loading_body")
     );
   }
+}
+
+function uiPrepare(ui: MaplatUi, appOption: MaplatAppOption) {
+  console.log("######### uiPrepare");
+  const core = ui.core!;
+  const mapDiv = core.mapDivDocument!;
+  const modalBase = mapDiv.querySelector(".modalBase") as HTMLElement;
+
+  const restoreTransparency =
+    core.initialRestore.transparency ||
+    (appOption.restore ? appOption.restore.transparency : undefined);
+  const enableSplash = !core.initialRestore.mapID;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const options: any = {
