@@ -32259,20 +32259,19 @@ let Ac = class extends sR {
     };
   }
   async runLifecyclePhase(e, t) {
-    var i;
-    const r = this.buildLifecycleContext(e, t), s = Cz[e], a = (i = this.uiHooks) == null ? void 0 : i[s];
-    if (a)
+    var i, r, s, a, o;
+    (r = (i = this.logger) == null ? void 0 : i.debug) == null || r.call(i, `lifecycle:${e}`);
+    const l = this.buildLifecycleContext(e, t), c = Cz[e], h = (s = this.uiHooks) == null ? void 0 : s[c];
+    if (h)
       try {
-        const o = await a(r);
-        this.lifecycleHookResults[e] = o, r.uiHookResult = o, r.uiHookResults = { ...this.lifecycleHookResults };
-      } catch (o) {
-        throw this.dispatchEvent(
-          new an("lifecycle:error", { detail: { phaseId: e, error: o } })
-        ), o;
+        const u = await h(l);
+        this.lifecycleHookResults[e] = u, l.uiHookResult = u, l.uiHookResults = { ...this.lifecycleHookResults };
+      } catch (u) {
+        throw (o = (a = this.logger) == null ? void 0 : a.debug) == null || o.call(a, `lifecycle:error:${e}`), this.dispatchEvent(new an("lifecycle:error", { phaseId: e, error: u })), u;
       }
     return this.dispatchEvent(
-      new an(`lifecycle:${e}`, { detail: r })
-    ), r;
+      new an(`lifecycle:${e}`, l)
+    ), l;
   }
   // Async initializers 1: Load application setting
   async settingLoader(e) {
@@ -61723,7 +61722,7 @@ typeof ActiveXObject == "function" && (typeof global < "u" && global.ActiveXObje
 typeof Ta != "function" && (Ta = void 0);
 if (!Ta && !Cu && !cf)
   try {
-    import("./browser-ponyfill-BpzQiOZj.js").then((n) => n.b).then(function(n) {
+    import("./browser-ponyfill-BdqWNzYY.js").then((n) => n.b).then(function(n) {
       Ta = n.default;
     }).catch(function() {
     });

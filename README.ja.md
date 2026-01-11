@@ -20,6 +20,7 @@ Maplatは古地図/絵地図を歪める事なくGPSや正確な地図と連携�
     - [ブラウザでのCDN利用](#ブラウザでのcdn利用)
   - [利用方法](#利用方法)
     - [ESM (EcmaScript Modules)](#esm-ecmascript-modules)
+  - [ライフサイクル](#ライフサイクル)
   - [APIドキュメント](#apiドキュメント)
     - [MaplatUi](#maplatui)
       - [静的メソッド](#静的メソッド)
@@ -96,6 +97,9 @@ pnpm add ol
 ※ バージョン番号は適宜最新のものに置き換えてください。
 
 ## 利用方法
+
+## ライフサイクル
+- フェーズや uiHooks については `docs/ui-core-lifecycle.ja.md` を参照してください。
 
 ### ESM (EcmaScript Modules)
 ```javascript

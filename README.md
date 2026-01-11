@@ -22,6 +22,7 @@ This project won Grand Prize / Educational Effectiveness Prize / Visitors Select
     - [Using CDN in Browser](#using-cdn-in-browser)
   - [Usage](#usage)
     - [ESM (EcmaScript Modules)](#esm-ecmascript-modules)
+  - [Lifecycle](#lifecycle)
   - [API Documentation](#api-documentation)
     - [MaplatUi](#maplatui)
       - [Static Methods](#static-methods)
@@ -98,6 +99,9 @@ For usage directly in the browser without a bundler, you must load OpenLayers be
 *Note: Make sure to use the latest compatible versions.*
 
 ## Usage
+
+## Lifecycle
+- See `docs/ui-core-lifecycle.md` for lifecycle phases and uiHooks.
 
 ### ESM (EcmaScript Modules)
 ```javascript
