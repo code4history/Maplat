@@ -56,14 +56,10 @@ export const META_KEYS = [
 ];
 
 async function i18nLoader(ui: MaplatUi, appOption: MaplatAppOption) {
-  console.log("######### i18nLoader");
   const appData = ui.core!.appData!;
   const lang = appOption.lang || appData.lang || browserLanguage();
   if (lang) ui.lang = lang;
-  if (
-    ui.lang.toLowerCase() == "zh-hk" ||
-    ui.lang.toLowerCase() == "zh-hant"
-  )
+  if (ui.lang.toLowerCase() == "zh-hk" || ui.lang.toLowerCase() == "zh-hant")
     ui.lang = "zh-TW";
 
   return new Promise<void>((resolve, _reject) => {
@@ -93,6 +89,7 @@ type UiReadyGate = {
 
 function getUiReadyGate(ui: MaplatUi): UiReadyGate {
   const key = "__uiReadyGate";
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const existing = (ui as any)[key] as UiReadyGate | undefined;
   if (existing) return existing;
 
@@ -123,6 +120,7 @@ function getUiReadyGate(ui: MaplatUi): UiReadyGate {
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (ui as any)[key] = gate;
   return gate;
 }
@@ -135,6 +133,7 @@ type UiDomGate = {
 
 function getUiDomGate(ui: MaplatUi): UiDomGate {
   const key = "__uiDomGate";
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const existing = (ui as any)[key] as UiDomGate | undefined;
   if (existing) return existing;
 
@@ -153,10 +152,12 @@ function getUiDomGate(ui: MaplatUi): UiDomGate {
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (ui as any)[key] = gate;
   return gate;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function applyMapChanged(ui: MaplatUi, map: any) {
   const core = ui.core!;
   if (!ui.baseSwiper || !ui.overlaySwiper) return;
@@ -182,7 +183,6 @@ function applyMapChanged(ui: MaplatUi, map: any) {
 }
 
 export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
-  console.log("######### uiInit");
   let resolveI18nReady: (() => void) | undefined;
   let rejectI18nReady: ((error: unknown) => void) | undefined;
   let i18nResolved = false;
@@ -222,15 +222,15 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
     onUiDomReady: async (context: unknown) => {
       await i18nReady;
       translateDom(ui);
-      initModalHandlers(ui, appOption);
-      initSplash(ui, appOption);
+      initModalHandlers(ui);
+      initSplash(ui);
+      initDocumentTitle(ui);
       if (existingUiHooks?.onUiDomReady) {
         return existingUiHooks.onUiDomReady(context);
       }
       return undefined;
     },
     onCoreReady: async (context: unknown) => {
-      console.log("######### onCoreReady");
       initControls(ui, appOption);
       await initMapEventListeners(ui);
       initGpsHandlers(ui, appOption);
@@ -240,7 +240,7 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
       return undefined;
     }
   };
-  const core = ui.core = new Core(appOption);
+  const core = (ui.core = new Core(appOption));
   const uiReadyGate = getUiReadyGate(ui);
   core.addEventListener("mapChanged", (evt: unknown) => {
     const map = (evt as CustomEvent).detail;
@@ -249,17 +249,9 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
       applyMapChanged(ui, map);
     })();
   });
-  core.addEventListener("appdata", (_evt: unknown) =>{(async () => {
-    core.addEventListener("uiPrepare", (_evt: unknown) =>{(async () => {
-      await i18nReady;
-      uiPrepare(ui, appOption);
-    })()});
-    console.log("######### appdata");
-  })()});
 }
 
 async function appDataLoaded(ui: MaplatUi, appOption: MaplatAppOption) {
-  console.log("######### appDataLoaded");
   const core = ui.core!;
   if (appOption.icon) {
     (pointer as Record<string, string>)["defaultpin.png"] = appOption.icon;
@@ -339,7 +331,6 @@ async function appDataLoaded(ui: MaplatUi, appOption: MaplatAppOption) {
 }
 
 function initGpsHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
-  console.log("######### initGpsHandlers");
   const core = ui.core!;
   const enableOutOfMap = !appOption.presentationMode;
   const mapDiv = core.mapDivDocument!;
@@ -421,7 +412,6 @@ function initGpsHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function initSwipers(ui: MaplatUi, sources: any[]) {
-  console.log("######### initSwipers");
   const colors = [
     "maroon",
     "deeppink",
@@ -533,9 +523,9 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
     );
   });
   if (baseSources.length < 2) {
-    core.mapDivDocument!.querySelector(".base-swiper")!.classList.add(
-      "single-map"
-    );
+    core
+      .mapDivDocument!.querySelector(".base-swiper")!
+      .classList.add("single-map");
   }
 
   const overlaySwiper = (ui.overlaySwiper = new Swiper(".overlay-swiper", {
@@ -570,9 +560,9 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
     );
   });
   if (overlaySources.length < 2) {
-    core.mapDivDocument!.querySelector(".overlay-swiper")!.classList.add(
-      "single-map"
-    );
+    core
+      .mapDivDocument!.querySelector(".overlay-swiper")!
+      .classList.add("single-map");
   }
 
   baseSources.forEach(source => {
@@ -610,11 +600,8 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
 }
 
 async function initMapEventListeners(ui: MaplatUi) {
-  console.log("######### initMapEventListeners");
   const core = ui.core!;
-  core.addEventListener("mapChanged", (_evt: unknown) => {
-    console.log("######### mapChanged");
-  });
+  core.addEventListener("mapChanged", (_evt: unknown) => {});
 
   core.addEventListener("poi_number", (evt: unknown) => {
     const number = (evt as CustomEvent).detail;
@@ -625,8 +612,8 @@ async function initMapEventListeners(ui: MaplatUi) {
     }
   });
 
-  core.addEventListener("clickMarkers", (evt: any) => {
-    const data = evt.detail;
+  core.addEventListener("clickMarkers", (evt: unknown) => {
+    const data = (evt as CustomEvent).detail;
     if (data.length === 1) {
       ui.handleMarkerAction(data[0]);
     } else {
@@ -648,6 +635,7 @@ async function initMapEventListeners(ui: MaplatUi) {
   });
 
   if (!ui.baseSwiper) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sources = Object.values((core as any).cacheHash || {});
     if (sources.length) {
       const domGate = getUiDomGate(ui);
@@ -663,7 +651,8 @@ async function initMapEventListeners(ui: MaplatUi) {
     }
   }
   const mapObject = core.mapObject;
-  
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   mapObject.on("moveend", (_evt: any) => {
     ui.updateUrl();
   });
@@ -682,8 +671,7 @@ async function initMapEventListeners(ui: MaplatUi) {
   );
 }
 
-function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
-  console.log("######### initModalHandlers");
+function initModalHandlers(ui: MaplatUi) {
   let cachedMarkerListMapID: string | undefined;
   const core = ui.core!;
   const mapDiv = core.mapDivDocument!;
@@ -759,7 +747,6 @@ function initModalHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
   });
 
   core.waitReady.then(() => {
-    console.log("######### Core waitReady");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     core.mapObject.on("click_control", (evt: any) => {
       const control = evt.control || (evt.frameState && evt.frameState.control);
@@ -1273,16 +1260,7 @@ function translateDom(ui: MaplatUi) {
   }
 }
 
-function uiPrepare(ui: MaplatUi, appOption: MaplatAppOption) {
-  console.log("######### uiPrepare");
-  const core = ui.core!;
-  const mapDiv = core.mapDivDocument!;
-  const enableSplash = !core.initialRestore.mapID;
-  document.querySelector("title")!.innerHTML =
-    ui.translate(core.appName) || "";
-}
-
-function initSplash(ui: MaplatUi, appOption: MaplatAppOption) {
+function initSplash(ui: MaplatUi) {
   const core = ui.core!;
   const mapDiv = core.mapDivDocument!;
   const modalBase = mapDiv.querySelector(".modalBase") as HTMLElement;
@@ -1317,8 +1295,12 @@ function initSplash(ui: MaplatUi, appOption: MaplatAppOption) {
   });
 }
 
+function initDocumentTitle(ui: MaplatUi) {
+  const core = ui.core!;
+  document.querySelector("title")!.innerHTML = ui.translate(core.appName) || "";
+}
+
 function initControls(ui: MaplatUi, appOption: MaplatAppOption) {
-  console.log("######### initControls");
   const core = ui.core!;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1408,7 +1390,6 @@ function initControls(ui: MaplatUi, appOption: MaplatAppOption) {
 }
 
 function initDom(ui: MaplatUi, appOption: MaplatAppOption) {
-  console.log("######### initDom");
   const core = ui.core!;
   // Inject Custom Toast Styles
   const style = document.createElement("style");

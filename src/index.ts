@@ -27,7 +27,6 @@ import type { Coordinate } from "ol/coordinate";
 import { resolveRelativeLink, ellips } from "./ui_utils";
 import type { MaplatAppOption, RestoreState, SwiperInstance } from "./types";
 import { i18n, TFunction } from "i18next";
-import browserLanguage from "./browserlanguage";
 
 Swiper.use([Navigation, Pagination]);
 
@@ -165,13 +164,11 @@ export class MaplatUi extends EventTarget {
             this.restoring = true;
           }
           await this.initializer(appOption);
-          console.log("Core 1");
           await this.core!.waitReady;
           this.restoring = false;
           this.updateUrl();
         } else if (restore.mapID) {
           this.restoring = true;
-          console.log("Core 2");
           await this.core!.waitReady;
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           this.core!.changeMap(restore.mapID!, restore as any);
@@ -189,7 +186,6 @@ export class MaplatUi extends EventTarget {
           }
 
           this.restoring = false;
-          console.log(`[Debug] Calling updateUrl from ChangeMap`);
           this.updateUrl();
         }
         if (this.waitReadyBridge) {
@@ -211,7 +207,6 @@ export class MaplatUi extends EventTarget {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async initializer(appOption: any) {
-    console.log("######### Initializer");
     await uiInit(this, appOption);
     return this as MaplatUi;
   }
@@ -228,17 +223,24 @@ export class MaplatUi extends EventTarget {
     if (!dataFragment || typeof dataFragment === "string")
       return dataFragment as string;
     const langs = Object.keys(dataFragment);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    console.log(`translate: ${this.core!.appLang}`);
-    let key = langs.reduce((prev: any, curr, idx, arr) => {
-      if (curr == this.core!.appLang) {
-        prev = [dataFragment[curr], true];
-      } else if (!prev || (curr == "en" && !prev[1])) {
-        prev = [dataFragment[curr], false];
-      }
-      if (idx == arr.length - 1) return prev[0];
-      return prev;
-    }, undefined);
+
+    let key = langs.reduce(
+      (
+        prev: string | [string, boolean] | undefined,
+        curr: string,
+        idx: number,
+        arr: string[]
+      ) => {
+        if (curr == this.lang) {
+          prev = [dataFragment[curr], true];
+        } else if (!prev || (curr == "en" && !prev[1])) {
+          prev = [dataFragment[curr], false];
+        }
+        if (idx == arr.length - 1) return prev[0];
+        return prev;
+      },
+      undefined
+    );
 
     key = typeof key === "string" ? key : `${key}`;
     if (
@@ -295,7 +297,6 @@ export class MaplatUi extends EventTarget {
   }
 
   updateUrl() {
-    console.log("######### updateUrl");
     if (!this.appOption.stateUrl) return;
     if (this.restoring) return;
 

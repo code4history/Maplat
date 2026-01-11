@@ -46,6 +46,7 @@ export declare class MaplatUi extends EventTarget {
     lastClickCoordinate: Coordinate | undefined;
     lastGPSError: string | undefined;
     selectedMarkerNamespaceID: string | undefined;
+    lang: string;
     _t?: TFunction<"translation", undefined>;
     i18n?: i18n;
     constructor(appOption: MaplatAppOption);
