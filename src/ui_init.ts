@@ -213,7 +213,7 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
       return undefined;
     },
     onAppdataReady: async (context: unknown) => {
-      await appDataLoaded(ui, appOption);
+      await initUiFromAppData(ui, appOption);
       if (existingUiHooks?.onAppdataReady) {
         return existingUiHooks.onAppdataReady(context);
       }
@@ -251,7 +251,7 @@ export async function uiInit(ui: MaplatUi, appOption: MaplatAppOption) {
   });
 }
 
-async function appDataLoaded(ui: MaplatUi, appOption: MaplatAppOption) {
+async function initUiFromAppData(ui: MaplatUi, appOption: MaplatAppOption) {
   const core = ui.core!;
   if (appOption.icon) {
     (pointer as Record<string, string>)["defaultpin.png"] = appOption.icon;
@@ -601,7 +601,6 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
 
 async function initMapEventListeners(ui: MaplatUi) {
   const core = ui.core!;
-  core.addEventListener("mapChanged", (_evt: unknown) => {});
 
   core.addEventListener("poi_number", (evt: unknown) => {
     const number = (evt as CustomEvent).detail;

@@ -61723,7 +61723,7 @@ typeof ActiveXObject == "function" && (typeof global < "u" && global.ActiveXObje
 typeof Ta != "function" && (Ta = void 0);
 if (!Ta && !Cu && !cf)
   try {
-    import("./browser-ponyfill-DcoGYATV.js").then((n) => n.b).then(function(n) {
+    import("./browser-ponyfill-BpzQiOZj.js").then((n) => n.b).then(function(n) {
       Ta = n.default;
     }).catch(function() {
     });
@@ -62304,8 +62304,7 @@ function u1(n, e) {
 }
 async function E8(n) {
   const e = n.core;
-  if (e.addEventListener("mapChanged", (i) => {
-  }), e.addEventListener("poi_number", (i) => {
+  if (e.addEventListener("poi_number", (i) => {
     i.detail ? e.mapDivDocument.classList.remove("no_poi") : e.mapDivDocument.classList.add("no_poi");
   }), e.addEventListener("clickMarkers", (i) => {
     const r = i.detail;
