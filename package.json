@@ -64,7 +64,7 @@
     "i18next-http-backend": "^3.0.2",
     "page": "^1.11.6",
     "qrcode": "^1.5.4",
-    "swiper": "^6.8.4",
+    "swiper": "^12.1.2",
     "workbox-core": "^7.4.0",
     "workbox-expiration": "^7.4.0",
     "workbox-precaching": "^7.4.0",
