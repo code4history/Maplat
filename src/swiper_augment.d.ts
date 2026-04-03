@@ -8,6 +8,6 @@ declare module "swiper" {
     setSlideIndexAsSelected(index: number): void;
     setSlideMapIDAsSelected(mapID: string): void;
     slideToIndex(index: number): void;
-    $el: HTMLElement[];
+    el: HTMLElement;
   }
 }

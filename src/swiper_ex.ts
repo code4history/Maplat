@@ -1,10 +1,10 @@
 import Swiper from "swiper";
 
 Swiper.prototype.slideToMapID = function (mapID: string) {
-  const slide = this.$el[0].querySelector(".swiper-slide-active");
+  const slide = this.el.querySelector(".swiper-slide-active");
   if (slide && slide.getAttribute("data") == mapID) return;
 
-  const sliders = this.$el[0].querySelectorAll(".swiper-slide");
+  const sliders = this.el.querySelectorAll(".swiper-slide");
   for (let i = 0; i < sliders.length; i++) {
     const slider = sliders[i];
     if (slider.getAttribute("data") == mapID) {
@@ -16,14 +16,18 @@ Swiper.prototype.slideToMapID = function (mapID: string) {
 };
 
 Swiper.prototype.slideToIndex = function (index: number) {
-  const slide = this.$el[0].querySelector(".swiper-slide-active");
+  const slide = this.el.querySelector(".swiper-slide-active");
   if (
     slide &&
     parseInt(slide.getAttribute("data-swiper-slide-index") || "0") == index
   )
     return;
 
-  this.slideToLoop(index);
+  if (this.params.loop) {
+    this.slideToLoop(index);
+  } else {
+    this.slideTo(index);
+  }
 };
 
 Swiper.prototype.setSlideMapID = function (mapID: string) {
@@ -37,7 +41,7 @@ Swiper.prototype.setSlideIndex = function (index: number) {
 };
 
 Swiper.prototype.setSlideIndexAsSelected = function (index: number) {
-  const sliders = this.$el[0].querySelectorAll(".swiper-slide");
+  const sliders = this.el.querySelectorAll(".swiper-slide");
   for (let i = 0; i < sliders.length; i++) {
     const slider = sliders[i];
     if (slider.getAttribute("data-swiper-slide-index") == index.toString()) {
@@ -49,7 +53,7 @@ Swiper.prototype.setSlideIndexAsSelected = function (index: number) {
 };
 
 Swiper.prototype.setSlideMapIDAsSelected = function (mapID: string) {
-  const sliders = this.$el[0].querySelectorAll(".swiper-slide");
+  const sliders = this.el.querySelectorAll(".swiper-slide");
   for (let i = 0; i < sliders.length; i++) {
     const slider = sliders[i];
     if (slider.getAttribute("data") == mapID) {

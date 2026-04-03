@@ -1,8 +1,8 @@
 import { MaplatApp as Core, MaplatApp } from "@maplat/core";
 import pointer from "./pointer_images";
 import { Swiper } from "./swiper_ex";
-import { Navigation, Pagination } from "swiper";
-import "swiper/swiper-bundle.css";
+import { Manipulation, Navigation, Pagination } from "swiper/modules";
+import "swiper/css/bundle";
 import {
   SliderNew,
   Copyright,
@@ -35,8 +35,6 @@ import type { MaplatAppOption } from "./types";
 import i18n from "i18next";
 import i18nHttpBackend from "i18next-http-backend";
 import browserLanguage from "./browserlanguage";
-
-Swiper.use([Navigation, Pagination]);
 
 export const META_KEYS = [
   "title",
@@ -491,7 +489,9 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
     }
   });
 
+  const baseShouldLoop = baseSources.length >= 3;
   const baseSwiper = (ui.baseSwiper = new Swiper(".base-swiper", {
+    modules: [Manipulation, Navigation, Pagination],
     slidesPerView: 2,
     spaceBetween: 15,
     breakpoints: {
@@ -506,7 +506,7 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
     preventClicksPropagation: true,
     observer: true,
     observeParents: true,
-    loop: baseSources.length >= 2,
+    loop: baseShouldLoop,
     navigation: {
       nextEl: ".base-next",
       prevEl: ".base-prev"
@@ -528,7 +528,9 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
       .classList.add("single-map");
   }
 
+  const overlayShouldLoop = overlaySources.length >= 3;
   const overlaySwiper = (ui.overlaySwiper = new Swiper(".overlay-swiper", {
+    modules: [Manipulation, Navigation, Pagination],
     slidesPerView: 2,
     spaceBetween: 15,
     breakpoints: {
@@ -543,7 +545,7 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
     preventClicksPropagation: true,
     observer: true,
     observeParents: true,
-    loop: overlaySources.length >= 2,
+    loop: overlayShouldLoop,
     navigation: {
       nextEl: ".overlay-next",
       prevEl: ".overlay-prev"
@@ -593,8 +595,8 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
     ui.updateEnvelope();
   });
 
-  baseSwiper.slideToLoop(0);
-  overlaySwiper.slideToLoop(0);
+  baseSwiper.slideToIndex(0);
+  overlaySwiper.slideToIndex(0);
   ellips(core.mapDivDocument!);
   getUiReadyGate(ui).markSwipersReady();
 }
@@ -1423,12 +1425,12 @@ function initDom(ui: MaplatUi, appOption: MaplatAppOption) {
 
   // Add UI HTML Element
   let newElems = createElement(`<d c="ol-control map-title"><s></s></d>
-  <d c="swiper-container ol-control base-swiper prevent-default-ui">
+  <d c="swiper swiper-container ol-control base-swiper prevent-default-ui">
     <d c="swiper-wrapper"> </d>
       <d c="swiper-button-next base-next swiper-button-white"> </d>
         <d c="swiper-button-prev base-prev swiper-button-white"> </d>
           </d>
-          <d c="swiper-container ol-control overlay-swiper prevent-default-ui">
+          <d c="swiper swiper-container ol-control overlay-swiper prevent-default-ui">
             <d c="swiper-wrapper"> </d>
               <d c="swiper-button-next overlay-next swiper-button-white"> </d>
                 <d c="swiper-button-prev overlay-prev swiper-button-white"> </d>

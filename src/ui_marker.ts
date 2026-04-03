@@ -396,7 +396,7 @@ export function setHideMarker(ui: MaplatUi, flag: boolean) {
 
 export function checkOverlayID(ui: MaplatUi, mapID: string) {
   const swiper = ui.overlaySwiper;
-  const sliders = Array.from(swiper.$el[0].querySelectorAll(".swiper-slide"));
+  const sliders = Array.from(swiper.el.querySelectorAll(".swiper-slide"));
   return sliders.some(slider => slider.getAttribute("data") === mapID);
 }
 

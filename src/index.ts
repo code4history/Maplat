@@ -3,9 +3,7 @@ import "ol/ol.css";
 import EventTarget from "ol/events/Target.js";
 import { asArray } from "ol/color";
 
-import { Swiper } from "./swiper_ex";
-import { Navigation, Pagination } from "swiper";
-import "swiper/swiper-bundle.css";
+import "swiper/css/bundle";
 import page from "page";
 import * as bsn from "bootstrap.native";
 import "./styles/ui.scss";
@@ -27,8 +25,6 @@ import type { Coordinate } from "ol/coordinate";
 import { resolveRelativeLink, ellips } from "./ui_utils";
 import type { MaplatAppOption, RestoreState, SwiperInstance } from "./types";
 import { i18n, TFunction } from "i18next";
-
-Swiper.use([Navigation, Pagination]);
 
 export class MaplatUi extends EventTarget {
   static async createObject(option: MaplatAppOption) {
