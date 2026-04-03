@@ -3335,7 +3335,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
   registerRoute(
     /(?:maps\/.+\.json|pwa\/.+|pois\/.+\.json|apps\/.+\.json|tmbs\/.+\.jpg|images\/.+\.(?:png|jpg))$/,
     new StaleWhileRevalidate({
-      cacheName: `resourcesCache-${"2026-04-04-02-50"}`,
+      cacheName: `resourcesCache-${"2026-04-04-02-59"}`,
       plugins: [
         new ExpirationPlugin({
           maxAgeSeconds: 86400,

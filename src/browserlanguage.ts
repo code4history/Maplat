@@ -1,30 +1,33 @@
+type LegacyNavigator = Navigator & {
+  browserLanguage?: string;
+  userLanguage?: string;
+};
+
 const browserLanguage = (): string => {
-  const navigator = window.navigator;
+  const navigator = window.navigator as LegacyNavigator;
   const ua = navigator.userAgent.toLowerCase();
 
   try {
-    let lang;
+    let lang: string[] | undefined;
     // Chrome
     if (ua.indexOf("chrome") != -1) {
-      lang = (
+      const detectedLang =
         navigator.languages[0] ||
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (navigator as any).browserLanguage ||
+        navigator.browserLanguage ||
         navigator.language ||
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (navigator as any).userLanguage
-      ).split(";");
+        navigator.userLanguage;
+      if (!detectedLang) return "";
+      lang = detectedLang.split(";");
       return lang[0];
     }
     // Other
     else {
-      lang = // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (
-        (navigator as any).browserLanguage ||
+      const detectedLang =
+        navigator.browserLanguage ||
         navigator.language ||
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (navigator as any).userLanguage
-      ).split(";");
+        navigator.userLanguage;
+      if (!detectedLang) return "";
+      lang = detectedLang.split(";");
       return lang[0];
     }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

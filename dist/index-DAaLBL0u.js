@@ -62289,7 +62289,7 @@ typeof ActiveXObject == "function" && (typeof global < "u" && global.ActiveXObje
 typeof Fo != "function" && (Fo = void 0);
 if (!Fo && !su && !Kg)
   try {
-    import("./browser-ponyfill-C3wpip4-.js").then((n) => n.b).then(function(n) {
+    import("./browser-ponyfill-C_U_VF9F.js").then((n) => n.b).then(function(n) {
       Fo = n.default;
     }).catch(function() {
     });
@@ -62569,11 +62569,13 @@ const CY = () => {
   const n = window.navigator, e = n.userAgent.toLowerCase();
   try {
     let t;
-    return e.indexOf("chrome") != -1 ? (t = (n.languages[0] || // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    n.browserLanguage || n.language || // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    n.userLanguage).split(";"), t[0]) : (t = // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (n.browserLanguage || n.language || // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    n.userLanguage).split(";"), t[0]);
+    if (e.indexOf("chrome") != -1) {
+      const i = n.languages[0] || n.browserLanguage || n.language || n.userLanguage;
+      return i ? (t = i.split(";"), t[0]) : "";
+    } else {
+      const i = n.browserLanguage || n.language || n.userLanguage;
+      return i ? (t = i.split(";"), t[0]) : "";
+    }
   } catch {
     return "";
   }
