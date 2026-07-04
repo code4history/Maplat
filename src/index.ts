@@ -227,17 +227,24 @@ export class MaplatUi extends EventTarget {
         idx: number,
         arr: string[]
       ) => {
-        if (curr == this.lang) {
-          prev = [dataFragment[curr], true];
-        } else if (!prev || (curr == "en" && !prev[1])) {
-          prev = [dataFragment[curr], false];
+        // 空文字の言語エントリは候補にしない(未入力言語へのフォールバック防止)
+        if (dataFragment[curr]) {
+          if (curr == this.lang) {
+            prev = [dataFragment[curr], true];
+          } else if (!prev || (curr == "en" && !prev[1])) {
+            prev = [dataFragment[curr], false];
+          }
         }
-        if (idx == arr.length - 1) return prev[0];
+        if (idx == arr.length - 1) return prev ? prev[0] : undefined;
         return prev;
       },
       undefined
     );
 
+    // 全言語空のフラグメント(未入力のappName等)ではキーが決まらない。
+    // 空キーをi18nextのaddResourceに渡すとtranslation名前空間全体が
+    // 破壊され、以後のt()が全て生キーを返すため、登録せずそのまま返す (#251)
+    if (key === undefined || key === "") return "";
     key = typeof key === "string" ? key : `${key}`;
     if (
       this.i18n!.exists(key, { ns: "translation", nsSeparator: "__X__yX__X__" })
@@ -246,7 +253,11 @@ export class MaplatUi extends EventTarget {
 
     for (let i = 0; i < langs.length; i++) {
       const lang = langs[i];
-      this.i18n!.addResource(lang, "translation", key, dataFragment[lang]);
+      // 空文字の言語は登録しない。登録すると現在言語の空値が採用されてしまい、
+      // 他言語への正当なフォールバックが働かない (#251)
+      if (dataFragment[lang]) {
+        this.i18n!.addResource(lang, "translation", key, dataFragment[lang]);
+      }
     }
     return this.t(key, { ns: "translation", nsSeparator: "__X__yX__X__" });
   }

@@ -62375,7 +62375,7 @@ typeof ActiveXObject == "function" && (typeof global < "u" && global.ActiveXObje
 typeof Fo != "function" && (Fo = void 0);
 if (!Fo && !su && !_g)
   try {
-    import("./browser-ponyfill-tbichWWL.js").then((n) => n.b).then(function(n) {
+    import("./browser-ponyfill-f_YT80aR.js").then((n) => n.b).then(function(n) {
       Fo = n.default;
     }).catch(function() {
     });
@@ -63670,14 +63670,15 @@ class EU extends $g {
       return e;
     const t = Object.keys(e);
     let i = t.reduce(
-      (r, s, o, a) => (s == this.lang ? r = [e[s], !0] : (!r || s == "en" && !r[1]) && (r = [e[s], !1]), o == a.length - 1 ? r[0] : r),
+      (r, s, o, a) => (e[s] && (s == this.lang ? r = [e[s], !0] : (!r || s == "en" && !r[1]) && (r = [e[s], !1])), o == a.length - 1 ? r ? r[0] : void 0 : r),
       void 0
     );
+    if (i === void 0 || i === "") return "";
     if (i = typeof i == "string" ? i : `${i}`, this.i18n.exists(i, { ns: "translation", nsSeparator: "__X__yX__X__" }))
       return this.t(i, { ns: "translation", nsSeparator: "__X__yX__X__" });
     for (let r = 0; r < t.length; r++) {
       const s = t[r];
-      this.i18n.addResource(s, "translation", i, e[s]);
+      e[s] && this.i18n.addResource(s, "translation", i, e[s]);
     }
     return this.t(i, { ns: "translation", nsSeparator: "__X__yX__X__" });
   }
