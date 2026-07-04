@@ -64,7 +64,7 @@
     "@types/page": "^1.11.9",
     "bootstrap.native": "^5.1.6",
     "i18next": "^25.8.5",
-    "i18next-http-backend": "^3.0.2",
+    "i18next-http-backend": "^3.0.5",
     "page": "^1.11.6",
     "qrcode": "^1.5.4",
     "swiper": "^11.2.10",
