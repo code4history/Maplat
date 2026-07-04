@@ -46,8 +46,7 @@ jobs:
         run: pnpm typecheck
 
       - name: Run tests
-        # テストファイルが未整備のため0件を許容する(実テスト整備は #250 の継続課題)
-        run: pnpm exec vitest run --passWithNoTests
+        run: pnpm exec vitest run
 
       - name: Build package
         run: pnpm build
