@@ -15,11 +15,11 @@ importers:
         specifier: ^0.2.6
         version: 0.2.6
       '@c4h/weiwudi':
-        specifier: ^0.3.0
-        version: 0.3.0(workbox-routing@7.4.0)
+        specifier: github:code4history/Weiwudi#foss4g-hiroshima
+        version: https://codeload.github.com/code4history/Weiwudi/tar.gz/9591216ce1226b3e703757a8032832f840659666(workbox-routing@7.4.0)
       '@maplat/core':
-        specifier: 0.13.1
-        version: 0.13.1(mapbox-gl@3.17.0)(maplibre-gl@4.7.1)(ol@10.8.0)(workbox-routing@7.4.0)
+        specifier: github:code4history/MaplatCore#foss4g-hiroshima
+        version: https://codeload.github.com/code4history/MaplatCore/tar.gz/ed02ac1434cb7cf64d9935be05555d513ebcbddc(mapbox-gl@3.17.0)(maplibre-gl@4.7.1)(ol@10.8.0)(workbox-routing@7.4.0)
       '@turf/turf':
         specifier: ^7.3.1
         version: 7.3.1
@@ -659,6 +659,13 @@ packages:
     peerDependencies:
       workbox-routing: ^7.4.0
 
+  '@c4h/weiwudi@https://codeload.github.com/code4history/Weiwudi/tar.gz/9591216ce1226b3e703757a8032832f840659666':
+    resolution: {gitHosted: true, integrity: sha512-NHgHeAVIqAbWXcxmXH9X87b5uexWq6ZgEkzn2r/CZKc2YzJPCePKOXj+SFiKcwp7DQeop+nOGAQ+mu3tChOqvQ==, tarball: https://codeload.github.com/code4history/Weiwudi/tar.gz/9591216ce1226b3e703757a8032832f840659666}
+    version: 0.3.0
+    engines: {node: '>=20.0.0', pnpm: '>=9.0.0'}
+    peerDependencies:
+      workbox-routing: ^7.4.0
+
   '@csstools/color-helpers@6.0.2':
     resolution: {integrity: sha512-LMGQLS9EuADloEFkcTBR3BwV/CGHV7zyDxVRtVDTwdI2Ca4it0CCVTT9wCkxSgokjE5Ho41hEPgb8OEUwoXr6Q==}
     engines: {node: '>=20.19.0'}
@@ -987,8 +994,9 @@ packages:
     resolution: {integrity: sha512-Es6WcD0nO5l+2BOQS4uLfNPYQaNDfbot3X1XUoloz+x0mPDS3eeORZJl06HXjwBG1fOGwCRnzK88LMdxKRrd6Q==}
     engines: {node: '>=6.0.0'}
 
-  '@maplat/core@0.13.1':
-    resolution: {integrity: sha512-rIxXyVK5eIgftuFi4mcNTMsp5xwkjQw6JN+Hgs0VEI8ZiBxgpXAhENbQRgrKnLjzq60wt7uTd51gLzast6EcTw==}
+  '@maplat/core@https://codeload.github.com/code4history/MaplatCore/tar.gz/ed02ac1434cb7cf64d9935be05555d513ebcbddc':
+    resolution: {gitHosted: true, integrity: sha512-2C/oRBH8vhpgSVA30rYwCUOnuzvs6DLABEfq8u4jm7rKhwRn9U+rgiE+wLjaBLxthU07jn/lPfCMOu7zaNW9EQ==, tarball: https://codeload.github.com/code4history/MaplatCore/tar.gz/ed02ac1434cb7cf64d9935be05555d513ebcbddc}
+    version: 0.13.1
     engines: {pnpm: '>=9'}
     peerDependencies:
       mapbox-gl: ^1.0.0 || ^2.0.0 || ^3.0.0
@@ -2502,6 +2510,7 @@ packages:
   glob@11.1.0:
     resolution: {integrity: sha512-vuNwKSaKiqm7g0THUBu2x7ckSs3XJLXE+2ssL7/MfTGPLLcrJQ/4Uq1CjPTtO5cCIiRxqvN6Twy1qOwhL0Xjcw==}
     engines: {node: 20 || >=22}
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
     hasBin: true
 
   global-prefix@4.0.0:
@@ -4705,6 +4714,10 @@ snapshots:
     dependencies:
       workbox-routing: 7.4.0
 
+  '@c4h/weiwudi@https://codeload.github.com/code4history/Weiwudi/tar.gz/9591216ce1226b3e703757a8032832f840659666(workbox-routing@7.4.0)':
+    dependencies:
+      workbox-routing: 7.4.0
+
   '@csstools/color-helpers@6.0.2': {}
 
   '@csstools/css-calc@3.1.1(@csstools/css-parser-algorithms@4.0.0(@csstools/css-tokenizer@4.0.0))(@csstools/css-tokenizer@4.0.0)':
@@ -4941,7 +4954,7 @@ snapshots:
 
   '@mapbox/whoots-js@3.1.0': {}
 
-  '@maplat/core@0.13.1(mapbox-gl@3.17.0)(maplibre-gl@4.7.1)(ol@10.8.0)(workbox-routing@7.4.0)':
+  '@maplat/core@https://codeload.github.com/code4history/MaplatCore/tar.gz/ed02ac1434cb7cf64d9935be05555d513ebcbddc(mapbox-gl@3.17.0)(maplibre-gl@4.7.1)(ol@10.8.0)(workbox-routing@7.4.0)':
     dependencies:
       '@c4h/weiwudi': 0.3.0(workbox-routing@7.4.0)
       '@maplat/transform': 0.5.2

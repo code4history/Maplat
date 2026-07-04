@@ -1,0 +1,10 @@
+packages:
+  - "."
+
+# pnpm 10+ 用設定(pnpm 9はpackage.jsonのpnpm欄を読むため両方を維持)
+overrides:
+  "@microsoft/api-extractor": 7.58.0
+onlyBuiltDependencies:
+  - esbuild
+  - sass
+  - workbox-build

@@ -29163,6 +29163,9 @@ const xR = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBMRXhpZgAATU0AK
     },
     attr: "©︎ OpenStreetMap contributors",
     maptype: "base",
+    // maxZoom必須: 未指定だとWeiwudi(SWタイルキャッシュ)登録時にズーム上限0と
+    // 解釈される環境があり、キャッシュ経由の全タイルが404になる (#78)
+    maxZoom: 19,
     thumbnail: xR,
     urls: [
       "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -62289,7 +62292,7 @@ typeof ActiveXObject == "function" && (typeof global < "u" && global.ActiveXObje
 typeof Fo != "function" && (Fo = void 0);
 if (!Fo && !su && !Kg)
   try {
-    import("./browser-ponyfill-C_U_VF9F.js").then((n) => n.b).then(function(n) {
+    import("./browser-ponyfill-Dqe4v62e.js").then((n) => n.b).then(function(n) {
       Fo = n.default;
     }).catch(function() {
     });
