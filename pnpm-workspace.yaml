@@ -8,3 +8,7 @@ onlyBuiltDependencies:
   - esbuild
   - sass
   - workbox-build
+
+# FOSS4Gリリーストレイン: @maplat/core(git参照)の依存に@c4h/weiwudi(git参照)が
+# 含まれるため、意図的にexotic subdepsを許可する(FOSS4G前のnpm一斉publish後に戻す)
+blockExoticSubdeps: false

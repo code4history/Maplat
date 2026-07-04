@@ -28547,7 +28547,7 @@ let xk = class oo extends bk {
   static async registerMap(e, t) {
     if (!await oo.swCheck()) throw "Weiwudi service worker is not implemented.";
     let i;
-    const r = ["type", "url", "width", "height", "tileSize", "minZoom", "maxZoom", "maxLng", "maxLat", "minLng", "minLat"].reduce((o, a) => (typeof t[a] < "u" && (t[a] instanceof Array ? t[a].map((l) => {
+    const r = ["type", "url", "width", "height", "tileSize", "minZoom", "maxZoom", "maxLng", "maxLat", "minLng", "minLat", "cacheTtl"].reduce((o, a) => (typeof t[a] < "u" && (t[a] instanceof Array ? t[a].map((l) => {
       o.append(a, l);
     }) : o.append(a, String(t[a]))), o), new URLSearchParams());
     r.append("mapID", e);
@@ -29247,7 +29247,7 @@ async function Vk(n, e) {
 async function Ff(n) {
   const e = {};
   if (n.maptype === "mapbox" || n.maptype === "maplibre" || n.maptype === "google" || !n.enableCache) return;
-  n.maptype === "base" || n.maptype === "overlay" ? e.type = "wmts" : e.type = "xyz", e.url = n.urls ? n.urls : n.url, e.width = n.width, e.height = n.height, e.maxZoom = n.maxZoom, e.minZoom = n.minZoom;
+  n.maptype === "base" || n.maptype === "overlay" ? e.type = "wmts" : e.type = "xyz", e.url = n.urls ? n.urls : n.url, e.width = n.width, e.height = n.height, e.maxZoom = n.maxZoom, e.minZoom = n.minZoom, n.cacheTtl !== void 0 && (e.cacheTtl = n.cacheTtl);
   const t = n.envelopeLngLats;
   if (t) {
     const r = t.reduce(
@@ -34881,7 +34881,7 @@ class As extends xz {
   static async registerMap(e, t) {
     if (!await As.swCheck()) throw "Weiwudi service worker is not implemented.";
     let i;
-    const r = ["type", "url", "width", "height", "tileSize", "minZoom", "maxZoom", "maxLng", "maxLat", "minLng", "minLat"].reduce((o, a) => (typeof t[a] < "u" && (t[a] instanceof Array ? t[a].map((l) => {
+    const r = ["type", "url", "width", "height", "tileSize", "minZoom", "maxZoom", "maxLng", "maxLat", "minLng", "minLat", "cacheTtl"].reduce((o, a) => (typeof t[a] < "u" && (t[a] instanceof Array ? t[a].map((l) => {
       o.append(a, l);
     }) : o.append(a, String(t[a]))), o), new URLSearchParams());
     r.append("mapID", e);
@@ -62292,7 +62292,7 @@ typeof ActiveXObject == "function" && (typeof global < "u" && global.ActiveXObje
 typeof Fo != "function" && (Fo = void 0);
 if (!Fo && !su && !Kg)
   try {
-    import("./browser-ponyfill-Dqe4v62e.js").then((n) => n.b).then(function(n) {
+    import("./browser-ponyfill-V0IU_ALk.js").then((n) => n.b).then(function(n) {
       Fo = n.default;
     }).catch(function() {
     });
