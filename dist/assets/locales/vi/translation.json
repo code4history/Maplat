@@ -57,7 +57,7 @@
         "marker_list_title": "Danh sách điểm đánh dấu"
     },
     "app": {
-        "fake_explanation": "LƯU Ý: Nếu kết quả GPS cách xa %1$s hơn %2$f km, hệ thống sẽ cung cấp tọa độ giả quanh %1$s.",
+        "fake_explanation": "LƯU Ý: Nếu kết quả GPS cách xa %1$s hơn %2$d km, hệ thống sẽ cung cấp tọa độ giả quanh %1$s.",
         "acquiring_gps_desc": "Đang lấy dữ liệu GPS.",
         "out_of_map": "Ngoài phạm vi bản đồ",
         "out_of_map_desc": "Kết quả GPS nằm ngoài phạm vi bản đồ. Chức năng GPS sẽ tắt.",
