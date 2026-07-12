@@ -21539,7 +21539,7 @@ function LM(n) {
       }) : this.pois[i] && (this.pois[i].pois = []);
     }
     listPoiLayers(i = !1, r = !1) {
-      return Object.keys(this.pois).sort((s, o) => s === "main" ? -1 : o === "main" ? 1 : s < o ? -1 : s > o ? 1 : 0).map((s) => this.pois[s]).filter(
+      return Object.keys(this.pois).sort((s, o) => s === "main" ? -1 : o === "main" ? 1 : 0).map((s) => this.pois[s]).filter(
         (s) => r ? i ? s.pois.length && s.hide : s.pois.length : i ? s.hide : !0
       );
     }
@@ -30641,7 +30641,7 @@ let qh = class extends ZM {
     );
   }
   listPoiLayers(e = !1, t = !1) {
-    const i = Object.keys(this.pois).sort((s, o) => s === "main" ? -1 : o === "main" ? 1 : s < o ? -1 : s > o ? 1 : 0).map((s) => this.pois[s]).filter(
+    const i = Object.keys(this.pois).sort((s, o) => s === "main" ? -1 : o === "main" ? 1 : 0).map((s) => this.pois[s]).filter(
       (s) => t ? e ? s.pois.length && s.hide : s.pois.length : e ? s.hide : !0
     ), r = this.from.listPoiLayers(
       e,
@@ -62399,7 +62399,7 @@ typeof ActiveXObject == "function" && (typeof global < "u" && global.ActiveXObje
 typeof Bo != "function" && (Bo = void 0);
 if (!Bo && !ou && !$g)
   try {
-    import("./browser-ponyfill-CyifY4nP.js").then((n) => n.b).then(function(n) {
+    import("./browser-ponyfill-DoX0TmgX.js").then((n) => n.b).then(function(n) {
       Bo = n.default;
     }).catch(function() {
     });
