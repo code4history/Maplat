@@ -36,6 +36,9 @@ Maplat is open-source under the Apache License 2.0 (from version 0.12.2).
 - GPS / accurate map collaboration without distorting the original map image
 - Pluggable base maps (OpenLayers-based; optional Mapbox GL JS / MapLibre GL JS for vector tiles)
 - PWA-ready application shell (manifest, service worker, share, URL state)
+- Viewer UI available in 11 languages: English, Japanese, German, Spanish,
+  French, Indonesian, Korean, Thai, Vietnamese, Chinese (Simplified), and
+  Chinese (Traditional)
 - Open-source (Apache 2.0 from version 0.12.2) with a companion desktop editor (MaplatEditor)
 
 <!-- SECTION 5: Quick Start -->

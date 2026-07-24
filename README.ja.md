@@ -34,6 +34,9 @@ Maplat は Apache License 2.0（バージョン 0.12.2 以降）のオープン�
 - 元の地図画像を歪めずに GPS・正確な地図と連携
 - OpenLayers ベースの切替可能なベースマップ（Vector Tile で Mapbox GL JS / MapLibre GL JS をオプション扱い）
 - PWA 対応アプリケーションシェル（マニフェスト・Service Worker・シェア・URL 状態管理）
+- ビューア UI は11言語に対応: 英語・日本語・ドイツ語・スペイン語・
+  フランス語・インドネシア語・韓国語・タイ語・ベトナム語・簡体字中国語・
+  繁体字中国語
 - Apache 2.0（バージョン 0.12.2 以降）のオープンソース・デスクトップ向けデータ作成ツール MaplatEditor が併設
 
 <!-- SECTION 5: Quick Start -->
