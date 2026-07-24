@@ -6,9 +6,9 @@
 <h1 align="center">Maplat</h1>
 
 <p align="center">
-  [![CI](https://github.com/code4history/Maplat/actions/workflows/ci.yml/badge.svg)](https://github.com/code4history/Maplat/actions/workflows/ci.yml)
-  [![npm version](https://img.shields.io/npm/v/@maplat/ui)](https://www.npmjs.com/package/@maplat/ui)
-  [![License](https://img.shields.io/npm/l/@maplat/ui)](LICENSE)
+  <a href="https://github.com/code4history/Maplat/actions/workflows/ci.yml"><img src="https://github.com/code4history/Maplat/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <a href="https://www.npmjs.com/package/@maplat/ui"><img src="https://img.shields.io/npm/v/@maplat/ui" alt="npm version" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/npm/l/@maplat/ui" alt="License" /></a>
 </p>
 
 <!-- SECTION 2: Elevator Pitch -->
