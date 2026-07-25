@@ -1,0 +1,26 @@
+# Tasks: Restore Share QR Code
+
+- [ ] Install dependencies <!-- id: 1 -->
+    - [ ] `pnpm add qrcode`
+    - [ ] `pnpm add -D @types/qrcode`
+- [ ] Implement QR Code Logic <!-- id: 2 -->
+    - [ ] Import `qrcode` in `src/index.ts`
+    - [ ] Locate/Verify `.qr_app` and `.qr_view` containers in Modal DOM
+        - *Note: If missing, inject them dynamically or update HTML template if accessible.*
+    - [ ] Port logic from legacy to calculate `uri` and `view` strings
+    - [ ] Implement rendering using `QRCode.toCanvas` (or `toDataURL` + img) in `click_control` handler
+- [ ] Implement Share Buttons <!-- id: 4 -->
+    - [ ] Implement Twitter share logic
+    - [ ] Implement Facebook share logic
+    - [ ] Implement Copy to Clipboard logic
+- [ ] Implement Custom Toast <!-- id: 5 -->
+    - [ ] Create simple CSS/JS toast mechanism
+    - [ ] Integrate toast into Copy action
+- [ ] Cleanup Dependencies <!-- id: 6 -->
+    - [ ] Remove `iziToast` from `package.json`
+    - [ ] Remove `iziToast` imports from source
+- [ ] Verify <!-- id: 3 -->
+    - [ ] Build and run
+    - [ ] Open Share dialog
+    - [ ] Confirm QR codes appear
+    - [ ] Verify scanned URLs

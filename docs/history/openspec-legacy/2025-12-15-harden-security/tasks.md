@@ -1,0 +1,4 @@
+- [x] Create `.npmrc` with `ignore-scripts=true` and `engine-strict=true` <!-- id: 0 -->
+- [x] Add `engines` field to `package.json` to enforce pnpm (replaced script) <!-- id: 1 -->
+- [x] Configure `pnpm.onlyBuiltDependencies` in `package.json` for `esbuild` and other valid tools <!-- id: 2 -->
+- [x] Verify `pnpm install` works with the new restrictions <!-- id: 3 -->
