@@ -24,7 +24,12 @@
     "typecheck": "tsc --noEmit",
     "lint": "pnpm lint:eslint && pnpm lint:prettier",
     "lint:eslint": "eslint \"{src,spec,demo}/**/*.{ts,js}\" --fix",
-    "lint:prettier": "prettier \"./{src,spec,demo}/**/*.{ts,js}\" --write"
+    "lint:prettier": "prettier \"./{src,spec,demo}/**/*.{ts,js}\" --write",
+    "dev:e2e": "vite --port 5176 --strictPort",
+    "pretest:e2e": "pnpm exec playwright install chromium",
+    "test:e2e": "pnpm exec playwright test",
+    "test:e2e:ci": "pnpm exec playwright test --config playwright-ci.config.ts",
+    "test:e2e:m18-t6": "pnpm exec playwright test e2e/m18-t6-marker-list-layer-toggle.spec.ts"
   },
   "pnpm": {
     "overrides": {
@@ -98,6 +103,8 @@
     "vite-plugin-dts": "^4.5.4",
     "vitest": "^3.2.6",
     "workbox-build": "^7.4.0",
-    "workbox-window": "^7.4.0"
+    "workbox-window": "^7.4.0",
+    "@playwright/test": "^1.57.0",
+    "@maplat/transform": "^0.5.2"
   }
 }

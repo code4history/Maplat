@@ -17,6 +17,7 @@ export default defineConfig(({ command }) => ({
     // Package build: use '/' (library, base doesn't matter)
     // Demo build: use '/Maplat/' for GitHub Pages
     base: command === 'serve' ? '/' : (isPackageBuild ? '/' : '/Maplat/'),
+    resolve: {},
     plugins: [
         {
             name: 'copy-locales',
@@ -107,7 +108,8 @@ export default defineConfig(({ command }) => ({
     },
     test: {
         environment: 'jsdom',
-        include: ['**/*.test.js', '**/*.test.ts', '**/*.spec.js', '**/*.spec.ts'],
+        include: ['spec/**/*.test.ts', 'spec/**/*.spec.ts'],
+        exclude: ['**/node_modules/**', '**/dist/**', 'e2e/**'],
         globals: true
     }
 }));

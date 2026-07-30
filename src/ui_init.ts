@@ -877,9 +877,9 @@ function initModalHandlers(ui: MaplatUi) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           checkbox.addEventListener("change", (e: any) => {
             if (e.target.checked) {
-              core.showPoiLayer(layer.id);
+              core.showPoiLayer(layer.namespaceID);
             } else {
-              core.hidePoiLayer(layer.id);
+              core.hidePoiLayer(layer.namespaceID);
             }
           });
 
