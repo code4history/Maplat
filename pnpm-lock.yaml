@@ -4,9 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  '@microsoft/api-extractor': 7.58.0
-
 importers:
 
   .:
@@ -15,11 +12,11 @@ importers:
         specifier: ^0.2.6
         version: 0.2.6
       '@c4h/weiwudi':
-        specifier: github:code4history/Weiwudi#foss4g-hiroshima
-        version: https://codeload.github.com/code4history/Weiwudi/tar.gz/04f4b4011487db0526b9478f28271fd7b2e3c8b4(workbox-routing@7.4.0)
+        specifier: ^0.3.1
+        version: 0.3.1(workbox-routing@7.4.0)
       '@maplat/core':
-        specifier: github:code4history/MaplatCore#foss4g-hiroshima
-        version: https://codeload.github.com/code4history/MaplatCore/tar.gz/84c09697d212d82f5d8c0af228a0f39d6f58b395(mapbox-gl@3.17.0)(maplibre-gl@4.7.1)(ol@10.8.0)(workbox-routing@7.4.0)
+        specifier: ^0.13.2
+        version: 0.13.2(mapbox-gl@3.17.0)(maplibre-gl@4.7.1)(ol@10.8.0)(workbox-routing@7.4.0)
       '@turf/turf':
         specifier: ^7.3.1
         version: 7.3.1
@@ -676,9 +673,14 @@ packages:
     resolution: {integrity: sha512-NaWZw9k61BWXm51aPrW8wZ3dS4MyLwAVHzQRqke3NDYF83/gPGWaIxr5g5tYYhwDkS/wRpMP326L1ciHDCe3+Q==}
     engines: {pnpm: '>=9.0.0'}
 
-  '@c4h/weiwudi@https://codeload.github.com/code4history/Weiwudi/tar.gz/04f4b4011487db0526b9478f28271fd7b2e3c8b4':
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/code4history/Weiwudi/tar.gz/04f4b4011487db0526b9478f28271fd7b2e3c8b4}
-    version: 0.3.0
+  '@c4h/weiwudi@0.3.0':
+    resolution: {integrity: sha512-fYSvWa9XCzj/o/MY/dKbEUZFCs841yusz/VCL0eIhRe/iZvs4NB70bXq/cLp8uVL3lmzqHOaUKWYegpHI4ipwg==}
+    engines: {node: '>=20.0.0', pnpm: '>=9.0.0'}
+    peerDependencies:
+      workbox-routing: ^7.4.0
+
+  '@c4h/weiwudi@0.3.1':
+    resolution: {integrity: sha512-B3m/rmx2ckTpiUcaAHjLByVAe+T4e1wznWCWlsqhvgykukru8D3UzWNLdXbZ5dHbTCUNNgtZsQn2ESmg3DFI/Q==}
     engines: {node: '>=20.0.0', pnpm: '>=9.0.0'}
     peerDependencies:
       workbox-routing: ^7.4.0
@@ -1167,9 +1169,8 @@ packages:
     resolution: {integrity: sha512-Es6WcD0nO5l+2BOQS4uLfNPYQaNDfbot3X1XUoloz+x0mPDS3eeORZJl06HXjwBG1fOGwCRnzK88LMdxKRrd6Q==}
     engines: {node: '>=6.0.0'}
 
-  '@maplat/core@https://codeload.github.com/code4history/MaplatCore/tar.gz/84c09697d212d82f5d8c0af228a0f39d6f58b395':
-    resolution: {gitHosted: true, integrity: sha512-g/TxbKvrPlxT4E07p117DzlVmIRgrdcTj6XeSPxFRwIx12le6nGSO2kyhu2Ul5c35+gM5ChMwXUiYawzxvWDPg==, tarball: https://codeload.github.com/code4history/MaplatCore/tar.gz/84c09697d212d82f5d8c0af228a0f39d6f58b395}
-    version: 0.13.1
+  '@maplat/core@0.13.2':
+    resolution: {integrity: sha512-gz80R1yWLDJxPi4yRWEjTnmbEjV/+32TKE5gSy10XAkV5rwv7FkM41q7bod90uuEOPUVZOxb22+qwJG5jWAM3A==}
     engines: {pnpm: '>=9'}
     peerDependencies:
       mapbox-gl: ^1.0.0 || ^2.0.0 || ^3.0.0
@@ -4933,7 +4934,11 @@ snapshots:
       three: 0.171.0
       viewerjs: 1.11.7
 
-  '@c4h/weiwudi@https://codeload.github.com/code4history/Weiwudi/tar.gz/04f4b4011487db0526b9478f28271fd7b2e3c8b4(workbox-routing@7.4.0)':
+  '@c4h/weiwudi@0.3.0(workbox-routing@7.4.0)':
+    dependencies:
+      workbox-routing: 7.4.0
+
+  '@c4h/weiwudi@0.3.1(workbox-routing@7.4.0)':
     dependencies:
       workbox-routing: 7.4.0
 
@@ -5251,9 +5256,9 @@ snapshots:
 
   '@mapbox/whoots-js@3.1.0': {}
 
-  '@maplat/core@https://codeload.github.com/code4history/MaplatCore/tar.gz/84c09697d212d82f5d8c0af228a0f39d6f58b395(mapbox-gl@3.17.0)(maplibre-gl@4.7.1)(ol@10.8.0)(workbox-routing@7.4.0)':
+  '@maplat/core@0.13.2(mapbox-gl@3.17.0)(maplibre-gl@4.7.1)(ol@10.8.0)(workbox-routing@7.4.0)':
     dependencies:
-      '@c4h/weiwudi': https://codeload.github.com/code4history/Weiwudi/tar.gz/04f4b4011487db0526b9478f28271fd7b2e3c8b4(workbox-routing@7.4.0)
+      '@c4h/weiwudi': 0.3.0(workbox-routing@7.4.0)
       '@maplat/transform': 0.5.2
       '@turf/turf': 7.3.1
       lodash.template: 4.5.0

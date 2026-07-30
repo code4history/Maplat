@@ -51,8 +51,8 @@
   },
   "dependencies": {
     "@c4h/chuci": "^0.2.6",
-    "@c4h/weiwudi": "github:code4history/Weiwudi#foss4g-hiroshima",
-    "@maplat/core": "github:code4history/MaplatCore#foss4g-hiroshima",
+    "@c4h/weiwudi": "^0.3.1",
+    "@maplat/core": "^0.13.2",
     "@turf/turf": "^7.3.1",
     "@types/page": "^1.11.9",
     "bootstrap.native": "^5.1.6",
