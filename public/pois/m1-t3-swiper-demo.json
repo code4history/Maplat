@@ -1,0 +1,79 @@
+{
+ "id": "m1_t3_swiper_demo",
+ "type": "FeatureCollection",
+ "name": "swiper 目視確認用 POI（m1-t3）",
+ "crs": {
+  "type": "name",
+  "properties": {
+   "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+  }
+ },
+ "properties": {
+  "icon": "img/stones.png"
+ },
+ "_note": "m1-t3 で追加。swiper（複数画像ビューア）は POI の画像が2枚以上のときだけ生成されるため、目視確認の入口として固定 id を持つ POI を用意した。画像 URL は既存の公開データ（t.tilemap.jp）から採取している。設計書 §9.2 / AC12。",
+ "features": [
+  {
+   "type": "Feature",
+   "id": "m1-t3-swiper-a",
+   "properties": {
+    "name": "swiper確認A（画像4枚）",
+    "image": [
+     {
+      "src": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no256-DSC_7083.JPG",
+      "caption": "円教寺名号塔"
+     },
+     {
+      "src": "https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no260-DSC_7125.JPG",
+      "caption": "六百遠忌報恩塔"
+     },
+     {
+      "src": "https://code4history.dev/Chuci/assets/azumaya_panorama1.png",
+      "caption": "あずまやの全景写真"
+     },
+     {
+      "src": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "caption": "YouTube Video"
+     }
+    ],
+    "desc": "m1-t3 の swiper 目視確認用に追加した POI。複数画像を持つため cc-swiper が生成される。"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     139.539,
+     36.251
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "m1-t3-swiper-b",
+   "properties": {
+    "name": "swiper確認B（画像3枚）",
+    "image": [
+     {
+      "src": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "caption": "MP4 Video File"
+     },
+     {
+      "src": "https://t.tilemap.jp/3ddata/okuman.obj",
+      "caption": "3D OBJ/MTL Model (Debug Mode)"
+     },
+     {
+      "src": "https://t.tilemap.jp/3ddata/okuman.splat",
+      "caption": "Gaussian Splatting Model"
+     }
+    ],
+    "desc": "m1-t3 の swiper 目視確認用に追加した POI。複数画像を持つため cc-swiper が生成される。"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     139.5395,
+     36.2515
+    ]
+   }
+  }
+ ]
+}
