@@ -4,6 +4,14 @@ packages:
 # pnpm 10+ 用設定(pnpm 9はpackage.jsonのpnpm欄を読むため両方を維持)
 overrides:
   "@microsoft/api-extractor": 7.58.0
+
+# build script 許可リスト。pnpm 11 で onlyBuiltDependencies(リスト形式)は
+# allowBuilds(マップ形式)に置換された(旧キーは警告なしで無視される)。
+# pnpm 9/10/11 との両対応のため新旧両形式を併記する
+allowBuilds:
+  esbuild: true
+  sass: true
+  workbox-build: true
 onlyBuiltDependencies:
   - esbuild
   - sass
