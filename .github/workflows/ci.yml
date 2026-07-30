@@ -28,7 +28,10 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
         with:
-          version: 9
+          # ローカル開発と同じ pnpm 11 系にメジャー固定（m1-t1）。
+          # pnpm 11 は package.json の pnpm フィールドを読まないため、
+          # overrides / allowBuilds は pnpm-workspace.yaml 側が正本
+          version: 11
 
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v6
@@ -66,7 +69,10 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
         with:
-          version: 9
+          # ローカル開発と同じ pnpm 11 系にメジャー固定（m1-t1）。
+          # pnpm 11 は package.json の pnpm フィールドを読まないため、
+          # overrides / allowBuilds は pnpm-workspace.yaml 側が正本
+          version: 11
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
