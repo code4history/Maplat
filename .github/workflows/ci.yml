@@ -30,7 +30,7 @@ jobs:
         with:
           # ローカル開発と同じ pnpm 11 系にメジャー固定（m1-t1）。
           # pnpm 11 は package.json の pnpm フィールドを読まないため、
-          # overrides / allowBuilds は m1-t2 で不要と実測し撤去済み（pnpm-workspace.yaml も削除）
+          # overrides は m1-t2 で不要と実測し撤去。allowBuilds は必要なため ci/pnpm-workspace.ci.yaml へ分離した
           version: 11
 
       - name: Setup Node.js ${{ matrix.node-version }}
@@ -38,6 +38,11 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
+
+      # pnpm 11 は allowBuilds を pnpm-workspace.yaml からしか読まない。ローカルでは同ファイルが
+      # workspace ルート誤認を起こすためリポジトリ直下には置かず、CI でのみ展開する（m1-t2）
+      - name: Apply CI-only pnpm config
+        run: cp ci/pnpm-workspace.ci.yaml pnpm-workspace.yaml
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -71,7 +76,7 @@ jobs:
         with:
           # ローカル開発と同じ pnpm 11 系にメジャー固定（m1-t1）。
           # pnpm 11 は package.json の pnpm フィールドを読まないため、
-          # overrides / allowBuilds は m1-t2 で不要と実測し撤去済み（pnpm-workspace.yaml も削除）
+          # overrides は m1-t2 で不要と実測し撤去。allowBuilds は必要なため ci/pnpm-workspace.ci.yaml へ分離した
           version: 11
 
       - name: Setup Node.js
@@ -79,6 +84,11 @@ jobs:
         with:
           node-version: 24
           cache: 'pnpm'
+
+      # pnpm 11 は allowBuilds を pnpm-workspace.yaml からしか読まない。ローカルでは同ファイルが
+      # workspace ルート誤認を起こすためリポジトリ直下には置かず、CI でのみ展開する（m1-t2）
+      - name: Apply CI-only pnpm config
+        run: cp ci/pnpm-workspace.ci.yaml pnpm-workspace.yaml
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
