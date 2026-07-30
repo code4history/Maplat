@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  path-to-regexp: ~1.9.0
+  swiper: ^12.1.2
+  lodash.template: ^4.18.1
+
 importers:
 
   .:
@@ -45,8 +50,8 @@ importers:
         specifier: ^1.5.4
         version: 1.5.4
       swiper:
-        specifier: ^11.2.10
-        version: 11.2.10
+        specifier: ^12.1.2
+        version: 12.2.0
       workbox-core:
         specifier: ^7.4.0
         version: 7.4.0
@@ -3099,8 +3104,8 @@ packages:
   lodash.sortby@4.7.0:
     resolution: {integrity: sha512-HDWXG8isMntAyRF5vZ7xKuEvOhT4AhlRt/3czTSjvGUxjYCBVRQY48ViDHyfYz9VIoBkW4TMGQNapx+l3RUwdA==}
 
-  lodash.template@4.5.0:
-    resolution: {integrity: sha512-84vYFxIkmidUiFxidA/KjjH9pAycqW+h980j7Fuz5qxRtO9pgB7MDFTdys1N7A5mcucRiDyEq4fusljItR1T/A==}
+  lodash.template@4.18.1:
+    resolution: {integrity: sha512-5urZrLnV/VD6zHK5KsVtZgt7H19v51mIzoS0aBNH8yp3I8tbswrEjOABOPY8m8uB7NuibubLrMX+Y0PXsU9X+w==}
     deprecated: This package is deprecated. Use https://socket.dev/npm/package/eta instead.
 
   lodash.templatesettings@4.2.0:
@@ -3319,8 +3324,8 @@ packages:
     resolution: {integrity: sha512-oWyT4gICAu+kaA7QWk/jvCHWarMKNs6pXOGWKDTr7cw4IGcUbW+PeTfbaQiLGheFRpjo6O9J0PmyMfQPjH71oA==}
     engines: {node: 20 || >=22}
 
-  path-to-regexp@1.2.1:
-    resolution: {integrity: sha512-DBw9IhWfevR2zCVwEZURTuQNseCvu/Q9f5ZgqMCK0Rh61bDa4uyjPAOy9b55yKiPT59zZn+7uYKxmWwsguInwg==}
+  path-to-regexp@1.9.0:
+    resolution: {integrity: sha512-xIp7/apCFJuUHdDLWe8O1HIkb0kQrOMb/0u6FXQjemHn/ii5LrIzU6bdECnsiTF/GjZkMEKg1xdiZwNqDYlZ6g==}
 
   pathe@2.0.3:
     resolution: {integrity: sha512-WUjGcAqP1gQacoQe+OBJsFA7Ld4DyXuUIjZ5cc75cLHvJ7dtNsTugphxIADwspS+AraAUePCKrSVtPLFj/F88w==}
@@ -3746,8 +3751,8 @@ packages:
   sweepline-intersections@1.5.0:
     resolution: {integrity: sha512-AoVmx72QHpKtItPu72TzFL+kcYjd67BPLDoR0LarIk+xyaRg+pDTMFXndIEvZf9xEKnJv6JdhgRMnocoG0D3AQ==}
 
-  swiper@11.2.10:
-    resolution: {integrity: sha512-RMeVUUjTQH+6N3ckimK93oxz6Sn5la4aDlgPzB+rBrG/smPdCTicXyhxa+woIpopz+jewEloiEE3lKo1h9w2YQ==}
+  swiper@12.2.0:
+    resolution: {integrity: sha512-K8uXsBZU6ME97Ia3xbBge8IRCnR1lOmIILzvY/jGVic7dSTQ530s3uO8RvXbPUtkkXLWIwmZLRPbtDxRWVAFdg==}
     engines: {node: '>= 4.7.0'}
 
   symbol-tree@3.2.4:
@@ -4930,7 +4935,7 @@ snapshots:
   '@c4h/chuci@0.2.6':
     dependencies:
       gsplat: 1.2.9
-      swiper: 11.2.10
+      swiper: 12.2.0
       three: 0.171.0
       viewerjs: 1.11.7
 
@@ -5261,7 +5266,7 @@ snapshots:
       '@c4h/weiwudi': 0.3.0(workbox-routing@7.4.0)
       '@maplat/transform': 0.5.2
       '@turf/turf': 7.3.1
-      lodash.template: 4.5.0
+      lodash.template: 4.18.1
       ol: 10.8.0
       whatwg-fetch: 3.6.20
     optionalDependencies:
@@ -8090,7 +8095,7 @@ snapshots:
 
   lodash.sortby@4.7.0: {}
 
-  lodash.template@4.5.0:
+  lodash.template@4.18.1:
     dependencies:
       lodash._reinterpolate: 3.0.0
       lodash.templatesettings: 4.2.0
@@ -8325,7 +8330,7 @@ snapshots:
 
   page@1.11.6:
     dependencies:
-      path-to-regexp: 1.2.1
+      path-to-regexp: 1.9.0
 
   pako@2.1.0: {}
 
@@ -8355,7 +8360,7 @@ snapshots:
       lru-cache: 11.2.4
       minipass: 7.1.2
 
-  path-to-regexp@1.2.1:
+  path-to-regexp@1.9.0:
     dependencies:
       isarray: 0.0.1
 
@@ -8826,7 +8831,7 @@ snapshots:
     dependencies:
       tinyqueue: 2.0.3
 
-  swiper@11.2.10: {}
+  swiper@12.2.0: {}
 
   symbol-tree@3.2.4: {}
 
