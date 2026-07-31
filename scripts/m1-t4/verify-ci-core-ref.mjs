@@ -121,10 +121,17 @@ if (!existsSync(PKG_JSON)) {
 {
   const NEEDLE = "github:code4history/";
   const ciText = existsSync(CI_YAML) ? readFileSync(CI_YAML, "utf8") : null;
+  // pnpm-workspace.yaml だけは「無くて正しい」。ローカル開発では置かない
+  // （置くと pnpm がそのディレクトリを workspace ルートと誤認する。m1-t2）。
+  // package.json と pnpm-lock.yaml は必須であり、不在は fail とする。
   const targets = ["package.json", "pnpm-workspace.yaml", "pnpm-lock.yaml"];
+  const OPTIONAL = new Set(["pnpm-workspace.yaml"]);
   for (const rel of targets) {
     const full = path.join(ROOT, rel);
-    if (!existsSync(full)) continue;
+    if (!existsSync(full)) {
+      if (!OPTIONAL.has(rel)) fail("AC12a-4", `${rel} が無い（検査に必要なファイルである）`);
+      continue;
+    }
     const text = readFileSync(full, "utf8");
     if (rel === "pnpm-workspace.yaml" && ciText !== null && text === ciText) continue;
     if (rel === "pnpm-lock.yaml") {
@@ -138,11 +145,21 @@ if (!existsSync(PKG_JSON)) {
       //
       // ここでは importers 節だけを切り出し、github ref を持つ specifier を全件列挙して、
       // 「@maplat/core かつ CI YAML の override と完全一致」の1件だけを許可する。
+      // 構造が想定と違う場合は**必ず fail する**。
+      // 「節が見つからないので飛ばす」は、検査できなかった事実を成功として報告することであり、
+      // 素通しの穴になる（AC12a-2 で取得失敗を skip にしないのと同じ理由）。
       const start = text.indexOf("\nimporters:");
-      if (start === -1) continue; // importers 節が無い lock（想定外）は他の検査に委ねる
+      if (start === -1) {
+        fail("AC12a-4", `${rel} に importers 節が無い。lock の構造が想定と異なり、正規の github specifier を検査できない`);
+        continue;
+      }
       const after = text.slice(start + 1);
       const endRel = after.indexOf("\npackages:");
-      const importers = endRel === -1 ? after : after.slice(0, endRel);
+      if (endRel === -1) {
+        fail("AC12a-4", `${rel} に packages 節が無い。importers 節の終端を確定できず、検査範囲を切り出せない`);
+        continue;
+      }
+      const importers = after.slice(0, endRel);
 
       // "  '<name>':" の直後に続く "specifier: <value>" を対応付けて全件拾う
       const found = [];
