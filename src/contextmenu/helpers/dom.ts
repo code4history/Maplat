@@ -230,8 +230,7 @@ export function createElement(
           id?: string;
           classname?: string;
           attr?:
-            | { name: string; value: string }
-            | { name: string; value: string }[];
+            { name: string; value: string } | { name: string; value: string }[];
         }
       ],
   html: string

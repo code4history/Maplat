@@ -44,6 +44,14 @@ jobs:
       - name: Apply CI-only pnpm config
         run: cp ci/pnpm-workspace.ci.yaml pnpm-workspace.yaml
 
+      # m1-t4 暫定 override の鮮度検査（AC12a）。m9 で override とともに撤去する。
+      # install の**前**に置くのが要点である。install が通ってしまってからでは、
+      # 古い（あるいは未 push の）コミットに対する green を後追いでしか検出できない。
+      # Test job のみで実行する（E2E job には追加しない）。E2E job は同じ CI 専用 YAML と
+      # 同じ lock で --frozen-lockfile install するため、解決グラフは lock により同一である。
+      - name: Verify CI-only @maplat/core ref (m1-t4)
+        run: node scripts/m1-t4/verify-ci-core-ref.mjs
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 

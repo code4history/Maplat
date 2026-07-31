@@ -160,9 +160,8 @@ export function poiWebControl(
       ui.translate!(data.address) || "";
     // m1-t4 (S1): リモート POI の desc をサニタイズしてから代入する。
     // \n → <br> の置換は**サニタイズ後**に行う（前だと <br> が入力扱いになり許可リストの意味が薄れる）。
-    (htmlDiv.querySelector(".poi_desc") as HTMLElement).innerHTML = sanitizeHtml(
-      ui.translate!(data.desc) || ""
-    ).replace(/\n/g, "<br>");
+    (htmlDiv.querySelector(".poi_desc") as HTMLElement).innerHTML =
+      sanitizeHtml(ui.translate!(data.desc) || "").replace(/\n/g, "<br>");
 
     // Show/hide share buttons based on showShare parameter
     const shareButtons =

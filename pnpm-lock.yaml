@@ -8,6 +8,7 @@ overrides:
   path-to-regexp: ~1.9.0
   swiper: ^12.1.2
   lodash.template: ^4.18.1
+  '@maplat/core': github:code4history/MaplatCore#0bd702c455ee03a488e4ffe67979ebad30657c7a
 
 importers:
 
@@ -20,8 +21,8 @@ importers:
         specifier: ^0.3.1
         version: 0.3.1(workbox-routing@7.4.0)
       '@maplat/core':
-        specifier: ^0.13.2
-        version: 0.13.2(mapbox-gl@3.17.0)(maplibre-gl@4.7.1)(ol@10.8.0)(workbox-routing@7.4.0)
+        specifier: github:code4history/MaplatCore#0bd702c455ee03a488e4ffe67979ebad30657c7a
+        version: https://codeload.github.com/code4history/MaplatCore/tar.gz/0bd702c455ee03a488e4ffe67979ebad30657c7a(mapbox-gl@3.17.0)(maplibre-gl@4.7.1)(ol@10.8.0)(workbox-routing@7.4.0)
       '@turf/turf':
         specifier: ^7.3.1
         version: 7.3.1
@@ -678,12 +679,6 @@ packages:
     resolution: {integrity: sha512-NaWZw9k61BWXm51aPrW8wZ3dS4MyLwAVHzQRqke3NDYF83/gPGWaIxr5g5tYYhwDkS/wRpMP326L1ciHDCe3+Q==}
     engines: {pnpm: '>=9.0.0'}
 
-  '@c4h/weiwudi@0.3.0':
-    resolution: {integrity: sha512-fYSvWa9XCzj/o/MY/dKbEUZFCs841yusz/VCL0eIhRe/iZvs4NB70bXq/cLp8uVL3lmzqHOaUKWYegpHI4ipwg==}
-    engines: {node: '>=20.0.0', pnpm: '>=9.0.0'}
-    peerDependencies:
-      workbox-routing: ^7.4.0
-
   '@c4h/weiwudi@0.3.1':
     resolution: {integrity: sha512-B3m/rmx2ckTpiUcaAHjLByVAe+T4e1wznWCWlsqhvgykukru8D3UzWNLdXbZ5dHbTCUNNgtZsQn2ESmg3DFI/Q==}
     engines: {node: '>=20.0.0', pnpm: '>=9.0.0'}
@@ -1174,8 +1169,9 @@ packages:
     resolution: {integrity: sha512-Es6WcD0nO5l+2BOQS4uLfNPYQaNDfbot3X1XUoloz+x0mPDS3eeORZJl06HXjwBG1fOGwCRnzK88LMdxKRrd6Q==}
     engines: {node: '>=6.0.0'}
 
-  '@maplat/core@0.13.2':
-    resolution: {integrity: sha512-gz80R1yWLDJxPi4yRWEjTnmbEjV/+32TKE5gSy10XAkV5rwv7FkM41q7bod90uuEOPUVZOxb22+qwJG5jWAM3A==}
+  '@maplat/core@https://codeload.github.com/code4history/MaplatCore/tar.gz/0bd702c455ee03a488e4ffe67979ebad30657c7a':
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/code4history/MaplatCore/tar.gz/0bd702c455ee03a488e4ffe67979ebad30657c7a}
+    version: 0.13.2
     engines: {pnpm: '>=9'}
     peerDependencies:
       mapbox-gl: ^1.0.0 || ^2.0.0 || ^3.0.0
@@ -2426,6 +2422,9 @@ packages:
 
   dijkstrajs@1.0.3:
     resolution: {integrity: sha512-qiSlmBq9+BCdCA/L46dw8Uy93mloxsPSbwnm5yrKn2vMPiy8KyAskTF6zuV/j5BMsmOGZDPs7KjU+mjb670kfA==}
+
+  dompurify@3.4.12:
+    resolution: {integrity: sha512-zQvGet8Z2sWbQhCmfFz/T5QWH2oBmjnqK3qvOjaqaNLrLEF912WamU+ohnTp0TCep/MFVHpdJuCZEdFOdTnEFg==}
 
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
@@ -4939,10 +4938,6 @@ snapshots:
       three: 0.171.0
       viewerjs: 1.11.7
 
-  '@c4h/weiwudi@0.3.0(workbox-routing@7.4.0)':
-    dependencies:
-      workbox-routing: 7.4.0
-
   '@c4h/weiwudi@0.3.1(workbox-routing@7.4.0)':
     dependencies:
       workbox-routing: 7.4.0
@@ -5261,11 +5256,12 @@ snapshots:
 
   '@mapbox/whoots-js@3.1.0': {}
 
-  '@maplat/core@0.13.2(mapbox-gl@3.17.0)(maplibre-gl@4.7.1)(ol@10.8.0)(workbox-routing@7.4.0)':
+  '@maplat/core@https://codeload.github.com/code4history/MaplatCore/tar.gz/0bd702c455ee03a488e4ffe67979ebad30657c7a(mapbox-gl@3.17.0)(maplibre-gl@4.7.1)(ol@10.8.0)(workbox-routing@7.4.0)':
     dependencies:
-      '@c4h/weiwudi': 0.3.0(workbox-routing@7.4.0)
+      '@c4h/weiwudi': 0.3.1(workbox-routing@7.4.0)
       '@maplat/transform': 0.5.2
       '@turf/turf': 7.3.1
+      dompurify: 3.4.12
       lodash.template: 4.18.1
       ol: 10.8.0
       whatwg-fetch: 3.6.20
@@ -7309,6 +7305,10 @@ snapshots:
   diff@8.0.2: {}
 
   dijkstrajs@1.0.3: {}
+
+  dompurify@3.4.12:
+    optionalDependencies:
+      '@types/trusted-types': 2.0.7
 
   dunder-proto@1.0.1:
     dependencies:

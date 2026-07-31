@@ -15,17 +15,23 @@ const langs = readdirSync(localesDir, { withFileTypes: true })
 type Json = { [key: string]: string | Json };
 
 function loadLocale(lang: string): Json {
-  return JSON.parse(readFileSync(join(localesDir, lang, "translation.json"), "utf8"));
+  return JSON.parse(
+    readFileSync(join(localesDir, lang, "translation.json"), "utf8")
+  );
 }
 
 function flattenKeys(obj: Json, prefix = ""): string[] {
   return Object.entries(obj).flatMap(([key, value]) =>
-    typeof value === "object" ? flattenKeys(value, `${prefix}${key}.`) : [`${prefix}${key}`]
+    typeof value === "object"
+      ? flattenKeys(value, `${prefix}${key}.`)
+      : [`${prefix}${key}`]
   );
 }
 
 function valueOf(obj: Json, path: string): string {
-  return path.split(".").reduce((cur: Json | string, key) => (cur as Json)[key], obj) as string;
+  return path
+    .split(".")
+    .reduce((cur: Json | string, key) => (cur as Json)[key], obj) as string;
 }
 
 // 訳文中で保持されるべきプレースホルダ/マークアップを抽出する
@@ -33,7 +39,7 @@ function extractPlaceholders(value: string): string[] {
   const patterns = [
     /%\d+\$[sdf]/g, // sprintf位置指定子 (%1$s, %2$f 等)
     /<img src='\$\{[^}]+\}'>/gi, // コントロールアイコン差し込み
-    /<a [^>]+>/g, // リンクタグ(href/target保持)
+    /<a [^>]+>/g // リンクタグ(href/target保持)
   ];
   return patterns.flatMap(pattern => value.match(pattern) ?? []).sort();
 }
@@ -43,7 +49,19 @@ describe("locale resources", () => {
   const enKeys = flattenKeys(en).sort();
 
   it("has at least the historically supported languages", () => {
-    for (const lang of ["de", "en", "es", "fr", "id", "ja", "ko", "th", "vi", "zh", "zh-TW"]) {
+    for (const lang of [
+      "de",
+      "en",
+      "es",
+      "fr",
+      "id",
+      "ja",
+      "ko",
+      "th",
+      "vi",
+      "zh",
+      "zh-TW"
+    ]) {
       expect(langs).toContain(lang);
     }
   });
@@ -67,7 +85,8 @@ describe("locale resources", () => {
           const enTokens = extractPlaceholders(valueOf(en, key));
           if (enTokens.length === 0) continue;
           // 大文字小文字の揺れ(<Img)はHTMLとして等価のため小文字比較
-          const normalize = (tokens: string[]) => tokens.map(token => token.toLowerCase()).sort();
+          const normalize = (tokens: string[]) =>
+            tokens.map(token => token.toLowerCase()).sort();
           expect(
             normalize(extractPlaceholders(valueOf(data, key))),
             `${lang}:${key}`
