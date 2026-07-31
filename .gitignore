@@ -76,3 +76,6 @@ dist-demo/
 # Open/Keep
 .git.keep
 .git.open
+
+# m1-t4: E2E プローブの生成物
+e2e/fixtures/dist-probe/
