@@ -165,8 +165,19 @@ if (!existsSync(PKG_JSON)) {
             `（許可されるのは @maplat/core が CI YAML の override と完全一致する1件のみ）`
         );
       }
-      if (allowed.length > 1) {
-        fail("AC12a-4", `${rel} の importers に @maplat/core の github ref が ${allowed.length} 件ある（1件のみ許可）`);
+      // 件数は「ちょうど1件」でなければならない。
+      // 0件は、lock が git ref を指さなくなった状態（specifier を npm 版へ戻した・
+      // エントリごと消えた等）であり、CI は npm 公開版 0.13.2 を引いて新 API を得られない。
+      // 「多すぎる」だけを見て「無い」を見逃すと、override が効いていない lock を素通しする。
+      if (allowed.length !== 1) {
+        fail(
+          "AC12a-4",
+          allowed.length === 0
+            ? `${rel} の importers に @maplat/core の github ref（CI YAML の override と完全一致）が無い。` +
+              `lock が git ref を指していないため、CI は npm 公開版を引いて新 API を得られない。` +
+              `override 追加後に lock を再生成したか確認すること`
+            : `${rel} の importers に @maplat/core の github ref が ${allowed.length} 件ある（ちょうど1件のみ許可）`
+        );
       }
       continue;
     }
