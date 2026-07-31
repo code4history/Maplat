@@ -29,7 +29,8 @@
     "pretest:e2e": "pnpm exec playwright install chromium",
     "test:e2e": "pnpm exec playwright test",
     "test:e2e:ci": "pnpm exec playwright test --config playwright-ci.config.ts",
-    "test:e2e:m18-t6": "pnpm exec playwright test e2e/m18-t6-marker-list-layer-toggle.spec.ts"
+    "test:e2e:m18-t6": "pnpm exec playwright test e2e/m18-t6-marker-list-layer-toggle.spec.ts",
+    "test:e2e:m1-t4": "pnpm exec playwright test e2e/m1-t4-sanitize-browser.spec.ts"
   },
   "repository": {
     "type": "git",
