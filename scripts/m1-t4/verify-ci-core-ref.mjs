@@ -39,6 +39,7 @@ const fail = (id, msg) => failures.push(`[${id}] ${msg}`);
 
 // --- 検査1: override の記法と SHA の取り出し ---
 let sha = null;
+let ciOverrideValue = null; // 検査4 で lock の specifier と完全一致を見るために保持する
 if (!existsSync(CI_YAML)) {
   fail("AC12a-1", `${path.relative(ROOT, CI_YAML)} が無い`);
 } else {
@@ -59,6 +60,7 @@ if (!existsSync(CI_YAML)) {
       fail("AC12a-1", `SHA が 40 桁 hex でない: ${g[1]}（${g[1].length} 桁）`);
     } else {
       sha = g[1];
+      ciOverrideValue = value;
     }
   }
 }
@@ -126,11 +128,45 @@ if (!existsSync(PKG_JSON)) {
     const text = readFileSync(full, "utf8");
     if (rel === "pnpm-workspace.yaml" && ciText !== null && text === ciText) continue;
     if (rel === "pnpm-lock.yaml") {
-      // lock の resolution 欄は override の結果として当然 github ref を含む。
-      // 検査対象は「importers の specifier 欄」に漏れていないかだけ。
-      const importers = text.slice(0, text.indexOf("\npackages:") + 1 || undefined);
-      if (importers.includes(NEEDLE) && !/^\s*'@maplat\/core':\s*github:/m.test(importers)) {
-        fail("AC12a-4", `${rel} の specifier 欄に想定外の ${NEEDLE} がある`);
+      // lock の overrides 節と packages 節の resolution 欄は、override の結果として
+      // 当然 github ref を含む。検査対象は **importers 節の specifier 欄**だけである。
+      //
+      // 旧実装は「packages: より前の領域に needle があり、かつ正規の @maplat/core 行が
+      // 存在すれば pass」という粗い判定だった。packages: より前には overrides 節と
+      // importers 節の両方があるため、正規の override が1つあるだけで**別 importer に
+      // 何を混ぜても pass**してしまった（実装レビューで指摘・M9 で再現）。
+      //
+      // ここでは importers 節だけを切り出し、github ref を持つ specifier を全件列挙して、
+      // 「@maplat/core かつ CI YAML の override と完全一致」の1件だけを許可する。
+      const start = text.indexOf("\nimporters:");
+      if (start === -1) continue; // importers 節が無い lock（想定外）は他の検査に委ねる
+      const after = text.slice(start + 1);
+      const endRel = after.indexOf("\npackages:");
+      const importers = endRel === -1 ? after : after.slice(0, endRel);
+
+      // "  '<name>':" の直後に続く "specifier: <value>" を対応付けて全件拾う
+      const found = [];
+      let currentPkg = null;
+      for (const line of importers.split("\n")) {
+        const pkg = /^\s+["']?(@?[^"'\s:]+)["']?:\s*$/.exec(line);
+        if (pkg) { currentPkg = pkg[1]; continue; }
+        const spec = /^\s+specifier:\s*(.+?)\s*$/.exec(line);
+        if (spec && spec[1].includes(NEEDLE)) found.push({ pkg: currentPkg, spec: spec[1] });
+      }
+
+      const expected = ciOverrideValue; // ci/pnpm-workspace.ci.yaml の @maplat/core の値
+      const allowed = found.filter((f) => f.pkg === "@maplat/core" && f.spec === expected);
+      const rest = found.filter((f) => !(f.pkg === "@maplat/core" && f.spec === expected));
+
+      for (const f of rest) {
+        fail(
+          "AC12a-4",
+          `${rel} の importers に想定外の github ref がある: ${f.pkg} → ${f.spec}` +
+            `（許可されるのは @maplat/core が CI YAML の override と完全一致する1件のみ）`
+        );
+      }
+      if (allowed.length > 1) {
+        fail("AC12a-4", `${rel} の importers に @maplat/core の github ref が ${allowed.length} 件ある（1件のみ許可）`);
       }
       continue;
     }
