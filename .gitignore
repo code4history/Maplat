@@ -79,6 +79,7 @@ dist-demo/
 
 # m1-t4: E2E プローブの生成物
 e2e/fixtures/dist-probe/
+e2e/fixtures/dist-probe-t5/
 
 # Playwright の実行成果物（再生成可能。削除せず ignore する）
 playwright-report/

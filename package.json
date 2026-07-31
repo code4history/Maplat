@@ -31,7 +31,9 @@
     "test:e2e:ci": "pnpm exec playwright test --config playwright-ci.config.ts",
     "test:e2e:m18-t6": "pnpm exec playwright test e2e/m18-t6-marker-list-layer-toggle.spec.ts",
     "test:e2e:m1-t4": "pnpm exec playwright test e2e/m1-t4-sanitize-browser.spec.ts",
-    "pretest:e2e:m1-t4": "vite build --config e2e/fixtures/vite.probe.config.js"
+    "pretest:e2e:m1-t4": "vite build --config e2e/fixtures/vite.probe.config.js",
+    "pretest:e2e:m1-t5": "vite build --config e2e/fixtures/vite.probe-t5.config.js",
+    "test:e2e:m1-t5": "pnpm exec playwright test e2e/m1-t5-poi-html-isolation.spec.ts"
   },
   "repository": {
     "type": "git",
