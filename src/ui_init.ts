@@ -1,4 +1,4 @@
-import { MaplatApp as Core, MaplatApp } from "@maplat/core";
+import { MaplatApp as Core, MaplatApp, sanitizeHtml } from "@maplat/core";
 import pointer from "./pointer_images";
 import { Swiper } from "./swiper_ex";
 import { Manipulation, Navigation, Pagination } from "swiper/modules";
@@ -36,7 +36,6 @@ import i18n from "i18next";
 import i18nHttpBackend from "i18next-http-backend";
 import browserLanguage from "./browserlanguage";
 // m1-t4: サニタイズ層（許可リストの正本は MaplatCore/src/sanitize.ts）
-import { sanitizeHtml } from "@maplat/core";
 
 export const META_KEYS = [
   "title",
