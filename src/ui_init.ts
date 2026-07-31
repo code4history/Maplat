@@ -35,6 +35,8 @@ import type { MaplatAppOption } from "./types";
 import i18n from "i18next";
 import i18nHttpBackend from "i18next-http-backend";
 import browserLanguage from "./browserlanguage";
+// m1-t4: サニタイズ層（許可リストの正本は MaplatCore/src/sanitize.ts）
+import { sanitizeHtml } from "@maplat/core";
 
 export const META_KEYS = [
   "title",
@@ -1016,8 +1018,10 @@ function initModalHandlers(ui: MaplatUi) {
                   (contentEl as HTMLElement).innerHTML =
                     `<img src="${iconUrl}" class="license" />`;
                 } else {
-                  (contentEl as HTMLElement).innerHTML =
-                    ui.translate!(val) || "";
+                  // m1-t4 (S5): POI 由来の値が入りうるためサニタイズする
+                  (contentEl as HTMLElement).innerHTML = sanitizeHtml(
+                    ui.translate!(val) || ""
+                  );
                 }
               }
             } else {

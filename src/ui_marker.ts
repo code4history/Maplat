@@ -3,6 +3,8 @@ import "@c4h/chuci";
 import QRCode from "qrcode";
 import { point, polygon, booleanPointInPolygon } from "@turf/turf";
 import { createElement, resolveRelativeLink, prepareModal } from "./ui_utils";
+// m1-t4: サニタイズ層（許可リストの正本は MaplatCore/src/sanitize.ts）
+import { sanitizeHtml, buildSlideAttrs } from "@maplat/core";
 
 function detectMediaType(src: string): string {
   if (src.includes("youtube.com") || src.includes("youtu.be")) {
@@ -102,32 +104,32 @@ export function poiWebControl(
 
         const tmpSrc = resolveRelativeLink(mediaObj.src, "img"); // Assume 'img' type resolve works for most media assets or general path
 
-        let slideAttrs = `image-url="${tmpSrc}" image-type="${mediaObj.type}"`;
-
+        // m1-t4 (S2): 属性名も POI 由来であるため、値のエスケープだけでは防げない。
+        // 旧実装は ["src","type","thumbnail","desc"] の blocklist 4件だけを除外しており、
+        // mediaObj が {"onerror":"alert(1)"} を持てば ` onerror="alert(1)"` を出力していた。
+        // buildSlideAttrs が cc-swiper-slide の固定 allowlist（設計書 §3.4）でキーを選別する。
+        const slideSource: Record<string, unknown> = {
+          "image-url": tmpSrc,
+          "image-type": mediaObj.type
+        };
         if (mediaObj.thumbnail) {
-          slideAttrs += ` thumbnail-url="${resolveRelativeLink(mediaObj.thumbnail, "img")}"`;
-        } else {
-          // Default thumbnail to src for images, but for others (video etc) this might fail if no explicit thumb provided.
+          slideSource["thumbnail-url"] = resolveRelativeLink(
+            mediaObj.thumbnail,
+            "img"
+          );
+        } else if (mediaObj.type === "image") {
           // Legacy behavior was image-only so src was thumb.
-          // For non-image types without thumbnail, Chuci might handle or show placeholder.
-          // Let's use src as thumb for images or if nothing else.
-          if (mediaObj.type === "image") {
-            slideAttrs += ` thumbnail-url="${tmpSrc}"`;
-          }
+          slideSource["thumbnail-url"] = tmpSrc;
         }
-
-        // Map other attributes
         for (const key of Object.keys(mediaObj)) {
           if (["src", "type", "thumbnail", "desc"].includes(key)) continue;
-          const val = mediaObj[key];
-          if (typeof val === "boolean") {
-            if (val) slideAttrs += ` ${key}`;
-          } else if (val !== undefined && val !== null) {
-            slideAttrs += ` ${key}="${val}"`;
-          }
+          // allowlist 外のキーは buildSlideAttrs 側で破棄される
+          slideSource[key] = mediaObj[key];
         }
 
-        slides.push(`<cc-swiper-slide ${slideAttrs}></cc-swiper-slide>`);
+        slides.push(
+          `<cc-swiper-slide ${buildSlideAttrs(slideSource)}></cc-swiper-slide>`
+        );
       });
 
       swiperStr = `    <div class="col-xs-12 poi_img_swiper">
@@ -156,7 +158,9 @@ export function poiWebControl(
 
     (htmlDiv.querySelector(".poi_address") as HTMLElement).innerText =
       ui.translate!(data.address) || "";
-    (htmlDiv.querySelector(".poi_desc") as HTMLElement).innerHTML = (
+    // m1-t4 (S1): リモート POI の desc をサニタイズしてから代入する。
+    // \n → <br> の置換は**サニタイズ後**に行う（前だと <br> が入力扱いになり許可リストの意味が薄れる）。
+    (htmlDiv.querySelector(".poi_desc") as HTMLElement).innerHTML = sanitizeHtml(
       ui.translate!(data.desc) || ""
     ).replace(/\n/g, "<br>");
 
