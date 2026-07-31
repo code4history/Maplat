@@ -104,6 +104,12 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm exec playwright install chromium --with-deps
 
+      # m1-t5 のブラウザ E2E は事前バンドルした probe を使うため、
+      # spec の実行前に probe を build する必要がある（m1-t4 と同方式）。
+      # これが無いと probe asset が 404 になり、前提テストが落ちる。
+      - name: Build m1-t5 E2E probe
+        run: pnpm run pretest:e2e:m1-t5
+
       - name: Run E2E tests
         run: pnpm run test:e2e:ci
 
