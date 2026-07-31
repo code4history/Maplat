@@ -1014,8 +1014,19 @@ function initModalHandlers(ui: MaplatUi) {
                   const iconUrl =
                     pointer[`${fileName}.png`] ||
                     `assets/parts/${fileName}.png`;
-                  (contentEl as HTMLElement).innerHTML =
-                    `<img src="${iconUrl}" class="license" />`;
+                  // m1-t5: 文字列連結ではなく DOM API で組み立てる。
+                  //
+                  // iconUrl は mapData.get("license") 由来で、加工は
+                  // .toLowerCase().replace(/ /g, "_") だけである。空白は潰れるが
+                  // **引用符は残る**ため、innerHTML へ補間すると属性を閉じられる。
+                  //   license = 'a"onerror=alert(1)'
+                  //     → <img src="assets/parts/a"onerror=alert(1).png" class="license" />
+                  // src をプロパティ代入にすれば HTML として解釈されないので、
+                  // エスケープを足すのではなく sink 自体を無くす。
+                  const licenseImg = document.createElement("img");
+                  licenseImg.className = "license";
+                  licenseImg.src = iconUrl;
+                  (contentEl as HTMLElement).replaceChildren(licenseImg);
                 } else {
                   // m1-t4 (S5): POI 由来の値が入りうるためサニタイズする
                   (contentEl as HTMLElement).innerHTML = sanitizeHtml(
