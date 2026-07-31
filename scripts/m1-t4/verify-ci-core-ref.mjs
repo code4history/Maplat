@@ -110,13 +110,21 @@ if (!existsSync(PKG_JSON)) {
 }
 
 // --- 検査4: GitHub ref が CI 専用 YAML 以外に無いこと ---
+//
+// 注意: CI は "Apply CI-only pnpm config" で ci/pnpm-workspace.ci.yaml を
+// pnpm-workspace.yaml へコピーしてから本検査を走らせる。したがって CI 実行時の
+// pnpm-workspace.yaml は**その展開結果そのもの**であり、github ref を含んでいて正しい。
+// 内容が ci/pnpm-workspace.ci.yaml と同一なら展開結果とみなして許可し、
+// 異なる内容なら「CI 専用 YAML 以外の場所に github ref がある」として fail する。
 {
   const NEEDLE = "github:code4history/";
+  const ciText = existsSync(CI_YAML) ? readFileSync(CI_YAML, "utf8") : null;
   const targets = ["package.json", "pnpm-workspace.yaml", "pnpm-lock.yaml"];
   for (const rel of targets) {
     const full = path.join(ROOT, rel);
     if (!existsSync(full)) continue;
     const text = readFileSync(full, "utf8");
+    if (rel === "pnpm-workspace.yaml" && ciText !== null && text === ciText) continue;
     if (rel === "pnpm-lock.yaml") {
       // lock の resolution 欄は override の結果として当然 github ref を含む。
       // 検査対象は「importers の specifier 欄」に漏れていないかだけ。
