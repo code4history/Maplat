@@ -7,7 +7,11 @@
 import { poiWebControl } from "../../src/ui_marker";
 // 実際の CSS を読む（.poi_html_host--scroll の overflow-y を computed style で検査するため。
 // テスト側に CSS を写すと正本が2箇所になる）
-import "../../src/styles/ui.scss";
+//
+// ?inline で**文字列として**取り込み、自前で <style> へ入れる。
+// 別アセットとして出して <link> で読むと、Vite dev サーバが .css を JS モジュールとして
+// 返す（Content-Type: text/javascript）ため、ブラウザの MIME チェックで適用されない（実測）。
+import css from "../../src/styles/ui.scss?inline";
 
 import type { MaplatUi } from "../../src/index";
 import type { MarkerData } from "../../src/types";
@@ -18,11 +22,23 @@ const ui = (noScroll: boolean) =>
     translate: (x: unknown) => x as string
   }) as unknown as MaplatUi;
 
+const styleEl = document.createElement("style");
+styleEl.textContent = css;
+document.head.appendChild(styleEl);
+
+// ui.scss のルールは `.maplat` 配下へスコープされている（実測:
+// `.maplat .poi_html_host--scroll{height:60vh;overflow-y:auto}`）。
+// body 直下へ置くと CSS が当たらず、computed style の検査が無意味になるため
+// 製品と同じ祖先の下にマウントする。
+const root = document.createElement("div");
+root.className = "maplat";
+document.body.appendChild(root);
+
 function mount(): HTMLElement {
   const div = document.createElement("div");
   // 高さ検査のため実レイアウトへ載せる（display:none だと clientHeight が 0 になる）
   div.style.width = "600px";
-  document.body.appendChild(div);
+  root.appendChild(div);
   return div;
 }
 

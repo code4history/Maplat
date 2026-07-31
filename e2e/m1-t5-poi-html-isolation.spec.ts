@@ -10,6 +10,29 @@ import { test, expect } from "@playwright/test";
 // （m1-t4 の finding5）、モジュールを動的 import しない構成にしている。
 
 const PROBE = "/e2e/fixtures/poi-html-probe.html";
+const PROBE_JS = "/e2e/fixtures/dist-probe/poi-html-probe.js";
+
+// 最初に**配信元そのもの**を検証する。
+// 別 worktree の Vite に繋がっていると probe asset の代わりに index.html が返り、
+// 以降のテストが「window.__t5 が未定義」という分かりにくい timeout で落ちる
+// （実装レビュー Phase 1 で判明した根本原因）。ここで先に落として原因を明示する。
+test("前提: probe asset が この worktree から JavaScript として配信される", async ({
+  request
+}) => {
+  const res = await request.get(PROBE_JS);
+  expect(res.status()).toBe(200);
+  const ct = res.headers()["content-type"] ?? "";
+  expect(
+    ct,
+    `probe JS の Content-Type が ${ct}。別 worktree の Vite に繋がっている疑い`
+  ).toContain("javascript");
+  const body = await res.text();
+  expect(
+    body.startsWith("<!DOCTYPE"),
+    "probe JS の応答が HTML である（index.html へのフォールバック）"
+  ).toBe(false);
+  expect(body.length).toBeGreaterThan(100000);
+});
 
 test.describe("M1-T5: POI html の隔離（実ブラウザ）", () => {
   test("AC6: 悪性 HTML が親 DOM・親 localStorage へ到達できない", async ({
