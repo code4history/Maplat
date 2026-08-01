@@ -33,7 +33,8 @@
     "test:e2e:m1-t4": "pnpm exec playwright test e2e/m1-t4-sanitize-browser.spec.ts",
     "pretest:e2e:m1-t4": "vite build --config e2e/fixtures/vite.probe.config.js",
     "pretest:e2e:m1-t5": "vite build --config e2e/fixtures/vite.probe-t5.config.js",
-    "test:e2e:m1-t5": "pnpm exec playwright test --config playwright-m1-t5.config.ts"
+    "test:e2e:m1-t5": "pnpm exec playwright test --config playwright-m1-t5.config.ts",
+    "verify:dist-freshness": "node scripts/m1-t5-hotfix-1/verify-dist-freshness.mjs"
   },
   "repository": {
     "type": "git",
