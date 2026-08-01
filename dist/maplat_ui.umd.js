@@ -379,6 +379,11 @@ Minimum version required to store current data is: `+x+`.
                 // m1-t9: 画像 URL は親から postMessage で受け取り setAttribute で入れる。
                 // srcdoc に埋めると属性ブレイクアウトが成立するため（SRH-1）。
                 window.addEventListener('message', function (e) {
+                  // m1-t9-hotfix-1: 正当な送り手は親フレームだけである。
+                  // origin ではなく source で照合する — 将来 sandbox を付けると
+                  // opaque origin になり e.origin が "null" になるため（m1-t9 D4 の実測）。
+                  // source 照合なら sandbox の有無によらず成立する。
+                  if (e.source !== parent) return;
                   var d = e.data;
                   if (!d || d.type !== 'cc-panorama-src' || typeof d.src !== 'string') return;
                   var sky = document.querySelector('a-sky');
