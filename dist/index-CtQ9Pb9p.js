@@ -36620,7 +36620,7 @@ class Bs extends eW {
   static async registerMap(e, t) {
     if (!await Bs.swCheck()) throw "Weiwudi service worker is not implemented.";
     let n;
-    const r = ["type", "url", "width", "height", "tileSize", "minZoom", "maxZoom", "maxLng", "maxLat", "minLng", "minLat"].reduce((o, a) => (typeof t[a] < "u" && (t[a] instanceof Array ? t[a].map((l) => {
+    const r = ["type", "url", "width", "height", "tileSize", "minZoom", "maxZoom", "maxLng", "maxLat", "minLng", "minLat", "cacheTtl"].reduce((o, a) => (typeof t[a] < "u" && (t[a] instanceof Array ? t[a].map((l) => {
       o.append(a, l);
     }) : o.append(a, String(t[a]))), o), new URLSearchParams());
     r.append("mapID", e);
@@ -64213,7 +64213,7 @@ typeof ActiveXObject == "function" && (typeof global < "u" && global.ActiveXObje
 typeof na != "function" && (na = void 0);
 if (!na && !zu && !Qf)
   try {
-    import("./browser-ponyfill-D1P2iRcN.js").then((i) => i.b).then(function(i) {
+    import("./browser-ponyfill-BKFSoKTB.js").then((i) => i.b).then(function(i) {
       na = i.default;
     }).catch(function() {
     });
