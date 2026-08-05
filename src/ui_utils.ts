@@ -173,3 +173,23 @@ export function renderLicenseCell(
   }
   contentEl.replaceChildren(...children);
 }
+
+/**
+ * m6-t3: license / dataLicense が空のとき、地図種別に応じたフォールバック値を返す。
+ *
+ * ベースマップ (isWmts = true): license / dataLicense ともに "All right reserved"
+ * Maplat 地図 (isWmts = false):
+ *   license → "All right reserved" (MapEdit.vue の既定値)
+ *   dataLicense → "CC BY-SA" (MapEdit.vue の既定値。人間確認済み)
+ */
+export function resolveLicenseFallback(
+  key: "license" | "dataLicense",
+  val: string | undefined,
+  isWmts: boolean
+): string {
+  if (val) return val;
+  if (key === "license") return "All right reserved";
+  // dataLicense
+  return isWmts ? "All right reserved" : "CC BY-SA";
+}
+
