@@ -21,9 +21,9 @@ describe("ui_init license fallback wiring (m6-t3 AC18)", () => {
   });
 
   it("renderLicenseCell の第2引数が effectiveLicense である", () => {
-    // 呼び出し引数列に effectiveLicense が license 値として渡ることを確認
+    // 引数リストの位置を固定: contentEl, effectiveLicense, note, iconUrlFor
     expect(source).toMatch(
-      /renderLicenseCell\(\s*[\s\S]*?effectiveLicense[\s\S]*?\)/
+      /renderLicenseCell\(\s*contentEl as HTMLElement,\s*effectiveLicense,\s*note \|\| undefined,/
     );
   });
 
