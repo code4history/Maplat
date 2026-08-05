@@ -132,3 +132,38 @@ export function encBytes(bytes: number): string {
   }
   return `${Math.floor(bytes * 10) / 10} ${suffix}`;
 }
+
+// M6-T2: ライセンスセル (copyright モーダルの license / dataLicense 行) の共通描画関数。
+// 規則 (§4.3 / 親設計 §2.4): 「アイコンがあれば出す。Note があればその下に文章を出す。
+// 値が Custom ならアイコン無しで文章だけ出す」。
+//
+// sink は textContent (m1-t5 の sink 撤去方針を踏襲し innerHTML は使わない)。Note は
+// ライセンスの説明文でマークアップを必要としないため、最も狭い sink を選ぶ。
+//
+// iconUrlFor は pointer_images の解決を呼び出し側 (ui_init.ts) から渡す。
+// ui_utils.ts から pointer_images を直接 import すると @maplat/core の assets 依存が太るため。
+export function renderLicenseCell(
+  contentEl: HTMLElement,
+  license: string | undefined,
+  note: string | undefined,
+  iconUrlFor: (fileName: string) => string
+): void {
+  const children: (Node)[] = [];
+  // Custom はアイコンを持たない語彙。アイコン無しで Note 文章だけを出す。
+  if (license && license !== "Custom") {
+    const fileName = license.toLowerCase().replace(/ /g, "_") + ".png";
+    const licenseImg = document.createElement("img");
+    licenseImg.className = "license";
+    // プロパティ代入。innerHTML への補間は使わない (m1-t5: src 属性を閉じる XSS を防ぐ)
+    licenseImg.src = iconUrlFor(fileName);
+    children.push(licenseImg);
+  }
+  if (note) {
+    const noteDiv = document.createElement("div");
+    noteDiv.className = "license_note";
+    // textContent sink。Note の HTML を解釈しない
+    noteDiv.textContent = note;
+    children.push(noteDiv);
+  }
+  contentEl.replaceChildren(...children);
+}

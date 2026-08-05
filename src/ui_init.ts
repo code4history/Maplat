@@ -25,7 +25,8 @@ import {
   ellips,
   encBytes,
   isBasemap,
-  prepareModal
+  prepareModal,
+  renderLicenseCell
 } from "./ui_utils";
 
 import { poiWebControl } from "./ui_marker";
@@ -1002,37 +1003,46 @@ function initModalHandlers(ui: MaplatUi) {
               (mapData as any)[key];
           const container = mapDiv.querySelector(`.modal_map .${key}_div`);
           if (container) {
+            if (key === "license" || key === "dataLicense") {
+              // m6-t2: Note は license 分岐内で明示的に読む。Maplat の META_KEYS には足さない
+              // (足すと :1543 の DOM 生成が独立の dt/dd 行を作り、license 行の中に入れ子で出す
+              // 設計と矛盾する)。対応は1行で — license→licenseNote / dataLicense→dataLicenseNote。
+              const noteKey =
+                key === "license" ? "licenseNote" : "dataLicenseNote";
+              const noteRaw = mapData.get
+                ? mapData.get(noteKey)
+                : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  (mapData as any)[noteKey];
+              // ui.translate を通してから渡す (license 自体は単一の ASCII 語彙なので翻訳しない)
+              const note = noteRaw ? ui.translate!(noteRaw) : "";
+              // val || note: Note だけがあって license が空のときにも行を表示する
+              // (m6-t3 のフォールバック導入前は起こりうる状態)
+              if (val || note) {
+                (container as HTMLElement).style.display = "block";
+                const contentEl = container.querySelector(`.${key}_dd`);
+                if (contentEl) {
+                  // renderLicenseCell に集約 (license / dataLicense が同じ処理を受けることを
+                  // 同一関数呼び出しとして表す)。sink は textContent。
+                  renderLicenseCell(
+                    contentEl as HTMLElement,
+                    val as string | undefined,
+                    note || undefined,
+                    fileName => pointer[fileName] || `assets/parts/${fileName}`
+                  );
+                }
+              } else {
+                (container as HTMLElement).style.display = "none";
+              }
+              return;
+            }
             if (val) {
               (container as HTMLElement).style.display = "block";
               const contentEl = container.querySelector(`.${key}_dd`);
               if (contentEl) {
-                if (key === "license" || key === "dataLicense") {
-                  const fileName = (val as string)
-                    .toLowerCase()
-                    .replace(/ /g, "_");
-
-                  const iconUrl =
-                    pointer[`${fileName}.png`] ||
-                    `assets/parts/${fileName}.png`;
-                  // m1-t5: 文字列連結ではなく DOM API で組み立てる。
-                  //
-                  // iconUrl は mapData.get("license") 由来で、加工は
-                  // .toLowerCase().replace(/ /g, "_") だけである。空白は潰れるが
-                  // **引用符は残る**ため、innerHTML へ補間すると属性を閉じられる。
-                  //   license = 'a"onerror=alert(1)'
-                  //     → <img src="assets/parts/a"onerror=alert(1).png" class="license" />
-                  // src をプロパティ代入にすれば HTML として解釈されないので、
-                  // エスケープを足すのではなく sink 自体を無くす。
-                  const licenseImg = document.createElement("img");
-                  licenseImg.className = "license";
-                  licenseImg.src = iconUrl;
-                  (contentEl as HTMLElement).replaceChildren(licenseImg);
-                } else {
-                  // m1-t4 (S5): POI 由来の値が入りうるためサニタイズする
-                  (contentEl as HTMLElement).innerHTML = sanitizeHtml(
-                    ui.translate!(val) || ""
-                  );
-                }
+                // m1-t4 (S5): POI 由来の値が入りうるためサニタイズする
+                (contentEl as HTMLElement).innerHTML = sanitizeHtml(
+                  ui.translate!(val) || ""
+                );
               }
             } else {
               (container as HTMLElement).style.display = "none";
