@@ -74,8 +74,8 @@
     "workbox-strategies": "^7.4.0"
   },
   "peerDependencies": {
-    "mapbox-gl": "^1.0.0 || ^2.0.0 || ^3.0.0",
-    "maplibre-gl": "^3.0.0 || ^4.0.0",
+    "mapbox-gl": "^2.0.0 || ^3.0.0",
+    "maplibre-gl": "^5.0.0 || ^6.0.0",
     "ol": "^9.0.0 || ^10.0.0"
   },
   "devDependencies": {
