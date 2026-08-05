@@ -26,7 +26,8 @@ import {
   encBytes,
   isBasemap,
   prepareModal,
-  renderLicenseCell
+  renderLicenseCell,
+  resolveLicenseFallback
 } from "./ui_utils";
 
 import { poiWebControl } from "./ui_marker";
@@ -1015,23 +1016,29 @@ function initModalHandlers(ui: MaplatUi) {
                   (mapData as any)[noteKey];
               // ui.translate を通してから渡す (license 自体は単一の ASCII 語彙なので翻訳しない)
               const note = noteRaw ? ui.translate!(noteRaw) : "";
-              // val || note: Note だけがあって license が空のときにも行を表示する
-              // (m6-t3 のフォールバック導入前は起こりうる状態)
-              if (val || note) {
-                (container as HTMLElement).style.display = "block";
-                const contentEl = container.querySelector(`.${key}_dd`);
-                if (contentEl) {
-                  // renderLicenseCell に集約 (license / dataLicense が同じ処理を受けることを
-                  // 同一関数呼び出しとして表す)。sink は textContent。
-                  renderLicenseCell(
-                    contentEl as HTMLElement,
-                    val as string | undefined,
-                    note || undefined,
-                    fileName => pointer[fileName] || `assets/parts/${fileName}`
-                  );
-                }
-              } else {
-                (container as HTMLElement).style.display = "none";
+              // m6-t3: license / dataLicense が空のとき地図種別に応じたフォールバック値を代入する。
+              // isWmts が不在の時はベースマップ扱い（安全側: All right reserved へ倒す）
+              const isWmts =
+                typeof (mapData as { isWmts?: () => boolean }).isWmts ===
+                "function"
+                  ? (mapData as { isWmts: () => boolean }).isWmts()
+                  : true;
+              const effectiveLicense = resolveLicenseFallback(
+                key,
+                val as string | undefined,
+                isWmts
+              );
+              (container as HTMLElement).style.display = "block";
+              const contentEl = container.querySelector(`.${key}_dd`);
+              if (contentEl) {
+                // renderLicenseCell に集約 (license / dataLicense が同じ処理を受けることを
+                // 同一関数呼び出しとして表す)。sink は textContent。
+                renderLicenseCell(
+                  contentEl as HTMLElement,
+                  effectiveLicense,
+                  note || undefined,
+                  fileName => pointer[fileName] || `assets/parts/${fileName}`
+                );
               }
               return;
             }
