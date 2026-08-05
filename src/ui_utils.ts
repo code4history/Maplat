@@ -142,6 +142,12 @@ export function encBytes(bytes: number): string {
 //
 // iconUrlFor は pointer_images の解決を呼び出し側 (ui_init.ts) から渡す。
 // ui_utils.ts から pointer_images を直接 import すると @maplat/core の assets 依存が太るため。
+//
+// アイコンを持たない語彙の保存値。Editor 側の LICENSE_WITHOUT_ICON (= "Custom") と文字列を
+// 揃えておく (レビュー Minor m2: 直書きの二重は避け、ここで一元化する。Editor とは別 repo のため
+// import はできず、値の一致をコメントで担保する)。
+const LICENSE_WITHOUT_ICON = "Custom";
+
 export function renderLicenseCell(
   contentEl: HTMLElement,
   license: string | undefined,
@@ -150,7 +156,7 @@ export function renderLicenseCell(
 ): void {
   const children: (Node)[] = [];
   // Custom はアイコンを持たない語彙。アイコン無しで Note 文章だけを出す。
-  if (license && license !== "Custom") {
+  if (license && license !== LICENSE_WITHOUT_ICON) {
     const fileName = license.toLowerCase().replace(/ /g, "_") + ".png";
     const licenseImg = document.createElement("img");
     licenseImg.className = "license";
