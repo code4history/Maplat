@@ -27274,56 +27274,58 @@ function oO(i, e) {
 }
 class aO extends AT {
   constructor(e) {
-    const t = function(n) {
-      const r = this.getSource(), s = r.mapboxMap;
-      if (!s)
+    let t;
+    const n = function(r) {
+      const s = this.getSource(), o = s.mapboxMap;
+      if (!o)
         return console.error("MapboxLayer: mapboxMap is undefined!"), null;
-      s.setStyle(r.style);
-      const o = s.getCanvas(), a = n.viewState, l = this.getVisible();
-      o.style.display = l ? "block" : "none";
-      const c = this.getOpacity();
-      o.style.opacity = c;
-      const h = a.rotation * -180 / Math.PI, u = hu(a.center), d = a.zoom - 1, g = s.getBearing(), f = s.getCenter().toArray(), m = s.getZoom();
-      return h == g && u[0] == f[0] && u[1] == f[1] && d == m || (h != g && s.rotateTo(h, {
+      s.style !== t && (o.setStyle(s.style), t = s.style);
+      const a = o.getCanvas(), l = r.viewState, c = this.getVisible();
+      a.style.display = c ? "block" : "none";
+      const h = this.getOpacity();
+      a.style.opacity = h;
+      const u = l.rotation * -180 / Math.PI, d = hu(l.center), g = l.zoom - 1, f = o.getBearing(), m = o.getCenter().toArray(), p = o.getZoom();
+      return u == f && d[0] == m[0] && d[1] == m[1] && g == p || (u != f && o.rotateTo(u, {
         animate: !1
-      }), (u[0] != f[0] || u[1] != f[1] || d != m) && s.jumpTo({
-        center: u,
-        zoom: d,
+      }), (d[0] != m[0] || d[1] != m[1] || g != p) && o.jumpTo({
+        center: d,
+        zoom: g,
         animate: !1
-      }), s._frame && (s._frame.cancel(), s._frame = null), s._render()), o;
+      }), o._frame && (o._frame.cancel(), o._frame = null), o._render()), a;
     };
     super({
-      render: t,
+      render: n,
       source: e.source
     });
   }
 }
 class lO extends AT {
   constructor(e) {
-    const t = function(n) {
-      const r = this.getSource(), s = r.maplibreMap;
-      if (!s)
+    let t;
+    const n = function(r) {
+      const s = this.getSource(), o = s.maplibreMap;
+      if (!o)
         return console.error("MapLibreLayer: maplibreMap is undefined!"), null;
-      s.setStyle(r.style);
-      const o = s.getCanvas(), a = n.viewState, l = this.getVisible();
-      o.style.display = l ? "block" : "none";
-      const c = this.getOpacity();
-      o.style.opacity = c;
-      const h = -a.rotation * 180 / Math.PI, u = s.getBearing();
-      Math.abs(h - u) > 0.01 && (s.stop(), s.setBearing(h));
-      const d = hu(a.center), g = a.zoom - 1;
-      if ((s.getCenter().toArray().toString() !== d.toString() || s.getZoom() !== g) && s.jumpTo({
-        center: d,
-        zoom: g,
+      s.style !== t && (o.setStyle(s.style), t = s.style);
+      const a = o.getCanvas(), l = r.viewState, c = this.getVisible();
+      a.style.display = c ? "block" : "none";
+      const h = this.getOpacity();
+      a.style.opacity = h;
+      const u = -l.rotation * 180 / Math.PI, d = o.getBearing();
+      Math.abs(u - d) > 0.01 && (o.stop(), o.setBearing(u));
+      const g = hu(l.center), f = l.zoom - 1;
+      if ((o.getCenter().toArray().toString() !== g.toString() || o.getZoom() !== f) && o.jumpTo({
+        center: g,
+        zoom: f,
         animate: !1
-      }), s._frame && (s._frame.cancel(), s._frame = null), n.size) {
-        const [f, m] = n.size;
-        (o.width !== f || o.height !== m) && s.resize();
+      }), o._frame && (o._frame.cancel(), o._frame = null), r.size) {
+        const [m, p] = r.size;
+        (a.width !== m || a.height !== p) && o.resize();
       }
-      return s._render(), Math.abs(s.getZoom() - g) > 0.01 && s.setZoom(g), o.style.position = "absolute", o.style.left = "0", o.style.top = "0", o;
+      return o._render(), Math.abs(o.getZoom() - f) > 0.01 && o.setZoom(f), a.style.position = "absolute", a.style.left = "0", a.style.top = "0", a;
     };
     super({
-      render: t,
+      render: n,
       source: e.source
     });
   }
@@ -63867,7 +63869,7 @@ typeof ActiveXObject == "function" && (typeof global < "u" && global.ActiveXObje
 typeof ta != "function" && (ta = void 0);
 if (!ta && !Bu && !Rf)
   try {
-    import("./browser-ponyfill-DP8KV3-q.js").then((i) => i.b).then(function(i) {
+    import("./browser-ponyfill-Bpwkv2i0.js").then((i) => i.b).then(function(i) {
       ta = i.default;
     }).catch(function() {
     });
