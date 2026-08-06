@@ -3,13 +3,13 @@
   // <define:self.__WB_MANIFEST>
   var define_self_WB_MANIFEST_default = [];
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/_version.js
+  // ../node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/_version.js
   try {
     self["workbox:core:7.4.0"] && _();
   } catch (e) {
   }
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/_private/logger.js
+  // ../node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/_private/logger.js
   var logger = false ? null : (() => {
     if (!("__WB_DISABLE_DEV_LOGS" in globalThis)) {
       self.__WB_DISABLE_DEV_LOGS = false;
@@ -61,7 +61,7 @@
     return api;
   })();
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/models/messages/messages.js
+  // ../node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/models/messages/messages.js
   var messages = {
     "invalid-value": ({ paramName, validValueDescription, value }) => {
       if (!paramName || !validValueDescription) {
@@ -225,7 +225,7 @@
     }
   };
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/models/messages/messageGenerator.js
+  // ../node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/models/messages/messageGenerator.js
   var generatorFunction = (code, details = {}) => {
     const message = messages[code];
     if (!message) {
@@ -235,7 +235,7 @@
   };
   var messageGenerator = false ? fallback : generatorFunction;
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/_private/WorkboxError.js
+  // ../node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/_private/WorkboxError.js
   var WorkboxError = class extends Error {
     /**
      *
@@ -253,7 +253,7 @@
     }
   };
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/_private/assert.js
+  // ../node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/_private/assert.js
   var isArray = (value, details) => {
     if (!Array.isArray(value)) {
       throw new WorkboxError("not-an-array", details);
@@ -304,10 +304,10 @@
     isArrayOfClass
   };
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/models/quotaErrorCallbacks.js
+  // ../node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/models/quotaErrorCallbacks.js
   var quotaErrorCallbacks = /* @__PURE__ */ new Set();
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/registerQuotaErrorCallback.js
+  // ../node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/registerQuotaErrorCallback.js
   function registerQuotaErrorCallback(callback) {
     if (true) {
       finalAssertExports.isType(callback, "function", {
@@ -322,7 +322,7 @@
     }
   }
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/_private/cacheNames.js
+  // ../node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/_private/cacheNames.js
   var _cacheNameDetails = {
     googleAnalytics: "googleAnalytics",
     precache: "precache-v2",
@@ -363,7 +363,7 @@
     }
   };
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/_private/cacheMatchIgnoreParams.js
+  // ../node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/_private/cacheMatchIgnoreParams.js
   function stripParams(fullURL, ignoreParams) {
     const strippedURL = new URL(fullURL);
     for (const param of ignoreParams) {
@@ -387,7 +387,7 @@
     return;
   }
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/_private/canConstructResponseFromBodyStream.js
+  // ../node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/_private/canConstructResponseFromBodyStream.js
   var supportStatus;
   function canConstructResponseFromBodyStream() {
     if (supportStatus === void 0) {
@@ -405,13 +405,13 @@
     return supportStatus;
   }
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/_private/dontWaitFor.js
+  // ../node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/_private/dontWaitFor.js
   function dontWaitFor(promise) {
     void promise.then(() => {
     });
   }
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/_private/Deferred.js
+  // ../node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/_private/Deferred.js
   var Deferred = class {
     /**
      * Creates a promise and exposes its resolve and reject functions as methods.
@@ -424,7 +424,7 @@
     }
   };
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/_private/executeQuotaErrorCallbacks.js
+  // ../node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/_private/executeQuotaErrorCallbacks.js
   async function executeQuotaErrorCallbacks() {
     if (true) {
       logger.log(`About to run ${quotaErrorCallbacks.size} callbacks to clean up caches.`);
@@ -440,25 +440,25 @@
     }
   }
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/_private/getFriendlyURL.js
+  // ../node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/_private/getFriendlyURL.js
   var getFriendlyURL = (url) => {
     const urlObj = new URL(String(url), location.href);
     return urlObj.href.replace(new RegExp(`^${location.origin}`), "");
   };
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/_private/timeout.js
+  // ../node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/_private/timeout.js
   function timeout(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/_private/waitUntil.js
+  // ../node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/_private/waitUntil.js
   function waitUntil(event, asyncFn) {
     const returnPromise = asyncFn();
     event.waitUntil(returnPromise);
     return returnPromise;
   }
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/copyResponse.js
+  // ../node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/copyResponse.js
   async function copyResponse(response, modifier) {
     let origin = null;
     if (response.url) {
@@ -479,12 +479,12 @@
     return new Response(body, modifiedResponseInit);
   }
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/clientsClaim.js
+  // ../node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/clientsClaim.js
   function clientsClaim() {
     self.addEventListener("activate", () => self.clients.claim());
   }
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/skipWaiting.js
+  // ../node_modules/.pnpm/workbox-core@7.4.1/node_modules/workbox-core/skipWaiting.js
   function skipWaiting() {
     if (true) {
       logger.warn(`skipWaiting() from workbox-core is no longer recommended and will be removed in Workbox v7. Using self.skipWaiting() instead is equivalent.`);
@@ -492,13 +492,13 @@
     void self.skipWaiting();
   }
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-precaching@7.4.1/node_modules/workbox-precaching/_version.js
+  // ../node_modules/.pnpm/workbox-precaching@7.4.1/node_modules/workbox-precaching/_version.js
   try {
     self["workbox:precaching:7.4.0"] && _();
   } catch (e) {
   }
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-precaching@7.4.1/node_modules/workbox-precaching/utils/createCacheKey.js
+  // ../node_modules/.pnpm/workbox-precaching@7.4.1/node_modules/workbox-precaching/utils/createCacheKey.js
   var REVISION_SEARCH_PARAM = "__WB_REVISION__";
   function createCacheKey(entry) {
     if (!entry) {
@@ -531,7 +531,7 @@
     };
   }
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-precaching@7.4.1/node_modules/workbox-precaching/utils/PrecacheInstallReportPlugin.js
+  // ../node_modules/.pnpm/workbox-precaching@7.4.1/node_modules/workbox-precaching/utils/PrecacheInstallReportPlugin.js
   var PrecacheInstallReportPlugin = class {
     constructor() {
       this.updatedURLs = [];
@@ -557,7 +557,7 @@
     }
   };
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-precaching@7.4.1/node_modules/workbox-precaching/utils/PrecacheCacheKeyPlugin.js
+  // ../node_modules/.pnpm/workbox-precaching@7.4.1/node_modules/workbox-precaching/utils/PrecacheCacheKeyPlugin.js
   var PrecacheCacheKeyPlugin = class {
     constructor({ precacheController: precacheController2 }) {
       this.cacheKeyWillBeUsed = async ({ request, params }) => {
@@ -568,7 +568,7 @@
     }
   };
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-precaching@7.4.1/node_modules/workbox-precaching/utils/printCleanupDetails.js
+  // ../node_modules/.pnpm/workbox-precaching@7.4.1/node_modules/workbox-precaching/utils/printCleanupDetails.js
   var logGroup = (groupTitle, deletedURLs) => {
     logger.groupCollapsed(groupTitle);
     for (const url of deletedURLs) {
@@ -585,7 +585,7 @@
     }
   }
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-precaching@7.4.1/node_modules/workbox-precaching/utils/printInstallDetails.js
+  // ../node_modules/.pnpm/workbox-precaching@7.4.1/node_modules/workbox-precaching/utils/printInstallDetails.js
   function _nestedGroup(groupTitle, urls) {
     if (urls.length === 0) {
       return;
@@ -611,13 +611,13 @@
     }
   }
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-strategies@7.4.1/node_modules/workbox-strategies/_version.js
+  // ../node_modules/.pnpm/workbox-strategies@7.4.1/node_modules/workbox-strategies/_version.js
   try {
     self["workbox:strategies:7.4.0"] && _();
   } catch (e) {
   }
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-strategies@7.4.1/node_modules/workbox-strategies/StrategyHandler.js
+  // ../node_modules/.pnpm/workbox-strategies@7.4.1/node_modules/workbox-strategies/StrategyHandler.js
   function toRequest(input) {
     return typeof input === "string" ? new Request(input) : input;
   }
@@ -1036,7 +1036,7 @@
     }
   };
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-strategies@7.4.1/node_modules/workbox-strategies/Strategy.js
+  // ../node_modules/.pnpm/workbox-strategies@7.4.1/node_modules/workbox-strategies/Strategy.js
   var Strategy = class {
     /**
      * Creates a new instance of the strategy and sets all documented option
@@ -1186,7 +1186,7 @@
     }
   };
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-precaching@7.4.1/node_modules/workbox-precaching/PrecacheStrategy.js
+  // ../node_modules/.pnpm/workbox-precaching@7.4.1/node_modules/workbox-precaching/PrecacheStrategy.js
   var PrecacheStrategy = class _PrecacheStrategy extends Strategy {
     /**
      *
@@ -1344,7 +1344,7 @@
     }
   };
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-precaching@7.4.1/node_modules/workbox-precaching/PrecacheController.js
+  // ../node_modules/.pnpm/workbox-precaching@7.4.1/node_modules/workbox-precaching/PrecacheController.js
   var PrecacheController = class {
     /**
      * Create a new PrecacheController.
@@ -1598,7 +1598,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-precaching@7.4.1/node_modules/workbox-precaching/utils/getOrCreatePrecacheController.js
+  // ../node_modules/.pnpm/workbox-precaching@7.4.1/node_modules/workbox-precaching/utils/getOrCreatePrecacheController.js
   var precacheController;
   var getOrCreatePrecacheController = () => {
     if (!precacheController) {
@@ -1607,13 +1607,13 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     return precacheController;
   };
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-routing@7.4.1/node_modules/workbox-routing/_version.js
+  // ../node_modules/.pnpm/workbox-routing@7.4.1/node_modules/workbox-routing/_version.js
   try {
     self["workbox:routing:7.4.0"] && _();
   } catch (e) {
   }
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-routing@7.4.1/node_modules/workbox-routing/utils/constants.js
+  // ../node_modules/.pnpm/workbox-routing@7.4.1/node_modules/workbox-routing/utils/constants.js
   var defaultMethod = "GET";
   var validMethods = [
     "DELETE",
@@ -1624,7 +1624,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     "PUT"
   ];
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-routing@7.4.1/node_modules/workbox-routing/utils/normalizeHandler.js
+  // ../node_modules/.pnpm/workbox-routing@7.4.1/node_modules/workbox-routing/utils/normalizeHandler.js
   var normalizeHandler = (handler) => {
     if (handler && typeof handler === "object") {
       if (true) {
@@ -1649,7 +1649,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-routing@7.4.1/node_modules/workbox-routing/Route.js
+  // ../node_modules/.pnpm/workbox-routing@7.4.1/node_modules/workbox-routing/Route.js
   var Route = class {
     /**
      * Constructor for Route class.
@@ -1688,7 +1688,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-routing@7.4.1/node_modules/workbox-routing/RegExpRoute.js
+  // ../node_modules/.pnpm/workbox-routing@7.4.1/node_modules/workbox-routing/RegExpRoute.js
   var RegExpRoute = class extends Route {
     /**
      * If the regular expression contains
@@ -1729,7 +1729,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-routing@7.4.1/node_modules/workbox-routing/Router.js
+  // ../node_modules/.pnpm/workbox-routing@7.4.1/node_modules/workbox-routing/Router.js
   var Router = class {
     /**
      * Initializes a new Router.
@@ -2042,7 +2042,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-routing@7.4.1/node_modules/workbox-routing/utils/getOrCreateDefaultRouter.js
+  // ../node_modules/.pnpm/workbox-routing@7.4.1/node_modules/workbox-routing/utils/getOrCreateDefaultRouter.js
   var defaultRouter;
   var getOrCreateDefaultRouter = () => {
     if (!defaultRouter) {
@@ -2053,7 +2053,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     return defaultRouter;
   };
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-routing@7.4.1/node_modules/workbox-routing/registerRoute.js
+  // ../node_modules/.pnpm/workbox-routing@7.4.1/node_modules/workbox-routing/registerRoute.js
   function registerRoute(capture, handler, method) {
     let route;
     if (typeof capture === "string") {
@@ -2099,7 +2099,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     return route;
   }
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-precaching@7.4.1/node_modules/workbox-precaching/utils/removeIgnoredSearchParams.js
+  // ../node_modules/.pnpm/workbox-precaching@7.4.1/node_modules/workbox-precaching/utils/removeIgnoredSearchParams.js
   function removeIgnoredSearchParams(urlObject, ignoreURLParametersMatching = []) {
     for (const paramName of [...urlObject.searchParams.keys()]) {
       if (ignoreURLParametersMatching.some((regExp) => regExp.test(paramName))) {
@@ -2109,7 +2109,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     return urlObject;
   }
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-precaching@7.4.1/node_modules/workbox-precaching/utils/generateURLVariations.js
+  // ../node_modules/.pnpm/workbox-precaching@7.4.1/node_modules/workbox-precaching/utils/generateURLVariations.js
   function* generateURLVariations(url, { ignoreURLParametersMatching = [/^utm_/, /^fbclid$/], directoryIndex = "index.html", cleanURLs = true, urlManipulation } = {}) {
     const urlObject = new URL(url, location.href);
     urlObject.hash = "";
@@ -2134,7 +2134,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   }
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-precaching@7.4.1/node_modules/workbox-precaching/PrecacheRoute.js
+  // ../node_modules/.pnpm/workbox-precaching@7.4.1/node_modules/workbox-precaching/PrecacheRoute.js
   var PrecacheRoute = class extends Route {
     /**
      * @param {PrecacheController} precacheController A `PrecacheController`
@@ -2171,26 +2171,26 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-precaching@7.4.1/node_modules/workbox-precaching/addRoute.js
+  // ../node_modules/.pnpm/workbox-precaching@7.4.1/node_modules/workbox-precaching/addRoute.js
   function addRoute(options) {
     const precacheController2 = getOrCreatePrecacheController();
     const precacheRoute = new PrecacheRoute(precacheController2, options);
     registerRoute(precacheRoute);
   }
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-precaching@7.4.1/node_modules/workbox-precaching/precache.js
+  // ../node_modules/.pnpm/workbox-precaching@7.4.1/node_modules/workbox-precaching/precache.js
   function precache(entries) {
     const precacheController2 = getOrCreatePrecacheController();
     precacheController2.precache(entries);
   }
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-precaching@7.4.1/node_modules/workbox-precaching/precacheAndRoute.js
+  // ../node_modules/.pnpm/workbox-precaching@7.4.1/node_modules/workbox-precaching/precacheAndRoute.js
   function precacheAndRoute(entries, options) {
     precache(entries);
     addRoute(options);
   }
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-strategies@7.4.1/node_modules/workbox-strategies/utils/messages.js
+  // ../node_modules/.pnpm/workbox-strategies@7.4.1/node_modules/workbox-strategies/utils/messages.js
   var messages2 = {
     strategyStart: (strategyName, request) => `Using ${strategyName} to respond to '${getFriendlyURL(request.url)}'`,
     printFinalResponse: (response) => {
@@ -2202,7 +2202,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-strategies@7.4.1/node_modules/workbox-strategies/plugins/cacheOkAndOpaquePlugin.js
+  // ../node_modules/.pnpm/workbox-strategies@7.4.1/node_modules/workbox-strategies/plugins/cacheOkAndOpaquePlugin.js
   var cacheOkAndOpaquePlugin = {
     /**
      * Returns a valid response (to allow caching) if the status is 200 (OK) or
@@ -2222,7 +2222,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-strategies@7.4.1/node_modules/workbox-strategies/StaleWhileRevalidate.js
+  // ../node_modules/.pnpm/workbox-strategies@7.4.1/node_modules/workbox-strategies/StaleWhileRevalidate.js
   var StaleWhileRevalidate = class extends Strategy {
     /**
      * @param {Object} [options]
@@ -2296,7 +2296,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/idb@7.1.1/node_modules/idb/build/wrap-idb-value.js
+  // ../node_modules/.pnpm/idb@7.1.1/node_modules/idb/build/wrap-idb-value.js
   var instanceOfAny = (object, constructors) => constructors.some((c) => object instanceof c);
   var idbProxyableTypes;
   var cursorAdvanceMethods;
@@ -2439,7 +2439,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
   }
   var unwrap = (value) => reverseTransformCache.get(value);
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/idb@7.1.1/node_modules/idb/build/index.js
+  // ../node_modules/.pnpm/idb@7.1.1/node_modules/idb/build/index.js
   function openDB(name, version, { blocked, upgrade, blocking, terminated } = {}) {
     const request = indexedDB.open(name, version);
     const openPromise = wrap(request);
@@ -2514,13 +2514,13 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     has: (target, prop) => !!getMethod(target, prop) || oldTraps.has(target, prop)
   }));
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-expiration@7.4.1/node_modules/workbox-expiration/_version.js
+  // ../node_modules/.pnpm/workbox-expiration@7.4.1/node_modules/workbox-expiration/_version.js
   try {
     self["workbox:expiration:7.4.0"] && _();
   } catch (e) {
   }
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-expiration@7.4.1/node_modules/workbox-expiration/models/CacheTimestampsModel.js
+  // ../node_modules/.pnpm/workbox-expiration@7.4.1/node_modules/workbox-expiration/models/CacheTimestampsModel.js
   var DB_NAME = "workbox-expiration";
   var CACHE_OBJECT_STORE = "cache-entries";
   var normalizeURL = (unNormalizedUrl) => {
@@ -2661,7 +2661,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-expiration@7.4.1/node_modules/workbox-expiration/CacheExpiration.js
+  // ../node_modules/.pnpm/workbox-expiration@7.4.1/node_modules/workbox-expiration/CacheExpiration.js
   var CacheExpiration = class {
     /**
      * To construct a new CacheExpiration instance you must provide at least
@@ -2801,7 +2801,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/workbox-expiration@7.4.1/node_modules/workbox-expiration/ExpirationPlugin.js
+  // ../node_modules/.pnpm/workbox-expiration@7.4.1/node_modules/workbox-expiration/ExpirationPlugin.js
   var ExpirationPlugin = class {
     /**
      * @param {ExpirationPluginOptions} config
@@ -2970,7 +2970,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // ../.worktrees/m6-t5-mapbox-maplibre/node_modules/.pnpm/@c4h+weiwudi@0.3.1_workbox-routing@7.4.1/node_modules/@c4h/weiwudi/dist/weiwudi-sw.es.js
+  // ../node_modules/.pnpm/@c4h+weiwudi@0.3.1_workbox-routing@7.4.1/node_modules/@c4h/weiwudi/dist/weiwudi-sw.es.js
   function v(_2) {
     const I = 20037508342789244e-9, x = {};
     let m;
@@ -3335,7 +3335,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
   registerRoute(
     /(?:maps\/.+\.json|pwa\/.+|pois\/.+\.json|apps\/.+\.json|tmbs\/.+\.jpg|images\/.+\.(?:png|jpg))$/,
     new StaleWhileRevalidate({
-      cacheName: `resourcesCache-${"2026-08-05-22-22"}`,
+      cacheName: `resourcesCache-${"2026-08-06-09-28"}`,
       plugins: [
         new ExpirationPlugin({
           maxAgeSeconds: 86400,
