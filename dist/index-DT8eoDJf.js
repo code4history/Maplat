@@ -29727,36 +29727,38 @@ const UT = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBMRXhpZgAATU0AK
   }
 }, FE = (i) => (i || "").match(/^(?:base|overlay|google(?:_(?:roadmap|satellite|hybrid|terrain))?|mapbox|maplibre|osm)$/);
 async function hV(i, e) {
-  if (typeof i == "string" && (i = { ...cV[i] }), i = hs(Object.assign(i, e)), i.label = i.label || i.year, FE(i.maptype)) {
-    const o = i.maptype === "base" ? Wc : i.maptype === "overlay" ? lf : i.maptype === "mapbox" ? of : i.maptype === "maplibre" ? af : FC;
-    o.isBasemap() ? (i.homePosition = i.homePos, i.mercZoom = i.defZoom) : (i.homePosition || (i.homePosition = i.homePos), i.mercZoom || (i.mercZoom = i.defZoom)), delete i.homePos, delete i.defZoom, i.zoomRestriction && (i.maxZoom = i.maxZoom || i.mercMaxZoom, i.minZoom = i.minZoom || i.mercMinZoom), i.zoomRestriction = i.mercMaxZoom = i.mercMinZoom = void 0, i.imageExtension || (i.imageExtension = "jpg"), vC(i.maptype) ? (delete i.url, delete i.urls) : i.mapID && !i.url && !i.urls && (i.url = i.tms ? `tiles/${i.mapID}/{z}/{x}/{-y}.${i.imageExtension}` : `tiles/${i.mapID}/{z}/{x}/{y}.${i.imageExtension}`), i.weiwudi = await lp(i), i.weiwudi && (i.url = i.weiwudi.url, delete i.urls);
-    const a = await o.createAsync(i);
-    return await a.initialWait, a;
+  typeof i == "string" && (i = { ...cV[i] }), i = hs(Object.assign(i, e));
+  const t = i.label || i.year;
+  if (t !== void 0 && (i.label = t), FE(i.maptype)) {
+    const a = i.maptype === "base" ? Wc : i.maptype === "overlay" ? lf : i.maptype === "mapbox" ? of : i.maptype === "maplibre" ? af : FC;
+    a.isBasemap() ? (i.homePosition = i.homePos, i.mercZoom = i.defZoom) : (i.homePosition || (i.homePosition = i.homePos), i.mercZoom || (i.mercZoom = i.defZoom)), delete i.homePos, delete i.defZoom, i.zoomRestriction && (i.maxZoom = i.maxZoom || i.mercMaxZoom, i.minZoom = i.minZoom || i.mercMinZoom), i.zoomRestriction = i.mercMaxZoom = i.mercMinZoom = void 0, i.imageExtension || (i.imageExtension = "jpg"), vC(i.maptype) ? (delete i.url, delete i.urls) : i.mapID && !i.url && !i.urls && (i.url = i.tms ? `tiles/${i.mapID}/{z}/{x}/{-y}.${i.imageExtension}` : `tiles/${i.mapID}/{z}/{x}/{y}.${i.imageExtension}`), i.weiwudi = await lp(i), i.weiwudi && (i.url = i.weiwudi.url, delete i.urls);
+    const l = await a.createAsync(i);
+    return await l.initialWait, l;
   } else if (i.noload)
     return i.mercMaxZoom = i.mercMinZoom = void 0, new TE(i);
-  const t = i.settingFile || `maps/${i.mapID}.json`, n = await fetch(t);
-  if (!n.ok)
+  const n = i.settingFile || `maps/${i.mapID}.json`, r = await fetch(n);
+  if (!r.ok)
     throw new Error("Fail to load map json");
-  const r = await n.json();
-  if (i = hs(Object.assign(r, i)), i.label = i.label || r.year, i.maptype || (i.maptype = "maplat"), FE(i.maptype)) {
-    const o = i.maptype === "base" ? Wc : i.maptype === "overlay" ? lf : i.maptype === "mapbox" ? of : i.maptype === "maplibre" ? af : FC;
-    o.isBasemap() ? (i.homePosition = i.homePos, i.mercZoom = i.defZoom) : (i.homePosition || (i.homePosition = i.homePos), i.mercZoom || (i.mercZoom = i.defZoom)), delete i.homePos, delete i.defZoom, i.zoomRestriction && (i.maxZoom = i.maxZoom || i.mercMaxZoom, i.minZoom = i.minZoom || i.mercMinZoom), i.zoomRestriction = i.mercMaxZoom = i.mercMinZoom = void 0, i.imageExtension || (i.imageExtension = "jpg"), vC(i.maptype) ? (delete i.url, delete i.urls) : i.mapID && !i.url && !i.urls && (i.url = i.tms ? `tiles/${i.mapID}/{z}/{x}/{-y}.${i.imageExtension}` : `tiles/${i.mapID}/{z}/{x}/{y}.${i.imageExtension}`), i.weiwudi = await lp(i), i.weiwudi && (i.url = i.weiwudi.url, delete i.urls);
-    const a = await o.createAsync(i);
+  const s = await r.json();
+  if (i = hs(Object.assign(s, i)), i.label = i.label || s.year, i.maptype || (i.maptype = "maplat"), FE(i.maptype)) {
+    const a = i.maptype === "base" ? Wc : i.maptype === "overlay" ? lf : i.maptype === "mapbox" ? of : i.maptype === "maplibre" ? af : FC;
+    a.isBasemap() ? (i.homePosition = i.homePos, i.mercZoom = i.defZoom) : (i.homePosition || (i.homePosition = i.homePos), i.mercZoom || (i.mercZoom = i.defZoom)), delete i.homePos, delete i.defZoom, i.zoomRestriction && (i.maxZoom = i.maxZoom || i.mercMaxZoom, i.minZoom = i.minZoom || i.mercMinZoom), i.zoomRestriction = i.mercMaxZoom = i.mercMinZoom = void 0, i.imageExtension || (i.imageExtension = "jpg"), vC(i.maptype) ? (delete i.url, delete i.urls) : i.mapID && !i.url && !i.urls && (i.url = i.tms ? `tiles/${i.mapID}/{z}/{x}/{-y}.${i.imageExtension}` : `tiles/${i.mapID}/{z}/{x}/{y}.${i.imageExtension}`), i.weiwudi = await lp(i), i.weiwudi && (i.url = i.weiwudi.url, delete i.urls);
+    const l = await a.createAsync(i);
     try {
-      return await a.initialWait, a;
+      return await l.initialWait, l;
     } catch {
-      return a;
+      return l;
     }
   }
   if (delete i.homePos, delete i.defZoom, i.imageExtension || (i.imageExtension = "jpg"), i.mapID && !i.url && !i.urls && (i.url = `tiles/${i.mapID}/{z}/{x}/{y}.${i.imageExtension}`), !i.compiled || !i.compiled.wh)
     throw console.error(
-      `[Maplat] Missing compiled.wh for mapID=${i.mapID}. Check map setting file: ${t}`
+      `[Maplat] Missing compiled.wh for mapID=${i.mapID}. Check map setting file: ${n}`
     ), new Error(`Map ${i.mapID} is missing compiled data.`);
   i.width = i.width || i.compiled.wh[0], i.height = i.height || i.compiled.wh[1], i.weiwudi = await lp(i), i.weiwudi && (i.url = i.weiwudi.url, delete i.urls);
-  const s = await TE.createAsync(i);
-  return await s.initialWait, await new Promise((o) => {
-    s.setupMapParameter(() => o());
-  }), s;
+  const o = await TE.createAsync(i);
+  return await o.initialWait, await new Promise((a) => {
+    o.setupMapParameter(() => a());
+  }), o;
 }
 async function lp(i) {
   const e = {};
@@ -63869,7 +63871,7 @@ typeof ActiveXObject == "function" && (typeof global < "u" && global.ActiveXObje
 typeof ta != "function" && (ta = void 0);
 if (!ta && !Bu && !Rf)
   try {
-    import("./browser-ponyfill-Bpwkv2i0.js").then((i) => i.b).then(function(i) {
+    import("./browser-ponyfill-VflmAlQa.js").then((i) => i.b).then(function(i) {
       ta = i.default;
     }).catch(function() {
     });
