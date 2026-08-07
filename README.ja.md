@@ -42,7 +42,7 @@ Maplat は Apache License 2.0（バージョン 0.12.2 以降）のオープン�
 <!-- SECTION 5: Quick Start -->
 ## クイックスタート
 
-> 特定リリースに紐づく情報（ADR-0012）。下記のバージョン `0.12.2` は現在の
+> 特定リリースに紐づく情報（ADR-0012）。下記のバージョン `1.0.0-rc1` は現在の
 > リリース値です。リリースごとに更新してください。
 
 ### インストール
@@ -82,8 +82,8 @@ MaplatUi.createObject(option).then(app => {
 <script src="https://cdn.jsdelivr.net/npm/ol@10/dist/ol.min.js"></script>
 
 <!-- Maplat UI -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@maplat/ui@0.12.2/dist/maplat_ui.css">
-<script src="https://cdn.jsdelivr.net/npm/@maplat/ui@0.12.2/dist/maplat_ui.umd.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@maplat/ui@1.0.0-rc1/dist/maplat_ui.css">
+<script src="https://cdn.jsdelivr.net/npm/@maplat/ui@1.0.0-rc1/dist/maplat_ui.umd.js"></script>
 
 <div id="map_div"></div>
 <script>
