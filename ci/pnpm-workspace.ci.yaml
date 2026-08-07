@@ -35,3 +35,12 @@ overrides:
 #       const expand = require("brace-expansion") として expand(pattern) する minimatch 3.x を壊す。
 #   詳細は設計書 §2.4。m9 で再評価する。
   path-to-regexp: "~1.9.0"
+
+# 自組織パッケージは publisher が我々自身のため、pnpm 11 既定の 24h 隔離
+# （minimumReleaseAge=1440・サプライチェーン保護）の対象外とする。第三者依存への
+# 保護は既定のまま維持する。リリーストレインの publish 直後に CI が自パッケージを
+# 解決できるようにする恒久設定（m9-t0。rc1 publish 直後の全 CI が
+# ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION で停止した実測に基づく）
+minimumReleaseAgeExclude:
+  - "@maplat/*"
+  - "@c4h/*"
