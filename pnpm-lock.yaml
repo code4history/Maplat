@@ -6,23 +6,20 @@ settings:
 
 overrides:
   path-to-regexp: ~1.9.0
-  swiper: ^12.1.2
-  lodash.template: ^4.18.1
-  '@maplat/core': github:code4history/MaplatCore#0bd702c455ee03a488e4ffe67979ebad30657c7a
 
 importers:
 
   .:
     dependencies:
       '@c4h/chuci':
-        specifier: ^0.2.6
-        version: 0.2.6
+        specifier: ^1.0.0-rc1
+        version: 1.0.0-rc1
       '@c4h/weiwudi':
-        specifier: ^0.3.1
-        version: 0.3.1(workbox-routing@7.4.0)
+        specifier: ^1.0.0-rc1
+        version: 1.0.0-rc1(workbox-routing@7.4.0)
       '@maplat/core':
-        specifier: github:code4history/MaplatCore#0bd702c455ee03a488e4ffe67979ebad30657c7a
-        version: https://codeload.github.com/code4history/MaplatCore/tar.gz/0bd702c455ee03a488e4ffe67979ebad30657c7a(mapbox-gl@3.17.0)(maplibre-gl@5.6.2)(ol@10.8.0)(workbox-routing@7.4.0)
+        specifier: ^1.0.0-rc1
+        version: 1.0.0-rc1(mapbox-gl@3.17.0)(maplibre-gl@5.6.2)(ol@10.8.0)(workbox-routing@7.4.0)
       '@turf/turf':
         specifier: ^7.3.1
         version: 7.3.1
@@ -70,8 +67,8 @@ importers:
         specifier: ^9.39.2
         version: 9.39.2
       '@maplat/transform':
-        specifier: ^0.5.2
-        version: 0.5.2
+        specifier: ^1.0.0-rc1
+        version: 1.0.0-rc1
       '@playwright/test':
         specifier: ^1.61.1
         version: 1.62.0
@@ -675,12 +672,12 @@ packages:
     resolution: {integrity: sha512-4zBIxpPzowiZpusoFkyGVwakdRJUyuH5PxQ/PrqghfdFWWasvnCdPfQXHrenDai+gyLARulZjZowCOj6fjT4pA==}
     engines: {node: '>=6.9.0'}
 
-  '@c4h/chuci@0.2.6':
-    resolution: {integrity: sha512-NaWZw9k61BWXm51aPrW8wZ3dS4MyLwAVHzQRqke3NDYF83/gPGWaIxr5g5tYYhwDkS/wRpMP326L1ciHDCe3+Q==}
+  '@c4h/chuci@1.0.0-rc1':
+    resolution: {integrity: sha512-KECN3hso2LclErGMK5Jc42Px+WSKVfPuzSJc8ihDxyNC0w2RmhmFk7/ijJCW5/BapKE4snZGcAHycLPqjp5WKg==}
     engines: {pnpm: '>=9.0.0'}
 
-  '@c4h/weiwudi@0.3.1':
-    resolution: {integrity: sha512-B3m/rmx2ckTpiUcaAHjLByVAe+T4e1wznWCWlsqhvgykukru8D3UzWNLdXbZ5dHbTCUNNgtZsQn2ESmg3DFI/Q==}
+  '@c4h/weiwudi@1.0.0-rc1':
+    resolution: {integrity: sha512-/9WKXuXNjWh9FPK+ZimybB2IwO6Rp3q8KGw6KZwypLTPyqsY2L0GoL5/JJtngBgy74yNi0xM7lAmmhJhlMmvyQ==}
     engines: {node: '>=20.0.0', pnpm: '>=9.0.0'}
     peerDependencies:
       workbox-routing: ^7.4.0
@@ -1170,13 +1167,12 @@ packages:
     resolution: {integrity: sha512-Es6WcD0nO5l+2BOQS4uLfNPYQaNDfbot3X1XUoloz+x0mPDS3eeORZJl06HXjwBG1fOGwCRnzK88LMdxKRrd6Q==}
     engines: {node: '>=6.0.0'}
 
-  '@maplat/core@https://codeload.github.com/code4history/MaplatCore/tar.gz/0bd702c455ee03a488e4ffe67979ebad30657c7a':
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/code4history/MaplatCore/tar.gz/0bd702c455ee03a488e4ffe67979ebad30657c7a}
-    version: 0.13.2
+  '@maplat/core@1.0.0-rc1':
+    resolution: {integrity: sha512-jMfvWjiRpx67yhIG0zAB2JHxM7QMZXhKViWW4DfHr2huD+300sD6mqGE3F09CKxOo+Z1Ca/tH7u0vosKfwjgHA==}
     engines: {pnpm: '>=9'}
     peerDependencies:
-      mapbox-gl: ^1.0.0 || ^2.0.0 || ^3.0.0
-      maplibre-gl: ^3.0.0 || ^4.0.0
+      mapbox-gl: ^2.0.0 || ^3.0.0
+      maplibre-gl: ^5.0.0 || ^6.0.0
       ol: ^9.0.0 || ^10.0.0
     peerDependenciesMeta:
       mapbox-gl:
@@ -1184,8 +1180,8 @@ packages:
       maplibre-gl:
         optional: true
 
-  '@maplat/transform@0.5.2':
-    resolution: {integrity: sha512-iDn0t3wRxXsgkSwBdbPUFcN/A/syRZgk4O5TcKf/kqyTgHuPnKNWL5PUbo4u9dXOoB/W8RvIdCJAIwk2MUZO8Q==}
+  '@maplat/transform@1.0.0-rc1':
+    resolution: {integrity: sha512-+FDUFP4HEeNMomKbmYbdX6pEfmCfKU23a9tTWK+VbEyOdH7J/RPnFrnlAjpBXEjptNuwIobaZniWPQ6LvIpTfg==}
     engines: {node: '>=20', pnpm: '>=9'}
 
   '@maplibre/maplibre-gl-style-spec@23.3.0':
@@ -4911,14 +4907,14 @@ snapshots:
       '@babel/helper-validator-identifier': 7.29.7
     optional: true
 
-  '@c4h/chuci@0.2.6':
+  '@c4h/chuci@1.0.0-rc1':
     dependencies:
       gsplat: 1.2.9
       swiper: 12.2.0
       three: 0.171.0
       viewerjs: 1.11.7
 
-  '@c4h/weiwudi@0.3.1(workbox-routing@7.4.0)':
+  '@c4h/weiwudi@1.0.0-rc1(workbox-routing@7.4.0)':
     dependencies:
       workbox-routing: 7.4.0
 
@@ -5234,10 +5230,10 @@ snapshots:
 
   '@mapbox/whoots-js@3.1.0': {}
 
-  '@maplat/core@https://codeload.github.com/code4history/MaplatCore/tar.gz/0bd702c455ee03a488e4ffe67979ebad30657c7a(mapbox-gl@3.17.0)(maplibre-gl@5.6.2)(ol@10.8.0)(workbox-routing@7.4.0)':
+  '@maplat/core@1.0.0-rc1(mapbox-gl@3.17.0)(maplibre-gl@5.6.2)(ol@10.8.0)(workbox-routing@7.4.0)':
     dependencies:
-      '@c4h/weiwudi': 0.3.1(workbox-routing@7.4.0)
-      '@maplat/transform': 0.5.2
+      '@c4h/weiwudi': 1.0.0-rc1(workbox-routing@7.4.0)
+      '@maplat/transform': 1.0.0-rc1
       '@turf/turf': 7.3.1
       dompurify: 3.4.12
       lodash.template: 4.18.1
@@ -5249,7 +5245,7 @@ snapshots:
     transitivePeerDependencies:
       - workbox-routing
 
-  '@maplat/transform@0.5.2':
+  '@maplat/transform@1.0.0-rc1':
     dependencies:
       '@turf/turf': 7.3.1
 

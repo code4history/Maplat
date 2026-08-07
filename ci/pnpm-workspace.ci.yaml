@@ -35,26 +35,3 @@ overrides:
 #       const expand = require("brace-expansion") として expand(pattern) する minimatch 3.x を壊す。
 #   詳細は設計書 §2.4。m9 で再評価する。
   path-to-regexp: "~1.9.0"
-
-# ---- 暫定 override（m1-t3）: m9 の一斉publish で撤去すること ----
-# Maplat は swiper を直接依存に持つが、@c4h/chuci（npm 公開版）経由でも別インスタンスを引く。
-# 同じく lodash.template を @maplat/core（npm 公開版）経由で引く。
-# どちらも上流は我々自身のパッケージであり publish すれば自然に伝播する。
-# ローカルは outer workspace の symlink により既に伝播済み。CI が npm 公開版を引く期間だけ必要。
-# 撤去条件は設計書 §2.3 と m9 の carryover を参照。
-  swiper: "^12.1.2"  # m9 で撤去
-  lodash.template: "^4.18.1"  # m9 で撤去
-
-# ---- m1-t4 暫定 override: m9 で撤去すること ----
-# Maplat は @maplat/core の新 API（sanitizeHtml / buildSlideAttrs）に依存するが、
-# CI は単独 clone のため npm 公開版 0.13.2 を引き、公開版に該当 export は存在しない
-# （npm pack で実測）。publish を待たずに CI を green にするため、CI 限定で特定コミットへ解決する。
-# package.json は ^0.13.2 のまま触らない（公開 semver 契約を保持する）。
-#
-# 固定ハッシュのため、MaplatCore に commit を積んだら本行の更新と lock 再生成が必要である。
-# 忘れると古い MaplatCore に対して green が出続ける（stale green）。
-# scripts/m1-t4/verify-ci-core-ref.mjs（AC12a）が GitHub の task branch と照合して検出する。
-#
-# 撤去は m9 で override・AC12a スクリプト・ci.yml のステップ・playwright-ci.config.ts の
-# testIgnore を**同一変更**で行うこと（設計書 §3.6.4）。
-  "@maplat/core": "github:code4history/MaplatCore#0bd702c455ee03a488e4ffe67979ebad30657c7a"
