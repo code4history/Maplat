@@ -57,7 +57,8 @@ describe("browserLanguage", () => {
 
   it("非Chrome（Firefox相当）は language をそのまま返す", () => {
     setNavigator({
-      userAgent: "Mozilla/5.0 (Windows NT 10.0; rv:120.0) Gecko/20100101 Firefox/120.0",
+      userAgent:
+        "Mozilla/5.0 (Windows NT 10.0; rv:120.0) Gecko/20100101 Firefox/120.0",
       language: "fr-FR"
     });
     expect(browserLanguage()).toBe("fr-FR");
@@ -65,7 +66,8 @@ describe("browserLanguage", () => {
 
   it("非Chromeでフォールバック候補が全てundefinedなら空文字を返す", () => {
     setNavigator({
-      userAgent: "Mozilla/5.0 (Windows NT 10.0; rv:120.0) Gecko/20100101 Firefox/120.0",
+      userAgent:
+        "Mozilla/5.0 (Windows NT 10.0; rv:120.0) Gecko/20100101 Firefox/120.0",
       browserLanguage: undefined,
       language: undefined,
       userLanguage: undefined

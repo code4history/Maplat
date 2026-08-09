@@ -69,7 +69,9 @@ describe("assertEqual", () => {
   });
 
   it("異なれば実引数を埋め込んだメッセージのErrorを投げる", () => {
-    expect(() => assertEqual("a", "b", "msg")).toThrowError("msg mismatch: a != b");
+    expect(() => assertEqual("a", "b", "msg")).toThrowError(
+      "msg mismatch: a != b"
+    );
   });
 });
 

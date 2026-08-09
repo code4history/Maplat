@@ -27,7 +27,11 @@ describe("html.ts ソーステキスト（AC3: innerHTML/insertAdjacentHTML 不�
 });
 
 function makeFakeBase(
-  overrides: Partial<{ items: ContextMenuItem[]; defaultItems: boolean; width: number }> = {}
+  overrides: Partial<{
+    items: ContextMenuItem[];
+    defaultItems: boolean;
+    width: number;
+  }> = {}
 ) {
   const container = document.createElement("div");
   const ul = document.createElement("ul");
@@ -94,7 +98,9 @@ describe("addMenuEntry", () => {
     const li = ul.children[0] as HTMLElement;
     expect(li.classList.contains(CSS_VARS.separator)).toBe(true);
     expect(li.querySelector("hr")).not.toBeNull();
-    const entry = Object.values(base.Internal.items)[0] as { separator: boolean };
+    const entry = Object.values(base.Internal.items)[0] as {
+      separator: boolean;
+    };
     expect(entry.separator).toBe(true);
   });
 
