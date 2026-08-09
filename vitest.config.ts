@@ -1,4 +1,5 @@
 import { defineConfig } from "vitest/config";
+import { fileURLToPath } from "node:url";
 
 export default defineConfig({
   test: {
@@ -12,6 +13,17 @@ export default defineConfig({
       deps: {
         inline: [/@maplat\/core/]
       }
+    }
+  },
+  resolve: {
+    alias: {
+      // m19-t9: @maplat/core（MaplatCore submodule）は package.json の exports map で
+      // "./dist/functions" サブパスを公開していない。src/function.ts のテストのみを
+      // 目的として、テスト専用スタブへ差し替える。本番ビルド用の vite.config.js には
+      // 一切影響しない（別ファイル。設計書 §5.2 参照）。
+      "@maplat/core/dist/functions": fileURLToPath(
+        new URL("./spec/support/maplat-core-functions.stub.ts", import.meta.url)
+      )
     }
   }
 });
