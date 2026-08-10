@@ -7,7 +7,6 @@
 
 <p align="center">
   <a href="https://github.com/code4history/Maplat/actions/workflows/ci.yml"><img src="https://github.com/code4history/Maplat/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
-  <a href="https://www.npmjs.com/package/@maplat/ui"><img src="https://img.shields.io/npm/v/@maplat/ui" alt="npm version" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/npm/l/@maplat/ui" alt="License" /></a>
 </p>
 
@@ -42,17 +41,21 @@ Maplat は Apache License 2.0（バージョン 0.12.2 以降）のオープン�
 <!-- SECTION 5: Quick Start -->
 ## クイックスタート
 
-> 特定リリースに紐づく情報（ADR-0012）。下記のバージョン `1.0.0-rc1` は現在の
-> リリース値です。リリースごとに更新してください。
+<!-- release-pinned:start -->
+> **現在のリリース: `1.0.0-rc1`**（リリース候補）。このブロックは本リポジトリで唯一
+> リリース版数を持つ場所です（ADR-0012）。ブロックの外はすべて 1.0 正式版を前提に
+> 書かれています。
+> npm: [`@maplat/ui`](https://www.npmjs.com/package/@maplat/ui)
+> [![npm rc](https://img.shields.io/npm/v/@maplat/ui/rc)](https://www.npmjs.com/package/@maplat/ui)
 
 ### インストール
 
 ```bash
 # pnpm（推奨）
-pnpm add @maplat/ui
+pnpm add @maplat/ui@rc
 
 # npm
-npm install @maplat/ui
+npm install @maplat/ui@rc
 ```
 
 ### 最小利用例
@@ -160,6 +163,7 @@ pnpm test         # テストの実行 (Vitest)
 pnpm typecheck    # 型チェック (TypeScript)
 pnpm lint         # リントとフォーマット (ESLint/Prettier)
 ```
+<!-- release-pinned:end -->
 
 <!-- SECTION 6: Prerequisites -->
 ## 動作環境
