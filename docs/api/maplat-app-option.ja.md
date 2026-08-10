@@ -9,7 +9,7 @@
 | `pwaWorker`        | `string`            | Service Workerのパス                   |
 | `overlay`          | `boolean`           | オーバーレイモードの有効化             |
 | `enableHideMarker` | `boolean`           | マーカー非表示機能の有効化             |
-| `enableMarkerList` | `boolean`           | マーカーリスト機能の有効化             |
+| `enableMarkerList` | `boolean`           | マーカー一覧UI の有効化                |
 | `enableBorder`     | `boolean`           | 境界線表示機能の有効化                 |
 | `stateUrl`         | `boolean`           | URLによる状態管理の有効化              |
 | `enableShare`      | `boolean`           | シェア機能の有効化                     |

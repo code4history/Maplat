@@ -13,4 +13,4 @@
 ## 関連
 
 - [UI コアライフサイクル](../ui-core-lifecycle.ja.md) — ライフサイクルフェーズと uiHooks
-- [メイン README](../README.ja.md) — インストール / クイックスタート / エコシステム
+- [メイン README](../../README.ja.md) — インストール / クイックスタート / エコシステム

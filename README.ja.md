@@ -99,6 +99,23 @@ MaplatUi.createObject(option).then(app => {
 
 ※ バージョン番号は適宜最新のものに置き換えてください。
 
+### POI 仕様（`setting.pois`）
+
+Maplat UI はアプリ/地図設定の `pois` フィールドをそのまま
+`MaplatApp.createObject` へ渡します。したがって MaplatCore が受け付ける形式は
+すべてそのまま利用できます。代表的な指定方法は次のとおりです。
+
+- **URL 文字列** — `"pois/landmarks.geojson"`（初期化時に fetch されます）
+- **地図内定義POI** — 設定に直接書いたインライン `FeatureCollection`
+- **レイヤ参照（ラッパー）** — `{ layer: <URL|FeatureCollection>, hide?, title?,
+  icon?, selectedIcon? }`。レイヤを参照しつつ、参照先のファイルを編集せずに
+  このアプリでの表示属性だけを上書きします
+
+受け付ける全形式・上書きの優先順位・未知キーの扱いは MaplatCore 側に一本化して
+記載しています。MaplatCore README の
+[POI specification (`setting.pois`)](https://github.com/code4history/MaplatCore#poi-specification-settingpois)
+を参照してください（日本語版は同 README の言語切替リンクから辿れます）。
+
 ### ライフサイクル
 
 - フェーズや uiHooks については [docs/ui-core-lifecycle.ja.md](docs/ui-core-lifecycle.ja.md) を参照してください。
@@ -167,8 +184,8 @@ pnpm add ol
 
 Vector Tile を使用する場合は、Mapbox GL JS または MapLibre GL JS も必要になる場合があります。
 
-- `mapbox-gl`: `^1.0.0 || ^2.0.0 || ^3.0.0`
-- `maplibre-gl`: `^3.0.0 || ^4.0.0`
+- `mapbox-gl`: `^2.0.0 || ^3.0.0`
+- `maplibre-gl`: `^5.0.0 || ^6.0.0`
 
 <!-- SECTION 8: Ecosystem / Related Repositories -->
 ## エコシステム
@@ -188,6 +205,9 @@ Maplat エコシステムの一部です。全容は下記エコシステム図�
 | [MaplatTin](https://github.com/code4history/MaplatTin) | Apache 2.0 | `@maplat/tin` | TIN 変換 |
 | [MaplatTransform](https://github.com/code4history/MaplatTransform) | Apache 2.0 | `@maplat/transform` | 座標変換 |
 | [MaplatEditor](https://github.com/code4history/MaplatEditor) | Apache 2.0 | — | データ作成ツール（デスクトップ） |
+| [Chuci](https://github.com/code4history/Chuci) | MIT | `@c4h/chuci` | マルチメディアスワイパー/ビューア Web Components |
+| [Quyuan](https://github.com/code4history/Quyuan) | MIT | `@c4h/quyuan` | GeoJSON テンプレートエンジン＋マルチメディアビューア Web Components |
+| [Weiwudi](https://github.com/code4history/Weiwudi) | MIT | `@c4h/weiwudi` | タイルキャッシュ用 Service Worker |
 
 > MaplatEditor は上記ビューアライブラリが描画する地図・POI を作成する
 > データ作成ツールです。Maplat エコシステムはエンドツーエンド:
