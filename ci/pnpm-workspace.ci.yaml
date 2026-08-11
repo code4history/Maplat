@@ -1,0 +1,46 @@
+# CI 専用の pnpm 設定（m1-t2）
+#
+# なぜリポジトリ直下の pnpm-workspace.yaml ではなくここに置くか:
+#   pnpm 11 は allowBuilds を pnpm-workspace.yaml からしか読まない（package.json の
+#   pnpm フィールドも .npmrc も効かないことを実測）。しかし pnpm-workspace.yaml が
+#   リポジトリ直下に存在すると、pnpm はそのディレクトリを workspace ルートと判定する
+#   （packages: の有無は無関係。実測）。ローカル開発では superproject（Maplats）が
+#   workspace ルートであり、リポジトリ内で pnpm run を1回実行しただけで単独 install が
+#   走って内部パッケージの symlink が壊れる。
+#
+#   CI は各リポジトリを単独 clone するため workspace ルートになって困らない。そこで
+#   ファイル名を pnpm が読まないものにしてコミットし、CI の install 直前に
+#   pnpm-workspace.yaml へコピーする。
+#
+# 中身の出自: CI と同条件（CI=true・--no-ignore-scripts・単独 clone 相当）で
+#   pnpm install を実行し、ERR_PNPM_IGNORED_BUILDS が報告したパッケージを全数採録した。
+#   増減した場合は同じ手順で測り直すこと。
+
+allowBuilds:
+  "@parcel/watcher": true
+  esbuild: true
+  less: true
+
+overrides:
+
+# ---- 恒久 override（m1-t3）----
+# 第三者依存の脆弱性。上流の更新を待つしかないため恒久。
+# audit の下限（>=X）ではなく系列を留める spec を書くこと（>=X だと未検証の上位メジャーを引く）。
+#   例: path-to-regexp は page@1.11.6 が 1.x API 前提のため ~1.9.0 に留める（>=1.9.0 だと 8.4.2 へ解決して壊れる）。
+#
+# 既知除外: brace-expansion <=5.0.7（high / DoS via unbounded expansion length）は override しない。
+#   (a) 我々の経路では到達しない — pwa-asset-generator > pretty > js-beautify は library API を呼び、
+#       editorconfig / glob を require する cli.js を通らないため実行時にロードされない。
+#   (b) 修正版 ^5.0.8 は module.exports が function から object へ変わっており、
+#       const expand = require("brace-expansion") として expand(pattern) する minimatch 3.x を壊す。
+#   詳細は設計書 §2.4。m9 で再評価する。
+  path-to-regexp: "~1.9.0"
+
+# 自組織パッケージは publisher が我々自身のため、pnpm 11 既定の 24h 隔離
+# （minimumReleaseAge=1440・サプライチェーン保護）の対象外とする。第三者依存への
+# 保護は既定のまま維持する。リリーストレインの publish 直後に CI が自パッケージを
+# 解決できるようにする恒久設定（m9-t0。rc1 publish 直後の全 CI が
+# ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION で停止した実測に基づく）
+minimumReleaseAgeExclude:
+  - "@maplat/*"
+  - "@c4h/*"

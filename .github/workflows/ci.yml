@@ -28,13 +28,21 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
         with:
-          version: 9
+          # ローカル開発と同じ pnpm 11 系にメジャー固定（m1-t1）。
+          # pnpm 11 は package.json の pnpm フィールドを読まないため、
+          # overrides は m1-t2 で不要と実測し撤去。allowBuilds は必要なため ci/pnpm-workspace.ci.yaml へ分離した
+          version: 11
 
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
+
+      # pnpm 11 は allowBuilds を pnpm-workspace.yaml からしか読まない。ローカルでは同ファイルが
+      # workspace ルート誤認を起こすためリポジトリ直下には置かず、CI でのみ展開する（m1-t2）
+      - name: Apply CI-only pnpm config
+        run: cp ci/pnpm-workspace.ci.yaml pnpm-workspace.yaml
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -46,11 +54,62 @@ jobs:
         run: pnpm typecheck
 
       - name: Run tests
-        # テストファイルが未整備のため0件を許容する(実テスト整備は #250 の継続課題)
-        run: pnpm exec vitest run --passWithNoTests
+        run: pnpm exec vitest run
 
       - name: Build package
         run: pnpm build
 
       - name: Build demo
         run: pnpm build:demo
+
+
+  e2e:
+    name: E2E (Playwright)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          # ローカル開発と同じ pnpm 11 系にメジャー固定（m1-t1）。
+          # pnpm 11 は package.json の pnpm フィールドを読まないため、
+          # overrides は m1-t2 で不要と実測し撤去。allowBuilds は必要なため ci/pnpm-workspace.ci.yaml へ分離した
+          version: 11
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: 'pnpm'
+
+      # pnpm 11 は allowBuilds を pnpm-workspace.yaml からしか読まない。ローカルでは同ファイルが
+      # workspace ルート誤認を起こすためリポジトリ直下には置かず、CI でのみ展開する（m1-t2）
+      - name: Apply CI-only pnpm config
+        run: cp ci/pnpm-workspace.ci.yaml pnpm-workspace.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install chromium --with-deps
+
+      # m1-t5 のブラウザ E2E は事前バンドルした probe を使うため、
+      # spec の実行前に probe を build する必要がある（m1-t4 と同方式）。
+      # これが無いと probe asset が 404 になり、前提テストが落ちる。
+      - name: Build m1-t5 E2E probe
+        run: pnpm run pretest:e2e:m1-t5
+
+      - name: Run E2E tests
+        run: pnpm run test:e2e:ci
+
+      - name: Upload test results on failure
+        uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/

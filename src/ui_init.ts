@@ -1,4 +1,4 @@
-import { MaplatApp as Core, MaplatApp } from "@maplat/core";
+import { MaplatApp as Core, MaplatApp, sanitizeHtml } from "@maplat/core";
 import pointer from "./pointer_images";
 import { Swiper } from "./swiper_ex";
 import { Manipulation, Navigation, Pagination } from "swiper/modules";
@@ -25,7 +25,9 @@ import {
   ellips,
   encBytes,
   isBasemap,
-  prepareModal
+  prepareModal,
+  renderLicenseCell,
+  resolveLicenseFallback
 } from "./ui_utils";
 
 import { poiWebControl } from "./ui_marker";
@@ -35,6 +37,7 @@ import type { MaplatAppOption } from "./types";
 import i18n from "i18next";
 import i18nHttpBackend from "i18next-http-backend";
 import browserLanguage from "./browserlanguage";
+// m1-t4: サニタイズ層（許可リストの正本は MaplatCore/src/sanitize.ts）
 
 export const META_KEYS = [
   "title",
@@ -877,9 +880,9 @@ function initModalHandlers(ui: MaplatUi) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           checkbox.addEventListener("change", (e: any) => {
             if (e.target.checked) {
-              core.showPoiLayer(layer.id);
+              core.showPoiLayer(layer.namespaceID);
             } else {
-              core.hidePoiLayer(layer.id);
+              core.hidePoiLayer(layer.namespaceID);
             }
           });
 
@@ -1001,24 +1004,52 @@ function initModalHandlers(ui: MaplatUi) {
               (mapData as any)[key];
           const container = mapDiv.querySelector(`.modal_map .${key}_div`);
           if (container) {
+            if (key === "license" || key === "dataLicense") {
+              // m6-t2: Note は license 分岐内で明示的に読む。Maplat の META_KEYS には足さない
+              // (足すと :1543 の DOM 生成が独立の dt/dd 行を作り、license 行の中に入れ子で出す
+              // 設計と矛盾する)。対応は1行で — license→licenseNote / dataLicense→dataLicenseNote。
+              const noteKey =
+                key === "license" ? "licenseNote" : "dataLicenseNote";
+              const noteRaw = mapData.get
+                ? mapData.get(noteKey)
+                : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  (mapData as any)[noteKey];
+              // ui.translate を通してから渡す (license 自体は単一の ASCII 語彙なので翻訳しない)
+              const note = noteRaw ? ui.translate!(noteRaw) : "";
+              // m6-t3: license / dataLicense が空のとき地図種別に応じたフォールバック値を代入する。
+              // isWmts が不在の時はベースマップ扱い（安全側: All right reserved へ倒す）
+              const isWmts =
+                typeof (mapData as { isWmts?: () => boolean }).isWmts ===
+                "function"
+                  ? (mapData as { isWmts: () => boolean }).isWmts()
+                  : true;
+              const effectiveLicense = resolveLicenseFallback(
+                key,
+                val as string | undefined,
+                isWmts
+              );
+              (container as HTMLElement).style.display = "block";
+              const contentEl = container.querySelector(`.${key}_dd`);
+              if (contentEl) {
+                // renderLicenseCell に集約 (license / dataLicense が同じ処理を受けることを
+                // 同一関数呼び出しとして表す)。sink は textContent。
+                renderLicenseCell(
+                  contentEl as HTMLElement,
+                  effectiveLicense,
+                  note || undefined,
+                  fileName => pointer[fileName] || `assets/parts/${fileName}`
+                );
+              }
+              return;
+            }
             if (val) {
               (container as HTMLElement).style.display = "block";
               const contentEl = container.querySelector(`.${key}_dd`);
               if (contentEl) {
-                if (key === "license" || key === "dataLicense") {
-                  const fileName = (val as string)
-                    .toLowerCase()
-                    .replace(/ /g, "_");
-
-                  const iconUrl =
-                    pointer[`${fileName}.png`] ||
-                    `assets/parts/${fileName}.png`;
-                  (contentEl as HTMLElement).innerHTML =
-                    `<img src="${iconUrl}" class="license" />`;
-                } else {
-                  (contentEl as HTMLElement).innerHTML =
-                    ui.translate!(val) || "";
-                }
+                // m1-t4 (S5): POI 由来の値が入りうるためサニタイズする
+                (contentEl as HTMLElement).innerHTML = sanitizeHtml(
+                  ui.translate!(val) || ""
+                );
               }
             } else {
               (container as HTMLElement).style.display = "none";

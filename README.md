@@ -7,7 +7,6 @@
 
 <p align="center">
   <a href="https://github.com/code4history/Maplat/actions/workflows/ci.yml"><img src="https://github.com/code4history/Maplat/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
-  <a href="https://www.npmjs.com/package/@maplat/ui"><img src="https://img.shields.io/npm/v/@maplat/ui" alt="npm version" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/npm/l/@maplat/ui" alt="License" /></a>
 </p>
 
@@ -35,23 +34,30 @@ Maplat is open-source under the Apache License 2.0 (from version 0.12.2).
 - Historical map / illustrated map viewer with nonlinear but homeomorphic coordinate transformation
 - GPS / accurate map collaboration without distorting the original map image
 - Pluggable base maps (OpenLayers-based; optional Mapbox GL JS / MapLibre GL JS for vector tiles)
-- PWA-ready application shell (manifest, service worker, share, URL state)
+- PWA-ready application shell (manifest, Service Worker, share, URL state)
+- Viewer UI available in 11 languages: English, Japanese, German, Spanish,
+  French, Indonesian, Korean, Thai, Vietnamese, Chinese (Simplified), and
+  Chinese (Traditional)
 - Open-source (Apache 2.0 from version 0.12.2) with a companion desktop editor (MaplatEditor)
 
 <!-- SECTION 5: Quick Start -->
 ## Quick Start
 
-> Release-dependent information (ADR-0012). The version `0.12.2` below is the
-> current release; update it on each new release.
+<!-- release-pinned:start -->
+> **Current release: `1.0.0-rc1`** — a release candidate. This block is the only place in
+> this repository that carries a release version (ADR-0012); everything outside it is
+> written against the 1.0 release.
+> npm: [`@maplat/ui`](https://www.npmjs.com/package/@maplat/ui)
+> [![npm rc](https://img.shields.io/npm/v/@maplat/ui/rc)](https://www.npmjs.com/package/@maplat/ui)
 
 ### Install
 
 ```bash
 # pnpm (recommended)
-pnpm add @maplat/ui
+pnpm add @maplat/ui@rc
 
 # npm
-npm install @maplat/ui
+npm install @maplat/ui@rc
 ```
 
 ### Minimal usage
@@ -82,8 +88,8 @@ separately.
 <script src="https://cdn.jsdelivr.net/npm/ol@10/dist/ol.min.js"></script>
 
 <!-- Maplat UI -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@maplat/ui@0.12.2/dist/maplat_ui.css">
-<script src="https://cdn.jsdelivr.net/npm/@maplat/ui@0.12.2/dist/maplat_ui.umd.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@maplat/ui@1.0.0-rc1/dist/maplat_ui.css">
+<script src="https://cdn.jsdelivr.net/npm/@maplat/ui@1.0.0-rc1/dist/maplat_ui.umd.js"></script>
 
 <div id="map_div"></div>
 <script>
@@ -98,6 +104,24 @@ separately.
 ```
 
 *Note: Make sure to use the latest compatible versions.*
+
+### POI specification (`setting.pois`)
+
+Maplat UI passes the `pois` field of an app/map setting straight through to
+`MaplatApp.createObject`, so every form accepted by MaplatCore is accepted here
+unchanged. The common ways to point at POI data are:
+
+- **URL string** — `"pois/landmarks.geojson"`, fetched at initialization
+- **Map-embedded POI** — an inline `FeatureCollection` written directly in the
+  setting
+- **Layer ref (wrapper)** — `{ layer: <URL|FeatureCollection>, hide?, title?,
+  icon?, selectedIcon? }`, which references a layer and overrides only its
+  presentation for this app without editing the referenced file
+
+The full list of accepted forms, the override precedence, and the rule for
+unknown keys are documented once in MaplatCore; see
+[POI specification (`setting.pois`)](https://github.com/code4history/MaplatCore#poi-specification-settingpois)
+in the MaplatCore README.
 
 ### Lifecycle
 
@@ -143,6 +167,7 @@ pnpm test         # Run tests (Vitest)
 pnpm typecheck    # Run type checks (TypeScript)
 pnpm lint         # Run linter and formatter (ESLint/Prettier)
 ```
+<!-- release-pinned:end -->
 
 <!-- SECTION 6: Prerequisites -->
 ## Prerequisites
@@ -167,8 +192,8 @@ pnpm add ol
 
 If you use Vector Tiles, you may also need Mapbox GL JS or MapLibre GL JS:
 
-- `mapbox-gl`: `^1.0.0 || ^2.0.0 || ^3.0.0`
-- `maplibre-gl`: `^3.0.0 || ^4.0.0`
+- `mapbox-gl`: `^2.0.0 || ^3.0.0`
+- `maplibre-gl`: `^5.0.0 || ^6.0.0`
 
 <!-- SECTION 8: Ecosystem / Related Repositories -->
 ## Ecosystem
@@ -188,6 +213,9 @@ repository; the Sister repositories table below is the public substitute)*
 | [MaplatTin](https://github.com/code4history/MaplatTin) | Apache 2.0 | `@maplat/tin` | TIN conversion |
 | [MaplatTransform](https://github.com/code4history/MaplatTransform) | Apache 2.0 | `@maplat/transform` | Coordinate transform |
 | [MaplatEditor](https://github.com/code4history/MaplatEditor) | Apache 2.0 | — | Data authoring tool (desktop) |
+| [Chuci](https://github.com/code4history/Chuci) | MIT | `@c4h/chuci` | Multimedia swiper & viewer Web Components |
+| [Quyuan](https://github.com/code4history/Quyuan) | MIT | `@c4h/quyuan` | GeoJSON template engine + multimedia viewer Web Components |
+| [Weiwudi](https://github.com/code4history/Weiwudi) | MIT | `@c4h/weiwudi` | Service Worker for tile cache |
 
 > MaplatEditor is the data authoring tool used to create the maps and POIs
 > that the viewers above render. The Maplat ecosystem is end-to-end:
@@ -230,7 +258,7 @@ limitations under the License.
 
 > **Past versions**: Versions before 0.12.2 were distributed under the
 > Maplat Limited License 1.1. The license restoration to Apache 2.0 takes
-> effect from version 0.12.2 onward. Earlier versions available on npmjs.com
+> effect from version 1.0.0-rc1 onward. Earlier versions available on npmjs.com
 > remain under their original limited-license terms.
 
 <!-- SECTION 11: Contributors / Sponsors -->

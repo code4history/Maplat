@@ -1,0 +1,10 @@
+<!doctype html>
+<!-- M1-T4 AC5b: ブラウザ側サニタイズ検証用のテスト専用ページ。製品には含めない。
+     bare specifier を残さない事前バンドルを読むため、dev サーバの依存最適化に依存しない。 -->
+<html lang="ja">
+  <head><meta charset="utf-8" /><title>m1-t4 sanitize probe</title></head>
+  <body>
+    <div id="probe">ready</div>
+    <script src="./dist-probe/sanitize-probe.js"></script>
+  </body>
+</html>

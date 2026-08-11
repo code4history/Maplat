@@ -3,6 +3,8 @@ import "@c4h/chuci";
 import QRCode from "qrcode";
 import { point, polygon, booleanPointInPolygon } from "@turf/turf";
 import { createElement, resolveRelativeLink, prepareModal } from "./ui_utils";
+// m1-t4: サニタイズ層（許可リストの正本は MaplatCore/src/sanitize.ts）
+import { sanitizeHtml, buildSlideAttrs } from "@maplat/core";
 
 function detectMediaType(src: string): string {
   if (src.includes("youtube.com") || src.includes("youtu.be")) {
@@ -34,43 +36,55 @@ export function poiWebControl(
   // let poiSwiper: SwiperInstance | undefined;
   div.innerHTML = "";
 
-  if (data.url || data.html) {
-    const htmlDiv =
-      createElement(`<div class="${ui.enablePoiHtmlNoScroll ? "" : " embed-responsive embed-responsive-60vh"}">
-    <iframe class="poi_iframe iframe_poi" frameborder="0" src=""${ui.enablePoiHtmlNoScroll ? ` onload="window.addEventListener('message', (e) =>{if (e.data[0] == 'setHeight') {this.style.height = e.data[1];}});" scrolling="no"` : ""}></iframe>
+  if (data.html) {
+    // m1-t5: POI の html は **iframe を使わず** Shadow DOM へ描画する。
+    //
+    // なぜ iframe をやめたか（設計書 v2.1 §2.2 / §3.1）:
+    //   旧実装は srcdoc の中身の高さを ResizeObserver で測り postMessage で親へ送っていた。
+    //   この往復が必要なのは中身が**別のブラウジングコンテキスト**にいるからであり、
+    //   同一文書へ描画すれば要素は自然に流れて測定も通信も要らない。
+    //   高さ同期の経路を消せば、それを守るための検証（送信元・値の妥当性）も不要になる。
+    //
+    // **Shadow DOM はセキュリティ境界ではない**（設計書 §3.2）:
+    //   mode: "open" の shadow root は親から到達でき、生の HTML を入れれば
+    //   親ページ権限でスクリプトが動く。Shadow DOM が担うのは**スタイル隔離だけ**である。
+    //   防御境界は sanitizeHtml() であり、**生の data.html を描画する分岐を作ってはならない**。
+    const host = createElement(
+      `<div class="poi_html_host${
+        ui.enablePoiHtmlNoScroll ? "" : " poi_html_host--scroll"
+      }"></div>`
+    )[0] as HTMLElement;
+    div.appendChild(host);
+
+    const shadow = host.attachShadow({ mode: "open" });
+    // 旧実装が iframe 文書へ注入していた style のうち、host に意味があるものだけを移植する。
+    // html, body { height: 100vh } は iframe 文書向けなので移植しない（host に文書は無い）。
+    const style = document.createElement("style");
+    style.textContent = "img { width: 100%; }";
+    shadow.appendChild(style);
+
+    const body = document.createElement("div");
+    // ここが唯一の描画点である。入力は必ず sanitizeHtml() の戻り値でなければならない。
+    body.innerHTML = sanitizeHtml(ui.translate!(data.html) || "");
+    shadow.appendChild(body);
+  } else if (data.url) {
+    // 外部サイトの表示は iframe のまま維持する（内容を我々が合成するわけではない）。
+    //
+    // m1-t5: インライン onload= による message リスナ登録は**廃止**した。
+    //   旧実装は e.source も e.origin も検証せず style.height へ代入していた。
+    //   実測では data.url の実体はすべて外部サイト（Wikipedia）であり、
+    //   外部サイトが ["setHeight", …] を送ることはないため実質デッドコードだった
+    //   （設計書 §2.4）。高さは従来どおり固定コンテナとスクロールに任せる。
+    const htmlDiv = createElement(`<div class="${
+      ui.enablePoiHtmlNoScroll ? "" : " embed-responsive embed-responsive-60vh"
+    }">
+    <iframe class="poi_iframe iframe_poi" frameborder="0" src=""${
+      ui.enablePoiHtmlNoScroll ? ` scrolling="no"` : ""
+    }></iframe>
     </div>`)[0] as HTMLElement;
     div.appendChild(htmlDiv);
     const iframe = htmlDiv.querySelector(".poi_iframe") as HTMLIFrameElement;
-
-    if (data.html) {
-      const loadEvent = (event: Event) => {
-        if (!event.currentTarget) return;
-        event.currentTarget.removeEventListener(event.type, loadEvent);
-        const cssLink = createElement(
-          '<style type="text/css">html, body { height: 100vh; }\n img { width: 100%; }</style>'
-        );
-        const jsLink = createElement(
-          `<script>
-                const heightGetter = document.querySelector("#heightGetter");
-                const resizeObserver = new ResizeObserver(entries => {
-                  window.parent.postMessage(["setHeight", (entries[0].target.clientHeight + 16) + "px"], "*");
-                });
-                if(heightGetter) resizeObserver.observe(heightGetter);
-              </script>`
-        );
-        iframe.contentDocument!.head.appendChild(cssLink[0]);
-        iframe.contentDocument!.head.appendChild(jsLink[0]);
-      };
-      iframe.addEventListener("load", loadEvent);
-      iframe.removeAttribute("src");
-      iframe.setAttribute(
-        "srcdoc",
-        `<div id="heightGetter">${ui.translate!(data.html) || ""}</div>`
-      );
-    } else {
-      iframe.removeAttribute("srcdoc");
-      iframe.setAttribute("src", ui.translate!(data.url) || "");
-    }
+    iframe.setAttribute("src", ui.translate!(data.url) || "");
   } else {
     const slides: string[] = [];
     const mediaList = (data.media || data.image) as MediaSetting[] | undefined;
@@ -102,32 +116,32 @@ export function poiWebControl(
 
         const tmpSrc = resolveRelativeLink(mediaObj.src, "img"); // Assume 'img' type resolve works for most media assets or general path
 
-        let slideAttrs = `image-url="${tmpSrc}" image-type="${mediaObj.type}"`;
-
+        // m1-t4 (S2): 属性名も POI 由来であるため、値のエスケープだけでは防げない。
+        // 旧実装は ["src","type","thumbnail","desc"] の blocklist 4件だけを除外しており、
+        // mediaObj が {"onerror":"alert(1)"} を持てば ` onerror="alert(1)"` を出力していた。
+        // buildSlideAttrs が cc-swiper-slide の固定 allowlist（設計書 §3.4）でキーを選別する。
+        const slideSource: Record<string, unknown> = {
+          "image-url": tmpSrc,
+          "image-type": mediaObj.type
+        };
         if (mediaObj.thumbnail) {
-          slideAttrs += ` thumbnail-url="${resolveRelativeLink(mediaObj.thumbnail, "img")}"`;
-        } else {
-          // Default thumbnail to src for images, but for others (video etc) this might fail if no explicit thumb provided.
+          slideSource["thumbnail-url"] = resolveRelativeLink(
+            mediaObj.thumbnail,
+            "img"
+          );
+        } else if (mediaObj.type === "image") {
           // Legacy behavior was image-only so src was thumb.
-          // For non-image types without thumbnail, Chuci might handle or show placeholder.
-          // Let's use src as thumb for images or if nothing else.
-          if (mediaObj.type === "image") {
-            slideAttrs += ` thumbnail-url="${tmpSrc}"`;
-          }
+          slideSource["thumbnail-url"] = tmpSrc;
         }
-
-        // Map other attributes
         for (const key of Object.keys(mediaObj)) {
           if (["src", "type", "thumbnail", "desc"].includes(key)) continue;
-          const val = mediaObj[key];
-          if (typeof val === "boolean") {
-            if (val) slideAttrs += ` ${key}`;
-          } else if (val !== undefined && val !== null) {
-            slideAttrs += ` ${key}="${val}"`;
-          }
+          // allowlist 外のキーは buildSlideAttrs 側で破棄される
+          slideSource[key] = mediaObj[key];
         }
 
-        slides.push(`<cc-swiper-slide ${slideAttrs}></cc-swiper-slide>`);
+        slides.push(
+          `<cc-swiper-slide ${buildSlideAttrs(slideSource)}></cc-swiper-slide>`
+        );
       });
 
       swiperStr = `    <div class="col-xs-12 poi_img_swiper">
@@ -156,9 +170,10 @@ export function poiWebControl(
 
     (htmlDiv.querySelector(".poi_address") as HTMLElement).innerText =
       ui.translate!(data.address) || "";
-    (htmlDiv.querySelector(".poi_desc") as HTMLElement).innerHTML = (
-      ui.translate!(data.desc) || ""
-    ).replace(/\n/g, "<br>");
+    // m1-t4 (S1): リモート POI の desc をサニタイズしてから代入する。
+    // \n → <br> の置換は**サニタイズ後**に行う（前だと <br> が入力扱いになり許可リストの意味が薄れる）。
+    (htmlDiv.querySelector(".poi_desc") as HTMLElement).innerHTML =
+      sanitizeHtml(ui.translate!(data.desc) || "").replace(/\n/g, "<br>");
 
     // Show/hide share buttons based on showShare parameter
     const shareButtons =

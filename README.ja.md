@@ -7,7 +7,6 @@
 
 <p align="center">
   <a href="https://github.com/code4history/Maplat/actions/workflows/ci.yml"><img src="https://github.com/code4history/Maplat/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
-  <a href="https://www.npmjs.com/package/@maplat/ui"><img src="https://img.shields.io/npm/v/@maplat/ui" alt="npm version" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/npm/l/@maplat/ui" alt="License" /></a>
 </p>
 
@@ -34,22 +33,29 @@ Maplat は Apache License 2.0（バージョン 0.12.2 以降）のオープン�
 - 元の地図画像を歪めずに GPS・正確な地図と連携
 - OpenLayers ベースの切替可能なベースマップ（Vector Tile で Mapbox GL JS / MapLibre GL JS をオプション扱い）
 - PWA 対応アプリケーションシェル（マニフェスト・Service Worker・シェア・URL 状態管理）
+- ビューア UI は11言語に対応: 英語・日本語・ドイツ語・スペイン語・
+  フランス語・インドネシア語・韓国語・タイ語・ベトナム語・簡体字中国語・
+  繁体字中国語
 - Apache 2.0（バージョン 0.12.2 以降）のオープンソース・デスクトップ向けデータ作成ツール MaplatEditor が併設
 
 <!-- SECTION 5: Quick Start -->
 ## クイックスタート
 
-> 特定リリースに紐づく情報（ADR-0012）。下記のバージョン `0.12.2` は現在の
-> リリース値です。リリースごとに更新してください。
+<!-- release-pinned:start -->
+> **現在のリリース: `1.0.0-rc1`**（リリース候補）。このブロックは本リポジトリで唯一
+> リリース版数を持つ場所です（ADR-0012）。ブロックの外はすべて 1.0 正式版を前提に
+> 書かれています。
+> npm: [`@maplat/ui`](https://www.npmjs.com/package/@maplat/ui)
+> [![npm rc](https://img.shields.io/npm/v/@maplat/ui/rc)](https://www.npmjs.com/package/@maplat/ui)
 
 ### インストール
 
 ```bash
 # pnpm（推奨）
-pnpm add @maplat/ui
+pnpm add @maplat/ui@rc
 
 # npm
-npm install @maplat/ui
+npm install @maplat/ui@rc
 ```
 
 ### 最小利用例
@@ -79,8 +85,8 @@ MaplatUi.createObject(option).then(app => {
 <script src="https://cdn.jsdelivr.net/npm/ol@10/dist/ol.min.js"></script>
 
 <!-- Maplat UI -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@maplat/ui@0.12.2/dist/maplat_ui.css">
-<script src="https://cdn.jsdelivr.net/npm/@maplat/ui@0.12.2/dist/maplat_ui.umd.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@maplat/ui@1.0.0-rc1/dist/maplat_ui.css">
+<script src="https://cdn.jsdelivr.net/npm/@maplat/ui@1.0.0-rc1/dist/maplat_ui.umd.js"></script>
 
 <div id="map_div"></div>
 <script>
@@ -95,6 +101,23 @@ MaplatUi.createObject(option).then(app => {
 ```
 
 ※ バージョン番号は適宜最新のものに置き換えてください。
+
+### POI 仕様（`setting.pois`）
+
+Maplat UI はアプリ/地図設定の `pois` フィールドをそのまま
+`MaplatApp.createObject` へ渡します。したがって MaplatCore が受け付ける形式は
+すべてそのまま利用できます。代表的な指定方法は次のとおりです。
+
+- **URL 文字列** — `"pois/landmarks.geojson"`（初期化時に fetch されます）
+- **地図内定義POI** — 設定に直接書いたインライン `FeatureCollection`
+- **レイヤ参照（ラッパー）** — `{ layer: <URL|FeatureCollection>, hide?, title?,
+  icon?, selectedIcon? }`。レイヤを参照しつつ、参照先のファイルを編集せずに
+  このアプリでの表示属性だけを上書きします
+
+受け付ける全形式・上書きの優先順位・未知キーの扱いは MaplatCore 側に一本化して
+記載しています。MaplatCore README の
+[POI specification (`setting.pois`)](https://github.com/code4history/MaplatCore#poi-specification-settingpois)
+を参照してください（日本語版は同 README の言語切替リンクから辿れます）。
 
 ### ライフサイクル
 
@@ -140,6 +163,7 @@ pnpm test         # テストの実行 (Vitest)
 pnpm typecheck    # 型チェック (TypeScript)
 pnpm lint         # リントとフォーマット (ESLint/Prettier)
 ```
+<!-- release-pinned:end -->
 
 <!-- SECTION 6: Prerequisites -->
 ## 動作環境
@@ -164,8 +188,8 @@ pnpm add ol
 
 Vector Tile を使用する場合は、Mapbox GL JS または MapLibre GL JS も必要になる場合があります。
 
-- `mapbox-gl`: `^1.0.0 || ^2.0.0 || ^3.0.0`
-- `maplibre-gl`: `^3.0.0 || ^4.0.0`
+- `mapbox-gl`: `^2.0.0 || ^3.0.0`
+- `maplibre-gl`: `^5.0.0 || ^6.0.0`
 
 <!-- SECTION 8: Ecosystem / Related Repositories -->
 ## エコシステム
@@ -185,6 +209,9 @@ Maplat エコシステムの一部です。全容は下記エコシステム図�
 | [MaplatTin](https://github.com/code4history/MaplatTin) | Apache 2.0 | `@maplat/tin` | TIN 変換 |
 | [MaplatTransform](https://github.com/code4history/MaplatTransform) | Apache 2.0 | `@maplat/transform` | 座標変換 |
 | [MaplatEditor](https://github.com/code4history/MaplatEditor) | Apache 2.0 | — | データ作成ツール（デスクトップ） |
+| [Chuci](https://github.com/code4history/Chuci) | MIT | `@c4h/chuci` | マルチメディアスワイパー/ビューア Web Components |
+| [Quyuan](https://github.com/code4history/Quyuan) | MIT | `@c4h/quyuan` | GeoJSON テンプレートエンジン＋マルチメディアビューア Web Components |
+| [Weiwudi](https://github.com/code4history/Weiwudi) | MIT | `@c4h/weiwudi` | タイルキャッシュ用 Service Worker |
 
 > MaplatEditor は上記ビューアライブラリが描画する地図・POI を作成する
 > データ作成ツールです。Maplat エコシステムはエンドツーエンド:

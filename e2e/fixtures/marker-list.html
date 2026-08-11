@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <base href="/" />
+  <title>Maplat E2E — Marker List Layer Toggle (m18-t6)</title>
+  <meta content="yes" name="apple-mobile-web-app-capable" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+  <link rel="icon" type="image/png" href="/parts/favicon.png" />
+  <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.6.1/mapbox-gl.css" rel="stylesheet" />
+  <link href="https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.css" rel="stylesheet" />
+  <style>
+    .mainview {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="mainview">
+    <div id="map_div"></div>
+  </div>
+  <div id="status">Initializing</div>
+  <script src="https://cdn.jsdelivr.net/npm/ol@10.6.1/dist/ol.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@10.6.1/ol.css" />
+  <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v1.6.1/mapbox-gl.js"></script>
+  <script src="https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.js"></script>
+  <script type="module">
+    import { MaplatUi } from '/src/index.ts';
+
+    const mapboxgl = window.mapboxgl;
+    const maplibregl = window.maplibregl;
+
+    // Query param: mode=nocollision (default) | collision
+    const params = new URLSearchParams(window.location.search);
+    const mode = params.get('mode') || 'nocollision';
+
+    // ---- App-level POIs ----
+    // Non-collision: FC with properties.id = "app_layer_a"
+    // Collision: plain array → key = "main"
+    let appPois;
+    let sourcePoisOverride;
+    if (mode === 'collision') {
+      // Plain array → normalize_pois.ts creates key "main"
+      appPois = [
+        { id: "app_p1", name: "App POI 1", lng: 141.150, lat: 39.700 }
+      ];
+      sourcePoisOverride = [
+        { id: "map_p1", name: "Map POI 1", lng: 141.152, lat: 39.709 }
+      ];
+    } else {
+      // FeatureCollection → key = properties.id
+      appPois = {
+        type: "FeatureCollection",
+        properties: { id: "app_layer_a" },
+        features: [
+          {
+            type: "Feature",
+            properties: { id: "app_p1", name: "App POI 1" },
+            geometry: { type: "Point", coordinates: [141.150, 39.700] }
+          }
+        ]
+      };
+      sourcePoisOverride = {
+        type: "FeatureCollection",
+        properties: { id: "map_layer_b" },
+        features: [
+          {
+            type: "Feature",
+            properties: { id: "map_p1", name: "Map POI 1" },
+            geometry: { type: "Point", coordinates: [141.152, 39.709] }
+          }
+        ]
+      };
+    }
+
+    const setting = {
+      appName: "m18-t6 E2E Test",
+      lang: "ja",
+      homePosition: [141.149989, 39.699952],
+      defaultZoom: 15,
+      minZoom: 10,
+      maxZoom: 15,
+      zoomRestriction: true,
+      startFrom: "morioka_ndl2",
+      pois: appPois,
+      sources: [
+        {
+          mapID: "morioka_ndl2",
+          settingFile: "e2e/fixtures/maps/morioka_ndl.json",
+          url: "tiles/morioka_ndl/{z}/{x}/{y}.jpg",
+          thumbnail: "tmbs/morioka_ndl.jpg",
+          label: "1644 (Maplat)",
+          pois: sourcePoisOverride
+        },
+        {
+          mapID: "osm",
+          title: { ja: "OSM", en: "OSM" },
+          label: "OSM",
+          url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+          maxZoom: 19,
+          maptype: "base"
+        }
+      ]
+    };
+
+    const option = {
+      mapboxgl,
+      maplibregl,
+      mapboxToken: "",
+      setting,
+      markerList: true,
+      enableMarkerList: true,
+      pwaManifest: false,
+      restoreSession: false,
+      stateUrl: false,
+      enableCache: false,
+      fakeGps: true,
+      fakeCenter: { ja: "盛岡市", en: "Morioka" },
+      fakeRadius: 10
+    };
+
+    MaplatUi.createObject(option).then(function (ui) {
+      window.__maplatUi = ui;
+      window.__maplatApp = ui.core;
+      document.getElementById("status").textContent = "READY";
+    }).catch(function (err) {
+      console.error("MaplatUi init error:", err);
+      document.getElementById("status").textContent = "ERROR: " + err.message;
+    });
+  </script>
+</body>
+
+</html>

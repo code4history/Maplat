@@ -48,6 +48,8 @@ import minus from "../assets/parts/minus.png";
 // @ts-expect-error - PNG imports handled by Vite
 import noimg from "../assets/parts/no_image.png";
 // @ts-expect-error - PNG imports handled by Vite
+import odbl from "../assets/parts/odbl.png";
+// @ts-expect-error - PNG imports handled by Vite
 import overlay from "../assets/parts/overlay.png";
 // @ts-expect-error - PNG imports handled by Vite
 import pd from "../assets/parts/pd.png";
@@ -90,6 +92,7 @@ const pointer: Record<string, string> = {
   "loading_image.png": loading_i,
   "minus.png": minus,
   "no_image.png": noimg,
+  "odbl.png": odbl,
   "osm.jpg": assets.osm,
   "overlay.png": overlay,
   "pd.png": pd,

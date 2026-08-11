@@ -9,7 +9,7 @@ Key properties of the option object passed during initialization.
 | `pwaWorker`        | `string`            | Service Worker path                 |
 | `overlay`          | `boolean`           | Enable overlay mode                 |
 | `enableHideMarker` | `boolean`           | Enable marker hiding                |
-| `enableMarkerList` | `boolean`           | Enable marker list                  |
+| `enableMarkerList` | `boolean`           | Marker List UI                      |
 | `enableBorder`     | `boolean`           | Enable border display               |
 | `stateUrl`         | `boolean`           | Enable URL state management         |
 | `enableShare`      | `boolean`           | Enable share feature                |

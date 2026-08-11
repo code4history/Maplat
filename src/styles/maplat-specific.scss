@@ -326,6 +326,22 @@ input[type="checkbox"].markerlist:checked+label.check>div {
   padding-bottom: 60vh;
 }
 
+// m1-t5: POI html の描画先（Shadow DOM の host）。
+// .embed-responsive-60vh は padding-bottom 方式で、内部の iframe が自前で
+// スクロールすることを前提にした高さ確保である。host には iframe が無く
+// padding では内部スクロールが生じないため、流用せず専用クラスを設ける。
+.poi_html_host {
+  display: block;
+  width: 100%;
+}
+
+// enablePoiHtmlNoScroll が false のとき。旧実装の 60vh 相当を保ちつつ、
+// iframe が担っていた内部スクロールを host 自身が担う。
+.poi_html_host--scroll {
+  height: 60vh;
+  overflow-y: auto;
+}
+
 .poi_data {
   display: inline-block;
   width: 100%;

@@ -13,4 +13,4 @@ The conceptual explanation and usage patterns live in the
 ## Related
 
 - [UI core lifecycle](../ui-core-lifecycle.md) — lifecycle phases and uiHooks
-- [Main README](../README.md) — install / quick start / ecosystem
+- [Main README](../../README.md) — install / quick start / ecosystem

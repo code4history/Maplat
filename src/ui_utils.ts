@@ -132,3 +132,64 @@ export function encBytes(bytes: number): string {
   }
   return `${Math.floor(bytes * 10) / 10} ${suffix}`;
 }
+
+// M6-T2: ライセンスセル (copyright モーダルの license / dataLicense 行) の共通描画関数。
+// 規則 (§4.3 / 親設計 §2.4): 「アイコンがあれば出す。Note があればその下に文章を出す。
+// 値が Custom ならアイコン無しで文章だけ出す」。
+//
+// sink は textContent (m1-t5 の sink 撤去方針を踏襲し innerHTML は使わない)。Note は
+// ライセンスの説明文でマークアップを必要としないため、最も狭い sink を選ぶ。
+//
+// iconUrlFor は pointer_images の解決を呼び出し側 (ui_init.ts) から渡す。
+// ui_utils.ts から pointer_images を直接 import すると @maplat/core の assets 依存が太るため。
+//
+// アイコンを持たない語彙の保存値。Editor 側の LICENSE_WITHOUT_ICON (= "Custom") と文字列を
+// 揃えておく (レビュー Minor m2: 直書きの二重は避け、ここで一元化する。Editor とは別 repo のため
+// import はできず、値の一致をコメントで担保する)。
+const LICENSE_WITHOUT_ICON = "Custom";
+
+export function renderLicenseCell(
+  contentEl: HTMLElement,
+  license: string | undefined,
+  note: string | undefined,
+  iconUrlFor: (fileName: string) => string
+): void {
+  const children: (Node)[] = [];
+  // Custom はアイコンを持たない語彙。アイコン無しで Note 文章だけを出す。
+  if (license && license !== LICENSE_WITHOUT_ICON) {
+    const fileName = license.toLowerCase().replace(/ /g, "_") + ".png";
+    const licenseImg = document.createElement("img");
+    licenseImg.className = "license";
+    // プロパティ代入。innerHTML への補間は使わない (m1-t5: src 属性を閉じる XSS を防ぐ)
+    licenseImg.src = iconUrlFor(fileName);
+    children.push(licenseImg);
+  }
+  if (note) {
+    const noteDiv = document.createElement("div");
+    noteDiv.className = "license_note";
+    // textContent sink。Note の HTML を解釈しない
+    noteDiv.textContent = note;
+    children.push(noteDiv);
+  }
+  contentEl.replaceChildren(...children);
+}
+
+/**
+ * m6-t3: license / dataLicense が空のとき、地図種別に応じたフォールバック値を返す。
+ *
+ * ベースマップ (isWmts = true): license / dataLicense ともに "All right reserved"
+ * Maplat 地図 (isWmts = false):
+ *   license → "All right reserved" (MapEdit.vue の既定値)
+ *   dataLicense → "CC BY-SA" (MapEdit.vue の既定値。人間確認済み)
+ */
+export function resolveLicenseFallback(
+  key: "license" | "dataLicense",
+  val: string | undefined,
+  isWmts: boolean
+): string {
+  if (val) return val;
+  if (key === "license") return "All right reserved";
+  // dataLicense
+  return isWmts ? "All right reserved" : "CC BY-SA";
+}
+
