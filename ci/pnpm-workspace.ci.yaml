@@ -22,6 +22,12 @@ allowBuilds:
   less: true
 
 overrides:
+  # eslint / vitest まわりが引く js-yaml。>=4.0.0 <4.3.1 の high。4系の最新へ留める。
+  js-yaml: "^4.3.1"
+  # ajv > fast-uri ほか。>=3.0.0 <3.1.5 の high。
+  fast-uri: "^3.1.5"
+  # ビルド系各所が引く postcss。<8.5.23 の high。8系の最新へ留める。
+  postcss: "^8.5.23"
 
   # postcss > nanoid。<3.3.18 の high（CVE-2026-67213）。3系の最新へ留める。
   # 正本: scripts/m1-t3/overrides.json（outer）。ここは その部分集合である
