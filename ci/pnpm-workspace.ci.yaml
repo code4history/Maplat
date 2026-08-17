@@ -23,6 +23,9 @@ allowBuilds:
 
 overrides:
 
+  # postcss > nanoid。<3.3.18 の high（CVE-2026-67213）。3系の最新へ留める。
+  # 正本: scripts/m1-t3/overrides.json（outer）。ここは その部分集合である
+  nanoid: "^3.3.18"
 # ---- 恒久 override（m1-t3）----
 # 第三者依存の脆弱性。上流の更新を待つしかないため恒久。
 # audit の下限（>=X）ではなく系列を留める spec を書くこと（>=X だと未検証の上位メジャーを引く）。
