@@ -44,20 +44,20 @@ Maplat is open-source under the Apache License 2.0 (from version 0.12.2).
 ## Quick Start
 
 <!-- release-pinned:start -->
-> **Current release: `1.0.0-rc1`** — a release candidate. This block is the only place in
+> **Current release: `1.0.0`**. This block is the only place in
 > this repository that carries a release version (ADR-0012); everything outside it is
 > written against the 1.0 release.
 > npm: [`@maplat/ui`](https://www.npmjs.com/package/@maplat/ui)
-> [![npm rc](https://img.shields.io/npm/v/@maplat/ui/rc)](https://www.npmjs.com/package/@maplat/ui)
+> [![npm](https://img.shields.io/npm/v/@maplat/ui)](https://www.npmjs.com/package/@maplat/ui)
 
 ### Install
 
 ```bash
 # pnpm (recommended)
-pnpm add @maplat/ui@rc
+pnpm add @maplat/ui
 
 # npm
-npm install @maplat/ui@rc
+npm install @maplat/ui
 ```
 
 ### Minimal usage
@@ -88,8 +88,8 @@ separately.
 <script src="https://cdn.jsdelivr.net/npm/ol@10/dist/ol.min.js"></script>
 
 <!-- Maplat UI -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@maplat/ui@1.0.0-rc1/dist/maplat_ui.css">
-<script src="https://cdn.jsdelivr.net/npm/@maplat/ui@1.0.0-rc1/dist/maplat_ui.umd.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@maplat/ui@1.0.0/dist/maplat_ui.css">
+<script src="https://cdn.jsdelivr.net/npm/@maplat/ui@1.0.0/dist/maplat_ui.umd.js"></script>
 
 <div id="map_div"></div>
 <script>

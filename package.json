@@ -1,6 +1,6 @@
 {
   "name": "@maplat/ui",
-  "version": "1.0.0-rc1",
+  "version": "1.0.0",
   "description": "Maplat is the cool Historical Map/Illustrated Map Viewer.\nIt can transform each map coordinates with nonlinear but homeomorphic projection and makes possible that the maps can collaborate with GPS/accurate maps, without distorting original maps.",
   "type": "module",
   "main": "dist/maplat_ui.umd.js",
@@ -57,9 +57,9 @@
     "pnpm": ">=9.0.0"
   },
   "dependencies": {
-    "@c4h/chuci": "^1.0.0-rc1",
-    "@c4h/weiwudi": "^1.0.0-rc1",
-    "@maplat/core": "^1.0.0-rc1",
+    "@c4h/chuci": "^1.0.0",
+    "@c4h/weiwudi": "^1.0.0",
+    "@maplat/core": "^1.0.0",
     "@turf/turf": "^7.4.0",
     "@types/page": "^1.11.9",
     "bootstrap.native": "^5.1.6",
@@ -103,7 +103,7 @@
     "workbox-build": "^7.4.0",
     "workbox-window": "^7.4.0",
     "@playwright/test": "^1.62.1",
-    "@maplat/transform": "^1.0.0-rc1",
+    "@maplat/transform": "^1.0.0",
     "maplibre-gl": "5.6.2"
   }
 }
