@@ -36,6 +36,7 @@ import type { MaplatAppOption } from "./types";
 import i18n from "i18next";
 import i18nHttpBackend from "i18next-http-backend";
 import browserLanguage from "./browserlanguage";
+import { shouldLoop, slideRepeatCount } from "./swiper_loop";
 // m1-t4: サニタイズ層（許可リストの正本は MaplatCore/src/sanitize.ts）
 
 export const META_KEYS = [
@@ -491,7 +492,7 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
     }
   });
 
-  const baseShouldLoop = baseSources.length >= 3;
+  const baseShouldLoop = shouldLoop(baseSources.length);
   const baseSwiper = (ui.baseSwiper = new Swiper(".base-swiper", {
     modules: [Manipulation, Navigation, Pagination],
     slidesPerView: 2,
@@ -520,9 +521,7 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
     const slide = baseSwiper.clickedSlide;
     core.changeMap(slide.getAttribute("data")!);
     delete ui._selectCandidateSources;
-    baseSwiper.setSlideIndexAsSelected(
-      parseInt(slide.getAttribute("data-swiper-slide-index") || "0", 10)
-    );
+    baseSwiper.setSlideMapIDAsSelected(slide.getAttribute("data")!);
   });
   if (baseSources.length < 2) {
     core
@@ -530,7 +529,7 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
       .classList.add("single-map");
   }
 
-  const overlayShouldLoop = overlaySources.length >= 3;
+  const overlayShouldLoop = shouldLoop(overlaySources.length);
   const overlaySwiper = (ui.overlaySwiper = new Swiper(".overlay-swiper", {
     modules: [Manipulation, Navigation, Pagination],
     slidesPerView: 2,
@@ -559,9 +558,7 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
     const slide = overlaySwiper.clickedSlide;
     core.changeMap(slide.getAttribute("data")!);
     delete ui._selectCandidateSources;
-    overlaySwiper.setSlideIndexAsSelected(
-      parseInt(slide.getAttribute("data-swiper-slide-index") || "0", 10)
-    );
+    overlaySwiper.setSlideMapIDAsSelected(slide.getAttribute("data")!);
   });
   if (overlaySources.length < 2) {
     core
@@ -569,36 +566,46 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
       .classList.add("single-map");
   }
 
+  const baseSlides: string[] = [];
+  const baseRepeat = slideRepeatCount(baseSources.length);
   baseSources.forEach(source => {
     const thumbKey = source.thumbnail ? source.thumbnail.split("/").pop() : "";
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const thumbUrl = (pointer as any)[thumbKey] || source.thumbnail;
-    baseSwiper.appendSlide(
+    const baseSlide =
       `<div class="swiper-slide" data="${source.mapID}">` +
-        `<img crossorigin="anonymous" src="${
-          thumbUrl
-        }"><div> ${ui.translate!(source.label)}</div> </div> `
-    );
+      `<img crossorigin="anonymous" src="${
+        thumbUrl
+      }"><div> ${ui.translate!(source.label)}</div> </div> `;
+    for (let i = 0; i < baseRepeat; i++) {
+      baseSlides.push(baseSlide);
+    }
   });
+  baseSwiper.appendSlide(baseSlides);
+  const overlaySlides: string[] = [];
+  const overlayRepeat = slideRepeatCount(overlaySources.length);
   overlaySources.forEach(source => {
     const colorCss = source.envelope ? ` ${source.envelopeColor}` : "";
     const thumbKey = source.thumbnail ? source.thumbnail.split("/").pop() : "";
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const thumbUrl = (pointer as any)[thumbKey] || source.thumbnail;
-    overlaySwiper.appendSlide(
+    const overlaySlide =
       `<div class="swiper-slide${colorCss}" data="${source.mapID}">` +
-        `<img crossorigin="anonymous" src="${
-          thumbUrl
-        }"><div> ${ui.translate!(source.label)}</div> </div> `
-    );
+      `<img crossorigin="anonymous" src="${
+        thumbUrl
+      }"><div> ${ui.translate!(source.label)}</div> </div> `;
+    for (let i = 0; i < overlayRepeat; i++) {
+      overlaySlides.push(overlaySlide);
+    }
   });
+  overlaySwiper.appendSlide(overlaySlides);
 
   overlaySwiper.on("slideChange", () => {
     ui.updateEnvelope();
   });
 
-  baseSwiper.slideToIndex(0);
-  overlaySwiper.slideToIndex(0);
+  if (baseSources.length) baseSwiper.slideToMapID(baseSources[0].mapID);
+  if (overlaySources.length) overlaySwiper.slideToMapID(overlaySources[0].mapID);
   ellips(core.mapDivDocument!);
   getUiReadyGate(ui).markSwipersReady();
 }
