@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [22, 24]
+        node-version: [20, 22]
     
     steps:
       - name: Checkout
@@ -82,7 +82,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version: 22
           cache: 'pnpm'
 
       # pnpm 11 は allowBuilds を pnpm-workspace.yaml からしか読まない。ローカルでは同ファイルが
@@ -113,3 +113,36 @@ jobs:
           path: |
             playwright-report/
             test-results/
+
+  deploy:
+    name: Deploy demo to GitHub Pages
+    runs-on: ubuntu-latest
+    needs: [test, e2e]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master' && (vars.PAGES_DEPLOY_MODE == 'replace' || vars.PAGES_DEPLOY_MODE == 'coexist')
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 11
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: 'pnpm'
+      - name: Apply CI-only pnpm config
+        run: cp ci/pnpm-workspace.ci.yaml pnpm-workspace.yaml
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build demo
+        run: pnpm build:demo
+      - name: Deploy demo to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist-demo
+          publish_branch: gh-pages
+          keep_files: ${{ vars.PAGES_DEPLOY_MODE == 'coexist' }}
