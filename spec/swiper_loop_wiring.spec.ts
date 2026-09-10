@@ -3,11 +3,18 @@
 // 検証対象は既存の src/ui_init.ts であり、import 解決に依存しない（src/swiper_loop を import しない）。
 // 変更前（閾値 >=3 のまま・index 基準のまま）で FAIL、変更後（shouldLoop 配線 = 閾値 >=2・
 // mapID 基準・appendSlide(配列) 1 回）で PASS する。
+//
+// oct26-m3-t2 fix-forward: CI の Run linter（eslint --fix → prettier --write）は Run tests より前に
+// 作業ツリーを整形し直す。この spec が照合する式について整形が変えるのは空白と改行だけなので、
+// 空白を全て除いた本文に対して assert し、整形の前（ローカル）と後（CI）で結果が変わらないようにする。
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-const source = readFileSync(resolve(__dirname, "../src/ui_init.ts"), "utf8");
+const source = readFileSync(
+  resolve(__dirname, "../src/ui_init.ts"),
+  "utf8"
+).replace(/\s+/g, "");
 
 // ループ判定の「実効閾値」を読む。
 // 変更後: shouldLoop(xxxSources.length) 配線（shouldLoop の契約は sourceCount >= 2）。
@@ -68,10 +75,10 @@ describe("少数地図 Swiper ループ閾値（oct26-m3-t2 主判定 AC1）", (
 
   it("初期化が slideToMapID（mapID 基準）で、n=0 guard を付す", () => {
     expect(source).toMatch(
-      /if \(baseSources\.length\) baseSwiper\.slideToMapID\(baseSources\[0\]\.mapID\)/
+      /if\(baseSources\.length\)baseSwiper\.slideToMapID\(baseSources\[0\]\.mapID\)/
     );
     expect(source).toMatch(
-      /if \(overlaySources\.length\) overlaySwiper\.slideToMapID\(overlaySources\[0\]\.mapID\)/
+      /if\(overlaySources\.length\)overlaySwiper\.slideToMapID\(overlaySources\[0\]\.mapID\)/
     );
     expect(source).not.toMatch(/baseSwiper\.slideToIndex\(0\)/);
     expect(source).not.toMatch(/overlaySwiper\.slideToIndex\(0\)/);
@@ -84,6 +91,8 @@ describe("少数地図 Swiper ループ閾値（oct26-m3-t2 主判定 AC1）", (
     expect(source).toMatch(/overlaySwiper\.appendSlide\(overlaySlides\)/);
     // 1 回の appendSlide（配列渡し）。逐次 appendSlide（forEach 内で都度呼ぶ）ではない。
     expect((source.match(/baseSwiper\.appendSlide\(/g) || []).length).toBe(1);
-    expect((source.match(/overlaySwiper\.appendSlide\(/g) || []).length).toBe(1);
+    expect((source.match(/overlaySwiper\.appendSlide\(/g) || []).length).toBe(
+      1
+    );
   });
 });
