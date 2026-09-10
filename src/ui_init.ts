@@ -17,8 +17,7 @@ import {
   MarkerList
 } from "./maplat_control";
 import ContextMenu from "./contextmenu";
-import Weiwudi from "@c4h/weiwudi";
-import absoluteUrl from "./absolute_url";
+import { initPwa } from "./pwa_init";
 import * as QRCode from "qrcode";
 import {
   createElement,
@@ -1450,10 +1449,6 @@ function initDom(ui: MaplatUi, appOption: MaplatAppOption) {
     `;
   document.head.appendChild(style);
 
-  let pwaManifest = appOption.pwaManifest;
-  let pwaWorker = appOption.pwaWorker;
-  let pwaScope = appOption.pwaScope;
-
   // Add UI HTML Element
   let newElems = createElement(`<d c="ol-control map-title"><s></s></d>
   <d c="swiper swiper-container ol-control base-swiper prevent-default-ui">
@@ -1600,46 +1595,5 @@ function initDom(ui: MaplatUi, appOption: MaplatAppOption) {
   }
 
   // PWA
-  if (pwaManifest) {
-    if (pwaManifest === true) {
-      pwaManifest = `./pwa/${core.appid}_manifest.json`;
-    }
-    if (!pwaWorker) {
-      pwaWorker = "./service-worker.js";
-    }
-    if (!pwaScope) {
-      pwaScope = "./";
-    }
-
-    const head = document.querySelector("head");
-    if (head) {
-      if (!head.querySelector('link[rel="manifest"]')) {
-        head.appendChild(
-          createElement(`<link rel="manifest" href="${pwaManifest}">`)[0]
-        );
-      }
-    }
-    try {
-      Weiwudi.registerSW(pwaWorker, { scope: pwaScope });
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (_e) {} // eslint-disable-line no-empty
-
-    if (head && !head.querySelector('link[rel="apple-touch-icon"]')) {
-      fetch(pwaManifest)
-        .then(response => response.json())
-        .then(value => {
-          if (value.icons) {
-            value.icons.forEach((icon: { src: string; sizes: string }) => {
-              const src = absoluteUrl(pwaManifest as string, icon.src);
-              const sizes = icon.sizes;
-              const tag = `<link rel="apple-touch-icon" sizes="${sizes}" href="${src}">`;
-              head.appendChild(createElement(tag)[0]);
-            });
-          }
-        })
-        .catch(err => {
-          console.error("Failed to fetch PWA manifest:", err);
-        });
-    }
-  }
+  initPwa(core, appOption);
 }
