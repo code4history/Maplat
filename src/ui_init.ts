@@ -1,7 +1,7 @@
 import { MaplatApp as Core, MaplatApp, sanitizeHtml } from "@maplat/core";
 import pointer from "./pointer_images";
 import { Swiper } from "./swiper_ex";
-import { Manipulation, Navigation, Pagination } from "swiper/modules";
+import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css/bundle";
 import {
   SliderNew,
@@ -36,7 +36,7 @@ import type { MaplatAppOption } from "./types";
 import i18n from "i18next";
 import i18nHttpBackend from "i18next-http-backend";
 import browserLanguage from "./browserlanguage";
-import { shouldLoop, slideRepeatCount } from "./swiper_loop";
+import { buildLoopSlides, clickedSlideStep, shouldLoop } from "./swiper_loop";
 // m1-t4: サニタイズ層（許可リストの正本は MaplatCore/src/sanitize.ts）
 
 export const META_KEYS = [
@@ -411,6 +411,17 @@ function initGpsHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
   });
 }
 
+// 左右に覗くカードのクリックでは、そのカードの側へ 1 枚だけ動かす（矢印と同じ slideNext / slidePrev。oct26-m9-t1）。
+// 後から非同期に来る changeMap → mapChanged → slideToMapID は、active が既に同じ mapID なので早期 return する。
+// 先回りしないと slideToMapID が「DOM で最初に一致した複製」へ slideToLoop し、逆向きに動く・動かずに中身が入れ替わる。
+// 遷移中で slideNext / slidePrev が拒否された場合も、後から来る slideToMapID が active の mapID を合わせる。
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function slideTowardClickedSlide(swiper: any) {
+  const step = clickedSlideStep(swiper.activeIndex, swiper.clickedIndex);
+  if (step === 1) swiper.slideNext();
+  else if (step === -1) swiper.slidePrev();
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function initSwipers(ui: MaplatUi, sources: any[]) {
   const colors = [
@@ -492,9 +503,45 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
     }
   });
 
+  // スライドを DOM に置いてから Swiper を生成する（oct26-m9-t1）。
+  // 0 枚のまま loop: true で生成すると swiper 12 の loopFix が Loop Warning を出し、
+  // 複製は buildLoopSlides でソース配列全体を繰り返す（A,B,A,B…）。ソースごとに固める（A,A,B,B）と
+  // 1 回の操作で同じ地図の複製へ進むだけの回が生じ、左右に同じ地図が覗く。
+  const baseSlides: string[] = [];
+  baseSources.forEach(source => {
+    const thumbKey = source.thumbnail ? source.thumbnail.split("/").pop() : "";
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const thumbUrl = (pointer as any)[thumbKey] || source.thumbnail;
+    baseSlides.push(
+      `<div class="swiper-slide" data="${source.mapID}">` +
+        `<img crossorigin="anonymous" src="${
+          thumbUrl
+        }"><div> ${ui.translate!(source.label)}</div> </div> `
+    );
+  });
+  const overlaySlides: string[] = [];
+  overlaySources.forEach(source => {
+    const colorCss = source.envelope ? ` ${source.envelopeColor}` : "";
+    const thumbKey = source.thumbnail ? source.thumbnail.split("/").pop() : "";
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const thumbUrl = (pointer as any)[thumbKey] || source.thumbnail;
+    overlaySlides.push(
+      `<div class="swiper-slide${colorCss}" data="${source.mapID}">` +
+        `<img crossorigin="anonymous" src="${
+          thumbUrl
+        }"><div> ${ui.translate!(source.label)}</div> </div> `
+    );
+  });
+  core.mapDivDocument!.querySelector(
+    ".base-swiper .swiper-wrapper"
+  )!.innerHTML = buildLoopSlides(baseSlides).join("");
+  core.mapDivDocument!.querySelector(
+    ".overlay-swiper .swiper-wrapper"
+  )!.innerHTML = buildLoopSlides(overlaySlides).join("");
+
   const baseShouldLoop = shouldLoop(baseSources.length);
   const baseSwiper = (ui.baseSwiper = new Swiper(".base-swiper", {
-    modules: [Manipulation, Navigation, Pagination],
+    modules: [Navigation, Pagination],
     slidesPerView: 2,
     spaceBetween: 15,
     breakpoints: {
@@ -519,6 +566,7 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
   baseSwiper.on("click", (_e: any) => {
     if (!baseSwiper.clickedSlide) return;
     const slide = baseSwiper.clickedSlide;
+    slideTowardClickedSlide(baseSwiper);
     core.changeMap(slide.getAttribute("data")!);
     delete ui._selectCandidateSources;
     baseSwiper.setSlideMapIDAsSelected(slide.getAttribute("data")!);
@@ -531,7 +579,7 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
 
   const overlayShouldLoop = shouldLoop(overlaySources.length);
   const overlaySwiper = (ui.overlaySwiper = new Swiper(".overlay-swiper", {
-    modules: [Manipulation, Navigation, Pagination],
+    modules: [Navigation, Pagination],
     slidesPerView: 2,
     spaceBetween: 15,
     breakpoints: {
@@ -556,6 +604,7 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
   overlaySwiper.on("click", (_e: any) => {
     if (!overlaySwiper.clickedSlide) return;
     const slide = overlaySwiper.clickedSlide;
+    slideTowardClickedSlide(overlaySwiper);
     core.changeMap(slide.getAttribute("data")!);
     delete ui._selectCandidateSources;
     overlaySwiper.setSlideMapIDAsSelected(slide.getAttribute("data")!);
@@ -565,40 +614,6 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
       .mapDivDocument!.querySelector(".overlay-swiper")!
       .classList.add("single-map");
   }
-
-  const baseSlides: string[] = [];
-  const baseRepeat = slideRepeatCount(baseSources.length);
-  baseSources.forEach(source => {
-    const thumbKey = source.thumbnail ? source.thumbnail.split("/").pop() : "";
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const thumbUrl = (pointer as any)[thumbKey] || source.thumbnail;
-    const baseSlide =
-      `<div class="swiper-slide" data="${source.mapID}">` +
-      `<img crossorigin="anonymous" src="${
-        thumbUrl
-      }"><div> ${ui.translate!(source.label)}</div> </div> `;
-    for (let i = 0; i < baseRepeat; i++) {
-      baseSlides.push(baseSlide);
-    }
-  });
-  baseSwiper.appendSlide(baseSlides);
-  const overlaySlides: string[] = [];
-  const overlayRepeat = slideRepeatCount(overlaySources.length);
-  overlaySources.forEach(source => {
-    const colorCss = source.envelope ? ` ${source.envelopeColor}` : "";
-    const thumbKey = source.thumbnail ? source.thumbnail.split("/").pop() : "";
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const thumbUrl = (pointer as any)[thumbKey] || source.thumbnail;
-    const overlaySlide =
-      `<div class="swiper-slide${colorCss}" data="${source.mapID}">` +
-      `<img crossorigin="anonymous" src="${
-        thumbUrl
-      }"><div> ${ui.translate!(source.label)}</div> </div> `;
-    for (let i = 0; i < overlayRepeat; i++) {
-      overlaySlides.push(overlaySlide);
-    }
-  });
-  overlaySwiper.appendSlide(overlaySlides);
 
   overlaySwiper.on("slideChange", () => {
     ui.updateEnvelope();

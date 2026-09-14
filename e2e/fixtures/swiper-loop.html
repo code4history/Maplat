@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <base href="/" />
+  <title>Maplat E2E — Swiper loop (oct26-m9-t1)</title>
+  <meta content="yes" name="apple-mobile-web-app-capable" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+  <link rel="icon" type="image/png" href="/parts/favicon.png" />
+  <link href="https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.css" rel="stylesheet" />
+  <style>
+    .mainview {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+
+    /* H-1（人間検証）の手順メモ。スワイパー（画面下部）に重ならない左上寄りに、閉じた状態で置く */
+    #m9-howto {
+      position: fixed;
+      top: 64px;
+      left: 8px;
+      z-index: 10000;
+      max-width: min(360px, calc(100vw - 16px));
+      font: 12px/1.5 sans-serif;
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid #999;
+      border-radius: 4px;
+      padding: 2px 8px;
+    }
+
+    #m9-howto summary {
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    #m9-howto ol {
+      margin: 4px 0;
+      padding-left: 18px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="mainview">
+    <div id="map_div"></div>
+  </div>
+  <div id="status">Initializing</div>
+  <details id="m9-howto">
+    <summary>操作確認の手順（H-1）</summary>
+    <ol>
+      <li>画面下部の 2 段のスワイパー（上段 = 古地図 overlay・下段 = ベース地図 base）を、ドラッグ（スマートフォン幅ではスワイプ）と左右の矢印で、左右それぞれ 10 回以上回す。1 回ごとに隣の地図へ進み、途切れず回ること。中央のカードの左右には別の地図が覗くこと。</li>
+      <li>中央のカードの左右に覗いているカードを、右・左それぞれ 5 回以上クリック（タップ）する。右左を交互にする回と、同じ側を続ける回の両方を含める。クリックしたカードがクリックした側から中央へ 1 枚分滑ってきて、地図と画面上部の地図タイトルがそのカードの地図に切り替わること。</li>
+      <li><strong>覗いているカードは、矢印ボタンの上か下の部分を押す。</strong>矢印に当たると 1 枚滑るだけで、地図は切り替わらない（従来どおりの動作）。</li>
+      <li><strong>動きが止まってから次を押す。</strong>動いている途中に押すと、地図とタイトルは正しく切り替わるが、中央に来るのが同じ地図の別の複製になることがある（既知の限界・設計 §5.6 / §9.3）。</li>
+      <li>URL の <code>?base=2&amp;overlay=2</code> を <code>3</code> に変えて同じことをする。</li>
+    </ol>
+  </details>
+  <script src="https://cdn.jsdelivr.net/npm/ol@10.6.1/dist/ol.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@10.6.1/ol.css" />
+  <script src="https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.js"></script>
+  <script type="module">
+    import { MaplatUi } from '/src/index.ts';
+
+    // oct26-m9-t1: 地図切り替えスワイパーのループ（少数枚）を確かめる fixture。
+    // クエリ: base=<1..5>（ベース地図の枚数）・overlay=<1..6>（非線形地図の枚数）
+    const params = new URLSearchParams(location.search);
+    const clamp = (v, lo, hi, def) => {
+      const n = Number(v);
+      return Number.isInteger(n) ? Math.min(hi, Math.max(lo, n)) : def;
+    };
+    const nb = clamp(params.get('base'), 1, 5, 2);
+    const no = clamp(params.get('overlay'), 1, 6, 2);
+    // public/maps/ に定義がある非線形地図
+    const overlays = [
+      'tatebayashi_ojozu',
+      'tatebayashi_castle_akimoto',
+      'tatebayashi_kaei_jokamachi',
+      'zendoji_garan',
+      'tatebayashi_bunkazai_center',
+      'tatebayashi_bunkazai_zeniki'
+    ];
+    // mapbox / google はトークンと外部 SDK に依存するので使わない。OSM タイルの独自 base 地図で埋める
+    const osm = (id, label) => ({
+      mapID: id,
+      title: { ja: label, en: label },
+      label: { ja: label, en: label },
+      attr: 'OSM',
+      url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+      maxZoom: 19,
+      maptype: 'base'
+    });
+    const bases = [osm('osm', 'OSM'), 'gsi', 'gsi_ortho', osm('m9_base_4', 'B4'), osm('m9_base_5', 'B5')];
+    const setting = {
+      appName: 'oct26-m9-t1 swiper loop',
+      lang: 'ja',
+      homePosition: [139.5321, 36.249302],
+      defaultZoom: 17,
+      startFrom: overlays[0],
+      sources: [
+        ...overlays.slice(0, no).map(m => ({ mapID: m, label: { ja: m, en: m } })),
+        ...bases.slice(0, nb)
+      ],
+      pois: []
+    };
+
+    MaplatUi.createObject({
+      maplibregl: window.maplibregl,
+      mapboxToken: '',
+      setting,
+      pwaManifest: false,
+      restoreSession: false,
+      stateUrl: false,
+      enableCache: false
+    })
+      .then(ui => {
+        window.__maplatUi = ui;
+        document.getElementById('status').textContent = 'READY';
+      })
+      .catch(err => {
+        console.error('MaplatUi init error:', err);
+        document.getElementById('status').textContent = 'ERROR: ' + err.message;
+      });
+  </script>
+</body>
+
+</html>
