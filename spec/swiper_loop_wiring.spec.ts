@@ -133,15 +133,40 @@ describe("少数地図 Swiper ループ閾値（oct26-m3-t2 主判定 AC1）", (
   });
 
   it("slideTowardClickedSlide が clickedSlideStep(activeIndex, clickedIndex) の結果で slideNext / slidePrev を呼ぶ（oct26-m9-t1 AC-7）", () => {
-    const m = source.match(
-      /functionslideTowardClickedSlide\(swiper:any\)\{(.*?)\}(?=\/\/|function)/
-    );
-    expect(m, "slideTowardClickedSlide の本体").not.toBeNull();
-    const body = m![1];
+    const body = towardBody();
     expect(body).toMatch(
       /conststep=clickedSlideStep\(swiper\.activeIndex,swiper\.clickedIndex\)/
     );
     expect(body).toMatch(/if\(step===1\)swiper\.slideNext\(\)/);
     expect(body).toMatch(/elseif\(step===-1\)swiper\.slidePrev\(\)/);
+  });
+
+  it("slideTowardClickedSlide が先回りの後にクリックしたスライドの mapID で slideToMapID を呼び、位置合わせの見張りに目的を渡す（oct26-m9-t1 IR1 MAJ-1）", () => {
+    const body = towardBody();
+    const step = body.indexOf("swiper.slidePrev()");
+    const toMapID = body.indexOf("swiper.slideToMapID(");
+    expect(body).toMatch(/swiper\.clickedSlide\?\.getAttribute\("data"\)/);
+    expect(toMapID, "slideToMapID の呼び出し").toBeGreaterThanOrEqual(0);
+    expect(step).toBeGreaterThanOrEqual(0);
+    expect(toMapID).toBeGreaterThan(step);
+  });
+});
+
+// slideTowardClickedSlide の本体（直後の initSwipers の定義まで。IR1 INFO-1: 本体内の波括弧やコメントの有無に依存しない）
+function towardBody(): string {
+  const start = source.indexOf("functionslideTowardClickedSlide(swiper:any){");
+  expect(start, "slideTowardClickedSlide の定義").toBeGreaterThanOrEqual(0);
+  const end = source.indexOf("functioninitSwipers(", start);
+  expect(
+    end,
+    "initSwipers の定義（slideTowardClickedSlide の直後）"
+  ).toBeGreaterThan(start);
+  return source.slice(start, end);
+}
+
+describe("位置合わせの見張りの配線（oct26-m9-t1 IR1 MAJ-1・OF-1）", () => {
+  it("applyMapChanged は従来どおり base / overlay の setSlideMapID（→ slideToMapID）で合わせる", () => {
+    expect(source).toMatch(/ui\.baseSwiper\.setSlideMapID\(map\.mapID\)/);
+    expect(source).toMatch(/ui\.overlaySwiper\.setSlideMapID\(map\.mapID\)/);
   });
 });

@@ -12,10 +12,12 @@ import path from 'node:path';
  * - AC-2: スワイパー中央（上端寄りの高さ）からの実ドラッグ（1 枚分の 0.75 倍の距離）で同上
  * - AC-3: 1 枚は loop: false・single-map・矢印は swiper-button-lock で display: none・ドラッグで不変
  * - AC-4: 全ページで Swiper Loop Warning が 0 件
- * - AC-5: 右のカードの実クリック・setSlideMapID・core.changeMap 後の active mapID と .selected
+ * - AC-5: 右のカードの実クリック・setSlideMapID・core.changeMap 後の active mapID と .selected（(c) は既知の遷移を含め常に判定）
  * - AC-6: 初期 DOM の巡回で隣り合う 2 枚が同じ地図にならない・slidesPerView・左右に別の地図が覗く
  * - AC-12: 覗いているカードの実クリックで、クリックした側へ 1 枚分アニメーションし、クリックした要素が中央に来る
  * - 破壊試験（R2 MIN-R2-2）: 遷移中の連打・ドラッグ直後・矢印直後のクリックで、地図・選択表示・タイトルが正しい
+ * - AC-12 補助（IR1 MAJ-1）: 保留中の onResize があってもカードのクリック後に中央のカードと地図が揃う
+ * - AC-13（人間の指示による範囲追加・OF-1）: 状態復元（URL の #! 経由の changeMap）の後にスワイパーの active が目的の地図に合う
  *
  * active mapID は各スワイパーの `.swiper-slide-active` の `data` 属性で読む（§8.1。realIndex は複製環境で使わない）。
  * 待ち方は経路で分ける（§8.1）: 矢印・ドラッグは `!swiper.animating`、カードのクリック・setSlideMapID・changeMap は
@@ -40,14 +42,12 @@ const WIDTHS = [1280, 375];
 const CLICK_ORDER: Side[] = ['next', 'next', 'prev', 'prev', 'next', 'prev', 'next', 'next', 'prev', 'prev'];
 
 /**
- * AC-5 (c)（外部からの core.changeMap 後に active mapID が合う）の既知の揺らぎ（実装記録 M9T1-OF-1）:
- * swiper の observeParents が親要素の属性変化（changeMap で .maplat の class が変わる等）を拾って onResize →
- * slideToLoop(その時点の realIndex) を requestAnimationFrame に積み、Maplat の slideToMapID が積んだ slideTo と競合して
- * 元の位置へ戻ることがある。変更前（695415e）でも同じ形で起きる（本タスクの変更の外。設計 §9.3 のプログラムからの切り替え経路）。
- * 同一条件で結果が揺れるため既定では判定に使わず注記に記録し、M9_STRICT_AC5C=1 のときだけ判定する。
- * mapChanged が発火したことは常に判定する。
+ * AC-5 (c)（外部からの core.changeMap 後に active mapID が合う）: 実装 IR1 までは、swiper の observeParents が親要素の属性変化
+ * （changeMap で .maplat の class が変わる等）を拾って onResize → slideToLoop(その時点の realIndex) を requestAnimationFrame に積み、
+ * Maplat の slideToMapID が積んだ slideTo の後に走って元の位置へ戻す既知の不具合（M9T1-OF-1・変更前 695415e から存在）のため、
+ * 既定では判定から外していた。人間の指示による範囲追加（2026-09-14）で OF-1 を本タスクで直したので、既知の遷移
+ * （tatebayashi_kaei_jokamachi → zendoji_garan）を含めて常に判定する（src/swiper_ex.ts の位置合わせの見張り）。
  */
-const STRICT_AC5C = process.env.M9_STRICT_AC5C === '1';
 
 /** src/swiper_loop.ts の slideRepeatCount と同じ契約（e2e は src を import しない） */
 const repeatCount = (n: number) => (n < 2 ? 1 : Math.ceil(5 / n));
@@ -570,11 +570,7 @@ for (const n of [2, 3, 4, 5]) {
         const events = await page.evaluate(() => (window as any).__m9cev.slice());
         r.c.push({ id, from: cur, wait, events });
         expect.soft(events.some((e: string) => e.startsWith(`mapChanged:${id}@`)), `AC-5 (c) ${k} changeMap(${id}) の mapChanged`).toBe(true);
-        if (STRICT_AC5C) {
-          expect.soft(wait, `AC-5 (c) ${k} changeMap(${id})`).toEqual({ reached: true, stable: true });
-        } else if (!wait.reached || !wait.stable) {
-          test.info().annotations.push({ type: 'M9T1-OF-1', description: `AC-5 (c) ${k} changeMap(${id}) from ${cur}: ${JSON.stringify(wait)}` });
-        }
+        expect.soft(wait, `AC-5 (c) ${k} changeMap(${id}) from ${cur}`).toEqual({ reached: true, stable: true });
       }
       expect.soft(r.c.length, `AC-5 (c) ${k} 判定した id の数`).toBeGreaterThanOrEqual(n - 1);
       rec[k] = r;
@@ -693,6 +689,159 @@ for (const n of [2, 3]) {
       }
     }
     record(test.info().title, { n, warns, rec });
+    expect(warns, 'AC-4 Swiper Loop Warning').toEqual([]);
+  });
+}
+
+/**
+ * AC-12 補助（実装レビュー IR1 MAJ-1）: 保留中の onResize とカードのクリックの競合
+ *
+ * swiper の observeParents の MutationObserver は、親要素の属性変化を拾うと observerUpdate → onResize を呼び、
+ * onResize は slideToLoop(その時点の realIndex, 0, false, true) で「その時点の DOM の並びでの index」を計算してから
+ * slideTo を requestAnimationFrame に積む。この rAF が走る前にカードのクリックが来ると、click ハンドラの先回り
+ * （slideNext / slidePrev = 同期の loopFix による DOM の並べ替え）で index の意味が変わり、後から走る slideTo(…, 0) が
+ * 位置を直前の地図へ戻す。後から来る mapChanged → slideToMapID は「active が既に同じ mapID」を見て早期 return
+ * していたため、中央のカードと地図が持続的に食い違っていた（IR1 §4.2: 修正前は左のカード 0/5）。
+ *
+ * 自然発生は headless では 1 フレーム程度の窓で稀なので、実クリックの pointerup の直前（window の capture）で
+ * swiper 自身の observerUpdate を発火し、onResize の rAF が保留中の状態を毎回作る。クリックは実マウス（page.mouse.click）で、
+ * swiper の onTouchEnd → click → Maplat の click ハンドラの実経路を通す。
+ * 判定: 毎回、active mapID がクリックした地図に到達し 1 秒後も同値・.selected・地図タイトルが揃う。
+ */
+for (const n of [2, 5]) {
+  test(`AC-12 補助 w=375 n=${n}: 保留中の onResize があってもカードのクリック後に中央のカードと地図が揃う（IR1 MAJ-1）`, async ({ page }) => {
+    test.setTimeout(300000);
+    const warns = await openFixture(page, 375, n, n);
+    const rec: any[] = [];
+    for (const k of KINDS) {
+      for (const side of CLICK_ORDER) {
+        const pre = await markPeek(page, k, side);
+        expect.soft(pre?.point, `MAJ-1 ${k} ${side}: 押せる点`).toBeTruthy();
+        if (!pre?.point) continue;
+        await page.evaluate(k => {
+          const sw = (document.querySelector(`.${k}-swiper`) as any).swiper;
+          const w = window as any;
+          w.__m9resize = 0;
+          const once = () => {
+            window.removeEventListener('pointerup', once, true);
+            // MutationObserver が 1 件の変化を拾ったときと同じ同期の emit（swiper-core observer モジュール）
+            sw.emit('observerUpdate');
+            w.__m9resize++;
+          };
+          window.addEventListener('pointerup', once, true);
+        }, k);
+        await page.mouse.click(pre.point.x, pre.point.y);
+        const injected = await page.evaluate(() => (window as any).__m9resize);
+        const wait = await waitActive(page, k, pre.id!, 8000, 1000);
+        const sel = await selectedData(page, k);
+        const title = await titleState(page, pre.id!);
+        const ok =
+          injected === 1 &&
+          wait.reached &&
+          wait.stable &&
+          sel.length === repeatCount(n) &&
+          sel.every(s => s === pre.id) &&
+          title.actual === title.expected;
+        rec.push({ k, side, from: pre.from, clicked: pre.id, injected, wait, sel, title, now: await activeData(page, k), ok });
+        await page.waitForTimeout(300);
+      }
+    }
+    record(test.info().title, { n, warns, rec });
+    const failed = rec.filter(r => !r.ok).map(r => `${r.k}:${r.side}:${r.clicked}(now ${r.now})`);
+    expect.soft(failed, `MAJ-1 満たさなかったクリック（${rec.filter(r => r.ok).length}/${rec.length} が満たした）`).toEqual([]);
+    expect(warns, 'AC-4 Swiper Loop Warning').toEqual([]);
+  });
+}
+
+/**
+ * AC-13（人間の指示による範囲追加・OF-1）: 状態復元（URL の #! 経由の core.changeMap）の後に、スワイパーの active が目的の地図に合う
+ *
+ * 経路: index.ts の page.js ハンドラ（stateUrl: true）→ core.changeMap(restore.mapID) → mapChanged → applyMapChanged →
+ * setSlideMapID → slideToMapID → slideToLoop（slideTo は requestAnimationFrame に積まれる）。
+ * OF-1 の競合は「この rAF が走る前に、地図の切り替えで親要素の属性が変わり、observeParents の MutationObserver が
+ * onResize → slideToLoop(まだ動く前の realIndex, 0) を後から積む」ことで起きる。自然発生は直前の操作列に依存して揺れるので、
+ * Maplat の slideToMapID が slideToLoop を呼んだ同じタスクの中で swiper 自身の observerUpdate を発火し（MutationObserver が
+ * 1 件の変化を拾ったときと同じ同期の emit）、毎回その順序を作る。slideToLoop の包みは観測用で、元の関数をそのまま呼ぶ。
+ * 判定: 毎回、active mapID が目的の地図に到達し 1 秒後も同値・地図タイトル・changeMap が URL から呼ばれたこと。
+ * 加えて、#! 付きの URL を新しく開いた（初期化時の復元）場合も active が目的の地図になることを確かめる。
+ */
+for (const n of [4, 5]) {
+  test(`AC-13 w=1280 n=${n}: URL の #! による状態復元の後にスワイパーの active が目的の地図に合う（OF-1）`, async ({ page }) => {
+    test.setTimeout(300000);
+    const warns: string[] = [];
+    page.on('console', m => {
+      if (/Swiper Loop Warning/i.test(m.text())) warns.push(m.text().slice(0, 120));
+    });
+    await page.setViewportSize({ width: 1280, height: 800 });
+    const rec: any = { n, initial: null, hash: [] };
+    // (1) 初期化時の復元: #!s:zendoji_garan を付けて開く
+    {
+      const target = 'zendoji_garan';
+      await page.goto(`/e2e/fixtures/swiper-loop.html?base=${n}&overlay=${n}&stateUrl=1#!s:${target}`);
+      await page.waitForFunction(() => document.getElementById('status')?.textContent === 'READY', null, { timeout: 90000 });
+      const wait = await waitActive(page, 'overlay', target, 15000, 1000);
+      rec.initial = { target, wait };
+      expect.soft(wait, `AC-13 (1) 初期化時の復元 #!s:${target} の overlay active`).toEqual({ reached: true, stable: true });
+    }
+    await page.waitForTimeout(3000);
+    await page.evaluate(() => {
+      const ui = (window as any).__maplatUi;
+      const w = window as any;
+      w.__m9changeMap = [];
+      w.__m9titles = {};
+      ui.core.addEventListener('mapChanged', (evt: any) => {
+        const map = evt.detail;
+        w.__m9titles[map.mapID] = ui.translate(map.officialTitle || map.title || map.label) || '';
+      });
+      const orig = ui.core.changeMap.bind(ui.core);
+      ui.core.changeMap = (...args: any[]) => {
+        w.__m9changeMap.push(args[0]);
+        return orig(...args);
+      };
+    });
+    // (2) 読み込み後の #! の変更（戻る・進む・URL の編集と同じ popstate 経路）。既知の遷移 kaei_jokamachi → zendoji_garan を含む
+    const plan: [Kind, string][] = [
+      ...(['tatebayashi_castle_akimoto', 'tatebayashi_kaei_jokamachi', 'zendoji_garan', 'tatebayashi_ojozu', ...(n >= 5 ? ['tatebayashi_bunkazai_center'] : []), 'tatebayashi_kaei_jokamachi', 'zendoji_garan'].map(id => ['overlay', id] as [Kind, string])),
+      ...idsOf('base', n).slice(1).concat(idsOf('base', n)[0]).map(id => ['base', id] as [Kind, string])
+    ];
+    for (const [k, id] of plan) {
+      const cur = await activeData(page, k);
+      if (cur === id) continue;
+      await page.evaluate(({ k, id }) => {
+        const w = window as any;
+        const sw = (document.querySelector(`.${k}-swiper`) as any).swiper;
+        w.__m9inject = 0;
+        if (!sw.__m9origSlideToLoop) sw.__m9origSlideToLoop = sw.slideToLoop;
+        const orig = sw.__m9origSlideToLoop;
+        let armed = true;
+        sw.slideToLoop = function (...args: any[]) {
+          const r = orig.apply(this, args);
+          // internal（onResize 自身の呼び出し）は除く。最初の位置合わせの直後に 1 回だけ observerUpdate を発火する
+          if (armed && !args[3]) {
+            armed = false;
+            w.__m9inject++;
+            sw.emit('observerUpdate');
+          }
+          return r;
+        };
+        location.hash = `#!s:${id}`;
+      }, { k, id });
+      const wait = await waitActive(page, k, id, 8000, 1000);
+      const info = await page.evaluate(({ k }) => {
+        const w = window as any;
+        const sw = (document.querySelector(`.${k}-swiper`) as any).swiper;
+        sw.slideToLoop = sw.__m9origSlideToLoop;
+        return { calls: w.__m9changeMap.splice(0), inject: w.__m9inject };
+      }, { k });
+      const title = await titleState(page, id);
+      rec.hash.push({ k, id, from: cur, wait, ...info, title });
+      expect.soft(info.calls, `AC-13 (2) #!s:${id} が changeMap(${id}) を呼ぶ`).toContain(id);
+      expect.soft(info.inject, `AC-13 (2) #!s:${id} で競合の順序を作れた`).toBe(1);
+      expect.soft(wait, `AC-13 (2) ${k} #!s:${id} from ${cur} の active`).toEqual({ reached: true, stable: true });
+      expect.soft(title.actual, `AC-13 (2) #!s:${id} の地図タイトル`).toBe(title.expected);
+      await page.waitForTimeout(300);
+    }
+    record(test.info().title, rec);
     expect(warns, 'AC-4 Swiper Loop Warning').toEqual([]);
   });
 }

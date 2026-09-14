@@ -67,7 +67,7 @@
     import { MaplatUi } from '/src/index.ts';
 
     // oct26-m9-t1: 地図切り替えスワイパーのループ（少数枚）を確かめる fixture。
-    // クエリ: base=<1..5>（ベース地図の枚数）・overlay=<1..6>（非線形地図の枚数）
+    // クエリ: base=<1..5>（ベース地図の枚数）・overlay=<1..6>（非線形地図の枚数）・stateUrl=1（#! の状態復元を有効にする）
     const params = new URLSearchParams(location.search);
     const clamp = (v, lo, hi, def) => {
       const n = Number(v);
@@ -114,7 +114,8 @@
       setting,
       pwaManifest: false,
       restoreSession: false,
-      stateUrl: false,
+      // stateUrl=1: URL の #! で状態を復元する経路（index.ts の page.js ハンドラ → core.changeMap）を有効にする（AC-13）
+      stateUrl: params.get('stateUrl') === '1',
       enableCache: false
     })
       .then(ui => {

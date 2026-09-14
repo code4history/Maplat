@@ -412,14 +412,21 @@ function initGpsHandlers(ui: MaplatUi, appOption: MaplatAppOption) {
 }
 
 // 左右に覗くカードのクリックでは、そのカードの側へ 1 枚だけ動かす（矢印と同じ slideNext / slidePrev。oct26-m9-t1）。
-// 後から非同期に来る changeMap → mapChanged → slideToMapID は、active が既に同じ mapID なので早期 return する。
-// 先回りしないと slideToMapID が「DOM で最初に一致した複製」へ slideToLoop し、逆向きに動く・動かずに中身が入れ替わる。
-// 遷移中で slideNext / slidePrev が拒否された場合も、後から来る slideToMapID が active の mapID を合わせる。
+// 先回りしないと、後から来る changeMap → mapChanged → slideToMapID が「DOM で最初に一致した複製」へ slideToLoop し、
+// 逆向きに動く・動かずに中身が入れ替わる。
+// 先回りの直後に、クリックしたスライドの mapID で slideToMapID を呼ぶ（active は既に同じ mapID なので動かさず、
+// 位置合わせの見張り（swiper_ex.ts）に目的を渡す）。swiper の observeParents → onResize が先回りより前に積んだ slideTo は、
+// 先回りの loopFix で並びが変わった後に走って位置を直前の地図へ戻すことがあり、後から来る slideToMapID は active が
+// 同じ mapID の時点で早期 return するので、見張りが無いと中央のカードと地図が食い違ったまま残る（実装レビュー IR1 MAJ-1）。
+// 遷移中で slideNext / slidePrev が拒否された場合は、ここでの slideToMapID がクリックした地図へ合わせる。
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function slideTowardClickedSlide(swiper: any) {
   const step = clickedSlideStep(swiper.activeIndex, swiper.clickedIndex);
   if (step === 1) swiper.slideNext();
   else if (step === -1) swiper.slidePrev();
+  else return;
+  const mapID = swiper.clickedSlide?.getAttribute("data");
+  if (mapID) swiper.slideToMapID(mapID);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
