@@ -213,7 +213,7 @@ export function handleMarkerAction(ui: MaplatUi, data: MarkerData) {
 
   if (data.directgo) {
     let blank = false;
-    let href = "";
+    let href: string;
     if (typeof data.directgo == "string") {
       href = data.directgo;
     } else {

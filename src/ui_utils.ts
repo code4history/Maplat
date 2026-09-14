@@ -157,7 +157,7 @@ export function renderLicenseCell(
   const children: (Node)[] = [];
   // Custom はアイコンを持たない語彙。アイコン無しで Note 文章だけを出す。
   if (license && license !== LICENSE_WITHOUT_ICON) {
-    const fileName = license.toLowerCase().replace(/ /g, "_") + ".png";
+    const fileName = `${license.toLowerCase().replace(/ /g, "_")}.png`;
     const licenseImg = document.createElement("img");
     licenseImg.className = "license";
     // プロパティ代入。innerHTML への補間は使わない (m1-t5: src 属性を閉じる XSS を防ぐ)

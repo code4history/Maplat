@@ -35840,7 +35840,7 @@ const q5 = "Custom";
 function $5(i, e, t, n) {
   const r = [];
   if (e && e !== q5) {
-    const s = e.toLowerCase().replace(/ /g, "_") + ".png", o = document.createElement("img");
+    const s = `${e.toLowerCase().replace(/ /g, "_")}.png`, o = document.createElement("img");
     o.className = "license", o.src = n(s), r.push(o);
   }
   if (t) {
@@ -36333,7 +36333,7 @@ function XU(i, e) {
 }
 function YU(i, e = window.document, t = !1) {
   const n = /^(#?[\w-]+|\.[\w-.]+)$/, r = /\./g, s = Array.prototype.slice;
-  let o = [];
+  let o;
   if (n.test(i))
     switch (i[0]) {
       case "#": {
@@ -62772,7 +62772,7 @@ function lB(i, e, t, n = !0) {
 function cB(i, e) {
   const t = i.core.mapDivDocument.querySelector(".modalBase"), n = Ya(t);
   if (e.directgo) {
-    let l = !1, c = "";
+    let l = !1, c;
     typeof e.directgo == "string" ? c = e.directgo : (c = e.directgo.href, l = e.directgo.blank || !1), l ? window.open(c, "_blank") : window.location.href = c;
     return;
   }
@@ -64373,7 +64373,7 @@ typeof ActiveXObject == "function" && (typeof global < "u" && global.ActiveXObje
 typeof la != "function" && (la = void 0);
 if (!la && !ju && !Wf)
   try {
-    import("./browser-ponyfill-DczYs-aH.js").then((i) => i.b).then(function(i) {
+    import("./browser-ponyfill-C46sgRqQ.js").then((i) => i.b).then(function(i) {
       la = i.default;
     }).catch(function() {
     });

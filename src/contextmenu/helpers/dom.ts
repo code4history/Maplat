@@ -103,7 +103,7 @@ export function find(
   const simpleRe = /^(#?[\w-]+|\.[\w-.]+)$/,
     periodRe = /\./g,
     slice = Array.prototype.slice;
-  let matches: HTMLElement[] = [];
+  let matches: HTMLElement[];
 
   // Redirect call to the more performant function
   // if it's a simple selector and return an array
