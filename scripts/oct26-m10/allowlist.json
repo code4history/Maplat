@@ -30,10 +30,10 @@
       "kind": "add-only",
       "conditional": true,
       "expected_change_sites": 1,
-      "expected_blob_sha": "PENDING",
-      "expected_sha256": "PENDING",
-      "capture_procedure": "対処時（§2.3: PlatSeries Pages が Jekyll build 失敗等で 404 になった場合のみ .nojekyll を 1 commit 追加する）に、git ls-tree gh-pages -- .nojekyll の blob SHA と git show gh-pages:.nojekyll | shasum -a 256 の値を機械採取して記録する。",
-      "reason": "§4.3: 「追加のみ・対処時に限る」の特殊エントリ。§1.2-8 の実測により現行 gh-pages 木に .nojekyll は存在しないため、通常の全履歴移送ではこの差分は現れない。追加が許容されるのは Pages の build 失敗への対処として人間が追加した場合のみ。"
+      "expected_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "expected_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "capture_procedure": ".nojekyll は空ファイル（0 バイト）であるため期待値は機械的に確定できる（fix commit 採取対象ではない）: 空 blob SHA は git hash-object /dev/null の出力（e69de29bb2d1d6434b8b29ae775ad8c2e48c5391）・空バイト列の sha256 は printf '' | shasum -a 256 の出力（e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855）。検査スクリプトは追加時にこの期待値と内容を照合する（任意の内容の追加を green にしない）。",
+      "reason": "§4.3: 「追加のみ・対処時に限る」の特殊エントリ。§1.2-8 の実測により現行 gh-pages 木に .nojekyll は存在しないため、通常の全履歴移送ではこの差分は現れない。追加が許容されるのは Pages の build 失敗への対処として人間が追加した場合のみで、追加時の内容（空であること）も allowlist の期待値が律する。"
     }
   ]
 }

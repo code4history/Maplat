@@ -2,7 +2,7 @@
 /**
  * verify-switch.mjs — oct26-m10-t1 配信同一性検査（P 層: s.maplat.jp の切替前後）
  *
- * 識別語: OCT26-M10T1-IMPL-HOTARU
+ * 識別語: OCT26-M10T1-IMPL-HOTARU（是正: OCT26-M10T1-FIX-TSUBAME）
  *
  * 正本: docs/superpowers/specs/2026-09-16-oct26-m10-design.md（v2）
  *   - §4.6-P  proxy 同一性（capture モードと verify モード）
@@ -25,7 +25,8 @@
  *     基準値で 200 以外のものは現状維持（新たに 200 になっても FAIL にしない。
  *     内容は H 層〔verify-ghpages-identity.mjs --http〕で保証済み）。
  *     cf-cache-status が HIT の場合は FAIL（origin まで届いておらず検査に
- *     なっていないため §9.2 の cache purge をやり直す）。
+ *     なっていないため §9.2 の cache purge をやり直す）。HIT 判定は trim +
+ *     大文字化の正規化比較で行う（"hit"・"Hit" 等の表記ゆれも HIT として検出）。
  *
  * map 名の列挙は手書きリストを作らず、ghpages-tree-baseline.json（§4.3 の凍結証跡）
  * の tree から機械導出する。name = 拡張子を除いた path。トップレベルの地図ページ
@@ -163,6 +164,9 @@ export function judgeCapture(results) {
  * verify の判定（§4.6-P）。
  *   - 基準値で 200 の URL: 全て 200 かつ sha256 一致が必須（cf-cache-status が
  *     HIT なら FAIL: origin まで届いていない＝検査になっていない）。
+ *     HIT 判定は大小文字を正規化して行う（実装レビュー Minor-1 の是正:
+ *     CloudFlare の cf-cache-status は大文字固定が既知だが、防御的に
+ *     "hit"・"Hit" 等の小文字・混在表記も HIT として検出する）。
  *   - 基準値で 200 以外の URL: 現状維持（新たに 200 になっても FAIL にしない）。
  *   - 例外（fetch の throw・タイムアウト）は 1 件でもあれば outcome "error"
  *     （exit 3）。条件偽（exit 2）と区別する。
@@ -196,7 +200,8 @@ export function judgeVerify(proxyBaseline, results) {
         );
         continue;
       }
-      if (r.fresh.cf_cache_status === "HIT") {
+      // HIT 判定は trim + 大文字化して比較する（Minor-1 是正: "hit"/"Hit" の素通りを防ぐ）
+      if (String(r.fresh.cf_cache_status ?? "").trim().toUpperCase() === "HIT") {
         problems.push(
           `cf-cache-status=HIT（origin まで届いていない）: ${u.url}。` +
             `§9.2 の cache purge をやり直してから再実行すること`,
@@ -257,7 +262,8 @@ mode 別前提（設計 §4.6「検査スクリプトの実行点のまとめ」
     200 になっても FAIL にしない（内容は H 層で保証済みのため）。
   - 基準値で 200 の URL に cf-cache-status: HIT が残る場合は FAIL とする
     （origin まで届いておらず sha256 一致の意味が消えるため。
-    §9.2 の cache purge をやり直して再実行すること）。
+    §9.2 の cache purge をやり直して再実行すること。HIT 判定は大小文字を
+    正規化して行う: "hit"・"Hit" 等も HIT として検出する）。
   - --verify は ?_=<ISO8601> の cache-bust クエリを付けて再取得する
     （CDN キャッシュの回避。静的配信はクエリを無視するが CloudFlare の
     cache key は通常クエリを含むため、bust によって origin まで届く）。
@@ -637,6 +643,26 @@ function buildSelfTestCases() {
     return ok(
       v.outcome === "fail" && v.problems.some((p) => p.includes("HIT") && p.includes("purge")),
       `outcome=${v.outcome} problems=${JSON.stringify(v.problems)}`,
+    );
+  });
+  t("ver-9: 【Minor-1 是正】cf-cache-status が小文字 \"hit\" でも FAIL と検出される", async () => {
+    const v = judgeVerify(
+      proxyCaptureDoc([base200("u1", S("x"))]),
+      [{ url: "u1", ...fresh(200, S("x"), "hit") }],
+    );
+    return ok(
+      v.outcome === "fail" && v.problems.some((p) => p.includes("HIT") && p.includes("purge")),
+      `小文字 "hit" が素通りしている: outcome=${v.outcome} problems=${JSON.stringify(v.problems)}`,
+    );
+  });
+  t("ver-10: 【Minor-1 是正】cf-cache-status が混在 \"Hit\" でも FAIL と検出される（前後の空白も許容）", async () => {
+    const v = judgeVerify(
+      proxyCaptureDoc([base200("u1", S("x"))]),
+      [{ url: "u1", ...fresh(200, S("x"), " Hit ") }],
+    );
+    return ok(
+      v.outcome === "fail" && v.problems.some((p) => p.includes("HIT") && p.includes("purge")),
+      `混在 "Hit" が素通りしている: outcome=${v.outcome} problems=${JSON.stringify(v.problems)}`,
     );
   });
   t("ver-5: 基準値 非 200 は現状維持（404 のままでも・200 になっても FAIL にしない）", async () => {

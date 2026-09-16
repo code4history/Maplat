@@ -2,7 +2,7 @@
 /**
  * verify-ghpages-identity.mjs — oct26-m10-t1 配信同一性検査（G 層・H 層）
  *
- * 識別語: OCT26-M10T1-IMPL-HOTARU
+ * 識別語: OCT26-M10T1-IMPL-HOTARU（是正: OCT26-M10T1-FIX-TSUBAME）
  *
  * 正本: docs/superpowers/specs/2026-09-16-oct26-m10-design.md（v2）
  *   - §4.3  基準値マニフェスト（凍結証跡）の処遇
@@ -14,17 +14,25 @@
  *   G 層 (--git)            : ghpages-tree-baseline.json（6975 blob SHA）と
  *                            PlatSeries 作業 clone の `git ls-tree -r gh-pages` を
  *                            全件比較する。差分が allowlist 内のみなら green。
+ *                            追加専用エントリ（.nojekyll）も内容（blob SHA）を照合する。
  *   H 層 (--http)          : 旧 Maplat Pages と新 PlatSeries Pages を同時点で取得して
  *                            status・sha256(body)・content-type を比較する。
  *                            対象 = 52 HTML + apps/*.json 40 件 + 代表資産 6 件
  *                            + 安定抽出サンプル 100 件（path を sha256 昇順に並べ
  *                            先頭 100 件。決定的・乱数不使用）。
+ *                            旧 == 新（byte 同一）は allowlist の如何に依らず PASS。
+ *                            旧 != 新のとき初めて allowlist（fix 後期待値）を参照する
+ *                            （G 層と同じ「差分があるときだけ allowlist を見る」構造。
+ *                            §9.1 手順 6 の「AC3 が fix commit 前に green」を可能にする）。
  *
  * 基準値 baseline の生成コマンドの記録（§4.3「手書き禁止・機械変換」の履行）:
  *   node scripts/oct26-m10/verify-ghpages-identity.mjs --make-baseline
  *     → `git ls-tree -r -z origin/gh-pages`（作業リポジトリ = 本リポジトリで実行）
  *       の出力をそのまま機械変換して ghpages-tree-baseline.json へ書く。
  *       -z は NUL 区切り・パス無 quote の機械可読形式（手書きでは 1 行も書かない）。
+ *       書き込みは整合検査（総数/HTML/apps/先端の設計期待値照合）に合格してから行う
+ *       （検査 FAIL なら 1 バイトも書かない）。既存 baseline があるときは退避コピー
+ *       （<path>.bak-<ISO8601>。既存ファイルは消さない）を作ってから書く。
  *   ※ baseline は凍結証跡（§4.3-1）。t4 の deploy 後は再生成しない。
  *
  * リダイレクトの扱い（§4.6-H・§1.3-5・v1 レビュー Major-2 の是正）:
@@ -52,7 +60,7 @@
 
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -186,12 +194,29 @@ function serializeBaseline(doc) {
 /**
  * --make-baseline: `git ls-tree -r -z origin/gh-pages` を機械変換して
  * ghpages-tree-baseline.json を書く。§4.3 の「コマンド出力の機械変換（手書き禁止）」。
- * 総数・先端が設計 §1.1/§9.1 の期待と食い違う場合は警告とともに FAIL(2) する
+ * 総数・先端が設計 §1.1/§9.1 の期待と食い違う場合は FAIL(2) する
  * （fail-closed: baseline は設計時点の木であることが前提）。
+ *
+ * 書き込み順序（実装レビュー Minor-3 の是正）:
+ *   1. 整合検査（総数/html/apps/tip の設計期待値照合）を先に行う。
+ *   2. 検査に失敗した場合は baseline を 1 バイトも書かず FAIL(2) で終了する
+ *      （誤った木で凍結証跡を壊す経路を封じる）。
+ *   3. 検査に合格した場合のみ、既存 baseline があれば退避コピー
+ *      （<path>.bak-<ISO8601>。既存ファイルは消さない・上書きしない）を
+ *      作ってから書く。
+ *
+ * io は自己テスト用の差し替え点（git・exists・copy・write・baselinePath・nowIso）。
+ * 既定は本物の git・fs へ繋がる。
  */
-function makeBaseline(print, printErr) {
-  const tip = git(REPO_ROOT, "rev-parse", "origin/gh-pages").trim();
-  const entries = parseLsTreeZ(git(REPO_ROOT, "ls-tree", "-r", "-z", "origin/gh-pages"));
+export function makeBaseline(print, printErr, io = {}) {
+  const gitImpl = io.git ?? git;
+  const existsImpl = io.exists ?? existsSync;
+  const copyImpl = io.copy ?? copyFileSync;
+  const writeImpl = io.write ?? writeFileSync;
+  const baselinePath = io.baselinePath ?? BASELINE_PATH;
+  const nowIso = io.nowIso ?? (() => new Date().toISOString());
+  const tip = gitImpl(REPO_ROOT, "rev-parse", "origin/gh-pages").trim();
+  const entries = parseLsTreeZ(gitImpl(REPO_ROOT, "ls-tree", "-r", "-z", "origin/gh-pages"));
   const html = entries.filter((e) => e.path.endsWith(".html")).length;
   const appsJson = entries.filter((e) => /^apps\/[^/]+\.json$/.test(e.path)).length;
   const doc = {
@@ -207,9 +232,7 @@ function makeBaseline(print, printErr) {
     counts: { html, apps_json: appsJson, total: entries.length },
     tree: entries,
   };
-  writeFileSync(BASELINE_PATH, serializeBaseline(doc), "utf8");
-  print(`baseline を書いた: ${BASELINE_PATH}`);
-  print(`  tip=${tip} entry_count=${entries.length} html=${html} apps/*.json=${appsJson}`);
+  // ★ 整合検査を書き込みより先に行う（Minor-3 是正: 失敗時に凍結証跡を壊さない）。
   const problems = [];
   if (entries.length !== DESIGN_EXPECT.total) {
     problems.push(
@@ -234,10 +257,21 @@ function makeBaseline(print, printErr) {
       printErr(`⚠ ${p}`);
     }
     printErr(
-      "baseline は書いたが、設計時点の木と食い違う。gh-pages が設計後に変わっていないか確認すること。",
+      "baseline は書かない（検査 FAIL。誤った木で凍結証跡を上書きしない）。" +
+        "gh-pages が設計後に変わっていないか確認すること。",
     );
     return EXIT.FAIL;
   }
+  // 既存 baseline の退避（既存ファイルは消さない・上書きしない）。
+  if (existsImpl(baselinePath)) {
+    const stamp = nowIso().replace(/[:.]/g, "-");
+    const backup = `${baselinePath}.bak-${stamp}`;
+    copyImpl(baselinePath, backup);
+    print(`既存 baseline を退避した: ${backup}`);
+  }
+  writeImpl(baselinePath, serializeBaseline(doc), "utf8");
+  print(`baseline を書いた: ${baselinePath}`);
+  print(`  tip=${tip} entry_count=${entries.length} html=${html} apps/*.json=${appsJson}`);
   print("  設計 §1.1/§9.1 の期待値と一致。");
   return EXIT.PASS;
 }
@@ -516,6 +550,10 @@ export async function httpGet(url, opts = {}) {
  * PASS 条件: 差分が allowlist に列挙された変更のみ（path の増減は許容しない。
  * .nojekyll の「追加のみ・対処時に限る」のみ例外）。
  * allowlist の期待 blob SHA が未採取（PENDING）のまま diff に使われたら FAIL。
+ * 追加専用エントリ（.nojekyll）も内容を照合する: 追加された blob SHA が
+ * allowlist の expected_blob_sha と一致することを要求する（.nojekyll は空
+ * ファイル（0 バイト）のため期待値は機械的に確定できる。任意の内容の追加が
+ * green になる「追加のみ・内容不問」の穴を塞ぐ＝実装レビュー Minor-2 の是正）。
  * 分母（両木のエントリ列）が空なら FAIL。
  */
 export function compareTrees(baselineEntries, targetEntries, allowlist) {
@@ -557,8 +595,25 @@ export function compareTrees(baselineEntries, targetEntries, allowlist) {
       problems.push(`追加されている（allowlist 外の追加）: ${p}`);
       continue;
     }
+    // 追加も内容を照合する（Minor-2 是正: .nojekyll は空ファイルのため
+    // 期待 blob SHA は確定値。任意の内容の追加を green にしない）。
+    const to = tgt.get(p).sha;
+    if (isPending(al.expected_blob_sha)) {
+      problems.push(
+        `allowlist 未採取: 追加 ${p} の期待 blob SHA が "${PENDING}" のまま検査に使われた。` +
+          `expected_additions の期待値を採取してから再実行すること`,
+      );
+      continue;
+    }
+    if (al.expected_blob_sha !== to) {
+      problems.push(
+        `追加ファイルの blob SHA が allowlist の期待値と不一致: ${p}（期待 ${al.expected_blob_sha}・実測 ${to}）。` +
+          `expected_additions は「追加のみ・対処時に限る」の特殊エントリであり内容まで律する`,
+      );
+      continue;
+    }
     addedInAllowlist++;
-    notes.push(`追加を許容（allowlist の「追加のみ・対処時に限る」特殊エントリ）: ${p}`);
+    notes.push(`追加を許容（allowlist の「追加のみ・対処時に限る」特殊エントリ・期待 blob SHA と一致）: ${p}`);
   }
   let changedInAllowlist = 0;
   for (const p of changed) {
@@ -614,22 +669,35 @@ export function compareTrees(baselineEntries, targetEntries, allowlist) {
 // ---- H 層: 判定 ----
 
 /**
- * H 層の判定（§4.6-H）。
+ * H 層の判定（§4.6-H・§9.1 手順 6）。
  *   - 全対象で status 200 かつ sha256 一致（かつ content-type 一致）。
- *   - ただし allowlist に列挙された path（shizuoka.html）は
- *     「両側 200 かつ、新側 sha256 が allowlist の fix 後期待値と一致」を PASS 条件とする
- *     （fix 後の新側は相対参照へ書き換わるため旧 origin 原件と byte 不一致になる予期差分）。
+ *   - 旧 == 新（byte 同一）なら allowlist の如何に依らず PASS。
+ *     §9.1 手順 6 は「AC3 が green になってから手順 7（fix commit）へ進む」と定め、
+ *     この時点の PlatSeries は Maplat gh-pages の完全コピー（全対象が byte 同一）であり、
+ *     allowlist の期待値はまだ PENDING（fix commit 作成時に機械採取するため §4.3）。
+ *     よって「allowlist に載っている path」というだけで PENDING 分岐へ落とすと、
+ *     fix 前の正しい状態が常に赤になり設計が要求する pre-fix green が実行不能になる
+ *     （実装レビュー Critical-1 の是正）。
+ *   - 旧 != 新のとき初めて allowlist を参照する（G 層 compareTrees と同じ
+ *     「差分があるときだけ allowlist を見る」構造）:
+ *     - allowlist に載っていて期待 sha256 採取済み → 新側が期待値と一致すれば PASS
+ *       （fix 後の新側は相対参照へ書き換わるため旧 origin 原件と byte 不一致になる予期差分）
+ *     - allowlist に載っていて期待値が PENDING → FAIL（期待値が無く判定不能。
+ *       PENDING を素通ししない fail-closed）
+ *     - allowlist に載っていない → FAIL（予期差分の範囲外）
  *   - 例外（fetch の throw・タイムアウト）は条件偽と区別する: 例外が 1 件でも
  *     あれば outcome "error"（exit 3）。不一致のみなら "fail"（exit 2）。
  */
 export function judgeHttp(results, allowlist) {
   const problems = [];
+  const notes = [];
   const errors = [];
   if (!Array.isArray(results) || results.length === 0) {
     return {
       outcome: "fail",
       exit_code: EXIT.FAIL,
       problems: ["H 層の結果列が 0 件（分母が空）"],
+      notes,
       errors,
     };
   }
@@ -640,24 +708,32 @@ export function judgeHttp(results, allowlist) {
     if (r.old.status !== 200) problems.push(`旧側 status 非 200（${r.old.status}）: ${r.old.final_url}`);
     if (r.new.status !== 200) problems.push(`新側 status 非 200（${r.new.status}）: ${r.new.final_url}`);
     if (r.old.status !== 200 || r.new.status !== 200) continue;
+    // ★ 差分があるかを先に見る（G 層と同じ構造）。allowlist に載っている
+    // というだけで PENDING 分岐へ落とさない（Critical-1 是正）。
     const al = allowlist?.httpByPath?.get(r.path);
-    if (al && !isPending(al.expected_sha256)) {
+    if (r.old.sha256 === r.new.sha256) {
+      // 旧 == 新（byte 同一）: PASS。fix commit 前の正しい状態（§9.1 手順 6）。
+      if (al) {
+        notes.push(
+          `${r.path} は byte 同一（旧 == 新）。allowlist 対象だが fix commit 前のため期待値を参照しない`,
+        );
+      }
+    } else if (al && !isPending(al.expected_sha256)) {
       if (r.new.sha256 !== al.expected_sha256) {
         problems.push(
           `予期差分の範囲外: ${r.path} 新側 sha256=${r.new.sha256} が allowlist の fix 後期待値（${al.expected_sha256}）と不一致`,
         );
       }
-    } else if (al && isPending(al.expected_sha256)) {
+    } else if (al) {
+      // 旧 != 新 なのに期待値が未採取 → 判定不能のため FAIL（fail-closed）
       problems.push(
-        `allowlist 未採取: ${r.path} の fix 後期待 sha256 が "${PENDING}" のまま検査に使われた。` +
+        `allowlist 未採取: ${r.path} は旧 != 新（byte 不一致）だが fix 後期待 sha256 が "${PENDING}" のまま。` +
           `§9.1 手順 7 の fix commit 作成時に機械採取して allowlist.json を更新してから再実行すること`,
       );
     } else {
-      if (r.old.sha256 !== r.new.sha256) {
-        problems.push(
-          `sha256 不一致: ${r.path}（旧=${r.old.sha256}・新=${r.new.sha256}）`,
-        );
-      }
+      problems.push(
+        `sha256 不一致: ${r.path}（旧=${r.old.sha256}・新=${r.new.sha256}）`,
+      );
     }
     if (r.old.content_type !== r.new.content_type) {
       problems.push(
@@ -666,9 +742,9 @@ export function judgeHttp(results, allowlist) {
     }
   }
   // 例外による失敗を条件偽による失敗より優先する（exit 3 vs 2 の区別）。
-  if (errors.length) return { outcome: "error", exit_code: EXIT.ENV, problems, errors };
-  if (problems.length) return { outcome: "fail", exit_code: EXIT.FAIL, problems, errors };
-  return { outcome: "pass", exit_code: EXIT.PASS, problems: [], errors };
+  if (errors.length) return { outcome: "error", exit_code: EXIT.ENV, problems, notes, errors };
+  if (problems.length) return { outcome: "fail", exit_code: EXIT.FAIL, problems, notes, errors };
+  return { outcome: "pass", exit_code: EXIT.PASS, problems: [], notes, errors };
 }
 
 // ---- 使い方と mode 別前提（実行点を誤らせない） ----
@@ -679,12 +755,18 @@ verify-ghpages-identity.mjs — oct26-m10 配信同一性検査（G 層・H 層�
 使い方:
   node scripts/oct26-m10/verify-ghpages-identity.mjs --make-baseline
       ghpages-tree-baseline.json を \`git ls-tree -r -z origin/gh-pages\` の
-      出力から機械生成する（§4.3。手書き禁止。凍結証跡なので再生成は t4 後に行わない）
+      出力から機械生成する（§4.3。手書き禁止。凍結証跡なので再生成は t4 後に行わない）。
+      整合検査（総数/HTML/apps/先端の設計期待値照合）に合格してから書く。
+      失敗した場合は 1 バイトも書かない。既存 baseline があるときは
+      <path>.bak-<ISO8601> へ退避コピー（既存ファイルは消さない）を作ってから書く
   node scripts/oct26-m10/verify-ghpages-identity.mjs --git [--repo <platseries>]
-      G 層: baseline 6975 blob SHA と PlatSeries 作業 clone の gh-pages 木を全件比較
+      G 層: baseline 6975 blob SHA と PlatSeries 作業 clone の gh-pages 木を全件比較。
+      追加専用エントリ（.nojekyll）の追加も内容（blob SHA = 空ファイルの確定値）を照合する
   node scripts/oct26-m10/verify-ghpages-identity.mjs --http [オプション]
       H 層: 旧 Maplat Pages と新 PlatSeries Pages の生・生 HTTP 比較（大量 HTTP。
-      明示フラグ必須・CI には入れない）
+      明示フラグ必須・CI には入れない）。旧 == 新（byte 同一）は allowlist の如何に
+      依らず PASS（§9.1 手順 6: fix commit 前の全対象 byte 同一が green になる）。
+      旧 != 新のとき初めて allowlist の fix 後期待値を参照する（PENDING なら FAIL）
   node scripts/oct26-m10/verify-ghpages-identity.mjs --selftest
       自己テスト（ネットワークに出ずに判定ロジックを固定入力で検査する）
 
@@ -704,10 +786,16 @@ mode 別前提（設計 §4.6「検査スクリプトの実行点のまとめ」
   |-------------------|------------------------------|-----------------------------------------------|
   | t1-v（退避後・切替前） | --git と --http の両方    | Maplat gh-pages がまだ生きている（H の生・生比較のため）。
                         ※ fix commit 前は --git は 0 差分で green、
+                          --http は全対象 byte 同一（旧 == 新）で green
+                          （§9.1 手順 6: AC3 の green を確認してから
+                          手順 7 の fix commit へ進む）、
                           fix commit 後は差分 = allowlist 内のみで green
   | t3 gate（削除前）  | --git と verify-switch.mjs --verify の再実行 | t2 の疎通 green 後
   | t2-c / t2-v       | verify-switch.mjs --capture / --verify | Workers 変更の前後
   | t3-v（削除後）     | verify-switch.mjs --verify のみ | 旧 Pages は消えているため --http は再実行しない
+  両 mode 指定（--git --http）の実行順は G → H。G が環境エラー（exit 3）や引数の
+  誤り（exit 4）で throw した場合は H を実行せずその非ゼロで終了する（fail-closed:
+  例外経路が exit 0 を作らない。t1-v は個別 mode で回すのが設計前提）。
   再実行してはならないもの:
   - t4 完了後の --git : gh-pages が dist-demo に置換されるため baseline との全体一致は
     正当に成立しなくなる（§4.3-1「期待された赤」。baseline は移送時点の凍結記録として残す）
@@ -842,6 +930,7 @@ async function runHttp(o, print, printErr) {
   const verdict = judgeHttp(results, allowlist);
   // 証跡の書き出しは「全取得が完了」の場合のみ（例外が 1 件でもあれば書かない）。
   if (verdict.outcome !== "error") {
+    for (const n of verdict.notes) print(`  注記: ${n}`);
     const capFile = o.out;
     mkdirSync(path.dirname(capFile), { recursive: true });
     writeFileSync(
@@ -859,6 +948,7 @@ async function runHttp(o, print, printErr) {
             total: targets.length,
             outcome: verdict.outcome,
             problems: verdict.problems,
+            notes: verdict.notes,
           },
           results: results.map((r) => ({
             path: r.path,
@@ -952,6 +1042,28 @@ function syntheticAllowlist() {
           kind: "add-only",
           conditional: true,
           expected_change_sites: 1,
+          // .nojekyll は空ファイル（0 バイト）のため期待 blob SHA は確定値
+          // （git hash-object /dev/null の実測。Minor-2 是正で内容照合に使う）
+          expected_blob_sha: "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+          expected_sha256: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        },
+      ],
+    }),
+  ).allowlist;
+}
+
+/** Minor-2 の fail-closed 検証用: .nojekyll の期待値が PENDING のままの allowlist */
+function syntheticAllowlistPendingAddition() {
+  return parseAllowlist(
+    JSON.stringify({
+      schema: ALLOWLIST_SCHEMA,
+      expected_changes: [],
+      expected_additions: [
+        {
+          path: ".nojekyll",
+          kind: "add-only",
+          conditional: true,
+          expected_change_sites: 1,
           expected_blob_sha: PENDING,
           expected_sha256: PENDING,
         },
@@ -1028,10 +1140,13 @@ function buildSelfTestCases() {
       `allowlist 外追加が検出されていない: ${JSON.stringify(v.problems)}`,
     );
   });
-  t("git-4: allowlist の特殊エントリ（.nojekyll）の追加のみは許容される", async () => {
+  t("git-4: allowlist の特殊エントリ（.nojekyll）の追加のみは許容される（内容＝空 blob SHA も照合）", async () => {
+    // Minor-2 是正: 追加は「path が .nojekyll」だけでなく内容（blob SHA）も照合される。
+    // .nojekyll は空ファイルなので空 blob SHA（git hash-object /dev/null の実測値）。
+    const NOJEKYLL_EMPTY_BLOB = "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391";
     const tgt = [
       ...syntheticTree(),
-      { mode: "100644", type: "blob", sha: "e".repeat(40), path: ".nojekyll" },
+      { mode: "100644", type: "blob", sha: NOJEKYLL_EMPTY_BLOB, path: ".nojekyll" },
     ];
     const v = compareTrees(syntheticTree(), tgt, syntheticAllowlist());
     return ok(v.outcome === "pass", `追加許容のはずが FAIL: ${v.problems.join(" / ")}`);
@@ -1089,6 +1204,43 @@ function buildSelfTestCases() {
     return ok(
       v.outcome === "fail" && v.problems.some((p) => p.includes("分母が空")),
       `分母空が FAIL になっていない: ${JSON.stringify(v.problems)}`,
+    );
+  });
+  t("git-11: 【Critical と同観点・G 層】allowlist 対象（期待値 PENDING）が blob 同一なら差分に入らず PASS（fix 前 0 差分）", async () => {
+    // H 層 Critical-1 と同じ観点の G 層側: shizuoka.html（期待値 PENDING）が
+    // baseline と対象で同一 blob なら changed に入らず、PENDING 分岐に到達しない。
+    const tree = [
+      ...syntheticTree(),
+      { mode: "100644", type: "blob", sha: "6".repeat(40), path: "shizuoka.html" },
+    ];
+    const v = compareTrees(tree, tree, syntheticAllowlist());
+    return ok(
+      v.outcome === "pass",
+      `blob 同一の allowlist 対象（PENDING）が FAIL になっている: ${JSON.stringify(v.problems)}`,
+    );
+  });
+  t("git-12: .nojekyll の追加でも内容（blob SHA）が allowlist の期待値と不一致なら FAIL", async () => {
+    // Minor-2 是正の検出側: 「.nojekyll という path なら何を入れても green」の穴が塞がったことの検証。
+    const tgt = [
+      ...syntheticTree(),
+      { mode: "100644", type: "blob", sha: "9".repeat(40), path: ".nojekyll" },
+    ];
+    const v = compareTrees(syntheticTree(), tgt, syntheticAllowlist());
+    return ok(
+      v.outcome === "fail" &&
+        v.problems.some((p) => p.includes("追加ファイルの blob SHA") && p.includes("期待値と不一致")),
+      `任意の内容の .nojekyll 追加が green になっている: ${JSON.stringify(v.problems)}`,
+    );
+  });
+  t("git-13: .nojekyll の追加で期待 blob SHA が PENDING のままなら FAIL（fail-closed）", async () => {
+    const tgt = [
+      ...syntheticTree(),
+      { mode: "100644", type: "blob", sha: "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391", path: ".nojekyll" },
+    ];
+    const v = compareTrees(syntheticTree(), tgt, syntheticAllowlistPendingAddition());
+    return ok(
+      v.outcome === "fail" && v.problems.some((p) => p.includes(PENDING)),
+      `追加エントリの期待値が PENDING でも FAIL になっていない: ${JSON.stringify(v.problems)}`,
     );
   });
 
@@ -1191,8 +1343,13 @@ function buildSelfTestCases() {
       `予期差分の範囲外が検出されていない: ${JSON.stringify(v.problems)}`,
     );
   });
-  t("judge-6: allowlist の期待 sha256 が PENDING のまま検査に使われたら FAIL", async () => {
-    const v = judgeHttp([mk("shizuoka.html", H, H)], syntheticAllowlist());
+  t("judge-6: allowlist の期待 sha256 が PENDING のまま検査に使われたら FAIL（旧 != 新のとき）", async () => {
+    // Critical-1 是正に伴う修正: 旧 == 新 + PENDING は fix commit 前の正当状態なので
+    // PASS にする（judge-11）。PENDING が FAIL になるのは旧 != 新のときに限る。
+    const v = judgeHttp(
+      [mk("shizuoka.html", H, sha256Hex("changed-bytes"))],
+      syntheticAllowlist(),
+    );
     return ok(
       v.outcome === "fail" && v.problems.some((p) => p.includes(PENDING)),
       `未採取（PENDING）のまま検査に使われても FAIL になっていない: ${JSON.stringify(v.problems)}`,
@@ -1241,6 +1398,59 @@ function buildSelfTestCases() {
   t("judge-10: 結果列が 0 件（分母 0）なら FAIL", async () => {
     const v = judgeHttp([], syntheticAllowlist());
     return ok(v.outcome === "fail" && v.exit_code === 2, `outcome=${v.outcome} code=${v.exit_code}`);
+  });
+  // ===== judgeHttp: Critical-1 是正の 4 ケース（委任指定。byte 同一と allowlist の順序） =====
+  // 正しい論理: 「旧 == 新 なら allowlist の如何に依らず PASS／旧 != 新 のとき
+  // 初めて allowlist（期待値）を参照する」。PENDING を素通しする緩和ではない
+  // （差分があるときだけ allowlist を見る = fail-closed 契約は維持）。
+  t("judge-11: 【Critical 是正】allowlist 対象が byte 同一（旧==新）・期待値 PENDING → PASS（fix commit 前の正しい状態）", async () => {
+    // §9.1 手順 6: AC3 は fix commit の前に green になる必要がある。この時点の
+    // PlatSeries は Maplat gh-pages の完全コピーであり、shizuoka.html を含む
+    // 全対象が byte 同一。allowlist 期待値は fix commit 時の機械採取（§4.3）なので
+    // この時点では PENDING しかありえない。よってこの状態が PASS にならなければ
+    // 設計が要求する pre-fix green が実行不能になる（旧実装のCritical の再現ケース）。
+    const v = judgeHttp([mk("shizuoka.html", H, H)], syntheticAllowlist());
+    return ok(
+      v.outcome === "pass" && v.exit_code === 0,
+      `byte 同一（旧==新）+ PENDING が FAIL になっている（Critical 未解消）: outcome=${v.outcome} problems=${JSON.stringify(v.problems)}`,
+    );
+  });
+  t("judge-12: allowlist 対象が byte 不一致・期待値 PENDING → FAIL（期待値が無く判定不能）", async () => {
+    const v = judgeHttp(
+      [mk("shizuoka.html", H, sha256Hex("diverted-bytes"))],
+      syntheticAllowlist(),
+    );
+    return ok(
+      v.outcome === "fail" &&
+        v.exit_code === 2 &&
+        v.problems.some((p) => p.includes(PENDING)),
+      `旧 != 新 + PENDING が FAIL になっていない: outcome=${v.outcome} problems=${JSON.stringify(v.problems)}`,
+    );
+  });
+  t("judge-13: allowlist 対象が byte 不一致・期待値採取済みで新側が一致 → PASS", async () => {
+    const exp = "8".repeat(64);
+    const v = judgeHttp(
+      [mk("aizumap.html", sha256Hex("old-bytes"), exp)],
+      syntheticAllowlist(),
+    );
+    return ok(
+      v.outcome === "pass" && v.exit_code === 0,
+      `期待値との一致で PASS になるはず: outcome=${v.outcome} problems=${JSON.stringify(v.problems)}`,
+    );
+  });
+  t("judge-14: allowlist 対象が byte 不一致・期待値採取済みで新側が不一致 → FAIL", async () => {
+    // syntheticAllowlist の aizumap.html は期待 sha256 = "8"*64（採取済み）。
+    // 新側を期待値以外へずらして FAIL になることを検証する。
+    const v = judgeHttp(
+      [mk("aizumap.html", sha256Hex("old-bytes"), sha256Hex("wrong-fix"))],
+      syntheticAllowlist(),
+    );
+    return ok(
+      v.outcome === "fail" &&
+        v.exit_code === 2 &&
+        v.problems.some((p) => p.includes("予期差分の範囲外")),
+      `期待値との不一致が FAIL になっていない: outcome=${v.outcome} problems=${JSON.stringify(v.problems)}`,
+    );
   });
 
   // ===== enumHttpTargets: 分母の検査 =====
@@ -1334,14 +1544,107 @@ function buildSelfTestCases() {
     const shizuoka = r.allowlist.httpByPath.get("shizuoka.html");
     const readme = r.allowlist.modifiedByPath.get("README.md");
     const nojekyll = r.allowlist.addedByPath.get(".nojekyll");
+    // Minor-2 是正: .nojekyll の期待値は空ファイルの確定値（PENDING ではない）。
+    const EMPTY_BLOB_SHA = "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391";
     return ok(
       shizuoka &&
         isPending(shizuoka.expected_sha256) &&
         readme &&
         isPending(readme.expected_blob_sha) &&
         readme.expected_change_sites === 9 &&
-        nojekyll?.conditional === true,
-      `allowlist の中身が設計 §4.3/§4.5 と不一致: shizuoka=${JSON.stringify(shizuoka?.expected_sha256)} readme sites=${readme?.expected_change_sites}`,
+        nojekyll?.conditional === true &&
+        nojekyll.expected_blob_sha === EMPTY_BLOB_SHA,
+      `allowlist の中身が設計 §4.3/§4.5 と不一致: shizuoka=${JSON.stringify(shizuoka?.expected_sha256)} readme sites=${readme?.expected_change_sites} nojekyll=${JSON.stringify(nojekyll?.expected_blob_sha)}`,
+    );
+  });
+
+  // ===== makeBaseline: 書き込み順序（Minor-3 是正。仮想 IO で実ファイルに触れない） =====
+  // 設計期待値と一致する仮想木: total 6975 = HTML 52 + apps 40 + その他 6883。
+  const V_TIP = DESIGN_EXPECT.tip;
+  const V_SHA = "1".repeat(40);
+  const makeVirtualEntries = (total) => {
+    const entries = [];
+    for (let i = 0; i < DESIGN_EXPECT.html; i++) {
+      entries.push({ mode: "100644", type: "blob", sha: V_SHA, path: `page${i}.html` });
+    }
+    for (let i = 0; i < DESIGN_EXPECT.appsJson; i++) {
+      entries.push({ mode: "100644", type: "blob", sha: V_SHA, path: `apps/app${i}.json` });
+    }
+    const rest = total - DESIGN_EXPECT.html - DESIGN_EXPECT.appsJson;
+    for (let i = 0; i < rest; i++) {
+      entries.push({ mode: "100644", type: "blob", sha: V_SHA, path: `tiles/t${i}.png` });
+    }
+    return entries;
+  };
+  const makeVirtualGit = (entries) => (cwd, ...args) => {
+    if (args[0] === "rev-parse") return `${V_TIP}\n`;
+    if (args[0] === "ls-tree") {
+      return `${entries.map((e) => `100644 blob ${e.sha}\t${e.path}`).join("\0")}\0`;
+    }
+    throw new Error(`仮想 git が未知の呼び出しを受けた: ${args.join(" ")}`);
+  };
+  const makeVirtualIo = (entries, exists) => {
+    const writes = [];
+    const copies = [];
+    return {
+      io: {
+        git: makeVirtualGit(entries),
+        exists: () => exists,
+        copy: (from, to) => copies.push({ from, to }),
+        write: (file, text) => writes.push({ file, text }),
+        baselinePath: "/virtual/ghpages-tree-baseline.json",
+        nowIso: () => "2026-09-17T00:00:00.000Z",
+      },
+      writes,
+      copies,
+    };
+  };
+  const sinkLines = () => {
+    const lines = [];
+    return {
+      print: (...a) => lines.push(a.join(" ")),
+      printErr: (...a) => lines.push(a.join(" ")),
+      text: () => lines.join("\n"),
+    };
+  };
+  t("make-1: 整合検査に失敗する木では baseline を 1 バイトも書かない（凍結証跡を誤った木で壊さない）", async () => {
+    // 総数 6974（設計期待 6975 に 1 件欠ける）→ 整合検査 FAIL → exit 2・書き込み 0 回
+    const v = makeVirtualEntries(DESIGN_EXPECT.total - 1);
+    const { io, writes, copies } = makeVirtualIo(v, false);
+    const sink = sinkLines();
+    const code = makeBaseline(sink.print, sink.printErr, io);
+    return ok(
+      code === EXIT.FAIL && writes.length === 0 && copies.length === 0,
+      `検査 FAIL 時に書き込みが発生していないか退出コードが違う: code=${code} writes=${writes.length} copies=${copies.length}`,
+    );
+  });
+  t("make-2: 整合検査に合格する木では baseline を書く（内容は parseBaseline を通る）", async () => {
+    const v = makeVirtualEntries(DESIGN_EXPECT.total);
+    const { io, writes, copies } = makeVirtualIo(v, false);
+    const sink = sinkLines();
+    const code = makeBaseline(sink.print, sink.printErr, io);
+    const parsed = writes.length === 1 ? parseBaseline(writes[0].text) : { ok: false, problems: ["書き込み無し"] };
+    return ok(
+      code === EXIT.PASS &&
+        writes.length === 1 &&
+        parsed.ok === true &&
+        parsed.baseline.entry_count === DESIGN_EXPECT.total &&
+        parsed.baseline.tip_commit === DESIGN_EXPECT.tip,
+      `検査合格時に正しく書けていない: code=${code} writes=${writes.length} parsed.ok=${parsed.ok} problems=${JSON.stringify(parsed.problems ?? [])}`,
+    );
+  });
+  t("make-3: 既存 baseline があるときは退避コピーを作ってから書く（既存ファイルは消さない・上書きしない）", async () => {
+    const v = makeVirtualEntries(DESIGN_EXPECT.total);
+    const { io, writes, copies } = makeVirtualIo(v, true);
+    const sink = sinkLines();
+    const code = makeBaseline(sink.print, sink.printErr, io);
+    return ok(
+      code === EXIT.PASS &&
+        copies.length === 1 &&
+        copies[0].from === io.baselinePath &&
+        copies[0].to === `${io.baselinePath}.bak-2026-09-17T00-00-00-000Z` &&
+        writes.length === 1,
+      `退避コピーの挙動が期待と違う: code=${code} copies=${JSON.stringify(copies)} writes=${writes.length}`,
     );
   });
 
