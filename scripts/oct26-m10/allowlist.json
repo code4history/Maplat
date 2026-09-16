@@ -1,0 +1,39 @@
+{
+  "schema": "oct26-m10-allowlist",
+  "version": 1,
+  "design_doc": "docs/superpowers/specs/2026-09-16-oct26-m10-design.md §4.3・§4.5・§4.6（v2）",
+  "pending_marker": "PENDING",
+  "note": "expected_blob_sha / expected_sha256 は §9.1 手順 7 の fix commit 作成時点で機械採取して記録する（§4.3: 手書き禁止。git hash-object 相当の blob SHA と shasum -a 256）。この時点では未採取を表す明示値 \"PENDING\" を置く。検査スクリプトは PENDING のまま検査に使われたら FAIL する（fail-closed。「行数だけ合って中身が別物」を検出するための値であり、人力で書くと検査の意味を失う）。",
+  "expected_changes": [
+    {
+      "path": "shizuoka.html",
+      "kind": "modified",
+      "expected_change_sites": 2,
+      "expected_blob_sha": "PENDING",
+      "expected_sha256": "PENDING",
+      "capture_procedure": "§9.1 手順 7 の fix commit 作成後、PlatSeries 作業 clone 内で機械採取する: git ls-tree gh-pages -- shizuoka.html の blob SHA（40 桁）を expected_blob_sha へ、git show gh-pages:shizuoka.html | shasum -a 256 の値（64 桁）を expected_sha256 へ記録する。",
+      "reason": "§4.5: 7 行・40 行の旧 URL 絶対参照（https://code4history.github.io/Maplat/dist/{maplat.css,maplat.js}）を相対参照（dist/maplat.css・dist/maplat.js）へ書き換える 2 箇所。§4.6-G の blob 差し替え許容対象。H 層では旧 origin の原件（絶対参照）と byte 不一致になる予期差分であるため、新側が expected_sha256 と一致することを PASS 条件とする（§4.6-H）。"
+    },
+    {
+      "path": "README.md",
+      "kind": "modified",
+      "expected_change_sites": 9,
+      "expected_blob_sha": "PENDING",
+      "expected_sha256": "PENDING",
+      "capture_procedure": "§9.1 手順 7 の fix commit 作成後、PlatSeries 作業 clone 内で機械採取する: git ls-tree gh-pages -- README.md の blob SHA（40 桁）を expected_blob_sha へ、git show gh-pages:README.md | shasum -a 256 の値（64 桁）を expected_sha256 へ記録する。",
+      "reason": "§4.5: 1・20・25・78〜83 行の 9 箇所が https://code4history.github.io/Maplat/{page_imgs,img}/... を指す旧 URL 絶対参照であり、同パスの相対参照へ書き換える。§4.6-G の blob 差し替え許容対象。README.md は H 層の対象集合（52 HTML + 40 apps + 代表資産 + サンプル 100）に含まれないため、H 層の予期差分対応は不要（§4.6-H）。"
+    }
+  ],
+  "expected_additions": [
+    {
+      "path": ".nojekyll",
+      "kind": "add-only",
+      "conditional": true,
+      "expected_change_sites": 1,
+      "expected_blob_sha": "PENDING",
+      "expected_sha256": "PENDING",
+      "capture_procedure": "対処時（§2.3: PlatSeries Pages が Jekyll build 失敗等で 404 になった場合のみ .nojekyll を 1 commit 追加する）に、git ls-tree gh-pages -- .nojekyll の blob SHA と git show gh-pages:.nojekyll | shasum -a 256 の値を機械採取して記録する。",
+      "reason": "§4.3: 「追加のみ・対処時に限る」の特殊エントリ。§1.2-8 の実測により現行 gh-pages 木に .nojekyll は存在しないため、通常の全履歴移送ではこの差分は現れない。追加が許容されるのは Pages の build 失敗への対処として人間が追加した場合のみ。"
+    }
+  ]
+}
