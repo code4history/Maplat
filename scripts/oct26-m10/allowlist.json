@@ -9,19 +9,23 @@
       "path": "shizuoka.html",
       "kind": "modified",
       "expected_change_sites": 2,
-      "expected_blob_sha": "PENDING",
-      "expected_sha256": "PENDING",
+      "expected_blob_sha": "c8f327f5817e9201ba347706fc24f1017baf02ca",
+      "expected_sha256": "71af21d0b6c27f394b42f16367ad1bb4a987eac60a8fb10c1f7c0d4a0e71c2e3",
       "capture_procedure": "§9.1 手順 7 の fix commit 作成後、PlatSeries 作業 clone 内で機械採取する: git ls-tree gh-pages -- shizuoka.html の blob SHA（40 桁）を expected_blob_sha へ、git show gh-pages:shizuoka.html | shasum -a 256 の値（64 桁）を expected_sha256 へ記録する。",
-      "reason": "§4.5: 7 行・40 行の旧 URL 絶対参照（https://code4history.github.io/Maplat/dist/{maplat.css,maplat.js}）を相対参照（dist/maplat.css・dist/maplat.js）へ書き換える 2 箇所。§4.6-G の blob 差し替え許容対象。H 層では旧 origin の原件（絶対参照）と byte 不一致になる予期差分であるため、新側が expected_sha256 と一致することを PASS 条件とする（§4.6-H）。"
+      "reason": "§4.5: 7 行・40 行の旧 URL 絶対参照（https://code4history.github.io/Maplat/dist/{maplat.css,maplat.js}）を相対参照（dist/maplat.css・dist/maplat.js）へ書き換える 2 箇所。§4.6-G の blob 差し替え許容対象。H 層では旧 origin の原件（絶対参照）と byte 不一致になる予期差分であるため、新側が expected_sha256 と一致することを PASS 条件とする（§4.6-H）。",
+      "captured_at": "2026-09-17",
+      "captured_from": "PlatSeries gh-pages ea2fcb7e0415ad2c10614262e7a44fe7970ab9e1（git ls-tree の blob SHA と git show | shasum -a 256 で機械採取）"
     },
     {
       "path": "README.md",
       "kind": "modified",
       "expected_change_sites": 9,
-      "expected_blob_sha": "PENDING",
-      "expected_sha256": "PENDING",
+      "expected_blob_sha": "0fde6225f457306fd7763f4b658fa27dba42cf27",
+      "expected_sha256": "76d5109faa59e88e093fa24366d64e9fdafbda402c5c1a8ffa7cd61cfc46a9dc",
       "capture_procedure": "§9.1 手順 7 の fix commit 作成後、PlatSeries 作業 clone 内で機械採取する: git ls-tree gh-pages -- README.md の blob SHA（40 桁）を expected_blob_sha へ、git show gh-pages:README.md | shasum -a 256 の値（64 桁）を expected_sha256 へ記録する。",
-      "reason": "§4.5: 1・20・25・78〜83 行の 9 箇所が https://code4history.github.io/Maplat/{page_imgs,img}/... を指す旧 URL 絶対参照であり、同パスの相対参照へ書き換える。§4.6-G の blob 差し替え許容対象。README.md は H 層の対象集合（52 HTML + 40 apps + 代表資産 + サンプル 100）に含まれないため、H 層の予期差分対応は不要（§4.6-H）。"
+      "reason": "§4.5: 1・20・25・78〜83 行の 9 箇所が https://code4history.github.io/Maplat/{page_imgs,img}/... を指す旧 URL 絶対参照であり、同パスの相対参照へ書き換える。§4.6-G の blob 差し替え許容対象。README.md は H 層の対象集合（52 HTML + 40 apps + 代表資産 + サンプル 100）に含まれないため、H 層の予期差分対応は不要（§4.6-H）。",
+      "captured_at": "2026-09-17",
+      "captured_from": "PlatSeries gh-pages ea2fcb7e0415ad2c10614262e7a44fe7970ab9e1（git ls-tree の blob SHA と git show | shasum -a 256 で機械採取）"
     }
   ],
   "expected_additions": [
