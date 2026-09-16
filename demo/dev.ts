@@ -49,7 +49,43 @@ for (let i = 0; i < hashesArr.length; i++) {
     hash[1] == "true" ? true : hash[1] == "false" ? false : hash[1];
 }
 
+// クエリ→option 上書き機構が反映した後の現在値（MaplatCore の既定に合わせる）
+const queryOption = option as Record<string, unknown>;
+const appid = String(queryOption.appid || "sample");
+const lang = String(queryOption.lang || "ja");
+const statusEl = document.getElementById("status");
+
+// control row の配線: 現在値を選択肢へ復元し、変更時に URL クエリを
+// 組み立てて再読み込みする（ライブラリ側の変更は不要）
+const appSelect = document.getElementById(
+  "app-select"
+) as HTMLSelectElement | null;
+const langSelect = document.getElementById(
+  "lang-select"
+) as HTMLSelectElement | null;
+if (appSelect) {
+  appSelect.value = appid;
+}
+if (langSelect) {
+  langSelect.value = lang;
+}
+const reloadWithQuery = () => {
+  const search = new URLSearchParams();
+  if (appSelect) {
+    search.set("appid", appSelect.value);
+  }
+  if (langSelect) {
+    search.set("lang", langSelect.value);
+  }
+  window.location.search = search.toString();
+};
+appSelect?.addEventListener("change", reloadWithQuery);
+langSelect?.addEventListener("change", reloadWithQuery);
+
 MaplatUi.createObject(option).then(app => {
+  if (statusEl) {
+    statusEl.textContent = `READY appid=${appid} lang=${lang}`;
+  }
   app.addEventListener("clickMarker", (evt: CustomEvent) => {
     console.log(evt);
   });
@@ -69,4 +105,9 @@ MaplatUi.createObject(option).then(app => {
       }
     });
   });
+}).catch(err => {
+  console.error(err);
+  if (statusEl) {
+    statusEl.textContent = "読み込み失敗（console を参照）";
+  }
 });
