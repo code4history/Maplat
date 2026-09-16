@@ -1,0 +1,108 @@
+{
+  "schema_version": 2,
+  "task_id": "oct26-m10-t1",
+  "cycle": {
+    "id": 2,
+    "slug": "october-2026-update-cycle"
+  },
+  "milestone_id": "m10",
+  "title": "配信同一性の機械検査スクリプト（G/H/P 3 層）と基準値マニフェストの実装（PlatSeries 新設の前準備）",
+  "classification": "new feature",
+  "status": "implementation_complete",
+  "repos": [
+    "Maplat"
+  ],
+  "branch": "codex/oct26-m10-t1",
+  "worktree": ".worktrees/oct26-m10-t1-maplat",
+  "design": {
+    "document": "docs/superpowers/specs/2026-09-16-oct26-m10-design.md",
+    "version": 2,
+    "shasum_256": "411ff99896d145e9bb00239c989116db174de31f91bd7465d2282e6652aa6c15",
+    "read_sections": [
+      "§0.4（命名規約）",
+      "§1.1〜§1.3（実測の再照合）",
+      "§4.3（基準値マニフェスト）",
+      "§4.5（自己参照 fix commit）",
+      "§4.6（配信同一性の機械検査の設計・fail-closed 契約）",
+      "§4.7（AC1〜AC5）",
+      "§5.3（AC6・AC7）",
+      "§6.1（gate G1〜G7）",
+      "§9.1（人間手順書）"
+    ]
+  },
+  "implementation": {
+    "delegation_id": "OCT26-M10T1-IMPL-HOTARU",
+    "status": "implementation_complete",
+    "finished_at": "2026-10-26",
+    "runtime": "node v24.19.0（依存追加なし・Node 標準モジュールのみ・pnpm install 未実施）",
+    "deliverables": [
+      {
+        "path": "scripts/oct26-m10/ghpages-tree-baseline.json",
+        "lines": 6992,
+        "note": "git ls-tree -r -z origin/gh-pages を --make-baseline が機械変換（手書き 0 行）。6975 エントリ・tip ee6f935a4ca0dbec374972b29dc3430782529bdf・html 52・apps/*.json 40。タイムスタンプを含まないため再生成でバイト同一（実測済み: SHA-256 が再生成前後で一致）"
+      },
+      {
+        "path": "scripts/oct26-m10/allowlist.json",
+        "note": "shizuoka.html（2 箇所）・README.md（9 箇所）・.nojekyll（追加のみ・対処時に限る）。期待値は未採取を表す明示値 \"PENDING\"（§4.3: fix commit 作成時に機械採取）。PENDING のまま検査に使うと FAIL する（fail-closed）"
+      },
+      {
+        "path": "scripts/oct26-m10/verify-ghpages-identity.mjs",
+        "note": "G 層（--git）・H 層（--http）・--make-baseline・--selftest。リダイレクトは自前追従（上限 10 hop）し最終 status で判定。終了コード 0/2/3/4/5 の fail-closed 契約"
+      },
+      {
+        "path": "scripts/oct26-m10/verify-switch.mjs",
+        "note": "P 層（--capture / --verify）・--selftest。52 map 名 + 代表資産 2 件。capture は例外 0 件かつ応答 200 が 1 件以上のときのみ基準値を書く。verify は ?_=<ISO8601> の cache-bust 付きで基準値 200 の URL が全て 200 かつ sha256 一致を検査"
+      },
+      {
+        "path": "package.json",
+        "note": "verify:m10:identity・verify:m10:switch の 2 行を結線（rule-0012・設計 §4.6 の JSON どおり。CI には入れない）"
+      }
+    ],
+    "self_tests": {
+      "verify-ghpages-identity": {
+        "command": "node scripts/oct26-m10/verify-ghpages-identity.mjs --selftest",
+        "result": "45/45 緑・exit 0",
+        "coverage": "サンプル抽出の決定性（4）・G 層 compareTrees（10・未採取 PENDING・分母空・allowlist 外差分を含む）・httpGet のリダイレクト扱い（5・301→200/301→404/ループ/相対 Location/タイムアウト）・H 層 judgeHttp（10・例外 vs 条件偽の区別 2 件を含む）・列挙の分母検査（3）・基準値 parse の破損検出（5）・CLI 終了コード（8・実データでの allowlist 外差分 FAIL を含む）"
+      },
+      "verify-switch": {
+        "command": "node scripts/oct26-m10/verify-switch.mjs --selftest",
+        "result": "24/24 緑・exit 0",
+        "coverage": "map 名列挙（3）・cache-bust クエリ（1）・capture 判定（5・例外 vs 応答しない集合の区別を含む）・verify 判定（8・HIT→FAIL・現状維持・例外 vs 条件偽・分母空を含む）・CLI 終了コード（7）"
+      }
+    },
+    "acceptance_digestion": {
+      "t1-m の範囲": {
+        "AC2: --git": "コマンド実装済み。PlatSeries 未作成の現時点では exit 3 で明確な FAIL（実測: 「比較先リポジトリ（--repo）が見つからない…§9.1 手順 1〜4…」）。green 判定は §9.1 手順 4 の後（t1-v・手順 8）に回す",
+        "AC3: --http": "コマンド実装済み（ネットワーク実行は t1-v の実行点。委任の権限がネットワークを伴わないローカル検査に限るため今回未実行）",
+        "AC5: 結線": "PASS（package.json 39-40 行に 2 スクリプト存在・実測済み）",
+        "AC6: --capture": "コマンド実装済み（実行は t2-c の実行点）",
+        "AC7: --verify": "コマンド実装済み（実行は t2-v の実行点）",
+        "AC1/AC3 curl 部分/AC4": "PlatSeries 作成後（§9.1）に orchestrator が回す工程。本タスクの成果物がその検査を支える"
+      }
+    },
+    "fail_closed_verification": [
+      "--git を PlatSeries 未作成の状態で実行 → exit 3・理由が読めるメッセージ（「まだ無いから合格」にしない）",
+      "実データでの allowlist 外差分検出: ローカル gh-pages（tip bbc8331 = baseline の親）は pois/19mapcon_gp.geojson が baseline と差し替わっており、--git --repo <本 worktree> が exit 2・「allowlist 外の差分」で FAIL（自己テスト cli-4 で実データ実測）",
+      "例外と条件偽の区別: judgeHttp/judgeVerify/judgeCapture は例外を outcome error（exit 3）・条件偽を fail（exit 2）に分ける。自己テスト 3 ケースで明示検証",
+      "分母空: baseline 空・対象木空・列挙 0 件・応答 200 が 0 件はすべて FAIL。自己テストで明示検証"
+    ],
+    "design_deviation": [
+      "【P 層・HIT 判定】設計 §4.6-P は「cf-cache-status が HIT の場合は cache purge のやり直しを人間手順（§9.2）へ戻す」と文言で書き、AC7 の exit 0 条件（status 200 かつ sha256 一致）には HIT 無判定が含まれていない。gate が「exit 0 のみ green・文言で判定しない」規律（§4.6）であるため、HIT を exit 2 FAIL として終了コードで戻す道を実装した（HIT は origin まで届いておらず sha256 一致の意味が消えるため、false-green を封じる方向の解釈）",
+      "【H 層・content-type】§4.6-H は「status・sha256(body)・content-type を比較する」と列挙しつつ判定文は status 200 かつ sha256 一致のみを書く。比較列挙に含まれる content-type の不一致も FAIL とする厳しい側の解釈で実装した",
+      "【baseline 生成手段】設計 §4.3 は baseline の生成コマンドを指定しない（「そのまま機械変換・手書き禁止」のみ）。生成器を --make-baseline mode として verify-ghpages-identity.mjs 内に置き、使用コマンド（git ls-tree -r -z origin/gh-pages）をファイルヘッダと baseline の generated_by フィールドに記録した",
+      "【P 層 map 名】§4.6-P「52 枚の {name}.html」を文字どおり tree の全 52 HTML（name = 拡張子を除いた path）と解釈した。dist/index.html 等の非トップレベル分はプロキシが応じなければ 403/404 で「応答しない集合」に記録され、検査分母から除外される（設計が明記する仕組みと整合）"
+    ],
+    "self_found_defects_fixed_before_commit": [
+      "serializeBaseline の末尾結合で余分な空行が入る不備をコミット前に修正した",
+      "verify-switch 自己テスト ver-5 ケースが分母 0 件ガードに抵触する構成だったのを修正した（基準値に 200 を 1 件含む形に）",
+      "verify-ghpages-identity 自己テスト git-7 ケースに無用な中間コードが残っていたのを整理した"
+    ],
+    "evidence_limits": [
+      "H 層（--http）・P 層（--capture/--verify）の実ネットワーク実行は今回行っていない（委任の権限がネットワークを伴わないローカル検査に限るため）。判定ロジックは自己テスト（フェッチ差し替え・固定入力）で検証済み。実行点は t1-v・t2-c・t2-v",
+      "allowlist の期待値（fix 後 blob SHA・sha256）は PENDING のまま（§4.3 の設計どおり、§9.1 手順 7 の fix commit 作成時に機械採取する）",
+      "s.maplat.jp の実応答・CloudFlare の cache key がクエリを含むかは未実測（設計 §5.2 が「本設計の管轄外（人間領域）であり実測していない」と明記する事項）",
+      "captures/ ディレクトリは --http/--capture の実行時にスクリプトが作成する（今回の成果物には含まれない）"
+    ],
+    "next_action": "実装レビュー（nayuta-implementation-reviewer）→ 合格後、§9.1 の人間手順（t1-h）へ。t1-m の master merge push 直後に gh-pages 先端が ee6f935a のままであることを §6.1 G2 と同じ検査で確認すること"
+  }
+}
