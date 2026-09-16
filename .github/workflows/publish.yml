@@ -1,0 +1,217 @@
+name: Publish to npm
+
+on:
+  workflow_dispatch:
+    inputs:
+      dist_tag:
+        description: 'npm dist-tag（next = RC / latest = 正式版）'
+        type: choice
+        options: [next, latest]
+        required: true
+      expected_version:
+        description: '公開する version（package.json と一致すること。例 1.0.1-rc.1）'
+        type: string
+        required: true
+      expected_sha:
+        description: '起動する tag が指す commit の SHA（40 桁）'
+        type: string
+        required: true
+      dry_run:
+        description: 'true なら publish しない（リハーサル）'
+        type: boolean
+        default: true
+
+permissions: {}
+
+concurrency:
+  group: npm-publish
+  cancel-in-progress: false
+
+env:
+  # ---- repo ごとに変える（設計書 §3.2 の表） ----
+  CI_WORKFLOW_FILE: ci.yml
+  RELEASE_CHECK: pnpm run typecheck && pnpm exec vitest run && pnpm run build
+  # ---- 共通 ----
+  PNPM_VERSION: 11.27.0
+  NODE_VERSION: '24'
+
+jobs:
+  verify:
+    name: 事前検査・build・pack（OIDC 権限なし）
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      name: ${{ steps.meta.outputs.name }}
+      version: ${{ steps.meta.outputs.version }}
+      tarball: ${{ steps.pack.outputs.tarball }}
+      sha256: ${{ steps.pack.outputs.sha256 }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: 起動条件の検査
+        id: meta
+        env:
+          DIST_TAG: ${{ inputs.dist_tag }}
+          EXPECTED_VERSION: ${{ inputs.expected_version }}
+          EXPECTED_SHA: ${{ inputs.expected_sha }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # 形式検査（Minor #2）: expected_version は semver、expected_sha は 40 桁の 16 進数。誤入力・注入文字列を早期に fail する
+          VER_RE='^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$'
+          SHA_RE='^[0-9a-fA-F]{40}$'
+          [[ "${EXPECTED_VERSION}" =~ ${VER_RE} ]] || { echo "::error::expected_version が semver でない: ${EXPECTED_VERSION}"; exit 1; }
+          [[ "${EXPECTED_SHA}" =~ ${SHA_RE} ]]  || { echo "::error::expected_sha が 40 桁の 16 進数でない"; exit 1; }
+          NAME=$(node -p "require('./package.json').name")
+          VERSION=$(node -p "require('./package.json').version")
+          echo "name=${NAME}" >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          # 本番は全項目で停止。dry_run は SHA 以外を警告に留める（master でのリハーサルのため）
+          check() { if [ "${DRY_RUN}" = "true" ]; then echo "::warning::$1"; else echo "::error::$1"; exit 1; fi; }
+          [ "${GITHUB_SHA}" = "${EXPECTED_SHA}" ] || { echo "::error::SHA 不一致: ${GITHUB_SHA} != ${EXPECTED_SHA}"; exit 1; }
+          [ "${GITHUB_REF_TYPE}" = "tag" ] || check "tag 以外から起動された（${GITHUB_REF}）"
+          [ "${GITHUB_REF_NAME}" = "v${EXPECTED_VERSION}" ] || check "tag 名 ${GITHUB_REF_NAME} が v${EXPECTED_VERSION} と一致しない"
+          [ "${VERSION}" = "${EXPECTED_VERSION}" ] || check "version 不一致: package.json=${VERSION} 入力=${EXPECTED_VERSION}"
+          case "${VERSION}" in
+            *-*) [ "${DIST_TAG}" = "next" ]   || check "prerelease ${VERSION} を ${DIST_TAG} に出そうとしている" ;;
+            *)   [ "${DIST_TAG}" = "latest" ] || check "正式版 ${VERSION} を ${DIST_TAG} に出そうとしている" ;;
+          esac
+          if [ -n "$(npm view "${NAME}@${VERSION}" version 2>/dev/null || true)" ]; then
+            check "${NAME}@${VERSION} は公開済み"
+          fi
+          N=$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/${CI_WORKFLOW_FILE}/runs?head_sha=${GITHUB_SHA}&status=success" --jq '.total_count')
+          [ "${N}" -ge 1 ] || check "${CI_WORKFLOW_FILE} が ${GITHUB_SHA} で成功していない"
+          {
+            echo "### publish 候補"
+            echo "- package: \`${NAME}@${VERSION}\` → dist-tag \`${DIST_TAG}\`（dry_run=${DRY_RUN}）"
+            echo "- ref: \`${GITHUB_REF}\` / sha: \`${GITHUB_SHA}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: CI 用 pnpm 設定を展開
+        run: cp ci/pnpm-workspace.ci.yaml pnpm-workspace.yaml
+
+      - name: 依存の導入
+        run: pnpm install --frozen-lockfile
+
+      - name: release 検査（lint・typecheck・test・build）
+        run: bash -euo pipefail -c "${RELEASE_CHECK}"
+
+      - name: pack
+        id: pack
+        run: |
+          set -euo pipefail
+          mkdir -p "${RUNNER_TEMP}/pack"
+          pnpm pack --pack-destination "${RUNNER_TEMP}/pack"
+          COUNT=$(find "${RUNNER_TEMP}/pack" -maxdepth 1 -name '*.tgz' | wc -l)
+          [ "${COUNT}" -eq 1 ] || { echo "::error::tarball が ${COUNT} 個"; exit 1; }
+          T=$(find "${RUNNER_TEMP}/pack" -maxdepth 1 -name '*.tgz')
+          S=$(sha256sum "${T}" | cut -d' ' -f1)
+          echo "tarball=$(basename "${T}")" >> "$GITHUB_OUTPUT"
+          echo "sha256=${S}" >> "$GITHUB_OUTPUT"
+          echo "- tarball: \`$(basename "${T}")\` sha256 \`${S}\`" >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: npm-tarball
+          path: ${{ runner.temp }}/pack/*.tgz
+          if-no-files-found: error
+          retention-days: 30
+
+  publish:
+    name: publish（environment npm-publish の承認後）
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: npm-publish
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: npm-tarball
+          path: ${{ runner.temp }}/pack
+
+      - name: tarball の同一性
+        env:
+          TARBALL: ${{ needs.verify.outputs.tarball }}
+          SHA256: ${{ needs.verify.outputs.sha256 }}
+        run: echo "${SHA256}  ${RUNNER_TEMP}/pack/${TARBALL}" | sha256sum -c -
+
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          # registry-url は渡さない（.npmrc にトークン行を作らない）
+
+      - name: OIDC 交換の確認（dry_run のときだけ・HTTP status だけを出す）
+        if: ${{ inputs.dry_run }}
+        env:
+          NAME: ${{ needs.verify.outputs.name }}
+        run: |
+          set -euo pipefail
+          ID=$(curl -sS -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=npm:registry.npmjs.org" \
+            | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>process.stdout.write(JSON.parse(s).value||""))')
+          [ -n "${ID}" ] || { echo "::error::GitHub から ID トークンを取れない（id-token 権限を確認）"; exit 1; }
+          echo "::add-mask::${ID}"
+          ESC=$(node -p 'encodeURIComponent(process.env.NAME).replace(/^%40/,"@")')
+          CODE=$(curl -sS -o /dev/null -w '%{http_code}' -X POST -H "Authorization: Bearer ${ID}" \
+            "https://registry.npmjs.org/-/npm/v1/oidc/token/exchange/package/${ESC}")
+          echo "- OIDC exchange: HTTP ${CODE}" >> "$GITHUB_STEP_SUMMARY"
+          case "${CODE}" in 2??) ;; *) echo "::error::OIDC 交換が HTTP ${CODE}。npm の trusted publisher 登録（repo・publish.yml・npm-publish）を確認"; exit 1 ;; esac
+
+      - name: publish
+        working-directory: ${{ runner.temp }}/pack
+        env:
+          TARBALL: ${{ needs.verify.outputs.tarball }}
+          DIST_TAG: ${{ inputs.dist_tag }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          ARGS=(--access public --tag "${DIST_TAG}" --provenance --no-git-checks)
+          [ "${DRY_RUN}" = "true" ] && ARGS+=(--dry-run)
+          pnpm publish "./${TARBALL}" "${ARGS[@]}"
+
+      - name: 公開結果の確認
+        if: ${{ !inputs.dry_run }}
+        env:
+          NAME: ${{ needs.verify.outputs.name }}
+          VERSION: ${{ needs.verify.outputs.version }}
+          DIST_TAG: ${{ inputs.dist_tag }}
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 20); do
+            J=$(npm view "${NAME}@${VERSION}" --json 2>/dev/null || true)
+            [ -n "${J}" ] && break
+            sleep 15
+          done
+          [ -n "${J}" ] || { echo "::error::${NAME}@${VERSION} が 5 分以内に registry で見えない"; exit 1; }
+          printf '%s' "${J}" | node -e '
+            let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{
+              const p=JSON.parse(s); const tag=process.env.DIST_TAG;
+              const prov=!!(p.dist&&p.dist.attestations&&p.dist.attestations.provenance);
+              const tp=!!(p._npmUser&&p._npmUser.trustedPublisher);
+              const tagOk=(p["dist-tags"]||{})[tag]===p.version;
+              console.log(`- registry: version=${p.version} dist-tags.${tag}=${tagOk} provenance=${prov} trustedPublisher=${tp}`);
+              if(!tagOk){console.log(`::error::dist-tag ${tag} が ${p.version} を指していない`);process.exit(1)}
+              if(!prov){console.log("::warning::provenance が付いていない（公開は成立。§8 の扱い）")}
+            })' | tee -a "$GITHUB_STEP_SUMMARY"
