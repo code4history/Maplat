@@ -92,19 +92,6 @@ MaplatUi.createObject(option).then(app => {
   app.addEventListener("clickMap", (evt: CustomEvent) => {
     console.log(evt);
   });
-  app.core!.waitReady.then(() => {
-    app.core!.addLine({
-      lnglats: [
-        [141.151995, 39.701599],
-        [141.151137, 39.703736],
-        [141.1521671, 39.7090232]
-      ],
-      stroke: {
-        color: "#ffcc33",
-        width: 2
-      }
-    });
-  });
 }).catch(err => {
   console.error(err);
   if (statusEl) {
