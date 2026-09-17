@@ -1,6 +1,6 @@
 <!-- SECTION 1: Header (logo, badges, title) -->
 <p align="center">
-  <img src="https://code4history.github.io/Maplat/page_imgs/maplat.png" alt="Maplat logo" width="200" />
+  <img src="page_imgs/maplat.png" alt="Maplat logo" width="200" />
 </p>
 
 <h1 align="center">Maplat</h1>
@@ -270,11 +270,11 @@ This project exists thanks to all the people who contribute. <!--[[Contribute](C
 ## Sponsors
 
 Maplat is supported by
-<a href="https://www.locazing.com/" target="_blank"><img src="https://code4history.github.io/Maplat/img/locazing.png" width="150"></a>
-<a href="https://www.thedesignium.com/" target="_blank"><img src="https://code4history.github.io/Maplat/img/logo_TheDesignium.png" width="150"></a>
-<a href="https://www.browserstack.com/" target="_blank"><img src="https://code4history.github.io/Maplat/img/browserstack-logo-600x315.png" width="150"></a>
-<a href="https://zender.co.jp/" target="_blank"><img src="https://code4history.github.io/Maplat/img/Zender_logo_y_color.png" width="150"></a>
-<a href="https://www.webimpact.co.jp/" target="_blank"><img src="https://code4history.github.io/Maplat/img/webimpact.jpg" width="150"></a>
+<a href="https://www.locazing.com/" target="_blank"><img src="img/locazing.png" width="150"></a>
+<a href="https://www.thedesignium.com/" target="_blank"><img src="img/logo_TheDesignium.png" width="150"></a>
+<a href="https://www.browserstack.com/" target="_blank"><img src="img/browserstack-logo-600x315.png" width="150"></a>
+<a href="https://zender.co.jp/" target="_blank"><img src="img/Zender_logo_y_color.png" width="150"></a>
+<a href="https://www.webimpact.co.jp/" target="_blank"><img src="img/webimpact.jpg" width="150"></a>
 
 Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/maplat#backer)]
 <a href="https://opencollective.com/maplat#backers" target="_blank"><img src="https://opencollective.com/maplat/backers.svg?width=890"></a>
