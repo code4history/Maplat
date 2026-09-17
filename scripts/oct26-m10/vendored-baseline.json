@@ -1,0 +1,65 @@
+{
+  "schema": "oct26-m10-vendored-baseline",
+  "version": 1,
+  "design_doc": "docs/superpowers/specs/2026-09-16-oct26-m10-design.md §1.4・§4.6-V・§6.5 AC11-同梱（v4）",
+  "note": "同梱画像 23 ファイルの期待 path（各リポジトリ repo-root 相対の最終配置先）→ 期待 blob SHA（git blob SHA・40 桁 16 進）の対応表。§1.4 実測で確定した SHA を記録する。22 ファイル（README 6＋POI 15＋MaplatEditor ロゴ 1）は PlatSeries HEAD（ea2fcb7e0415ad2c10614262e7a44fe7970ab9e1）の blob SHA、sample_splash.png のみ PlatSeries にも旧 gh-pages にも存在しないため Maplat master の blob SHA（b32c34053f4b6d107408864c9e74fc0be5f7d199）を正本とする。README 参照検査の列挙源は本表の readme.paths（Maplat 6＋MaplatEditor 1 の計 7 path）に固定する（全 <img> を検査しない）。",
+  "expect": {
+    "files_total": 23,
+    "maplat_files": 22,
+    "editor_files": 1,
+    "readme_target_refs": 14,
+    "readme_non_target_refs": 14
+  },
+  "repos": {
+    "maplat": {
+      "label": "Maplat",
+      "files": {
+        "page_imgs/maplat.png": "0f38681dc9abecd1ab3481ea16238dd22a67d30e",
+        "img/locazing.png": "bfe523a58c17bab6eb12a804ca02647f3ffc44ee",
+        "img/logo_TheDesignium.png": "e30ab7d451be3879b46d7e96d6594ca2c710f8c5",
+        "img/browserstack-logo-600x315.png": "5a0cea27a1924263262e5256407078aa8194a1b5",
+        "img/Zender_logo_y_color.png": "85a499af9299174c1b71d3e8fb257b764ac290cb",
+        "img/webimpact.jpg": "8e9cfe5b0c983dc35c29a3071f8d064aaf75744b",
+        "public/img/stones.png": "70af6a0c7a52e7e662c8715042561474e81e5f04",
+        "public/img/aoume.jpg": "80a1c71b24544eb5b7a89a90c8247ae3e94b20a1",
+        "public/img/atago_shrine.jpg": "bf53b3dacb2b11bb04c933441eb6c322eee4b360",
+        "public/img/hatsuhiki_inari.jpg": "94bc76404bf2b0e57ec4c1b589997ed420116377",
+        "public/img/kumano_shrine.jpg": "b7ef0439cf4bf491d4c99a7044966ed397e3622e",
+        "public/img/nejiri.jpg": "a84f7d2676f3a1af339b24b6f336c390d84733cd",
+        "public/img/obiki_inari.jpg": "ef526989b413fbe484eef2e01c4edd81d05fd4d4",
+        "public/img/oshoji.jpg": "5cab018c340ff113b5092bbe7d05a80ea9e061fb",
+        "public/img/tomigi_jizo.jpg": "ff0b4dddce4fa5ba639741a1dd41405cecf0459e",
+        "public/img/yoake_inari.jpg": "cd2c36b15b199a94e9ad3473d523fe61488f42a0",
+        "public/img/ishiwari_zakura.jpg": "39a1dfa040b6cd80e08ba915327fdcd71a52cdb7",
+        "public/img/mitsuishi_jinja.jpg": "faaef4e77ae5bbce778f68162de1aac7560fd2a3",
+        "public/img/moriokaginko.jpg": "398a031d3957e24b3a17c26b69db863ef4f83038",
+        "public/img/moriokajo.jpg": "89b2767c8a0cf0ec4f816d918431c752dd4dfab2",
+        "public/img/sakurayama_jinja.jpg": "2a5cc7b2037d0df16abf045faebb237c8cdbc444",
+        "public/img/sample_splash.png": "b32c34053f4b6d107408864c9e74fc0be5f7d199"
+      },
+      "readme": {
+        "files": ["README.md", "README.ja.md"],
+        "paths": [
+          "page_imgs/maplat.png",
+          "img/locazing.png",
+          "img/logo_TheDesignium.png",
+          "img/browserstack-logo-600x315.png",
+          "img/Zender_logo_y_color.png",
+          "img/webimpact.jpg"
+        ],
+        "expect_refs_per_file": 6
+      }
+    },
+    "maplat-editor": {
+      "label": "MaplatEditor",
+      "files": {
+        "page_imgs/maplat.png": "0f38681dc9abecd1ab3481ea16238dd22a67d30e"
+      },
+      "readme": {
+        "files": ["README.md", "README.ja.md"],
+        "paths": ["page_imgs/maplat.png"],
+        "expect_refs_per_file": 1
+      }
+    }
+  }
+}
