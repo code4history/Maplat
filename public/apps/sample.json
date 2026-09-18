@@ -133,10 +133,6 @@
    "label": "Mapbox"
   },
   {
-   "mapID": "google",
-   "label": "Google"
-  },
-  {
    "mapID": "osm",
    "title": {
     "ja": "オープンストリートマップ",
