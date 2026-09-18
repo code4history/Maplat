@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maplat UI デモ - @maplat/ui</title>
+  <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.6.1/mapbox-gl.css" rel="stylesheet">
+  <link rel="icon" type="image/png" sizes="196x196" href="pwa/sample/favicon-196.png">
+
+  <meta name="msapplication-square70x70logo" content="pwa/sample/mstile-icon-128.png">
+  <meta name="msapplication-square150x150logo" content="pwa/sample/mstile-icon-270.png">
+  <meta name="msapplication-square310x310logo" content="pwa/sample/mstile-icon-558.png">
+  <meta name="msapplication-wide310x150logo" content="pwa/sample/mstile-icon-558-270.png">
+  <script type="module" crossorigin src="/Maplat/assets/index-CRgjbbJB.js"></script>
+  <link rel="stylesheet" crossorigin href="/Maplat/assets/index-C4bOISvJ.css">
+</head>
+<body class="c4h-app">
+  <header class="c4h-header">
+    <h1>@maplat/ui デモ - Maplat</h1>
+    <div class="c4h-control-row">
+      <label>
+        地図セット:
+        <select id="app-select">
+          <option value="sample">sample（ぷらっと館林）</option>
+          <option value="sample_old">sample_old</option>
+        </select>
+      </label>
+      <div class="c4h-divider"></div>
+      <label>
+        言語:
+        <select id="lang-select">
+          <option value="ja">ja</option>
+          <option value="en">en</option>
+        </select>
+      </label>
+    </div>
+    <span id="status" class="c4h-status">読み込み中…</span>
+  </header>
+
+  <div class="c4h-note">地図セットと言語を選ぶと URL クエリ付きで再読み込みします。</div>
+
+  <div class="c4h-panels">
+    <div class="c4h-panel" style="width: 100%; height: calc(100vh - 210px); min-height: 320px;">
+      <div id="map_div" style="position: relative; width: 100%; height: 100%;"></div>
+    </div>
+  </div>
+
+  <div class="c4h-legend">
+    マーカー (POI) はクリックして操作できます。<br>
+    clickMarker / clickMap のイベント内容は console に出力されます。
+  </div>
+
+  <script src="js/geolocate.js"></script>
+  <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v1.6.1/mapbox-gl.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "style" : "mapbox://styles/moritoru/ck3xqi0hh1pob1cqpanp3jxxo",
+  "maptype" : "mapbox",
+  "title" : {
+    "ja" : "Mapbox 地図",
+    "en" : "Mapbox Map"
+  },
+  "attr" : "(c) Mapbox (c) Map style designed by Toru Mori (c) OpenStreetMap contributors"
+}
