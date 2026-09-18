@@ -35,7 +35,6 @@ const option = {
   maplibregl,
   mapboxToken:
     "pk.eyJ1IjoicmVraXNoaWtva3VkbyIsImEiOiJjazRoMmF3dncwODU2M2ttdzI2aDVqYXVwIn0.8Hb9sekgjfck6Setxk5uVg",
-  googleApiKey: "AIzaSyB0v_F9EVPbE7R2uOm6Mixrtzts21DEICc",
   lang: "ja"
 };
 

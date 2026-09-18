@@ -54,11 +54,6 @@
         {
             "mapID": "mapbox",
             "label": "Mapbox"
-        },
-        {
-            "mapID": "google",
-            "label": "Google"
         }
-    ],
-    "pois": "morioka_one_poi.json"
+    ]
 }
