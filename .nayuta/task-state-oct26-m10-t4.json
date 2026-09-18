@@ -1,0 +1,147 @@
+{
+ "schema_version": 2,
+ "task_id": "oct26-m10-t4",
+ "cycle": {
+  "id": 2,
+  "slug": "october-2026-update-cycle"
+ },
+ "milestone_id": "m10",
+ "title": "Maplat のデモページ（C4HFoundry demo-boilerplate 準拠・single-demo-page）",
+ "classification": "new feature",
+ "status": "completed_with_open_findings",
+ "repos": [
+  "Maplat"
+ ],
+ "branch": "codex/oct26-m10-t4",
+ "worktree": ".worktrees/oct26-m10-t4-maplat",
+ "design": {
+  "document": "docs/superpowers/specs/2026-09-16-oct26-m10-design.md",
+  "version": 2,
+  "shasum_256": "411ff99896d145e9bb00239c989116db174de31f91bd7465d2282e6652aa6c15",
+  "shasum_verified": true,
+  "verification_command": "shasum -a 256 /Users/kochizufan/zcode/NayutaProducts/.worktrees/oct26-integration/docs/superpowers/specs/2026-09-16-oct26-m10-design.md",
+  "read_sections": [
+   "§7.1（正本の要求と現状の対応）",
+   "§7.2（single-demo-page の選定）",
+   "§7.3（ページ構成・index.html の書き換え）",
+   "§7.4（demo/dev.ts の変更）",
+   "§7.5（demo/demo-shell.css のバイト等価コピー）",
+   "§7.6（波及調査・列挙コマンド）",
+   "§7.7（公開の順序）",
+   "§7.8（AC14〜AC21）",
+   "§7.9（人間の追加指示との整合）",
+   "§1.2-14〜20・24（t4 の設計入力となる実測）",
+   "§11（ルール読み込み状況）"
+  ]
+ },
+ "implementation": {
+  "delegation_id": "OCT26-M10T4-IMPL-SUZUME",
+  "status": "completed_with_open_findings",
+  "finished_at": "2026-10-26",
+  "runtime": "node_modules 不在の worktree（委任が pnpm install を禁止）∴ pnpm build/test/lint/typecheck は全て未実行。検証は静的範囲（grep・diff・shasum・実データ確認）のみ",
+  "deliverables": [
+   {
+    "path": "index.html",
+    "change": "書き換え（108 行 → 57 行）",
+    "lines": 57,
+    "shasum_256": "dea6953e8911ebb446b76272d8e9efa0ee44309f93c585c26c89eda2e113d507",
+    "note": "雛形 single-page.html の変数を設計 §7.3 の表の値で埋めた。shell 化（c4h-header/control-row/status/note/panels/legend・body class c4h-app）。<style> ブロック撤去・s.maplat.jp 系メタ（canonical/og/twitter/description/keywords）撤去・apple-splash 52 行撤去。残したもの: favicon・msapplication 4 行・mapbox CDN css/js・js/geolocate.js・./demo/dev.ts"
+   },
+   {
+    "path": "demo/demo-shell.css",
+    "change": "新規（バイト等価コピー）",
+    "lines": 352,
+    "shasum_256": "17f6ac61eeada43a34b2b25b04f30bae9044dfc7ecafe3ab7d719b8b478c138e",
+    "note": "§7.5 どおり /Users/kochizufan/github/C4HFoundry/templates/demo-boilerplate/demo-shell.css から cp でコピー。AC14 をその場で検証（diff 空出力・exit 0・shasum 一致）"
+   },
+   {
+    "path": "demo/dev.ts",
+    "change": "変更（72 行 → 113 行・追加のみ 41 行・削除 0 行）",
+    "lines": 113,
+    "shasum_256": "b3ff18add0000d7215f8f10e033b3aecbf440c81bb30c6e7d938106bd263624e",
+    "note": "git diff で削除 0 行を確認（残す項目は 1 行も変わっていない）。足したもの: ①control row 配線（#app-select/#lang-select のクエリ復元・変更時に location.search を組み立て再読み込み） ②status 配線（READY appid=<appid> lang=<lang>・失敗時 読み込み失敗（console を参照））"
+   }
+  ],
+  "keep_items_verification": {
+   "method": "/usr/bin/grep -c <pattern> demo/dev.ts（2026-10-26 実行・17 パターン全て 1 件以上）",
+   "items": {
+    "import_MaplatUi": {"pattern": "import { MaplatUi } from \"../src/index\";", "count": 1},
+    "import_ui_scss": {"pattern": "import \"../src/styles/ui.scss\";", "count": 1},
+    "window_mapboxgl": {"pattern": "window.mapboxgl", "count": 1},
+    "window_maplibregl": {"pattern": "window.maplibregl", "count": 1},
+    "mapboxToken": {"pattern": "mapboxToken", "count": 1},
+    "googleApiKey": {"pattern": "googleApiKey", "count": 1},
+    "query_option_mechanism": {"pattern": "hashesArr", "count": 3},
+    "createObject": {"pattern": "MaplatUi.createObject(option)", "count": 1},
+    "clickMarker": {"pattern": "clickMarker", "count": 1},
+    "clickMap": {"pattern": "clickMap", "count": 1},
+    "waitReady": {"pattern": "waitReady", "count": 1},
+    "addLine": {"pattern": "addLine", "count": 1},
+    "enableCache": {"pattern": "enableCache", "count": 1},
+    "markerList": {"pattern": "markerList", "count": 1},
+    "presentationMode": {"pattern": "presentationMode", "count": 1},
+    "pwaManifest": {"pattern": "pwaManifest: true", "count": 1},
+    "northTop": {"pattern": "northTop", "count": 1}
+   },
+   "note": "設計 §7.4 の「残す」bullet は 5 個（import 群+window 受け渡し+token/key・クエリ→option 機構・createObject+listener・addLine・option 一式）。委任文は同じものを「6 項目」と数えた（bullet ①の構成要素を分けて数えた差）。上記 17 パターンで 5 bullet の全構成要素を 1 件ずつ確認した"
+  },
+  "impact_survey": {
+   "executed_at": "2026-10-26",
+   "axis1_demo_dev_references": {
+    "command": "/usr/bin/grep -rn -E 'demo/dev|dev\\.ts' spec/ e2e/ scripts/ playwright*.ts docs/superpowers/specs/",
+    "result": "0 件。docs/superpowers/specs/ と playwright*.ts は worktree に存在しない（grep がそれらを指す stderr を出したが、存在する分母での hit は 0）。設計 §7.6 の実測（生ヒット 0 件・参照元は root index.html 105 行のみ）と一致"
+   },
+   "axis2_index_html_references": {
+    "command": "/usr/bin/grep -rn 'index\\.html' spec/ e2e/ scripts/ tsconfig.json",
+    "result": "設計時 3 件（e2e/m1-t5-poi-html-isolation.spec.ts 16・32 行・e2e/fixtures/vite.probe-t5.config.js 4 行・すべてコメント）に加え、設計後に master へ入った t1 成果物（scripts/oct26-m10/）由来 16 件。t1 成果物の hit はすべて gh-pages 木の baseline データ（ghpages-tree-baseline.json の path エントリ）・自己テスト fixture・コメントであり、root index.html への実コード依存は 0 件"
+   },
+   "axis3_page_goto": {
+    "command": "/usr/bin/grep -rn 'page\\.goto' e2e/",
+    "result": "root index.html に依存する spec は 0 件。/e2e/fixtures/marker-list.html（m18-t6・4 箇所）・PROBE（m1-t4/m1-t5・6 箇所）・/e2e/fixtures/swiper-loop.html（oct26-m9-t1 の 2 spec・4 箇所・設計後に追加）。設計の列挙（marker-list と PROBE）から m9-t1 分が増えたが、いずれも fixtures 依存で root index.html 非依存"
+   },
+   "webserver": "playwright.config.ts を読了。webServer は pnpm run dev:e2e・port 5176・reuseExistingServer: !CI。設計 §7.6 と一致",
+   "import_graph": "demo/dev.ts → ../src/index + ../src/styles/ui.scss（dev.ts を読了して確認）。src/ は本件で無変更のため transitive importer への影響なし",
+   "data_files": "public/（apps・pwa・js・maps・pois・service-worker.js・tiles・tmbs）は無変更。apps/sample.json・sample_old.json・pwa/sample_manifest.json・sample_old_manifest.json・js/geolocate.js の実在を実測（repository rule-0003）",
+   "source_text_assert": "vitest spec が index.html/dev.ts を文字列 assert するものは 0 件（軸1 と同じ needle の hit 0 で裏付け）",
+   "lint_axis": "lint:eslint は {src,spec,demo}/**/*.{ts,js} を対象（package.json 26 行・eslint.config.js の ignore に demo/ 無し）。∴ 変更後の dev.ts に lint が走るが、本環境では未実行（node_modules 不在）",
+   "typecheck_axis": "tsconfig.json の include は src・test・parts のみ（26-29 行）。demo/ を含まない ∴ typecheck は dev.ts を掴まない。設計 §7.6 の記述どおり",
+   "conclusion": "壊れるものは無し。設計 §7.6 の結論（参照元は root index.html 1 件のみ・E2E は root index.html 非依存）と一致。設計列挙後に増えたファイル（t1 成果物・m9-t1 spec）はいずれも影響を与えない"
+  },
+  "acceptance_digestion": {
+   "AC14": "静的検査 PASS。diff demo/demo-shell.css /Users/kochizufan/github/C4HFoundry/templates/demo-boilerplate/demo-shell.css → 空出力・exit 0。shasum 両者 17f6ac61eeada43a34b2b25b04f30bae9044dfc7ecafe3ab7d719b8b478c138e で一致",
+   "AC15": "静的検査 PASS。c4h-header=1（≥1）/ c4h-control-row=1（≥1）/ c4h-status=1（≥1）/ id=\"map_div\"=1（=1）/ demo/demo-shell.css=1（=1）/ 1a2744=0（=0）。全て期待値どおり",
+   "AC16": "第一検査（/usr/bin/grep -n \"outDir: isPackageBuild ? 'dist' : 'dist-demo'\" vite.config.js → 73 行で不改変）PASS。pnpm build:demo と dist-demo/index.html の grep は未実行（node_modules 不在）",
+   "AC17": "未実行。node_modules/.bin/eslint も pnpm typecheck も走らせられない",
+   "AC18": "未実行。pnpm run test:e2e:ci は走らせられない",
+   "AC19": "t4-d（merge→deploy）後の検査。本工程（t4-i）の対象外（§7.7-4）",
+   "AC20": "t4-d 後の検査。本工程の対象外",
+   "AC21": "t4-d 後の検査。本工程の対象外"
+  },
+  "conditional_continuation": {
+   "finding": "AC16 の後半（build:demo・dist-demo 出力確認）・AC17（eslint/typecheck）・AC18（E2E）が実行できない。原因は委任文が最初に規定した環境（node_modules 不在・pnpm install 禁止）であり、設計 §7.7-1「AC14〜AC18 を worktree 内で通す」の機械検査部分が完了しない",
+   "C_a": "原因はタスク成果物の外（委任の環境規定）にある。tracked 変更を含まない checkout（HEAD 57b54255）でも node_modules は不在（実測: ls node_modules → No such file or directory）",
+   "C_b": "続行した手順（3 成果物の作成・静的検査・task-state 記録・コミット）は node_modules に依存しない",
+   "C_c": "続行は破壊的・不可逆操作を伴わない（worktree 内の新規作成・編集・git add・git commit のみ。git push は禁止を遵守）",
+   "note": "本判断（completed_with_open_findings の使用）自体を人間承認事項として立てる"
+  },
+  "design_interpretations": [
+   "【manifest link 削除】設計 §7.3 は「残すもの: pwaManifest: true の機構（dev.ts 側・pwa_init.ts が manifest link を自動注入）」と書く。src/pwa_init.ts 18-36 行の実測で、head に手書き link[rel=manifest] があると自動注入がスキップされる（31 行の if）。手書き link は ./pwa/sample_manifest.json 固定のため、?appid=sample_old のとき manifest が sample のままになる（機構の appid 追従を妨げる誤り）。∴ 手書き link は削除し機構に委任した",
+   "【apple-touch-icon 手書き削除】pwa_init.ts 46-62 行が manifest から appid 追従で apple-touch-icon を自動注入する（手書きがあると同様にスキップ）。∴ 削除して機構に委任。public/pwa/sample_manifest.json が icons を持つことを実データで確認済み",
+   "【mobile-web-app-capable 削除】設計の残すリスト（pwaManifest 機構・favicon・mapbox css/js・geolocate.js・dev.ts）に含まれず、アイコンでも機構でもないため削除（apple-splash と同じ PWA 表示系メタ）",
+   "【msapplication 4 行は残した】「favicon」をアイコン宣言一式と解釈。pwa_init.ts は msapplication を注入しないため手書き必須",
+   "【main region の寸法】demo-shell.css は改変不可（AC14）・<style> 埋込禁止（完了条件）のため、c4h-panel にインライン style 属性で height: calc(100vh - 210px) を明示（正本「keep canvas sizing explicit」に準じ、§7.3「地図は残りビューポートを埋める」の近似。min-height 320px 併用）。雛形 examples/single-page-example.html も凡例でインライン style 属性を使用しており、<style> ブロック埋込とは区別される",
+   "【select の復元元】クエリから独立に parse せず、42-50 行の既存機構が上書きした後の option を真実源にした（単一の真実源・二重実装の回避）。appid 未指定時の表示は MaplatCore 既定（MaplatCore/src/index.ts:220 appOption.appid || \"sample\"）に合わせ sample",
+   "【option への型被せ】option リテラルは無変更のまま、読み出し側で option as Record<string, unknown> のローカル参照を介した（demo/ は tsconfig include 外だが、将来の include 拡張に備えた最小の型安全化）"
+  ],
+  "self_found_risks": [
+   "【lint リスク・未実行ゆえ指摘できない】eslint.config.js の arrow-body-style: \"error\"（as-needed）が有効な構成（flat config で rules が最後に定義済み）。この規則では、残した既存コードのブロック形式 arrow（clickMarker/clickMap listener の (evt: CustomEvent) => { console.log(evt); }・waitReady.then(() => { addLine(...) })）が as-needed 違反として指摘される可能性がある。lint:eslint（--fix 付き）なら自動修正されるが、AC17 は fix 無しの exit 0 を要求する。node_modules 不在で実測できず「未確認」とする。「残す（変更しない）」の設計指示を優先して既存形式は温存した。実行環境で AC17 が赤くなった場合の処置は実装レビュー・人間判断に委ねる"
+  ],
+  "evidence_limits": [
+   "dev.ts の TypeScript 構文・型の変換検査（esbuild・tsc）は未実施（node_modules 不在）。diff により「残す」行の不変は確認したが、追加行の構文は未検証",
+   "index.html のレンダリング・レイアウト崩れの有無は未検証（視覚言語は §7.8 末尾のとおり人間目視が必要）",
+   "dist-demo 出力・E2E・lint・typecheck は全て未実行（AC16 後半・AC17・AC18）",
+   "calc(100vh - 210px) の高さ見積もりは demo-shell.css の値からの計算であって、ブラウザでの実測ではない"
+  ],
+  "next_action": "実装レビュー（nayuta-implementation-reviewer）→ AC16〜18 の機械検査は node_modules が揃った環境（root workspace）で実施 → 合格後、master merge は t3 完了まで保留（§7.7-1）し §7.7-3 の機械前提 assert を経て t4-d"
+ }
+}
