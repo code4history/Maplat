@@ -70,14 +70,24 @@ if (langSelect) {
   langSelect.value = lang;
 }
 const reloadWithQuery = () => {
-  const search = new URLSearchParams();
+  // 現在の URL（#! 以前）のクエリを引き継ぎ、appid/lang を更新する。
+  // #! 以降は「開いていた地図」等の状態保存であり、地図セット(appid)を
+  // 変えたときは相手先に存在しない地図を指し得るため捨てる（HR-14/1）。
+  const current = new URL(window.location.href);
+  const search = current.searchParams;
   if (appSelect) {
     search.set("appid", appSelect.value);
   }
   if (langSelect) {
     search.set("lang", langSelect.value);
   }
-  window.location.search = search.toString();
+  if (appSelect && appSelect.value !== appid) {
+    // 地図セット変更: #! 以降を捨てて再読み込み（pathname + クエリのみ）
+    window.location.href = `${current.pathname}?${search.toString()}`;
+  } else {
+    // 言語のみの変更（同一地図セット）: 状態は有効なので #! を保持する
+    window.location.search = search.toString();
+  }
 };
 appSelect?.addEventListener("change", reloadWithQuery);
 langSelect?.addEventListener("change", reloadWithQuery);
