@@ -5,6 +5,8 @@ import { point, polygon, booleanPointInPolygon } from "@turf/turf";
 import { createElement, resolveRelativeLink, prepareModal } from "./ui_utils";
 // m1-t4: サニタイズ層（許可リストの正本は MaplatCore/src/sanitize.ts）
 import { sanitizeHtml, buildSlideAttrs } from "@maplat/core";
+// oct26-m16-t1: url・directgo の許可リスト（http/https）
+import { safeWebUrl } from "./poi_safe";
 
 function detectMediaType(src: string): string {
   if (src.includes("youtube.com") || src.includes("youtu.be")) {
@@ -68,6 +70,11 @@ export function poiWebControl(
     body.innerHTML = sanitizeHtml(ui.translate!(data.html) || "");
     shadow.appendChild(body);
   } else if (data.url) {
+    // oct26-m16-t1 (B-UI-2): url は信頼できない POI データなので、http/https
+    // （相対 URL を含む）のときだけ iframe へ入れる。それ以外（javascript: 等）は
+    // 親文書のオリジンで実行されうるため、iframe を出さない。
+    const safeUrl = safeWebUrl(ui.translate!(data.url));
+    if (safeUrl === undefined) return undefined;
     // 外部サイトの表示は iframe のまま維持する（内容を我々が合成するわけではない）。
     //
     // m1-t5: インライン onload= による message リスナ登録は**廃止**した。
@@ -84,7 +91,7 @@ export function poiWebControl(
     </div>`)[0] as HTMLElement;
     div.appendChild(htmlDiv);
     const iframe = htmlDiv.querySelector(".poi_iframe") as HTMLIFrameElement;
-    iframe.setAttribute("src", ui.translate!(data.url) || "");
+    iframe.setAttribute("src", safeUrl);
   } else {
     const slides: string[] = [];
     const mediaList = (data.media || data.image) as MediaSetting[] | undefined;
@@ -220,6 +227,10 @@ export function handleMarkerAction(ui: MaplatUi, data: MarkerData) {
       href = data.directgo.href;
       blank = data.directgo.blank || false;
     }
+    // oct26-m16-t1 (B-UI-3): directgo は信頼できない POI データなので、B-UI-2 と同じ
+    // 許可リスト（http/https・相対 URL を含む）を通ったときだけ遷移する。
+    // javascript: 等は現在の文書のオリジンで実行されうるため、遷移しない。
+    if (safeWebUrl(href) === undefined) return;
     if (blank) {
       window.open(href, "_blank");
     } else {
