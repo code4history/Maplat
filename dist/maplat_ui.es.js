@@ -1,4 +1,4 @@
-import { M as w } from "./index-DyZgLxEt.js";
+import { M as w } from "./index-D6zlmOQu.js";
 typeof window < "u" && window.MaplatUi && window.MaplatUi.MaplatUi && (window.MaplatUi = window.MaplatUi.MaplatUi);
 export {
   w as MaplatUi

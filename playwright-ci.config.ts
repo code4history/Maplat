@@ -15,8 +15,7 @@ export default defineConfig({
   // `@c4h/chuci@1.0.0`（修正前）を解決して必ず FAIL する。lock が `@c4h/chuci@1.0.1` 以降を解決した時点で外す
   // （設計 docs/superpowers/specs/2026-09-14-oct26-m9-t1-design.md §9.4 の申し送り）。
   testIgnore: [
-    "**/m1-t4-sanitize-browser.spec.ts",
-    "**/oct26-m9-t1-chuci-arrow.spec.ts"
+    "**/m1-t4-sanitize-browser.spec.ts"
   ],
   fullyParallel: true,
   forbidOnly: true,
