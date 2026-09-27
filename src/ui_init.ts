@@ -30,7 +30,7 @@ import {
 } from "./ui_utils";
 
 import { poiWebControl } from "./ui_marker";
-import { layerListItemHtml, poiListItemHtml } from "./poi_safe";
+import { escapeHtml, layerListItemHtml, poiListItemHtml } from "./poi_safe";
 
 import type { MaplatUi } from "./index";
 import type { MaplatAppOption } from "./types";
@@ -657,7 +657,7 @@ async function initMapEventListeners(ui: MaplatUi) {
         list.push({
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           icon: datum.icon || (pointer as any)["defaultpin.png"],
-          text: ui.translate!(datum.name),
+          text: escapeHtml(ui.translate!(datum.name)),
           callback: () => {
             ui.handleMarkerAction(datum);
           }
