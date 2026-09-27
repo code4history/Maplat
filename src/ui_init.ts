@@ -30,6 +30,7 @@ import {
 } from "./ui_utils";
 
 import { poiWebControl } from "./ui_marker";
+import { layerListItemHtml, poiListItemHtml } from "./poi_safe";
 
 import type { MaplatUi } from "./index";
 import type { MaplatAppOption } from "./types";
@@ -877,18 +878,14 @@ function initModalHandlers(ui: MaplatUi) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         layers.forEach((layer: any) => {
           // Create Layer Item
-          const layerLi = createElement(`<li class="list-group-item layer">
-                        <div class="row layer_row">
-                           <div class="layer_label">
-                              <span class="dli-chevron"></span>
-                              <img src="${layer.icon || pointer["defaultpin.png"]}" class="markerlist"> ${ui.translate!(layer.name)}
-                           </div>
-                           <div class="layer_onoff">
-                              <input type="checkbox" class="markerlist" ${layer.hide ? "" : "checked"}>
-                              <label class="check"><div></div></label>
-                           </div>
-                        </div>
-                    </li>`)[0] as HTMLElement;
+          // oct26-m16-t1 (B-UI-1): name・icon は信頼できない POI データなので実体参照化して組み立てる
+          const layerLi = createElement(
+            layerListItemHtml(
+              layer.icon || pointer["defaultpin.png"],
+              ui.translate!(layer.name),
+              Boolean(layer.hide)
+            )
+          )[0] as HTMLElement;
 
           const checkbox = layerLi.querySelector(
             "input[type=checkbox]"
@@ -963,14 +960,13 @@ function initModalHandlers(ui: MaplatUi) {
           if (layer.pois) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             layer.pois.forEach((poi: any) => {
-              const poiLi = createElement(`<li class="list-group-item poi">
-                                <div class="row poi_row">
-                                   <div class="poi_label">
-                                      <span class="dli-chevron"></span>
-                                      <img src="${poi.icon || layer.icon || pointer["defaultpin.png"]}" class="markerlist"> ${ui.translate!(poi.name)}
-                                   </div>
-                                </div>
-                            </li>`)[0] as HTMLElement;
+              // oct26-m16-t1 (B-UI-1): name・icon は信頼できない POI データなので実体参照化して組み立てる
+              const poiLi = createElement(
+                poiListItemHtml(
+                  poi.icon || layer.icon || pointer["defaultpin.png"],
+                  ui.translate!(poi.name)
+                )
+              )[0] as HTMLElement;
 
               const poiContentDiv = createElement(
                 `<div class="list_poicontent_div"></div>`
