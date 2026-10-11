@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 設定ファイル（apps/<id>.json）・地図の設定・タイル・POI・画像はページ起点の相対パスで読まれるので、
+       基点を MaplatUI の公開ルート（public/ が載る / ）にそろえる -->
+  <base href="../">
+  <title>maplat-ui 確認ページ</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { margin: 0; font: 13px/1.5 system-ui, sans-serif; color: #1a2744; background: #eef0f4; display: flex; flex-direction: column; }
+    header { padding: 8px 16px; background: #1a2744; color: #fff; display: flex; gap: 16px; align-items: baseline; flex-wrap: wrap; }
+    header h1 { font-size: 15px; margin: 0; }
+    #status { color: #c9d3ea; }
+    main { flex: 1; min-height: 320px; padding: 8px; }
+    /* <maplat-ui> の既定の高さ（400px）をページの CSS で上書きする */
+    maplat-ui { height: 100%; border: 1px solid #c5ccd9; background: #fff; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>&lt;maplat-ui&gt; on &lt;maplat-app&gt; 確認ページ</h1>
+    <span id="status" data-testid="status" data-state="loading">読み込み中…</span>
+  </header>
+  <main>
+    <!-- 層 A の実装はページの import で決まる。この HTML の構成は層 A の実装に依らず同じ -->
+    <!-- enable-share: 共有のボタン・state-url: 地図の状態を URL（#!…）に書き、その URL で開くと同じ状態に戻す -->
+    <maplat-ui id="ui" app-id="sample" lang="ja" enable-marker-list enable-share state-url>
+      <maplat-app slot="map"></maplat-app>
+    </maplat-ui>
+  </main>
+  <script type="module">
+    // ページの操作（層 A・層 B の公開面だけを使う。両方の確認ページで同じ）
+    const ui = document.getElementById("ui");
+    const status = document.getElementById("status");
+    window.__maplatUi = ui; // e2e から読む
+    // ?pwa を付けて開いたら PWA を有効にする（pwa-manifest は起動時のみのキーなので、要素の登録の前に書く）
+    if (new URLSearchParams(location.search).has("pwa")) ui.setAttribute("pwa-manifest", "");
+    customElements.whenDefined("maplat-ui").then(() => ui.ready).then(
+      () => {
+        const app = ui.app;
+        status.textContent = `READY: <maplat-app> ${app.implementation} ${app.version} × <maplat-ui> ${ui.implementation} ${ui.version}`;
+        status.dataset.state = "ready";
+        ui.addEventListener("mapChanged", e => console.log("mapChanged", e.detail.mapID));
+        ui.addEventListener("clickMarker", e => console.log("clickMarker", e.detail && e.detail.name));
+      },
+      err => {
+        console.error(err);
+        status.textContent = `ERROR: ${err && err.message ? err.message : err}`;
+        status.dataset.state = "error";
+      }
+    );
+  </script>
+  <!-- 層 A（Core の <maplat-app>）と層 B（<maplat-ui>）を登録する。違うのはこの import だけ -->
+  <script type="module" src="/demo/element.ts"></script>
+</body>
+</html>

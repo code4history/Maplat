@@ -101,7 +101,7 @@ if (before.length) {
 // --- 検査2: 再ビルドを実行する ---
 console.log("→ pnpm build を実行して dist を再生成します（数十秒かかります）");
 try {
-  execFileSync("pnpm", ["run", "build"], {
+  execFileSync("pnpm", ["--ignore-workspace", "run", "build"], {
     cwd: ROOT,
     encoding: "utf8",
     maxBuffer: 64 * 1024 * 1024,

@@ -39,7 +39,7 @@ export default defineConfig({
     }
   ],
   webServer: {
-    command: "pnpm run dev:e2e",
+    command: "pnpm --ignore-workspace run dev:e2e",
     url: "http://localhost:5176",
     reuseExistingServer: true
   }
