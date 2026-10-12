@@ -104,12 +104,14 @@ describe("addMenuEntry", () => {
     expect(entry.separator).toBe(true);
   });
 
-  it("iconを指定するとstyleにbackground-imageが設定されiconクラスが付与される", () => {
+  it("iconを指定するとCSSOMでbackground-imageが設定されiconクラスが付与される", () => {
     const { html, base } = makeHtml();
     html.addMenuEntry({ text: "Icon", icon: "x.png" });
     const ul = base.container.querySelector("ul") as HTMLElement;
     const li = ul.children[0] as HTMLElement;
-    expect(li.getAttribute("style")).toContain("background-image:url(x.png)");
+    // nov26-m5-t1（Maplat#274）: CSSOM の直列化は background-image: url("x.png") の形
+    expect(li.style.backgroundImage).toContain("x.png");
+    expect(li.style.backgroundImage.startsWith("url(")).toBe(true);
     expect(li.classList.contains(CSS_VARS.icon)).toBe(true);
   });
 
