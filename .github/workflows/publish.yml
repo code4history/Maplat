@@ -199,19 +199,32 @@ jobs:
           DIST_TAG: ${{ inputs.dist_tag }}
         run: |
           set -euo pipefail
+          # 版と dist-tag が一致するまで待つ（NayutaProducts#30）。404 の JSON・JSON でない出力では抜けない
+          [ -n "${VERSION}" ] || { echo "::error::VERSION が空（verify job の出力を確認）"; exit 1; }
+          JUDGE='
+            let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{
+              const want=process.env.VERSION, tag=process.env.DIST_TAG, final=process.env.FINAL==="1";
+              let p=null; try{p=JSON.parse(s)}catch(e){p=null}
+              const ok=!!p&&typeof p==="object"&&!Array.isArray(p)&&!p.error;
+              const ver=ok&&p.version===want;
+              const tagOk=ok&&(p["dist-tags"]||{})[tag]===want;
+              if(!final){process.exit(ver&&tagOk?0:1)}
+              const prov=ok&&!!(p.dist&&p.dist.attestations&&p.dist.attestations.provenance);
+              let t=null; try{t=JSON.parse(process.env.TP_JSON||"")}catch(e){t=null}
+              const tp=!!t&&typeof t==="object"&&!Array.isArray(t)&&!t.error&&typeof t.id==="string"&&t.id!=="";
+              console.log(`- registry: version=${ok?p.version:"(応答なし)"} dist-tags.${tag}=${tagOk} provenance=${prov} trustedPublisher=${tp}`);
+              const errs=[];
+              if(!ver)errs.push(`${want} が registry で見えない`);
+              if(!tagOk)errs.push(`dist-tag ${tag} が ${want} を指していない`);
+              if(!prov)errs.push("provenance が付いていない");
+              if(!tp)errs.push("trustedPublisher が付いていない");
+              if(errs.length){for(const m of errs)console.log(`::error::${m}`);console.log("::error::公開は済んだが照合に落ちた（取り消しはできない）。下流の波を止める");process.exit(1)}
+            })'
+          J=""
           for i in $(seq 1 20); do
             J=$(npm view "${NAME}@${VERSION}" --json 2>/dev/null || true)
-            [ -n "${J}" ] && break
+            if printf '%s' "${J}" | FINAL=0 node -e "${JUDGE}"; then break; fi
             sleep 15
           done
-          [ -n "${J}" ] || { echo "::error::${NAME}@${VERSION} が 5 分以内に registry で見えない"; exit 1; }
-          printf '%s' "${J}" | node -e '
-            let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{
-              const p=JSON.parse(s); const tag=process.env.DIST_TAG;
-              const prov=!!(p.dist&&p.dist.attestations&&p.dist.attestations.provenance);
-              const tp=!!(p._npmUser&&p._npmUser.trustedPublisher);
-              const tagOk=(p["dist-tags"]||{})[tag]===p.version;
-              console.log(`- registry: version=${p.version} dist-tags.${tag}=${tagOk} provenance=${prov} trustedPublisher=${tp}`);
-              if(!tagOk){console.log(`::error::dist-tag ${tag} が ${p.version} を指していない`);process.exit(1)}
-              if(!prov){console.log("::warning::provenance が付いていない（公開は成立。§8 の扱い）")}
-            })' | tee -a "$GITHUB_STEP_SUMMARY"
+          TP=$(npm view "${NAME}@${VERSION}" _npmUser.trustedPublisher --json 2>/dev/null || true)
+          printf '%s' "${J}" | FINAL=1 TP_JSON="${TP}" node -e "${JUDGE}" | tee -a "$GITHUB_STEP_SUMMARY"
