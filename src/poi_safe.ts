@@ -76,3 +76,60 @@ export function poiListItemHtml(icon: unknown, label: unknown): string {
                                 </div>
                             </li>`;
 }
+
+/**
+ * 画像の URL として許すもの: safeWebUrl が通すもの（http/https・相対）と、
+ * `data:image/` で始まるもの（前後の空白を除き大文字小文字を区別しない）。
+ * それ以外（javascript:・data:text/html・vbscript:・文字列でない値・空文字）は undefined。
+ *
+ * **画像の文脈（`<img src>`・CSS の `background-image`）専用。** `data:image/svg+xml` を通すので、
+ * 遷移・埋め込み（`<a href>`・`<iframe src>`・`<object data>`・`window.open`・`location`）には
+ * 使ってはならない。そちらは safeWebUrl を使う。
+ * Web Components 化の試作（wc-work/Maplat d7c61e0d:src/element/maplat-ui.ts:166-173）の非公開 safeImageUrl と同じ意味。
+ */
+export function safeImageUrl(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  if (/^\s*data:image\//i.test(value)) return value;
+  return safeWebUrl(value);
+}
+
+/**
+ * スワイパーのサムネイルの URL。thumbnail のファイル名が images（pointer_images の表）の
+ * **自身のキー**で値が文字列ならその値、そうでなければ thumbnail を使い、safeImageUrl を通らなければ fallback。
+ * 継承キー（`__proto__`・`constructor` 等）は使わない（nov26-m5-t1）。
+ */
+export function swiperThumbUrl(
+  thumbnail: unknown,
+  images: Record<string, unknown>,
+  fallback: string
+): string {
+  let candidate: unknown = thumbnail;
+  if (typeof thumbnail === "string" && thumbnail !== "") {
+    const key = thumbnail.split("/").pop()!;
+    if (
+      Object.prototype.hasOwnProperty.call(images, key) &&
+      typeof images[key] === "string"
+    ) {
+      candidate = images[key];
+    }
+  }
+  return safeImageUrl(candidate) ?? fallback;
+}
+
+/**
+ * 地図切替スワイパーの 1 枚。テンプレートは変更前（src/ui_init.ts:524-527・537-540, 26fbb36a）と同一で、
+ * mapID・thumbUrl・label・extraClass を実体参照化する点だけが違う。
+ * thumbUrl は呼び出し側で swiperThumbUrl を通した値を渡す（ここでは実体参照化だけをする）。
+ */
+export function swiperSlideHtml(
+  mapID: unknown,
+  thumbUrl: unknown,
+  label: unknown,
+  extraClass = ""
+): string {
+  const cls = extraClass ? ` ${escapeHtml(extraClass)}` : "";
+  return (
+    `<div class="swiper-slide${cls}" data="${escapeHtml(mapID)}">` +
+    `<img crossorigin="anonymous" src="${escapeHtml(thumbUrl)}"><div> ${escapeHtml(label)}</div> </div> `
+  );
+}

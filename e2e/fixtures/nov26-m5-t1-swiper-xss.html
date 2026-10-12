@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <base href="/" />
+  <title>Maplat E2E — Swiper slide XSS (nov26-m5-t1)</title>
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+  <link href="https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.css" rel="stylesheet" />
+  <style>
+    .mainview {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="mainview">
+    <div id="map_div"></div>
+  </div>
+  <div id="status">Initializing</div>
+  <script src="https://cdn.jsdelivr.net/npm/ol@10.6.1/dist/ol.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@10.6.1/ol.css" />
+  <script src="https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.js"></script>
+  <script type="module">
+    import { MaplatUi } from '/src/index.ts';
+
+    // nov26-m5-t1（NayutaProducts#28 B-UI-4）: 地図設定の label・mapID・thumbnail に注入値を入れた base 地図を並べる fixture。
+    // 是正前はスライドの HTML 文字列へ生で補間され、label の <img onerror>・mapID の onmouseover・thumbnail の onerror が
+    // DOM に入って発火した（window.__nov26m5t1 / __nov26m5t1m / __nov26m5t1t が 1 になる）。
+    // mapID に引用符を含む地図は、MaplatCore が ./tmbs/<mapID>_menu.jpg を取りに行かないよう thumbnail を明示する（設計 R-T1-5）。
+    const PNG =
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+    const P = '<img src=x onerror=window.__nov26m5t1=1>';
+    const M = 'm5t1" onmouseover="window.__nov26m5t1m=1';
+    const osm = (mapID, label, thumbnail) => ({
+      mapID,
+      title: { ja: mapID, en: mapID },
+      label,
+      attr: 'OSM',
+      url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+      maxZoom: 19,
+      maptype: 'base',
+      thumbnail
+    });
+    const setting = {
+      appName: 'nov26-m5-t1 swiper xss',
+      lang: 'ja',
+      homePosition: [139.5321, 36.249302],
+      defaultZoom: 17,
+      startFrom: 'tatebayashi_ojozu',
+      sources: [
+        { mapID: 'tatebayashi_ojozu', label: { ja: 'tatebayashi_ojozu', en: 'tatebayashi_ojozu' } },
+        osm('m5t1_plain', { ja: 'Plain', en: 'Plain' }, PNG),
+        osm('m5t1_label', { ja: P, en: P }, PNG),
+        osm(M, { ja: 'M', en: 'M' }, PNG),
+        osm('m5t1_thumb_js', { ja: 'J', en: 'J' }, 'javascript:window.__nov26m5t1j=1'),
+        osm('m5t1_thumb_attr', { ja: 'T', en: 'T' }, 'x" onerror="window.__nov26m5t1t=1')
+      ],
+      pois: []
+    };
+    window.__nov26m5t1Payload = { P, M };
+
+    MaplatUi.createObject({
+      maplibregl: window.maplibregl,
+      mapboxToken: '',
+      setting,
+      pwaManifest: false,
+      restoreSession: false,
+      stateUrl: false,
+      enableCache: false
+    })
+      .then(ui => {
+        window.__maplatUi = ui;
+        document.getElementById('status').textContent = 'READY';
+      })
+      .catch(err => {
+        console.error('MaplatUi init error:', err);
+        document.getElementById('status').textContent = 'ERROR: ' + err.message;
+      });
+  </script>
+</body>
+
+</html>
