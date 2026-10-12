@@ -3,6 +3,7 @@ import { ContextMenuItem } from "../types";
 import { CSS_VARS, DEFAULT_ITEMS } from "./constants";
 import { createFragment, find } from "./helpers/dom";
 import { contains, getUniqueId } from "./helpers/mix";
+import { safeImageUrl } from "../poi_safe";
 
 /**
  * @class Html
@@ -100,7 +101,12 @@ export class Html {
         } else if (!cItem.classname.includes(CSS_VARS.icon)) {
           cItem.classname += ` ${CSS_VARS.icon}`;
         }
-        element.setAttribute("style", `background-image:url(${cItem.icon})`);
+        // nov26-m5-t1（Maplat#274）: icon を CSS の文字列へ生で入れない。
+        // 画像の URL として通るものだけを、CSSOM の 1 プロパティ（他のプロパティへはみ出せない）で入れる。
+        const iconUrl = safeImageUrl(cItem.icon);
+        if (iconUrl !== undefined) {
+          element.style.backgroundImage = `url(${JSON.stringify(iconUrl)})`;
+        }
       }
 
       element.id = index;

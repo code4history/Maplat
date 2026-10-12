@@ -30,7 +30,13 @@ import {
 } from "./ui_utils";
 
 import { poiWebControl } from "./ui_marker";
-import { escapeHtml, layerListItemHtml, poiListItemHtml } from "./poi_safe";
+import {
+  escapeHtml,
+  layerListItemHtml,
+  poiListItemHtml,
+  swiperSlideHtml,
+  swiperThumbUrl
+} from "./poi_safe";
 
 import type { MaplatUi } from "./index";
 import type { MaplatAppOption } from "./types";
@@ -515,29 +521,28 @@ function initSwipers(ui: MaplatUi, sources: any[]) {
   // 0 枚のまま loop: true で生成すると swiper 12 の loopFix が Loop Warning を出し、
   // 複製は buildLoopSlides でソース配列全体を繰り返す（A,B,A,B…）。ソースごとに固める（A,A,B,B）と
   // 1 回の操作で同じ地図の複製へ進むだけの回が生じ、左右に同じ地図が覗く。
+  const images: Record<string, unknown> = pointer;
+  const noImage = pointer["no_image.png"];
   const baseSlides: string[] = [];
   baseSources.forEach(source => {
-    const thumbKey = source.thumbnail ? source.thumbnail.split("/").pop() : "";
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const thumbUrl = (pointer as any)[thumbKey] || source.thumbnail;
+    // nov26-m5-t1（B-UI-4）: 地図 JSON の mapID・thumbnail・label を実体参照化・URL 検査してから補間する
     baseSlides.push(
-      `<div class="swiper-slide" data="${source.mapID}">` +
-        `<img crossorigin="anonymous" src="${
-          thumbUrl
-        }"><div> ${ui.translate!(source.label)}</div> </div> `
+      swiperSlideHtml(
+        source.mapID,
+        swiperThumbUrl(source.thumbnail, images, noImage),
+        ui.translate!(source.label)
+      )
     );
   });
   const overlaySlides: string[] = [];
   overlaySources.forEach(source => {
-    const colorCss = source.envelope ? ` ${source.envelopeColor}` : "";
-    const thumbKey = source.thumbnail ? source.thumbnail.split("/").pop() : "";
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const thumbUrl = (pointer as any)[thumbKey] || source.thumbnail;
     overlaySlides.push(
-      `<div class="swiper-slide${colorCss}" data="${source.mapID}">` +
-        `<img crossorigin="anonymous" src="${
-          thumbUrl
-        }"><div> ${ui.translate!(source.label)}</div> </div> `
+      swiperSlideHtml(
+        source.mapID,
+        swiperThumbUrl(source.thumbnail, images, noImage),
+        ui.translate!(source.label),
+        source.envelope ? source.envelopeColor : ""
+      )
     );
   });
   core.mapDivDocument!.querySelector(
