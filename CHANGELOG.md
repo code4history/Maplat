@@ -4,9 +4,15 @@
 
 ## [Unreleased]
 
+### Added
+- `pwaWorker: false`（`null` も同じ）で Service Worker を登録しないようにした。manifest の `<link>` と apple-touch-icon は従来どおり足す。登録済みの Service Worker は解除しない（MaplatEditor#106）
+
 ### Fixed
 - 地図切り替えスワイパーで、地図設定の `mapID`・`thumbnail`・`label` を無害化して表示するようにした（NayutaProducts#28 B-UI-4）。**地図 JSON の `label` に書いた HTML はタグとして解釈されず、文字のまま表示される。** `thumbnail` は http/https・相対 URL・`data:image/` だけを使い、それ以外は「画像なし」の絵になる
 - 重なったマーカーのメニューで、POI の `icon` を CSS の文字列へ生のまま入れていたのをやめ、画像の URL として検査してから設定するようにした（#274）
+
+### Security
+- PWA の `<link rel="manifest">`・`<link rel="apple-touch-icon">` を HTML 文字列ではなく DOM の組み立てで作るようにした（`pwaManifest` と manifest の `icons` の値が要素として解釈されない）
 
 ## [1.1.0] - 2026-10-05
 
