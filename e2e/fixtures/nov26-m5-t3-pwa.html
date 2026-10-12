@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <base href="/" />
+  <title>Maplat E2E — pwaWorker (nov26-m5-t3)</title>
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+  <link href="https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.css" rel="stylesheet" />
+  <style>
+    .mainview {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="mainview">
+    <div id="map_div"></div>
+  </div>
+  <div id="status">Initializing</div>
+  <script src="https://cdn.jsdelivr.net/npm/ol@10.6.1/dist/ol.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@10.6.1/ol.css" />
+  <script src="https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.js"></script>
+  <script type="module">
+    import { MaplatUi } from '/src/index.ts';
+
+    // nov26-m5-t3: pwaWorker: false / null で Service Worker を登録しないことを確かめる fixture。
+    // クエリ: worker=false|null|default（default は "/service-worker.js"）・cache=1（enableCache: true）
+    const params = new URLSearchParams(location.search);
+    const workerParam = params.get('worker');
+    const pwaWorker =
+      workerParam === 'false' ? false :
+      workerParam === 'null' ? null :
+      '/service-worker.js';
+    const osm = {
+      mapID: 'osm',
+      title: { ja: 'OSM', en: 'OSM' },
+      label: { ja: 'OSM', en: 'OSM' },
+      attr: 'OSM',
+      url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+      maxZoom: 19,
+      maptype: 'base'
+    };
+    const setting = {
+      appName: 'nov26-m5-t3 pwaWorker',
+      lang: 'ja',
+      homePosition: [139.5321, 36.249302],
+      defaultZoom: 17,
+      startFrom: 'osm',
+      sources: [osm],
+      pois: []
+    };
+
+    MaplatUi.createObject({
+      maplibregl: window.maplibregl,
+      mapboxToken: '',
+      setting,
+      pwaManifest: '/pwa/sample_manifest.json',
+      pwaWorker,
+      // SW は scope の中のページしか制御しない。他の e2e のページを SW の制御下に置かない
+      pwaScope: '/e2e/fixtures/',
+      restoreSession: false,
+      enableCache: params.get('cache') === '1'
+    })
+      .then(ui => {
+        window.__maplatUi = ui;
+        document.getElementById('status').textContent = 'READY';
+      })
+      .catch(err => {
+        console.error('MaplatUi init error:', err);
+        document.getElementById('status').textContent = 'ERROR: ' + err.message;
+      });
+  </script>
+</body>
+
+</html>
