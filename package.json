@@ -39,6 +39,7 @@
     "verify:m10:identity": "node scripts/oct26-m10/verify-ghpages-identity.mjs",
     "verify:m10:switch": "node scripts/oct26-m10/verify-switch.mjs",
     "verify:m10:vendored": "node scripts/oct26-m10/verify-vendored-images.mjs",
+    "verify:nov26-m5:demo": "node scripts/nov26-m5/verify-demo-query-allowlist.mjs",
     "prepublishOnly": "pnpm run typecheck && pnpm run test && pnpm run build"
   },
   "repository": {

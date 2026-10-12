@@ -1,6 +1,7 @@
 import { MaplatUi } from "../src/index";
 // Import styles - Vite will process these automatically
 import "../src/styles/ui.scss";
+import { parseDemoQuery } from "./query";
 
 const mapboxgl = window.mapboxgl;
 const maplibregl = window.maplibregl;
@@ -38,20 +39,11 @@ const option = {
   lang: "ja"
 };
 
-const hashes = window.location.href.split("#!")[0];
-const hashesArr = hashes
-  .slice(window.location.href.indexOf("?") + 1)
-  .split("&");
-for (let i = 0; i < hashesArr.length; i++) {
-  const hash: string[] = hashesArr[i].split("=");
-  option[hash[0]] =
-    hash[1] == "true" ? true : hash[1] == "false" ? false : hash[1];
-}
-
-// クエリ→option 上書き機構が反映した後の現在値（MaplatCore の既定に合わせる）
-const queryOption = option as Record<string, unknown>;
-const appid = String(queryOption.appid || "sample");
-const lang = String(queryOption.lang || "ja");
+// nov26-m5-t2: URL のクエリは appid・lang だけを、形を検査して受け付ける（B-UI-5）
+const query = parseDemoQuery(window.location.search);
+const appid = query.appid ?? "sample";
+const lang = query.lang ?? "ja";
+const appOption = { ...option, appid, lang };
 const statusEl = document.getElementById("status");
 
 // control row の配線: 現在値を選択肢へ復元し、変更時に URL クエリを
@@ -91,19 +83,21 @@ const reloadWithQuery = () => {
 appSelect?.addEventListener("change", reloadWithQuery);
 langSelect?.addEventListener("change", reloadWithQuery);
 
-MaplatUi.createObject(option).then(app => {
-  if (statusEl) {
-    statusEl.textContent = `READY appid=${appid} lang=${lang}`;
-  }
-  app.addEventListener("clickMarker", (evt: CustomEvent) => {
-    console.log(evt);
+MaplatUi.createObject(appOption)
+  .then(app => {
+    if (statusEl) {
+      statusEl.textContent = `READY appid=${appid} lang=${lang}`;
+    }
+    app.addEventListener("clickMarker", (evt: CustomEvent) => {
+      console.log(evt);
+    });
+    app.addEventListener("clickMap", (evt: CustomEvent) => {
+      console.log(evt);
+    });
+  })
+  .catch(err => {
+    console.error(err);
+    if (statusEl) {
+      statusEl.textContent = "読み込み失敗（console を参照）";
+    }
   });
-  app.addEventListener("clickMap", (evt: CustomEvent) => {
-    console.log(evt);
-  });
-}).catch(err => {
-  console.error(err);
-  if (statusEl) {
-    statusEl.textContent = "読み込み失敗（console を参照）";
-  }
-});

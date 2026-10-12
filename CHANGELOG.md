@@ -2,6 +2,11 @@
 
 このプロジェクトの主な変更を記録します。版数は [Semantic Versioning](https://semver.org/) に従います。
 
+## [Unreleased]
+
+### Fixed
+- 開発用デモ（`code4history.dev/Maplat/`）が URL のクエリから受け付けるキーを `appid`・`lang` に限り、値の形を検査するようにした。以前はすべてのキーを設定に入れており、`?poiTemplate=…` で任意のスクリプトが動いた（反射型 XSS・NayutaProducts#28 B-UI-5）。npm の配布物には影響しない
+
 ## [1.1.0] - 2026-10-05
 
 1.1.0-rc.1 と同じ内容の正式版です。版番号と、依存 `@maplat/core`・`@c4h/weiwudi`・`@c4h/chuci` の指定を RC から正式版（`^1.1.0`・`^1.1.0`・`^1.0.1`）へ戻したことだけが違います。変更点は 1.1.0-rc.1 までの各項を参照してください。
