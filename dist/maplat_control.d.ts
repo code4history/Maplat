@@ -10,6 +10,7 @@ export declare class SliderNew extends Control {
     setValue(res: number): void;
 }
 export declare class CustomControl extends Control {
+    protected element: HTMLElement;
     center_: import('ol/coordinate').Coordinate | undefined;
     zoom_: number | undefined;
     callResetNorth_: unknown;
@@ -26,6 +27,7 @@ export declare class SetGPS extends CustomControl {
     constructor(optOptions: ControlOptions);
 }
 export declare class CompassRotate extends Rotate {
+    protected element: HTMLElement;
     center_?: import('ol/coordinate').Coordinate;
     zoom_?: number;
     customLabel_: HTMLElement;
@@ -51,5 +53,6 @@ export declare class MarkerList extends CustomControl {
     constructor(optOptions: ControlOptions);
 }
 export declare class Zoom extends BaseZoom {
+    protected element: HTMLElement;
     constructor(options?: ControlOptions);
 }

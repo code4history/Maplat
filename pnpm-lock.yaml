@@ -23,7 +23,7 @@ importers:
         version: 1.1.0(workbox-routing@7.4.1)
       '@maplat/core':
         specifier: ^1.1.0
-        version: 1.1.0(mapbox-gl@3.32.0)(maplibre-gl@6.9.0)(ol@10.10.0)(workbox-routing@7.4.1)
+        version: 1.1.0(mapbox-gl@3.32.0)(maplibre-gl@6.9.0)(ol@10.11.0)(workbox-routing@7.4.1)
       '@turf/turf':
         specifier: ^7.4.0
         version: 7.4.0
@@ -114,7 +114,7 @@ importers:
         version: 6.9.0
       ol:
         specifier: ^10.10.0
-        version: 10.10.0
+        version: 10.11.0
       prettier:
         specifier: ^3.9.6
         version: 3.9.10
@@ -2775,8 +2775,8 @@ packages:
     resolution: {integrity: sha512-XrsrhT5sybtKI6wakr2SPOlGZWWYbUXZ7a0jT8/QOeAPau+1X/bSegNe5YR75oJmEZQbKningirmGOEJCIk61Q==}
     engines: {node: '>=12.20.0'}
 
-  ol@10.10.0:
-    resolution: {integrity: sha512-tLPKn6zl+6uWdPufYlqG/lQzuVUTVmfwahQqVr5+wZNyZecyAtIhMTyOtKpu7ooNDLY2sEjKZNXw9HL+sOjC1A==}
+  ol@10.11.0:
+    resolution: {integrity: sha512-OJ+lrx7kx/1O7Xx18Ff9QkVnwZIEL0OuhJQSy2sYgzzDvyZ2qHvuZEGAajbSstUyBwaS1OtQ4RWnY84tRMDdqg==}
 
   optionator@0.9.4:
     resolution: {integrity: sha512-6IpQ7mKUxRcZNLIObR0hz7lxsapSSIYNZJwXPGeF0mTVqGKFIXj1DQcMoT22S3ROcLyY/rz0PWaWZ9ayWmad9g==}
@@ -4569,14 +4569,14 @@ snapshots:
       '@types/geojson': 7946.0.16
       pbf: 5.1.2
 
-  '@maplat/core@1.1.0(mapbox-gl@3.32.0)(maplibre-gl@6.9.0)(ol@10.10.0)(workbox-routing@7.4.1)':
+  '@maplat/core@1.1.0(mapbox-gl@3.32.0)(maplibre-gl@6.9.0)(ol@10.11.0)(workbox-routing@7.4.1)':
     dependencies:
       '@c4h/weiwudi': 1.1.0(workbox-routing@7.4.1)
       '@maplat/transform': 1.1.0
       '@turf/turf': 7.4.0
       dompurify: 3.4.16
       lodash.template: 4.18.1
-      ol: 10.10.0
+      ol: 10.11.0
       whatwg-fetch: 3.6.20
     optionalDependencies:
       mapbox-gl: 3.32.0
@@ -7211,7 +7211,7 @@ snapshots:
 
   obug@2.2.1: {}
 
-  ol@10.10.0:
+  ol@10.11.0:
     dependencies:
       '@types/rbush': 4.0.0
       earcut: 3.2.4
