@@ -172,6 +172,9 @@ export class SliderNew extends Control {
 }
 
 export class CustomControl extends Control {
+  // ol 10.11 で Control.element が HTMLElement | null になった。null になるのは element を渡さず生成した場合だけで、
+  // 本クラスは constructor で必ず div を渡して super() を呼ぶので null にならない（型だけを狭める・実行時の出力は無い）。
+  declare protected element: HTMLElement;
   center_: import("ol/coordinate").Coordinate | undefined;
   zoom_: number | undefined;
   callResetNorth_: unknown;
@@ -378,6 +381,9 @@ export class SetGPS extends CustomControl {
 }
 
 export class CompassRotate extends Rotate {
+  // ol 10.11 で Control.element が HTMLElement | null になった。null になるのは element を渡さず生成した場合だけで、
+  // 親の ol/control/Rotate は constructor で必ず div を渡すので null にならない（型だけを狭める・実行時の出力は無い）。
+  declare protected element: HTMLElement;
   center_?: import("ol/coordinate").Coordinate;
   zoom_?: number;
   customLabel_: HTMLElement;
@@ -607,6 +613,9 @@ export class MarkerList extends CustomControl {
 }
 
 export class Zoom extends BaseZoom {
+  // ol 10.11 で Control.element が HTMLElement | null になった。null になるのは element を渡さず生成した場合だけで、
+  // 親の ol/control/Zoom は constructor で必ず div を渡すので null にならない（型だけを狭める・実行時の出力は無い）。
+  declare protected element: HTMLElement;
   constructor(options: ControlOptions = {}) {
     if (control_settings["zoom_plus"]) {
       options.zoomInLabel = createElement(
