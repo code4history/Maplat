@@ -61,7 +61,7 @@
     "pnpm": ">=9.0.0"
   },
   "dependencies": {
-    "@c4h/chuci": "^1.0.1",
+    "@c4h/chuci": "file:/tmp/work/m9-artifacts/Chuci/head-vitest-cloud0308/c4h-chuci-1.0.1.tgz",
     "@c4h/weiwudi": "^1.1.0",
     "@maplat/core": "^1.1.0",
     "@turf/turf": "^7.4.0",
@@ -85,6 +85,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@maplat/transform": "^1.0.0",
+    "@playwright/test": "^1.62.1",
     "@types/node": "^25.5.2",
     "@types/ol": "^6.5.3",
     "@types/qrcode": "^1.5.6",
@@ -96,6 +98,7 @@
     "eslint-config-prettier": "^10.1.8",
     "globals": "^16.5.0",
     "jsdom": "^30.0.1",
+    "maplibre-gl": "6.9.0",
     "ol": "^10.10.0",
     "prettier": "^3.9.6",
     "sass": "^1.97.3",
@@ -105,9 +108,6 @@
     "vite-plugin-dts": "^5.1.0",
     "vitest": "^4.1.11",
     "workbox-build": "^7.4.0",
-    "workbox-window": "^7.4.0",
-    "@playwright/test": "^1.62.1",
-    "@maplat/transform": "^1.0.0",
-    "maplibre-gl": "6.9.0"
+    "workbox-window": "^7.4.0"
   }
 }

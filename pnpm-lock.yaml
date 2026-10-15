@@ -16,8 +16,8 @@ importers:
   .:
     dependencies:
       '@c4h/chuci':
-        specifier: ^1.0.1
-        version: 1.0.1
+        specifier: file:/tmp/work/m9-artifacts/Chuci/head-vitest-cloud0308/c4h-chuci-1.0.1.tgz
+        version: file:../../m9-artifacts/Chuci/head-vitest-cloud0308/c4h-chuci-1.0.1.tgz
       '@c4h/weiwudi':
         specifier: ^1.1.0
         version: 1.1.0(workbox-routing@7.4.1)
@@ -664,8 +664,9 @@ packages:
     resolution: {integrity: sha512-0GEz8qJWokkUVYQYRukmkSHIFNoBH8QTreeHrAFbvz1XFYc3Y+puhMs8PQ5x8GNugiC2l5jvDBXKLbBIByeSBw==}
     hasBin: true
 
-  '@c4h/chuci@1.0.1':
-    resolution: {integrity: sha512-+1AQLS8dH17l6N/KgUH7PZOEjZ2BDM6JmfWJcum/IF3Ki5pfsDuDdLrMB3uNmPm1XD0dGFc2IvaToAMBkDdoWQ==}
+  '@c4h/chuci@file:../../m9-artifacts/Chuci/head-vitest-cloud0308/c4h-chuci-1.0.1.tgz':
+    resolution: {integrity: sha512-S6hAKaSX2jc3txorsccsD67BwteG0vNXc2Gw4/OP9MwbP+VIux0Ax7kRje6TDcj9fW2LN8HFF2uolSW68q77HA==, tarball: file:../../m9-artifacts/Chuci/head-vitest-cloud0308/c4h-chuci-1.0.1.tgz}
+    version: 1.0.1
     engines: {pnpm: '>=9.0.0'}
 
   '@c4h/weiwudi@1.1.0':
@@ -4342,7 +4343,7 @@ snapshots:
     dependencies:
       css-tree: 3.2.1
 
-  '@c4h/chuci@1.0.1':
+  '@c4h/chuci@file:../../m9-artifacts/Chuci/head-vitest-cloud0308/c4h-chuci-1.0.1.tgz':
     dependencies:
       gsplat: 1.2.9
       swiper: 12.2.0
