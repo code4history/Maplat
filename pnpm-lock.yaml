@@ -22,8 +22,8 @@ importers:
         specifier: ^1.1.0
         version: 1.1.0(workbox-routing@7.4.1)
       '@maplat/core':
-        specifier: ^1.1.0
-        version: 1.1.0(mapbox-gl@3.32.0)(maplibre-gl@6.9.0)(ol@10.11.0)(workbox-routing@7.4.1)
+        specifier: file:/tmp/work/m9-artifacts/MaplatCore/s8b-upstream-base-cloud0305/maplat-core-1.1.0.tgz
+        version: file:../m9-artifacts/MaplatCore/s8b-upstream-base-cloud0305/maplat-core-1.1.0.tgz(mapbox-gl@3.32.0)(maplibre-gl@6.9.0)(ol@10.11.0)(workbox-routing@7.4.1)
       '@turf/turf':
         specifier: ^7.4.0
         version: 7.4.0
@@ -991,8 +991,9 @@ packages:
   '@mapbox/vector-tile@3.0.0':
     resolution: {integrity: sha512-Qf10S1uIHMk20ri/IVBnpS+esUEkVaR5Hftmz88jTInrpmWgPGJfPe3LVjjlE77trLx8tH6qjTG7uWH9hIq/0Q==}
 
-  '@maplat/core@1.1.0':
-    resolution: {integrity: sha512-0QUkgTKhigdWc9oWUei/G1Uv90DHD+AQ1a/jDdAbwb2mIskDWM7TGyaC8rLDd3lI8dGtM89mrKaXaYm2/2NHNg==}
+  '@maplat/core@file:../m9-artifacts/MaplatCore/s8b-upstream-base-cloud0305/maplat-core-1.1.0.tgz':
+    resolution: {integrity: sha512-8Eqtufs0Dq6vlODG7RSNc6MfdCBtfHZvhrbY1Z2lwzEGIKIy+2PLMDRgxFrYvpHEV77qBhq2UPPjPJ0Yg/rrHw==, tarball: file:../m9-artifacts/MaplatCore/s8b-upstream-base-cloud0305/maplat-core-1.1.0.tgz}
+    version: 1.1.0
     engines: {pnpm: '>=9'}
     peerDependencies:
       mapbox-gl: ^2.0.0 || ^3.0.0
@@ -4569,7 +4570,7 @@ snapshots:
       '@types/geojson': 7946.0.16
       pbf: 5.1.2
 
-  '@maplat/core@1.1.0(mapbox-gl@3.32.0)(maplibre-gl@6.9.0)(ol@10.11.0)(workbox-routing@7.4.1)':
+  '@maplat/core@file:../m9-artifacts/MaplatCore/s8b-upstream-base-cloud0305/maplat-core-1.1.0.tgz(mapbox-gl@3.32.0)(maplibre-gl@6.9.0)(ol@10.11.0)(workbox-routing@7.4.1)':
     dependencies:
       '@c4h/weiwudi': 1.1.0(workbox-routing@7.4.1)
       '@maplat/transform': 1.1.0
