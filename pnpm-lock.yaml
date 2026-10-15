@@ -80,8 +80,8 @@ importers:
         specifier: ^25.5.2
         version: 25.9.9
       '@types/ol':
-        specifier: ^6.5.3
-        version: 6.5.3
+        specifier: ^7.0.0
+        version: 7.0.0
       '@types/qrcode':
         specifier: ^1.5.6
         version: 1.5.6
@@ -1672,9 +1672,6 @@ packages:
   '@turf/voronoi@7.4.0':
     resolution: {integrity: sha512-Uw/gyd0vuRonM/zCzgKqsb4Pt8gLl3oMPPscGVtmtyH0vsdlaZuaimJFC9Xdo9sWkLxn8eokhFnkJ3MZSl2UTA==}
 
-  '@types/arcgis-rest-api@10.4.8':
-    resolution: {integrity: sha512-MapiW0nP/5X0BUHmtRNEjbK0xrxS6n0syZWQk25H4ObFFwuK1+pGl7LQfOLgpsVM849WQ1b2sKIvWqEAvPwzCA==}
-
   '@types/chai@5.2.3':
     resolution: {integrity: sha512-Mw558oeA9fFbv65/y4mHtXDs9bPnFMZAL/jxdPFUpOHHIXX91mcgEHbS5Lahr+pwZFR8A7GQleRWeI6cGFC2UA==}
 
@@ -1705,8 +1702,9 @@ packages:
   '@types/node@25.9.9':
     resolution: {integrity: sha512-b4e2xxj/yMeT2hNlD6x7zNFiQK2Dlmkb9CQ6v3/1G2RezKN4YS2lcEv8lzGm1mhs4f2lM4yNAMI/zUDBZBBt7w==}
 
-  '@types/ol@6.5.3':
-    resolution: {integrity: sha512-C0Sm5dytTfRxztYFMuWq0IBJYfMffPF4GzXI/s4ZyJlNZ8AAdS+9fW0iGOyYkTb3ZQmfYWYdAzMqwGXfHVw+3A==}
+  '@types/ol@7.0.0':
+    resolution: {integrity: sha512-JKNA4FYdgBz1GidTsrHu4PPPbCCpddXRG0qDpX8Cz08n2RxJ5PZIQaiAGQKO0y2pNuy7qBQqgOu/rQwttj+L3w==}
+    deprecated: This is a stub types definition. ol provides its own type definitions, so you do not need this installed.
 
   '@types/page@1.11.9':
     resolution: {integrity: sha512-Ki8IZMwg63i7+tF3UpfDIl4rwBN1B1kWQjZCUzaWoohfMB0m9CYap/dExbz7W21uS2WPoA/8lvlDuwX0X/YfIQ==}
@@ -1719,9 +1717,6 @@ packages:
 
   '@types/resolve@1.20.2':
     resolution: {integrity: sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==}
-
-  '@types/topojson-specification@1.0.5':
-    resolution: {integrity: sha512-C7KvcQh+C2nr6Y2Ub4YfgvWvWCgP2nOQMtfhlnwsRL4pYmmwzBS7HclGiS87eQfDOU/DLQpX6GEscviaz4yLIQ==}
 
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
@@ -5943,8 +5938,6 @@ snapshots:
       d3-voronoi: 1.1.2
       tslib: 2.8.1
 
-  '@types/arcgis-rest-api@10.4.8': {}
-
   '@types/chai@5.2.3':
     dependencies:
       '@types/deep-eql': 4.0.2
@@ -5970,12 +5963,9 @@ snapshots:
     dependencies:
       undici-types: 7.24.6
 
-  '@types/ol@6.5.3':
+  '@types/ol@7.0.0':
     dependencies:
-      '@types/arcgis-rest-api': 10.4.8
-      '@types/geojson': 7946.0.16
-      '@types/rbush': 4.0.0
-      '@types/topojson-specification': 1.0.5
+      ol: 10.11.0
 
   '@types/page@1.11.9': {}
 
@@ -5986,10 +5976,6 @@ snapshots:
   '@types/rbush@4.0.0': {}
 
   '@types/resolve@1.20.2': {}
-
-  '@types/topojson-specification@1.0.5':
-    dependencies:
-      '@types/geojson': 7946.0.16
 
   '@types/trusted-types@2.0.7': {}
 
