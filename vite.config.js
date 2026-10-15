@@ -12,6 +12,14 @@ const __dirname = path.dirname(__filename);
 const BUILD_MODE = process.env.BUILD_MODE;
 const isPackageBuild = BUILD_MODE === 'package';
 
+// nov26-m9-t6 §3.3（試行・merge しない）: vite 8 で既定が変わった build.target・cssTarget・minify を、
+// base（vite 7.3 の解決値。collect vite-config の出力）のまま明示して保つ。cssMinify は両側とも true で同じ。
+const M9_T6_BASE_BUILD = {
+    target: ['chrome107', 'edge107', 'firefox104', 'safari16'],
+    cssTarget: ['chrome107', 'edge107', 'firefox104', 'safari16'],
+    minify: 'esbuild'
+};
+
 export default defineConfig(({ command }) => ({
     // Dev server: always use '/'
     // Package build: use '/' (library, base doesn't matter)
@@ -71,6 +79,7 @@ export default defineConfig(({ command }) => ({
     },
     build: {
         outDir: isPackageBuild ? 'dist' : 'dist-demo',
+        ...M9_T6_BASE_BUILD,
         copyPublicDir: !isPackageBuild,
         ...(isPackageBuild ? {
             lib: {
