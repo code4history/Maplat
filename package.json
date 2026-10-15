@@ -61,7 +61,7 @@
     "pnpm": ">=9.0.0"
   },
   "dependencies": {
-    "@c4h/chuci": "file:/tmp/work/m9-artifacts/Chuci/s8-base-tarball-cloud0300/c4h-chuci-1.0.1.tgz",
+    "@c4h/chuci": "file:/tmp/work/m9-artifacts/Chuci/head-jest-dom-cloud0300/c4h-chuci-1.0.1.tgz",
     "@c4h/weiwudi": "^1.1.0",
     "@maplat/core": "^1.1.0",
     "@turf/turf": "^7.4.0",
