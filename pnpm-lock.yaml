@@ -19,8 +19,8 @@ importers:
         specifier: ^1.0.1
         version: 1.0.1
       '@c4h/weiwudi':
-        specifier: ^1.1.0
-        version: 1.1.0(workbox-routing@7.4.1)
+        specifier: file:/tmp/work/m9-artifacts/Weiwudi/s8b-upstream-head-types-node-cloud0301/c4h-weiwudi-1.1.0.tgz
+        version: file:../m9-artifacts/Weiwudi/s8b-upstream-head-types-node-cloud0301/c4h-weiwudi-1.1.0.tgz(workbox-routing@7.4.1)
       '@maplat/core':
         specifier: ^1.1.0
         version: 1.1.0(mapbox-gl@3.32.0)(maplibre-gl@6.9.0)(ol@10.11.0)(workbox-routing@7.4.1)
@@ -670,6 +670,13 @@ packages:
 
   '@c4h/weiwudi@1.1.0':
     resolution: {integrity: sha512-7sMmBQ+1hyLqvTYZvaoZZEY7Ce+HZinmTtEaDY7mhfnyEnkBtkPTaKleXEbLLyLuIyFUeVb0vXHibO0Kd4aaFw==}
+    engines: {node: '>=20.0.0', pnpm: '>=9.0.0'}
+    peerDependencies:
+      workbox-routing: ^7.4.0
+
+  '@c4h/weiwudi@file:../m9-artifacts/Weiwudi/s8b-upstream-head-types-node-cloud0301/c4h-weiwudi-1.1.0.tgz':
+    resolution: {integrity: sha512-t8Ny6iIqCVH83lFWz2D+Ox4gxaMmNpwR8acIg1AsMZ7N79QvVcDS9vd9LmE1f//QJWuR+Udc4UD2SRXMdDn8bg==, tarball: file:../m9-artifacts/Weiwudi/s8b-upstream-head-types-node-cloud0301/c4h-weiwudi-1.1.0.tgz}
+    version: 1.1.0
     engines: {node: '>=20.0.0', pnpm: '>=9.0.0'}
     peerDependencies:
       workbox-routing: ^7.4.0
@@ -4350,6 +4357,10 @@ snapshots:
       viewerjs: 1.15.2
 
   '@c4h/weiwudi@1.1.0(workbox-routing@7.4.1)':
+    dependencies:
+      workbox-routing: 7.4.1
+
+  '@c4h/weiwudi@file:../m9-artifacts/Weiwudi/s8b-upstream-head-types-node-cloud0301/c4h-weiwudi-1.1.0.tgz(workbox-routing@7.4.1)':
     dependencies:
       workbox-routing: 7.4.1
 
