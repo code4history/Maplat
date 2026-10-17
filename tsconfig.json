@@ -20,6 +20,7 @@
         "noUnusedLocals": true, // Maybe disable initially during migration
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true,
+        "noUncheckedSideEffectImports": false, // TS 6 changed the default to true; keep the TS 5 behavior
         "allowJs": true,
         "checkJs": false // Enable incrementally
     },
