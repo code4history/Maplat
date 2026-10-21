@@ -748,13 +748,16 @@ function initModalHandlers(ui: MaplatUi) {
     } else if (cmds[0] === "tw") {
       const text = document.title;
       const twuri = `https://twitter.com/intent/tweet?url=${encodeURIComponent(uri)}&text=${encodeURIComponent(text)}&hashtags=Maplat`;
-      window.open(twuri, "_blank");
+      // SR-NOV26-B-3: 逆タブナビング対策。SNS 側のページから元のタブを
+      // window.opener 経由で書き換えられないよう noopener / noreferrer を付ける。
+      window.open(twuri, "_blank", "noopener,noreferrer");
     } else if (cmds[0] === "fb") {
       const fburi = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(uri)}&display=popup&ref=plugin&src=like&kid_directed_site=0`;
+      // 既存のポップアップ指定は残したまま noopener / noreferrer を足す
       window.open(
         fburi,
         "_blank",
-        "width=650,height=450,menubar=no,toolbar=no,scrollbars=yes"
+        "width=650,height=450,menubar=no,toolbar=no,scrollbars=yes,noopener,noreferrer"
       );
     } else if (cmds[0] === "qr") {
       const qrDiv =
