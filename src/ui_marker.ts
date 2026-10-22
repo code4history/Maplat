@@ -232,7 +232,9 @@ export function handleMarkerAction(ui: MaplatUi, data: MarkerData) {
     // javascript: 等は現在の文書のオリジンで実行されうるため、遷移しない。
     if (safeWebUrl(href) === undefined) return;
     if (blank) {
-      window.open(href, "_blank");
+      // SR-NOV26-B-3: 開いた先から window.opener で元のタブを書き換えられないよう
+      // noopener / noreferrer を付ける。戻り値は使っていないので null でも問題ない。
+      window.open(href, "_blank", "noopener,noreferrer");
     } else {
       window.location.href = href;
     }

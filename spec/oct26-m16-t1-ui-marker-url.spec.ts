@@ -185,8 +185,18 @@ describe("B-UI-3: POI の directgo は http/https のときだけ遷移する", 
     handleMarkerAction(makeMarkerUi(), {
       directgo: { href: url, blank: true }
     } as MarkerData);
-    expect(openSpy).toHaveBeenCalledWith(url, "_blank");
+    // SR-NOV26-B-3: 逆タブナビング対策で noopener,noreferrer を付ける
+    expect(openSpy).toHaveBeenCalledWith(url, "_blank", "noopener,noreferrer");
     expect(hrefSet).toEqual([]);
+  });
+
+  it("SR-NOV26-B-3: blank 指定の directgo は noopener 付きで開く", () => {
+    handleMarkerAction(makeMarkerUi(), {
+      directgo: { href: "https://example.com/", blank: true }
+    } as MarkerData);
+    const features = String(openSpy.mock.calls[0][2]);
+    expect(features).toContain("noopener");
+    expect(features).toContain("noreferrer");
   });
 
   it("オブジェクト形で blank が無ければ location.href へ代入する（既存挙動）", () => {

@@ -2970,7 +2970,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // node_modules/.pnpm/@c4h+weiwudi@1.1.0-rc.1_workbox-routing@7.4.1/node_modules/@c4h/weiwudi/dist/weiwudi-sw.es.js
+  // node_modules/.pnpm/@c4h+weiwudi@1.1.0_workbox-routing@7.4.1/node_modules/@c4h/weiwudi/dist/weiwudi-sw.es.js
   function W(S) {
     const u = 20037508342789244e-9, M = {};
     let A;
@@ -3391,7 +3391,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
   registerRoute(
     /(?:maps\/.+\.json|pwa\/.+|pois\/.+\.json|apps\/.+\.json|tmbs\/.+\.jpg|images\/.+\.(?:png|jpg))$/,
     new StaleWhileRevalidate({
-      cacheName: `resourcesCache-${"2026-09-28-01-43"}`,
+      cacheName: `resourcesCache-${"2026-10-17-05-10"}`,
       plugins: [
         new ExpirationPlugin({
           maxAgeSeconds: 86400,

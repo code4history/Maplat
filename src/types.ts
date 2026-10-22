@@ -7,7 +7,12 @@ export interface MaplatAppOption {
   appid?: string;
   fake?: boolean;
   pwaManifest?: boolean | string;
-  pwaWorker?: string;
+  /**
+   * Service Worker のスクリプトの URL。未指定・空文字なら "./service-worker.js"。
+   * false または null で Service Worker を登録しない（manifest の <link> と apple-touch-icon は足す）。
+   * 登録済みの Service Worker は解除しない。enableCache は Service Worker を要する。
+   */
+  pwaWorker?: string | false | null;
   pwaScope?: string;
   overlay?: boolean;
   enableHideMarker?: boolean;
