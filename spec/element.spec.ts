@@ -489,9 +489,11 @@ describe("POI の吹き出し（clickMarkers / clickMarker）", () => {
     expect(slide.getAttribute("image-type")).toBe("image");
     expect(slide.getAttribute("thumbnail-url")).toBe("img/castle.jpg");
     expect(selectMarker).toHaveBeenCalledWith("main#p1");
-    // 言語を替えると開いている吹き出しも描き直す
+    // 言語を替えると開いている吹き出しも描き直す（言語ファイルの読み込みを待つ）
     ui.setAttribute("lang", "en");
-    expect(part(ui, "poi-title").textContent).toBe("Castle");
+    await vi.waitFor(() =>
+      expect(part(ui, "poi-title").textContent).toBe("Castle")
+    );
 
     click(part(ui, "poi-close"));
     expect(modal.hidden).toBe(true);
@@ -871,7 +873,9 @@ describe("マーカー一覧（enable-marker-list・listPoiLayers / showPoiLayer
     click(part(ui, "marker-list").querySelector("button")!);
     const modal = part(ui, "marker-list-modal");
     ui.setAttribute("lang", "en");
-    expect(part(ui, "marker-list-title").textContent).toBe("Marker list");
+    await vi.waitFor(() =>
+      expect(part(ui, "marker-list-title").textContent).toBe("Marker list")
+    );
     expect(layers(ui)[1].querySelector(".name")!.textContent).toBe("Spots");
     part(ui, "marker-list-close").dispatchEvent(
       new KeyboardEvent("keydown", {
@@ -1036,8 +1040,10 @@ describe("言語（translateText・t・currentLang）", () => {
       "ホーム位置復帰"
     );
     ui.setAttribute("lang", "en");
-    expect(part(ui, "home").querySelector("button")!.title).toBe(
-      "Go Home Position"
+    await vi.waitFor(() =>
+      expect(part(ui, "home").querySelector("button")!.title).toBe(
+        "Go Home Position"
+      )
     );
     expect(ui.t("no.such.key")).toBe("no.such.key");
   });

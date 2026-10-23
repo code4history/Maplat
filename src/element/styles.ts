@@ -68,11 +68,49 @@ export const MAPLAT_UI_CSS = `
 .ctl-home { top: 9.2em; left: .5em; left: calc(.5em + env(safe-area-inset-left)); }
 .ctl-compass { top: .5em; right: .5em; right: calc(.5em + env(safe-area-inset-right)); }
 .ctl-compass .needle { display: inline-block; will-change: transform; }
-/* マーカー一覧のボタン（旧 .ol-marker-list: 右下。旧はスワイパーの上、ここは透過度のスライダーの上） */
-.ctl-marker-list { right: .5em; right: calc(.5em + env(safe-area-inset-right)); bottom: 2.6em; bottom: calc(2.6em + env(safe-area-inset-bottom)); }
 .ctl-compass .needle svg { transform: rotate(-33deg); }
-/* 共有のボタン（旧 .ol-share: 左下。旧はスワイパーの上、ここはマーカー一覧のボタンと同じ高さ） */
+/* 右下のボタンの列（旧 .ol-copyright・.ol-border・.ol-hide-marker・.ol-marker-list の積み方）。
+   下から 地図情報・枠線・マーカーの非表示・マーカー一覧 の順（R4）。列は flex なので、隠れている
+   ボタンの分だけ詰めて積まれる（旧 UI と同じく隙間を空けない）。 */
+.ctl-column {
+  position: absolute;
+  z-index: 2;
+  right: .5em;
+  right: calc(.5em + env(safe-area-inset-right));
+  bottom: 2.6em;
+  bottom: calc(2.6em + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 6px;
+}
+.ctl-column > .ctl {
+  position: relative;
+  top: auto;
+  right: auto;
+  bottom: auto;
+  left: auto;
+}
+/* 共有のボタン（旧 .ol-share: 左下。旧はスワイパーの上、ここはマーカー一覧の列と同じ高さ） */
 .ctl-share { left: .5em; left: calc(.5em + env(safe-area-inset-left)); bottom: 2.6em; bottom: calc(2.6em + env(safe-area-inset-bottom)); }
+/* ヘルプのボタン（旧 .ol-maplat: 左下。旧は共有のボタンの下） */
+.ctl-help { left: .5em; left: calc(.5em + env(safe-area-inset-left)); bottom: .5em; bottom: calc(.5em + env(safe-area-inset-bottom)); }
+/* 押されている状態（旧は class の付け替えで表していた） */
+.ctl button[aria-pressed="true"] { background-color: rgba(120, 5, 8, .9); }
+/* 操作ボタンの自動非表示（旧 .ol-control.fade / .ol-slidercommon.fade） */
+.ctl.fade,
+.slider.fade { display: none; }
+/* タッチ端末ではズームのボタンを隠す（旧 &.ol-touch .ol-zoom { display: none; }） */
+.frame.touch .ctl-zoom { display: none; }
+/* タッチ端末はズームを隠した分、GPS とホームを上へ詰め、ボタンを指で押せる大きさにする
+   （旧 ol-touch: src/styles/maplat-specific.scss の .gps / .home の top と、
+   node_modules/ol/ol.css の .ol-touch .ol-control button { font-size: 1.5em }） */
+.frame.touch .ctl-gps { top: .5em; }
+.frame.touch .ctl-home { top: calc(.5em + 3em); }
+.frame.touch .ctl button { font-size: 1.5em; }
+/* タッチ端末はボタンが大きくなるので、共有をヘルプの上へずらす（n1。共有とヘルプが重ならない）。
+   ボタンの高さ = 2.0625em（.ctl button の height）× 1.5em（タッチの文字の大きさ）= 3.09375em。
+   .5em（ヘルプの下端）+ 3.09375em（ボタンの高さ）+ .5em（すき間）。 */
+.frame.touch .ctl-share { bottom: 4.09375em; bottom: calc(4.09375em + env(safe-area-inset-bottom)); }
 
 /* ---- 透過度のスライダー（旧 .ol-slidernew） ---- */
 .slider {
@@ -206,6 +244,10 @@ export const MAPLAT_UI_CSS = `
   font-size: 1.6em;
 }
 .map-menu .label { padding: 3px 4px; line-height: 1.25; text-align: center; overflow-wrap: anywhere; }
+/* 範囲を持つ地図の印（枠線と同じ色。旧 UI のスライドの枠と同じ役） */
+/* 色の印は枠線の表示中だけ出す（旧 .show-border のスライドの枠。N1） */
+.map-menu .swatch { display: none; height: 4px; margin: 0 4px 4px; border-radius: 2px; }
+.map-menu.show-border .swatch { display: block; }
 
 /* ---- POI の吹き出し（旧 .modal / .modal_poi） ---- */
 .modal {
@@ -422,6 +464,92 @@ export const MAPLAT_UI_CSS = `
   pointer-events: none;
 }
 .toast.show { visibility: visible; opacity: 1; }
+
+/* ---- 地図情報（旧 .modal_map・modal_cache_content。旧は Bootstrap の dl-horizontal と btn を並べていた） ---- */
+.map-info-modal .body { padding: 15px; }
+.map-info-modal dl.map-meta {
+  display: grid;
+  grid-template-columns: 9em 1fr;
+  gap: .35em .9em;
+  margin: 0;
+}
+.map-info-modal dl.map-meta dt { color: #555; font-weight: bold; }
+.map-info-modal dl.map-meta dd { margin: 0; min-width: 0; }
+.map-info-modal img.license { display: block; max-height: 2.2em; max-width: 100%; }
+/* アイコンの無い語彙は文言だけを出す（相対 URL の画像を取りに行かない） */
+.map-info-modal .license-text { display: block; }
+.map-info-modal .license_note { margin-top: .3em; font-size: .85em; color: #555; }
+.map-info-modal .map-cache { margin-top: 15px; padding-top: 10px; border-top: 1px solid #e5e5e5; }
+.map-info-modal .cache-heading { margin: 0 0 .4em; font-size: .95em; font-weight: bold; color: #555; }
+.map-info-modal .cache-size { margin: 0 0 .6em; overflow-wrap: anywhere; }
+.map-info-modal .cache-buttons { margin: 0; text-align: right; }
+.map-info-modal .cache-buttons button {
+  margin-left: .5em;
+  padding: .3em .9em;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f4f4f4;
+  color: #212529;
+  font: inherit;
+  cursor: pointer;
+}
+.map-info-modal .cache-buttons button:hover:not([disabled]) { background-color: #e2e6ea; border-color: #dae0e5; }
+.map-info-modal .cache-buttons button:focus-visible { outline: 2px solid rgba(120, 5, 8, .9); outline-offset: 1px; }
+.map-info-modal .cache-buttons button.btn-danger { background-color: #d9534f; border-color: #d43f3a; color: #fff; }
+.map-info-modal .cache-buttons button.btn-danger:hover:not([disabled]) { background-color: #c9302c; border-color: #ac2925; }
+.map-info-modal .cache-buttons button[disabled] { opacity: .5; cursor: default; }
+
+/* ---- ヘルプ（旧 .modal_help_content・.help_content・.help_img） ---- */
+.help-modal .help-body { max-height: 70vh; overflow-y: auto; }
+.help-modal .help-text { margin: 0 0 .6em; }
+.help-modal h4 { margin: 1em 0 .3em; font-size: 1em; font-weight: bold; color: #333; }
+.help-modal .help-list { margin: 0 0 .6em; padding-inline-start: 1.4em; }
+.help-modal .help-list li { margin: 0 0 .4em; }
+.help-modal .help-icon { display: inline-block; height: 1em; width: 1em; vertical-align: -0.125em; }
+.help-modal .help-icon svg { height: 1em; width: 1em; }
+.help-modal .help-img { max-height: 1.4em; width: auto; vertical-align: middle; }
+.help-modal .help-key {
+  display: inline-block;
+  min-width: 1.2em;
+  padding: 0 .3em;
+  border: 1px solid #999;
+  border-radius: 3px;
+  background: #eee;
+  font-weight: bold;
+  line-height: 1.4;
+  text-align: center;
+  vertical-align: middle;
+}
+.help-modal .help-slider {
+  display: inline-block;
+  width: 2.2em;
+  height: .8em;
+  border: 2px solid #666;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, .6);
+  vertical-align: middle;
+}
+.help-modal .help-footer { margin: 1em 0 0; font-size: .9em; color: #555; }
+
+/* ---- 範囲外・GPS のエラー（旧 modal_gpsD。題名と本文だけ） ---- */
+.gps-modal .gps-message { margin: 0; line-height: 1.6; }
+
+/* ---- スプラッシュ（旧 initSplash・.modal_load_content・.splash_div） ---- */
+.splash {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, .92);
+  text-align: center;
+}
+.splash-inner { max-width: 90%; max-height: 90%; overflow: hidden; }
+.splash-title { margin: 0 0 .6em; font-size: 1.4em; font-weight: bold; }
+.splash-loading { margin: 0; color: #555; }
+.splash-image { margin: .8em 0 0; }
+.splash-image img { max-width: 100%; max-height: 60vh; }
 
 .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
 `;
