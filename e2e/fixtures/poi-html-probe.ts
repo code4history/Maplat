@@ -3,64 +3,50 @@
 // m1-t4 と同じく**事前バンドル**して読む。dev サーバの依存最適化と競合すると
 // 504 (Outdated Optimize Dep) で不安定になるため（m1-t4 の finding5）。
 //
-// 実コードの poiWebControl をそのまま呼ぶ。テスト内でロジックを再現してはならない。
-import { poiWebControl } from "../../src/ui_marker";
-// 実際の CSS を読む（.poi_html_host--scroll の overflow-y を computed style で検査するため。
-// テスト側に CSS を写すと正本が2箇所になる）
+// Stage 4: 旧の実装（`src/ui_marker.ts` の `poiWebControl`）を消したので、`<maplat-ui>` が実際に使う
+// 組み立て（`src/element/poi-html.ts`）をそのまま呼ぶ。テスト内でロジックを再現してはならない。
+import {
+  buildPoiBody,
+  buildPoiHtml,
+  buildPoiIframe
+} from "../../src/element/poi-html";
+// 実際の CSS を読む（`.poi-html.scroll` の overflow-y を computed style で検査するため。
+// テスト側に CSS を写すと正本が2箇所になる）。
 //
-// ?inline で**文字列として**取り込み、自前で <style> へ入れる。
-// 別アセットとして出して <link> で読むと、Vite dev サーバが .css を JS モジュールとして
-// 返す（Content-Type: text/javascript）ため、ブラウザの MIME チェックで適用されない（実測）。
-import css from "../../src/styles/ui.scss?inline";
-
-import type { MaplatUi } from "../../src/index";
-import type { MarkerData } from "../../src/types";
-
-const ui = (noScroll: boolean) =>
-  ({
-    enablePoiHtmlNoScroll: noScroll,
-    translate: (x: unknown) => x as string
-  }) as unknown as MaplatUi;
+// 要素が Shadow DOM に入れているのと同じ文字列（MAPLAT_UI_CSS）を probe でも <style> へ入れる。
+// 旧は `ui.scss?inline` を読んで `.maplat` の下へ置いていたが、その CSS は旧 UI のもので、
+// いまの吹き出しの見た目は要素の CSS が正本。
+import { MAPLAT_UI_CSS } from "../../src/element/styles";
 
 const styleEl = document.createElement("style");
-styleEl.textContent = css;
+styleEl.textContent = MAPLAT_UI_CSS;
 document.head.appendChild(styleEl);
-
-// ui.scss のルールは `.maplat` 配下へスコープされている（実測:
-// `.maplat .poi_html_host--scroll{height:60vh;overflow-y:auto}`）。
-// body 直下へ置くと CSS が当たらず、computed style の検査が無意味になるため
-// 製品と同じ祖先の下にマウントする。
-const root = document.createElement("div");
-root.className = "maplat";
-document.body.appendChild(root);
 
 function mount(): HTMLElement {
   const div = document.createElement("div");
   // 高さ検査のため実レイアウトへ載せる（display:none だと clientHeight が 0 になる）
   div.style.width = "600px";
-  root.appendChild(div);
+  document.body.appendChild(div);
   return div;
 }
 
 (window as unknown as Record<string, unknown>).__t5 = {
   renderHtml(html: string, noScroll = true) {
-    const div = mount();
-    poiWebControl(ui(noScroll), div, { html } as unknown as MarkerData, false);
-    return div.querySelector(".poi_html_host") as HTMLElement;
+    const host = buildPoiHtml(html, noScroll);
+    mount().appendChild(host);
+    return host;
   },
   renderUrl(url: string, noScroll = true) {
     const div = mount();
-    poiWebControl(ui(noScroll), div, { url } as unknown as MarkerData, false);
+    const iframe = buildPoiIframe(url, noScroll);
+    if (iframe) div.appendChild(iframe);
     return div;
   },
   renderBoth(html: string, url: string, noScroll = true) {
     const div = mount();
-    poiWebControl(
-      ui(noScroll),
-      div,
-      { html, url } as unknown as MarkerData,
-      false
-    );
+    // 分岐（html があれば url は見ない）は要素の #renderPoi と同じ buildPoiBody に任せる（ここに写さない）
+    const body = buildPoiBody({ html, url }, noScroll);
+    if (body.node) div.appendChild(body.node);
     return div;
   },
   marker: "untouched"

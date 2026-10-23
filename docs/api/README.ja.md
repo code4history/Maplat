@@ -9,6 +9,7 @@
 
 - [MaplatUi クラス](maplat-ui.ja.md) — 静的メソッド・コンストラクタ・インスタンスメソッド
 - [MaplatAppOption](maplat-app-option.ja.md) — オプションオブジェクトのプロパティ
+- [旧 UI の DOM からの移行（Shadow DOM 化）](migration-ui-shadow-dom.md) — `::part` / CSS 変数の対応表
 
 ## 関連
 

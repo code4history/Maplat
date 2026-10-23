@@ -2,6 +2,8 @@ import { test, expect, type Page } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 /**
  * oct26-m9-t1: 地図切り替えスワイパーの少数枚ループ（code4history/Maplat#259）— 実 UI E2E
  *
@@ -10,20 +12,43 @@ import path from 'node:path';
  *
  * - AC-1（主判定）: 矢印の実クリックで active mapID が正順 / 逆順の巡回と完全一致（幅 1280・375）
  * - AC-2: スワイパー中央（上端寄りの高さ）からの実ドラッグ（1 枚分の 0.75 倍の距離）で同上
- * - AC-3: 1 枚は loop: false・single-map・矢印は swiper-button-lock で display: none・ドラッグで不変
+ * - AC-3: 1 枚は巡回しない・single-map・矢印は非表示・ドラッグで不変
  * - AC-4: 全ページで Swiper Loop Warning が 0 件
  * - AC-5: 右のカードの実クリック・setSlideMapID・core.changeMap 後の active mapID と .selected（(c) は既知の遷移を含め常に判定）
- * - AC-6: 初期 DOM の巡回で隣り合う 2 枚が同じ地図にならない・slidesPerView・左右に別の地図が覗く
+ * - AC-6: 初期配置で隣り合うカードが同じ地図にならない・枚数（perView）・左右に別の地図が覗く
  * - AC-12: 覗いているカードの実クリックで、クリックした側へ 1 枚分アニメーションし、クリックした要素が中央に来る
  * - 破壊試験（R2 MIN-R2-2）: 遷移中の連打・ドラッグ直後・矢印直後のクリックで、地図・選択表示・タイトルが正しい
- * - AC-12 補助（IR1 MAJ-1）: 保留中の onResize があってもカードのクリック後に中央のカードと地図が揃う
+ * - AC-12 補助（IR1 MAJ-1）: 保留中の再配置があってもカードのクリック後に中央のカードと地図が揃う
  * - AC-13（人間の指示による範囲追加・OF-1）: 状態復元（URL の #! 経由の changeMap）の後にスワイパーの active が目的の地図に合う
  *
- * active mapID は各スワイパーの `.swiper-slide-active` の `data` 属性で読む（§8.1。realIndex は複製環境で使わない）。
- * 待ち方は経路で分ける（§8.1）: 矢印・ドラッグは `!swiper.animating`、カードのクリック・setSlideMapID・changeMap は
- * 「active mapID が期待値になるのを期限付きで待つ → 一定時間置いても同値」。
- *
  * 環境変数 M9_RECORD_DIR を与えると、各テストの観測記録（JSON）をそのディレクトリへ書く（証跡用。CI では不要）。
+ *
+ * ── Stage 3（一本化）での移植（設計 v2 §4.7.3 の対応表・M4(d)・M7）──────────────────────────────
+ * 旧 API の `MaplatUi` は `<maplat-ui>` の上の互換層になり、スワイパーは Swiper ではなく
+ * `<maplat-ui>` の shadow root の中の自前のスライダー（`src/element/slider.ts`。5 スロットの循環）になった。
+ *   旧 `.base-swiper .swiper-slide[data]`   → `[part="map-slider"][data-kind="base"] [part~="map-slide"][data-map-id]`
+ *   旧 `.swiper-slide-active`               → `host.slider(k).slots` の offset 0 の要素（押した要素と同じノード。§4.3.3）
+ *   旧 `.swiper-slide-next` / `-prev`       → 同じく offset +1 / -1 の要素
+ *   旧 `.swiper-slide.selected`             → `[part~="map-slide"].selected`（一致する全スロット）
+ *   旧 `swiper.animating`                   → `host.slider(k).animating`（`@internal`。テスト専用）
+ *   旧 `swiper.params.slidesPerView`        → `host.slider(k).perView`
+ *   旧 `swiper.wrapperEl`・`swiper.translate` → スライダーの帯 `.map-slider-track` とその transform
+ *   旧 `.map-title span`                    → `[part="map-title"] .text`
+ *   旧 `.base-next` / `.base-prev`          → `[part="map-slider-next"]` / `[part="map-slider-prev"]`
+ *   `document.elementFromPoint` はホストを返すので、当たり判定は shadow root の `elementFromPoint` で行う。
+ * 期待値の言い換え（Swiper の複製の数に依るもの。各所のコメントにも書いた）:
+ *   - `.selected` の数: 旧 `repeatCount(n)`（Swiper の複製の数）→ `selectedCount(n)`（offset -2..+2 のうち
+ *     `offset mod n == 0` の数。N=1 は 1・N=2 は 3・N>=3 は 1）
+ *   - AC-6 の総スライド数: 旧 `n * repeatCount(n)` → スロットの数（N=1 は 1・N>=2 は 5）。
+ *     「巡回で隣り合う同じ地図が 0」は「見えている 3 スロット（offset -1・0・+1）が N>=3 で全部異なる・
+ *     N=2 で中央と両隣が異なる」へ
+ *   - AC-6 の枚数: 旧 `width >= 480 ? 1.4 : 2`（Swiper v6 以後の設定）→ `width <= 480 ? 1.4 : 2`
+ *     （人間の決定 P1。`spec/fixtures/legacy-e2e-classification.md` §3 の「意図した差分」。
+ *     設計 v2 §4.7.3 の式は旧の式を写したままなので、P1 と `slider.ts` の `perViewFor` に従った）
+ *   - AC-3: 旧 `params.loop === false`・`swiper-button-lock` → `single-map` class・矢印の `hidden`
+ *     （display: none）・`step()` が何もしない・ドラッグで不変
+ *   - AC-12 補助・AC-13 の「競合の順序を作る」注入: 旧は Swiper の `observerUpdate`（onResize の保留）を
+ *     発火していた。新は同じ時点でスライダーの再配置（`refresh()`。ResizeObserver が呼ぶもの）を割り込ませる
  */
 
 const OVERLAY_IDS = [
@@ -42,16 +67,19 @@ const WIDTHS = [1280, 375];
 const CLICK_ORDER: Side[] = ['next', 'next', 'prev', 'prev', 'next', 'prev', 'next', 'next', 'prev', 'prev'];
 
 /**
- * AC-5 (c)（外部からの core.changeMap 後に active mapID が合う）: 実装 IR1 までは、swiper の observeParents が親要素の属性変化
- * （changeMap で .maplat の class が変わる等）を拾って onResize → slideToLoop(その時点の realIndex) を requestAnimationFrame に積み、
- * Maplat の slideToMapID が積んだ slideTo の後に走って元の位置へ戻す既知の不具合（M9T1-OF-1・変更前 695415e から存在）のため、
- * 既定では判定から外していた。人間の指示による範囲追加（2026-09-14）で OF-1 を本タスクで直したので、既知の遷移
- * （tatebayashi_kaei_jokamachi → zendoji_garan）を含めて常に判定する（src/swiper_ex.ts の位置合わせの見張り）。
+ * AC-5 (c)（外部からの core.changeMap 後に active mapID が合う）: 旧の Swiper 版では既知の不具合（M9T1-OF-1）を
+ * 直したあと、既知の遷移（tatebayashi_kaei_jokamachi → zendoji_garan）を含めて常に判定する。
  */
 
-/** src/swiper_loop.ts の slideRepeatCount と同じ契約（e2e は src を import しない） */
-const repeatCount = (n: number) => (n < 2 ? 1 : Math.ceil(5 / n));
+/**
+ * 言い換え（設計 v2 §4.7.3 AC-12・M4(d)）: 選択中の地図が中央にあるとき、`.selected` が付くスロットの数。
+ * 5 スロット（offset -2..+2）のうち `offset mod n == 0` のもの（N=1 は 1 スロットだけ）。
+ * 旧は Swiper の複製の数 `repeatCount(n) = n < 2 ? 1 : ceil(5 / n)` だった。
+ */
+const selectedCount = (n: number) => (n < 2 ? 1 : [-2, -1, 0, 1, 2].filter(o => o % n === 0).length);
 const idsOf = (k: Kind, n: number) => (k === 'base' ? BASE_IDS : OVERLAY_IDS).slice(0, n);
+/** スライダーの根（shadow root の中）。Playwright の CSS locator は shadow root を貫く */
+const sliderSel = (k: Kind) => `[part="map-slider"][data-kind="${k}"]`;
 
 function record(name: string, data: unknown) {
   const dir = process.env.M9_RECORD_DIR;
@@ -73,19 +101,24 @@ async function openFixture(page: Page, width: number, base: number, overlay: num
   await page.waitForFunction(() => document.getElementById('status')?.textContent === 'READY', null, {
     timeout: 90000
   });
+  // 旧: 両方の .{k}-swiper に swiper が付く → 新: 両方のスライダーがカードを持つ
   await page.waitForFunction(
-    () => ['base', 'overlay'].every(k => (document.querySelector(`.${k}-swiper`) as any)?.swiper),
+    () => {
+      const host = document.querySelector('maplat-ui') as any;
+      return ['base', 'overlay'].every(k => (host?.slider?.(k)?.slots?.length ?? 0) > 0);
+    },
     null,
     { timeout: 30000 }
   );
-  // 初期化の slideToMapID の遷移が終わるのを待つ（設計 §5.6 の記録: 2 秒では 1 回目の操作が遷移の途中になる回があった）
+  // 初期化の位置合わせが終わるのを待つ（設計 §5.6 の記録: 2 秒では 1 回目の操作が遷移の途中になる回があった）
   await page.waitForTimeout(4000);
-  // changeMap の呼び出しを記録する（破壊試験で「最後に選ばれた地図」を知るため。呼び出しはそのまま通す）
+  // changeMap の呼び出しを記録する（破壊試験で「最後に選ばれた地図」を知るため。呼び出しはそのまま通す）。
+  // <maplat-ui> は子の <maplat-app> の changeMap を呼び、子は中身（ui.core）の changeMap を呼ぶので、ここで拾える
   await page.evaluate(() => {
     const ui = (window as any).__maplatUi;
     const w = window as any;
     w.__m9changeMap = [];
-    // 地図タイトルの期待値は mapChanged の detail から ui_init.ts applyMapChanged と同じ式で求める
+    // 地図タイトルの期待値は mapChanged の detail から旧 ui_init.ts applyMapChanged と同じ式で求める
     w.__m9titles = {};
     ui.core.addEventListener('mapChanged', (evt: any) => {
       const map = evt.detail;
@@ -100,18 +133,26 @@ async function openFixture(page: Page, width: number, base: number, overlay: num
   return warns;
 }
 
+/** 中央（offset 0）のカードの mapID（旧 `.swiper-slide-active` の `data`） */
 const activeData = (page: Page, k: Kind) =>
-  page.evaluate(k => document.querySelector(`.${k}-swiper .swiper-slide-active`)?.getAttribute('data') ?? null, k);
+  page.evaluate(
+    k =>
+      ((document.querySelector('maplat-ui') as any).slider(k)?.slots.find((s: any) => s.offset === 0)?.element
+        .dataset.mapId as string | undefined) ?? null,
+    k
+  );
 
 const waitNotAnimating = (page: Page, k: Kind) =>
-  page.waitForFunction(k => !(document.querySelector(`.${k}-swiper`) as any).swiper.animating, k, { timeout: 5000 });
+  page.waitForFunction(k => !(document.querySelector('maplat-ui') as any).slider(k).animating, k, { timeout: 5000 });
 
 /** 期待値を期限付きで待ち、settle ms 置いても同値かを返す（§8.1・R1 MIN-1） */
 async function waitActive(page: Page, k: Kind, id: string, timeout: number, settle: number) {
   let reached = true;
   try {
     await page.waitForFunction(
-      ({ k, id }) => document.querySelector(`.${k}-swiper .swiper-slide-active`)?.getAttribute('data') === id,
+      ({ k, id }) =>
+        (document.querySelector('maplat-ui') as any).slider(k)?.slots.find((s: any) => s.offset === 0)?.element
+          .dataset.mapId === id,
       { k, id },
       { timeout }
     );
@@ -125,35 +166,47 @@ async function waitActive(page: Page, k: Kind, id: string, timeout: number, sett
 
 const selectedData = (page: Page, k: Kind) =>
   page.evaluate(
-    k => [...document.querySelectorAll(`.${k}-swiper .swiper-slide.selected`)].map(e => e.getAttribute('data')),
-    k
+    sel =>
+      [
+        ...document
+          .querySelector('maplat-ui')!
+          .shadowRoot!.querySelectorAll<HTMLElement>(`${sel} [part~="map-slide"].selected`)
+      ].map(e => e.dataset.mapId ?? null),
+    sliderSel(k)
   );
 
-/** 地図タイトルの期待値（mapChanged の detail から ui_init.ts applyMapChanged と同じ式で求めたもの）と実際の表示 */
+/** 地図タイトルの期待値（mapChanged の detail から旧 ui_init.ts applyMapChanged と同じ式で求めたもの）と実際の表示 */
 const titleState = (page: Page, id: string) =>
   page.evaluate(id => {
     const expected = (window as any).__m9titles?.[id];
+    const el = document.querySelector('maplat-ui')?.shadowRoot?.querySelector('[part="map-title"] .text') as
+      | HTMLElement
+      | null
+      | undefined;
     return {
       expected: expected === undefined ? null : expected,
-      actual: (document.querySelector('.map-title span') as HTMLElement | null)?.innerText ?? null
+      actual: el?.innerText ?? null
     };
   }, id);
 
 /**
- * 覗いているカード（.swiper-slide-next / .swiper-slide-prev）の「見えていてカードに当たる点」を求め、印を付ける。
+ * 覗いているカード（offset +1 / -1）の「見えていてカードに当たる点」を求め、印を付ける。
  * locator.click() は矩形の中心を押し、覗いているカードの中心は容器の外（地図の canvas の上）なので使えない（設計 §8.1）。
- * 走査: まずカードの縦の中央の行を、容器の内側の端から横に 1px ずつ（設計者 probe と同じ）。見つからなければ
- * 交わりの矩形全体を上の行から走査する。`elementFromPoint(x, y).closest('.swiper-slide')` がそのカード自身の点だけを採る
+ * 走査: まずカードの縦の中央の行を、容器の内側の端から横に 1px ずつ。見つからなければ交わりの矩形全体を上の行から
+ * 走査する。shadow root の `elementFromPoint(x, y).closest('[part~=map-slide]')` がそのカード自身の点だけを採る
  * （矢印ボタンなど他の要素に覆われた点は採らない）。
  */
 const markPeek = (page: Page, k: Kind, side: Side) =>
   page.evaluate(
-    ({ k, side }) => {
-      const root = document.querySelector(`.${k}-swiper`) as any;
-      const sw = root.swiper;
-      root.querySelectorAll('.swiper-slide').forEach((e: Element) => e.removeAttribute('data-m9-mark'));
-      const peek = root.querySelector(`.swiper-slide-${side}`) as HTMLElement | null;
-      const act = root.querySelector('.swiper-slide-active') as HTMLElement | null;
+    ({ k, side, sel }) => {
+      const host = document.querySelector('maplat-ui') as any;
+      const sr = host.shadowRoot as ShadowRoot;
+      const slider = host.slider(k);
+      const root = sr.querySelector(sel) as HTMLElement;
+      root.querySelectorAll('[part~="map-slide"]').forEach((e: Element) => e.removeAttribute('data-m9-mark'));
+      const at = (o: number) => (slider.slots.find((s: any) => s.offset === o)?.element as HTMLElement) ?? null;
+      const peek = at(side === 'next' ? 1 : -1);
+      const act = at(0);
       if (!peek || !act) return null;
       peek.setAttribute('data-m9-mark', '1');
       const cr = root.getBoundingClientRect();
@@ -163,7 +216,7 @@ const markPeek = (page: Page, k: Kind, side: Side) =>
       const hi = Math.min(pr.right, cr.right) - 1;
       const top = Math.max(pr.top, cr.top) + 1;
       const bottom = Math.min(pr.bottom, cr.bottom) - 1;
-      const hits = (x: number, y: number) => document.elementFromPoint(x, y)?.closest('.swiper-slide') === peek;
+      const hits = (x: number, y: number) => sr.elementFromPoint(x, y)?.closest('[part~="map-slide"]') === peek;
       const xs: number[] = [];
       for (let i = 0; i <= Math.floor(hi - lo); i++) xs.push(side === 'next' ? lo + i : hi - i);
       let pt: { x: number; y: number } | null = null;
@@ -171,80 +224,87 @@ const markPeek = (page: Page, k: Kind, side: Side) =>
       for (const x of xs) if (hits(x, midY)) { pt = { x, y: midY }; break; }
       for (let y = top; !pt && y <= bottom; y++) for (const x of xs) if (hits(x, y)) { pt = { x, y }; break; }
       return {
-        id: peek.getAttribute('data'),
-        from: act.getAttribute('data'),
+        id: peek.dataset.mapId ?? null,
+        from: act.dataset.mapId ?? null,
         point: pt,
-        step: ar.width + (sw.params.spaceBetween || 0),
+        step: ar.width + (slider.gap || 0),
         peekCx0: pr.left + pr.width / 2,
         containerCx: cr.left + cr.width / 2
       };
     },
-    { k, side }
+    { k, side, sel: sliderSel(k) }
   );
 
 /**
- * 遷移中など `.swiper-slide-next` / `-prev` のクラスがまだ画面上の位置と一致しないときに使う。
+ * 遷移中など offset と画面上の位置がまだ一致しないときに使う。
  * 容器の右端（side=next）/ 左端（side=prev）から内側 60px の帯を走査し、その瞬間に見えていて
- * `elementFromPoint` がスライドに当たる最初の点を返す（そのスライドに印を付ける）。
+ * `elementFromPoint` がカードに当たる最初の点を返す（そのカードに印を付ける）。
  */
 const markEdgeCard = (page: Page, k: Kind, side: Side) =>
   page.evaluate(
-    ({ k, side }) => {
-      const root = document.querySelector(`.${k}-swiper`) as any;
-      root.querySelectorAll('.swiper-slide').forEach((e: Element) => e.removeAttribute('data-m9-mark'));
+    ({ side, sel }) => {
+      const sr = document.querySelector('maplat-ui')!.shadowRoot!;
+      const root = sr.querySelector(sel) as HTMLElement;
+      root.querySelectorAll('[part~="map-slide"]').forEach((e: Element) => e.removeAttribute('data-m9-mark'));
       const cr = root.getBoundingClientRect();
       for (let y = Math.ceil(cr.top) + 1; y < cr.bottom - 1; y += 2) {
         for (let i = 1; i < 60; i++) {
           const x = side === 'next' ? cr.right - i : cr.left + i;
-          const slide = document.elementFromPoint(x, y)?.closest('.swiper-slide') as HTMLElement | null;
+          const slide = sr.elementFromPoint(x, y)?.closest('[part~="map-slide"]') as HTMLElement | null;
           if (slide && root.contains(slide)) {
             slide.setAttribute('data-m9-mark', '1');
-            return { id: slide.getAttribute('data'), point: { x, y } };
+            return { id: slide.dataset.mapId ?? null, point: { x, y } };
           }
         }
       }
       return null;
     },
-    { k, side }
+    { side, sel: sliderSel(k) }
   );
 
-/** wrapperEl の transform の CSS transition を記録する（loopFix の補正は duration 0 で transition を生まない） */
+/**
+ * スライダーの帯（旧 wrapperEl）の transform の CSS transition を記録する
+ * （循環のつなぎ目の付け替えは transition: none で transition を生まない。旧 loopFix の duration 0 と同じ）
+ */
 const hookTransitions = (page: Page, k: Kind) =>
-  page.evaluate(k => {
-    const sw = (document.querySelector(`.${k}-swiper`) as any).swiper;
-    const w = window as any;
-    w.__m9runs = w.__m9runs || {};
-    w.__m9runs[k] = [];
-    w.__m9hooked = w.__m9hooked || {};
-    if (w.__m9hooked[k]) return;
-    w.__m9hooked[k] = true;
-    const px = (v: string) => {
-      const m = /translate3d\(\s*(-?[\d.e+-]+)px/.exec(v || '');
-      if (m) return Number(m[1]);
-      const mm = /matrix\(([^)]+)\)/.exec(v || '');
-      return mm ? Number(mm[1].split(',')[4]) : NaN;
-    };
-    sw.wrapperEl.addEventListener('transitionrun', (ev: TransitionEvent) => {
-      if (ev.target !== sw.wrapperEl || ev.propertyName !== 'transform') return;
-      for (const a of sw.wrapperEl.getAnimations()) {
-        if ((a as any).transitionProperty !== 'transform') continue;
-        const kf = (a.effect as KeyframeEffect).getKeyframes();
-        w.__m9runs[k].push(Math.round(px(kf[kf.length - 1].transform as string) - px(kf[0].transform as string)));
-      }
-    });
-  }, k);
+  page.evaluate(
+    ({ k, sel }) => {
+      const track = document.querySelector('maplat-ui')!.shadowRoot!.querySelector(`${sel} .map-slider-track`) as HTMLElement;
+      const w = window as any;
+      w.__m9runs = w.__m9runs || {};
+      w.__m9runs[k] = [];
+      w.__m9hooked = w.__m9hooked || {};
+      if (w.__m9hooked[k] === track) return;
+      w.__m9hooked[k] = track;
+      const px = (v: string) => {
+        const m = /translate3d\(\s*(-?[\d.e+-]+)px/.exec(v || '');
+        if (m) return Number(m[1]);
+        const mm = /matrix\(([^)]+)\)/.exec(v || '');
+        return mm ? Number(mm[1].split(',')[4]) : NaN;
+      };
+      track.addEventListener('transitionrun', (ev: TransitionEvent) => {
+        if (ev.target !== track || ev.propertyName !== 'transform') return;
+        for (const a of track.getAnimations()) {
+          if ((a as any).transitionProperty !== 'transform') continue;
+          const kf = (a.effect as KeyframeEffect).getKeyframes();
+          w.__m9runs[k].push(Math.round(px(kf[kf.length - 1].transform as string) - px(kf[0].transform as string)));
+        }
+      });
+    },
+    { k, sel: sliderSel(k) }
+  );
 
 /** AC-12 の 1 クリック分の観測と判定 */
 async function clickPeekAndJudge(page: Page, k: Kind, side: Side, n: number) {
   const pre = await markPeek(page, k, side);
   if (!pre || !pre.point) return { k, side, ok: false, reason: pre ? 'no clickable point' : 'no peek slide', pre };
   await hookTransitions(page, k);
-  // 補助の読み取り軸: requestAnimationFrame ごとに、印を付けたカードの中心 x と wrapperEl の実行中アニメーション数を記録する
+  // 補助の読み取り軸: requestAnimationFrame ごとに、印を付けたカードの中心 x と帯の実行中アニメーション数を記録する
   const sampling = page.evaluate(
-    k =>
+    sel =>
       new Promise<{ t: number; x: number; anim: number }[]>(resolve => {
-        const root = document.querySelector(`.${k}-swiper`) as any;
-        const sw = root.swiper;
+        const root = document.querySelector('maplat-ui')!.shadowRoot!.querySelector(sel) as HTMLElement;
+        const track = root.querySelector('.map-slider-track') as HTMLElement;
         const t0 = performance.now();
         const w = window as any;
         w.__m9stop = false;
@@ -252,34 +312,39 @@ async function clickPeekAndJudge(page: Page, k: Kind, side: Side, n: number) {
         const tick = () => {
           const m = root.querySelector('[data-m9-mark="1"]') as HTMLElement;
           const r = m.getBoundingClientRect();
-          out.push({ t: Math.round(performance.now() - t0), x: r.left + r.width / 2, anim: sw.wrapperEl.getAnimations().length });
+          out.push({ t: Math.round(performance.now() - t0), x: r.left + r.width / 2, anim: track.getAnimations().length });
           // クリック後の待ち（期待値の到達 → 1.2 秒）が終わるまで採る（上限 15 秒）
           if (!w.__m9stop && performance.now() - t0 < 15000) requestAnimationFrame(tick);
           else resolve(out);
         };
         requestAnimationFrame(tick);
       }),
-    k
+    sliderSel(k)
   );
   await page.mouse.click(pre.point.x, pre.point.y);
   const wait = await waitActive(page, k, pre.id!, 8000, 1200);
   await page.evaluate(() => { (window as any).__m9stop = true; });
   const frames = await sampling;
-  const post = await page.evaluate(k => {
-    const root = document.querySelector(`.${k}-swiper`) as any;
-    const cr = root.getBoundingClientRect();
-    const mark = root.querySelector('[data-m9-mark="1"]') as HTMLElement;
-    const r = mark.getBoundingClientRect();
-    const hit = document.elementFromPoint(cr.left + cr.width / 2, cr.top + cr.height / 2)?.closest('.swiper-slide');
-    const act = root.querySelector('.swiper-slide-active');
-    return {
-      runs: ((window as any).__m9runs[k] as number[]).slice(),
-      markCx: r.left + r.width / 2,
-      centerIsMark: hit === mark,
-      activeIsMark: act === mark,
-      selected: [...root.querySelectorAll('.swiper-slide.selected')].map((e: Element) => e.getAttribute('data'))
-    };
-  }, k);
+  const post = await page.evaluate(
+    ({ k, sel }) => {
+      const host = document.querySelector('maplat-ui') as any;
+      const sr = host.shadowRoot as ShadowRoot;
+      const root = sr.querySelector(sel) as HTMLElement;
+      const cr = root.getBoundingClientRect();
+      const mark = root.querySelector('[data-m9-mark="1"]') as HTMLElement;
+      const r = mark.getBoundingClientRect();
+      const hit = sr.elementFromPoint(cr.left + cr.width / 2, cr.top + cr.height / 2)?.closest('[part~="map-slide"]');
+      const act = host.slider(k).slots.find((s: any) => s.offset === 0)?.element;
+      return {
+        runs: ((window as any).__m9runs[k] as number[]).slice(),
+        markCx: r.left + r.width / 2,
+        centerIsMark: hit === mark,
+        activeIsMark: act === mark,
+        selected: [...root.querySelectorAll<HTMLElement>('[part~="map-slide"].selected')].map(e => e.dataset.mapId ?? null)
+      };
+    },
+    { k, sel: sliderSel(k) }
+  );
   const sign = side === 'next' ? -1 : 1;
   const animSum = post.runs.reduce((a, b) => a + b, 0);
   const markMove = post.markCx - pre.peekCx0;
@@ -287,7 +352,8 @@ async function clickPeekAndJudge(page: Page, k: Kind, side: Side, n: number) {
   const amountOk = Math.abs(animSum - sign * pre.step) <= 3;
   const visualOk = Math.abs(markMove - animSum) <= 3;
   const centerOk = post.centerIsMark && post.activeIsMark;
-  const selectedOk = post.selected.length === repeatCount(n) && post.selected.every(s => s === pre.id);
+  // 言い換え: 期待数は旧の repeatCount(n) ではなく selectedCount(n)（設計 v2 §4.7.3 AC-12）
+  const selectedOk = post.selected.length === selectedCount(n) && post.selected.every(s => s === pre.id);
   // transitionrun 軸（(i) 向き・(ii) 量・(iii) 見た目の移動）
   const transitionOk = dirOk && amountOk && visualOk;
   // rAF 軸: 正味の移動が 1 枚分・逆向きに 3px を超えて出ない・アニメーションが走らない 2 フレーム間で 0.6 枚分を超えて飛ばない・アニメーションが 1 回は走る
@@ -325,7 +391,7 @@ async function clickPeekAndJudge(page: Page, k: Kind, side: Side, n: number) {
 
 /** スワイパー中央から横へドラッグする。y は既定で縦の中央、'upper' で上端から 8px（矢印ボタンの高さを避ける） */
 async function drag(page: Page, k: Kind, dx: number, row: 'middle' | 'upper' = 'middle') {
-  const box = (await page.locator(`.${k}-swiper`).boundingBox())!;
+  const box = (await page.locator(sliderSel(k)).boundingBox())!;
   const x0 = box.x + box.width / 2;
   const y = row === 'upper' ? box.y + 8 : box.y + box.height / 2;
   await page.mouse.move(x0, y);
@@ -339,31 +405,58 @@ const cyclic = (ids: string[], start: string, dir: 1 | -1, count: number) => {
   return Array.from({ length: count }, (_, i) => ids[(((s + dir * (i + 1)) % ids.length) + ids.length) % ids.length]);
 };
 
-/** AC-6: 初期 DOM・slidesPerView・覗き */
+/** AC-6: 初期配置・perView・覗き */
 const initialLayout = (page: Page, k: Kind) =>
-  page.evaluate(k => {
-    const root = document.querySelector(`.${k}-swiper`) as any;
-    const sw = root.swiper;
-    const cr = root.getBoundingClientRect();
-    const overlapW = (el: Element | null) => {
-      if (!el) return -1;
-      const r = el.getBoundingClientRect();
-      return Math.min(r.right, cr.right) - Math.max(r.left, cr.left);
-    };
-    const prev = root.querySelector('.swiper-slide-prev');
-    const next = root.querySelector('.swiper-slide-next');
-    const act = root.querySelector('.swiper-slide-active');
-    return {
-      order: [...root.querySelectorAll('.swiper-slide')].map((e: Element) => e.getAttribute('data')),
-      loop: sw.params.loop,
-      slidesPerView: sw.params.slidesPerView,
-      active: act?.getAttribute('data') ?? null,
-      prev: prev?.getAttribute('data') ?? null,
-      next: next?.getAttribute('data') ?? null,
-      prevOverlap: overlapW(prev),
-      nextOverlap: overlapW(next)
-    };
-  }, k);
+  page.evaluate(
+    ({ k, sel }) => {
+      const host = document.querySelector('maplat-ui') as any;
+      const slider = host.slider(k);
+      const root = host.shadowRoot.querySelector(sel) as HTMLElement;
+      const cr = root.getBoundingClientRect();
+      const overlapW = (el: Element | null) => {
+        if (!el) return -1;
+        const r = el.getBoundingClientRect();
+        return Math.min(r.right, cr.right) - Math.max(r.left, cr.left);
+      };
+      const slots = [...slider.slots].sort((a: any, b: any) => a.offset - b.offset);
+      const at = (o: number) => (slots.find((s: any) => s.offset === o)?.element as HTMLElement) ?? null;
+      const prev = at(-1);
+      const next = at(1);
+      const act = at(0);
+      return {
+        // 左から順（offset -2..+2）の mapID
+        order: slots.map((s: any) => s.element.dataset.mapId ?? null),
+        perView: slider.perView,
+        active: act?.dataset.mapId ?? null,
+        prev: prev?.dataset.mapId ?? null,
+        next: next?.dataset.mapId ?? null,
+        prevOverlap: overlapW(prev),
+        nextOverlap: overlapW(next)
+      };
+    },
+    { k, sel: sliderSel(k) }
+  );
+
+/**
+ * 言い換え（AC-6・設計 v2 §4.7.3）: 旧の「巡回で隣り合う同じ地図の数 = 0」（Swiper の複製の並び）を、
+ * 「見えている 3 スロット（offset -1・0・+1）が N>=3 で全部異なる・N=2 で中央と両隣が異なる」にする。
+ * 返り値は「満たさない組の数」（0 で合格）。
+ */
+const visibleSameCount = (lay: { prev: string | null; active: string | null; next: string | null }, n: number) => {
+  let bad = 0;
+  if (lay.prev === lay.active) bad++;
+  if (lay.next === lay.active) bad++;
+  if (n >= 3 && lay.prev === lay.next) bad++;
+  return bad;
+};
+/**
+ * 言い換え（AC-6）: 総スライド数は旧 `n * repeatCount(n)`（Swiper の複製を含む数）→ スロットの数
+ * （N=1 は 1・N>=2 は 5。設計 v2 §4.7.3 の括弧書き。同じ行の式 `min(5, n)` は括弧書きと食い違う書き誤りで、
+ * `slider.ts` の `#slotCount()` も N>=2 で 5）
+ */
+const slotTotal = (n: number) => (n < 2 ? 1 : 5);
+/** 言い換え（AC-6・P1）: 旧 `width >= 480 ? 1.4 : 2` → `width <= 480 ? 1.4 : 2` */
+const perViewOf = (width: number) => (width <= 480 ? 1.4 : 2);
 
 for (const width of WIDTHS) {
   for (const n of [2, 3, 4, 5]) {
@@ -376,10 +469,9 @@ for (const width of WIDTHS) {
         // AC-6
         const lay = await initialLayout(page, k);
         rec[`${k}Layout`] = lay;
-        expect.soft(lay.order.length, `AC-6 ${k} 総スライド数`).toBe(n * repeatCount(n));
-        const adjacentSame = lay.order.filter((d, i) => d === lay.order[(i + 1) % lay.order.length]).length;
-        expect.soft(adjacentSame, `AC-6 ${k} 巡回で隣り合う同じ地図の数 order=${lay.order.join(',')}`).toBe(0);
-        expect.soft(lay.slidesPerView, `AC-6 ${k} slidesPerView`).toBe(width >= 480 ? 1.4 : 2);
+        expect.soft(lay.order.length, `AC-6 ${k} 総スライド数`).toBe(slotTotal(n));
+        expect.soft(visibleSameCount(lay, n), `AC-6 ${k} 見えている 3 枚で隣り合う同じ地図の数 order=${lay.order.join(',')}`).toBe(0);
+        expect.soft(lay.perView, `AC-6 ${k} perView`).toBe(perViewOf(width));
         expect.soft(lay.prevOverlap, `AC-6 ${k} 左のカードが容器内に覗く`).toBeGreaterThanOrEqual(1);
         expect.soft(lay.nextOverlap, `AC-6 ${k} 右のカードが容器内に覗く`).toBeGreaterThanOrEqual(1);
         expect.soft(lay.prev !== null && lay.prev !== lay.active, `AC-6 ${k} 左は active と別の地図 (${lay.prev}/${lay.active})`).toBe(true);
@@ -390,7 +482,7 @@ for (const width of WIDTHS) {
           const start = (await activeData(page, k))!;
           const seq: (string | null)[] = [];
           for (let i = 0; i < 2 * n + 1; i++) {
-            await page.locator(`.${k}-${dir}`).click({ timeout: 5000 });
+            await page.locator(`${sliderSel(k)} [part="map-slider-${dir}"]`).click({ timeout: 5000 });
             await waitNotAnimating(page, k);
             seq.push(await activeData(page, k));
           }
@@ -399,16 +491,12 @@ for (const width of WIDTHS) {
         }
 
         // AC-2: 実ドラッグ（左へ = 次へ、右へ = 前へ）
-        // 設計の「中央から 80px」から次の 2 点を変えている（実装記録の H-6 計測・設計逸脱として記録）:
-        // (1) 距離を 1 枚分（active の幅 + spaceBetween）の 0.75 倍にする。80px は幅 1280 で 1 枚分 167px の 0.48 倍で、
-        //     ドラッグが swiper の longSwipesMs（300ms）を超えると long swipe（longSwipesRatio 0.5 未満）として元へ戻る。
-        //     headless の描画負荷でマウス移動が 300ms を超える回があり、同じ実装で結果が揺れた。
-        // (2) 縦位置を上端から 8px にする。swiper は short swipe を矢印ボタンの上で離すと prev ボタンでは動かさない
-        //     （swiper-core の onTouchEnd の isNavButtonTarget 分岐）ため、終点が矢印に重ならない高さでドラッグする。
+        // 距離は 1 枚分（中央のカードの幅 + 間隔）の 0.75 倍、縦位置は上端から 8px（旧と同じ。旧の理由は Swiper の
+        // long swipe と矢印ボタンの上で離したときの分岐。新しいスライダーでも同じ点で離す）。
         const dist = await page.evaluate(k => {
-          const root = document.querySelector(`.${k}-swiper`) as any;
-          const act = root.querySelector('.swiper-slide-active') as HTMLElement;
-          return Math.round((act.getBoundingClientRect().width + (root.swiper.params.spaceBetween || 0)) * 0.75);
+          const slider = (document.querySelector('maplat-ui') as any).slider(k);
+          const act = slider.slots.find((s: any) => s.offset === 0).element as HTMLElement;
+          return Math.round((act.getBoundingClientRect().width + (slider.gap || 0)) * 0.75);
         }, k);
         rec[`${k}DragDistance`] = dist;
         for (const [dx, sign, label] of [[-dist, 1, 'left'], [dist, -1, 'right']] as const) {
@@ -439,9 +527,10 @@ test('AC-4 AC-6 n=6: base 5 枚・overlay 6 枚でも警告が無く隣が同じ
     const lay = await initialLayout(page, k);
     rec[k] = lay;
     const n = k === 'base' ? 5 : 6;
-    expect.soft(lay.order.length, `AC-6 ${k} 総スライド数`).toBe(n * repeatCount(n));
-    const adjacentSame = lay.order.filter((d, i) => d === lay.order[(i + 1) % lay.order.length]).length;
-    expect.soft(adjacentSame, `AC-6 ${k} 巡回で隣り合う同じ地図の数`).toBe(0);
+    expect.soft(lay.order.length, `AC-6 ${k} 総スライド数`).toBe(slotTotal(n));
+    expect.soft(visibleSameCount(lay, n), `AC-6 ${k} 見えている 3 枚で隣り合う同じ地図の数`).toBe(0);
+    // 5 スロットに出ている地図はどれも異なる（n >= 5 なので offset -2..+2 は全部別の地図）
+    expect.soft(new Set(lay.order).size, `AC-6 ${k} 5 スロットの地図が全部異なる order=${lay.order.join(',')}`).toBe(5);
   }
   rec.warns = warns;
   record(test.info().title, rec);
@@ -449,40 +538,52 @@ test('AC-4 AC-6 n=6: base 5 枚・overlay 6 枚でも警告が無く隣が同じ
 });
 
 for (const width of WIDTHS) {
-  test(`AC-3 AC-4 w=${width} n=1: 1 枚は loop しない・矢印は lock で非表示・ドラッグで不変`, async ({ page }) => {
+  test(`AC-3 AC-4 w=${width} n=1: 1 枚は巡回しない・矢印は非表示・ドラッグで不変`, async ({ page }) => {
     test.setTimeout(120000);
     const warns = await openFixture(page, width, 1, 1);
     const rec: any = {};
     for (const k of KINDS) {
-      const info = await page.evaluate(k => {
-        const root = document.querySelector(`.${k}-swiper`) as any;
-        const btn = (s: string) => {
-          const b = document.querySelector(`.${k}-${s}`) as HTMLElement;
-          return { lock: b.classList.contains('swiper-button-lock'), display: getComputedStyle(b).display };
-        };
-        return {
-          loop: root.swiper.params.loop,
-          single: root.classList.contains('single-map'),
-          slides: root.querySelectorAll('.swiper-slide').length,
-          next: btn('next'),
-          prev: btn('prev')
-        };
-      }, k);
-      expect.soft(info.loop, `AC-3 ${k} params.loop`).toBe(false);
+      // 言い換え（設計 v2 §4.7.3 AC-3）: 旧の params.loop === false と swiper-button-lock は存在しない。
+      // single-map class・矢印の hidden（display: none）・step() が何もしない、で判定する
+      const info = await page.evaluate(
+        sel => {
+          const host = document.querySelector('maplat-ui') as any;
+          const root = host.shadowRoot.querySelector(sel) as HTMLElement;
+          const btn = (s: string) => {
+            const b = root.querySelector(`[part="map-slider-${s}"]`) as HTMLElement;
+            return { hidden: b.hidden, display: getComputedStyle(b).display };
+          };
+          return {
+            single: root.classList.contains('single-map'),
+            slides: root.querySelectorAll('[part~="map-slide"]').length,
+            next: btn('next'),
+            prev: btn('prev')
+          };
+        },
+        sliderSel(k)
+      );
       expect.soft(info.single, `AC-3 ${k} single-map`).toBe(true);
       expect.soft(info.slides, `AC-3 ${k} スライド数`).toBe(1);
       for (const s of ['next', 'prev'] as const) {
-        expect.soft(info[s].lock, `AC-3 ${k}-${s} swiper-button-lock`).toBe(true);
+        expect.soft(info[s].hidden, `AC-3 ${k}-${s} hidden（旧 swiper-button-lock）`).toBe(true);
         expect.soft(info[s].display, `AC-3 ${k}-${s} display`).toBe('none');
       }
       const before = await activeData(page, k);
+      // step() は何もしない（旧 params.loop === false の言い換え。1 枚は動かない）
+      const stepped = await page.evaluate(async k => {
+        const slider = (document.querySelector('maplat-ui') as any).slider(k);
+        await slider.step(1);
+        await slider.step(-1);
+        return { animating: slider.animating, active: slider.activeMapID };
+      }, k);
+      expect.soft(stepped, `AC-3 ${k} step() の後も動かない`).toEqual({ animating: false, active: before });
       await drag(page, k, -80);
       await page.waitForTimeout(800);
       const afterLeft = await activeData(page, k);
       await drag(page, k, 80);
       await page.waitForTimeout(800);
       const afterRight = await activeData(page, k);
-      rec[k] = { info, before, afterLeft, afterRight };
+      rec[k] = { info, before, stepped, afterLeft, afterRight };
       expect.soft([afterLeft, afterRight], `AC-3 ${k} ドラッグ後の active`).toEqual([before, before]);
     }
     rec.warns = warns;
@@ -490,6 +591,16 @@ for (const width of WIDTHS) {
     expect(warns, 'AC-4 Swiper Loop Warning').toEqual([]);
   });
 }
+
+/** 帯（旧 wrapperEl）の今の transform（旧 swiper.translate の言い換え） */
+const trackTranslate = (page: Page, k: Kind) =>
+  page.evaluate(
+    sel =>
+      getComputedStyle(
+        document.querySelector('maplat-ui')!.shadowRoot!.querySelector(`${sel} .map-slider-track`) as HTMLElement
+      ).transform,
+    sliderSel(k)
+  );
 
 for (const n of [2, 3, 4, 5]) {
   test(`AC-4 AC-5 w=1280 n=${n}: カードのクリック・setSlideMapID・changeMap 後の active と選択表示`, async ({ page }) => {
@@ -510,32 +621,35 @@ for (const n of [2, 3, 4, 5]) {
         r.a = { clicked: pre.id, from: pre.from, wait, sel, title };
         expect.soft(pre.id !== pre.from, `AC-5 (a) ${k} クリック対象は操作前の active と異なる`).toBe(true);
         expect.soft(wait, `AC-5 (a) ${k} active = クリックした mapID`).toEqual({ reached: true, stable: true });
-        expect.soft(sel, `AC-5 (a) ${k} .selected`).toEqual(Array(repeatCount(n)).fill(pre.id));
+        expect.soft(sel, `AC-5 (a) ${k} .selected`).toEqual(Array(selectedCount(n)).fill(pre.id));
         expect.soft(title.actual, `AC-5 (a) ${k} 地図タイトル`).toBe(title.expected);
       }
       // (a') 中央のカードのクリックでは動かない（R2 Info 2）
       {
-        const center = await page.evaluate(k => {
-          const root = document.querySelector(`.${k}-swiper`) as any;
-          const act = root.querySelector('.swiper-slide-active') as HTMLElement;
-          const r = act.getBoundingClientRect();
-          const cr = root.getBoundingClientRect();
-          const x = r.left + r.width / 2;
-          const y = Math.max(r.top, cr.top) + 6;
-          return { x, y, id: act.getAttribute('data'), hit: document.elementFromPoint(x, y)?.closest('.swiper-slide') === act, translate: root.swiper.translate };
-        }, k);
+        const center = await page.evaluate(
+          ({ k, sel }) => {
+            const host = document.querySelector('maplat-ui') as any;
+            const sr = host.shadowRoot as ShadowRoot;
+            const root = sr.querySelector(sel) as HTMLElement;
+            const act = host.slider(k).slots.find((s: any) => s.offset === 0).element as HTMLElement;
+            const r = act.getBoundingClientRect();
+            const cr = root.getBoundingClientRect();
+            const x = r.left + r.width / 2;
+            const y = Math.max(r.top, cr.top) + 6;
+            return { x, y, id: act.dataset.mapId ?? null, hit: sr.elementFromPoint(x, y)?.closest('[part~="map-slide"]') === act };
+          },
+          { k, sel: sliderSel(k) }
+        );
+        const translate0 = await trackTranslate(page, k);
         expect.soft(center.hit, `AC-5 (a') ${k} 中央のカードの押せる点`).toBe(true);
         await page.mouse.click(center.x, center.y);
         await page.waitForTimeout(1200);
-        const after = await page.evaluate(k => {
-          const root = document.querySelector(`.${k}-swiper`) as any;
-          return { translate: root.swiper.translate, active: root.querySelector('.swiper-slide-active')?.getAttribute('data') };
-        }, k);
-        r.center = { center, after };
-        expect.soft(after, `AC-5 (a') ${k} 中央のカードのクリック後に translate と active が変わらない`).toEqual({ translate: center.translate, active: center.id });
-        expect.soft(await selectedData(page, k), `AC-5 (a') ${k} .selected`).toEqual(Array(repeatCount(n)).fill(center.id));
+        const after = { translate: await trackTranslate(page, k), active: await activeData(page, k) };
+        r.center = { center, translate0, after };
+        expect.soft(after, `AC-5 (a') ${k} 中央のカードのクリック後に translate と active が変わらない`).toEqual({ translate: translate0, active: center.id });
+        expect.soft(await selectedData(page, k), `AC-5 (a') ${k} .selected`).toEqual(Array(selectedCount(n)).fill(center.id));
       }
-      // (b) setSlideMapID
+      // (b) setSlideMapID（旧 API の baseSwiper / overlaySwiper facade。互換層が新しいスライダーへ委譲する）
       r.b = [];
       for (const id of [...ids.slice(1), ids[0]]) {
         const cur = await activeData(page, k);
@@ -545,7 +659,7 @@ for (const n of [2, 3, 4, 5]) {
         const sel = await selectedData(page, k);
         r.b.push({ id, from: cur, wait, sel });
         expect.soft(wait, `AC-5 (b) ${k} setSlideMapID(${id})`).toEqual({ reached: true, stable: true });
-        expect.soft(sel, `AC-5 (b) ${k} setSlideMapID(${id}) の .selected`).toEqual(Array(repeatCount(n)).fill(id));
+        expect.soft(sel, `AC-5 (b) ${k} setSlideMapID(${id}) の .selected`).toEqual(Array(selectedCount(n)).fill(id));
       }
       expect.soft(r.b.length, `AC-5 (b) ${k} 判定した id の数`).toBeGreaterThanOrEqual(n - 1);
       // (c) core.changeMap
@@ -605,7 +719,7 @@ for (const width of WIDTHS) {
  * 破壊試験（R2 MIN-R2-2・設計 §4.1-3 の 4 点目・§9.3）
  * 遷移中の連打・ドラッグ直後・矢印直後のカードのクリックで、最後に選ばれた地図（changeMap の最後の引数）に
  * active mapID・.selected・地図タイトルが揃うことを固定する。
- * 「中央に来るのがクリックした要素ではなく同じ地図の別の複製になる」ことは既知の限界（設計 §5.6 / §9.3）なので判定せず記録だけする。
+ * 「中央に来るのがクリックした要素か」は記録だけする（旧と同じ。旧は複製の別ノードになりうる既知の限界だった）。
  */
 for (const n of [2, 3]) {
   test(`破壊試験 w=1280 n=${n}: 遷移中の連打・ドラッグ直後・矢印直後のクリックで地図・選択表示・タイトルが揃う`, async ({ page }) => {
@@ -618,16 +732,17 @@ for (const n of [2, 3]) {
       const wait = last ? await waitActive(page, k, last, 8000, 1200) : { reached: false, stable: false };
       const sel = await selectedData(page, k);
       const title = last ? await titleState(page, last) : { expected: null, actual: null };
-      const centerIsMark = await page.evaluate(k => {
-        const root = document.querySelector(`.${k}-swiper`) as any;
+      const centerIsMark = await page.evaluate(sel => {
+        const sr = document.querySelector('maplat-ui')!.shadowRoot!;
+        const root = sr.querySelector(sel) as HTMLElement;
         const cr = root.getBoundingClientRect();
-        const hit = document.elementFromPoint(cr.left + cr.width / 2, cr.top + cr.height / 2)?.closest('.swiper-slide');
+        const hit = sr.elementFromPoint(cr.left + cr.width / 2, cr.top + cr.height / 2)?.closest('[part~="map-slide"]');
         return hit ? hit.getAttribute('data-m9-mark') === '1' : null;
-      }, k);
+      }, sliderSel(k));
       rec.push({ k, scenario, calls, last, wait, sel, title, centerIsClickedElement: centerIsMark, ...extra });
       expect.soft(calls.length, `${scenario} ${k}: カードのクリックが changeMap まで届いた`).toBeGreaterThan(0);
       expect.soft(wait, `${scenario} ${k}: active mapID = 最後に選ばれた地図 ${last}`).toEqual({ reached: true, stable: true });
-      expect.soft(sel, `${scenario} ${k}: .selected`).toEqual(Array(repeatCount(n)).fill(last));
+      expect.soft(sel, `${scenario} ${k}: .selected`).toEqual(Array(selectedCount(n)).fill(last));
       expect.soft(title.actual, `${scenario} ${k}: 地図タイトル`).toBe(title.expected);
       await page.evaluate(() => { (window as any).__m9changeMap.length = 0; });
       await page.waitForTimeout(300);
@@ -667,7 +782,7 @@ for (const n of [2, 3]) {
       }
       // D4: 矢印を押した 40ms 後（遷移中）に、その時点の右隣をクリック
       {
-        await page.locator(`.${k}-next`).click({ timeout: 5000 });
+        await page.locator(`${sliderSel(k)} [part="map-slider-next"]`).click({ timeout: 5000 });
         await page.waitForTimeout(40);
         const q = await markEdgeCard(page, k, 'next');
         expect.soft(q?.point, `D4 ${k}: 矢印直後の押せる点`).toBeTruthy();
@@ -694,22 +809,19 @@ for (const n of [2, 3]) {
 }
 
 /**
- * AC-12 補助（実装レビュー IR1 MAJ-1）: 保留中の onResize とカードのクリックの競合
+ * AC-12 補助（実装レビュー IR1 MAJ-1）: 保留中の再配置とカードのクリックの競合
  *
- * swiper の observeParents の MutationObserver は、親要素の属性変化を拾うと observerUpdate → onResize を呼び、
- * onResize は slideToLoop(その時点の realIndex, 0, false, true) で「その時点の DOM の並びでの index」を計算してから
- * slideTo を requestAnimationFrame に積む。この rAF が走る前にカードのクリックが来ると、click ハンドラの先回り
- * （slideNext / slidePrev = 同期の loopFix による DOM の並べ替え）で index の意味が変わり、後から走る slideTo(…, 0) が
- * 位置を直前の地図へ戻す。後から来る mapChanged → slideToMapID は「active が既に同じ mapID」を見て早期 return
- * していたため、中央のカードと地図が持続的に食い違っていた（IR1 §4.2: 修正前は左のカード 0/5）。
+ * 旧は Swiper の observeParents が拾った親要素の変化（onResize → slideToLoop の rAF の保留）とカードのクリックが
+ * 競合して、中央のカードと地図が食い違っていた。新しいスライダーでは同じ役割を ResizeObserver → `refresh()`
+ * （配置の計算し直し）が持つ。
  *
- * 自然発生は headless では 1 フレーム程度の窓で稀なので、実クリックの pointerup の直前（window の capture）で
- * swiper 自身の observerUpdate を発火し、onResize の rAF が保留中の状態を毎回作る。クリックは実マウス（page.mouse.click）で、
- * swiper の onTouchEnd → click → Maplat の click ハンドラの実経路を通す。
- * 判定: 毎回、active mapID がクリックした地図に到達し 1 秒後も同値・.selected・地図タイトルが揃う。
+ * 言い換え: 実クリックの pointerup の直前（window の capture）で、旧の `sw.emit('observerUpdate')` の代わりに
+ * スライダー自身の `refresh()` を割り込ませ、再配置とクリックが同じ拍に来る状態を毎回作る。
+ * クリックは実マウス（page.mouse.click）で、pointerup → click → `<maplat-ui>` の onSelect の実経路を通す。
+ * 判定（変えない）: 毎回、active mapID がクリックした地図に到達し 1 秒後も同値・.selected・地図タイトルが揃う。
  */
 for (const n of [2, 5]) {
-  test(`AC-12 補助 w=375 n=${n}: 保留中の onResize があってもカードのクリック後に中央のカードと地図が揃う（IR1 MAJ-1）`, async ({ page }) => {
+  test(`AC-12 補助 w=375 n=${n}: 保留中の再配置があってもカードのクリック後に中央のカードと地図が揃う（IR1 MAJ-1）`, async ({ page }) => {
     test.setTimeout(300000);
     const warns = await openFixture(page, 375, n, n);
     const rec: any[] = [];
@@ -719,13 +831,13 @@ for (const n of [2, 5]) {
         expect.soft(pre?.point, `MAJ-1 ${k} ${side}: 押せる点`).toBeTruthy();
         if (!pre?.point) continue;
         await page.evaluate(k => {
-          const sw = (document.querySelector(`.${k}-swiper`) as any).swiper;
+          const slider = (document.querySelector('maplat-ui') as any).slider(k);
           const w = window as any;
           w.__m9resize = 0;
           const once = () => {
             window.removeEventListener('pointerup', once, true);
-            // MutationObserver が 1 件の変化を拾ったときと同じ同期の emit（swiper-core observer モジュール）
-            sw.emit('observerUpdate');
+            // ResizeObserver が大きさの変化を拾ったときと同じ再配置（旧 swiper の observerUpdate の言い換え）
+            slider.refresh();
             w.__m9resize++;
           };
           window.addEventListener('pointerup', once, true);
@@ -739,7 +851,7 @@ for (const n of [2, 5]) {
           injected === 1 &&
           wait.reached &&
           wait.stable &&
-          sel.length === repeatCount(n) &&
+          sel.length === selectedCount(n) &&
           sel.every(s => s === pre.id) &&
           title.actual === title.expected;
         rec.push({ k, side, from: pre.from, clicked: pre.id, injected, wait, sel, title, now: await activeData(page, k), ok });
@@ -756,13 +868,12 @@ for (const n of [2, 5]) {
 /**
  * AC-13（人間の指示による範囲追加・OF-1）: 状態復元（URL の #! 経由の core.changeMap）の後に、スワイパーの active が目的の地図に合う
  *
- * 経路: index.ts の page.js ハンドラ（stateUrl: true）→ core.changeMap(restore.mapID) → mapChanged → applyMapChanged →
- * setSlideMapID → slideToMapID → slideToLoop（slideTo は requestAnimationFrame に積まれる）。
- * OF-1 の競合は「この rAF が走る前に、地図の切り替えで親要素の属性が変わり、observeParents の MutationObserver が
- * onResize → slideToLoop(まだ動く前の realIndex, 0) を後から積む」ことで起きる。自然発生は直前の操作列に依存して揺れるので、
- * Maplat の slideToMapID が slideToLoop を呼んだ同じタスクの中で swiper 自身の observerUpdate を発火し（MutationObserver が
- * 1 件の変化を拾ったときと同じ同期の emit）、毎回その順序を作る。slideToLoop の包みは観測用で、元の関数をそのまま呼ぶ。
- * 判定: 毎回、active mapID が目的の地図に到達し 1 秒後も同値・地図タイトル・changeMap が URL から呼ばれたこと。
+ * 経路: `<maplat-ui>` の状態 URL（state-url）→ 子の changeMap(restore.mapID) → mapChanged → スライダーの setSelectedMapID。
+ * 旧の OF-1 の競合は「位置合わせの直後に、地図の切り替えで親要素が変わって onResize が後から積まれる」ことで起きた。
+ * 言い換え: 旧は Maplat の slideToMapID が呼んだ slideToLoop の直後に Swiper の observerUpdate を発火していた。新は
+ * スライダーの setSelectedMapID（位置合わせ）が呼ばれた同じタスクの中で、スライダー自身の `refresh()`（再配置）を
+ * 1 回だけ割り込ませる。setSelectedMapID の包みは観測用で、元の関数をそのまま呼ぶ。
+ * 判定（変えない）: 毎回、active mapID が目的の地図に到達し 1 秒後も同値・地図タイトル・changeMap が URL から呼ばれたこと。
  * 加えて、#! 付きの URL を新しく開いた（初期化時の復元）場合も active が目的の地図になることを確かめる。
  */
 for (const n of [4, 5]) {
@@ -799,7 +910,7 @@ for (const n of [4, 5]) {
         return orig(...args);
       };
     });
-    // (2) 読み込み後の #! の変更（戻る・進む・URL の編集と同じ popstate 経路）。既知の遷移 kaei_jokamachi → zendoji_garan を含む
+    // (2) 読み込み後の #! の変更（戻る・進む・URL の編集と同じ経路）。既知の遷移 kaei_jokamachi → zendoji_garan を含む
     const plan: [Kind, string][] = [
       ...(['tatebayashi_castle_akimoto', 'tatebayashi_kaei_jokamachi', 'zendoji_garan', 'tatebayashi_ojozu', ...(n >= 5 ? ['tatebayashi_bunkazai_center'] : []), 'tatebayashi_kaei_jokamachi', 'zendoji_garan'].map(id => ['overlay', id] as [Kind, string])),
       ...idsOf('base', n).slice(1).concat(idsOf('base', n)[0]).map(id => ['base', id] as [Kind, string])
@@ -809,18 +920,18 @@ for (const n of [4, 5]) {
       if (cur === id) continue;
       await page.evaluate(({ k, id }) => {
         const w = window as any;
-        const sw = (document.querySelector(`.${k}-swiper`) as any).swiper;
+        const slider = (document.querySelector('maplat-ui') as any).slider(k);
         w.__m9inject = 0;
-        if (!sw.__m9origSlideToLoop) sw.__m9origSlideToLoop = sw.slideToLoop;
-        const orig = sw.__m9origSlideToLoop;
+        if (!slider.__m9origSetSelected) slider.__m9origSetSelected = slider.setSelectedMapID;
+        const orig = slider.__m9origSetSelected;
         let armed = true;
-        sw.slideToLoop = function (...args: any[]) {
+        slider.setSelectedMapID = function (...args: any[]) {
           const r = orig.apply(this, args);
-          // internal（onResize 自身の呼び出し）は除く。最初の位置合わせの直後に 1 回だけ observerUpdate を発火する
-          if (armed && !args[3]) {
+          // 最初の位置合わせの直後に 1 回だけ再配置を割り込ませる（旧 observerUpdate の言い換え）
+          if (armed && args[0] === id) {
             armed = false;
             w.__m9inject++;
-            sw.emit('observerUpdate');
+            slider.refresh();
           }
           return r;
         };
@@ -829,8 +940,8 @@ for (const n of [4, 5]) {
       const wait = await waitActive(page, k, id, 8000, 1000);
       const info = await page.evaluate(({ k }) => {
         const w = window as any;
-        const sw = (document.querySelector(`.${k}-swiper`) as any).swiper;
-        sw.slideToLoop = sw.__m9origSlideToLoop;
+        const slider = (document.querySelector('maplat-ui') as any).slider(k);
+        slider.setSelectedMapID = slider.__m9origSetSelected;
         return { calls: w.__m9changeMap.splice(0), inject: w.__m9inject };
       }, { k });
       const title = await titleState(page, id);

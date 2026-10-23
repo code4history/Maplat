@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <base href="/" />
+  <title></title>
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+  <link rel="icon" type="image/png" href="/parts/favicon.png" />
+  <style>
+    .mainview {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+  </style>
+</head>
+
+<!--
+  旧 API（`MaplatUi`）の**API 水準**の e2e 用の fixture（設計 v2 §2.5.1・D4）。
+  `e2e/legacy-api.spec.ts` は、このページの `window.__maplatUi` を入口に、`ui.core`・イベント・
+  URL・文字だけを読む（旧 UI の DOM の class 名・Swiper の実物は読まない）。
+
+  地図の `title` と `officialTitle` は、カードの `label` と**別の文字列**にしてある。
+  こうすると「地図の題名の文字」を、カードの見出しや mapID と取り違えずに探せる
+  （スライダーの見出しは `label`、題名は `title`／`officialTitle`）。
+
+  クエリ:
+    stateUrl=1  URL の `#!` による状態復元を有効にする（`e2e/legacy-api.spec.ts` の A4・A9）
+    buttons=1   enableShare / enableBorder / enableHideMarker / enableMarkerList を全部有効にする
+                （`e2e/legacy-baseline-capture.spec.ts` の「全ボタン」の採取）
+    base=<1..3>・overlay=<1..3>  地図の枚数（既定 3・2）
+-->
+<body>
+  <div class="mainview">
+    <div id="map_div"></div>
+  </div>
+  <div id="status">Initializing</div>
+  <script type="module">
+    import { MaplatUi } from '/src/index.ts';
+
+    const params = new URLSearchParams(location.search);
+    const count = (name, lo, hi, def) => {
+      const raw = params.get(name);
+      if (raw === null || raw.trim() === "") return def;
+      const n = Number(raw);
+      return Number.isInteger(n) ? Math.min(hi, Math.max(lo, n)) : def;
+    };
+    const overlay = (mapID, label, title) => ({
+      mapID,
+      label: { ja: label, en: label },
+      title: { ja: title, en: title },
+      officialTitle: { ja: title, en: title }
+    });
+    // public/maps/ に定義がある非線形地図
+    const overlays = [
+      overlay('tatebayashi_ojozu', 'カード・A', '旧API題名・壱'),
+      overlay('tatebayashi_castle_akimoto', 'カード・B', '旧API題名・弐'),
+      overlay('tatebayashi_kaei_jokamachi', 'カード・C', '旧API題名・参')
+    ].slice(0, count('overlay', 1, 3, 3));
+    const basemap = (mapID, label, title) => ({
+      mapID,
+      label: { ja: label, en: label },
+      title: { ja: title, en: title },
+      officialTitle: { ja: title, en: title },
+      attr: 'OSM',
+      url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+      maxZoom: 19,
+      maptype: 'base'
+    });
+    const bases = [
+      basemap('osm', 'カード・背景1', '旧API題名・基壱'),
+      basemap('legacy_api_base2', 'カード・背景2', '旧API題名・基弐'),
+      basemap('legacy_api_base3', 'カード・背景3', '旧API題名・基参')
+    ].slice(0, count('base', 1, 3, 2));
+    const setting = {
+      appName: '旧 API の基準',
+      lang: 'ja',
+      homePosition: [139.5321, 36.249302],
+      defaultZoom: 17,
+      startFrom: 'tatebayashi_ojozu',
+      sources: [...overlays, ...bases],
+      pois: []
+    };
+
+    MaplatUi.createObject({
+      setting,
+      pwaManifest: false,
+      restoreSession: false,
+      enableCache: false,
+      stateUrl: params.get('stateUrl') === '1',
+      enableShare: params.get('buttons') === '1',
+      enableBorder: params.get('buttons') === '1',
+      enableHideMarker: params.get('buttons') === '1',
+      enableMarkerList: params.get('buttons') === '1'
+    })
+      .then(ui => {
+        window.__maplatUi = ui;
+        document.getElementById('status').textContent = 'READY';
+      })
+      .catch(err => {
+        console.error('MaplatUi init error:', err);
+        document.getElementById('status').textContent = 'ERROR: ' + err.message;
+      });
+  </script>
+</body>
+
+</html>

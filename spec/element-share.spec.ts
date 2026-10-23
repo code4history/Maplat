@@ -437,12 +437,28 @@ describe("共有のモーダル（enable-share）", () => {
     expect(open).toHaveBeenLastCalledWith(
       `https://twitter.com/intent/tweet?url=${encodeURIComponent(BASE)}&text=Doc%20title&hashtags=Maplat`,
       "_blank",
-      "noopener"
+      "noopener,noreferrer"
     );
     (modal.querySelector('[data-share="fb_app"]') as HTMLButtonElement).click();
     expect(open.mock.lastCall![0]).toBe(
       `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(BASE)}&display=popup&ref=plugin&src=like&kid_directed_site=0`
     );
+    // SR-NOV26-B-3（逆タブナビング）: 旧 spec `nov26-m12-noopener-window-open.spec.ts` の移植（期待値も旧と同じ）。
+    // Twitter は features がちょうど "noopener,noreferrer"、Facebook はポップアップ指定を保ったまま noopener と
+    // noreferrer の両方を持つ
+    const twCall = open.mock.calls.find(c =>
+      String(c[0]).includes("twitter.com/intent/tweet")
+    )!;
+    expect(twCall[1]).toBe("_blank");
+    expect(twCall[2]).toBe("noopener,noreferrer");
+    const fbCall = open.mock.calls.find(c =>
+      String(c[0]).includes("facebook.com/sharer/sharer.php")
+    )!;
+    expect(fbCall[1]).toBe("_blank");
+    expect(String(fbCall[2])).toContain("noopener");
+    expect(String(fbCall[2])).toContain("noreferrer");
+    expect(String(fbCall[2])).toContain("width=650");
+    expect(String(fbCall[2])).toContain("height=450");
   });
 
   it("吹き出しの共有は enable-share かつ state-url のときだけ。QR は開いた POI を含む今の表示の URL", async () => {

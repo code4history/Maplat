@@ -54,9 +54,9 @@ describe("言語ファイルの読み込みの失敗", () => {
     expect(ui.t("html.help_operation_content")).toContain(
       "<img src='${plus.png}'> <img src='${minus.png}'>"
     );
-    // 層 B の上書き（画面の作りが旧 UI と違う文言）は、落ちた先の en でも同じく重なる
+    // 落ちた先の en の言語ファイルは、旧 UI のスライダーの説明（Stage 2 で上書きをやめた）
     expect(ui.t("html.help_selection_content")).toContain(
-      "at the top of the screen"
+      "two sliders with thumbnail"
     );
     // 言語ファイルに無いキーは内蔵の en
     expect(ui.t("control.zoom_in")).toBe("Zoom in");

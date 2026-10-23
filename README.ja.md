@@ -128,6 +128,15 @@ Maplat UI はアプリ/地図設定の `pois` フィールドをそのまま
 - **API シグネチャ**（リリース依存）: [`docs/api/`](docs/api/) を参照
 - **概念解説**（リリース非依存）:
   [Wiki API-Reference](https://github.com/code4history/Maplat/wiki/API-Reference) を参照
+- 旧 DOM からの移行: [docs/api/migration-ui-shadow-dom.md](docs/api/migration-ui-shadow-dom.md) を参照
+
+#### 旧 UI のスタイル（`src/styles/`）
+
+`src/styles/` の SCSS（`ui.scss`・`maplat-specific.scss`・`contextmenu.scss`）は、**旧 API `MaplatUi` の後方互換の
+ためだけ**に残しています。画面は `<maplat-ui>` が Shadow DOM の中に持つ自分の CSS で描くので、これらのファイルは
+見た目に効かず、パッケージのどこからも import していません。配布物の `dist/maplat_ui.css` は一本化の後は OpenLayers の
+CSS だけ（約 5 KB。以前は旧 UI の CSS を含めて約 494 KB）で、旧の SCSS が利用者に届くのは、パッケージに同梱される
+原稿（`package.json` の `files` の `src/`）としてだけです。削除は次のメジャー版で行います。
 
 ### 開発
 

@@ -163,19 +163,27 @@ describe("内蔵の辞書と旧 UI の言語ファイルの合成", () => {
     const ja = await mountUi(u => u.setAttribute("lang", "ja"));
     expect(ja.t("control.zoom_in")).toBe("拡大");
     expect(ja.t("control.zoom_out")).toBe("縮小");
-    expect(ja.t("menu.base_maps")).toBe("背景地図");
+    expect(ja.t("slider.base")).toBe("背景の地図");
     expect(ja.t("html.share_qr")).toBe("QR コード");
     const en = await mountUi(u => u.setAttribute("lang", "en"));
     expect(en.t("control.zoom_in")).toBe("Zoom in");
-    expect(en.t("menu.overlay_maps")).toBe("Old maps / overlays");
-    // 内蔵の辞書にしか無い 8 キー
+    expect(en.t("slider.overlay")).toBe("Overlay maps");
+    // 使われなくなった地図の切り替えメニューの文言（Stage 2 で消した。レビュー Minor）は引けない
+    for (const key of [
+      "control.map_menu",
+      "menu.base_maps",
+      "menu.overlay_maps"
+    ])
+      expect(en.t(key), key).toBe(key);
+    // 内蔵の辞書にしか無い 9 キー（地図の切り替えスライダーの 4 つを含む）
     const builtinOnly: Record<string, string> = {
       "control.zoom_in": "Zoom in",
       "control.zoom_out": "Zoom out",
       "control.compass_north": "Turn North Up",
-      "control.map_menu": "Switch maps",
-      "menu.base_maps": "Base maps",
-      "menu.overlay_maps": "Old maps / overlays",
+      "slider.base": "Base maps",
+      "slider.overlay": "Overlay maps",
+      "slider.prev": "Previous map",
+      "slider.next": "Next map",
       "menu.poi_candidates": "Choose a spot",
       "html.share_qr": "QR code"
     };
@@ -188,13 +196,11 @@ describe("内蔵の辞書と旧 UI の言語ファイルの合成", () => {
     const de = await mountUi(u => u.setAttribute("lang", "de"));
     expect(de.t("control.zoom_in")).toBe("Vergrößern");
     expect(de.t("control.compass_north")).toBe("Norden nach oben drehen");
-    expect(de.t("menu.base_maps")).toBe("Basiskarten");
     expect(de.t("html.share_qr")).toBe("QR-Code");
+    expect(de.t("slider.prev")).toBe("Vorherige Karte");
     const fr = await mountUi(u => u.setAttribute("lang", "fr"));
     expect(fr.t("control.zoom_in")).toBe("Zoom avant");
-    expect(fr.t("menu.overlay_maps")).toBe(
-      "Cartes historiques / superpositions"
-    );
+    expect(fr.t("slider.overlay")).toBe("Cartes historiques / superpositions");
     expect(fr.t("html.share_qr")).toBe("Code QR");
     const zhTW = await mountUi(u => u.setAttribute("lang", "zh-TW"));
     expect(zhTW.t("control.zoom_in")).toBe("放大");
@@ -217,19 +223,19 @@ describe("内蔵の辞書と旧 UI の言語ファイルの合成", () => {
 // 層 B の上書き（<maplat-ui> の画面の作りが旧 UI と違うために意味が変わった文言）。旧 UI の言語ファイルより
 // 後に重なる。
 describe("層 B の上書き（画面の作りが旧 UI と違う文言）", () => {
-  /** 言語 → [層 B の文言にだけ出る語, 旧 UI の言語ファイルにだけ出る語]。 */
+  /** 言語 → [旧 UI の言語ファイルのスライダーの説明にだけ出る語, メニューの説明にだけ出る語]。 */
   const SELECTION: Record<string, [string, string]> = {
-    ja: ["画面上の地図名のボタン", "サムネイル付き"],
-    en: ["at the top of the screen", "sliders with thumbnail"],
-    de: ["Kartennamen oben auf dem Bildschirm", "Schieberegler"],
-    es: ["nombre del mapa en la parte superior", "controles deslizantes"],
-    fr: ["nom de la carte en haut de l'écran", "curseurs"],
-    id: ["nama peta di bagian atas layar", "penggeser"],
-    ko: ["지도 이름 버튼", "슬라이더"],
-    th: ["ปุ่มชื่อแผนที่", "แถบเลื่อน"],
-    vi: ["nút tên bản đồ", "thanh trượt"],
-    zh: ["地图名按钮", "缩略图"],
-    "zh-TW": ["地圖名稱按鈕", "縮圖"]
+    ja: ["サムネイル付きのスライダ", "メニュー"],
+    en: ["two sliders with thumbnail", "menu"],
+    de: ["Schieberegler mit Thumbnails", "Menü"],
+    es: ["controles deslizantes con miniaturas", "menú"],
+    fr: ["curseurs avec des vignettes", "menu"],
+    id: ["penggeser dengan gambar mini", "menu"],
+    ko: ["섬네일이 있는 슬라이더", "메뉴"],
+    th: ["แถบเลื่อนพร้อมภาพขนาดย่อ", "เมนู"],
+    vi: ["thanh trượt với hình thu nhỏ", "menu"],
+    zh: ["缩略图", "菜单"],
+    "zh-TW": ["縮圖", "選單"]
   };
 
   /** 言語 → [除く一文, 残る一文（パソコン・スマホの切り替え）]。 */
@@ -250,12 +256,13 @@ describe("層 B の上書き（画面の作りが旧 UI と違う文言）", () 
     "zh-TW": ["邊界內側", "以滑鼠移到想看的地圖上並點擊切換"]
   };
 
-  it("html.help_selection_content は 11 言語とも層 B の文言（上の中央の地図名のボタンで開くメニュー）", async () => {
+  it("html.help_selection_content は 11 言語とも旧 UI のスライダーの説明（メニューの説明ではない）", async () => {
     expect(Object.keys(SELECTION).sort()).toEqual([...LANGS].sort());
     for (const lang of LANGS) {
       const ui = await mountUi(u => u.setAttribute("lang", lang));
       const text = ui.t("html.help_selection_content");
       expect(text, lang).toContain(SELECTION[lang][0]);
+      expect(text, lang).toContain("${overlay.png}");
       expect(text, lang).not.toContain(SELECTION[lang][1]);
     }
   });

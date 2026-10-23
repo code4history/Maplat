@@ -184,12 +184,16 @@ describe("<maplat-ui> は <maplat-app> の公開面と @maplat/core/common だ�
       "src/element/index.ts",
       "src/element/license_images.ts",
       "src/element/maplat-ui.ts",
+      "src/element/poi-html.ts",
       "src/element/pwa.ts",
       "src/element/share.ts",
+      "src/element/slider.ts",
       "src/element/state-url.ts",
       "src/element/styles.ts",
       "src/icons.ts",
-      "src/poi_safe.ts"
+      "src/poi_safe.ts",
+      "src/shared/geo.ts",
+      "src/shared/text.ts"
     ]);
   });
 
@@ -231,10 +235,97 @@ describe("<maplat-ui> は <maplat-app> の公開面と @maplat/core/common だ�
     expect(INTERNAL.test("ui.app.mapObject.getView()")).toBe(true);
     expect(INTERNAL.test("core.from.mapID")).toBe(true);
     expect(INTERNAL.test("Array.from(list)")).toBe(false);
-    // 旧 UI の入口からたどると @maplat/core と ol が見つかる（たどり方が働いていることの確認）
-    const legacy = walk("src/index.ts");
+    // 旧 UI の入口からたどると @maplat/core と ol が見つかる（たどり方が働いていることの確認）。
+    // Stage 4 で旧 UI の実装（src/index.legacy.ts 等）を消したので、たどり方の確認は互換層の入口で行う。
+    // 互換層は層 A の公開面（@maplat/core/common）と `ol/events/Target.js` だけを読む。
+    const legacy = walk("src/legacy/maplat_ui_compat.ts");
     expect([...legacy.external.keys()]).toEqual(
-      expect.arrayContaining(["@maplat/core", "ol/control"])
+      expect.arrayContaining(["@maplat/core/common", "ol/events/Target.js"])
     );
+    expect([...legacy.external.keys()]).not.toContain("ol/control");
+    // 消えた旧 UI のファイルは、たどった先にもう無い
+    expect(
+      legacy.files.filter(f =>
+        /^src\/(index\.legacy|ui_init|ui_marker|ui_utils|maplat_control|function|pwa_init|contextmenu|swiper_ex|swiper_loop)\.ts$/.test(
+          f
+        )
+      )
+    ).toEqual([]);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 地図切替スライダー（`src/element/slider.ts`。設計 v2 §4・§6.2）の依存の規則。
+//
+// 上の再帰（`src/element/index.ts` の入口）とは**別に**たどる。Stage 1 ではスライダーを
+// `src/element/index.ts` から出さない（画面に配線しない）ので、入口の一覧（`files`）を
+// 変えずに、スライダー自身の依存だけを固定する。
+describe("地図切替スライダーは層 A と地図ライブラリ（ol・swiper）に依らない", () => {
+  const SLIDER_ENTRY = "src/element/slider.ts";
+  const { files: sliderFiles, external: sliderExternal } = walk(SLIDER_ENTRY);
+  /** スライダーが読んでよい外部（`Localized` の型だけ） */
+  const SLIDER_ALLOWED_EXTERNAL = new Set(["@maplat/core/common"]);
+  /** 旧 UI・地図ライブラリ・スワイパー（どれも読んではならない） */
+  const SLIDER_FORBIDDEN =
+    /^(ol(\/|$)|swiper(\/|$)|swiper-|maplibre-gl|mapbox-gl|@c4h\/|@turf\/|i18next|bootstrap|@maplat\/(?!core\/common$))/;
+
+  it("外部の import は @maplat/core/common だけ", () => {
+    const bad = [...sliderExternal.keys()].filter(
+      s => !SLIDER_ALLOWED_EXTERNAL.has(s) || SLIDER_FORBIDDEN.test(s)
+    );
+    expect(
+      bad,
+      `forbidden imports: ${bad
+        .map(b => `${b} ← ${[...sliderExternal.get(b)!].join(",")}`)
+        .join(", ")}`
+    ).toEqual([]);
+    expect([...sliderExternal.keys()].sort()).toEqual(["@maplat/core/common"]);
+  });
+
+  it("検査そのものが ol・swiper・旧 UI の import を見つけられる（自己検査）", () => {
+    expect(SLIDER_FORBIDDEN.test("ol")).toBe(true);
+    expect(SLIDER_FORBIDDEN.test("ol/control")).toBe(true);
+    expect(SLIDER_FORBIDDEN.test("swiper")).toBe(true);
+    expect(SLIDER_FORBIDDEN.test("swiper/modules")).toBe(true);
+    expect(SLIDER_FORBIDDEN.test("@maplat/core")).toBe(true);
+    expect(SLIDER_FORBIDDEN.test("@maplat/core/dist/functions")).toBe(true);
+    expect(SLIDER_FORBIDDEN.test("@maplat/core/common")).toBe(false);
+  });
+
+  it("旧 UI（src/index.ts・src/ui_init.ts・src/legacy）を読まない", () => {
+    const legacy = sliderFiles.filter(f =>
+      /^src\/(index|ui_init|ui_marker|maplat_control|function|ui_utils)\.ts$|^src\/legacy\//.test(
+        f
+      )
+    );
+    expect(legacy).toEqual([]);
+  });
+
+  it("ソースに ol・swiper・層 A の内部への参照が無い", () => {
+    // 旧: 「`from ol…`」と「`require(ol…)`」を AND で重ねていたので、**常に空配列**になり
+    // 検査が空回りしていた（Minor 10）。OR にし、名前どおり「層 A の内部」（`INTERNAL`）も見る。
+    const IMPORT_LINE =
+      /\bfrom\s*["'](ol|swiper)[^"']*["']|require\(\s*["'](ol|swiper)/;
+    // 検査そのものが働くこと（自己検査）
+    expect(IMPORT_LINE.test(`import Map from "ol/Map"`)).toBe(true);
+    expect(IMPORT_LINE.test(`const m = require("swiper")`)).toBe(true);
+    expect(
+      IMPORT_LINE.test(`import type { Localized } from "@maplat/core/common"`)
+    ).toBe(false);
+    for (const f of sliderFiles.filter(f => f.startsWith("src/"))) {
+      const src = stripComments(readFileSync(resolve(ROOT, f), "utf-8"));
+      const hits = src
+        .split("\n")
+        .filter(line => IMPORT_LINE.test(line) || INTERNAL.test(line));
+      expect(hits, `${f}: ${hits.join(" | ")}`).toEqual([]);
+    }
+  });
+
+  it("たどるファイルの一覧（意図しない連鎖の増加に気づくため）", () => {
+    expect(sliderFiles).toEqual([
+      "src/element/slider.ts",
+      "src/poi_safe.ts",
+      "src/shared/text.ts"
+    ]);
   });
 });

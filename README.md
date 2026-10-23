@@ -132,6 +132,17 @@ in the MaplatCore README.
 - **API signatures** (release-dependent): see [`docs/api/`](docs/api/)
 - **Conceptual guide** (release-independent): see the
   [Wiki API-Reference](https://github.com/code4history/Maplat/wiki/API-Reference)
+- Migrating from the legacy DOM: see
+  [docs/api/migration-ui-shadow-dom.md](docs/api/migration-ui-shadow-dom.md)
+
+#### Legacy styles (`src/styles/`)
+
+The SCSS files in `src/styles/` (`ui.scss`, `maplat-specific.scss`, `contextmenu.scss`) are kept **only for backward
+compatibility with the legacy `MaplatUi` API**. The UI is drawn by `<maplat-ui>` with its own CSS inside a Shadow DOM,
+so these files no longer affect the viewer's appearance and nothing in the package imports them. Since the unification,
+the shipped `dist/maplat_ui.css` contains only the OpenLayers CSS (about 5 KB; previously about 494 KB including the legacy
+UI CSS), so the legacy SCSS reaches users only as source files bundled through `files: ["src/"]` in `package.json`.
+They will be removed in the next major version.
 
 ### Development
 

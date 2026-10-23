@@ -124,12 +124,10 @@ describe("ヘルプ（旧 maplat_control.ts の Maplat・ui_init.ts の modal_he
     expect(text).not.toContain("${");
     expect(body.querySelectorAll(".help-icon").length).toBeGreaterThan(0);
     expect(body.querySelector(".help-key")!.textContent).toBe("+");
-    // 地図の変更方法は層 B の画面に合わせる（上の中央の地図名のボタンで開くメニュー。旧 UI の
-    // 言語ファイルの「左下と右下のサムネイル付きスライダ」は層 B の上書きで置き換わる）
-    expect(text).toContain("画面上の地図名のボタンで開くメニュー");
-    expect(text).toContain("「背景地図」はベースマップ");
-    expect(text).not.toContain("画面の左下と右下に");
-    expect(text).not.toContain("サムネイル付きのスライダ");
+    // Stage 2 で地図の変更方法がスライダーに戻ったので、旧 UI の言語ファイルの説明がそのまま出る
+    expect(text).toContain("画面の左下と右下に");
+    expect(text).toContain("サムネイル付きのスライダ");
+    expect(text).not.toContain("画面上の地図名のボタンで開くメニュー");
   });
 
   it("付随の行は enable-* のときだけ出す（旧 CSS の .share_help 等と同じ規則・起動後の変更も効く）", async () => {
@@ -192,12 +190,12 @@ describe("ヘルプ（旧 maplat_control.ts の Maplat・ui_init.ts の modal_he
     expect(part(ui, "help-body").textContent).toContain(
       "How to operate the map"
     );
-    // 地図の変更方法は層 B の画面に合わせる（旧 UI の言語ファイルのスライダーの説明は上書きで置き換わる）
+    // Stage 2 で地図の変更方法がスライダーに戻ったので、旧 UI の言語ファイルの説明がそのまま出る
     expect(part(ui, "help-body").textContent).toContain(
-      "at the top of the screen"
+      "The two sliders with thumbnail"
     );
     expect(part(ui, "help-body").textContent).not.toContain(
-      "The two sliders with thumbnail"
+      "at the top of the screen"
     );
   });
 
@@ -454,10 +452,15 @@ describe("トースト（既存の showToast。旧 showToast を使う画面の�
 });
 
 describe("操作ボタンの自動非表示（tap-duration / tap-ui-vanish。旧 setMapOnOff）", () => {
-  const faded = (ui: Ui) =>
-    Array.from(shadow(ui).querySelectorAll(".ctl, .slider")).every(c =>
-      c.classList.contains("fade")
-    );
+  // 旧 setMapOnOff は .ol-control を全部隠す（題名・2 本のスワイパー・透過度も .ol-control。レビュー Major 1）
+  const faded = (ui: Ui) => {
+    const root = shadow(ui);
+    expect(root.querySelectorAll(".map-title").length).toBe(1);
+    expect(root.querySelectorAll(".map-slider").length).toBe(2);
+    return Array.from(
+      root.querySelectorAll(".ctl, .slider, .map-title, .map-slider")
+    ).every(c => c.classList.contains("fade"));
+  };
 
   it("既定は tap-ui-vanish が偽なので、地図を押しても隠さない", async () => {
     const ui = await mountUi();
@@ -677,7 +680,9 @@ describe("タッチ端末でズームのボタンを隠す（旧 ol-touch・.ol-
       const base = parseFloat(getComputedStyle(gps).fontSize);
       // 旧: .ol-touch .gps { top: .5em }・.ol-touch .home { top: calc(.5em + 50px) } 相当
       expect(parseFloat(getComputedStyle(gps).top)).toBeCloseTo(base * 0.5);
-      expect(parseFloat(getComputedStyle(home).top)).toBeCloseTo(base * 3.5);
+      expect(parseFloat(getComputedStyle(home).top)).toBeCloseTo(
+        base * 0.5 + 50
+      );
       // 旧 ol.css: .ol-touch .ol-control button { font-size: 1.5em }
       expect(parseFloat(getComputedStyle(button).fontSize)).toBeCloseTo(
         base * 1.5
@@ -687,10 +692,14 @@ describe("タッチ端末でズームのボタンを隠す（旧 ol-touch・.ol-
       const share = part(touch, "share");
       const help = part(touch, "help");
       const helpButton = help.querySelector("button") as HTMLButtonElement;
+      // jsdom は env() を含む calc() を解かないので、px の項を全部足して比べる
+      // （env() は安全領域が無い画面では 0。旧 UI と同じ）
       const bottom = (el: Element) => {
         const raw = getComputedStyle(el).bottom;
-        const calc = /^calc\(\s*([\d.]+)px/.exec(raw);
-        return calc ? parseFloat(calc[1]) : parseFloat(raw);
+        const px = raw.match(/-?\d+(?:\.\d+)?px/g);
+        return px
+          ? px.reduce((sum, value) => sum + parseFloat(value), 0)
+          : parseFloat(raw);
       };
       expect(bottom(share)).toBeGreaterThanOrEqual(
         bottom(help) + parseFloat(getComputedStyle(helpButton).height)
@@ -698,17 +707,14 @@ describe("タッチ端末でズームのボタンを隠す（旧 ol-touch・.ol-
     } finally {
       delete (window as unknown as Record<string, unknown>).ontouchstart;
     }
-    // タッチでない端末では今までどおり（GPS 6.2em・ホーム 9.2em・ボタン 1.14em）
+    // タッチでない端末は旧 UI の位置（GPS 80px・ホーム 120px・ボタン 16px）
     const plain = await mountUi();
     const gps = part(plain, "gps");
     const home = part(plain, "home");
     const button = gps.querySelector("button") as HTMLButtonElement;
-    const base = parseFloat(getComputedStyle(gps).fontSize);
-    expect(parseFloat(getComputedStyle(gps).top)).toBeCloseTo(base * 6.2);
-    expect(parseFloat(getComputedStyle(home).top)).toBeCloseTo(base * 9.2);
-    expect(parseFloat(getComputedStyle(button).fontSize)).toBeCloseTo(
-      base * 1.14
-    );
+    expect(parseFloat(getComputedStyle(gps).top)).toBeCloseTo(80);
+    expect(parseFloat(getComputedStyle(home).top)).toBeCloseTo(120);
+    expect(parseFloat(getComputedStyle(button).fontSize)).toBeCloseTo(16);
   });
 });
 
@@ -892,42 +898,51 @@ describe("地図の切り替えメニューの色の印（N1。旧 .show-border 
       ]
     }) as typeof SETTING;
 
-  it("枠線のオン・オフでメニューの show-border を付け外しする（印は表示中だけ）", async () => {
+  it("枠線のオン・オフでスライダーの show-border を付け外しする（枠は表示中だけ）", async () => {
     const ui = await mountUi(
       u => u.setAttribute("enable-border", ""),
       withEnvelopes()
     );
-    const menu = shadow(ui).querySelector(".map-menu")!;
-    const swatches = () =>
-      Array.from(menu.querySelectorAll<HTMLElement>(".swatch"));
+    const sliders = () =>
+      Array.from(
+        shadow(ui).querySelectorAll<HTMLElement>(
+          '[part="map-slider"][data-kind="overlay"]'
+        )
+      );
+    const overlay = sliders()[0];
+    const cards = () =>
+      Array.from(overlay.querySelectorAll<HTMLElement>("[part~=map-slide]"));
     // 色は範囲を持つ地図に割り当て済み（要素はある）
-    expect(swatches().map(s => s.style.backgroundColor)).toEqual([
-      "rgb(128, 0, 0)",
-      "rgb(255, 20, 147)"
-    ]);
-    // 枠線を出していないときは show-border が無い（CSS が印を隠す）
-    expect(menu.classList.contains("show-border")).toBe(false);
-    const display = () => getComputedStyle(swatches()[0]).display;
-    expect(display()).toBe("none");
+    expect(
+      new Set(
+        cards()
+          .filter(c => c.classList.contains("has-envelope"))
+          .map(c => c.style.getPropertyValue("--maplat-envelope-color"))
+      )
+    ).toEqual(new Set(["#800000", "#ff1493"]));
+    // 枠線を出していないときは show-border が無い（CSS が枠を描かない）
+    expect(overlay.classList.contains("show-border")).toBe(false);
     press(ui, "border");
-    expect(menu.classList.contains("show-border")).toBe(true);
-    expect(display()).toBe("block");
+    expect(overlay.classList.contains("show-border")).toBe(true);
     press(ui, "border");
-    expect(menu.classList.contains("show-border")).toBe(false);
-    expect(display()).toBe("none");
+    expect(overlay.classList.contains("show-border")).toBe(false);
   });
 
-  it("状態 URL・restore で枠線が出ている状態から始めても印を出す", async () => {
+  it("状態 URL・restore で枠線が出ている状態から始めても枠を出す", async () => {
     const ui = await mountUi(u => {
       u.setAttribute("enable-border", "");
       u.restore = { mapID: "old1", showBorder: 1 };
     }, withEnvelopes());
     expect(
-      shadow(ui).querySelector(".map-menu")!.classList.contains("show-border")
+      shadow(ui)
+        .querySelector('[part="map-slider"][data-kind="overlay"]')!
+        .classList.contains("show-border")
     ).toBe(true);
     ui.setShowBorder(false);
     expect(
-      shadow(ui).querySelector(".map-menu")!.classList.contains("show-border")
+      shadow(ui)
+        .querySelector('[part="map-slider"][data-kind="overlay"]')!
+        .classList.contains("show-border")
     ).toBe(false);
   });
 });

@@ -69,11 +69,12 @@ const app = <T>(page: Page, fn: string, ...args: unknown[]) =>
   ) as Promise<T>;
 
 /** 同梱ベースマップ（地理院地図・地理院オルソ）のサムネイルが画像として出ている（読めずに頭文字の代替へ替わっていない）。 */
-async function expectBundledThumbnails(menu: ReturnType<Page["locator"]>) {
+async function expectBundledThumbnails(slider: ReturnType<Page["locator"]>) {
   for (const id of ["gsi", "gsi_ortho"]) {
-    const item = menu.locator(`[part="map-menu-item"][data-map-id="${id}"]`);
-    await item.scrollIntoViewIfNeeded();
-    const thumb = item.locator("img.thumb");
+    const item = slider
+      .locator(`[part~="map-slide"][data-map-id="${id}"]`)
+      .first();
+    const thumb = item.locator("img.map-slide-thumb");
     await expect(
       thumb,
       `${id}: the thumbnail <img> was replaced by the placeholder`
@@ -173,9 +174,7 @@ test("Core の <maplat-app> の上で <maplat-ui> の操作一式が動く", asy
       { timeout: 15_000 }
     )
     .toBeGreaterThan(0);
-  await expect(ui.locator('[part="map-title-button"] .text')).not.toHaveText(
-    ""
-  );
+  await expect(ui.locator('[part="map-title"] .text')).not.toHaveText("");
   for (const name of [
     "zoom-in",
     "zoom-out",
@@ -248,35 +247,54 @@ test("Core の <maplat-app> の上で <maplat-ui> の操作一式が動く", asy
     .toBeLessThan(0.5);
   await expect(compass).toHaveClass(/disable/);
 
-  // ---- 地図の切り替えメニュー（listMaps・changeMap）----
+  // ---- 地図の切り替えスライダー（listMaps・changeMap）----
   const startMap = await page.evaluate(
     () => (window as any).__maplatUi.app.currentMapId
   );
-  const titleButton = ui.locator('[part="map-title-button"]');
-  await titleButton.click();
-  const menu = ui.locator('[part="map-menu"]');
-  await expect(menu).toBeVisible();
-  const items = menu.locator('[part="map-menu-item"]');
-  expect(await items.count()).toBeGreaterThan(3);
+  const baseSlider = ui.locator('[part="map-slider"][data-kind="base"]');
+  const overlaySlider = ui.locator('[part="map-slider"][data-kind="overlay"]');
+  await expect(baseSlider).toBeVisible();
+  await expect(overlaySlider).toBeVisible();
+  expect(
+    await baseSlider.locator('[part~="map-slide"]').count()
+  ).toBeGreaterThan(1);
+  expect(
+    await overlaySlider.locator('[part~="map-slide"]').count()
+  ).toBeGreaterThan(1);
+  // 今の地図（重ねる地図）のカードが選ばれている
   await expect(
-    menu.locator(`[part="map-menu-item"][data-map-id="${startMap}"]`)
-  ).toHaveAttribute("aria-current", "true");
-  await expectBundledThumbnails(menu);
-  await shot(page, "3-menu", testInfo);
-  await menu.locator('[part="map-menu-item"][data-map-id="gsi"]').click();
-  await expect(menu).toBeHidden();
+    overlaySlider
+      .locator(`[part~="map-slide"][data-map-id="${startMap}"]`)
+      .first()
+  ).toHaveClass(/selected/);
+  await expectBundledThumbnails(baseSlider);
+  await shot(page, "3-sliders", testInfo);
+  // 背景の地図の先頭（スライダーの中央のカード）を押すと、その地図へ変わる
+  // （地図を変えるのは onSelect だけ。D5）
+  const firstBase = await page.evaluate(
+    () =>
+      (window as any).__maplatUi.app
+        .listMaps()
+        .filter((m: any) => m.isBasemap)[0].mapID as string
+  );
+  await baseSlider
+    .locator(`[part~="map-slide"][data-map-id="${firstBase}"]`)
+    .first()
+    .click();
   await expect
     .poll(
       () => page.evaluate(() => (window as any).__maplatUi.app.currentMapId),
       { timeout: 20_000 }
     )
-    .toBe("gsi");
+    .toBe(firstBase);
   await expect(ui.locator('[part="slider"]')).toBeDisabled();
-  await shot(page, "4-gsi", testInfo);
-  await titleButton.click();
-  await menu
-    .locator('[part="map-menu-item"][data-map-id="tatebayashi_castle_akimoto"]')
-    .click();
+  await shot(page, "4-base", testInfo);
+  // 重ねる地図へ戻す: 矢印 1 回で古地図を中央へ送り、そのカードを押す（矢印だけでは地図は変わらない）
+  const castle = overlaySlider
+    .locator('[part~="map-slide"][data-map-id="tatebayashi_castle_akimoto"]')
+    .first();
+  await overlaySlider.locator('[part="map-slider-next"]').click();
+  await castle.click();
   await expect
     .poll(
       () => page.evaluate(() => (window as any).__maplatUi.app.currentMapId),

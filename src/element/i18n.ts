@@ -1,15 +1,15 @@
-// <maplat-ui> の文言。旧 UI は i18next と assets/locales/<lang>/translation.json を HTTP で読んでいた。
-// <maplat-ui> は i18next を使わず（依存の規則。spec/element-deps.spec.ts）、旧 UI の言語ファイル
+// <maplat-ui> の文言。旧 UI は翻訳ライブラリを使って assets/locales/<lang>/translation.json を HTTP で読んでいた。
+// <maplat-ui> は翻訳ライブラリを使わず（依存の規則。spec/element-deps.spec.ts）、旧 UI の言語ファイル
 // （de・en・es・fr・id・ja・ko・th・vi・zh・zh-TW の 11 言語）を言語ごとに動的 import して読む。
 // 使う言語のファイルだけが読まれ、バンドルも言語ごとのチャンクに分かれる。
 //
-// キーの合成（旧 UI の i18next の fallbackLng: ["en"] と同じ考え方）。重ねる順は
+// キーの合成（旧 UI の fallbackLng: ["en"] と同じ考え方）。重ねる順は
 //   内蔵の辞書 → 旧 UI の言語ファイル → 層 B の上書き（OVERRIDES）
 // で、後から重ねたものが正になる。
 //   - 旧 UI の言語ファイルにあるキーは、そちらの訳を使う（内蔵の辞書と食い違う場合も言語ファイルが正）。
-//   - ただし <maplat-ui> で画面の作りが旧 UI と違うために意味が変わった文言（地図の切り替えは上の中央の
-//     地図名のボタンで開くメニュー、枠線の内側のクリックでの切り替えは無い 等）は、層 B の上書き（OVERRIDES）
-//     が言語ファイルより後に重なって正になる（旧 UI の言語ファイルは旧 UI が使うので変えない）。
+//   - ただし <maplat-ui> で画面の作りが旧 UI と違うために意味が変わった文言（枠線の内側のクリックでの
+//     切り替えは無い 等）は、層 B の上書き（OVERRIDES）が言語ファイルより後に重なって正になる
+//     （旧 UI の言語ファイルは旧 UI が使うので変えない）。
 //   - 内蔵の辞書（STRINGS）にあって言語ファイルに無いキー（<maplat-ui> で新しく足した文言）は、
 //     ja・en は内蔵のまま、ほかの言語は OVERRIDES の訳（無ければ en の内蔵の辞書）に落とす。
 //   - 言語ファイルにしか無いキー（control.zoom・app.acquiring_gps_desc 等、今の画面では使わないもの）も
@@ -30,9 +30,10 @@ const STRINGS: Record<string, Dict> = {
     "control.compass_north": "北を上にする",
     "control.gps": "GPS位置取得",
     "control.trans": "地図透明度変更",
-    "control.map_menu": "地図の切り替え",
-    "menu.base_maps": "背景地図",
-    "menu.overlay_maps": "古地図・重ね地図",
+    "slider.base": "背景の地図",
+    "slider.overlay": "重ねる地図",
+    "slider.prev": "前の地図",
+    "slider.next": "次の地図",
     "menu.poi_candidates": "スポットを選ぶ",
     "control.marker_list": "マーカー一覧表示",
     "html.marker_list_title": "マーカー一覧表示",
@@ -83,8 +84,6 @@ const STRINGS: Record<string, Dict> = {
     "html.help_operation_content":
       "地図の移動はPCの場合はマウスのドラッグ、スマートフォンの場合は指でのスワイプ動作で行います。<br>地図の拡大縮小は、PCでは左上の${plus.png} ${minus.png}ボタン、スマートフォンでは2本指でのピンチインアウトで行います。<br>スマートフォンでは2本指でのひねる操作により、地図の回転も行えます。<br>左上の${home.png}ボタンを使うと、表示中の地図のホームポジションに移動できます。<br>${compass.png}ボタン上に表示されているコンパスは、現在の北の方角を示しており、またこのボタンを押すことによって、地図の回転状態を正位置に戻すことができます。<br>地図の移動中は、地図の全体を表示するためボタンが消えますが、消えたボタンの表示を戻すには、しばらく待つか画面を1回クリックまたはタップしてください。",
     "html.help_selection_title": "地図の変更方法",
-    "html.help_selection_content":
-      "地図の切り替えは、画面上の地図名のボタンで開くメニューから行います。<br>メニューの一覧から表示したい地図をクリックすると、その地図の表示に切り替えられます。<br>「背景地図」はベースマップ(正確な地図)、「古地図・重ね地図」は絵地図や古地図の一覧です。",
     "html.help_gps_title": "地図上への現在地表示",
     "html.help_gps_content":
       "${gps.png}ボタンを押すと、GPS機能が有効になり、ユーザの現在地が${bluedot.png}で地図上に表示されます。<br>もう一度ボタンを押すとGPS機能はオフになります。<br>もし、ユーザの現在地が表示中の地図上になかった場合、メッセージが表示され、GPS機能は自動的にオフになります。",
@@ -114,9 +113,10 @@ const STRINGS: Record<string, Dict> = {
     "control.compass_north": "Turn North Up",
     "control.gps": "Acquire GPS Position",
     "control.trans": "Change Map Transparency",
-    "control.map_menu": "Switch maps",
-    "menu.base_maps": "Base maps",
-    "menu.overlay_maps": "Old maps / overlays",
+    "slider.base": "Base maps",
+    "slider.overlay": "Overlay maps",
+    "slider.prev": "Previous map",
+    "slider.next": "Next map",
     "menu.poi_candidates": "Choose a spot",
     "control.marker_list": "Marker list",
     "html.marker_list_title": "Marker list",
@@ -169,7 +169,7 @@ const STRINGS: Record<string, Dict> = {
       "Move the map by dragging the mouse in case of PC, swiping action with finger in case of smartphone.<br>Scaling the map can be done with the upper left ${plus.png} ${minus.png} buttons in case of PC, with pinch in/out actions with two fingers in case of smartphone.<br>On smartphone, you can rotate the map by twisting with two fingers.<br>By Using the ${home.png} button at the upper left, you can move to the home position of the map being displayed.<br>The compass displayed on ${compass.png} button indicates the current north direction, and by pressing this button, the rotation state of the map can be returned to the normal position.<br>While moving the map, buttons disappear to display the entire map, but to bring back the hidden buttons, please wait a moment or click/tap the screen once.",
     "html.help_selection_title": "How to change the map",
     "html.help_selection_content":
-      'To switch the map, use the menu opened by the map name button at the top of the screen.<br>Click the map you want in the list and the map changes to it.<br>"Base maps" lists accurate maps, and "Old maps / overlays" lists pictorial and historical maps.',
+      "The two sliders with thumbnail like ${overlay.png} are displayed in the lower left and the lower right of the screen, you can select the map to display with them.<br> Slide the slider to select the map you want, and click the thumbnail, then the map changed.<br>The lower left map slider is to choose base maps (accurate maps), the lower right map slider is to choose historical/illustrated maps.",
     "html.help_gps_title": "Showing current position on the map",
     "html.help_gps_content":
       "When you press the ${gps.png} button, the GPS function turns on and the user's current location is displayed on the map as ${bluedot.png}. <br>If you press the button again, the GPS function turns off. <br>If the user's current location is not on the map being displayed, a message will be displayed and the GPS function will be turned off automatically.",
@@ -196,23 +196,19 @@ const STRINGS: Record<string, Dict> = {
 /**
  * 層 B（<maplat-ui>）の上書き。画面の作りが旧 UI と違うために意味が変わった文言だけを、旧 UI の言語ファイル
  * より後に重ねる（旧 UI のファイルは旧 UI が使うので変えない）。
- *   - html.help_selection_content: 旧 UI は画面の左下・右下のサムネイル付きスライダーで地図を選ぶが、
- *     層 B は上の中央の地図名のボタンで開くメニューで選ぶ（11 言語ともその説明にする）。
+ *   - html.help_selection_content: Stage 2 で地図の切り替えがスライダーになったので、上書きをやめた
+ *     （旧 UI の言語ファイルの「左下と右下のスライダー」の説明が、そのまま正しくなった）。
  *   - html.help_etc_border: 旧 UI の言語ファイルには「境界の内側をクリックして地図を切り替える」とあるが、
  *     旧 UI にも層 B にもその操作は無い（その一文だけを除き、ほかは言語ファイルの訳のまま）。
- *   - STRINGS にしか無いキー（control.zoom_in・menu.base_maps 等）の ja・en 以外の訳。
+ *   - STRINGS にしか無いキー（control.zoom_in・slider.base 等）の ja・en 以外の訳。
  * 引く順は 言語 → 基底の言語 → en（overrides を参照）。
  */
 const OVERRIDES: Record<string, Dict> = {
   ja: {
-    "html.help_selection_content":
-      "地図の切り替えは、画面上の地図名のボタンで開くメニューから行います。<br>メニューの一覧から表示したい地図をクリックすると、その地図の表示に切り替えられます。<br>「背景地図」はベースマップ(正確な地図)、「古地図・重ね地図」は絵地図や古地図の一覧です。",
     "html.help_etc_border":
       "<img src='${border.png}'>ボタン: 地図の境界を表示します。<br>パソコンではマウスオーバーで地図を選びクリックで地図を切り替え、スマホではワンクリックで地図を選びもう一度クリックで地図を切り替えます。"
   },
   en: {
-    "html.help_selection_content":
-      'To switch the map, use the menu opened by the map name button at the top of the screen.<br>Click the map you want in the list and the map changes to it.<br>"Base maps" lists accurate maps, and "Old maps / overlays" lists pictorial and historical maps.',
     "html.help_etc_border":
       "<img src='${border.png}'> Button: Showing map border lines.<br> On a PC, select a map with a mouse over and switch the map with a click, on a smartphone, select a map with a click and switch the map with one more click."
   },
@@ -220,13 +216,12 @@ const OVERRIDES: Record<string, Dict> = {
     "control.zoom_in": "Vergrößern",
     "control.zoom_out": "Verkleinern",
     "control.compass_north": "Norden nach oben drehen",
-    "control.map_menu": "Karten wechseln",
-    "menu.base_maps": "Basiskarten",
-    "menu.overlay_maps": "Historische Karten / Überlagerungen",
+    "slider.base": "Basiskarten",
+    "slider.overlay": "Historische Karten / Überlagerungen",
+    "slider.prev": "Vorherige Karte",
+    "slider.next": "Nächste Karte",
     "menu.poi_candidates": "Standort wählen",
     "html.share_qr": "QR-Code",
-    "html.help_selection_content":
-      "Der Kartenwechsel erfolgt über das Menü, das sich mit der Schaltfläche mit dem Kartennamen oben auf dem Bildschirm öffnet.<br>Klicken Sie in der Liste auf die gewünschte Karte, und diese Karte wird angezeigt.<br>„Basiskarten“ sind genaue Karten, „Historische Karten / Überlagerungen“ sind illustrierte und historische Karten.",
     "html.help_etc_border":
       "<img src='${border.png}'>-Taste: Zeigt die Kartenrandlinien an.<br>Auf einem PC wählen Sie eine Karte mit der Maus aus und wechseln sie durch einen Klick, auf einem Smartphone wählen Sie eine Karte durch einen Klick aus und wechseln sie durch einen weiteren Klick."
   },
@@ -234,13 +229,12 @@ const OVERRIDES: Record<string, Dict> = {
     "control.zoom_in": "Acercar",
     "control.zoom_out": "Alejar",
     "control.compass_north": "Orientar al norte",
-    "control.map_menu": "Cambiar de mapa",
-    "menu.base_maps": "Mapas base",
-    "menu.overlay_maps": "Mapas históricos / superposiciones",
+    "slider.base": "Mapas base",
+    "slider.overlay": "Mapas históricos / superposiciones",
+    "slider.prev": "Mapa anterior",
+    "slider.next": "Mapa siguiente",
     "menu.poi_candidates": "Elegir un lugar",
     "html.share_qr": "Código QR",
-    "html.help_selection_content":
-      "Para cambiar de mapa, utilice el menú que se abre con el botón del nombre del mapa en la parte superior de la pantalla.<br>Haga clic en el mapa que desee de la lista y se mostrará ese mapa.<br>«Mapas base» son mapas precisos y «Mapas históricos / superposiciones» son mapas ilustrados e históricos.",
     "html.help_etc_border":
       "Botón <img src='${border.png}'>: muestra los límites de los mapas.<br>En un PC, seleccione un mapa pasando el ratón por encima y cambie de mapa con un clic; en un teléfono, seleccione un mapa con un clic y cambie de mapa con otro clic."
   },
@@ -248,13 +242,12 @@ const OVERRIDES: Record<string, Dict> = {
     "control.zoom_in": "Zoom avant",
     "control.zoom_out": "Zoom arrière",
     "control.compass_north": "Orienter vers le nord",
-    "control.map_menu": "Changer de carte",
-    "menu.base_maps": "Fonds de carte",
-    "menu.overlay_maps": "Cartes historiques / superpositions",
+    "slider.base": "Fonds de carte",
+    "slider.overlay": "Cartes historiques / superpositions",
+    "slider.prev": "Carte précédente",
+    "slider.next": "Carte suivante",
     "menu.poi_candidates": "Choisir un lieu",
     "html.share_qr": "Code QR",
-    "html.help_selection_content":
-      "Pour changer de carte, utilisez le menu qui s'ouvre avec le bouton du nom de la carte en haut de l'écran.<br>Cliquez sur la carte souhaitée dans la liste : cette carte s'affiche.<br>« Fonds de carte » regroupe les cartes précises, « Cartes historiques / superpositions » les cartes illustrées et historiques.",
     "html.help_etc_border":
       "Bouton <img src='${border.png}'> : affiche les limites des cartes.<br>Sur PC, sélectionnez une carte en la survolant avec la souris puis changez de carte d'un clic ; sur smartphone, sélectionnez une carte d'un premier clic et changez de carte d'un second clic."
   },
@@ -262,13 +255,12 @@ const OVERRIDES: Record<string, Dict> = {
     "control.zoom_in": "Perbesar",
     "control.zoom_out": "Perkecil",
     "control.compass_north": "Arahkan ke utara",
-    "control.map_menu": "Ganti peta",
-    "menu.base_maps": "Peta dasar",
-    "menu.overlay_maps": "Peta lama / lapisan",
+    "slider.base": "Peta dasar",
+    "slider.overlay": "Peta lama / lapisan",
+    "slider.prev": "Peta sebelumnya",
+    "slider.next": "Peta berikutnya",
     "menu.poi_candidates": "Pilih tempat",
     "html.share_qr": "Kode QR",
-    "html.help_selection_content":
-      "Untuk mengganti peta, gunakan menu yang dibuka dengan tombol nama peta di bagian atas layar.<br>Klik peta yang diinginkan pada daftar, lalu peta tersebut akan ditampilkan.<br>“Peta dasar” adalah peta yang akurat, “Peta lama / lapisan” adalah peta bergambar dan peta bersejarah.",
     "html.help_etc_border":
       "Tombol <img src='${border.png}'>: menampilkan garis batas peta.<br>Di PC, pilih peta dengan mengarahkan mouse lalu klik untuk mengganti peta; di ponsel, pilih peta dengan satu ketukan dan ganti peta dengan ketukan berikutnya."
   },
@@ -276,13 +268,12 @@ const OVERRIDES: Record<string, Dict> = {
     "control.zoom_in": "확대",
     "control.zoom_out": "축소",
     "control.compass_north": "북쪽을 위로",
-    "control.map_menu": "지도 전환",
-    "menu.base_maps": "베이스 맵",
-    "menu.overlay_maps": "고지도 / 중첩 지도",
+    "slider.base": "베이스 맵",
+    "slider.overlay": "고지도 / 중첩 지도",
+    "slider.prev": "이전 지도",
+    "slider.next": "다음 지도",
     "menu.poi_candidates": "스팟 선택",
     "html.share_qr": "QR 코드",
-    "html.help_selection_content":
-      "지도 전환은 화면 위쪽의 지도 이름 버튼으로 여는 메뉴에서 합니다.<br>메뉴 목록에서 표시할 지도를 클릭하면 그 지도로 전환됩니다.<br>“베이스 맵”은 정확한 지도, “고지도 / 중첩 지도”는 그림 지도나 고지도의 목록입니다.",
     "html.help_etc_border":
       "<img src='${border.png}'>버튼: 지도의 경계를 표시합니다. <br>PC의 경우는마우스 오버로 지도를 선택합니다. 스마트폰의 경우는 원클릭으로 지도를 선택해, 다시 한번 클릭하면 지도를 변경합니다."
   },
@@ -290,13 +281,12 @@ const OVERRIDES: Record<string, Dict> = {
     "control.zoom_in": "ซูมเข้า",
     "control.zoom_out": "ซูมออก",
     "control.compass_north": "หันทิศเหนือขึ้นด้านบน",
-    "control.map_menu": "สลับแผนที่",
-    "menu.base_maps": "แผนที่พื้นฐาน",
-    "menu.overlay_maps": "แผนที่เก่า / แผนที่ซ้อนทับ",
+    "slider.base": "แผนที่พื้นฐาน",
+    "slider.overlay": "แผนที่เก่า / แผนที่ซ้อนทับ",
+    "slider.prev": "แผนที่ก่อนหน้า",
+    "slider.next": "แผนที่ถัดไป",
     "menu.poi_candidates": "เลือกสถานที่",
     "html.share_qr": "คิวอาร์โค้ด",
-    "html.help_selection_content":
-      "การสลับแผนที่ทำได้จากเมนูที่เปิดด้วยปุ่มชื่อแผนที่ด้านบนของหน้าจอ<br>คลิกแผนที่ที่ต้องการในรายการ แล้วหน้าจอจะเปลี่ยนไปยังแผนที่นั้น<br>“แผนที่พื้นฐาน” คือแผนที่ที่ถูกต้องตามปัจจุบัน ส่วน “แผนที่เก่า / แผนที่ซ้อนทับ” คือรายการแผนที่ภาพวาดและแผนที่ประวัติศาสตร์",
     "html.help_etc_border":
       "ปุ่ม <img src='${border.png}'>: แสดงเส้นขอบเขตของแผนที่<br>บนคอมพิวเตอร์ ให้เลื่อนเมาส์ไปเลือกแผนที่แล้วคลิกเพื่อสลับ ส่วนบนสมาร์ตโฟน ให้แตะหนึ่งครั้งเพื่อเลือกแผนที่ แล้วแตะอีกครั้งเพื่อสลับ"
   },
@@ -304,13 +294,12 @@ const OVERRIDES: Record<string, Dict> = {
     "control.zoom_in": "Phóng to",
     "control.zoom_out": "Thu nhỏ",
     "control.compass_north": "Hướng bắc lên trên",
-    "control.map_menu": "Chuyển bản đồ",
-    "menu.base_maps": "Bản đồ cơ bản",
-    "menu.overlay_maps": "Bản đồ cũ / lớp phủ",
+    "slider.base": "Bản đồ cơ bản",
+    "slider.overlay": "Bản đồ cũ / lớp phủ",
+    "slider.prev": "Bản đồ trước",
+    "slider.next": "Bản đồ tiếp theo",
     "menu.poi_candidates": "Chọn điểm đánh dấu",
     "html.share_qr": "Mã QR",
-    "html.help_selection_content":
-      "Để chuyển bản đồ, hãy dùng menu mở ra bằng nút tên bản đồ ở phía trên màn hình.<br>Nhấp vào bản đồ bạn muốn trong danh sách, bản đồ đó sẽ được hiển thị.<br>“Bản đồ cơ bản” là bản đồ chính xác, “Bản đồ cũ / lớp phủ” là danh sách bản đồ minh họa và bản đồ lịch sử.",
     "html.help_etc_border":
       "Nút <img src='${border.png}'>: Hiển thị đường viền bản đồ.<br>Trên máy tính, chọn bản đồ bằng cách di chuột và nhấp để chuyển bản đồ, trên điện thoại, nhấp một lần để chọn và nhấp lần nữa để chuyển."
   },
@@ -318,13 +307,12 @@ const OVERRIDES: Record<string, Dict> = {
     "control.zoom_in": "放大",
     "control.zoom_out": "缩小",
     "control.compass_north": "正北朝上",
-    "control.map_menu": "切换地图",
-    "menu.base_maps": "基础地图",
-    "menu.overlay_maps": "历史地图 / 叠加地图",
+    "slider.base": "基础地图",
+    "slider.overlay": "历史地图 / 叠加地图",
+    "slider.prev": "上一张地图",
+    "slider.next": "下一张地图",
     "menu.poi_candidates": "选择场所",
     "html.share_qr": "二维码",
-    "html.help_selection_content":
-      "地图的切换请在画面上的地图名按钮打开的菜单中进行。<br>在菜单的列表里点击想查看的地图，即可切换成该地图。<br>“基础地图”是精确的地图，“历史地图 / 叠加地图”是手绘地图或历史地图的列表。",
     "html.help_etc_border":
       "<img src='${border.png}'>按钮: 地图的边界显示。<br>在电脑上操作可以用鼠标在地图上上移动选择后点击进行地图切换显示，手机上在选中地图后，再一次点击后进行地图切换显示。"
   },
@@ -332,13 +320,12 @@ const OVERRIDES: Record<string, Dict> = {
     "control.zoom_in": "放大",
     "control.zoom_out": "縮小",
     "control.compass_north": "北方朝上",
-    "control.map_menu": "切換地圖",
-    "menu.base_maps": "底圖",
-    "menu.overlay_maps": "古地圖 / 疊圖",
+    "slider.base": "底圖",
+    "slider.overlay": "古地圖 / 疊圖",
+    "slider.prev": "上一張地圖",
+    "slider.next": "下一張地圖",
     "menu.poi_candidates": "選擇景點",
     "html.share_qr": "QR 碼",
-    "html.help_selection_content":
-      "切換地圖請從畫面上的地圖名稱按鈕開啟的選單中進行。<br>從選單清單中點一下想顯示的地圖，即可切換成該地圖。<br>「底圖」是準確的地圖，「古地圖 / 疊圖」是繪圖或古地圖的清單。",
     "html.help_etc_border":
       "<img src='${border.png}'>按鈕：顯示地圖邊界線。<br>在電腦上以滑鼠移到想看的地圖上並點擊切換；在手機上先點一下選擇地圖，再點一下即可切換。"
   }
@@ -466,7 +453,7 @@ export function normalizeLang(lang: string): string {
   return lang;
 }
 
-/** i18next の入れ子（$t(key)）を辞書の値で解く（旧 UI の言語ファイルでは未使用。念のため）。 */
+/** 旧の辞書の入れ子（$t(key)）を辞書の値で解く（旧 UI の言語ファイルでは未使用。念のため）。 */
 function expandNesting(text: string, dict: Dict, depth = 0): string {
   if (depth > 10 || !text.includes("$t(")) return text;
   return text.replace(/\$t\(\s*([\w.-]+)\s*\)/g, (match, key: string) => {
@@ -477,7 +464,7 @@ function expandNesting(text: string, dict: Dict, depth = 0): string {
   });
 }
 
-/** i18next の差し込み（{{name}}）を option で埋める（名前は a.b の形も許す）。 */
+/** 旧の辞書の差し込み（{{name}}）を option で埋める（名前は a.b の形も許す）。 */
 function interpolate(text: string, option: Record<string, unknown>): string {
   return text.replace(/\{\{\s*([\w.-]+)\s*\}\}/g, (match, name: string) => {
     const value = name
@@ -493,7 +480,7 @@ function interpolate(text: string, option: Record<string, unknown>): string {
 
 /**
  * 文言のキー → 文字列。strings（loadLanguage の戻り値）があればそれを、無ければ内蔵の辞書（層 B の上書きを
- * 重ねたもの）を使う。キーが無ければ en → キー。i18next の入れ子（$t）と差し込み（{{name}}）を解く。
+ * 重ねたもの）を使う。キーが無ければ en → キー。旧の辞書の入れ子（$t）と差し込み（{{name}}）を解く。
  */
 export function translateKey(
   lang: string,

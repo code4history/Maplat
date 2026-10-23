@@ -1,6 +1,7 @@
 import { MaplatUi } from "../src/index";
-// Import styles - Vite will process these automatically
-import "../src/styles/ui.scss";
+// 旧 UI のスタイル（src/styles/ui.scss）は読まない。旧 API は互換層（src/index.ts）で、
+// 画面は <maplat-ui>（Shadow DOM）が描くので、その CSS は Shadow DOM の中に閉じている
+// （旧 API の後方互換のため SCSS はリポジトリに残すが、このデモでは要らない）。
 import { parseDemoQuery } from "./query";
 
 const mapboxgl = window.mapboxgl;

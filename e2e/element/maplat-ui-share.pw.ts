@@ -149,9 +149,12 @@ test("共有のモーダル・QR・コピー・状態 URL（切り替えて URL 
   await expect(modal).toBeHidden();
 
   // ---- 地図を切り替えると URL の地図（s:）が変わる ----
-  await ui.locator('[part="map-title-button"]').click();
-  await ui
-    .locator(`[part="map-menu-item"][data-map-id="${TARGET_MAP}"]`)
+  // 重ねる地図のスライダーを 1 つ進めてから、中央に来たカードを押す（矢印だけでは地図は変わらない）
+  const overlaySlider = ui.locator('[part="map-slider"][data-kind="overlay"]');
+  await overlaySlider.locator('[part="map-slider-next"]').click();
+  await overlaySlider
+    .locator(`[part~="map-slide"][data-map-id="${TARGET_MAP}"]`)
+    .first()
     .click();
   await expect
     .poll(() => statePath(page), { timeout: 20_000 })

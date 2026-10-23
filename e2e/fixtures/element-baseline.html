@@ -1,0 +1,133 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <base href="/" />
+    <title></title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no"
+    />
+    <link rel="icon" type="image/png" href="/parts/favicon.png" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+      }
+      maplat-ui {
+        display: block;
+        position: absolute;
+        inset: 0;
+        width: auto;
+        height: auto;
+      }
+      #status {
+        position: absolute;
+        right: 4px;
+        bottom: 0;
+        z-index: 100;
+        font: 11px monospace;
+        color: #333;
+        background: rgba(255, 255, 255, 0.8);
+      }
+    </style>
+  </head>
+
+  <!--
+  `<maplat-ui>` の見た目を旧 UI の基準（`spec/fixtures/legacy-baseline/*.json`）と比べるための fixture
+  （Stage 2。`e2e/element/maplat-ui-baseline-compare.pw.ts`）。地図の設定・題名・ラベル・枚数は
+  `e2e/fixtures/legacy-api.html` と揃えてある（比較する対象を同じにするため）。
+
+  クエリ:
+    base=<1..3>・overlay=<1..6>  地図の枚数（既定 3・3。基準の採取と同じ）
+    buttons=1  enableShare / enableBorder / enableHideMarker / enableMarkerList を有効にする
+-->
+  <body>
+    <div id="app"></div>
+    <div id="status">Initializing</div>
+    <script type="module">
+      import "/demo/element.ts";
+
+      const params = new URLSearchParams(location.search);
+      const count = (name, lo, hi, def) => {
+        const raw = params.get(name);
+        if (raw === null || raw.trim() === "") return def;
+        const n = Number(raw);
+        return Number.isInteger(n) ? Math.min(hi, Math.max(lo, n)) : def;
+      };
+      const overlay = (mapID, label, title) => ({
+        mapID,
+        label: { ja: label, en: label },
+        title: { ja: title, en: title },
+        officialTitle: { ja: title, en: title }
+      });
+      // public/maps/ に定義がある非線形地図（旧 fixture と同じ並びの先頭 3 枚＋3 枚）
+      const overlays = [
+        overlay("tatebayashi_ojozu", "カード・A", "旧API題名・壱"),
+        overlay("tatebayashi_castle_akimoto", "カード・B", "旧API題名・弐"),
+        overlay("tatebayashi_kaei_jokamachi", "カード・C", "旧API題名・参"),
+        overlay("tatebayashi_rekishinokomichi_1", "カード・D", "旧API題名・四"),
+        overlay("tatebayashi_rekishinokomichi_2", "カード・E", "旧API題名・五"),
+        overlay("tatebayashi_saiken_ura", "カード・F", "旧API題名・六")
+      ].slice(0, count("overlay", 1, 6, 3));
+      const basemap = (mapID, label, title) => ({
+        mapID,
+        label: { ja: label, en: label },
+        title: { ja: title, en: title },
+        officialTitle: { ja: title, en: title },
+        attr: "OSM",
+        url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+        maxZoom: 19,
+        maptype: "base"
+      });
+      const bases = [
+        basemap("osm", "カード・背景1", "旧API題名・基壱"),
+        basemap("legacy_api_base2", "カード・背景2", "旧API題名・基弐"),
+        basemap("legacy_api_base3", "カード・背景3", "旧API題名・基参")
+      ].slice(0, count("base", 1, 3, 3));
+      const setting = {
+        appName: "旧 API の基準",
+        lang: "ja",
+        homePosition: [139.5321, 36.249302],
+        defaultZoom: 17,
+        startFrom: "tatebayashi_ojozu",
+        sources: [...overlays, ...bases],
+        pois: []
+      };
+
+      const ui = document.createElement("maplat-ui");
+      ui.id = "ui";
+      if (params.get("buttons") === "1") {
+        ui.setAttribute("enable-share", "");
+        ui.setAttribute("enable-border", "");
+        ui.setAttribute("enable-hide-marker", "");
+        ui.setAttribute("enable-marker-list", "");
+      }
+      ui.setting = setting;
+      const app = document.createElement("maplat-app");
+      app.setAttribute("slot", "map");
+      ui.appendChild(app);
+      window.__maplatUi = ui;
+      document.getElementById("app").appendChild(ui);
+      const status = document.getElementById("status");
+      Promise.resolve(ui.ready).then(
+        () => {
+          status.textContent = "READY";
+          status.dataset.state = "ready";
+        },
+        err => {
+          console.error(err);
+          status.textContent =
+            "ERROR: " + (err && err.message ? err.message : err);
+          status.dataset.state = "error";
+        }
+      );
+    </script>
+  </body>
+</html>

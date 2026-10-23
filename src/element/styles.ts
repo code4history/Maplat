@@ -4,13 +4,25 @@
 //
 // 規則（仕様 §4.6-3）: 層 A（<maplat-app>）の中身の DOM・class には CSS を当てない。当てるのは
 // スロットに差した要素そのものの箱（::slotted）だけ。
+//
+// 地図の切り替えスライダーの見た目は、Stage 1 の `slider.ts` の暫定の `<style>` からここへ移した
+// （設計 §6.3・§4.5）。数値は `SLIDER_TUNING` から埋め込む（1 か所。Minor 5）。
+// 注意（P2 の調整のとき）: 埋め込みはこのモジュールを読み込んだ時の値で 1 回だけ行う。実行中に
+// `SLIDER_TUNING` を書き換えると、JS の側（幅の境界の判定・枚数・時間）だけが変わり CSS とずれる。
+// 数値を試すときは値を変えてから読み込み直す（ページを開き直す）。
+import { SLIDER_TUNING } from "./slider";
+
 export const MAPLAT_UI_CSS = `
 :host {
   display: block;
   position: relative;
   height: 400px;
   overflow: hidden;
-  font: 14px/1.42857 "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+  /* 書体はページから継承する（旧 UI と同じ。旧の bootstrap は .maplat の下に閉じ込めてあり、
+     body の書体の規則は当たらない＝題名・見出し・ボタンはページの書体を継ぐ。レビュー Major 3）。
+     文字の大きさと行の高さは当面ここで決める（旧は大きさもページから継ぐ。Stage 3 以降の課題） */
+  font-size: 14px;
+  line-height: 1.42857;
   color: #333;
   -webkit-tap-highlight-color: transparent;
 }
@@ -26,23 +38,28 @@ export const MAPLAT_UI_CSS = `
 }
 [hidden] { display: none !important; }
 
-/* ---- 操作ボタン（旧 .ol-control） ---- */
+/* ---- 操作ボタン（旧 .ol-control・node_modules/ol/ol.css と src/styles/maplat-specific.scss） ----
+   位置は設計 §5.2 の旧 CSS の px/em をそのまま使う。em の基準は旧と同じ 16px（下の .ctl）。 */
+/* 旧 .ol-control の文字は 16px（基準 JSON の計算値）。位置の .5em を旧と同じ 8px にするため、
+   容器にも 16px を置く（:host の 14px のままだと 7px になる。仕上げで実測） */
+.ctl,
+.ctl-column { font-size: 16px; }
 .ctl {
   position: absolute;
-  z-index: 2;
-  background-color: rgba(255, 255, 255, .4);
+  background-color: rgba(128, 128, 128, .25);
   border-radius: 4px;
-  padding: 2px;
 }
 .ctl button {
   display: block;
-  margin: 1px;
+  margin: 0;
   padding: 0;
   height: 2.0625em;
   width: 2.0625em;
-  font-size: 1.14em;
-  font-weight: bold;
-  line-height: 1;
+  /* 旧 bootstrap の .maplat button は font-family・line-height とも inherit（行の高さは normal） */
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: normal;
+  line-height: normal;
   color: rgb(255, 255, 255);
   background-color: rgba(120, 5, 8, .5);
   border: none;
@@ -60,28 +77,31 @@ export const MAPLAT_UI_CSS = `
   color: rgba(255, 255, 255, .7);
   background-color: rgba(120, 5, 8, .2);
 }
-/* アイコンは旧 UI の src/icons.ts の SVG（1em 角。旧 "fa-lg" 相当に大きくする） */
-.ctl .icon { display: inline-block; font-size: 1.2em; line-height: 1; }
+/* アイコンは旧 UI と同じ src/icons.ts の SVG（1em 角）。旧は getIcon(…, "far fa-lg") の class を付けるが、
+   旧 CSS に .fa-lg の規則は無いので、実際の大きさはボタンの文字の大きさ（16px・タッチ 24px）と同じ 1em。
+   新も 1em にする（仕上げで実測。旧 16×16・ボタンの左上から 8.5px/7.5px） */
+.ctl .icon { display: inline-block; font-size: 1em; line-height: 1; }
 .ctl-zoom { top: .5em; left: .5em; left: calc(.5em + env(safe-area-inset-left)); }
-.ctl-zoom button { font-size: 1.4em; font-weight: normal; height: 1.68em; width: 1.68em; }
-.ctl-gps { top: 6.2em; left: .5em; left: calc(.5em + env(safe-area-inset-left)); }
-.ctl-home { top: 9.2em; left: .5em; left: calc(.5em + env(safe-area-inset-left)); }
+.ctl-zoom button { height: 2.0625em; width: 2.0625em; font-weight: normal; }
+.ctl-zoom button:first-child { border-radius: 2px 2px 0 0; }
+.ctl-zoom button:last-child { border-radius: 0 0 2px 2px; }
+.ctl-gps { top: 80px; left: .5em; left: calc(.5em + env(safe-area-inset-left)); }
+.ctl-home { top: 120px; left: .5em; left: calc(.5em + env(safe-area-inset-left)); }
 .ctl-compass { top: .5em; right: .5em; right: calc(.5em + env(safe-area-inset-right)); }
 .ctl-compass .needle { display: inline-block; will-change: transform; }
 .ctl-compass .needle svg { transform: rotate(-33deg); }
 /* 右下のボタンの列（旧 .ol-copyright・.ol-border・.ol-hide-marker・.ol-marker-list の積み方）。
    下から 地図情報・枠線・マーカーの非表示・マーカー一覧 の順（R4）。列は flex なので、隠れている
-   ボタンの分だけ詰めて積まれる（旧 UI と同じく隙間を空けない）。 */
+   ボタンの分だけ詰めて積まれる（旧 UI と同じく隙間を空けない）。旧の間隔は 40px（33px + 7px）。 */
 .ctl-column {
   position: absolute;
-  z-index: 2;
   right: .5em;
   right: calc(.5em + env(safe-area-inset-right));
-  bottom: 2.6em;
-  bottom: calc(2.6em + env(safe-area-inset-bottom));
+  bottom: calc(65px + .5em);
+  bottom: calc(65px + .5em + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column-reverse;
-  gap: 6px;
+  gap: 7px;
 }
 .ctl-column > .ctl {
   position: relative;
@@ -90,32 +110,33 @@ export const MAPLAT_UI_CSS = `
   bottom: auto;
   left: auto;
 }
-/* 共有のボタン（旧 .ol-share: 左下。旧はスワイパーの上、ここはマーカー一覧の列と同じ高さ） */
-.ctl-share { left: .5em; left: calc(.5em + env(safe-area-inset-left)); bottom: 2.6em; bottom: calc(2.6em + env(safe-area-inset-bottom)); }
-/* ヘルプのボタン（旧 .ol-maplat: 左下。旧は共有のボタンの下） */
-.ctl-help { left: .5em; left: calc(.5em + env(safe-area-inset-left)); bottom: .5em; bottom: calc(.5em + env(safe-area-inset-bottom)); }
+/* 共有のボタン（旧 .ol-share: 左下。共有のボタンの上にヘルプ） */
+.ctl-share { left: .5em; left: calc(.5em + env(safe-area-inset-left)); bottom: calc(105px + .5em); bottom: calc(105px + .5em + env(safe-area-inset-bottom)); }
+/* ヘルプのボタン（旧 .ol-maplat: 左下） */
+.ctl-help { left: .5em; left: calc(.5em + env(safe-area-inset-left)); bottom: calc(65px + .5em); bottom: calc(65px + .5em + env(safe-area-inset-bottom)); }
 /* 押されている状態（旧は class の付け替えで表していた） */
 .ctl button[aria-pressed="true"] { background-color: rgba(120, 5, 8, .9); }
 /* 操作ボタンの自動非表示（旧 .ol-control.fade / .ol-slidercommon.fade） */
 .ctl.fade,
-.slider.fade { display: none; }
+.slider.fade,
+.map-title.fade,
+.map-slider.fade { display: none; }
 /* タッチ端末ではズームのボタンを隠す（旧 &.ol-touch .ol-zoom { display: none; }） */
 .frame.touch .ctl-zoom { display: none; }
 /* タッチ端末はズームを隠した分、GPS とホームを上へ詰め、ボタンを指で押せる大きさにする
    （旧 ol-touch: src/styles/maplat-specific.scss の .gps / .home の top と、
-   node_modules/ol/ol.css の .ol-touch .ol-control button { font-size: 1.5em }） */
+   node_modules/ol/ol.css の .ol-touch .ol-control button { font-size: 1.5em }＝16px × 1.5）。
+   右列は flex の自動積みで旧の 115px+.5em / 165px+.5em / 215px+.5em に寄せる（ボタン 49.5px）。 */
 .frame.touch .ctl-gps { top: .5em; }
-.frame.touch .ctl-home { top: calc(.5em + 3em); }
-.frame.touch .ctl button { font-size: 1.5em; }
-/* タッチ端末はボタンが大きくなるので、共有をヘルプの上へずらす（n1。共有とヘルプが重ならない）。
-   ボタンの高さ = 2.0625em（.ctl button の height）× 1.5em（タッチの文字の大きさ）= 3.09375em。
-   .5em（ヘルプの下端）+ 3.09375em（ボタンの高さ）+ .5em（すき間）。 */
-.frame.touch .ctl-share { bottom: 4.09375em; bottom: calc(4.09375em + env(safe-area-inset-bottom)); }
+.frame.touch .ctl-home { top: calc(.5em + 50px); }
+.frame.touch .ctl button { font-size: 24px; }
+/* bottom は基本の規則（65px + .5em + 安全領域）のまま。ここで書くと安全領域が消える（レビュー Major 2） */
+.frame.touch .ctl-column { gap: .5px; }
+.frame.touch .ctl-share { bottom: calc(115px + .5em); bottom: calc(115px + .5em + env(safe-area-inset-bottom)); }
 
 /* ---- 透過度のスライダー（旧 .ol-slidernew） ---- */
 .slider {
   position: absolute;
-  z-index: 2;
   appearance: none;
   -webkit-appearance: none;
   margin: 0;
@@ -128,13 +149,15 @@ export const MAPLAT_UI_CSS = `
   border: 2px solid #666;
   border-radius: 4px;
   box-sizing: border-box;
+  /* <input> は UA の 13.333px を持つので、旧 .ol-slidernew の 16px を置く（bottom の .5em を 8px に） */
+  font-size: 16px;
 }
 .slider[disabled] { background: rgba(255, 255, 255, .7); }
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   width: 20px;
-  height: 21px;
+  height: 25px;
   background-color: rgba(120, 5, 8, .5);
   border: none;
   border-radius: 4px;
@@ -142,7 +165,7 @@ export const MAPLAT_UI_CSS = `
 }
 .slider::-moz-range-thumb {
   width: 20px;
-  height: 21px;
+  height: 25px;
   background-color: rgba(120, 5, 8, .5);
   border: none;
   border-radius: 4px;
@@ -157,97 +180,101 @@ export const MAPLAT_UI_CSS = `
 @media screen and (max-width: 640px) {
   .slider { left: 37.5%; width: 25%; }
 }
+@media screen and (max-width: 320px) {
+  .slider { left: 120px; width: 80px; }
+}
 
-/* ---- 地図の題名と切り替えメニュー（旧 .map-title。旧 UI のスワイパーの代わり） ---- */
+/* ---- 地図の題名（旧 .map-title。旧 UI と同じく div + span） ---- */
 .map-title {
   position: absolute;
-  z-index: 2;
   top: .5em;
-  left: 50%;
-  transform: translateX(-50%);
+  left: calc(50% - 250px);
   width: 500px;
-  max-width: calc(100% - 7.5em);
-}
-.map-title button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: .4em;
-  width: 100%;
-  min-height: 2.2em;
-  padding: .3em .8em;
-  border: none;
-  border-radius: 4px;
+  margin: auto;
   background-color: rgba(32, 32, 32, .5);
-  color: #fff;
-  font: inherit;
-  font-size: 1.1em;
-  cursor: pointer;
-}
-.map-title .text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.map-title .caret { flex: none; font-size: .8em; opacity: .85; }
-.map-title button[aria-expanded="true"] .caret { transform: rotate(180deg); }
-.map-menu {
-  position: absolute;
-  z-index: 3;
-  top: 3.3em;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 500px;
-  max-width: calc(100% - 1em);
-  max-height: calc(100% - 4.5em);
-  overflow-y: auto;
-  box-sizing: border-box;
-  padding: .5em;
-  background: rgba(255, 255, 255, .96);
-  border-radius: 6px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, .3);
-}
-.map-menu h3 { margin: .3em .2em .4em; font-size: .9em; color: #555; }
-.map-menu ul {
-  list-style: none;
-  margin: 0 0 .4em;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
-  gap: 6px;
-}
-.map-menu li button {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  width: 100%;
-  padding: 0;
-  border: 2px solid transparent;
   border-radius: 4px;
-  background: #f4f4f4;
-  color: #222;
-  font: inherit;
-  font-size: .85em;
-  cursor: pointer;
+  color: #fff;
+  font-size: 18px;
+  text-align: center;
   overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
-.map-menu li button:hover { border-color: rgba(120, 5, 8, .4); }
-.map-menu li button[aria-current="true"] { border-color: rgba(120, 5, 8, .9); background: #fff0f0; }
-.map-menu .thumb {
-  display: block;
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-  background: #ddd;
+/* 旧 .map-title は高さも line-height も指定せず normal（ページの書体の normal）。新も同じにする */
+.map-title,
+.map-title .text { line-height: normal; }
+.map-title .text { display: inline; }
+@media screen and (max-width: 600px) {
+  .map-title { width: calc(100% - 100px); left: 50px; }
+  .frame.touch .map-title { width: calc(100% - 130px); left: 65px; }
 }
-.map-menu .thumb.none {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #888;
-  font-size: 1.6em;
+
+/* ---- 地図の切り替えスライダー（旧 .base-swiper / .overlay-swiper。設計 §4.5・§5.2 B12/B13） ----
+   位置は旧 CSS の値をそのまま使う（左＝背景の地図、右＝重ねる地図）。P3: overlay: false でも
+   隠さない。地図が 1 枚しかないスライダーは枠（背景）を描かないが、位置と幅は変えないので
+   左右の釣り合いは保たれる。 */
+.map-switcher { position: absolute; inset: 0; pointer-events: none; }
+.map-slider {
+  position: absolute;
+  z-index: 1;
+  bottom: .5em;
+  bottom: calc(.5em + env(safe-area-inset-bottom));
+  height: ${SLIDER_TUNING.cardHeightPx}px;
+  width: 224px;
+  background-color: rgba(32, 32, 32, .5);
+  border-radius: 4px;
+  color: #fff;
+  /* 旧 .swiper の容器は 16px（bottom の .5em＝8px）、カード（.swiper-slide）は 18px */
+  font-size: 16px;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: pan-y;
+  pointer-events: auto;
 }
-.map-menu .label { padding: 3px 4px; line-height: 1.25; text-align: center; overflow-wrap: anywhere; }
-/* 範囲を持つ地図の印（枠線と同じ色。旧 UI のスライドの枠と同じ役） */
-/* 色の印は枠線の表示中だけ出す（旧 .show-border のスライドの枠。N1） */
-.map-menu .swatch { display: none; height: 4px; margin: 0 4px 4px; border-radius: 2px; }
-.map-menu.show-border .swatch { display: block; }
+.map-slider[data-kind="base"] { left: calc(50% - 312px); }
+.map-slider[data-kind="overlay"] { left: calc(50% + 88px); }
+/* 1 枚（と 0 枚）のスライダーは枠を描かない（P3。位置は動かさない） */
+.map-slider.single-map { background-color: transparent; }
+.map-slider:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.map-slider-viewport { position: relative; overflow: hidden; width: 100%; height: 100%; }
+.map-slider-track { position: absolute; top: 0; left: 0; width: 100%; height: 100%; will-change: transform; }
+/* カードは <button>。UA の button の文字（13.333px）を受けず、旧 .swiper-slide と同じ 18px にする */
+.map-slide { position: absolute; top: 0; left: 0; height: 100%; margin: 0; padding: 0; border: 0; box-sizing: border-box; font: inherit; font-size: 18px; background-color: rgba(0, 0, 0, 0); display: flex; align-items: center; justify-content: center; text-align: center; cursor: pointer; }
+.map-slide:focus-visible { outline: 2px solid #fff; outline-offset: -2px; }
+.map-slide-thumb { position: absolute; top: 0; right: 0; bottom: 0; left: 0; margin: auto; z-index: 0; max-width: 100%; max-height: 100%; }
+/* 旧 #thumbPlaceholder と同じ見た目（頭文字）。要素の 1 つだけを使い、2 つ目を作らない */
+.map-slide .thumb.none { position: absolute; top: 0; right: 0; bottom: 0; left: 0; width: 52px; height: 52px; max-width: 100%; max-height: 100%; margin: auto; z-index: 0; display: flex; align-items: center; justify-content: center; color: rgba(255, 255, 255, .75); font-size: 1.6em; }
+.map-slide-label { position: absolute; right: 0; bottom: .1em; left: 0; margin: auto; z-index: 1; font-size: 1em; line-height: normal; color: #fff; background-color: rgba(32, 32, 32, .5); text-align: center; }
+.map-slide-label.minimize { font-size: .8em; }
+@media screen and (max-width: ${SLIDER_TUNING.breakpointWidth}px) {
+  .map-slider.touch .map-slide-label { font-size: .8em; }
+  .map-slider.touch .map-slide-label.minimize { font-size: .6em; }
+}
+.map-slide.selected { background-color: rgba(0, 0, 255, .1); }
+/* 範囲を持つ地図の枠（旧 .show-border .swiper-slide.<色>）。色は要素が割り当てた 12 色 */
+.map-slider.show-border .map-slide.has-envelope { border: 2px dashed var(--maplat-envelope-color, maroon); }
+/* 矢印（旧 .base-prev 等＋旧ライブラリ v12 の .swiper-button-prev/next）。箱は 18×30・top 15px、
+   形は旧ライブラリの山形の SVG、色は旧の既定の #007aff（旧の swiper-button-white は v12 では効かない） */
+.map-slider-nav { position: absolute; top: 15px; width: 18px; height: 30px; margin: 0; padding: 0; border: 0; background-color: transparent; display: flex; align-items: center; justify-content: center; color: #007aff; z-index: 10; cursor: pointer; }
+.map-slider-nav.prev { left: 4px; }
+.map-slider-nav.next { left: calc(100% - 22px); }
+.map-slider-nav-icon { width: 100%; height: 100%; object-fit: contain; transform-origin: center; fill: currentColor; pointer-events: none; }
+.map-slider-nav.prev .map-slider-nav-icon { transform: rotate(180deg); }
+.map-slider-nav[hidden] { display: none; }
+.map-slider.single-map .map-slider-nav { display: none; }
+.map-slider.disabled .map-slide { cursor: default; }
+.map-slider-live { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media screen and (max-width: 640px) {
+  .map-slider { width: 35%; }
+  .map-slider[data-kind="base"] { left: 1.25%; }
+  .map-slider[data-kind="overlay"] { left: 63.75%; }
+}
+@media screen and (max-width: 320px) {
+  .map-slider { width: 112px; }
+  .map-slider[data-kind="base"] { left: 4px; }
+  .map-slider[data-kind="overlay"] { left: 204px; }
+}
+@media (prefers-reduced-motion: reduce) { .map-slider-track { transition: none !important; } }
 
 /* ---- POI の吹き出し（旧 .modal / .modal_poi） ---- */
 .modal {
@@ -306,8 +333,10 @@ export const MAPLAT_UI_CSS = `
 .poi-media cc-swiper {
   display: block;
   height: 300px;
-  --cc-slider-theme-color: #007aff;
-  --cc-slider-navigation-color: #007aff;
+  /* ページから変えられるよう、層 B の CSS 変数で公開する（Shadow DOM の中で直接指定すると外から上書きできない。
+     Stage 3 のレビュー m5）。既定は旧と同じ #007aff */
+  --cc-slider-theme-color: var(--maplat-poi-media-theme-color, #007aff);
+  --cc-slider-navigation-color: var(--maplat-poi-media-navigation-color, #007aff);
 }
 .poi-address { color: #555; margin: 0 0 10px; }
 .poi-desc { margin: 0 0 10px; }

@@ -1,5 +1,9 @@
 // oct26-m16-t1: POI データ（信頼できない外部 JSON。m1-t4 の脅威モデル）を
 // DOM や遷移先へ渡す前の無害化ヘルパー。セキュリティレビュー B の B-UI-1〜3 の是正。
+//
+// Stage 4 の仕上げ: 旧 UI の画面の HTML を文字列で組み立てるための関数（`escapeHtml`・`layerListItemHtml`・
+// `poiListItemHtml` と、地図の切り替えのカードのサムネイル・カードの組み立て 2 本）は、呼び手（旧 UI）が無くなったので消した。
+// `<maplat-ui>` は DOM を組み立てて `textContent` で文字を入れ、URL は下の 2 本で検査する。
 
 /**
  * 遷移先・iframe の src として許すスキーム（許可リスト）。
@@ -27,57 +31,6 @@ export function safeWebUrl(value: unknown): string | undefined {
 }
 
 /**
- * HTML のテキスト・属性値（二重引用符・単一引用符のどちらで囲んでも）へ
- * 補間するための実体参照化。文字列以外は、変更前のテンプレート補間と同じく String() で文字列にする。
- */
-export function escapeHtml(value: unknown): string {
-  return String(value)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
-/**
- * POI 一覧（マーカーリスト）のレイヤ行。
- * テンプレートは変更前（src/ui_init.ts, 5a27bb77）と同一で、icon と label を実体参照化する点だけが違う。
- */
-export function layerListItemHtml(
-  icon: unknown,
-  label: unknown,
-  hide: boolean
-): string {
-  return `<li class="list-group-item layer">
-                        <div class="row layer_row">
-                           <div class="layer_label">
-                              <span class="dli-chevron"></span>
-                              <img src="${escapeHtml(icon)}" class="markerlist"> ${escapeHtml(label)}
-                           </div>
-                           <div class="layer_onoff">
-                              <input type="checkbox" class="markerlist" ${hide ? "" : "checked"}>
-                              <label class="check"><div></div></label>
-                           </div>
-                        </div>
-                    </li>`;
-}
-
-/**
- * POI 一覧（マーカーリスト）の POI 行。
- * テンプレートは変更前（src/ui_init.ts, 5a27bb77）と同一で、icon と label を実体参照化する点だけが違う。
- */
-export function poiListItemHtml(icon: unknown, label: unknown): string {
-  return `<li class="list-group-item poi">
-                                <div class="row poi_row">
-                                   <div class="poi_label">
-                                      <span class="dli-chevron"></span>
-                                      <img src="${escapeHtml(icon)}" class="markerlist"> ${escapeHtml(label)}
-                                   </div>
-                                </div>
-                            </li>`;
-}
-
-/**
  * 画像の URL として許すもの: safeWebUrl が通すもの（http/https・相対）と、
  * `data:image/` で始まるもの（前後の空白を除き大文字小文字を区別しない）。
  * それ以外（javascript:・data:text/html・vbscript:・文字列でない値・空文字）は undefined。
@@ -91,45 +44,4 @@ export function safeImageUrl(value: unknown): string | undefined {
   if (typeof value !== "string") return undefined;
   if (/^\s*data:image\//i.test(value)) return value;
   return safeWebUrl(value);
-}
-
-/**
- * スワイパーのサムネイルの URL。thumbnail のファイル名が images（pointer_images の表）の
- * **自身のキー**で値が文字列ならその値、そうでなければ thumbnail を使い、safeImageUrl を通らなければ fallback。
- * 継承キー（`__proto__`・`constructor` 等）は使わない（nov26-m5-t1）。
- */
-export function swiperThumbUrl(
-  thumbnail: unknown,
-  images: Record<string, unknown>,
-  fallback: string
-): string {
-  let candidate: unknown = thumbnail;
-  if (typeof thumbnail === "string" && thumbnail !== "") {
-    const key = thumbnail.split("/").pop()!;
-    if (
-      Object.prototype.hasOwnProperty.call(images, key) &&
-      typeof images[key] === "string"
-    ) {
-      candidate = images[key];
-    }
-  }
-  return safeImageUrl(candidate) ?? fallback;
-}
-
-/**
- * 地図切替スワイパーの 1 枚。テンプレートは変更前（src/ui_init.ts:524-527・537-540, 26fbb36a）と同一で、
- * mapID・thumbUrl・label・extraClass を実体参照化する点だけが違う。
- * thumbUrl は呼び出し側で swiperThumbUrl を通した値を渡す（ここでは実体参照化だけをする）。
- */
-export function swiperSlideHtml(
-  mapID: unknown,
-  thumbUrl: unknown,
-  label: unknown,
-  extraClass = ""
-): string {
-  const cls = extraClass ? ` ${escapeHtml(extraClass)}` : "";
-  return (
-    `<div class="swiper-slide${cls}" data="${escapeHtml(mapID)}">` +
-    `<img crossorigin="anonymous" src="${escapeHtml(thumbUrl)}"><div> ${escapeHtml(label)}</div> </div> `
-  );
 }

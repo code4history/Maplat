@@ -214,11 +214,14 @@ describe("枠線（enable-border・層 A の setEnvelopes。§5.1 M10・§3.7）
     // 塗りは今の地図（old1）の色で、ほかの地図は塗らない
     expect(controller.envelopes[0].fill).toBe("rgba(128, 0, 0, 0.4)");
     expect(controller.envelopes[1].fill).toBeUndefined();
-    // 地図の切り替えメニューの項目にも同じ色の印を付ける（R2 の任意）
-    const swatches = Array.from(
-      shadow(ui).querySelectorAll<HTMLElement>(".map-menu .swatch")
-    ).map(s => s.style.backgroundColor);
-    expect(swatches).toEqual(["rgb(128, 0, 0)", "rgb(255, 20, 147)"]);
+    // 地図の切り替えスライダーのカードにも同じ色を渡す（旧 UI のスライドの枠と同じ役。R2 の任意）
+    const colorOf = (mapID: string) =>
+      Array.from(
+        shadow(ui).querySelectorAll<HTMLElement>('[part~="map-slide"]')
+      )
+        .find(slide => slide.dataset.mapId === mapID)
+        ?.style.getPropertyValue("--maplat-envelope-color");
+    expect([colorOf("old1"), colorOf("old2")]).toEqual(["#800000", "#ff1493"]);
   });
 
   it("地図を切り替えると塗る範囲が今の古地図へ移る（旧 updateEnvelope の isActive）", async () => {
@@ -499,6 +502,42 @@ describe("地図情報・ライセンス・タイルキャッシュ（操作ボ�
     expect(license.querySelector(".license-text")!.textContent).toBe(
       "Mystery License"
     );
+  });
+
+  // 旧 `spec/m6-t2-license-cell.spec.ts` の AC14b・AC14c の移植（Stage 4 の仕上げ。旧の renderLicenseCell は消した）
+  it("AC14b: ライセンスが Custom ならアイコンを出さず、注意書きの文章だけを出す", async () => {
+    const setting = structuredClone(SETTING) as typeof SETTING;
+    (setting.sources[1] as any).meta = {
+      ...(setting.sources[1] as any).meta,
+      license: "Custom",
+      licenseNote: "ODbL 1.0"
+    };
+    const ui = await mountUi(u => u.setAttribute("lang", "en"), setting);
+    open(ui);
+    const license = cell(ui, "license");
+    expect(license.querySelector("img")).toBeNull();
+    expect(license.querySelector(".license-text")).toBeNull();
+    const note = license.querySelector(".license_note");
+    expect(note).toBeTruthy();
+    expect(note!.textContent).toBe("ODbL 1.0");
+  });
+
+  it("AC14c: 注意書きは textContent で入る（悪意ある HTML も文字のまま・要素にならない）", async () => {
+    const malicious = '<img src=x onerror="alert(1)"> 出典';
+    const setting = structuredClone(SETTING) as typeof SETTING;
+    (setting.sources[1] as any).meta = {
+      ...(setting.sources[1] as any).meta,
+      license: "Custom",
+      licenseNote: malicious
+    };
+    const ui = await mountUi(u => u.setAttribute("lang", "en"), setting);
+    open(ui);
+    const license = cell(ui, "license");
+    const note = license.querySelector(".license_note");
+    expect(note!.textContent).toBe(malicious);
+    expect(license.querySelector('img[src="x"]')).toBeNull();
+    expect(note!.querySelector("img")).toBeNull();
+    expect(note!.children).toHaveLength(0);
   });
 
   it("HTML の値は sanitizeHtml を通す（属性・帰属の HTML。onerror は落ちる）", async () => {

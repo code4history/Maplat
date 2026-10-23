@@ -19,8 +19,11 @@ import { safeWebUrl } from "../poi_safe";
 export interface PwaOptions {
   /** manifest の URL（true は既に既定のパスへ解決済みの値を渡す） */
   manifest: string;
-  /** Service Worker の URL（既定 ./service-worker.js） */
-  worker?: string;
+  /**
+   * Service Worker の URL（既定 ./service-worker.js）。`null` は「登録しない」（manifest・apple-touch-icon は足す。
+   * 旧 API の `pwaWorker: false / null`。旧 pwa_init.ts と同じ。互換層だけが渡す）
+   */
+  worker?: string | null;
   /** Service Worker の scope（既定 ./） */
   scope?: string;
 }
@@ -82,7 +85,10 @@ export function initPwa(
 ): Promise<ServiceWorkerRegistration | undefined> | undefined {
   if (typeof document === "undefined") return undefined;
   const manifest = safeWebUrl(options.manifest);
-  const worker = safeWebUrl(options.worker ?? "./service-worker.js");
+  const noWorker = options.worker === null;
+  const worker = noWorker
+    ? null
+    : safeWebUrl(options.worker ?? "./service-worker.js");
   const scope = safeWebUrl(options.scope ?? "./");
   if (manifest === undefined || worker === undefined || scope === undefined) {
     console.warn(
@@ -96,11 +102,14 @@ export function initPwa(
     appendLink(head, { rel: "manifest", href: manifest });
   }
 
-  const key = `${resolveKey(worker)}|${resolveKey(scope)}`;
-  let registration = registrations.get(key);
-  if (!registration) {
-    registration = register(worker, scope);
-    registrations.set(key, registration);
+  let registration: Promise<ServiceWorkerRegistration | undefined>;
+  if (worker === null) {
+    registration = Promise.resolve(undefined);
+  } else {
+    const key = `${resolveKey(worker)}|${resolveKey(scope)}`;
+    const known = registrations.get(key);
+    registration = known ?? register(worker, scope);
+    if (!known) registrations.set(key, registration);
   }
 
   const manifestKey = resolveKey(manifest);

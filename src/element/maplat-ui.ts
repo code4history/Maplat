@@ -5,7 +5,8 @@
 //   </maplat-ui>
 //
 // 地図（層 A の <maplat-app>）に、操作ボタン（ズーム・ホーム・コンパス・GPS・透過度・地図情報・枠線・
-// マーカーの非表示）・地図の切り替えメニュー・POI の吹き出し（メディアは Chuci のスワイパー）・マーカー一覧・
+// マーカーの非表示）・地図の切り替えスライダー（旧 UI の `.base-swiper` / `.overlay-swiper`）・
+// POI の吹き出し（メディアは Chuci のスワイパー）・マーカー一覧・
 // 重なった POI の選択メニュー・地図情報（メタデータ・ライセンス・タイルキャッシュ）・共有（SNS・コピー・QR）・
 // 状態 URL（state-url）・PWA（pwa-manifest 等）を重ねる。
 // 残りの機能（ヘルプ等の画面と全言語化）は後で移す。
@@ -53,7 +54,7 @@ import {
 } from "@maplat/core/common";
 import { getIcon } from "../icons";
 import { LICENSE_ICONS } from "./license_images";
-import { safeWebUrl } from "../poi_safe";
+import { safeImageUrl, safeWebUrl } from "../poi_safe";
 import browserLanguage from "../browserlanguage";
 import {
   loadLanguage,
@@ -62,6 +63,7 @@ import {
   translateKey
 } from "./i18n";
 import { initPwa } from "./pwa";
+import { buildPoiBody } from "./poi-html";
 import {
   facebookShareUrl,
   renderQr,
@@ -70,6 +72,9 @@ import {
   type ShareUrlType
 } from "./share";
 import { buildStatePath, parseStateHash } from "./state-url";
+import { MapSlider, type MapSliderItem } from "./slider";
+import { pointInPolygon, polygonArea } from "../shared/geo";
+import { resolveRelativeLink } from "../shared/text";
 import { MAPLAT_UI_CSS } from "./styles";
 
 /** @maplat/ui の版（package.json の version と一致することを spec/element.spec.ts が確かめる）。 */
@@ -77,6 +82,40 @@ export const MAPLAT_UI_VERSION = "1.1.0";
 
 /** コンパスを押したときの動き（U6: 層 B が決める）。auto は north-up が真なら北へ、偽なら回転を 0 へ。 */
 export type CompassAction = "auto" | "north" | "rotation";
+
+/**
+ * 汎用のメニュー（`part="poi-menu"`。設計 v2 §3 L4・§5.2 B15・D1）の 1 項目。
+ *
+ * メニューは**1 つだけ**持つ。重なった POI の選択はこの一般形の使い方の 1 つで、
+ * 旧 API の `showContextMenu([{icon, text, callback}])` も同じ部品へ委譲する（二重にしない）。
+ * `text` は `html: false` のとき文字として、それ以外は `sanitizeHtml` を通した HTML として入れる
+ * （旧 `contextmenu/html.ts:94` は HTML として差し込んでいた。D6）。
+ *
+ * @internal 旧 UI の互換層（`src/legacy/`）が使う移行期の口。層 B の公開面（仕様 §4.4）には数えない。
+ */
+export interface MaplatMenuItem {
+  /** 画像の URL（http/https・相対 URL だけを画像にする。`poi_safe.ts` の許可リスト） */
+  icon?: string;
+  /** 文言（`html: false` のときは文字として入れる） */
+  text: string;
+  /** `text` を HTML として入れるか（既定: 真。POI の名前は偽で文字として入れる） */
+  html?: boolean;
+  /** 押したときの処理（メニューは押す前に閉じる） */
+  callback?: () => void;
+}
+
+/** `showMenu()` の引数。 */
+export interface MaplatMenuOptions {
+  items: MaplatMenuItem[];
+  /**
+   * 位置。**`<maplat-ui>` の枠（`.frame`。ホストの内側いっぱい）の左上を原点にした px**（client 座標ではない）。
+   * 旧 API の `lastClickPixel`（旧は OL の viewport 基準、互換層はホスト基準）をそのまま渡せる。
+   * 省略すると最後の pointerdown の位置（こちらは client 座標から枠の座標へ直す）。どちらも無ければ枠の中央
+   */
+  at?: { x: number; y: number };
+  /** 読み上げ名（既定は POI の候補の文言） */
+  label?: string;
+}
 
 /** 層 A へ流す属性（§3.2 の属性と同期するキー・実装固有の機能に結びつく属性（U3））。 */
 const LAYER_A_ATTRS: readonly AttrDef[] = [
@@ -255,39 +294,6 @@ function normalizeDegree(deg: number): number {
   return d === -180 ? 180 : d;
 }
 
-/** 多角形（経緯度の点の並び）の面積。球面補正はしない（狭い範囲の重なりの比較にだけ使う）。 */
-function polygonArea(points: readonly LngLat[]): number {
-  let sum = 0;
-  for (let i = 0; i < points.length; i++) {
-    const a = points[i];
-    const b = points[(i + 1) % points.length];
-    sum += a.longitude * b.latitude - b.longitude * a.latitude;
-  }
-  return Math.abs(sum) / 2;
-}
-
-/** 点が多角形の中にあるか（ray casting。境界は内側に寄せる）。 */
-function pointInPolygon(point: LngLat, polygon: readonly LngLat[]): boolean {
-  let inside = false;
-  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-    const a = polygon[i];
-    const b = polygon[j];
-    const crosses =
-      a.latitude > point.latitude !== b.latitude > point.latitude &&
-      point.longitude <
-        ((b.longitude - a.longitude) * (point.latitude - a.latitude)) /
-          (b.latitude - a.latitude) +
-          a.longitude;
-    if (crosses) inside = !inside;
-  }
-  return inside;
-}
-
-/** 旧 ui_utils.resolveRelativeLink と同じ（"/" を含まない名前は既定の置き場 img/ の下）。 */
-function resolveRelativeLink(file: string, fallbackPath: string): string {
-  return /\//.test(file) ? file : `${fallbackPath}/${file}`;
-}
-
 /** バイト数の表し方（旧 ui_utils.encBytes と同じ規則・同じ刻み）。 */
 function encBytes(bytes: number): string {
   const suffixes = ["Bytes", "KBytes", "MBytes", "GBytes"];
@@ -331,15 +337,6 @@ function detectMediaType(src: string): string {
     default:
       return "image";
   }
-}
-
-/** 画像（アイコン）の URL として通すもの: http/https・相対 URL（safeWebUrl）と data:image/。それ以外は undefined。 */
-function safeImageUrl(value: unknown): string | undefined {
-  const web = safeWebUrl(value);
-  if (web !== undefined) return web;
-  return typeof value === "string" && /^data:image\//i.test(value.trim())
-    ? value
-    : undefined;
 }
 
 /** POI のマーカーの画像（旧 UI と同じく POI → レイヤー → 既定のピン（fallback）の順）。 */
@@ -457,15 +454,8 @@ const SHARE_BUTTONS = (kind: ShareUrlType) => `
 const TEMPLATE = `
 <div class="frame" part="frame">
   <slot name="map"></slot>
-  <div class="map-title" part="map-title" hidden>
-    <button type="button" class="map-title-button" part="map-title-button" aria-haspopup="true" aria-expanded="false">
-      <span class="text"></span><span class="caret" aria-hidden="true">&#9660;</span>
-    </button>
-  </div>
-  <div class="map-menu" part="map-menu" hidden>
-    <section data-kind="overlay"><h3></h3><ul></ul></section>
-    <section data-kind="base"><h3></h3><ul></ul></section>
-  </div>
+  <div class="map-title" part="map-title" hidden><span class="text"></span></div>
+  <div class="map-switcher" part="map-switcher"></div>
   <div class="ctl ctl-zoom" part="zoom">
     <button type="button" class="zoom-in" part="zoom-in">+</button>
     <button type="button" class="zoom-out" part="zoom-out">&#8722;</button>
@@ -572,9 +562,8 @@ const TEMPLATE = `
 interface Parts {
   frame: HTMLElement;
   title: HTMLElement;
-  titleButton: HTMLButtonElement;
   titleText: HTMLElement;
-  menu: HTMLElement;
+  switcher: HTMLElement;
   zoomIn: HTMLButtonElement;
   zoomOut: HTMLButtonElement;
   gps: HTMLElement;
@@ -685,13 +674,24 @@ export class MaplatUiElement extends BaseElement {
   #poi: MaplatPoi | null = null;
   // 表示中の POI の数（poi_number。0 ならマーカー一覧のボタンを隠す＝旧 no_poi）
   #poiCount = 0;
-  // 選択メニューに出している POI（ボタンの data-index で引く）
-  #poiMenuItems: MaplatPoi[] = [];
+  // 汎用メニュー（part="poi-menu"。旧 UI の contextmenu）。ボタンの data-index で引く。
+  // 1 つだけ持ち、重なった POI の選択も旧 API の showContextMenu もこの一般形を使う（二重にしない）。
+  #menuItems: MaplatMenuItem[] = [];
+  // メニューの項目を作り直す関数（言語の切り替え用）。null なら #menuItems のまま
+  #menuProvider: (() => MaplatMenuItem[]) | null = null;
+  #menuLabel = "";
+  // 重なった POI のメニューに出している POI（言語の切り替えで項目を作り直すために持つ）
+  #poiMenuList: MaplatPoi[] = [];
   // clickMarker を受けて、同じ拍に clickMarkers が来なければ単独で開く（旧 UI は clickMarkers だけを見る）
   #pendingMarker: MaplatPoi | null = null;
   // 地図（子の要素）の最後の pointerdown の位置（選択メニューの位置。仕様 §3.7: 子の要素の DOM の pointerdown）
   #lastPointer: { clientX: number; clientY: number } | null = null;
   #sliderDragging = false;
+  // 地図の切り替えスライダー（左＝背景の地図・右＝重ねる地図。設計 §4.6・Stage 2）
+  #baseSlider: MapSlider | null = null;
+  #overlaySlider: MapSlider | null = null;
+  // 重ねる地図のスライダーの中央のカード（枠線の塗りを先に追従させる。旧 updateEnvelope の isActive）
+  #activeOverlayMapId: string | null = null;
   #warned = new Set<string>();
   #setupListener: (() => void) | null = null;
   // 読み込んだ言語ファイルの辞書（内蔵の辞書 + 旧 UI の言語ファイル。null は内蔵の辞書だけ）。
@@ -701,6 +701,8 @@ export class MaplatUiElement extends BaseElement {
   #localeGeneration = 0;
   // 起動時だけ効く層 B のキーの起動時の値（最初の #setup で取る。以後の変更は警告して無視。U2）
   #startup: Map<string, unknown> | null = null;
+  // 旧 API の pwaWorker: false / null（disablePwaWorker）。Service Worker を登録しない
+  #pwaNoWorker = false;
   // 状態 URL（state-url）: 起動時に URL から読んだ復元値（子の restore として流す。§6.1）
   #urlRestore: Restore | null = null;
   // 子が restore を自分で持つ・子の作成が先に始まっていた → ready の後に changeMap で当てる（§5.2）
@@ -760,9 +762,8 @@ export class MaplatUiElement extends BaseElement {
     this.#el = {
       frame: q(".frame"),
       title: q(".map-title"),
-      titleButton: q<HTMLButtonElement>(".map-title-button"),
       titleText: q(".map-title .text"),
-      menu: q(".map-menu"),
+      switcher: q(".map-switcher"),
       zoomIn: q<HTMLButtonElement>(".zoom-in"),
       zoomOut: q<HTMLButtonElement>(".zoom-out"),
       gps: q(".ctl-gps"),
@@ -1024,8 +1025,9 @@ export class MaplatUiElement extends BaseElement {
   setShowBorder(flag: boolean): void {
     if (!this.#app || !this.#appReady) return;
     this.#showBorder = !!flag;
-    // 地図のメニューの色の印は枠線の表示中だけ出す（旧 .show-border のスライドの枠）
-    this.#el.menu.classList.toggle("show-border", this.#showBorder);
+    // 枠線の表示中だけ、スライダーの範囲を持つ地図のカードに枠を出す（旧 .show-border のスライドの枠）
+    this.#baseSlider?.setShowBorder(this.#showBorder);
+    this.#overlaySlider?.setShowBorder(this.#showBorder);
     this.#call("requestUpdateState", app =>
       app.requestUpdateState({ showBorder: flag ? 1 : 0 })
     );
@@ -1131,6 +1133,119 @@ export class MaplatUiElement extends BaseElement {
     }, 1500);
   }
 
+  // ---- 旧 UI の互換層（src/legacy/）のための口（移行期だけ。設計 §2.3.6・§3 L1〜L17）----
+  //
+  // ここから下はすべて @internal。層 B の公開面（仕様 §4.4 の 8 メソッド）には数えない。
+  // 旧 API（MaplatUi）の外形を保つために、互換層が要素の部品へ委譲するだけの口を置く。
+  // 旧 API は 1.x の間ずっと残す（メジャー版まで。設計 v2 §7.3 R-5）ので、この口も残す。
+
+  /**
+   * 言語ファイルの読み込みが済むまで待つ。
+   * @internal 旧 UI の onUiConfigure は i18n を読んでから利用者の hook を呼んでいた（設計 §3 L11）。
+   *   互換層はこの口を待ってから hook を呼ぶ。読み込みに失敗しても reject しない（en へ落ちる）。
+   */
+  whenI18nReady(): Promise<void> {
+    return this.#ensureLanguage();
+  }
+
+  /** @internal 状態 URL を今の状態で書き直す（旧 MaplatUi.updateUrl）。 */
+  refreshStateUrl(): void {
+    this.#updateUrl();
+  }
+
+  /** @internal 枠線（envelope）を描き直す（旧 MaplatUi.updateEnvelope）。 */
+  refreshEnvelopes(): void {
+    this.#updateEnvelope();
+  }
+
+  /** @internal スライダーの見出しを詰め直す（旧 MaplatUi.ellips の移設先。`ellipsize` を呼ぶ）。 */
+  refreshEllipsis(): void {
+    this.#baseSlider?.refresh();
+    this.#overlaySlider?.refresh();
+  }
+
+  /** @internal その地図がその行のスライダーにあるか（旧 checkOverlayID。overlay は重ねる地図の行）。 */
+  hasMap(mapID: string, kind: "base" | "overlay" = "overlay"): boolean {
+    return typeof mapID === "string" && mapID !== ""
+      ? this.slider(kind)?.hasMap(mapID) === true
+      : false;
+  }
+
+  /**
+   * @internal 旧 API の `pwaWorker: false / null`（Service Worker を登録しない。manifest は足す）。
+   *   互換層が起動前に呼ぶ。属性の `pwa-worker` には「登録しない」の値が無いので、移行期の口として置く。
+   */
+  disablePwaWorker(): void {
+    this.#pwaNoWorker = true;
+  }
+
+  /**
+   * @internal POI のメディアの表示部品（`@c4h/chuci` の `cc-swiper` 等）を先に読み込む。
+   *   旧 UI は起動時に Chuci を静的に import して登録していた（旧 ui_marker.ts）。旧 API の利用者は
+   *   起動の後に `cc-swiper` を自分のページで使えたので、互換層が起動時に呼ぶ（新 UI は最初のメディアで読む）。
+   */
+  preloadMediaViewer(): Promise<void> {
+    return loadChuci();
+  }
+
+  /**
+   * @internal 透過度のスライダーを使える・使えないにする（旧 `sliderNew.setEnable`。互換層が委譲する）。
+   *   旧と同じく次の地図の切り替えで「重ね地図のときだけ使える」に戻る。
+   */
+  setTransparencyEnabled(flag: boolean): void {
+    this.#el.slider.disabled = !flag;
+  }
+
+  /** @internal 地図の切り替えスライダー（旧 baseSwiper / overlaySwiper の facade が委譲する先）。 */
+  slider(kind: "base" | "overlay"): MapSlider | null {
+    return kind === "base" ? this.#baseSlider : this.#overlaySlider;
+  }
+
+  /** @internal 文言のキーが訳せるか（旧 i18n.exists の近似。キーのままなら訳が無い）。 */
+  hasTranslation(key: string): boolean {
+    return this.t(key) !== key;
+  }
+
+  /**
+   * 旧 modalSetting(type) の名前で画面を開く。
+   * @internal 旧 UI は 1 つのモーダルに class を付け替えていた。ここでは画面ごとの部品を開く。
+   *   種類: load（スプラッシュ）・poi・share・help・map（地図情報）・marker_list・gpsD（範囲外）。
+   *   地図の準備前は何もしない（旧は core-ready の後に配線していた）。
+   */
+  openModalByLegacyName(type: string): void {
+    switch (type) {
+      case "load":
+        this.#showSplash();
+        return;
+      case "poi":
+        if (this.#poi) this.#el.modal.hidden = false;
+        return;
+      case "share":
+        this.#openShare();
+        return;
+      case "help":
+        this.#openHelp();
+        return;
+      case "map":
+        this.#openMapInfo();
+        return;
+      case "marker_list":
+        this.#openMarkerList();
+        return;
+      case "gpsD":
+        this.#showGpsModal(true);
+        return;
+      case "gpsW":
+        this.#showGpsModal(false);
+        return;
+      default:
+        this.#warnOnce(
+          `modal:${type}`,
+          `<${MAPLAT_UI_TAG}>: unknown legacy modal "${type}"; nothing was opened.`
+        );
+    }
+  }
+
   // ---- 子の <maplat-app> ----
 
   #setup() {
@@ -1175,10 +1290,15 @@ export class MaplatUiElement extends BaseElement {
 
   // ---- 操作ボタンの自動非表示（旧 src/index.ts:1070-1123 の setMapOnOff）----
 
-  /** 自動非表示の対象（旧 .ol-control。スライダーも Control だったので含める）。 */
+  /**
+   * 自動非表示の対象（旧 Core の setMapOnOff が隠す .ol-control 全部）。旧は透過度のスライダー・
+   * 地図の切り替えのスワイパー・題名も .ol-control だった（旧 ui_init.ts:1486-1492。レビュー Major 1）。
+   */
   #controls(): HTMLElement[] {
     return Array.from(
-      this.#root.querySelectorAll<HTMLElement>(".ctl, .slider")
+      this.#root.querySelectorAll<HTMLElement>(
+        ".ctl, .slider, .map-title, .map-slider"
+      )
     );
   }
 
@@ -1316,7 +1436,9 @@ export class MaplatUiElement extends BaseElement {
     }
     void initPwa({
       manifest: url,
-      worker: this.#startup.get(ATTR_PWA_WORKER.prop) as string | undefined,
+      worker: this.#pwaNoWorker
+        ? null
+        : (this.#startup.get(ATTR_PWA_WORKER.prop) as string | undefined),
       scope: this.#startup.get(ATTR_PWA_SCOPE.prop) as string | undefined
     });
   }
@@ -1398,7 +1520,7 @@ export class MaplatUiElement extends BaseElement {
       const pe = evt as PointerEvent;
       this.#lastPointer = { clientX: pe.clientX, clientY: pe.clientY };
       if (!this.#el.poiMenu.hidden) {
-        this.#closePoiMenu();
+        this.#closeMenu();
         evt.stopPropagation();
       }
     };
@@ -1529,7 +1651,6 @@ export class MaplatUiElement extends BaseElement {
       this.#cacheFrame = 0;
     }
     this.#closeMenu();
-    this.#closePoiMenu();
     this.#closeMarkerList();
     this.#closeMapInfo();
     this.#closePoi();
@@ -1674,10 +1795,12 @@ export class MaplatUiElement extends BaseElement {
         this.#rememberOldMap(this.#currentMapId);
         this.#currentMeta = (detail as MapMeta | undefined) ?? null;
         this.#renderTitle();
-        this.#renderMenuSelection();
+        this.#syncSliders();
         this.#renderSlider();
-        // 地図の POI レイヤーは地図ごとに替わる（旧 UI は一覧を地図ごとに作り直す）
-        this.#closePoiMenu();
+        // 地図の POI レイヤーは地図ごとに替わる（旧 UI は一覧を地図ごとに作り直す）。閉じるのは
+        // POI の重なりのメニューだけ: 旧 API の showContextMenu の汎用メニューは、旧 UI でも地図の
+        // 切り替えでは閉じなかった（閉じるのは地図の pointerdown。旧 ui_marker.ts の closeMenuHandler）
+        if (this.#poiMenuList.length > 0) this.#closeMenu();
         if (this.#appReady) this.#countPois();
         if (!this.#el.markerList.hidden) this.#renderMarkerList();
         // 枠線の塗りは現在の地図の範囲だけ（旧 updateEnvelope の isActive）。地図情報も今の地図で描き直す
@@ -1821,7 +1944,7 @@ export class MaplatUiElement extends BaseElement {
     }
     this.#viewpoint = app.viewpoint ?? this.#viewpoint;
     this.#el.title.hidden = false;
-    this.#renderMenu();
+    this.#renderMaps();
     this.#logAppEnvelope();
     this.#renderTitle();
     this.#renderSlider();
@@ -2046,20 +2169,7 @@ export class MaplatUiElement extends BaseElement {
       const transparency = 100 - Number(el.slider.value);
       this.#call("setTransparency", app => app.setTransparency(transparency));
     });
-    el.titleButton.addEventListener("click", () => {
-      if (el.menu.hidden) this.#openMenu();
-      else this.#closeMenu();
-    });
-    el.menu.addEventListener("click", evt => {
-      const button = (evt.target as Element | null)?.closest?.(
-        "button[data-map-id]"
-      ) as HTMLButtonElement | null;
-      if (!button) return;
-      const mapID = button.dataset.mapId!;
-      this.#closeMenu();
-      if (mapID !== this.#currentMapId)
-        this.#call("changeMap", app => app.changeMap(mapID));
-    });
+    this.#createSliders();
     el.poiClose.addEventListener("click", () => this.#closePoi());
     el.modal.addEventListener("click", evt => {
       if (evt.target === el.modal) this.#closePoi();
@@ -2115,15 +2225,25 @@ export class MaplatUiElement extends BaseElement {
       ) as HTMLButtonElement | null;
       if (button) this.#onShareCommand(button);
     });
-    // ---- 重なった POI の選択メニュー ----
+    // ---- 汎用メニュー（重なった POI の選択・旧 API の showContextMenu の両方がここを通る）----
     el.poiMenu.addEventListener("click", evt => {
       const button = (evt.target as Element | null)?.closest?.(
         "button[data-index]"
       ) as HTMLButtonElement | null;
       if (!button) return;
-      const datum = this.#poiMenuItems[Number(button.dataset.index)];
-      this.#closePoiMenu();
-      if (datum) this.#openPoi(datum);
+      const item = this.#menuItems[Number(button.dataset.index)];
+      // メニューは押す前に閉じる（旧 showContextMenu と同じ。callback の中で開き直せる）
+      this.#closeMenu();
+      if (!item?.callback) return;
+      try {
+        item.callback();
+      } catch (err) {
+        // 利用者の callback の失敗で UI を壊さない（旧はそのまま伝播していたが、閉じた後の処理なので）
+        console.warn(
+          `<${MAPLAT_UI_TAG}>: a menu item callback threw an error.`,
+          err
+        );
+      }
     });
     // 自分の部品（メニューの外）を押したらメニューを閉じる。地図の押下は子の要素の pointerdown で閉じる
     this.#root.addEventListener("pointerdown", evt => {
@@ -2131,7 +2251,7 @@ export class MaplatUiElement extends BaseElement {
       const path = evt.composedPath();
       if (path.includes(el.poiMenu)) return;
       if (this.#app && path.includes(this.#app)) return;
-      this.#closePoiMenu();
+      this.#closeMenu();
     });
     this.#root.addEventListener("keydown", evt => {
       if ((evt as KeyboardEvent).key !== "Escape") return;
@@ -2140,9 +2260,8 @@ export class MaplatUiElement extends BaseElement {
       else if (!el.gpsModal.hidden) this.#closeGpsModal();
       else if (!el.info.hidden) this.#closeMapInfo();
       else if (!el.modal.hidden) this.#closePoi();
-      else if (!el.poiMenu.hidden) this.#closePoiMenu();
+      else if (!el.poiMenu.hidden) this.#closeMenu();
       else if (!el.markerList.hidden) this.#closeMarkerList();
-      else if (!el.menu.hidden) this.#closeMenu();
     });
   }
 
@@ -2165,12 +2284,20 @@ export class MaplatUiElement extends BaseElement {
     );
     el.slider.title = this.t("control.trans");
     el.slider.setAttribute("aria-label", el.slider.title);
-    el.titleButton.title = this.t("control.map_menu");
-    el.menu.setAttribute("aria-label", this.t("control.map_menu"));
-    el.menu.querySelector('section[data-kind="base"] h3')!.textContent =
-      this.t("menu.base_maps");
-    el.menu.querySelector('section[data-kind="overlay"] h3')!.textContent =
-      this.t("menu.overlay_maps");
+    // 地図の切り替えスライダー（グループ名と矢印の読み上げ名。Stage 2・Minor 9）
+    const groupLabels: Array<[MapSlider | null, string]> = [
+      [this.#baseSlider, "slider.base"],
+      [this.#overlaySlider, "slider.overlay"]
+    ];
+    for (const [slider, key] of groupLabels) {
+      if (!slider) continue;
+      slider.setGroupLabel(this.t(key));
+      slider.setNavLabels({
+        prev: this.t("slider.prev"),
+        next: this.t("slider.next")
+      });
+      slider.refresh();
+    }
     for (const close of [el.poiClose, el.markerListClose]) {
       close.querySelector(".sr-only")!.textContent = this.t("html.close");
       close.title = this.t("html.close");
@@ -2186,7 +2313,10 @@ export class MaplatUiElement extends BaseElement {
       this.#isCacheFetchingCurrent() ? "html.cache_cancel" : "html.cache_fetch"
     );
     el.cacheDelete.textContent = this.t("html.cache_delete");
-    el.poiMenu.setAttribute("aria-label", this.t("menu.poi_candidates"));
+    el.poiMenu.setAttribute(
+      "aria-label",
+      this.#menuLabel || this.t("menu.poi_candidates")
+    );
     label(el.shareButton, "control.share");
     el.shareTitle.textContent = this.t("html.share_title");
     el.shareApp.querySelector(".share-heading")!.textContent = this.t(
@@ -2245,9 +2375,11 @@ export class MaplatUiElement extends BaseElement {
   #applyLang() {
     this.#renderTexts();
     this.#renderTitle();
-    this.#renderMenu();
     if (!this.#el.markerList.hidden) this.#renderMarkerList();
-    if (!this.#el.poiMenu.hidden) this.#renderPoiMenuItems();
+    if (!this.#el.poiMenu.hidden) {
+      if (this.#menuProvider) this.#menuItems = this.#menuProvider();
+      this.#renderMenuItems();
+    }
     if (!this.#el.info.hidden) this.#renderMapInfo();
     if (!this.#el.help.hidden) this.#renderHelp();
     if (!this.#el.gpsModal.hidden) this.#renderGpsModal();
@@ -2304,83 +2436,122 @@ export class MaplatUiElement extends BaseElement {
     console.log(`This app's envelope is: ${bbox}`);
   }
 
-  #renderMenu() {
-    const lists: Record<"base" | "overlay", HTMLUListElement> = {
-      base: this.#el.menu.querySelector('section[data-kind="base"] ul')!,
-      overlay: this.#el.menu.querySelector('section[data-kind="overlay"] ul')!
-    };
-    lists.base.replaceChildren();
-    lists.overlay.replaceChildren();
+  /**
+   * 地図の切り替えスライダーを 2 本作る（左＝背景の地図・右＝重ねる地図。設計 §4.6・§5.2 B12/B13）。
+   * `listMaps` の並びは `#renderMaps` で渡す。地図を変えるのは `onSelect` だけ（D5）で、
+   * 部品が自分で動き始めるので、ここから `step()` は呼ばない。
+   */
+  #createSliders() {
+    const make = (kind: "base" | "overlay") =>
+      new MapSlider({
+        kind,
+        items: [],
+        translate: value => this.translateText(value) ?? "",
+        groupLabel: this.t(kind === "base" ? "slider.base" : "slider.overlay"),
+        navLabels: {
+          prev: this.t("slider.prev"),
+          next: this.t("slider.next")
+        },
+        // サムネイルの無い地図は、要素が既に持っているプレースホルダを使う（2 つ目を作らない）
+        placeholder: label => this.#thumbPlaceholder(label),
+        onSelect: (mapID, offset) => this.#onSliderSelect(kind, mapID, offset),
+        onActiveChange:
+          kind === "overlay"
+            ? mapID => this.#onOverlayActive(mapID)
+            : undefined,
+        onActivePreview:
+          kind === "overlay" ? mapID => this.#onOverlayActive(mapID) : undefined
+      });
+    this.#baseSlider = make("base");
+    this.#overlaySlider = make("overlay");
+    this.#el.switcher.append(
+      this.#baseSlider.element,
+      this.#overlaySlider.element
+    );
+    this.#baseSlider.setShowBorder(this.#showBorder);
+    this.#overlaySlider.setShowBorder(this.#showBorder);
+  }
+
+  /** `listMaps` を背景の地図と重ねる地図に分けて、2 本のスライダーへ渡す（旧 UI の 2 本）。 */
+  #renderMaps() {
+    const base = this.#baseSlider;
+    const overlay = this.#overlaySlider;
+    if (!base || !overlay) return;
+    const baseItems: MapSliderItem[] = [];
+    const overlayItems: MapSliderItem[] = [];
     for (const item of this.#maps) {
-      const li = document.createElement("li");
-      const button = document.createElement("button");
-      button.type = "button";
-      button.dataset.mapId = item.mapID;
-      button.setAttribute("part", "map-menu-item");
-      const label = this.translateText(item.label) || item.mapID;
-      if (item.thumbnail) {
-        const img = document.createElement("img");
-        img.className = "thumb";
-        img.alt = "";
-        img.loading = "lazy";
-        img.src = item.thumbnail;
-        img.addEventListener(
-          "error",
-          () => img.replaceWith(this.#thumbPlaceholder(label)),
-          { once: true }
-        );
-        button.appendChild(img);
-      } else {
-        button.appendChild(this.#thumbPlaceholder(label));
-      }
-      const span = document.createElement("span");
-      span.className = "label";
-      span.textContent = label;
-      button.appendChild(span);
-      // 範囲を持つ地図には枠線と同じ色の印を付ける（旧 UI のスライドの枠と同じ役。R2 の任意）
-      const color = this.#mapColors.get(item.mapID);
-      if (color) {
-        const swatch = document.createElement("span");
-        swatch.className = "swatch";
-        swatch.style.backgroundColor = color;
-        button.appendChild(swatch);
-      }
-      li.appendChild(button);
-      lists[item.isBasemap ? "base" : "overlay"].appendChild(li);
+      const view: MapSliderItem = {
+        mapID: item.mapID,
+        label: item.label,
+        thumbnail: item.thumbnail ?? null,
+        hasEnvelope: !!item.hasEnvelope,
+        envelopeColor: this.#mapColors.get(item.mapID),
+        isBasemap: !!item.isBasemap
+      };
+      (item.isBasemap ? baseItems : overlayItems).push(view);
     }
-    this.#el.menu.classList.toggle("show-border", this.#showBorder);
-    lists.base.parentElement!.hidden = lists.base.children.length === 0;
-    lists.overlay.parentElement!.hidden = lists.overlay.children.length === 0;
-    this.#renderMenuSelection();
+    base.setItems(baseItems);
+    overlay.setItems(overlayItems);
+    // 起動時は旧 Swiper の initialSlide と同じく、動かさずに今の地図へ置く。
+    // 今の地図が無い側は位置を保ち、`.selected` を付けない（旧 ui_init.ts:173-174 と旧の
+    // setSlideMapID は、両方に今の地図を渡し、無い側は選択を外すだけ。設計 S9・S14）
+    if (this.#currentMapId) {
+      for (const slider of [base, overlay]) {
+        if (slider.hasMap(this.#currentMapId))
+          slider.setSelectedMapID(this.#currentMapId, false);
+        else slider.setSelectedOnly(null);
+      }
+    }
+    const current = this.#maps.find(m => m.mapID === this.#currentMapId);
+    this.#activeOverlayMapId =
+      current && !current.isBasemap
+        ? this.#currentMapId
+        : (overlay.activeMapID ?? this.#lastOldMapId);
+    base.setShowBorder(this.#showBorder);
+    overlay.setShowBorder(this.#showBorder);
+    this.#updateEnvelope();
+  }
+
+  /**
+   * 今の地図に 2 本の選択を合わせる（`mapChanged`）。旧 ui_init.ts:173-174 と同じく両方に今の地図を
+   * 渡し、今の地図が無い側は位置を保って `.selected` だけ外す（選択は今の地図にだけ付く。設計 S9）。
+   */
+  #syncSliders() {
+    const current = this.#maps.find(m => m.mapID === this.#currentMapId);
+    for (const slider of [this.#baseSlider, this.#overlaySlider]) {
+      if (!slider) continue;
+      if (slider.hasMap(this.#currentMapId))
+        slider.setSelectedMapID(this.#currentMapId);
+      else slider.setSelectedOnly(null);
+    }
+    if (current && !current.isBasemap) this.#activeOverlayMapId = current.mapID;
+  }
+
+  /**
+   * スライダーのカードを選んだ（クリック・Enter）。押したカードは部品がもう動かし始めているので、
+   * `step()` は呼ばない（D5。呼ぶと 2 枚動く）。`.selected` だけ先に合わせてから地図を変える
+   * （旧 ui_init.ts:582-585 と同じ順序）。
+   */
+  #onSliderSelect(kind: "base" | "overlay", mapID: string, offset: number) {
+    void offset;
+    if (kind === "base") this.#baseSlider?.setSelectedOnly(mapID);
+    else this.#overlaySlider?.setSelectedOnly(mapID);
+    if (mapID !== this.#currentMapId)
+      this.#call("changeMap", app => app.changeMap(mapID));
+  }
+
+  /** 重ねる地図のスライダーの中央が変わった（drag 中は先に枠線の塗りだけ追従。設計 §4.6）。 */
+  #onOverlayActive(mapID: string | null) {
+    this.#activeOverlayMapId = mapID ?? this.#lastOldMapId;
+    if (this.#showBorder) this.#updateEnvelope();
   }
 
   #thumbPlaceholder(label: string): HTMLElement {
     const span = document.createElement("span");
     span.className = "thumb none";
+    span.setAttribute("aria-hidden", "true");
     span.textContent = Array.from(label)[0] ?? "?";
     return span;
-  }
-
-  #renderMenuSelection() {
-    for (const button of Array.from(
-      this.#el.menu.querySelectorAll<HTMLButtonElement>("button[data-map-id]")
-    )) {
-      if (button.dataset.mapId === this.#currentMapId)
-        button.setAttribute("aria-current", "true");
-      else button.removeAttribute("aria-current");
-    }
-  }
-
-  #openMenu() {
-    if (!this.#appReady) return;
-    this.#closeMapInfo();
-    this.#el.menu.hidden = false;
-    this.#el.titleButton.setAttribute("aria-expanded", "true");
-  }
-
-  #closeMenu() {
-    this.#el.menu.hidden = true;
-    this.#el.titleButton.setAttribute("aria-expanded", "false");
   }
 
   #renderSlider() {
@@ -2489,11 +2660,14 @@ export class MaplatUiElement extends BaseElement {
       this.#lastOldMapId = this.#maps.find(m => m.isOldMap)?.mapID ?? null;
   }
 
-  /** 範囲を塗る地図: 今の地図が古地図ならその地図、ベースマップの上なら最後に選んだ古地図（旧の isActive）。 */
+  /**
+   * 範囲を塗る地図: 今の地図が古地図ならその地図、ベースマップの上なら重ねる地図のスライダーの
+   * 中央のカード（旧の isActive。drag 中は preview に追従する。設計 §4.6）。
+   */
   #envelopeFillMapId(): string | null {
     const current = this.#maps.find(m => m.mapID === this.#currentMapId);
     if (current?.isOldMap) return this.#currentMapId;
-    return this.#lastOldMapId;
+    return this.#activeOverlayMapId ?? this.#lastOldMapId;
   }
 
   /**
@@ -2549,7 +2723,6 @@ export class MaplatUiElement extends BaseElement {
     if (!this.#appReady) return;
     if (this.#parseOwnAttribute(ATTR_ENABLE_SHARE) !== true) return;
     this.#closeMenu();
-    this.#closePoiMenu();
     this.#closeMarkerList();
     this.#closeMapInfo();
     this.#closePoi();
@@ -2596,12 +2769,16 @@ export class MaplatUiElement extends BaseElement {
           console.warn(`<${MAPLAT_UI_TAG}>: failed to copy the URL`, err)
       );
     } else if (cmd === "tw") {
-      window.open(twitterShareUrl(uri, document.title), "_blank", "noopener");
+      window.open(
+        twitterShareUrl(uri, document.title),
+        "_blank",
+        "noopener,noreferrer"
+      );
     } else if (cmd === "fb") {
       window.open(
         facebookShareUrl(uri),
         "_blank",
-        "width=650,height=450,menubar=no,toolbar=no,scrollbars=yes,noopener"
+        "width=650,height=450,menubar=no,toolbar=no,scrollbars=yes,noopener,noreferrer"
       );
     }
   }
@@ -2647,7 +2824,6 @@ export class MaplatUiElement extends BaseElement {
     this.#gpsModalError = error;
     this.#renderGpsModal();
     this.#closeMenu();
-    this.#closePoiMenu();
     this.#closeMarkerList();
     this.#closeMapInfo();
     this.#closeShare();
@@ -2682,7 +2858,6 @@ export class MaplatUiElement extends BaseElement {
   #openHelp() {
     if (!this.#appReady) return;
     this.#closeMenu();
-    this.#closePoiMenu();
     this.#closeMarkerList();
     this.#closeMapInfo();
     this.#closeShare();
@@ -2847,7 +3022,6 @@ export class MaplatUiElement extends BaseElement {
   #openMapInfo() {
     if (!this.#appReady) return;
     this.#closeMenu();
-    this.#closePoiMenu();
     this.#closeMarkerList();
     this.#closeShare();
     this.#closePoi();
@@ -3195,7 +3369,6 @@ export class MaplatUiElement extends BaseElement {
     if (!this.#appReady) return;
     if (this.#parseOwnAttribute(ATTR_ENABLE_MARKER_LIST) !== true) return;
     this.#closeMenu();
-    this.#closePoiMenu();
     this.#closeMapInfo();
     this.#renderMarkerList();
     this.#el.markerList.hidden = false;
@@ -3325,23 +3498,73 @@ export class MaplatUiElement extends BaseElement {
     this.#openPoi(datum ?? poi);
   }
 
-  // ---- 重なった POI の選択メニュー（旧 contextmenu/*・ui_marker.ts の showContextMenu）----
+  // ---- 汎用メニュー（旧 contextmenu/*・ui_marker.ts の showContextMenu・POI の重なりの選択）----
+  //
+  // メニューは 1 つだけ（設計 §3 L4・§3.3 の 7）。重なった POI の選択はその使い方の 1 つで、
+  // 旧 API の showContextMenu もここへ委譲する。part 名は既存の poi-menu / poi-menu-item を引き継ぐ
+  // （D1 の「map-menu 以外」。map-menu は Stage 2 で地図の切り替えメニューとともに消えた）。
 
+  /** 重なった POI のメニュー（旧 ui_marker.ts の showContextMenu の POI 版）。 */
   #openPoiMenu(list: MaplatPoi[]) {
-    this.#closeMenu();
     this.#closeMapInfo();
-    this.#poiMenuItems = list;
-    this.#renderPoiMenuItems();
+    this.#poiMenuList = list;
+    this.#showMenuInternal(() => this.#poiMenuItems(), {
+      label: this.t("menu.poi_candidates")
+    });
+  }
+
+  /** 重なった POI を項目にする（言語の切り替えのたびに作り直す）。 */
+  #poiMenuItems(): MaplatMenuItem[] {
+    return this.#poiMenuList.map(datum => ({
+      icon: poiIconUrl(this.#defaultPin(), datum.icon),
+      // 名前は信頼できない POI データ: 文字として入れる（旧は escapeHtml して HTML に組んでいた）
+      text: this.translateText(datum.name) || "",
+      html: false,
+      callback: () => this.#openPoi(datum)
+    }));
+  }
+
+  /**
+   * 汎用のメニューを開く。
+   * @internal 旧 UI の互換層（showContextMenu）と POI の重なりの両方が使う。移行期の口。
+   */
+  showMenu(options: MaplatMenuOptions): void {
+    if (!options || !Array.isArray(options.items)) return;
+    // 汎用のメニューに替えたら、POI の重なりのメニューではない（地図の切り替えで閉じない）
+    this.#poiMenuList = [];
+    this.#showMenuInternal(() => options.items, {
+      at: options.at,
+      label: options.label
+    });
+  }
+
+  #showMenuInternal(
+    provider: () => MaplatMenuItem[],
+    options: { at?: { x: number; y: number }; label?: string } = {}
+  ) {
     const menu = this.#el.poiMenu;
+    this.#menuProvider = provider;
+    this.#menuItems = provider();
+    this.#menuLabel = options.label ?? this.t("menu.poi_candidates");
+    this.#renderMenuItems();
     menu.hidden = false;
-    // 位置: 地図を押した位置（子の要素の pointerdown）を <maplat-ui> の枠の中の座標へ。枠からはみ出さないよう寄せる
+    // 位置: 指定（旧 API の pixel）＞ 地図を押した位置（子の要素の pointerdown）。枠の中の座標へ寄せる
     const frame = this.#root
       .querySelector<HTMLElement>(".frame")!
       .getBoundingClientRect();
     const box = menu.getBoundingClientRect();
+    // `at` は枠の中の座標（引かない）。最後の pointerdown は client 座標なので枠の左上を引く（M2）
     const p = this.#lastPointer;
-    let x = p ? p.clientX - frame.left : frame.width / 2;
-    let y = p ? p.clientY - frame.top : frame.height / 2;
+    let x = options.at
+      ? options.at.x
+      : p
+        ? p.clientX - frame.left
+        : frame.width / 2;
+    let y = options.at
+      ? options.at.y
+      : p
+        ? p.clientY - frame.top
+        : frame.height / 2;
     if (x + box.width > frame.width) x = Math.max(0, x - box.width);
     if (y + box.height > frame.height) y = Math.max(0, y - box.height);
     menu.style.left = `${Math.round(x)}px`;
@@ -3349,12 +3572,17 @@ export class MaplatUiElement extends BaseElement {
     menu
       .querySelector<HTMLButtonElement>("button")
       ?.focus({ preventScroll: true });
+    // `menuopen`・`menuclose`（detail なし・泡立たない）は @internal: 互換層の `ui.contextMenu.on("open"/"close")` の
+    // ためだけに出す移行期のイベント。層 B の公開イベント（仕様 §4.4）には数えない
+    this.dispatchEvent(new CustomEvent("menuopen"));
   }
 
-  #renderPoiMenuItems() {
+  #renderMenuItems() {
+    const menu = this.#el.poiMenu;
     const ul = this.#el.poiMenuList;
+    menu.setAttribute("aria-label", this.#menuLabel);
     ul.replaceChildren();
-    this.#poiMenuItems.forEach((datum, index) => {
+    this.#menuItems.forEach((item, index) => {
       const li = document.createElement("li");
       li.setAttribute("role", "none");
       const button = document.createElement("button");
@@ -3362,26 +3590,40 @@ export class MaplatUiElement extends BaseElement {
       button.setAttribute("role", "menuitem");
       button.setAttribute("part", "poi-menu-item");
       button.dataset.index = `${index}`;
-      const id = poiKey(datum);
-      if (id !== undefined) button.dataset.poiId = id;
-      const icon = document.createElement("img");
-      icon.className = "icon";
-      icon.alt = "";
-      icon.src = poiIconUrl(this.#defaultPin(), datum.icon);
+      const src = item.icon === undefined ? undefined : safeImageUrl(item.icon);
+      if (src !== undefined) {
+        const icon = document.createElement("img");
+        icon.className = "icon";
+        icon.alt = "";
+        icon.src = src;
+        button.appendChild(icon);
+      }
       const text = document.createElement("span");
       text.className = "name";
-      // 名前は信頼できない POI データ: textContent で入れる（旧は escapeHtml して HTML に組んでいた）
-      text.textContent = this.translateText(datum.name) || "";
-      button.append(icon, text);
+      if (item.html === false) text.textContent = item.text;
+      // 旧 showContextMenu の text は HTML（旧 contextmenu/html.ts:94）。D6 によりサニタイザを通す
+      else text.innerHTML = sanitizeHtml(item.text);
+      button.appendChild(text);
       li.appendChild(button);
       ul.appendChild(li);
     });
   }
 
-  #closePoiMenu() {
-    this.#el.poiMenu.hidden = true;
-    this.#poiMenuItems = [];
+  /** メニューを閉じる。@internal 互換層の contextMenu facade も使う。 */
+  closeMenu(): void {
+    this.#closeMenu();
+  }
+
+  #closeMenu() {
+    const menu = this.#el.poiMenu;
+    const wasOpen = !menu.hidden;
+    menu.hidden = true;
+    this.#menuItems = [];
+    this.#menuProvider = null;
+    this.#poiMenuList = [];
     this.#el.poiMenuList.replaceChildren();
+    // @internal の `menuclose`（上の `menuopen` の注記を参照）
+    if (wasOpen) this.dispatchEvent(new CustomEvent("menuclose"));
   }
 
   // ---- POI の吹き出し（旧 ui_marker.ts の handleMarkerAction・poiWebControl）----
@@ -3396,14 +3638,14 @@ export class MaplatUiElement extends BaseElement {
       // safeWebUrl は通した値をそのまま返す（http/https・相対 URL のとき）
       const safe = safeWebUrl(href);
       if (safe === undefined) return;
-      if (blank) window.open(safe, "_blank", "noopener");
+      // SR-NOV26-B-3（逆タブナビング・Referer を渡さない）: 旧と同じく noopener,noreferrer
+      if (blank) window.open(safe, "_blank", "noopener,noreferrer");
       else window.location.href = safe;
       return;
     }
     if (this.#poi) this.#unselect();
     this.#poi = data;
     this.#closeMenu();
-    this.#closePoiMenu();
     this.#closeMarkerList();
     this.#closeMapInfo();
     this.#closeShare();
@@ -3442,32 +3684,15 @@ export class MaplatUiElement extends BaseElement {
       this.#parseOwnAttribute(ATTR_ENABLE_POI_HTML_NO_SCROLL) === true;
     el.poiTitle.textContent = this.translateText(data.name) || "";
     el.poiBody.replaceChildren();
-    if (data.html) {
-      // 旧 m1-t5 と同じく iframe を使わず Shadow DOM（スタイルの隔離）へ描く。防御は sanitizeHtml
-      // （Shadow DOM はセキュリティ境界ではない）。生の data.html を描く分岐を作らない
-      const host = document.createElement("div");
-      host.className = noScroll ? "poi-html" : "poi-html scroll";
-      host.setAttribute("part", "poi-html");
-      const shadow = host.attachShadow({ mode: "open" });
-      const style = document.createElement("style");
-      style.textContent = "img { width: 100%; }";
-      shadow.appendChild(style);
-      const body = document.createElement("div");
-      body.innerHTML = sanitizeHtml(this.translateText(data.html) || "");
-      shadow.appendChild(body);
-      el.poiBody.appendChild(host);
-      return;
-    }
-    if (data.url) {
-      // url は信頼できない POI データ: http/https（相対 URL を含む）のときだけ iframe に入れる
-      const safe = safeWebUrl(this.translateText(data.url));
-      if (safe === undefined) return;
-      const iframe = document.createElement("iframe");
-      iframe.className = noScroll ? "poi-iframe no-scroll" : "poi-iframe";
-      iframe.setAttribute("part", "poi-iframe");
-      if (noScroll) iframe.setAttribute("scrolling", "no");
-      iframe.src = safe;
-      el.poiBody.appendChild(iframe);
+    // html があれば Shadow DOM（スタイルの隔離。防御は sanitizeHtml）、無くて url があれば http/https の
+    // ときだけ iframe。分岐と組み立ては poi-html.ts の buildPoiBody（実ブラウザの検証 m1-t5 と共有）
+    const body = buildPoiBody(
+      data,
+      noScroll,
+      value => this.translateText(value as Localized) || ""
+    );
+    if (body.kind !== "none") {
+      if (body.node) el.poiBody.appendChild(body.node);
       return;
     }
     const swiper = this.#buildMediaSwiper(data);
@@ -3635,6 +3860,8 @@ export interface MaplatUiElement {
   pwaScope: string | undefined;
   enableMarkerList: boolean | undefined;
   enablePoiHtmlNoScroll: boolean | undefined;
+  tapDuration: number | undefined;
+  tapUiVanish: boolean | undefined;
   appId: string | undefined;
   appSrc: string | undefined;
   mapId: string | undefined;

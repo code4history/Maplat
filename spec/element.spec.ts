@@ -16,6 +16,7 @@ import {
   MAPLAT_UI_VERSION,
   defineMaplatUi
 } from "../src/element";
+import { MAPLAT_UI_CSS } from "../src/element/styles";
 
 defineMockMaplatApp();
 
@@ -410,45 +411,62 @@ describe("コンパス（U6: 層 B の設定で resetDirection / resetRotation �
   });
 });
 
-describe("地図の切り替えメニュー（listMaps と changeMap）", () => {
-  it("使える地図を一覧に出し（古地図・重ね地図／背景地図）、選ぶと changeMap で切り替わる", async () => {
+describe("地図の切り替えスライダー（listMaps と changeMap）", () => {
+  const slides = (root: HTMLElement) =>
+    Array.from(root.querySelectorAll<HTMLElement>('[part~="map-slide"]'));
+  const slider = (ui: Ui, kind: "base" | "overlay") =>
+    part(ui, "map-switcher").querySelector<HTMLElement>(
+      `[part="map-slider"][data-kind="${kind}"]`
+    )!;
+
+  it("使える地図を 2 本のスライダーに分け、カードを押すと changeMap で切り替わる", async () => {
     const ui = await mountUi(u => u.setAttribute("lang", "ja"));
     const app = ui.app! as any;
-    const menu = part(ui, "map-menu");
-    const titleButton = part(ui, "map-title-button");
-    expect(menu.hidden).toBe(true);
-    expect(part(ui, "map-title").hidden).toBe(false);
-    expect(titleButton.querySelector(".text")!.textContent).toBe("古地図の題");
+    // 題名は旧 UI と同じ div + span。地図の切り替えメニューは無い（Stage 2 でスライダーへ）
+    const title = part(ui, "map-title");
+    expect(title.hidden).toBe(false);
+    expect(title.querySelector(".text")!.textContent).toBe("古地図の題");
+    expect(shadow(ui).querySelector(".map-menu")).toBeNull();
+    expect(shadow(ui).querySelector('[part="map-menu"]')).toBeNull();
+    expect(part(ui, "map-title").querySelector("button")).toBeNull();
 
-    click(titleButton);
-    expect(menu.hidden).toBe(false);
-    expect(titleButton.getAttribute("aria-expanded")).toBe("true");
-    const items = [
-      ...menu.querySelectorAll<HTMLButtonElement>('[part="map-menu-item"]')
-    ];
-    expect(items.map(b => b.dataset.mapId)).toEqual(["old1", "osm", "gsi"]); // broken は載らない
+    const base = slider(ui, "base");
+    const overlay = slider(ui, "overlay");
+    // 背景 2 枚（osm・gsi）・重ねる地図 1 枚（old1。broken は載らない）
+    expect(new Set(slides(base).map(b => b.dataset.mapId))).toEqual(
+      new Set(["osm", "gsi"])
+    );
+    expect(new Set(slides(overlay).map(b => b.dataset.mapId))).toEqual(
+      new Set(["old1"])
+    );
+    // 1 枚のスライダー: 枠を描かず（P3）、矢印を出さない（S8）。位置は CSS が保つ
+    expect(overlay.classList.contains("single-map")).toBe(true);
     expect(
-      menu.querySelector('section[data-kind="overlay"] h3')!.textContent
-    ).toBe("古地図・重ね地図");
-    expect(items.map(b => b.querySelector(".label")!.textContent)).toEqual([
-      "古地図1",
-      "OSM（現在）",
-      "GSI"
-    ]);
-    expect(
-      (items[1].querySelector("img") as HTMLImageElement).getAttribute("src")
-    ).toBe("tmbs/osm.jpg");
-    expect(items[0].getAttribute("aria-current")).toBe("true");
+      overlay.querySelector<HTMLButtonElement>(".map-slider-nav.next")!.hidden
+    ).toBe(true);
+    // 押したカードが .selected になる（今の地図 old1）
+    expect(slides(overlay)[0].classList.contains("selected")).toBe(true);
 
     const changeMap = vi.spyOn(app, "changeMap");
-    click(items[1]);
-    expect(changeMap).toHaveBeenCalledWith("osm");
+    click(base.querySelector('[data-map-id="gsi"]') as HTMLElement);
+    expect(changeMap).toHaveBeenCalledWith("gsi");
     await tick();
-    expect(app.currentMapId).toBe("osm");
-    expect(menu.hidden).toBe(true);
-    expect(items[1].getAttribute("aria-current")).toBe("true");
-    expect(items[0].hasAttribute("aria-current")).toBe(false);
-    expect(titleButton.querySelector(".text")!.textContent).toBe("OSM（現在）");
+    expect(app.currentMapId).toBe("gsi");
+    expect(
+      base.querySelector('[data-map-id="gsi"]')!.classList.contains("selected")
+    ).toBe(true);
+    // 背景の地図に切り替えると、重ねる地図のスライダーは位置（中央の old1）を保ち、`.selected` は外れる
+    // （旧 ui_init.ts:173-174 は両方に setSlideMapID(今の地図) を呼び、無い側は選択を外すだけ。設計 S9）
+    expect(
+      overlay
+        .querySelector('[data-map-id="old1"]')!
+        .classList.contains("selected")
+    ).toBe(false);
+    expect(overlay.querySelectorAll(".map-slide.selected").length).toBe(0);
+    expect(
+      overlay.querySelector('[data-map-id="old1"]')!.closest(".map-slider")
+    ).toBe(overlay);
+    expect(title.querySelector(".text")!.textContent).toBe("GSI");
   });
 
   it("ページが map-id で切り替えても題名と選択が追従する", async () => {
@@ -456,9 +474,14 @@ describe("地図の切り替えメニュー（listMaps と changeMap）", () => 
     ui.mapId = "gsi";
     await tick();
     expect(ui.app!.currentMapId).toBe("gsi");
+    expect(part(ui, "map-title").querySelector(".text")!.textContent).toBe(
+      "GSI"
+    );
     expect(
-      part(ui, "map-title-button").querySelector(".text")!.textContent
-    ).toBe("GSI");
+      slider(ui, "base")
+        .querySelector('[data-map-id="gsi"]')!
+        .classList.contains("selected")
+    ).toBe(true);
   });
 });
 
@@ -576,6 +599,205 @@ describe("POI の吹き出し（clickMarkers / clickMarker）", () => {
     expect(
       (part(ui, "poi-body").querySelector("iframe") as HTMLIFrameElement).src
     ).toBe("https://example.com/");
+  });
+
+  // ---- Stage 4 で旧 ui_marker.ts を消したので、その回帰をここへ移した（旧 spec の名前を行頭に書く） ----
+
+  // 旧 ui_marker_poi_html.spec.ts（m1-t5 AC1/AC10）: html と url の両方なら html を優先する
+  it("html と url が両方あるときは html を優先し、iframe を作らない（m1-t5 AC1/AC10）", async () => {
+    const ui = await mountUi();
+    getMockLayerAController(ui.app!)!.fire("clickMarkers", [
+      {
+        namespaceID: "both",
+        name: "B",
+        html: "<p>ok</p>",
+        url: "https://example.com/"
+      }
+    ]);
+    expect(part(ui, "poi-body").querySelector("iframe")).toBeNull();
+    expect(part(ui, "poi-html")).not.toBeNull();
+  });
+
+  // 旧 ui_marker_poi_html.spec.ts（m1-t5 AC1/AC10）: url の経路は sanitize の経路（Shadow DOM の html
+  // host）を作らない。iframe にインラインの onload 属性も付けない（message の受け口を置かない）
+  it("url だけなら iframe を作り、html host と onload 属性を作らない（m1-t5 AC1/AC10）", async () => {
+    const ui = await mountUi();
+    getMockLayerAController(ui.app!)!.fire("clickMarkers", [
+      { namespaceID: "u", name: "U", url: "https://example.com/" }
+    ]);
+    expect(part(ui, "poi-html")).toBeNull();
+    const iframe = part(ui, "poi-body").querySelector("iframe")!;
+    expect(iframe.hasAttribute("onload")).toBe(false);
+    expect(
+      Array.from(iframe.attributes)
+        .map(a => a.name)
+        .sort()
+    ).toEqual(["class", "part", "src"]);
+  });
+
+  // 旧 oct26-m16-t1-ui-marker-url.spec.ts（B-UI-2）: url の許可リスト（同じ一覧をそのまま使う）
+  it("url は http/https（相対 URL を含む）のときだけ iframe に入れる（B-UI-2）", async () => {
+    const REJECTED_URLS = [
+      "javascript:alert(1)",
+      "JaVaScRiPt:alert(1)",
+      "  javascript:alert(1)  ",
+      "\tjava\nscript:alert(1)",
+      "data:text/html,<script>alert(1)</script>",
+      "DATA:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==",
+      "vbscript:msgbox(1)",
+      " VBScript:msgbox(1)",
+      "blob:https://example.com/uuid",
+      "file:///etc/passwd"
+    ];
+    const ACCEPTED_URLS = [
+      "https://example.com/",
+      "http://example.com/a?b=c#d",
+      "HTTPS://EXAMPLE.COM/",
+      "./poi/1.html",
+      "poi/1.html",
+      "/abs/path.html",
+      "?q=1",
+      "//example.com/x"
+    ];
+    const ui = await mountUi();
+    const ctl = getMockLayerAController(ui.app!)!;
+    let id = 0;
+    for (const url of REJECTED_URLS) {
+      ctl.fire("clickMarkers", [{ namespaceID: `r${id++}`, name: "R", url }]);
+      expect(
+        part(ui, "poi-body").querySelector("iframe"),
+        `rejected ${url}`
+      ).toBeNull();
+    }
+    for (const url of ACCEPTED_URLS) {
+      ctl.fire("clickMarkers", [{ namespaceID: `a${id++}`, name: "A", url }]);
+      const iframe = part(ui, "poi-body").querySelector("iframe");
+      expect(iframe, `accepted ${url}`).not.toBeNull();
+      expect(iframe!.getAttribute("src"), `accepted ${url}`).toBe(url);
+    }
+  });
+
+  // 旧 oct26-m16-t1-ui-marker-url.spec.ts（B-UI-3）: directgo は http/https のときだけ遷移する
+  // （旧と同じ一覧をそのまま使う: 拒否 10 件・許可 8 件。Stage 4 の仕上げで、減っていた件数を旧に戻した）
+  describe("directgo は http/https のときだけ遷移する（B-UI-3）", () => {
+    const REJECTED_URLS = [
+      "javascript:alert(1)",
+      "JaVaScRiPt:alert(1)",
+      "  javascript:alert(1)  ",
+      "\tjava\nscript:alert(1)",
+      "data:text/html,<script>alert(1)</script>",
+      "DATA:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==",
+      "vbscript:msgbox(1)",
+      " VBScript:msgbox(1)",
+      "blob:https://example.com/uuid",
+      "file:///etc/passwd"
+    ];
+    const ACCEPTED_URLS = [
+      "https://example.com/",
+      "http://example.com/a?b=c#d",
+      "HTTPS://EXAMPLE.COM/",
+      "./poi/1.html",
+      "poi/1.html",
+      "/abs/path.html",
+      "?q=1",
+      "//example.com/x"
+    ];
+    let openSpy: ReturnType<typeof vi.fn>;
+    let hrefSet: string[];
+    let originalLocation: PropertyDescriptor | undefined;
+
+    // location の差し替えは**起動のあと**に入れる（起動は location.href を読むので先に壊さない）。
+    // jsdom は代入を「Not implemented: navigation」にするので、記録だけする偽物に替える
+    const installFakeLocation = () => {
+      const fakeLocation = {
+        get href() {
+          return "https://maplat.example/app/";
+        },
+        set href(v: string) {
+          hrefSet.push(v);
+        }
+      };
+      Object.defineProperty(globalThis, "location", {
+        configurable: true,
+        get: () => fakeLocation
+      });
+    };
+
+    beforeEach(() => {
+      openSpy = vi.fn(() => null);
+      vi.stubGlobal("open", openSpy);
+      hrefSet = [];
+      originalLocation = Object.getOwnPropertyDescriptor(
+        globalThis,
+        "location"
+      );
+    });
+
+    afterEach(() => {
+      vi.unstubAllGlobals();
+      if (originalLocation) {
+        Object.defineProperty(globalThis, "location", originalLocation);
+      }
+    });
+
+    const fire = async (directgo: unknown) => {
+      const ui = await mountUi();
+      installFakeLocation();
+      getMockLayerAController(ui.app!)!.fire("clickMarkers", [
+        { namespaceID: "d", name: "D", directgo }
+      ]);
+      // directgo は吹き出しを出さない（旧と同じ）
+      expect(part(ui, "poi-modal").hidden).toBe(true);
+    };
+
+    it("テストの前提: window.location の差し替えが効いている", () => {
+      installFakeLocation();
+      window.location.href = "https://probe.example/";
+      expect(hrefSet).toEqual(["https://probe.example/"]);
+    });
+
+    it.each(REJECTED_URLS)("文字列 %s では遷移しない", async url => {
+      await fire(url);
+      expect(hrefSet).toEqual([]);
+      expect(openSpy).not.toHaveBeenCalled();
+    });
+
+    it.each(REJECTED_URLS)(
+      "blank 指定 %s では window.open しない",
+      async url => {
+        await fire({ href: url, blank: true });
+        expect(openSpy).not.toHaveBeenCalled();
+        expect(hrefSet).toEqual([]);
+      }
+    );
+
+    it.each(ACCEPTED_URLS)(
+      "文字列 %s では location.href へ代入する",
+      async url => {
+        await fire(url);
+        expect(hrefSet).toEqual([url]);
+        expect(openSpy).not.toHaveBeenCalled();
+      }
+    );
+
+    // SR-NOV26-B-3: 逆タブナビング対策で noopener,noreferrer を付ける（旧 `oct26-m16-t1-ui-marker-url.spec.ts` と同じ期待値）
+    it.each(ACCEPTED_URLS)(
+      "blank 指定 %s では window.open(_blank, noopener,noreferrer)",
+      async url => {
+        await fire({ href: url, blank: true });
+        expect(openSpy).toHaveBeenCalledWith(
+          url,
+          "_blank",
+          "noopener,noreferrer"
+        );
+        expect(hrefSet).toEqual([]);
+      }
+    );
+
+    it("オブジェクト形で blank が無ければ location.href へ代入する", async () => {
+      await fire({ href: "https://example.com/" });
+      expect(hrefSet).toEqual(["https://example.com/"]);
+    });
   });
 
   it("背景のクリック・Escape で閉じる。openMarker(id) で開ける", async () => {
@@ -1087,5 +1309,44 @@ describe("公開面だけを使う（B-公開面だけ）", () => {
     const zoomBy = vi.spyOn(app, "zoomBy");
     click(part(ui, "zoom-in"));
     expect(zoomBy).toHaveBeenCalledWith(1);
+  });
+});
+
+// Stage 3 の再レビューの Info: ページから変えられる色の**変数の名前**を固定する。名前は外から見える
+// 契約（`docs/api/migration-ui-shadow-dom.md` の表）なので、改名は利用者の CSS を壊す。
+// Chuci の変数（`--cc-slider-*`）を要素が中で包んでいる理由も、ここで固定しておく。
+describe("POI のメディアの色の CSS 変数（ページが指定する名前）", () => {
+  const NAMES = [
+    [
+      "--maplat-poi-media-theme-color",
+      "--cc-slider-theme-color: var(--maplat-poi-media-theme-color, #007aff);"
+    ],
+    [
+      "--maplat-poi-media-navigation-color",
+      "--cc-slider-navigation-color: var(--maplat-poi-media-navigation-color, #007aff);"
+    ]
+  ] as const;
+
+  it.each(NAMES)("%s を Chuci の変数へ渡している", (name, rule) => {
+    // 名前は要素の CSS（Shadow DOM の中）で決めている
+    expect(MAPLAT_UI_CSS).toContain(rule);
+    expect(MAPLAT_UI_CSS).toContain(name);
+  });
+
+  it("名前は移行のドキュメント（CSS 変数の表）と同じ", () => {
+    const doc = readFileSync(
+      resolve(__dirname, "../docs/api/migration-ui-shadow-dom.md"),
+      "utf-8"
+    );
+    for (const [name] of NAMES) expect(doc, name).toContain(`\`${name}\``);
+  });
+
+  it("Chuci の変数を直接ページで指定しても効かない（中の指定が勝つ）ので、包んだ名前を公開している", () => {
+    // 要素の CSS は Shadow DOM の中にあり、継承でページの値を上書きするため
+    expect(MAPLAT_UI_CSS).toContain(
+      "var(--maplat-poi-media-theme-color, #007aff)"
+    );
+    // ページ側の既定値は要素が持つ（Chuci の既定と同じ #007aff）
+    expect(MAPLAT_UI_CSS).not.toContain("--cc-slider-theme-color: #007aff");
   });
 });
