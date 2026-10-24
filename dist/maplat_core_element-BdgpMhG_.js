@@ -1,6 +1,6 @@
 import { View as gu, Map as OC, Feature as kC } from "ol";
-import { K as LC, n as FC, b as BC, q as GC, o as NC, s as XC } from "./index-bp3Y7SUZ.js";
-import { h as Tx, E as Px, c as Dx, t as Ox, e as kx } from "./index-bp3Y7SUZ.js";
+import { K as LC, n as FC, b as BC, q as GC, o as NC, s as XC } from "./index-Bxhe7fqi.js";
+import { h as Tx, E as Px, c as Dx, t as Ox, e as kx } from "./index-Bxhe7fqi.js";
 function zC(...n) {
   console.warn(...n);
 }
@@ -33154,6 +33154,8 @@ class Ex extends XC {
    * 通常モードは undefined（基底の既定）を返し、今までどおり属性・起動時の値を返す（挙動を変えない）。
    * 旧クラス互換層の <maplat-ui> は this.#app?.northUp を読むので、地図とコンパスを食い違わせない。
    * Core 固有の読み口はここに置く（element_base.ts は Core-Pro と共有する土台なので、口だけを置く）。
+   * 対象は <maplat-app> の属性・プロパティの表にある機能系キー（northUp・homeMarginPixels・noRotate）だけ。
+   * tapDuration・tapUIVanish は <maplat-ui> の属性（§3.8 A11）で、互換層が appData から移すのでここには無い。
    */
   implementationKeyValue(t, e) {
     if (!this.#o) return;
@@ -33165,12 +33167,6 @@ class Ex extends XC {
         break;
       case "homeMarginPixels":
         s = i.mapObject?.homeMarginPixels;
-        break;
-      case "tapDuration":
-        s = i.mapObject?.tapDuration;
-        break;
-      case "tapUIVanish":
-        s = i.mapObject?.tapUIVanish;
         break;
       case "noRotate":
         s = i.noRotate;

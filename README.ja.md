@@ -74,6 +74,31 @@ MaplatUi.createObject(option).then(app => {
 });
 ```
 
+### Custom Element `<maplat-ui>`
+
+ビューアは Custom Element としても使えます。`@maplat/core/element`（地図。`<maplat-app>` を
+登録します）と `@maplat/ui/element`（ビューア。タグを登録します）を一度ずつ import して
+タグを書けば、要素が地図の上にビューアを重ね、メソッドとイベントは要素の上にあります。
+
+```typescript
+import 'ol/ol.css';
+import '@maplat/core/element';
+import '@maplat/ui/element';
+```
+
+```html
+<maplat-ui app-id="morioka" enable-share></maplat-ui>
+<script type="module">
+  const ui = document.querySelector('maplat-ui');
+  await ui.ready;
+  ui.addEventListener('mapChanged', (e) => console.log(e.detail.mapID));
+</script>
+```
+
+属性・プロパティ・メソッド・イベントと `::part()`・CSS 変数は
+[`docs/api/maplat-ui-element.ja.md`](docs/api/maplat-ui-element.ja.md) を参照してください。
+`MaplatUi` クラスは 1.x の間そのまま使え、次のメジャー版で閉じます。
+
 ### CDN（jsDelivr）
 
 バンドルせずにブラウザで直接利用する場合は、依存関係（OpenLayers）を先に読み込む
@@ -126,6 +151,7 @@ Maplat UI はアプリ/地図設定の `pois` フィールドをそのまま
 ### API リファレンス
 
 - **API シグネチャ**（リリース依存）: [`docs/api/`](docs/api/) を参照
+  （`<maplat-ui>` 要素: [docs/api/maplat-ui-element.ja.md](docs/api/maplat-ui-element.ja.md)）
 - **概念解説**（リリース非依存）:
   [Wiki API-Reference](https://github.com/code4history/Maplat/wiki/API-Reference) を参照
 - 旧 DOM からの移行: [docs/api/migration-ui-shadow-dom.md](docs/api/migration-ui-shadow-dom.md) を参照

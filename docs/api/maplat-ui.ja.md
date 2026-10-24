@@ -24,6 +24,8 @@ UI の表示は `<maplat-ui>`（Shadow DOM open）に移りました。`MaplatUi
 無くなり、スタイルは `::part()` と CSS 変数で当てる形になりました。また、旧 API の互換層は Core の
 `<maplat-app>` の上だけで動きます。移行の手順と対応表は
 [旧 UI の DOM からの移行（Shadow DOM 化）](migration-ui-shadow-dom.md) を参照してください。
+要素そのもの（`<maplat-ui>` の属性・プロパティ・メソッド・イベントと、このクラスとの対応）は
+[`<maplat-ui>` 要素 API](maplat-ui-element.ja.md) を参照してください。
 
 旧 UI の実装（`src/ui_init.ts` など）は削除済みで、このクラスは `<maplat-ui>` の上の**互換層**だけです
 （同じ画面を描く経路は 1 つ）。`ui.sliderNew`・`ui.contextMenu`・`ui.baseSwiper`/`ui.overlaySwiper`・`ui.i18n`・
@@ -31,6 +33,7 @@ UI の表示は `<maplat-ui>`（Shadow DOM open）に移りました。`MaplatUi
 
 ## 関連
 
+- [`<maplat-ui>` 要素 API](maplat-ui-element.ja.md) — このクラスの土台になっている Custom Element
 - [MaplatAppOption](maplat-app-option.ja.md) — オプションオブジェクトのプロパティ
 - [UI コアライフサイクル](../ui-core-lifecycle.ja.md) — ライフサイクルフェーズと uiHooks
 - [旧 UI の DOM からの移行（Shadow DOM 化）](migration-ui-shadow-dom.md) — `::part` の対応表

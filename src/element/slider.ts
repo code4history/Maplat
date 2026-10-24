@@ -61,6 +61,11 @@ export const SLIDER_TUNING = {
   easing: "cubic-bezier(.22,.61,.36,1)",
   /** `transitionend` が来ない環境で確定するまでの余裕（ms。遷移がまだ走っていれば、その終わりを待つ） */
   transitionFallbackSlackMs: 120,
+  /**
+   * 保険の時間が来ても遷移が**進んでいる**（`getAnimations()` の進み具合が前回と違う）あいだは待ち直す、
+   * その回数の上限（止まった遷移・観測できない環境では 1 回だけ待って確定する。待ち続ける経路は無い）
+   */
+  transitionWatchMaxRounds: 8,
   /** 払いの速さのしきい値（px/ms。P2） */
   thresholdVelocity: 0.35,
   /** 1 操作で動かす枚数の上限（P2） */
@@ -364,6 +369,9 @@ export class MapSlider {
     if (this.#destroyed) return;
     const previous = this.#activeMapID();
     this.#items = items ? [...items] : [];
+    // 読めなかったサムネイルの記録は、一覧を入れ替えたら忘れる（一時的に読めなかった画像を
+    // ページを開き直すまで頭文字のままにしない。同じ URL なら `<img>` を作り直して読み直す）
+    this.#brokenThumbs.clear();
     const index = previous
       ? this.#items.findIndex(i => i.mapID === previous)
       : -1;
@@ -810,7 +818,8 @@ export class MapSlider {
     if (!animate) return Promise.resolve();
     return new Promise<void>(resolve => {
       let settled = false;
-      let lastTimer = 0;
+      let timer = 0;
+      let rafId = 0;
       const finish = () => {
         if (settled) return;
         settled = true;
@@ -818,7 +827,8 @@ export class MapSlider {
         track.removeEventListener("transitionend", onEnd);
         track.removeEventListener("transitioncancel", onCancel);
         window.clearTimeout(timer);
-        window.clearTimeout(lastTimer);
+        if (rafId && typeof window.cancelAnimationFrame === "function")
+          window.cancelAnimationFrame(rafId);
         resolve();
       };
       // この 1 歩の遷移が始まったか（`transitionrun` を受けたか）。前の 1 歩の遷移の
@@ -841,27 +851,97 @@ export class MapSlider {
       track.addEventListener("transitionend", onEnd);
       track.addEventListener("transitioncancel", onCancel);
       const slack = SLIDER_TUNING.transitionFallbackSlackMs;
-      const timer = window.setTimeout(() => {
-        // 保険の時間が来ても、すぐには確定しない（仕上げで実測: 負荷の高い機械では 250ms の遷移が
-        // 340〜390ms かかり、`transitionend` が 120ms の余裕より遅れて配られる。ここで確定すると、
-        // 着いている遷移でも `transitioncancel` になり、まだ途中なら最後の数 px が跳ぶ）。
-        //  - まだ目標の位置に着いていない: 着くまで待ち、来なければもう 1 回分（＋余裕）の保険で確定する
-        //  - 着いている: 遷移のイベントは次の描画の更新で配られるので、次のフレームまで待つ
-        //    （rAF が回らない隠れたタブ等のために、同じ長さの保険も置く）
-        // `getAnimations()` は遷移が始まる前だと空を返すので、描かれている位置で見る。
+      // 保険の時間が来ても、すぐには確定しない（仕上げで実測: 負荷の高い機械では 250ms の遷移が
+      // 340〜390ms かかり、`transitionend` が 120ms の余裕より遅れて配られる。ここで確定すると、
+      // 着いている遷移でも `transitioncancel` になり、まだ途中なら最後の数 px が跳ぶ）。
+      //
+      // 積み残し「スライダーの連打の跳び」（実測。e2e「主スレッドが止まっても…」で再現）:
+      // 主スレッドが止まると、遷移は**書いた時刻ではなく、次にスタイルが解決された時刻**に始まる。
+      // 1 回目の保険が「まだ着いていない」を見てから、固定の時間（1 回分＋余裕×2）で確定すると、
+      // 遅れて始まった遷移が終わって `transitionend` が配られる前に確定することがあり、
+      // `transition: none` で遷移が消されて `transitioncancel` だけが来る（連打 3 回で 2 回しか
+      // `transitionend` が来ない）。そこで最後の保険は時間ではなく、**遷移が実際に進んでいるか**
+      // （`getAnimations()` の進み具合が前回の見直しと違うか）で判断する。
+      //  - 着いている: 遷移のイベントは次の描画の更新（rAF の前）で配られるので、次のフレームで確定する
+      //    （rAF が回らない隠れたタブ等のために、保険の時間も置く）
+      //  - 着いていなくて、遷移が進んでいる（始まるのを待っている・途中）: 残りの時間＋余裕だけ待って見直す
+      //    （上限 `transitionWatchMaxRounds` 回。進み具合が変わらなければ止まっているので確定する）
+      //  - 遷移を観測できない（`getAnimations` が無い）・遷移がまだ無い: もう 1 回分（＋余裕×2）だけ待って確定する
+      // どの道も有限の回数で `finish()` に着く（待ち続けて止まる経路は無い）。
+      let rounds = 0;
+      let lastSeen: string | null = null;
+      let blindWaited = false;
+      const settleAtTarget = () => {
+        const raf =
+          typeof window.requestAnimationFrame === "function"
+            ? window.requestAnimationFrame.bind(window)
+            : null;
+        if (raf) rafId = raf(() => finish());
+        // 1 回目より長くする（1 回目と同じ長さだと、時間で数える試験と見分けがつかない）
+        timer = window.setTimeout(finish, duration + slack * 2);
+      };
+      const check = () => {
+        if (settled) return;
         const x = currentTranslateX(track);
         if (x === null || Math.abs(x - target) < 0.5) {
-          const raf = window.requestAnimationFrame?.bind(window);
-          if (!raf) {
-            finish();
+          settleAtTarget();
+          return;
+        }
+        const info = this.#transitionProgress(track);
+        if (info) {
+          const seen = `${info.playState}:${info.pending}:${info.currentTime ?? "-"}`;
+          if (
+            seen !== lastSeen &&
+            rounds < SLIDER_TUNING.transitionWatchMaxRounds
+          ) {
+            rounds++;
+            lastSeen = seen;
+            const remaining =
+              info.currentTime === null
+                ? duration
+                : Math.max(0, duration - info.currentTime);
+            timer = window.setTimeout(check, remaining + slack);
             return;
           }
-          raf(() => finish());
+        } else if (!blindWaited) {
+          blindWaited = true;
+          timer = window.setTimeout(check, duration + slack * 2);
+          return;
         }
-        // 最後の保険（1 回目より長くする: 1 回目と同じ長さだと、時間で数える試験と見分けがつかない）
-        lastTimer = window.setTimeout(finish, duration + slack * 2);
-      }, duration + slack);
+        finish();
+      };
+      timer = window.setTimeout(check, duration + slack);
     });
+  }
+
+  /**
+   * トラックの `transform` の遷移の進み具合（`getAnimations()`）。遷移が無い・観測できない環境
+   * （`getAnimations` を持たない jsdom など）では null。
+   */
+  #transitionProgress(track: HTMLElement): {
+    playState: string;
+    pending: boolean;
+    currentTime: number | null;
+  } | null {
+    try {
+      if (typeof track.getAnimations !== "function") return null;
+      const animation = track
+        .getAnimations()
+        .find(
+          a =>
+            (a as unknown as { transitionProperty?: string })
+              .transitionProperty === "transform"
+        );
+      if (!animation) return null;
+      const time = animation.currentTime;
+      return {
+        playState: animation.playState,
+        pending: !!animation.pending,
+        currentTime: typeof time === "number" ? time : null
+      };
+    } catch {
+      return null;
+    }
   }
 
   /**

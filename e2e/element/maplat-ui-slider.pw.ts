@@ -7,6 +7,8 @@
 //   - 1 枚（と 0 枚）のスライダーは枠を描かず、矢印を出さない（P3・S8）
 //   - 遠い地図への移動・矢印の連打・遷移中のクリックでも、1 枚より大きく跳ばず、
 //     transitionend が来る（M3。連続する中央のカードが隣どうしであることを記録して確かめる）
+//   - 主スレッドが止まって遷移の開始と終わりの通知が遅れても、保険で早く確定して遷移を消さない
+//     （積み残し「スライダーの連打の跳び」の再現。transitionend が 1 歩に 1 回来て、cancel は来ない）
 //   - カードの実クリックで mapChanged と `.selected` が一致し、Enter でも変わる
 //
 // 地図の設定は `e2e/fixtures/element-baseline.html`（旧 UI の基準と同じ題名・ラベル・枚数）。
@@ -95,10 +97,66 @@ async function watchCenters(page: Page, kind: "base" | "overlay") {
       `[part="map-slider"][data-kind="${kind}"]`
     ) as HTMLElement;
     const track = el.querySelector(".map-slider-track") as HTMLElement;
-    const probe = { centers: [] as string[], ends: 0 };
+    const probe = {
+      centers: [] as string[],
+      ends: 0,
+      // 落ちたときの手がかり: 遷移のイベントと確定（transition: none）の時刻と描かれている位置
+      events: [] as { t: number; ev: string; x: number }[]
+    };
     w.__probe = probe;
     w.__centers = probe.centers;
     w.__ends = 0;
+    w.__events = probe.events;
+    const t0 = performance.now();
+    const xOf = () => {
+      const v = getComputedStyle(track).transform;
+      if (!v || v === "none") return 0;
+      return Math.round(new DOMMatrixReadOnly(v).m41 * 10) / 10;
+    };
+    const note = (ev: string) => {
+      try {
+        probe.events.push({
+          t: Math.round((performance.now() - t0) * 10) / 10,
+          ev,
+          x: xOf()
+        });
+      } catch {
+        /* 記録だけ */
+      }
+    };
+    for (const type of ["transitionrun", "transitionstart", "transitioncancel"])
+      track.addEventListener(type, ev => {
+        if ((ev as TransitionEvent).propertyName !== "transform") return;
+        if (w.__probe !== probe) return;
+        note(type);
+      });
+    if (!w.__transitionTrapped) {
+      // 部品が `track.style.transition` を書く瞬間（確定＝"none"・動かし始め＝"transform …"）を横取りして記録する。
+      // 記録に失敗しても部品の動きは変えない
+      w.__transitionTrapped = true;
+      Object.defineProperty(track.style, "transition", {
+        configurable: true,
+        get() {
+          return (this as CSSStyleDeclaration).getPropertyValue("transition");
+        },
+        set(v: string) {
+          try {
+            const current = w.__probe;
+            if (current?.events)
+              current.events.push({
+                t: Math.round((performance.now() - (current.t0 ?? 0)) * 10) / 10,
+                ev: v === "none" ? "commit" : v === "" ? "reset" : "animate " + v,
+                x: xOf()
+              });
+          } catch {
+            /* 記録だけ */
+          }
+          if (v === "") (this as CSSStyleDeclaration).removeProperty("transition");
+          else (this as CSSStyleDeclaration).setProperty("transition", v);
+        }
+      });
+    }
+    (probe as any).t0 = t0;
     const center = () => {
       const r = el.getBoundingClientRect();
       let best: HTMLElement | null = null;
@@ -122,12 +180,26 @@ async function watchCenters(page: Page, kind: "base" | "overlay") {
       probe.ends++;
       w.__ends = probe.ends;
       probe.centers.push(center());
+      note("transitionend");
     });
   }, kind);
 }
 
 const centers = (page: Page) => page.evaluate(() => (window as any).__centers);
 const ends = (page: Page) => page.evaluate(() => (window as any).__ends);
+/** `transitionend` の数を待つ。足りなければ、記録した遷移のイベントを失敗の文言に入れる（落ちたときの手がかり） */
+async function expectEnds(page: Page, expected: number, timeout = 30_000) {
+  try {
+    await expect.poll(() => ends(page), { timeout }).toBe(expected);
+  } catch (err) {
+    const events = await page.evaluate(() => (window as any).__events);
+    throw new Error(
+      `transitionend: expected ${expected}, received ${await ends(page)}\n` +
+        `events: ${JSON.stringify(events)}\n` +
+        String((err as Error).message)
+    );
+  }
+}
 
 test("幅 480/481 で 1.4 枚・2 枚（P1）と、1 枚のスライダー（P3・S8）", async ({
   page
@@ -185,7 +257,7 @@ test("矢印の実クリックは 1 枚ずつ巡回し、地図を変えない�
   // 矢印を 3 回押す: 1 枚ずつ動く（中央のカードが隣どうし）。地図は変えない
   for (let i = 0; i < 3; i++)
     await slider(page, "overlay").locator('[part="map-slider-next"]').click();
-  await expect.poll(() => ends(page), { timeout: 20_000 }).toBe(3);
+  await expectEnds(page, 3, 20_000);
   expect(await centers(page)).toHaveLength(3);
   expect(await currentMap(page)).toBe(start);
   const order = await page.evaluate(() =>
@@ -215,7 +287,7 @@ test("矢印の実クリックは 1 枚ずつ巡回し、地図を変えない�
   const start375 = await currentMap(page);
   for (let i = 0; i < 2; i++)
     await slider(page, "overlay").locator('[part="map-slider-next"]').click();
-  await expect.poll(() => ends(page), { timeout: 20_000 }).toBe(2);
+  await expectEnds(page, 2, 20_000);
   expect(await currentMap(page)).toBe(start375);
   expect((await sliderMetrics(page, "overlay")).perView).toBeCloseTo(1.4, 1);
 
@@ -247,7 +319,7 @@ test("矢印の実クリックは 1 枚ずつ巡回し、地図を変えない�
       await watchCenters(page, "overlay");
       const before = await currentMap(page);
       await slider(page, "overlay").locator('[part="map-slider-next"]').click();
-      await expect.poll(() => ends(page), { timeout: 20_000 }).toBe(1);
+      await expectEnds(page, 1, 20_000);
       expect(await currentMap(page)).toBe(before);
     }
   }
@@ -357,7 +429,7 @@ test("遠い地図・矢印の連打・遷移中のクリックでも 1 枚よ�
   const before = await currentMap(page);
   for (let i = 0; i < 3; i++)
     await slider(page, "overlay").locator('[part="map-slider-next"]').click();
-  await expect.poll(() => ends(page), { timeout: 30_000 }).toBe(3);
+  await expectEnds(page, 3);
   assertNoJump(await centers(page), "rapid arrows");
   expect(await currentMap(page)).toBe(before);
 
@@ -366,7 +438,7 @@ test("遠い地図・矢印の連打・遷移中のクリックでも 1 枚よ�
   await slider(page, "overlay").locator('[part="map-slider-next"]').click();
   await page.waitForTimeout(60);
   await slider(page, "overlay").locator('[part="map-slider-next"]').click();
-  await expect.poll(() => ends(page), { timeout: 30_000 }).toBe(2);
+  await expectEnds(page, 2);
   assertNoJump(await centers(page), "during transition");
   expect(await currentMap(page)).toBe(before);
 
@@ -405,5 +477,113 @@ test("遠い地図・矢印の連打・遷移中のクリックでも 1 枚よ�
     .toBe(pressed);
   expect(await ends(page)).toBeGreaterThanOrEqual(2);
   assertNoJump(await centers(page), "card during transition");
+  expect(errors, errors.join("\n")).toEqual([]);
+});
+
+/**
+ * 主スレッドを止める仕掛け（積み残し「スライダーの連打の跳び」の再現）。
+ *
+ * 矢印の `click` の後（部品のリスナーの後に登録するので、1 歩の transform を書いた直後）に
+ * `stallStartMs` 止める。遷移はスタイルが解決されるまで始まらないので、**開始がそのぶん遅れる**
+ * （1 回目の保険の時間 250+120ms より長く止めると、保険は「まだ着いていない」を見る）。
+ * 続けて、遅れて始まった遷移が終わる頃をまたいで `stallEndMs` 止める＝**終わりの通知（transitionend）が
+ * 遅れる**。直す前の部品は、ここで固定の時間（1 回分＋余裕×2＝約 860ms）で確定して `transition: none`
+ * を書くので、遷移が消されて `transitioncancel` だけが来た（transitionend が 1 つ足りない）。
+ */
+async function installStall(
+  page: Page,
+  kind: "base" | "overlay",
+  stall: { startMs: number; endMs: number; endDelayMs: number }
+) {
+  await page.evaluate(
+    ({ kind, stall }) => {
+      const w = window as any;
+      const root = w.__maplatUi.shadowRoot;
+      const el = root.querySelector(
+        `[part="map-slider"][data-kind="${kind}"]`
+      ) as HTMLElement;
+      const next = el.querySelector('[part="map-slider-next"]') as HTMLElement;
+      const track = el.querySelector(".map-slider-track") as HTMLElement;
+      const busy = (ms: number) => {
+        const t0 = performance.now();
+        while (performance.now() - t0 < ms) {
+          /* 主スレッドを止める */
+        }
+      };
+      w.__cancels = 0;
+      w.__stalls = 0;
+      track.addEventListener("transitioncancel", ev => {
+        if ((ev as TransitionEvent).propertyName === "transform") w.__cancels++;
+      });
+      if (w.__stallHandler) next.removeEventListener("click", w.__stallHandler);
+      w.__stallHandler = () => {
+        w.__stalls++;
+        busy(stall.startMs);
+        window.setTimeout(() => busy(stall.endMs), stall.endDelayMs);
+      };
+      next.addEventListener("click", w.__stallHandler);
+    },
+    { kind, stall }
+  );
+}
+
+test("主スレッドが止まって遷移の開始と終わりの通知が遅れても、1 歩ごとに transitionend で確定し、遷移を消さない（連打の跳び）", async ({
+  page
+}) => {
+  test.setTimeout(240_000);
+  const errors = await openFixture(page, "base=3&overlay=6", 1280);
+  const order = await page.evaluate(() =>
+    (window as any).__maplatUi.app
+      .listMaps()
+      .filter((m: any) => !m.isBasemap)
+      .map((m: any) => m.mapID)
+  );
+  const adjacent = (a: string, b: string) => {
+    const prev = order.indexOf(a);
+    const next = order.indexOf(b);
+    return (
+      Math.min(Math.abs(next - prev), order.length - Math.abs(next - prev)) ===
+      1
+    );
+  };
+  // 開始の遅れ 450ms（1 回目の保険 370ms より長い）・終わりの通知の遅れ 520ms（遅れて始まった遷移
+  // 450〜700ms の終わりをまたぎ、直す前の最後の保険 450+490=940ms より後まで止める）
+  const stall = { startMs: 450, endMs: 520, endDelayMs: 10 };
+
+  // 1 回: transitionend が 1 回、cancel は 0
+  await watchCenters(page, "overlay");
+  await installStall(page, "overlay", stall);
+  const before = await currentMap(page);
+  await slider(page, "overlay").locator('[part="map-slider-next"]').click();
+  await expectEnds(page, 1);
+  // 確定（commit）まで待ってから数える（最後の保険が遅れて走る余地を残さない）
+  await page.waitForTimeout(1500);
+  expect(await ends(page), "single step: transitionend").toBe(1);
+  expect(
+    await page.evaluate(() => (window as any).__cancels),
+    "single step: transitioncancel"
+  ).toBe(0);
+  expect(await page.evaluate(() => (window as any).__stalls)).toBe(1);
+
+  // 連打 3 回（毎回止める）: transitionend が 3 回、1 枚ずつ、cancel は 0
+  await watchCenters(page, "overlay");
+  await installStall(page, "overlay", stall);
+  for (let i = 0; i < 3; i++)
+    await slider(page, "overlay").locator('[part="map-slider-next"]').click();
+  await expectEnds(page, 3);
+  await page.waitForTimeout(1500);
+  expect(await ends(page), "rapid: transitionend").toBe(3);
+  expect(
+    await page.evaluate(() => (window as any).__cancels),
+    "rapid: transitioncancel"
+  ).toBe(0);
+  const visited = await centers(page);
+  expect(visited).toHaveLength(3);
+  for (let i = 1; i < visited.length; i++)
+    expect(
+      adjacent(visited[i - 1], visited[i]),
+      `rapid: ${visited[i - 1]} -> ${visited[i]}`
+    ).toBe(true);
+  expect(await currentMap(page)).toBe(before);
   expect(errors, errors.join("\n")).toEqual([]);
 });

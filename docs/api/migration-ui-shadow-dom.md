@@ -11,7 +11,8 @@
 - 旧 API の互換層は **Core の `<maplat-app>`（層 A）の上だけで動きます**。Pro など別の層 A 実装との
   組み合わせは対象外です（`<maplat-ui>` 自体は層 A を選びません）。
 - 地図（OpenLayers）は `<maplat-ui>` の light DOM の子 `<maplat-app slot="map">` に居ます。子の要素は
-  `maplat-ui > maplat-app` として `::slotted(maplat-app)` で当てられます（内部は層 A の DOM です）。
+  light DOM なので、ページの CSS から `maplat-ui > maplat-app` で当てられます（`::slotted()` は
+  Shadow DOM の中の書き方で、ページの CSS には使いません。内部は層 A の DOM です）。
 
 ## 対応表（旧 DOM / class → `::part` / 属性）
 
@@ -29,7 +30,7 @@
 | `.border`（枠線のボタン） | `::part(border)` | 地図の上の範囲の線の色は地図ごとに要素が決める（CSS 変数では変えられない） |
 | `.hide_marker` | `::part(hide-marker)` | |
 | マーカー一覧のボタン / 画面 | `::part(marker-list)` / `::part(marker-list-modal)` | 一覧の行は `::part(marker-list-layer)`・`::part(marker-list-poi)` |
-| 共有のボタン / 画面 | `::part(share-button)` / `::part(share-modal)` | QR は `::part(share-qr-app)`・`::part(share-qr-view)` |
+| 共有のボタン / 画面 | `::part(share)` / `::part(share-modal)` | `::part(share-button)` は画面の中の SNS・コピーのボタン。QR は `::part(share-qr-app)`・`::part(share-qr-view)`（QR の SVG 自体は `::part(qr-code)`） |
 | `.ol-slidernew input`（透過度） | `::part(slider)` | `<input type="range">` |
 | `.base-swiper` / `.overlay-swiper` | `::part(map-slider)` | カードは `::part(map-slide)`（選択中は `map-slide map-slide-selected`）。前後のボタンは `::part(map-slider-prev)` / `::part(map-slider-next)` |
 | `.swiper-slide` | `::part(map-slide)` | Swiper の DOM ではない（カードはボタン） |
@@ -38,6 +39,7 @@
 | `.modal_poi .title` | `::part(poi-title)` | ほかに `share-title`・`help-title`・`map-info-title`・`marker-list-title`・`gps-title` |
 | `.modal_poi .body` | `::part(poi-body)` | |
 | POI のメディア（Chuci） | `::part(poi-media)` / `::part(poi-swiper)` | |
+| POI の `html` / `url` の本文 | `::part(poi-html)` / `::part(poi-iframe)` | `html` の本文は `poi-html`、`url` の本文は iframe の `poi-iframe` |
 | `.custom-toast` | `::part(toast)` | |
 | 地図情報のメタデータ | `::part(map-meta)` | 行は `part="map-meta-<キー>"` |
 | キャッシュの欄 | `::part(map-cache)`・`::part(cache-heading)`・`::part(cache-size)`・`::part(cache-fetch)`・`::part(cache-delete)` | |
@@ -47,7 +49,7 @@
 | 変数 | 効く場所 |
 | --- | --- |
 | `--maplat-poi-media-theme-color` / `--maplat-poi-media-navigation-color` | POI のメディア（Chuci のスワイパー）の色。中で Chuci の `--cc-slider-theme-color` / `--cc-slider-navigation-color` に渡す（既定 `#007aff`）。Chuci の変数を直接ページで指定しても、Shadow DOM の中の指定が勝つので効かない |
-| `--maplat-envelope-color` | 枠線の表示中の、範囲を持つ地図のカード（`::part(map-slide)`）の点線の**既定色**だけ。地図ごとの色（要素が割り当てる 12 色）があればそちらが勝つので、ふつうは見えない。`::part(border)` のボタンにも、地図の上の範囲の線にも効かない |
+| `--maplat-envelope-color` | 枠線の表示中の、範囲を持つ地図のカード（`::part(map-slide)`）の点線の**既定色**だけ。地図ごとの色（要素が割り当てる 25 色）があればそちらが勝つので、ふつうは見えない（範囲を持つカードには必ず付くので、今の版ではページで指定した値は見えない）。`::part(border)` のボタンにも、地図の上の範囲の線にも効かない |
 
 ## 例
 
@@ -131,6 +133,7 @@ maplat-ui::part(map-slide-selected) {
 
 ## 参考
 
-- [`<maplat-ui>` の API](maplat-ui.ja.md)
+- [`<maplat-ui>` 要素の API](maplat-ui-element.ja.md)
+- [旧 `MaplatUi` クラス](maplat-ui.ja.md)
 - ライフサイクル: [`docs/ui-core-lifecycle.ja.md`](../ui-core-lifecycle.ja.md)
 - `part` 名の正本: `src/element/maplat-ui.ts`・`src/element/slider.ts`

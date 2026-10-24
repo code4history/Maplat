@@ -1309,6 +1309,151 @@ describe("レビュー指摘の直し（Stage 2 の Major・Minor）", () => {
     }
   });
 
+  /**
+   * 最後の保険を「時間」ではなく「遷移が実際に進んでいるか」で判断する（積み残し「スライダーの連打の跳び」）。
+   * jsdom には `getAnimations` が無いので、トラックに差し込んで遷移の進み具合を作る。描かれている位置は
+   * 上の検査と同じく `DOMMatrixReadOnly` を差し替えて作る。
+   */
+  function withFakeTransition(
+    fn: (ctx: {
+      slider: MapSlider;
+      track: HTMLElement;
+      anim: {
+        playState: string;
+        pending: boolean;
+        currentTime: number | null;
+        transitionProperty: string;
+      };
+      setDrawnX: (x: number) => void;
+      targetX: () => number;
+    }) => Promise<void>
+  ) {
+    return async () => {
+      stubMatchMedia();
+      useShippedDurations();
+      vi.useFakeTimers();
+      let drawnX = 0;
+      (window as any).DOMMatrixReadOnly = class {
+        m41: number;
+        constructor() {
+          this.m41 = drawnX;
+        }
+      };
+      const realGetComputedStyle = window.getComputedStyle.bind(window);
+      vi.spyOn(window, "getComputedStyle").mockImplementation(((
+        el: Element,
+        pseudo?: string | null
+      ) => {
+        const cs = realGetComputedStyle(el, pseudo);
+        if ((el as HTMLElement).classList?.contains("map-slider-track"))
+          return { ...cs, transform: "matrix(1, 0, 0, 1, 0, 0)" } as any;
+        return cs;
+      }) as any);
+      // rAF は回らないものとする（隠れたタブと同じ。保険の時間で確定できることを見る）
+      const realRaf = window.requestAnimationFrame;
+      window.requestAnimationFrame = (() => 1) as any;
+      try {
+        const { slider } = make(["a", "b", "c"]);
+        setWidth(slider, 224);
+        const track = slider.element.querySelector(
+          ".map-slider-track"
+        ) as HTMLElement;
+        const anim = {
+          transitionProperty: "transform",
+          playState: "running",
+          pending: true,
+          currentTime: null as number | null
+        };
+        (track as any).getAnimations = () => [anim];
+        await fn({
+          slider,
+          track,
+          anim,
+          setDrawnX: x => {
+            drawnX = x;
+          },
+          targetX: () => trackX(slider)
+        });
+      } finally {
+        window.requestAnimationFrame = realRaf;
+        vi.useRealTimers();
+        delete (window as any).DOMMatrixReadOnly;
+      }
+    };
+  }
+
+  it(
+    "遷移の保険: 遷移が進んでいる（始まるのを待っている・途中）あいだは残りの時間だけ待ち直し、着いたら確定する（連打の跳び）",
+    withFakeTransition(async ({ slider, track, anim, setDrawnX, targetX }) => {
+      const slack = SLIDER_TUNING.transitionFallbackSlackMs;
+      const duration = SHIPPED_TUNING.stepDurationMs;
+      setDrawnX(99999); // まだ着いていない
+      void slider.step(1);
+      const target = targetX();
+      // 1 回目の保険: 遷移は始まるのを待っている（pending・currentTime null）→ 1 回分＋余裕だけ待つ
+      await vi.advanceTimersByTimeAsync(duration + slack);
+      expect(slider.activeMapID).toBe("a");
+      // 旧の最後の保険（1 回分＋余裕×2）が来ても、遷移が進んでいれば確定しない（ここが直したところ）
+      anim.pending = false;
+      anim.currentTime = 100;
+      await vi.advanceTimersByTimeAsync(duration + slack * 2);
+      expect(slider.activeMapID).toBe("a");
+      // 残り 150ms＋余裕で見直す。着いていれば（transitionend の代わりに）保険の時間で確定する
+      setDrawnX(target);
+      anim.currentTime = duration;
+      anim.playState = "finished";
+      await vi.advanceTimersByTimeAsync(duration - 100 + slack);
+      expect(slider.activeMapID).toBe("a"); // 着いた直後は次のフレーム（rAF）か保険を待つ
+      await vi.advanceTimersByTimeAsync(duration + slack * 2);
+      expect(slider.activeMapID).toBe("b");
+      expect(vi.getTimerCount()).toBe(0);
+      void track;
+    })
+  );
+
+  it(
+    "遷移の保険: 進み具合が変わらない（止まっている）遷移は待たずに確定する（待ち続けない）",
+    withFakeTransition(async ({ slider, anim, setDrawnX }) => {
+      const slack = SLIDER_TUNING.transitionFallbackSlackMs;
+      const duration = SHIPPED_TUNING.stepDurationMs;
+      setDrawnX(99999);
+      anim.pending = false;
+      anim.currentTime = 50;
+      void slider.step(1);
+      await vi.advanceTimersByTimeAsync(duration + slack);
+      expect(slider.activeMapID).toBe("a"); // 1 回目は「進んでいる」とみて残り 200ms＋余裕を待つ
+      await vi.advanceTimersByTimeAsync(duration - 50 + slack);
+      expect(slider.activeMapID).toBe("b"); // 2 回目に同じ進み具合＝止まっている → 確定
+      expect(vi.getTimerCount()).toBe(0);
+    })
+  );
+
+  it(
+    "遷移の保険: 見直しは transitionWatchMaxRounds 回で打ち切る（進み続けて見える遷移でも止まらない）",
+    withFakeTransition(async ({ slider, anim, setDrawnX }) => {
+      setDrawnX(99999);
+      anim.pending = false;
+      anim.currentTime = 0;
+      // 読むたびに 1ms ずつ進んで見える（決して着かない）
+      Object.defineProperty(anim, "currentTime", {
+        get: () => ++tick,
+        configurable: true
+      });
+      let tick = 0;
+      void slider.step(1);
+      const rounds = SLIDER_TUNING.transitionWatchMaxRounds;
+      // 1 回目の保険 ＋ 見直し rounds 回（1 回あたり最大で 1 回分＋余裕）で確定する
+      for (let i = 0; i <= rounds; i++)
+        await vi.advanceTimersByTimeAsync(
+          SHIPPED_TUNING.stepDurationMs +
+            SLIDER_TUNING.transitionFallbackSlackMs
+        );
+      expect(slider.activeMapID).toBe("b");
+      expect(vi.getTimerCount()).toBe(0);
+      expect(tick).toBeLessThanOrEqual(rounds + 1);
+    })
+  );
+
   it("遷移が始まった後に消されたら（transitioncancel）待たずに確定する。始まる前の cancel は無視（Major 1）", async () => {
     stubMatchMedia();
     useShippedDurations();
@@ -1395,6 +1540,49 @@ describe("レビュー指摘の直し（Stage 2 の Major・Minor）", () => {
       expect(card.querySelector("img.map-slide-thumb")).not.toBeNull();
   });
 
+  it("読めなかったサムネイルの記録は setItems（一覧の入れ替え）で消え、同じ URL でも読み直す（積み残し）", () => {
+    const withThumbs = (mapIDs: string[]) =>
+      makeItems(mapIDs).map(item => ({
+        ...item,
+        thumbnail: `./tmbs/${item.mapID}.jpg`
+      }));
+    const { slider } = make(["a", "b", "c"], {
+      items: withThumbs(["a", "b", "c"]),
+      placeholder: (label: string) => {
+        const span = document.createElement("span");
+        span.className = "thumb none";
+        span.textContent = Array.from(label)[0] ?? "?";
+        return span;
+      }
+    });
+    setWidth(slider, 224);
+    const imgOf = (mapID: string) =>
+      slider.element.querySelector<HTMLImageElement>(
+        `[part~="map-slide"][data-map-id="${mapID}"] img.map-slide-thumb`
+      );
+    const placeholderOf = (mapID: string) =>
+      slider.element.querySelector(
+        `[part~="map-slide"][data-map-id="${mapID}"] .thumb.none`
+      );
+    // b が読めなかった → 頭文字
+    imgOf("b")!.dispatchEvent(new Event("error"));
+    expect(imgOf("b")).toBeNull();
+    expect(placeholderOf("b")).not.toBeNull();
+    // 記録は残っている: 同じ一覧を描き直しても（refresh）頭文字のまま
+    slider.refresh();
+    expect(imgOf("b")).toBeNull();
+    // 一覧を入れ替える（同じ URL を含む）と記録が消え、`<img>` を作り直して読み直す
+    slider.setItems(withThumbs(["a", "b", "c", "d"]));
+    expect(slider.count).toBe(4);
+    expect(imgOf("b")).not.toBeNull();
+    expect(imgOf("b")!.getAttribute("src")).toBe("./tmbs/b.jpg");
+    expect(placeholderOf("b")).toBeNull();
+    // 入れ替えた後にまた読めなければ、改めて頭文字に替わる（記録は一覧ごと）
+    imgOf("b")!.dispatchEvent(new Event("error"));
+    expect(imgOf("b")).toBeNull();
+    expect(placeholderOf("b")).not.toBeNull();
+  });
+
   it("CSS: 自動非表示は題名とスライダーにも効き、タッチの右列は安全領域を消さず、書体を固定しない（Major 1〜3）", () => {
     const css = MAPLAT_UI_CSS;
     expect(css).toContain(".map-title.fade");
@@ -1405,5 +1593,43 @@ describe("レビュー指摘の直し（Stage 2 の Major・Minor）", () => {
     expect(css).not.toContain("Helvetica");
     expect(css).toMatch(/\.ctl button \{[^}]*font-family: inherit;/);
     expect(css).toMatch(/\.ctl button \{[^}]*line-height: normal;/);
+  });
+
+  it("CSS: 文字の大きさと色は :host で決めずページから継ぐ。決めるのは旧も決めていたものだけ（積み残し）", () => {
+    const css = MAPLAT_UI_CSS;
+    const host = /:host \{([^}]*)\}/.exec(css)![1];
+    // 旧 UI は bootstrap を .maplat の下に閉じ込めていたので body の 14px・#333・1.42857 は当たらない
+    expect(host).not.toMatch(/font-size/);
+    expect(host).not.toMatch(/[^-]color:/);
+    expect(host).not.toMatch(/line-height/);
+    // 操作ボタンと容器: 旧 ol.css の .ol-control button { font-size: inherit }・容器は何も置かない
+    expect(css).not.toMatch(/\.ctl,\s*\.ctl-column \{ font-size/);
+    expect(css).toMatch(/\.ctl button \{[^}]*font-size: inherit;/);
+    expect(css).toMatch(/\.frame\.touch \.ctl button \{ font-size: 1\.5em; \}/);
+    // 透過度のスライダー（<input>）は bootstrap の input { font-size: inherit } と同じ
+    expect(css).toMatch(/\n\.slider \{[^}]*font-size: inherit;/);
+    // 地図の切り替えスライダーの容器も決めない
+    expect(css).not.toMatch(/\n\.map-slider \{[^}]*font-size/);
+    // 旧も自分で決めていたもの: 題名 18px・白、カード 18px、モーダルの見出し 18px、POI のメニュー 13px、知らせ 17px
+    expect(css).toMatch(
+      /\n\.map-title \{[^}]*color: #fff;[^}]*font-size: 18px;/
+    );
+    expect(css).toMatch(/\.map-slide \{[^}]*font-size: 18px;/);
+    expect(css).toMatch(/\.modal \.title \{[^}]*font-size: 18px;/);
+    expect(css).toMatch(/\n\.poi-menu \{[^}]*font-size: 13px;/);
+    expect(css).toMatch(/\n\.toast \{[^}]*font-size: 17px;/);
+    // 共有ボタン（旧 share btn btn-light）とキャッシュのボタン（旧 btn btn-default）: bootstrap の .btn の 14px・1.42857
+    expect(css).toMatch(
+      /\n\.share-button \{[^}]*font: inherit;[^}]*font-size: 14px;[^}]*line-height: 1\.42857;/
+    );
+    expect(css).toMatch(
+      /\.map-info-modal \.cache-buttons button \{[^}]*font: inherit;[^}]*font-size: 14px;[^}]*line-height: 1\.42857;/
+    );
+    // 地図情報の項目名と値（旧 bootstrap の dt, dd { line-height: $line-height-base }）
+    expect(css).toMatch(
+      /\.map-info-modal dl\.map-meta dt,\s*\.map-info-modal dl\.map-meta dd \{ line-height: 1\.42857; \}/
+    );
+    // スプラッシュの題名（旧 h4.modal-title 内の .modal_load_title の 18px）
+    expect(css).toMatch(/\.splash-title \{[^}]*font-size: 18px;/);
   });
 });

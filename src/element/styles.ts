@@ -18,12 +18,12 @@ export const MAPLAT_UI_CSS = `
   position: relative;
   height: 400px;
   overflow: hidden;
-  /* 書体はページから継承する（旧 UI と同じ。旧の bootstrap は .maplat の下に閉じ込めてあり、
-     body の書体の規則は当たらない＝題名・見出し・ボタンはページの書体を継ぐ。レビュー Major 3）。
-     文字の大きさと行の高さは当面ここで決める（旧は大きさもページから継ぐ。Stage 3 以降の課題） */
-  font-size: 14px;
-  line-height: 1.42857;
-  color: #333;
+  /* 書体・文字の大きさ・行の高さ・色はページから継承する（旧 UI と同じ。旧の bootstrap は .maplat の
+     下に閉じ込めてあり、body の規則（14px・1.42857・#333）は当たらない＝操作ボタン・スライダーの容器・
+     モーダルの本文はページの文字を継ぐ。基準 JSON の計算値は 16px・黒・normal＝ページ既定。
+     レビュー Major 3・積み残し「字の大きさと色をページから継承する」）。
+     ここでは何も決めない。大きさを決めるのは、旧も自分で決めていたもの（題名 18px・カード 18px・
+     モーダルの見出し 18px・POI のメニュー 13px・知らせ 17px）だけ */
   -webkit-tap-highlight-color: transparent;
 }
 :host([hidden]) { display: none; }
@@ -40,10 +40,8 @@ export const MAPLAT_UI_CSS = `
 
 /* ---- 操作ボタン（旧 .ol-control・node_modules/ol/ol.css と src/styles/maplat-specific.scss） ----
    位置は設計 §5.2 の旧 CSS の px/em をそのまま使う。em の基準は旧と同じ 16px（下の .ctl）。 */
-/* 旧 .ol-control の文字は 16px（基準 JSON の計算値）。位置の .5em を旧と同じ 8px にするため、
-   容器にも 16px を置く（:host の 14px のままだと 7px になる。仕上げで実測） */
-.ctl,
-.ctl-column { font-size: 16px; }
+/* 旧 .ol-control の文字はページから継ぐ（基準 JSON の 16px はページ既定の 16px）。位置の .5em も
+   ページの文字の大きさに従う（ページが 20px なら 10px。旧と同じ）。容器には何も置かない */
 .ctl {
   position: absolute;
   background-color: rgba(128, 128, 128, .25);
@@ -55,9 +53,11 @@ export const MAPLAT_UI_CSS = `
   padding: 0;
   height: 2.0625em;
   width: 2.0625em;
-  /* 旧 bootstrap の .maplat button は font-family・line-height とも inherit（行の高さは normal） */
+  /* 旧 bootstrap の .maplat button は font-family・font-size・line-height とも inherit（行の高さは normal）。
+     旧 ol.css の .ol-control button も font-size: inherit。UA の button の 13.333px を受けず、容器（＝ページ）
+     の大きさを継ぐ */
   font-family: inherit;
-  font-size: 16px;
+  font-size: inherit;
   font-weight: normal;
   line-height: normal;
   color: rgb(255, 255, 255);
@@ -125,11 +125,11 @@ export const MAPLAT_UI_CSS = `
 .frame.touch .ctl-zoom { display: none; }
 /* タッチ端末はズームを隠した分、GPS とホームを上へ詰め、ボタンを指で押せる大きさにする
    （旧 ol-touch: src/styles/maplat-specific.scss の .gps / .home の top と、
-   node_modules/ol/ol.css の .ol-touch .ol-control button { font-size: 1.5em }＝16px × 1.5）。
+   node_modules/ol/ol.css の .ol-touch .ol-control button { font-size: 1.5em }＝ページ既定の 16px なら 24px）。
    右列は flex の自動積みで旧の 115px+.5em / 165px+.5em / 215px+.5em に寄せる（ボタン 49.5px）。 */
 .frame.touch .ctl-gps { top: .5em; }
 .frame.touch .ctl-home { top: calc(.5em + 50px); }
-.frame.touch .ctl button { font-size: 24px; }
+.frame.touch .ctl button { font-size: 1.5em; }
 /* bottom は基本の規則（65px + .5em + 安全領域）のまま。ここで書くと安全領域が消える（レビュー Major 2） */
 .frame.touch .ctl-column { gap: .5px; }
 .frame.touch .ctl-share { bottom: calc(115px + .5em); bottom: calc(115px + .5em + env(safe-area-inset-bottom)); }
@@ -149,8 +149,9 @@ export const MAPLAT_UI_CSS = `
   border: 2px solid #666;
   border-radius: 4px;
   box-sizing: border-box;
-  /* <input> は UA の 13.333px を持つので、旧 .ol-slidernew の 16px を置く（bottom の .5em を 8px に） */
-  font-size: 16px;
+  /* <input> は UA の 13.333px を持つ。旧は bootstrap の input の font-size: inherit でページの大きさ
+     （基準 JSON の 16px はページ既定）を継いでいたので、新も継ぐ（bottom の .5em はページに従う） */
+  font-size: inherit;
 }
 .slider[disabled] { background: rgba(255, 255, 255, .7); }
 .slider::-webkit-slider-thumb {
@@ -224,8 +225,8 @@ export const MAPLAT_UI_CSS = `
   background-color: rgba(32, 32, 32, .5);
   border-radius: 4px;
   color: #fff;
-  /* 旧 .swiper の容器は 16px（bottom の .5em＝8px）、カード（.swiper-slide）は 18px */
-  font-size: 16px;
+  /* 旧 .swiper の容器はページの文字を継ぐ（基準 JSON の 16px はページ既定。bottom の .5em はページに従う）。
+     カード（.swiper-slide）は旧が自分で 18px を決めていたので、下の .map-slide で 18px */
   -webkit-user-select: none;
   user-select: none;
   touch-action: pan-y;
@@ -467,6 +468,9 @@ export const MAPLAT_UI_CSS = `
   background-color: #f8f9fa;
   color: #212529;
   font: inherit;
+  /* 旧 .btn（bootstrap の button-size の $font-size-base・$line-height-base）は文字を自分で決めていた */
+  font-size: 14px;
+  line-height: 1.42857;
   cursor: pointer;
 }
 .share-button:hover { background-color: #e2e6ea; border-color: #dae0e5; }
@@ -504,6 +508,9 @@ export const MAPLAT_UI_CSS = `
 }
 .map-info-modal dl.map-meta dt { color: #555; font-weight: bold; }
 .map-info-modal dl.map-meta dd { margin: 0; min-width: 0; }
+/* 旧 bootstrap の dt, dd { line-height: $line-height-base } は .maplat の下でも当たっていた */
+.map-info-modal dl.map-meta dt,
+.map-info-modal dl.map-meta dd { line-height: 1.42857; }
 .map-info-modal img.license { display: block; max-height: 2.2em; max-width: 100%; }
 /* アイコンの無い語彙は文言だけを出す（相対 URL の画像を取りに行かない） */
 .map-info-modal .license-text { display: block; }
@@ -520,6 +527,9 @@ export const MAPLAT_UI_CSS = `
   background-color: #f4f4f4;
   color: #212529;
   font: inherit;
+  /* 旧 .btn（bootstrap の button-size の $font-size-base・$line-height-base）は文字を自分で決めていた */
+  font-size: 14px;
+  line-height: 1.42857;
   cursor: pointer;
 }
 .map-info-modal .cache-buttons button:hover:not([disabled]) { background-color: #e2e6ea; border-color: #dae0e5; }
@@ -575,7 +585,8 @@ export const MAPLAT_UI_CSS = `
   text-align: center;
 }
 .splash-inner { max-width: 90%; max-height: 90%; overflow: hidden; }
-.splash-title { margin: 0 0 .6em; font-size: 1.4em; font-weight: bold; }
+/* 旧は h4.modal-title 内の .modal_load_title（18px） */
+.splash-title { margin: 0 0 .6em; font-size: 18px; font-weight: bold; }
 .splash-loading { margin: 0; color: #555; }
 .splash-image { margin: .8em 0 0; }
 .splash-image img { max-width: 100%; max-height: 60vh; }

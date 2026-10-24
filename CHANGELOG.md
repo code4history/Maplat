@@ -15,6 +15,8 @@
 - 旧 API のホスト（`<maplat-ui>`）は旧の地図と同じく `position: absolute; top/left/right/bottom: 0` で、いちばん近い位置指定の祖先いっぱいに広がる
 - POI のメディア（Chuci）の色は `--maplat-poi-media-theme-color`・`--maplat-poi-media-navigation-color` で変える（Shadow DOM の中なので、Chuci の `--cc-slider-*` をページで指定しても効かない）
 - 状態 URL の書き込みは `history.replaceState`（履歴を増やさない）。旧 UI の page.js は `pushState` だった
+- `<maplat-ui>` の文字の大きさ・行の高さ・色は、書体と同じくページから継承する（旧 UI と同じ。旧は bootstrap を `.maplat` の下に閉じ込めていたので body の 14px・#333 は当たらず、操作ボタン・スライダーの容器・モーダルの本文はページの文字を継いでいた）。題名（18px・白）・地図切り替えのカード（18px）・モーダルの見出し（18px）・スプラッシュの題名（18px）・共有ボタンと地図情報のキャッシュのボタン（旧 bootstrap の `.btn` の 14px・行の高さ 1.42857）・地図情報の項目名と値の行の高さ（旧 bootstrap の `dt, dd` の 1.42857）など、旧も自分で決めていたものは従来どおり。一本化の途中の版では `:host` で 14px・#333 を決めていたため、文字の大きさを指定したページで旧と見た目がずれていた
+- `package.json` に `exports` を足した（`.`・`./element`・`./dist/*`）。`require("@maplat/ui")` は `default` の ES 版（`dist/maplat_ui.es.js`）に解決され、Node 20.19 / 22.12 以降の `require(esm)` とバンドラーで読める。1.1.0 では `main` の `dist/maplat_ui.umd.js` が `"type": "module"` の下で ES モジュールとして読まれ、UMD の包みが `exports` も `require("ol")` も使えずに空の名前空間を返していたが、この問題も解消した。`exports` が付いたので、`src/`・`assets/` の深いパスは Node とバンドラーから読めなくなった（`./dist/*` 経由なら読める）。`dist/maplat_ui.umd.js` の名前と置き場所は変えていない（`<script>` と `main` は従来どおり）
 
 ### Added
 - `pwaWorker: false`（`null` も同じ）で Service Worker を登録しないようにした。manifest の `<link>` と apple-touch-icon は従来どおり足す。登録済みの Service Worker は解除しない（MaplatEditor#106）
@@ -29,6 +31,9 @@
 - 旧 UI の見た目の基準を採るスクリプト `e2e/legacy-baseline-capture.spec.ts` を削除した（旧 UI が無いので採れず、凍結した基準 JSON を新 UI の値で上書きしうるため。基準 JSON は残す）
 
 ### Fixed
+- 地図切り替えスライダーで、主スレッドが止まって遷移の開始と終わりの通知が遅れたとき（負荷の高い機械での矢印の連打など）に、保険が固定の時間で早く確定して遷移を消し、1 枚分跳んで見えることがあったのを直した。最後の保険は時間ではなく「遷移が実際に進んでいるか」（`getAnimations()` の進み具合）で判断し、進んでいるあいだは残りの時間だけ待ち直す（上限回数つき。待ち続ける経路は無い）
+- 地図切り替えスライダーで、読めなかったサムネイルの記録が地図の一覧を入れ替えても残り、一時的に読めなかった画像がページを開き直すまで頭文字のままだったのを直した（一覧の入れ替えで記録を消し、同じ URL でも読み直す）
+- `vite.config.js` の入れ子の UMD ビルド（`configFile: false`）に外側と同じ CSS（SCSS）の設定を渡すようにした（`silenceDeprecations` を 1 か所で持つ。ビルドの出力は変わらない）
 - 共有（Twitter・Facebook）と POI の `directgo`（`blank`）の `window.open` に `noreferrer` を戻した（`noopener,noreferrer`。1.1.0 と同じ。一本化の途中で `noopener` だけになっていた。SR-NOV26-B-3）
 - 旧 API の `ui.xyToMapIDs(xy)` が必ず reject していたのを直した（層 A の `sysCoord2MercAsync` の戻り値の扱いの誤り）。判定は `<maplat-ui>` の `mapsAt` に一本化した
 - 旧 API の `ui.showContextMenu` のメニューが、地図の箱が画面の左上に無いページで、ホストの位置のぶん左上へずれていたのを直した

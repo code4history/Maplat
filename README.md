@@ -76,6 +76,33 @@ MaplatUi.createObject(option).then(app => {
 });
 ```
 
+### Custom Element `<maplat-ui>`
+
+The viewer is also available as a Custom Element. Import `@maplat/core/element`
+(the map; it registers `<maplat-app>`) and `@maplat/ui/element` (the viewer; it
+registers the tag) once, and write the tag; the element lays the viewer over
+the map and its methods and events are on the element.
+
+```typescript
+import 'ol/ol.css';
+import '@maplat/core/element';
+import '@maplat/ui/element';
+```
+
+```html
+<maplat-ui app-id="morioka" enable-share></maplat-ui>
+<script type="module">
+  const ui = document.querySelector('maplat-ui');
+  await ui.ready;
+  ui.addEventListener('mapChanged', (e) => console.log(e.detail.mapID));
+</script>
+```
+
+See [`docs/api/maplat-ui-element.md`](docs/api/maplat-ui-element.md) for the
+attributes, properties, methods and events and the `::part()` / CSS variables.
+The `MaplatUi` class stays available in 1.x and closes in the next major
+version.
+
 ### CDN (jsDelivr)
 
 For usage directly in the browser without a bundler, you must load OpenLayers
@@ -130,6 +157,7 @@ in the MaplatCore README.
 ### API reference
 
 - **API signatures** (release-dependent): see [`docs/api/`](docs/api/)
+  (the `<maplat-ui>` element: [docs/api/maplat-ui-element.md](docs/api/maplat-ui-element.md))
 - **Conceptual guide** (release-independent): see the
   [Wiki API-Reference](https://github.com/code4history/Maplat/wiki/API-Reference)
 - Migrating from the legacy DOM: see

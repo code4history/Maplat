@@ -24,6 +24,8 @@ The UI is now rendered inside `<maplat-ui>` (Shadow DOM, open). The public shape
 names (`.ol-*`, `.swiper-*`, `.modal_*`, …) are gone; style the UI with `::part()` and CSS variables.
 The compatibility layer for the legacy API only works on top of Core's `<maplat-app>`. See the
 migration guide (Japanese): [旧 UI の DOM からの移行（Shadow DOM 化）](migration-ui-shadow-dom.md).
+For the element itself (`<maplat-ui>`: attributes, properties, methods, events, and the
+mapping from this class) see [`<maplat-ui>` element API](maplat-ui-element.md).
 
 The legacy UI implementation (`src/ui_init.ts` and friends) has been removed; this class is **only** the
 compatibility layer over `<maplat-ui>` (one code path draws the screen). The types of `ui.sliderNew`,
@@ -32,6 +34,7 @@ compatibility layer over `<maplat-ui>` (one code path draws the screen). The typ
 
 ## See also
 
+- [`<maplat-ui>` element API](maplat-ui-element.md) — the Custom Element this class sits on top of
 - [MaplatAppOption](maplat-app-option.md) — option object properties
 - [UI core lifecycle](../ui-core-lifecycle.md) — lifecycle phases and uiHooks
 - [Migration from the legacy UI DOM (Shadow DOM)](migration-ui-shadow-dom.md) — `::part` mapping

@@ -701,6 +701,9 @@ export class MaplatUiElement extends BaseElement {
   #localeGeneration = 0;
   // 起動時だけ効く層 B のキーの起動時の値（最初の #setup で取る。以後の変更は警告して無視。U2）
   #startup: Map<string, unknown> | null = null;
+  // appOption の起動時の値（同上。層 B の appOption は起動時だけ効く（§6.4 (i)）ので、要素自身の読み
+  // （currentLang・pwa-manifest の既定の appId・プロパティの読み）はこの値を見る。起動後の代入は子へ流すだけ）
+  #startupAppOption: Record<string, unknown> | undefined;
   // 旧 API の pwaWorker: false / null（disablePwaWorker）。Service Worker を登録しない
   #pwaNoWorker = false;
   // 状態 URL（state-url）: 起動時に URL から読んだ復元値（子の restore として流す。§6.1）
@@ -946,6 +949,8 @@ export class MaplatUiElement extends BaseElement {
         configurable: true,
         enumerable: true,
         get(this: MaplatUiElement) {
+          // appOption は起動時だけ効く（起動後は起動時の値を返す。子へは今の値が流れる。§6.4 (i)）
+          if (def.prop === "appOption") return this.#ownAppOption();
           return this.#props.get(def.prop);
         },
         set(this: MaplatUiElement, value: unknown) {
@@ -953,7 +958,6 @@ export class MaplatUiElement extends BaseElement {
           if (value == null) this.#props.delete(def.prop);
           else this.#props.set(def.prop, value);
           this.#flowKey(def.prop);
-          if (def.prop === "appOption") void this.#reloadLang();
         }
       });
     }
@@ -971,12 +975,13 @@ export class MaplatUiElement extends BaseElement {
     return this.#app;
   }
 
-  /** 解決後の言語（lang 属性 → appOption.lang（移行用）→ 設定ファイルの lang → ブラウザ）。 */
+  /**
+   * 解決後の言語（lang 属性 → appOption.lang（移行用・起動時の値）→ 設定ファイルの lang → ブラウザ）。
+   * appOption は起動時だけ効く（§6.4 (i)）ので、起動後に代入してもこの解決は変わらない。
+   */
   get currentLang(): string {
     const own = this.getAttribute("lang");
-    const option = (
-      this.#props.get("appOption") as Record<string, unknown> | undefined
-    )?.lang;
+    const option = this.#ownAppOption()?.lang;
     const fromFile = this.#readAppData()?.lang;
     const lang =
       own ||
@@ -1272,6 +1277,9 @@ export class MaplatUiElement extends BaseElement {
       for (const def of UI_ATTRS)
         if (def.startup) snapshot.set(def.prop, this.#parseOwnAttribute(def));
       this.#startup = snapshot;
+      // appOption も起動時の値で固定する（層 B の appOption は起動時だけ効く。§6.4 (i)・§6.5）
+      this.#startupAppOption = this.#props.get("appOption") as
+        Record<string, unknown> | undefined;
     }
     if (
       this.#stateUrlOn() &&
@@ -1286,6 +1294,16 @@ export class MaplatUiElement extends BaseElement {
   /** state-url が起動時に真だったか。 */
   #stateUrlOn(): boolean {
     return this.#startup?.get(ATTR_STATE_URL.prop) === true;
+  }
+
+  /**
+   * 要素自身が読む appOption（層 B の appOption は起動時だけ効く。§6.4 (i)）。
+   * 起動後は起動時の値（起動前は与えられた値）を返す。起動後の代入は子へ流すだけで、
+   * 層 B の読み（言語の解決・pwa-manifest の既定の appId・このプロパティの読み）には効かせない。
+   */
+  #ownAppOption(): Record<string, unknown> | undefined {
+    if (this.#startup) return this.#startupAppOption;
+    return this.#props.get("appOption") as Record<string, unknown> | undefined;
   }
 
   // ---- 操作ボタンの自動非表示（旧 src/index.ts:1070-1123 の setMapOnOff）----
@@ -1421,8 +1439,7 @@ export class MaplatUiElement extends BaseElement {
     this.#pwaStarted = true;
     let url: string;
     if (manifest === true) {
-      const option = this.#props.get("appOption") as
-        Record<string, unknown> | undefined;
+      const option = this.#ownAppOption();
       const appId =
         this.#app?.appId ??
         // 子の登録の前（公開面がまだ無い）でも属性は読める
@@ -3858,8 +3875,10 @@ export interface MaplatUiElement {
   pwaManifest: string | boolean | undefined;
   pwaWorker: string | undefined;
   pwaScope: string | undefined;
+  appEnvelope: boolean | undefined;
   enableMarkerList: boolean | undefined;
   enablePoiHtmlNoScroll: boolean | undefined;
+  presentationMode: boolean | undefined;
   tapDuration: number | undefined;
   tapUiVanish: boolean | undefined;
   appId: string | undefined;

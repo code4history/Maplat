@@ -10,7 +10,6 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/maplat_ui.es.js",
-      "require": "./dist/maplat_ui.umd.js",
       "default": "./dist/maplat_ui.es.js"
     },
     "./element": {

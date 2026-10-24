@@ -23,6 +23,16 @@ const PACKAGE_GLOBALS = {
     'maplibre-gl': 'maplibregl'
 };
 const UMD_FOOTER = 'if (typeof window !== "undefined" && window.MaplatUi && window.MaplatUi.MaplatUi) { window.MaplatUi = window.MaplatUi.MaplatUi; }';
+// CSS（SCSS）の設定。外側のビルドと、入れ子の UMD ビルド（`configFile: false` なので外側の設定を
+// 継がない）の両方に同じものを渡す（1 か所で持つ）。
+const CSS_OPTIONS = {
+    preprocessorOptions: {
+        scss: {
+            silenceDeprecations: ['legacy-js-api', 'import', 'color-functions', 'global-builtin', 'if-function'],
+            api: 'modern-compiler'
+        }
+    }
+};
 
 export default defineConfig(({ command }) => ({
     // Dev server: always use '/'
@@ -76,7 +86,8 @@ export default defineConfig(({ command }) => ({
                 // ES は複数の入口（`.` と `./element`）を 1 回で作れるが、UMD は Vite が
                 // 「output formats に umd/iife を含むときは複数の入口を許さない」と断る。
                 // そこで UMD（と CSS）だけを、ES のビルドが終わったあとに 1 入口で作り直す。
-                // `configFile: false` なので、このプラグインは入れ子のビルドには入らない。
+                // `configFile: false` なので、このプラグインも外側の `css` の設定も入れ子のビルドには
+                // 入らない。CSS の設定は `CSS_OPTIONS` を明示して渡す（外側と同じ 1 つの定数）。
                 name: 'maplat-ui-legacy-umd',
                 apply: 'build',
                 async closeBundle() {
@@ -84,6 +95,7 @@ export default defineConfig(({ command }) => ({
                     await build({
                         configFile: false,
                         logLevel: 'warn',
+                        css: CSS_OPTIONS,
                         build: {
                             outDir: 'dist',
                             emptyOutDir: false,
@@ -108,14 +120,7 @@ export default defineConfig(({ command }) => ({
             }
         ] : [])
     ],
-    css: {
-        preprocessorOptions: {
-            scss: {
-                silenceDeprecations: ['legacy-js-api', 'import', 'color-functions', 'global-builtin', 'if-function'],
-                api: 'modern-compiler'
-            }
-        }
-    },
+    css: CSS_OPTIONS,
     build: {
         outDir: isPackageBuild ? 'dist' : 'dist-demo',
         copyPublicDir: !isPackageBuild,

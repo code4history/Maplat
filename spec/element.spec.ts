@@ -10,7 +10,11 @@ import {
   defineMockMaplatApp,
   getMockLayerAController
 } from "@maplat/core/conformance";
-import { MAPLAT_UI_TAG, MAPLAT_APP_TAG } from "@maplat/core/common";
+import {
+  MAPLAT_UI_ATTRIBUTES,
+  MAPLAT_UI_TAG,
+  MAPLAT_APP_TAG
+} from "@maplat/core/common";
 import {
   MaplatUiElement,
   MAPLAT_UI_VERSION,
@@ -152,6 +156,60 @@ describe("<maplat-ui> の形（B-形）", () => {
     await ui.ready;
     await ui.app!.ready;
     expect(events).toEqual(["child:ui-ready", "uiReady"]);
+  });
+});
+
+// m3（文書のレビュー 2026-10-24）: 実行時にあるのに `interface MaplatUiElement` に無いキーがあった
+// （`presentationMode`・`appEnvelope`）。層 B の属性のプロパティは全部 interface に載せる。
+// `tsc --noEmit` は spec/ を対象にしない（tsconfig.json の include は src・test・parts）ので、
+// interface に載っているかはソースの interface の本文を読んで確かめる（値の側は実行時にも確かめる）。
+describe("型（interface MaplatUiElement。§4.2・§6.4）", () => {
+  const source = readFileSync(
+    resolve(__dirname, "../src/element/maplat-ui.ts"),
+    "utf-8"
+  );
+  /** 末尾の `export interface MaplatUiElement { … }` の本文。 */
+  const interfaceBody = (() => {
+    const start = source.indexOf("export interface MaplatUiElement {");
+    expect(start).toBeGreaterThanOrEqual(0);
+    return source.slice(start, source.indexOf("\n}", start));
+  })();
+  /** 宣言されているメンバーの名前（`  prop: T;` の prop）。 */
+  const declared = new Set(
+    Array.from(interfaceBody.matchAll(/^ {2}(\w+)\??:/gm), m => m[1])
+  );
+
+  it("層 B の属性のプロパティが全部載っている（m3 の presentationMode・appEnvelope の抜け）", () => {
+    // lang は HTMLElement のものを上書きしない（要素は自分の属性だけを見る）ので interface には無い
+    const layerB = MAPLAT_UI_ATTRIBUTES.map(def => def.prop).filter(
+      prop => prop !== "lang"
+    );
+    expect(layerB.length).toBeGreaterThan(0);
+    expect(declared.size).toBeGreaterThan(0);
+    for (const prop of layerB) expect(declared.has(prop), prop).toBe(true);
+    // m3 で名指しされた 2 つ（値の側は型が付いていても実行時に読めることを確かめる）
+    for (const prop of ["presentationMode", "appEnvelope"])
+      expect(declared.has(prop), prop).toBe(true);
+  });
+
+  it("presentationMode・appEnvelope はプロパティと属性が対応する（型と実行時が同じ）", () => {
+    const ui = document.createElement(MAPLAT_UI_TAG) as Ui;
+    // 起動前は未指定（属性も無い）
+    expect(ui.presentationMode).toBeUndefined();
+    expect(ui.appEnvelope).toBeUndefined();
+    expect(ui.hasAttribute("presentation-mode")).toBe(false);
+    expect(ui.hasAttribute("app-envelope")).toBe(false);
+    // 真偽のプロパティは属性（空文字）へ、属性はプロパティ（真偽）へ
+    ui.presentationMode = true;
+    ui.appEnvelope = true;
+    expect(ui.getAttribute("presentation-mode")).toBe("");
+    expect(ui.getAttribute("app-envelope")).toBe("");
+    expect(ui.presentationMode).toBe(true);
+    expect(ui.appEnvelope).toBe(true);
+    ui.removeAttribute("presentation-mode");
+    ui.removeAttribute("app-envelope");
+    expect(ui.presentationMode).toBeUndefined();
+    expect(ui.appEnvelope).toBeUndefined();
   });
 });
 
@@ -1243,6 +1301,52 @@ describe("言語（translateText・t・currentLang）", () => {
     expect(ui.translateText({ ja: "日本語", en: "English" })).toBe("日本語");
     ui.setAttribute("lang", "zh-hk");
     expect(ui.currentLang).toBe("zh-TW");
+  });
+
+  // m5（文書のレビュー 2026-10-24）: 層 B の appOption は起動時だけ効く（§6.4 (i)）。起動後の代入は
+  // 子へ流す（§4.3 の流し方はそのまま。子は自分の規則で警告して無視する）が、要素自身の読み
+  // （言語の解決）には効かない。
+  it("起動後に appOption を代入しても言語は変わらない（起動時の appOption.lang のまま）", async () => {
+    const ui = await mountUi(u => {
+      u.appOption = { lang: "ja" };
+    });
+    expect(ui.currentLang).toBe("ja"); // 起動時の appOption.lang が効いている
+    expect(ui.t("control.home")).toBe("ホーム位置復帰");
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    const option = { lang: "en", appid: "later" };
+    ui.appOption = option;
+    await tick();
+    // 言語（要素の読み）は起動時のまま
+    expect(ui.currentLang).toBe("ja");
+    expect(ui.t("control.home")).toBe("ホーム位置復帰");
+    expect(part(ui, "home").querySelector("button")!.title).toBe(
+      "ホーム位置復帰"
+    );
+    // 子へは流れている（子が自分の規則で警告して無視する＝層 A の規則は変えない）
+    expect(
+      warn.mock.calls.some(c =>
+        /property "appOption" is fixed at startup/.test(String(c[0]))
+      )
+    ).toBe(true);
+    // プロパティの読みも起動時の値
+    expect(ui.appOption).toEqual({ lang: "ja" });
+    expect((ui.app as any).appOption).toEqual({ lang: "ja" });
+  });
+
+  it("起動前に appOption が無ければ、起動後の代入でも設定ファイルの lang のまま", async () => {
+    const ui = await mountUi();
+    expect(ui.currentLang).toBe("en"); // 設定ファイルの lang
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    ui.appOption = { lang: "ja" };
+    await tick();
+    expect(ui.currentLang).toBe("en");
+    expect(ui.t("control.home")).toBe("Go Home Position");
+    expect(ui.appOption).toBeUndefined();
+    expect(
+      warn.mock.calls.some(c =>
+        /property "appOption" is fixed at startup/.test(String(c[0]))
+      )
+    ).toBe(true);
   });
 
   it("translateText は旧 translate の選び方（現在の言語 → en → 最初の空でない言語・全部空なら空文字）", async () => {

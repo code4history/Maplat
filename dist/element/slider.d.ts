@@ -25,6 +25,11 @@ export declare const SLIDER_TUNING: {
     easing: string;
     /** `transitionend` が来ない環境で確定するまでの余裕（ms。遷移がまだ走っていれば、その終わりを待つ） */
     transitionFallbackSlackMs: number;
+    /**
+     * 保険の時間が来ても遷移が**進んでいる**（`getAnimations()` の進み具合が前回と違う）あいだは待ち直す、
+     * その回数の上限（止まった遷移・観測できない環境では 1 回だけ待って確定する。待ち続ける経路は無い）
+     */
+    transitionWatchMaxRounds: number;
     /** 払いの速さのしきい値（px/ms。P2） */
     thresholdVelocity: number;
     /** 1 操作で動かす枚数の上限（P2） */
