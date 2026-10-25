@@ -270,7 +270,7 @@ test("Core の <maplat-app> の上で <maplat-ui> の操作一式が動く", asy
   await expectBundledThumbnails(baseSlider);
   await shot(page, "3-sliders", testInfo);
   // 背景の地図の先頭（スライダーの中央のカード）を押すと、その地図へ変わる
-  // （地図を変えるのは onSelect だけ。D5）
+  // （地図を変えるのは onSelect だけ）
   const firstBase = await page.evaluate(
     () =>
       (window as any).__maplatUi.app

@@ -3,7 +3,7 @@
 // m1-t4 と同じく**事前バンドル**して読む。dev サーバの依存最適化と競合すると
 // 504 (Outdated Optimize Dep) で不安定になるため（m1-t4 の finding5）。
 //
-// Stage 4: 旧の実装（`src/ui_marker.ts` の `poiWebControl`）を消したので、`<maplat-ui>` が実際に使う
+// 旧の実装（`src/ui_marker.ts` の `poiWebControl`）を消したので、`<maplat-ui>` が実際に使う
 // 組み立て（`src/element/poi-html.ts`）をそのまま呼ぶ。テスト内でロジックを再現してはならない。
 import {
   buildPoiBody,

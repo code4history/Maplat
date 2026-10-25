@@ -1,7 +1,7 @@
 // oct26-m16-t1: POI データ（信頼できない外部 JSON。m1-t4 の脅威モデル）を
 // DOM や遷移先へ渡す前の無害化ヘルパー。セキュリティレビュー B の B-UI-1〜3 の是正。
 //
-// Stage 4 の仕上げ: 旧 UI の画面の HTML を文字列で組み立てるための関数（`escapeHtml`・`layerListItemHtml`・
+// 旧 UI の実装の削除の仕上げ: 旧 UI の画面の HTML を文字列で組み立てるための関数（`escapeHtml`・`layerListItemHtml`・
 // `poiListItemHtml` と、地図の切り替えのカードのサムネイル・カードの組み立て 2 本）は、呼び手（旧 UI）が無くなったので消した。
 // `<maplat-ui>` は DOM を組み立てて `textContent` で文字を入れ、URL は下の 2 本で検査する。
 

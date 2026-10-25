@@ -62,6 +62,11 @@ npm install @maplat/ui
 
 ### Minimal usage
 
+> **Deprecated.** The `MaplatUi` class closes in the next major version (2.0);
+> new code should use the `<maplat-ui>` element instead
+> ([Custom Element `<maplat-ui>`](#custom-element-maplat-ui)). The example below
+> keeps working in 1.x.
+
 ```typescript
 import { MaplatUi } from '@maplat/ui';
 import '@maplat/ui/dist/maplat_ui.css'; // Import styles
@@ -100,8 +105,8 @@ import '@maplat/ui/element';
 
 See [`docs/api/maplat-ui-element.md`](docs/api/maplat-ui-element.md) for the
 attributes, properties, methods and events and the `::part()` / CSS variables.
-The `MaplatUi` class stays available in 1.x and closes in the next major
-version.
+The `MaplatUi` class is deprecated and stays available in 1.x; it closes in the
+next major version (2.0).
 
 ### CDN (jsDelivr)
 

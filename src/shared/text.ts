@@ -1,5 +1,5 @@
 /**
- * 文字の詰めもの（設計 v2 §2.3.1・§4.5.2・D8）。
+ * 文字の詰めもの。
  *
  * 旧 UI の `ellips()`（`src/ui_utils.ts:45-104`）と同じ手順を、そのまま 1 本だけ置く:
  *   1. 文字を 1 つずつ `<span>` に分け、末尾に省略記号（`…`）の span を置く
@@ -9,11 +9,11 @@
  *
  * 旧との違いは 4 点（いずれも設計・orchestrator の決定で決めたもの）:
  *   - `innerHTML` を使わず、`textContent` と DOM の組み立てだけで作る（XSS を作らない）
- *   - `letter-spacing` は触らない（旧の実装も触っていない。D8）
+ *   - `letter-spacing` は触らない（旧の実装も触っていない）
  *   - 同じ要素に何度呼んでも文字が増えないよう、元の文字を覚えておく（`options.text` で上書き可）
- *   - **1 文字の見出しはそのまま出す**（旧は `…` だけになっていた。不具合として直した。N5）
+ *   - **1 文字の見出しはそのまま出す**（旧は `…` だけになっていた。不具合として直した）
  *
- * `-webkit-line-clamp` は第一手段にしない（D8）。CSS 側の予備は `styles.ts` が持ち、
+ * `-webkit-line-clamp` は第一手段にしない。CSS 側の予備は `styles.ts` が持ち、
  * この関数は「JS が通るときの本命」として動く。
  */
 
@@ -80,7 +80,7 @@ export function ellipsize(
   element.appendChild(fragment);
 
   if (lines <= 0 || spans.length === 0) return;
-  // 1 文字の見出しはそのまま出す（orchestrator の決定。N5）。
+  // 1 文字の見出しはそのまま出す。
   //   旧 `ellips` は `thisSpan.length - 1` が 1 になるため、最後の「全部隠す」のループが先頭の
   //   文字を隠し、`…` だけが残っていた（実測）。1 文字が `…` になるのは不具合なので、
   //   旧の手順をなぞらずに文字を見せ、省略記号は出さない。
@@ -124,7 +124,7 @@ export function ellipsize(
       // 入っている前提の式（`thisSpan.length === spans.length + 1`）。新しい実装では
       // 省略記号を `spans` の外に置いているので、最後の実文字（`spans.length - 1`）で判定する。
       // ここを `spans.length - 2` にすると、収まるときに最後の 1 文字が `display: none` の
-      // まま残る（M1）。
+      // まま残る。
       omit.style.display = "none";
       return;
     }
@@ -138,7 +138,7 @@ export function ellipsize(
 }
 
 /**
- * 相対リンクの解決（旧 `ui_utils.ts` の `resolveRelativeLink` と同じ規則。Stage 3 のレビュー m4 で 1 か所にした）。
+ * 相対リンクの解決（旧 `ui_utils.ts` の `resolveRelativeLink` と同じ規則。レビュー m4 で 1 か所にした）。
  * `/` を含む名前はそのまま、含まない名前は `fallbackPath` の下（`null`・空は `.`）。
  * 層 B（`<maplat-ui>`）と旧 API の互換層（`MaplatUi.resolveRelativeLink`）の両方が使う。
  */

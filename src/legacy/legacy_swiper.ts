@@ -1,5 +1,4 @@
-// 旧 `ui.baseSwiper` / `ui.overlaySwiper`（Swiper のインスタンス）の限定 facade
-// （設計 v2 §3 L14・§2.3.6 (7)）。
+// 旧 `ui.baseSwiper` / `ui.overlaySwiper`（Swiper のインスタンス）の限定 facade。
 //
 // 旧 UI の地図の切り替えは Swiper 12 だった。層 B の `<maplat-ui>` は Swiper を使わず
 // （`src/element/slider.ts` の `MapSlider`）、`part="map-slide"` のボタンを並べる。

@@ -1,12 +1,12 @@
-// Stage 3 の仕上げ（実ブラウザの e2e で見つかった互換層・要素の直し）の単体テスト。
+// 旧 API の互換層の仕上げ（実ブラウザの e2e で見つかった互換層・要素の直し）の単体テスト。
 //
 //  1. ホストの寸法: 旧 Core の地図の箱と同じく、いちばん近い位置指定の祖先を埋める（絶対配置）
 //     （`e2e/fixtures/legacy-api.html` 等は `#map_div` の高さが 0 で、旧は子の絶対配置で埋めていた）
-//  2. 層 A のイベントの再送出（設計 §2.3.5・L10）: `ui.addEventListener("clickMarker", fn)` に
+//  2. 層 A のイベントの再送出: `ui.addEventListener("clickMarker", fn)` に
 //     `{ type, detail }` が届く。`uiReady` は出さない。`remove()` の後は出さない
 //  3. 旧 `pwaWorker: false / null` は Service Worker を登録しない（`disablePwaWorker`。e2e nov26-m5-t3）
 //  4. 旧 UI と同じく、起動時に Chuci（cc-swiper）を先に読む（`preloadMediaViewer`。e2e oct26-m9-t1-chuci-arrow）
-//  5. 汎用メニュー（旧 showContextMenu）は地図の切り替え（mapChanged）では閉じない（e2e legacy-api A7）
+//  5. 汎用メニュー（旧 showContextMenu）は地図の切り替え（mapChanged）では閉じない（e2e legacy-api で確認する）
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { MaplatUi } from "../src/index";
@@ -56,7 +56,7 @@ describe("ホストの寸法（旧 Core の地図の箱と同じ絶対配置）"
   }, 120000);
 });
 
-describe("層 A のイベントの再送出（設計 §2.3.5・L10）", () => {
+describe("層 A のイベントの再送出", () => {
   it("子が出した clickMarker が ui の listener に { type, detail } で届き、uiReady は届かない", async () => {
     const ui = await MaplatUi.createObject({
       appid: "legacy-finish-events",
@@ -112,7 +112,7 @@ describe("旧 pwaWorker: false / null（Service Worker を登録しない）", (
     }
   }, 120000);
 
-  // 旧 `spec/nov26-m5-t3-pwa-worker.spec.ts` の表のうち、互換層の経路の分（Stage 4 の仕上げ・レビュー m7）:
+  // 旧 `spec/nov26-m5-t3-pwa-worker.spec.ts` の表のうち、互換層の経路の分（旧 UI の実装の削除の仕上げ・レビュー m7）:
   // 空文字・true・数値・オブジェクトは「登録しない」ではなく、旧と同じく既定の ./service-worker.js で登録する
   it.each([
     ["空文字", ""],

@@ -1,10 +1,10 @@
-// 旧 `ui.i18n` の限定 facade（設計 v2 §3 L8・L9・§2.3.6 (7)）。
+// 旧 `ui.i18n` の限定 facade。
 //
 // 旧 UI は翻訳ライブラリのインスタンスを公開していた。互換層はそれを持たず（層 B の辞書は
 // `src/element/i18n.ts` が読む）、旧 API が使っていた口だけを要素へ委譲する。
 // 使えない口は**警告を 1 回だけ**出して undefined を返す（黙って壊れないため）。
 //
-// 旧 UI のファイル（`ui_init.ts` 等）は Stage 4 で消したので、ここから import しようがない
+// 旧 UI のファイル（`ui_init.ts` 等）は消したので、ここから import しようがない
 // （互換層が旧 UI を読まないことを `spec/legacy-deps.spec.ts` が機械で確かめる）。
 
 import type { MaplatUiElement } from "../element";

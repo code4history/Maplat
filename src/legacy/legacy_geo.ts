@@ -1,4 +1,4 @@
-// 旧 API の `ui.xyToMapIDs(xy, threshold)` の互換（設計 v2 §2.3.6・§3 L6。レビュー M1 で作り直した）。
+// 旧 API の `ui.xyToMapIDs(xy, threshold)` の互換（互換のために作り直した）。
 //
 // 旧 `ui_marker.ts` の `xyToMapIDs` は、今の地図の sys 座標の点に重なる（範囲を持つ）地図を、範囲の狭い順に返していた。
 // 重なりの判定は層 B の `<maplat-ui>` の `mapsAt(経緯度, threshold)`（画面の面積の threshold 倍以上の地図・

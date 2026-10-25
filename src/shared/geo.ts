@@ -1,6 +1,6 @@
 /**
  * 面積と点の内外の小さな計算（層 B の `<maplat-ui>` と旧 API の互換層 `src/legacy/` の両方が使う。
- * Stage 3 のレビュー M1 で 1 か所にまとめた）。DOM にも OpenLayers にも触れない純関数だけを置く。
+ * 1 か所にまとめた）。DOM にも OpenLayers にも触れない純関数だけを置く。
  */
 import type { LngLat } from "@maplat/core/common";
 

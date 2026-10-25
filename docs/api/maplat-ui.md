@@ -2,6 +2,18 @@
 
 The main class of `@maplat/ui`.
 
+> **Deprecated.** The `MaplatUi` class is deprecated and closes in the next major
+> version (2.0). New code should use the `<maplat-ui>` element
+> (`@maplat/ui/element`) together with `<maplat-app>` (`@maplat/core/element`)
+> instead; see [`maplat-ui-element.md`](maplat-ui-element.md) for its attributes,
+> properties, methods and events and the mapping from this class, and
+> [`migration-ui-shadow-dom.md`](migration-ui-shadow-dom.md) for the migration
+> from the legacy UI's DOM. `new MaplatUi(...)` and `MaplatUi.createObject(...)`
+> print this notice with `console.warn` once per process (not once per
+> instance). This document describes the 1.x class, whose public shape (static
+> methods, constructor, instance methods, `waitReady`, `uiHooks`, `ui.core`)
+> keeps working until 2.0.
+
 ## Static Methods
 
 - **`createObject(option: MaplatAppOption): Promise<MaplatUi>`**

@@ -23,11 +23,11 @@ import path from 'node:path';
  *
  * 環境変数 M9_RECORD_DIR を与えると、各テストの観測記録（JSON）をそのディレクトリへ書く（証跡用。CI では不要）。
  *
- * ── Stage 3（一本化）での移植（設計 v2 §4.7.3 の対応表・M4(d)・M7）──────────────────────────────
+ * ── 一本化での移植（M4(d)・M7）──────────────────────────────
  * 旧 API の `MaplatUi` は `<maplat-ui>` の上の互換層になり、スワイパーは Swiper ではなく
  * `<maplat-ui>` の shadow root の中の自前のスライダー（`src/element/slider.ts`。5 スロットの循環）になった。
  *   旧 `.base-swiper .swiper-slide[data]`   → `[part="map-slider"][data-kind="base"] [part~="map-slide"][data-map-id]`
- *   旧 `.swiper-slide-active`               → `host.slider(k).slots` の offset 0 の要素（押した要素と同じノード。§4.3.3）
+ *   旧 `.swiper-slide-active`               → `host.slider(k).slots` の offset 0 の要素（押した要素と同じノード）
  *   旧 `.swiper-slide-next` / `-prev`       → 同じく offset +1 / -1 の要素
  *   旧 `.swiper-slide.selected`             → `[part~="map-slide"].selected`（一致する全スロット）
  *   旧 `swiper.animating`                   → `host.slider(k).animating`（`@internal`。テスト専用）
@@ -43,8 +43,8 @@ import path from 'node:path';
  *     「巡回で隣り合う同じ地図が 0」は「見えている 3 スロット（offset -1・0・+1）が N>=3 で全部異なる・
  *     N=2 で中央と両隣が異なる」へ
  *   - AC-6 の枚数: 旧 `width >= 480 ? 1.4 : 2`（Swiper v6 以後の設定）→ `width <= 480 ? 1.4 : 2`
- *     （人間の決定 P1。`spec/fixtures/legacy-e2e-classification.md` §3 の「意図した差分」。
- *     設計 v2 §4.7.3 の式は旧の式を写したままなので、P1 と `slider.ts` の `perViewFor` に従った）
+ *     （幅 480px 以下で 1.4 枚・gap 10／481px 以上で 2 枚・gap 15。`spec/fixtures/legacy-e2e-classification.md` の「意図した差分」。
+ *     旧の式はそのまま写さず、`slider.ts` の `perViewFor` に従った）
  *   - AC-3: 旧 `params.loop === false`・`swiper-button-lock` → `single-map` class・矢印の `hidden`
  *     （display: none）・`step()` が何もしない・ドラッグで不変
  *   - AC-12 補助・AC-13 の「競合の順序を作る」注入: 旧は Swiper の `observerUpdate`（onResize の保留）を
@@ -72,7 +72,7 @@ const CLICK_ORDER: Side[] = ['next', 'next', 'prev', 'prev', 'next', 'prev', 'ne
  */
 
 /**
- * 言い換え（設計 v2 §4.7.3 AC-12・M4(d)）: 選択中の地図が中央にあるとき、`.selected` が付くスロットの数。
+ * 言い換え（AC-12・M4(d)）: 選択中の地図が中央にあるとき、`.selected` が付くスロットの数。
  * 5 スロット（offset -2..+2）のうち `offset mod n == 0` のもの（N=1 は 1 スロットだけ）。
  * 旧は Swiper の複製の数 `repeatCount(n) = n < 2 ? 1 : ceil(5 / n)` だった。
  */
@@ -110,7 +110,7 @@ async function openFixture(page: Page, width: number, base: number, overlay: num
     null,
     { timeout: 30000 }
   );
-  // 初期化の位置合わせが終わるのを待つ（設計 §5.6 の記録: 2 秒では 1 回目の操作が遷移の途中になる回があった）
+  // 初期化の位置合わせが終わるのを待つ（2 秒では 1 回目の操作が遷移の途中になる回があった）
   await page.waitForTimeout(4000);
   // changeMap の呼び出しを記録する（破壊試験で「最後に選ばれた地図」を知るため。呼び出しはそのまま通す）。
   // <maplat-ui> は子の <maplat-app> の changeMap を呼び、子は中身（ui.core）の changeMap を呼ぶので、ここで拾える
@@ -352,7 +352,7 @@ async function clickPeekAndJudge(page: Page, k: Kind, side: Side, n: number) {
   const amountOk = Math.abs(animSum - sign * pre.step) <= 3;
   const visualOk = Math.abs(markMove - animSum) <= 3;
   const centerOk = post.centerIsMark && post.activeIsMark;
-  // 言い換え: 期待数は旧の repeatCount(n) ではなく selectedCount(n)（設計 v2 §4.7.3 AC-12）
+  // 言い換え: 期待数は旧の repeatCount(n) ではなく selectedCount(n)（AC-12）
   const selectedOk = post.selected.length === selectedCount(n) && post.selected.every(s => s === pre.id);
   // transitionrun 軸（(i) 向き・(ii) 量・(iii) 見た目の移動）
   const transitionOk = dirOk && amountOk && visualOk;
@@ -438,7 +438,7 @@ const initialLayout = (page: Page, k: Kind) =>
   );
 
 /**
- * 言い換え（AC-6・設計 v2 §4.7.3）: 旧の「巡回で隣り合う同じ地図の数 = 0」（Swiper の複製の並び）を、
+ * 言い換え（AC-6）: 旧の「巡回で隣り合う同じ地図の数 = 0」（Swiper の複製の並び）を、
  * 「見えている 3 スロット（offset -1・0・+1）が N>=3 で全部異なる・N=2 で中央と両隣が異なる」にする。
  * 返り値は「満たさない組の数」（0 で合格）。
  */
@@ -451,7 +451,7 @@ const visibleSameCount = (lay: { prev: string | null; active: string | null; nex
 };
 /**
  * 言い換え（AC-6）: 総スライド数は旧 `n * repeatCount(n)`（Swiper の複製を含む数）→ スロットの数
- * （N=1 は 1・N>=2 は 5。設計 v2 §4.7.3 の括弧書き。同じ行の式 `min(5, n)` は括弧書きと食い違う書き誤りで、
+ * （N=1 は 1・N>=2 は 5。同じ行の式 `min(5, n)` はこの数と食い違う書き誤りで、
  * `slider.ts` の `#slotCount()` も N>=2 で 5）
  */
 const slotTotal = (n: number) => (n < 2 ? 1 : 5);
@@ -543,7 +543,7 @@ for (const width of WIDTHS) {
     const warns = await openFixture(page, width, 1, 1);
     const rec: any = {};
     for (const k of KINDS) {
-      // 言い換え（設計 v2 §4.7.3 AC-3）: 旧の params.loop === false と swiper-button-lock は存在しない。
+      // 言い換え（AC-3）: 旧の params.loop === false と swiper-button-lock は存在しない。
       // single-map class・矢印の hidden（display: none）・step() が何もしない、で判定する
       const info = await page.evaluate(
         sel => {

@@ -2,7 +2,7 @@
 //
 // 旧 `MaplatUi.translate`（多言語の値から今の言語を選ぶ）の単体テスト。
 //
-// Stage 4: 旧の実装（`src/index.legacy.ts`）を消したので、対象を互換層（`src/index.ts` の
+// 旧の実装（`src/index.legacy.ts`）を消したので、対象を互換層（`src/index.ts` の
 // `MaplatUi`）へ移した。旧は i18next に断片を資源として登録し `exists()` で引いていたが、
 // 互換層は i18next を持たず（`src/legacy/legacy_i18n.ts`）、断片の選び方は要素と共通の
 // `pickLocalized` 1 本だけ（`src/element/i18n.ts`）になった。ここで固定するのは **選んだ値**:
@@ -76,7 +76,7 @@ describe("MaplatUi.translate（互換層）", () => {
     expect(ui.translate({ ja: "地図名", en: "Map Name" })).toBe("地図名");
   });
 
-  // 積み残し（Stage 3 の再レビューの Info）: 起動前の `ui.lang = "en"` は**起動までの読み値だけ**。
+  // 積み残し（再レビューの Info）: 起動前の `ui.lang = "en"` は**起動までの読み値だけ**。
   // 起動すると `#createHost` は `option.lang` しか流さないので、属性の言語（要素の選び方）に従う。
   it("起動前の lang の代入は、起動前の translate に効く（起動後の値は持たない）", () => {
     const ui = newUi("ja");

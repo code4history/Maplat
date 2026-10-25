@@ -282,7 +282,7 @@ describe("状態 URL（state-url）", () => {
     await vi.waitFor(() => expect(app.getAttribute("map-id")).toBe("old2"));
   });
 
-  it("子が restore を自分で持つときは、ready の後に changeMap で URL の状態を当てる（§5.2）", async () => {
+  it("子が restore を自分で持つときは、ready の後に changeMap で URL の状態を当てる", async () => {
     history.replaceState(
       null,
       "",
@@ -326,7 +326,7 @@ describe("状態 URL（state-url）", () => {
     expect(location.hash).toBe("#!s:osm/z:10");
   });
 
-  it("state-url は起動時のみ: 起動後の変更は英語で警告して無視し、読み取りは起動時の値を返す（U2）", async () => {
+  it("state-url は起動時のみ: 起動後の変更は英語で警告して無視し、読み取りは起動時の値を返す", async () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
     const ui = await mountUi();
     expect(ui.stateUrl).toBeUndefined();

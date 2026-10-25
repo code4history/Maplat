@@ -12,13 +12,13 @@
 //
 // 本ファイルはヘルパー（src/poi_safe.ts）の単体テストを扱う。
 //
-// Stage 4: 旧の実装（`src/ui_init.ts`・`src/ui_marker.ts`）を消したので、
+// 旧の実装（`src/ui_init.ts`・`src/ui_marker.ts`）を消したので、
 //   - B-UI-1 の配線（POI 一覧の name・icon）は `<maplat-ui>` のマーカー一覧が担う。
 //     回帰は `spec/element.spec.ts` の「マーカー一覧」describe が見る（名前は textContent・
 //     アイコンは safeImageUrl）。ここにあった `ui_init.ts` のソーステキスト検査は対象が消えたので外した。
 //   - B-UI-2/3 の挙動（url の iframe・directgo）は `spec/element.spec.ts` の POI の describe が見る
 //     （旧 `oct26-m16-t1-ui-marker-url.spec.ts` の URL の一覧をそのまま移した）。
-//   - Stage 4 の仕上げ: 旧の一覧の HTML を組み立てる `escapeHtml`・`layerListItemHtml`・`poiListItemHtml` は
+//   - 旧 UI の実装の削除の仕上げ: 旧の一覧の HTML を組み立てる `escapeHtml`・`layerListItemHtml`・`poiListItemHtml` は
 //     呼び手が無くなったので `poi_safe.ts` から消し、その単体（B-UI-1 の部分）もここから消した。
 //     残るのは `safeWebUrl` の許可リストの単体（B-UI-2/3）。
 import { describe, it, expect } from "vitest";

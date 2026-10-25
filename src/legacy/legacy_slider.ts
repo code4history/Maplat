@@ -1,4 +1,4 @@
-// 旧 `ui.sliderNew`（透過度のスライダー）の限定 facade（設計 v2 §3 L13・§2.3.6 (7)・M6）。
+// 旧 `ui.sliderNew`（透過度のスライダー）の限定 facade。
 //
 // 旧 UI の透過度のスライダーは OL の Control（`src/maplat_control.ts` の `SliderNew`）で、
 // `get("slidervalue")` / `set("slidervalue", 0..1)` と `propertychange` を持っていた。

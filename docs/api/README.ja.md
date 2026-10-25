@@ -8,8 +8,9 @@
 ## リファレンス
 
 - [`<maplat-ui>` 要素](maplat-ui-element.ja.md) — 属性とプロパティ・状態・メソッド・
-  イベント・`::part()` と CSS 変数、`MaplatUi` クラス（次のメジャー版で閉じる）との関係
+  イベント・`::part()` と CSS 変数、`MaplatUi` クラス（次のメジャー版 2.0 で閉じる）との関係
 - [MaplatUi クラス](maplat-ui.ja.md) — 静的メソッド・コンストラクタ・インスタンスメソッド
+  （**非推奨**。2.0 で閉じる）
 - [MaplatAppOption](maplat-app-option.ja.md) — オプションオブジェクトのプロパティ
 - [旧 UI の DOM からの移行（Shadow DOM 化）](migration-ui-shadow-dom.md) — `::part` / CSS 変数の対応表
 

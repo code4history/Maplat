@@ -4,7 +4,25 @@ import { LegacyContextMenuFacade } from './legacy_context_menu';
 import { LegacyI18n } from './legacy_i18n';
 import { LegacySliderFacade } from './legacy_slider';
 import { ContextMenuItem, MaplatAppOption, SwiperInstance } from './legacy_types';
-/** 旧 `MaplatUi` の互換層。外形は旧と同じ、中は `<maplat-ui>`。 */
+/**
+ * 「1 回だけ」の記憶を戻す（テストの間の初期化用）。
+ * `warnMaplatUiDeprecated` の付属品で、公開面ではない（`src/index.ts` の入口からは出さない）。
+ * @internal
+ */
+export declare function resetMaplatUiDeprecationWarning(): void;
+/**
+ * 旧 `MaplatUi` の互換層。外形は旧と同じ、中は `<maplat-ui>`。
+ *
+ * @deprecated 旧 UI API です。1.x の間は外形（`createObject`・`waitReady`・公開メソッド・
+ *   公開フィールド・`uiHooks`・`ui.core`）を変えずに残し、**次のメジャー版（2.0）で閉じます**。
+ *   代わりに `<maplat-ui>` 要素（`@maplat/ui/element`）と `<maplat-app>` 要素
+ *   （`@maplat/core/element`）を組み合わせて使ってください（要素が地図の上にビューアを重ねます）。
+ *   移行の案内は `docs/api/maplat-ui-element.md`（要素の属性・プロパティ・メソッド・イベントと
+ *   このクラスとの対応）と `docs/api/migration-ui-shadow-dom.md`（旧 UI の DOM からの移行）に
+ *   あります。
+ *   `new MaplatUi(...)`（`createObject` も同じ）は、同一プロセスで 1 回だけこの旨を
+ *   `console.warn` で警告します。
+ */
 export declare class MaplatUi extends EventTarget {
     #private;
     /** Core の `MaplatApp`（`lifecycle:setting-loaded` で入る。それまでは undefined）。 */
@@ -48,7 +66,15 @@ export declare class MaplatUi extends EventTarget {
     selectedMarkerNamespaceID: string | undefined;
     /** 旧 API のコンストラクタ。`stateUrl` のときだけ、旧と同じく自分から起動を始める。 */
     constructor(appOption: MaplatAppOption);
-    /** 旧 `MaplatUi.createObject`（文書化された入口）。 */
+    /**
+     * 旧 `MaplatUi.createObject`（文書化された入口）。
+     *
+     * @deprecated 旧 UI API です（中で `new MaplatUi(...)` するので、同じく非推奨）。1.x の間は
+     *   この口を変えずに残し、**次のメジャー版（2.0）で閉じます**。代わりに `<maplat-ui>` 要素
+     *   （`@maplat/ui/element`）と `<maplat-app>` 要素（`@maplat/core/element`）を組み合わせて
+     *   使ってください。移行の案内は `docs/api/maplat-ui-element.md` と
+     *   `docs/api/migration-ui-shadow-dom.md` にあります。
+     */
     static createObject(option: MaplatAppOption): Promise<MaplatUi>;
     /** 旧 `initializer`（UI の初期化。互換層では起動を 1 回だけ始める）。 */
     initializer(_appOption?: MaplatAppOption): Promise<MaplatUi>;
@@ -101,13 +127,13 @@ export declare class MaplatUi extends EventTarget {
     set lang(value: string);
     /** 旧 `ui.mapID`（今の地図の id。ホストの `map-id` 属性を読む）。 */
     get mapID(): string | undefined;
-    /** 旧 `ui.transparency`（透過度。ホストの `transparency` 属性を読む。M6）。 */
+    /** 旧 `ui.transparency`（透過度。ホストの `transparency` 属性を読む）。 */
     get transparency(): number | undefined;
     /** 旧 `ui._t`（訳の関数。i18n が入るまでは undefined）。 */
     get _t(): ((x: string, option?: Record<string, unknown>) => string) | undefined;
     /** 旧 `ui._t = …` は受けない（訳は `<maplat-ui>` が持つ）。strict でも例外にせず、警告して無視する（m2）。 */
     set _t(_value: unknown);
-    /** 旧 `ui.i18n`（限定 facade。設計 §3 L8・L9）。 */
+    /** 旧 `ui.i18n`（限定 facade。`docs/api/migration-ui-shadow-dom.md` の「型の変化」を参照）。 */
     get i18n(): LegacyI18n | undefined;
     /**
      * 旧 `ui.i18n = …` は受けない（翻訳ライブラリのインスタンスはもう無い。限定 facade だけを返す）。

@@ -15,7 +15,7 @@ import { fileURLToPath } from "node:url";
 const PROBE = "/e2e/fixtures/poi-html-probe.html";
 const PROBE_JS = "/e2e/fixtures/dist-probe/poi-html-probe.js";
 
-// ---- probe の事前バンドルが古くないか（Stage 4 の仕上げ）----
+// ---- probe の事前バンドルが古くないか（旧 UI の実装の削除の仕上げ）----
 // probe は `pretest:e2e`（`vite build --config e2e/fixtures/vite.probe-t5.config.js`）で作るが、
 // `playwright test` を直接流すとその手順が走らず、**消した旧の実装を焼き込んだままの古い束**を読んで落ちた
 // （旧の class 名 `poi_html_host` が出た。2026-10-24 の実測）。probe が読むリポジトリの中のファイル

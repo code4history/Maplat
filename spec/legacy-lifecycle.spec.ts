@@ -1,4 +1,4 @@
-// 旧 API の互換層のライフサイクル（設計 v2 §2.3.1・§6.4 Stage 3・差分 C1(b)）。
+// 旧 API の互換層のライフサイクル。
 //
 // 判定は API の水準だけ（戻り値・`ui.core` の型・DOM の親子・`remove()`）で行う。
 // 層 A（Core の `MaplatApp`）は実物を使い、地図の実体は `sources: []` で起動する
@@ -96,7 +96,7 @@ describe("createObject → waitReady の外形（旧と同じ）", () => {
     const orderAtResolve = [...events];
     expect(resolved).toBe(ui);
     expect(coreAtResolve).toBe(true);
-    // 解決は層 A の起動完了を待たない（旧の不変条件。C1(b)）
+    // 解決は層 A の起動完了を待たない（旧の不変条件）
     expect(orderAtResolve).not.toContain("onUiReady");
     expect(orderAtResolve).not.toContain("onCoreReady");
     // その後の 7 段階は全部通る

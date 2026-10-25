@@ -5,7 +5,7 @@
 ## [Unreleased]
 
 ### Changed
-- UI の表示を `<maplat-ui>`（Shadow DOM open）に一本化した。旧 API `MaplatUi` は互換層として残り、`createObject`・`waitReady`・公開メソッド 19 本・公開フィールド・`uiHooks` の 7 段階・`ui.core`（Core の `MaplatApp`）の外形は変わらない。ただし互換層は Core の `<maplat-app>` の上だけで動く。旧 UI の DOM の class 名（`.ol-*`・`.swiper-*`・`.modal_*` など）は無くなり、スタイルは `::part()` と CSS 変数で当てる（R4 のスタイリング変更。[移行ガイド](docs/api/migration-ui-shadow-dom.md)）
+- UI の表示を `<maplat-ui>`（Shadow DOM open）に一本化した。旧 API `MaplatUi` は互換層として残り、`createObject`・`waitReady`・公開メソッド 19 本・公開フィールド・`uiHooks` の 7 段階・`ui.core`（Core の `MaplatApp`）の外形は変わらない。ただし互換層は Core の `<maplat-app>` の上だけで動く。旧 UI の DOM の class 名（`.ol-*`・`.swiper-*`・`.modal_*` など）は無くなり、スタイルは `::part()` と CSS 変数で当てる（スタイリングの変更。[移行ガイド](docs/api/migration-ui-shadow-dom.md)）
 - 旧 UI の CSS（bootstrap を含む `src/styles/ui.scss`）を入口から読まなくなった。地図（OpenLayers）の CSS は従来どおり入口が読み込む
 - `ui.contextMenu`・`ui.baseSwiper`・`ui.overlaySwiper`・`ui.sliderNew`・`ui.i18n` は限定 facade になった。旧 UI が使っていた口（`extend`/`clear`/`on`・`slides`・`get`/`set("slidervalue")`・`language`/`t`/`exists`/`changeLanguage`）は動くが、実物の Swiper・i18next・OL Control ではない
 - 設定ファイルの機能系キーは、旧 API の経路（`MaplatUi`）では従来どおり設定ファイルから読む。`noRotate`・`northUp`・`homeMarginPixels`・`controls`・`fakeGps`・`fakeRadius` は Core の互換モード（子の `<maplat-app>` が読む）、`tapDuration`・`tapUIVanish` は互換層が設定ファイルの中身（`appData`）から読んで `<maplat-ui>` の属性へ流す（option で与えたときは option が勝つ）。`<maplat-ui>` を直接使う場合は属性・プロパティで与える
@@ -16,11 +16,17 @@
 - POI のメディア（Chuci）の色は `--maplat-poi-media-theme-color`・`--maplat-poi-media-navigation-color` で変える（Shadow DOM の中なので、Chuci の `--cc-slider-*` をページで指定しても効かない）
 - 状態 URL の書き込みは `history.replaceState`（履歴を増やさない）。旧 UI の page.js は `pushState` だった
 - `<maplat-ui>` の文字の大きさ・行の高さ・色は、書体と同じくページから継承する（旧 UI と同じ。旧は bootstrap を `.maplat` の下に閉じ込めていたので body の 14px・#333 は当たらず、操作ボタン・スライダーの容器・モーダルの本文はページの文字を継いでいた）。題名（18px・白）・地図切り替えのカード（18px）・モーダルの見出し（18px）・スプラッシュの題名（18px）・共有ボタンと地図情報のキャッシュのボタン（旧 bootstrap の `.btn` の 14px・行の高さ 1.42857）・地図情報の項目名と値の行の高さ（旧 bootstrap の `dt, dd` の 1.42857）など、旧も自分で決めていたものは従来どおり。一本化の途中の版では `:host` で 14px・#333 を決めていたため、文字の大きさを指定したページで旧と見た目がずれていた
-- `package.json` に `exports` を足した（`.`・`./element`・`./dist/*`）。`require("@maplat/ui")` は `default` の ES 版（`dist/maplat_ui.es.js`）に解決され、Node 20.19 / 22.12 以降の `require(esm)` とバンドラーで読める。1.1.0 では `main` の `dist/maplat_ui.umd.js` が `"type": "module"` の下で ES モジュールとして読まれ、UMD の包みが `exports` も `require("ol")` も使えずに空の名前空間を返していたが、この問題も解消した。`exports` が付いたので、`src/`・`assets/` の深いパスは Node とバンドラーから読めなくなった（`./dist/*` 経由なら読める）。`dist/maplat_ui.umd.js` の名前と置き場所は変えていない（`<script>` と `main` は従来どおり）
+- `package.json` に `exports` を足した（`.`・`./element`・`./dist/*`・`./src/*`）。`require("@maplat/ui")` は `default` の ES 版（`dist/maplat_ui.es.js`）に解決され、Node 20.19 / 22.12 以降の `require(esm)` とバンドラーで読める。1.1.0 では `main` の `dist/maplat_ui.umd.js` が `"type": "module"` の下で ES モジュールとして読まれ、UMD の包みが `exports` も `require("ol")` も使えずに空の名前空間を返していたが、この問題も解消した。`exports` が付いたので、`assets/` の深いパスは Node とバンドラーから読めなくなった（`./dist/*` 経由なら読める）。`src/` は `./src/*` で開いてある（MaplatEditor が `src/styles/` の SCSS を import しているため）。`dist/maplat_ui.umd.js` の名前と置き場所は変えていない（`<script>` と `main` は従来どおり）
+- 地図の切り替えカードの枚数が変わる。幅 480px 以下は 1.4 枚、それより広い画面は 2 枚（今の版は 480px 以上で 1.4 枚・それ未満で 2 枚だった。Swiper の版上げで入った逆転を、v4 時代の見た目に戻した）
+- `dist/maplat_ui.css` は約 494 KB から約 5 KB になった。旧 UI の bootstrap を含む大きな CSS を配るのをやめ、`<maplat-ui>` の Shadow DOM の中の CSS だけにしたため。ページが旧 UI の bootstrap の CSS（`.btn` などの class）を間借りしていた場合は、それが効かなくなる
+- `::part` と CSS 変数の一覧は[移行ガイド](docs/api/migration-ui-shadow-dom.md)にある
 
 ### Added
 - `pwaWorker: false`（`null` も同じ）で Service Worker を登録しないようにした。manifest の `<link>` と apple-touch-icon は従来どおり足す。登録済みの Service Worker は解除しない（MaplatEditor#106）
 - POI の吹き出しの本文（html・url）の組み立てを `src/element/poi-html.ts` に集約した。`<maplat-ui>` と、実ブラウザで隔離を確かめる probe（`e2e/fixtures/poi-html-probe.ts`）が同じ関数を読む
+
+### Deprecated
+- 旧 UI API（`MaplatUi` クラス。`new MaplatUi(option)`・`MaplatUi.createObject(option)`）を非推奨にした。**削除は次のメジャー（2.0）で行う。** 代わりに `<maplat-ui>`（`@maplat/ui/element`）を使う。1.x の間は外形（`createObject`・`waitReady`・公開メソッド・公開フィールド・`uiHooks`・`ui.core`）を変えずに残す（[移行ガイド](docs/api/migration-ui-shadow-dom.md)）。型定義（配布物の `dist/legacy/maplat_ui_compat.d.ts`）のクラスと `createObject` には `@deprecated` と代替 API を記した。`new MaplatUi(option)`（`MaplatUi.createObject(option)` も中で `new` する）すると、**同一プロセスで 1 回だけ**（インスタンスごとではなく）英語の警告を `console.warn` で出す。`<maplat-ui>` 要素の経路は内部で `MaplatUi` を作らないため、要素だけを使うページでは警告は出ない
 
 ### Removed
 - **旧 UI の実装を削除した**。画面を描く経路は `<maplat-ui>` の 1 つだけになり、旧 API `MaplatUi` は互換層（`src/legacy/`）だけを通る（二重実装の解消）。消したファイル: `src/index.legacy.ts`・`ui_init.ts`・`ui_marker.ts`・`ui_utils.ts`・`maplat_control.ts`・`contextmenu.ts`・`src/contextmenu/`（7 ファイル）・`swiper_ex.ts`・`swiper_loop.ts`・`swiper_augment.d.ts`・`pwa_init.ts`・`pointer_images.ts`・`function.ts`。旧 API の互換層と旧 UI の SCSS（`src/styles/`）は 1.x の間は残す（削除はメジャー版）
@@ -34,7 +40,7 @@
 - 地図切り替えスライダーで、主スレッドが止まって遷移の開始と終わりの通知が遅れたとき（負荷の高い機械での矢印の連打など）に、保険が固定の時間で早く確定して遷移を消し、1 枚分跳んで見えることがあったのを直した。最後の保険は時間ではなく「遷移が実際に進んでいるか」（`getAnimations()` の進み具合）で判断し、進んでいるあいだは残りの時間だけ待ち直す（上限回数つき。待ち続ける経路は無い）
 - 地図切り替えスライダーで、読めなかったサムネイルの記録が地図の一覧を入れ替えても残り、一時的に読めなかった画像がページを開き直すまで頭文字のままだったのを直した（一覧の入れ替えで記録を消し、同じ URL でも読み直す）
 - `vite.config.js` の入れ子の UMD ビルド（`configFile: false`）に外側と同じ CSS（SCSS）の設定を渡すようにした（`silenceDeprecations` を 1 か所で持つ。ビルドの出力は変わらない）
-- 共有（Twitter・Facebook）と POI の `directgo`（`blank`）の `window.open` に `noreferrer` を戻した（`noopener,noreferrer`。1.1.0 と同じ。一本化の途中で `noopener` だけになっていた。SR-NOV26-B-3）
+- 共有（Twitter・Facebook）と POI の `directgo`（`blank`）の `window.open` に `noreferrer` を戻した（`noopener,noreferrer`。1.1.0 と同じ。一本化の途中で `noopener` だけになっていた）
 - 旧 API の `ui.xyToMapIDs(xy)` が必ず reject していたのを直した（層 A の `sysCoord2MercAsync` の戻り値の扱いの誤り）。判定は `<maplat-ui>` の `mapsAt` に一本化した
 - 旧 API の `ui.showContextMenu` のメニューが、地図の箱が画面の左上に無いページで、ホストの位置のぶん左上へずれていたのを直した
 - 旧 API の `ui.sliderNew.get("slidervalue")`・`propertychange` が、利用者がスライダーを動かした値を返さなかったのを直した

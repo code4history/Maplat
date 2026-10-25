@@ -1,4 +1,4 @@
-/** 共有する URL の種類（仕様 §4.4 getShareUrl）。app はアプリそのもの、view は今の表示（状態 URL 込み）。 */
+/** 共有する URL の種類（getShareUrl）。app はアプリそのもの、view は今の表示（状態 URL 込み）。 */
 export type ShareUrlType = "app" | "view";
 /** 旧 getShareUrl と同じ: view は今の URL（state-url なら "#!…" を含む）、それ以外は ? と # を落とした URL。 */
 export declare function shareUrlOf(type: string, href: string): string;

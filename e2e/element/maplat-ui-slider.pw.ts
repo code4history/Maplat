@@ -1,12 +1,12 @@
-// `<maplat-ui>` の地図の切り替えスライダーの e2e（Stage 2・設計 §4.5・§5.2 B12/B13）。
+// `<maplat-ui>` の地図の切り替えスライダーの e2e。
 //
 // 確かめること:
-//   - 幅 480px 以下で 1.4 枚・gap 10／481px 以上で 2 枚・gap 15（P1。実測）
-//   - 幅 1280・375 で、矢印の実クリックが 1 枚ずつ巡回し、地図を変えない（D5）
+//   - 幅 480px 以下で 1.4 枚・gap 10／481px 以上で 2 枚・gap 15（実測）
+//   - 幅 1280・375 で、矢印の実クリックが 1 枚ずつ巡回し、地図を変えない
 //   - n=2〜6 の枚数で矢印が出て、巡回する（5 スロットの仮想循環）
-//   - 1 枚（と 0 枚）のスライダーは枠を描かず、矢印を出さない（P3・S8）
+//   - 1 枚（と 0 枚）のスライダーは枠を描かず、矢印を出さない
 //   - 遠い地図への移動・矢印の連打・遷移中のクリックでも、1 枚より大きく跳ばず、
-//     transitionend が来る（M3。連続する中央のカードが隣どうしであることを記録して確かめる）
+//     transitionend が来る（連続する中央のカードが隣どうしであることを記録して確かめる）
 //   - 主スレッドが止まって遷移の開始と終わりの通知が遅れても、保険で早く確定して遷移を消さない
 //     （積み残し「スライダーの連打の跳び」の再現。transitionend が 1 歩に 1 回来て、cancel は来ない）
 //   - カードの実クリックで mapChanged と `.selected` が一致し、Enter でも変わる
@@ -65,7 +65,7 @@ async function openFixture(page: Page, query: string, width: number) {
 const slider = (page: Page, kind: "base" | "overlay") =>
   page.locator(`[part="map-slider"][data-kind="${kind}"]`);
 
-/** スライダーの実測（P1）。CSS 変数と幅から perView を出す。 */
+/** スライダーの実測。CSS 変数と幅から perView を出す。 */
 async function sliderMetrics(page: Page, kind: "base" | "overlay") {
   return page.evaluate(kind => {
     const root = (window as any).__maplatUi.shadowRoot;
@@ -87,7 +87,7 @@ async function sliderMetrics(page: Page, kind: "base" | "overlay") {
 /**
  * `transitionend` のたびに「中央に来たカードの mapID」を記録する。
  * `transitionend` は `#commit` より先に配られるので、その時点の画面の中央が
- * 1 枚ぶん動いた先になる（M3 の跳びの検出）。
+ * 1 枚ぶん動いた先になる（跳びの検出）。
  */
 async function watchCenters(page: Page, kind: "base" | "overlay") {
   await page.evaluate(kind => {
@@ -201,7 +201,7 @@ async function expectEnds(page: Page, expected: number, timeout = 30_000) {
   }
 }
 
-test("幅 480/481 で 1.4 枚・2 枚（P1）と、1 枚のスライダー（P3・S8）", async ({
+test("幅 480/481 で 1.4 枚・2 枚と、1 枚のスライダー", async ({
   page
 }) => {
   test.setTimeout(240_000);
@@ -376,7 +376,7 @@ test("カードの実クリックと Enter で地図が変わり、mapChanged �
   expect(errors, errors.join("\n")).toEqual([]);
 });
 
-test("遠い地図・矢印の連打・遷移中のクリックでも 1 枚より大きく跳ばず、transitionend が来る（M3）", async ({
+test("遠い地図・矢印の連打・遷移中のクリックでも 1 枚より大きく跳ばず、transitionend が来る", async ({
   page
 }) => {
   test.setTimeout(240_000);

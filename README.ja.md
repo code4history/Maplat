@@ -60,6 +60,10 @@ npm install @maplat/ui
 
 ### 最小利用例
 
+> **非推奨。** `MaplatUi` クラスは次のメジャー版（2.0）で閉じます。新しいコードは
+> `<maplat-ui>` 要素（[Custom Element `<maplat-ui>`](#custom-element-maplat-ui)）
+> を使ってください。下の例は 1.x の間は動きます。
+
 ```typescript
 import { MaplatUi } from '@maplat/ui';
 import '@maplat/ui/dist/maplat_ui.css'; // スタイルのインポート
@@ -97,7 +101,7 @@ import '@maplat/ui/element';
 
 属性・プロパティ・メソッド・イベントと `::part()`・CSS 変数は
 [`docs/api/maplat-ui-element.ja.md`](docs/api/maplat-ui-element.ja.md) を参照してください。
-`MaplatUi` クラスは 1.x の間そのまま使え、次のメジャー版で閉じます。
+`MaplatUi` クラスは非推奨で、1.x の間はそのまま使え、次のメジャー版（2.0）で閉じます。
 
 ### CDN（jsDelivr）
 

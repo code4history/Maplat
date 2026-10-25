@@ -2,7 +2,7 @@
 // <maplat-ui>（src/element/）の「残りの画面（前半）」の単体テスト: 枠線（enable-border）・マーカーの非表示
 // （enable-hide-marker）・地図情報／ライセンス／タイルキャッシュ。spec/element.spec.ts と同じく
 // @maplat/core/conformance の**模擬の層 A**（公開面だけを持つ <maplat-app>）の上で動かす
-// ＝ <maplat-ui> が層 A の公開面だけで動くことの確認（仕様 §4.6・§8.3 B-形・B-公開面だけ）。
+// ＝ <maplat-ui> が層 A の公開面だけで動くことの確認（形・公開面だけ）。
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import {
@@ -84,7 +84,7 @@ async function mountUi(
   return ui;
 }
 
-/** 古地図 old1 でもキャッシュの欄を出す設定（R1 の地図の切り替えの試験に使う）。 */
+/** 古地図 old1 でもキャッシュの欄を出す設定（地図の切り替えの試験に使う）。 */
 function withOld1Cache() {
   return {
     ...structuredClone(SETTING),
@@ -95,7 +95,7 @@ function withOld1Cache() {
     )
   } as typeof SETTING;
 }
-/** 範囲（envelope）を持つ古地図が 2 つある設定（R2 の色の割り当て・R5 の塗りの確認に使う）。 */
+/** 範囲（envelope）を持つ古地図が 2 つある設定（色の割り当てと塗りの確認に使う）。 */
 function withTwoEnvelopes() {
   return {
     ...structuredClone(SETTING),
@@ -145,7 +145,7 @@ describe("この spec の前提（登録）", () => {
   });
 });
 
-describe("枠線（enable-border・層 A の setEnvelopes。§5.1 M10・§3.7）", () => {
+describe("枠線（enable-border・層 A の setEnvelopes）", () => {
   it("enable-border が真で層 A が範囲を描けるときだけボタンを出し、起動後の変更も効く", async () => {
     const ui = await mountUi();
     expect(part(ui, "border").hidden).toBe(true);
@@ -197,7 +197,7 @@ describe("枠線（enable-border・層 A の setEnvelopes。§5.1 M10・§3.7）
     expect((app as any).state.showBorder).toBe(0);
   });
 
-  it("範囲を持つ地図に listMaps の順で違う色を割り振り、塗りはその色の透明度 0.4（R2）", async () => {
+  it("範囲を持つ地図に listMaps の順で違う色を割り振り、塗りはその色の透明度 0.4", async () => {
     const ui = await mountUi(
       u => u.setAttribute("enable-border", ""),
       withTwoEnvelopes()
@@ -214,7 +214,7 @@ describe("枠線（enable-border・層 A の setEnvelopes。§5.1 M10・§3.7）
     // 塗りは今の地図（old1）の色で、ほかの地図は塗らない
     expect(controller.envelopes[0].fill).toBe("rgba(128, 0, 0, 0.4)");
     expect(controller.envelopes[1].fill).toBeUndefined();
-    // 地図の切り替えスライダーのカードにも同じ色を渡す（旧 UI のスライドの枠と同じ役。R2 の任意）
+    // 地図の切り替えスライダーのカードにも同じ色を渡す（旧 UI のスライドの枠と同じ役。任意）
     const colorOf = (mapID: string) =>
       Array.from(
         shadow(ui).querySelectorAll<HTMLElement>('[part~="map-slide"]')
@@ -241,7 +241,7 @@ describe("枠線（enable-border・層 A の setEnvelopes。§5.1 M10・§3.7）
     expect(controller.envelopes[1].fill).toBeUndefined();
   });
 
-  it("ベースマップの上でも、メニューで最後に選んだ古地図の範囲を塗る（R5）", async () => {
+  it("ベースマップの上でも、メニューで最後に選んだ古地図の範囲を塗る", async () => {
     const setting = withTwoEnvelopes();
     // 起動時からベースマップの上（旧 UI では重ね地図のスワイパーが先頭の古地図を選んでいる状態）
     Object.assign(setting, { startFrom: "osm" });
@@ -303,7 +303,7 @@ describe("枠線（enable-border・層 A の setEnvelopes。§5.1 M10・§3.7）
     ).toBe("true");
   });
 
-  it("起動後に enable-border を外すと、描いた枠線も消す（R6）", async () => {
+  it("起動後に enable-border を外すと、描いた枠線も消す", async () => {
     const ui = await mountUi(u => u.setAttribute("enable-border", ""));
     const controller = getMockLayerAController(ui.app!)!;
     press(ui, "border");
@@ -346,7 +346,7 @@ describe("マーカーの非表示（enable-hide-marker・hideAllMarkers / showA
     press(ui, "hide-marker");
     expect(hide).toHaveBeenCalledTimes(1);
     expect(show).not.toHaveBeenCalled();
-    // 層 A が同じ値を状態の hideMarker に書く（仕様 §5.1: requestUpdateState は層 A に任せる）
+    // 層 A が同じ値を状態の hideMarker に書く（requestUpdateState は層 A に任せる）
     expect((app as any).state.hideMarker).toBe(1);
     expect(button.getAttribute("aria-pressed")).toBe("true");
 
@@ -480,7 +480,7 @@ describe("地図情報・ライセンス・タイルキャッシュ（操作ボ�
     );
   });
 
-  it("ライセンスのアイコンは import した URL で、表にない語彙は画像を出さず文言だけにする（R3）", async () => {
+  it("ライセンスのアイコンは import した URL で、表にない語彙は画像を出さず文言だけにする", async () => {
     const setting = structuredClone(SETTING) as typeof SETTING;
     // アイコンの表に無い語彙のライセンス（旧は存在しない相対 URL を取りに行っていた）
     (setting.sources[2] as any).meta = { license: "Mystery License" };
@@ -504,7 +504,7 @@ describe("地図情報・ライセンス・タイルキャッシュ（操作ボ�
     );
   });
 
-  // 旧 `spec/m6-t2-license-cell.spec.ts` の AC14b・AC14c の移植（Stage 4 の仕上げ。旧の renderLicenseCell は消した）
+  // 旧 `spec/m6-t2-license-cell.spec.ts` の AC14b・AC14c の移植（旧 UI の実装の削除の仕上げ。旧の renderLicenseCell は消した）
   it("AC14b: ライセンスが Custom ならアイコンを出さず、注意書きの文章だけを出す", async () => {
     const setting = structuredClone(SETTING) as typeof SETTING;
     (setting.sources[1] as any).meta = {
@@ -713,7 +713,7 @@ describe("地図情報・ライセンス・タイルキャッシュ（操作ボ�
 
   /**
    * 一括取得を始めて、終わりを外から解決できるようにする。統計は地図ごとに違う値を返す
-   * （osm は取得の前 0/10・後 10/10、old1 は 4/8）。R1 の 3 経路（閉じる・言語・地図）で使う。
+   * （osm は取得の前 0/10・後 10/10、old1 は 4/8）。地図の切り替えの 3 経路（閉じる・言語・地図）で使う。
    */
   async function startFetch(ui: Ui) {
     const app = ui.app!;
@@ -748,7 +748,7 @@ describe("地図情報・ライセンス・タイルキャッシュ（操作ボ�
     };
   }
 
-  it("取得中に地図情報を閉じても、終わった後に開き直すと「一括ダウンロード」と新しい統計に戻る（R1）", async () => {
+  it("取得中に地図情報を閉じても、終わった後に開き直すと「一括ダウンロード」と新しい統計に戻る", async () => {
     const ui = await mountUi(u => u.setAttribute("enable-cache", ""));
     const { finish } = await startFetch(ui);
     const modal = part(ui, "map-info-modal");
@@ -773,7 +773,7 @@ describe("地図情報・ライセンス・タイルキャッシュ（操作ボ�
     );
   });
 
-  it("取得中に言語を変えても、終わった後に「一括ダウンロード」と新しい統計に戻る（R1）", async () => {
+  it("取得中に言語を変えても、終わった後に「一括ダウンロード」と新しい統計に戻る", async () => {
     const ui = await mountUi(u => {
       u.setAttribute("enable-cache", "");
       u.setAttribute("lang", "en");
@@ -795,7 +795,7 @@ describe("地図情報・ライセンス・タイルキャッシュ（操作ボ�
     );
   });
 
-  it("取得中に地図を替えても、終わった後に「一括ダウンロード」と替えた先の統計に戻る（R1）", async () => {
+  it("取得中に地図を替えても、終わった後に「一括ダウンロード」と替えた先の統計に戻る", async () => {
     const ui = await mountUi(
       u => u.setAttribute("enable-cache", ""),
       withOld1Cache()

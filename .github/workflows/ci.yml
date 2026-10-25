@@ -106,6 +106,12 @@ jobs:
       - name: Run E2E tests
         run: pnpm run test:e2e:ci
 
+      # <maplat-ui>（src/element/）の e2e は playwright-element.config.ts で走る
+      # （testDir ./e2e/element・testMatch /\.pw\.ts$/・workers: 1・swiftshader）。
+      # 既定の playwright-ci.config.ts（testDir ./e2e）は .pw.ts を拾わないので、別の段で流す。
+      - name: Run <maplat-ui> element E2E tests
+        run: pnpm exec playwright test --config playwright-element.config.ts --retries=2 --forbid-only
+
       - name: Upload test results on failure
         uses: actions/upload-artifact@v7
         if: failure()

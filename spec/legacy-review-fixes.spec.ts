@@ -1,8 +1,8 @@
-// Stage 3 のレビュー（`_prompts/2026-10-24-ui-stage3-review.md`）の直しの単体テスト。
+// 旧 API の互換層のレビューの直しの単体テスト。
 //
-//  M1 `xyToMapIDs`: 層 A の `sysCoord2MercAsync`（`Promise<[x, y]>`）を待ってから経緯度に直し、
+//  `xyToMapIDs`: 層 A の `sysCoord2MercAsync`（`Promise<[x, y]>`）を待ってから経緯度に直し、
 //     層 B の `mapsAt` に渡す（直す前は `Promise.all(Promise)` で必ず reject していた）。`areaIndex` は `shared/geo.ts`
-//  M2 `showContextMenu` の位置: `at` は枠の中の座標。ホストが画面の左上に無いページでも二重に引かない
+//  `showContextMenu` の位置: `at` は枠の中の座標。ホストが画面の左上に無いページでも二重に引かない
 //  m1 `sliderNew`: 利用者の操作（子の `transparency` 属性の書き戻し）を `get`・`propertychange` に映す。`setEnable` は委譲
 //  m2 `lang`・`_t`・`i18n` は代入しても例外にならない（`lang` は属性へ、`_t`・`i18n` は警告して無視）
 //  m3 起動前の `translate` は `pickLocalized` と同じ（全言語が空なら ""。旧 #251）
@@ -54,7 +54,7 @@ const rect = (left: number, top: number, width: number, height: number) =>
     toJSON: () => ({})
   }) as DOMRect;
 
-describe("M1 xyToMapIDs（sysCoord2MercAsync の Promise を待ち、mapsAt に経緯度で渡す）", () => {
+describe("xyToMapIDs（sysCoord2MercAsync の Promise を待ち、mapsAt に経緯度で渡す）", () => {
   it("merc を経緯度に直す式（EPSG:3857）", () => {
     const p = mercToLngLat([15532269.24, 4334586.92]);
     expect(p.longitude).toBeCloseTo(139.53, 2);
@@ -119,7 +119,7 @@ describe("M1 xyToMapIDs（sysCoord2MercAsync の Promise を待ち、mapsAt に�
   });
 });
 
-describe("M2 showContextMenu の位置（ホストが画面の左上に無いページ）", () => {
+describe("showContextMenu の位置（ホストが画面の左上に無いページ）", () => {
   it("at は枠の中の座標: 枠が (100, 50) にあっても引き直さない", () => {
     document.body.innerHTML = "<maplat-ui></maplat-ui>";
     const host = document.querySelector("maplat-ui") as MaplatUiElement;
@@ -250,7 +250,7 @@ describe("m2 lang・_t・i18n への代入（strict でも例外にしない）"
     }
   }, 120000);
 
-  // 積み残し（Stage 3 の再レビューの Info）: 起動前の代入は**起動するまでの読み値だけ**。
+  // 積み残し（再レビューの Info）: 起動前の代入は**起動するまでの読み値だけ**。
   // 起動すると `#createHost` は `option.lang` しか流さないので、言語は要素が決める
   // （旧も `ui_init` が起動時に言語を上書きしていたので、振る舞いは旧と同じ）。
   it("起動前の lang の代入は、起動するまでの読み値にだけ出る", () => {

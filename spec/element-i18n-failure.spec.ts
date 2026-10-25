@@ -54,7 +54,7 @@ describe("言語ファイルの読み込みの失敗", () => {
     expect(ui.t("html.help_operation_content")).toContain(
       "<img src='${plus.png}'> <img src='${minus.png}'>"
     );
-    // 落ちた先の en の言語ファイルは、旧 UI のスライダーの説明（Stage 2 で上書きをやめた）
+    // 落ちた先の en の言語ファイルは、旧 UI のスライダーの説明（地図の切り替えがスライダーになって上書きをやめた）
     expect(ui.t("html.help_selection_content")).toContain(
       "two sliders with thumbnail"
     );

@@ -6,7 +6,7 @@ import { test, expect, type Page } from '@playwright/test';
  * 設計書 §6.3 の E-1〜E-4 を検証する。
  * fixture: e2e/fixtures/marker-list.html（mode=nocollision / collision）
  *
- * Stage 3（一本化。旧 API は `<maplat-ui>` の上の互換層）での移植: 旧 UI の `.ol-marker-list button`・
+ * 一本化（旧 API は `<maplat-ui>` の上の互換層）での移植: 旧 UI の `.ol-marker-list button`・
  * `.modal_marker_list_content .list-group-item.layer label.check` を、`<maplat-ui>` の shadow root の
  * `[part="marker-list"] button`・`[part="marker-list-layer"] label.switch`（`[part="marker-list-layer-switch"]` の
  * チェックボックスを包むラベル）へ移した（Playwright の CSS locator は shadow root を貫く）。

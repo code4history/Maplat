@@ -1,13 +1,13 @@
-// Stage 3 のレビューの直しを実地図で確かめる e2e（`_prompts/2026-10-24-ui-stage3-review.md`）。
+// 旧 API の互換層のレビューの直しを実地図で確かめる e2e。
 //
-//  M1: `ui.xyToMapIDs(画面の中心の sys 座標)` が reject せず、その点に重なる別の地図の mapID を返す
+//  `ui.xyToMapIDs(画面の中心の sys 座標)` が reject せず、その点に重なる別の地図の mapID を返す
 //      （今の地図は入らない。地図の外の点は空）。結果は層 B の `mapsAt` と同じ
-//  M2: 地図の箱が画面の左上に無いページ（左 120px・上 80px の余白）でも、`showContextMenu` が
+//  地図の箱が画面の左上に無いページ（左 120px・上 80px の余白）でも、`showContextMenu` が
 //      押した位置（`lastClickPixel`）に出る
 //  m1: 透過度のスライダーを利用者が動かすと、`sliderNew.get("slidervalue")` と `propertychange` に映る
 //
-// fixture は凍結の `e2e/fixtures/legacy-api.html`（中身は変えない。M2 だけ、開いた後にページの余白を足す）。
-// 実行: PLAYWRIGHT_SKIP_BROWSER_GC=1 node_modules/.bin/playwright test --workers=1 e2e/stage3-review-fixes.spec.ts
+// fixture は凍結の `e2e/fixtures/legacy-api.html`（中身は変えない。開いた後にページの余白を足す）。
+// 実行: PLAYWRIGHT_SKIP_BROWSER_GC=1 node_modules/.bin/playwright test --workers=1 e2e/legacy-review-fixes.spec.ts
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { test, expect, type Page } from "@playwright/test";
 
@@ -26,7 +26,7 @@ async function open(page: Page) {
   return errors;
 }
 
-test("M1: xyToMapIDs は実地図で reject せず、重なる別の地図を範囲の狭い順に返す", async ({ page }) => {
+test("xyToMapIDs は実地図で reject せず、重なる別の地図を範囲の狭い順に返す", async ({ page }) => {
   test.setTimeout(180_000);
   const errors = await open(page);
   // 重ねる地図の範囲（envelope）は、地図の準備（ready）の後も各地図の設定ファイルを読み終えるまで揃わない
@@ -69,7 +69,7 @@ test("M1: xyToMapIDs は実地図で reject せず、重なる別の地図を範
   expect(errors).toEqual([]);
 });
 
-test("M2: 地図の箱が左上に無いページでも、showContextMenu は押した位置に出る", async ({ page }) => {
+test("地図の箱が左上に無いページでも、showContextMenu は押した位置に出る", async ({ page }) => {
   test.setTimeout(180_000);
   const errors = await open(page);
   // 地図の箱（.mainview）を左 120px・上 80px ずらす（fixture のファイルは変えない）

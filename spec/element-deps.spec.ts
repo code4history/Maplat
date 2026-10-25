@@ -1,4 +1,4 @@
-// <maplat-ui> の依存の規則（仕様 §4.6・§8.3 B-静的検査）の機械検査。
+// <maplat-ui> の依存の規則（層 A の公開面だけを使う）の機械検査。
 //   <maplat-ui> の入口（src/element/index.ts）から相対 import を再帰でたどり、
 //   1. 外部のパッケージは @maplat/core/common と @c4h/chuci（POI のメディアの表示部品）と qrcode（共有の
 //      QR の符号化）だけ（@maplat/core の本体・@maplat/core/element・ほかの層 A の実装のパッケージ・OpenLayers・
@@ -236,7 +236,7 @@ describe("<maplat-ui> は <maplat-app> の公開面と @maplat/core/common だ�
     expect(INTERNAL.test("core.from.mapID")).toBe(true);
     expect(INTERNAL.test("Array.from(list)")).toBe(false);
     // 旧 UI の入口からたどると @maplat/core と ol が見つかる（たどり方が働いていることの確認）。
-    // Stage 4 で旧 UI の実装（src/index.legacy.ts 等）を消したので、たどり方の確認は互換層の入口で行う。
+    // 旧 UI の実装（src/index.legacy.ts 等）を消したので、たどり方の確認は互換層の入口で行う。
     // 互換層は層 A の公開面（@maplat/core/common）と `ol/events/Target.js` だけを読む。
     const legacy = walk("src/legacy/maplat_ui_compat.ts");
     expect([...legacy.external.keys()]).toEqual(
@@ -255,9 +255,9 @@ describe("<maplat-ui> は <maplat-app> の公開面と @maplat/core/common だ�
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 地図切替スライダー（`src/element/slider.ts`。設計 v2 §4・§6.2）の依存の規則。
+// 地図切替スライダー（`src/element/slider.ts`）の依存の規則。
 //
-// 上の再帰（`src/element/index.ts` の入口）とは**別に**たどる。Stage 1 ではスライダーを
+// 上の再帰（`src/element/index.ts` の入口）とは**別に**たどる。最初の版ではスライダーを
 // `src/element/index.ts` から出さない（画面に配線しない）ので、入口の一覧（`files`）を
 // 変えずに、スライダー自身の依存だけを固定する。
 describe("地図切替スライダーは層 A と地図ライブラリ（ol・swiper）に依らない", () => {
@@ -303,7 +303,7 @@ describe("地図切替スライダーは層 A と地図ライブラリ（ol・sw
 
   it("ソースに ol・swiper・層 A の内部への参照が無い", () => {
     // 旧: 「`from ol…`」と「`require(ol…)`」を AND で重ねていたので、**常に空配列**になり
-    // 検査が空回りしていた（Minor 10）。OR にし、名前どおり「層 A の内部」（`INTERNAL`）も見る。
+    // 検査が空回りしていた。OR にし、名前どおり「層 A の内部」（`INTERNAL`）も見る。
     const IMPORT_LINE =
       /\bfrom\s*["'](ol|swiper)[^"']*["']|require\(\s*["'](ol|swiper)/;
     // 検査そのものが働くこと（自己検査）

@@ -18,6 +18,7 @@
       "default": "./dist/element/index.js"
     },
     "./dist/*": "./dist/*",
+    "./src/*": "./src/*",
     "./package.json": "./package.json"
   },
   "files": [
@@ -28,33 +29,33 @@
     "assets/"
   ],
   "scripts": {
-    "dev": "concurrently \"pnpm --ignore-workspace run watch:sw\" \"vite --host\"",
+    "dev": "concurrently \"pnpm watch:sw\" \"vite --host\"",
     "build:sw": "node scripts/build-sw.js",
     "watch:sw": "node scripts/build-sw.js --watch",
-    "build": "cross-env BUILD_MODE=package tsc && cross-env BUILD_MODE=package vite build && pnpm --ignore-workspace run build:sw",
-    "build:demo": "pnpm --ignore-workspace run build:sw && vite build",
+    "build": "cross-env BUILD_MODE=package tsc && cross-env BUILD_MODE=package vite build && pnpm build:sw",
+    "build:demo": "pnpm build:sw && vite build",
     "preview": "vite preview",
     "test": "vitest",
     "typecheck": "tsc --noEmit",
-    "lint": "pnpm --ignore-workspace run lint:eslint && pnpm --ignore-workspace run lint:prettier",
+    "lint": "pnpm lint:eslint && pnpm lint:prettier",
     "lint:eslint": "eslint \"{src,spec,demo}/**/*.{ts,js}\" --fix",
     "lint:prettier": "prettier \"./{src,spec,demo}/**/*.{ts,js}\" --write",
     "dev:e2e": "vite --port 5176 --strictPort",
-    "pretest:e2e": "pnpm --ignore-workspace exec playwright install chromium && vite build --config e2e/fixtures/vite.probe.config.js && vite build --config e2e/fixtures/vite.probe-t5.config.js",
-    "test:e2e": "pnpm --ignore-workspace exec playwright test",
-    "test:e2e:ci": "pnpm --ignore-workspace exec playwright test --config playwright-ci.config.ts",
-    "test:e2e:m18-t6": "pnpm --ignore-workspace exec playwright test e2e/m18-t6-marker-list-layer-toggle.spec.ts",
-    "test:e2e:m1-t4": "pnpm --ignore-workspace exec playwright test e2e/m1-t4-sanitize-browser.spec.ts",
+    "pretest:e2e": "pnpm exec playwright install chromium && vite build --config e2e/fixtures/vite.probe.config.js && vite build --config e2e/fixtures/vite.probe-t5.config.js",
+    "test:e2e": "pnpm exec playwright test",
+    "test:e2e:ci": "pnpm exec playwright test --config playwright-ci.config.ts",
+    "test:e2e:m18-t6": "pnpm exec playwright test e2e/m18-t6-marker-list-layer-toggle.spec.ts",
+    "test:e2e:m1-t4": "pnpm exec playwright test e2e/m1-t4-sanitize-browser.spec.ts",
     "pretest:e2e:m1-t4": "vite build --config e2e/fixtures/vite.probe.config.js",
     "pretest:e2e:m1-t5": "vite build --config e2e/fixtures/vite.probe-t5.config.js",
-    "test:e2e:m1-t5": "pnpm --ignore-workspace exec playwright test --config playwright-m1-t5.config.ts",
+    "test:e2e:m1-t5": "pnpm exec playwright test --config playwright-m1-t5.config.ts",
     "verify:dist-freshness": "node scripts/m1-t5-hotfix-1/verify-dist-freshness.mjs",
     "verify:dist-reproducible": "node scripts/m1-t5-hotfix-1/verify-dist-reproducible.mjs",
     "verify:m10:identity": "node scripts/oct26-m10/verify-ghpages-identity.mjs",
     "verify:m10:switch": "node scripts/oct26-m10/verify-switch.mjs",
     "verify:m10:vendored": "node scripts/oct26-m10/verify-vendored-images.mjs",
     "verify:nov26-m5:demo": "node scripts/nov26-m5/verify-demo-query-allowlist.mjs",
-    "prepublishOnly": "pnpm --ignore-workspace run typecheck && pnpm --ignore-workspace run test && pnpm --ignore-workspace run build"
+    "prepublishOnly": "pnpm run typecheck && pnpm run test && pnpm run build"
   },
   "repository": {
     "type": "git",

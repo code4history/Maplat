@@ -3,13 +3,13 @@
 // DOM の組み立て（createElement("link") + setAttribute）で作る。
 // 設計: NayutaProducts docs/superpowers/specs/2026-10-11-nov26-m5-t3-task-design.md（v2）§3.2・§7 AC2・AC3
 //
-// Stage 4: 旧の実装（`src/pwa_init.ts`。Weiwudi の registerSW を呼ぶ・`resolvePwaWorker` を持つ）を
+// 旧の実装（`src/pwa_init.ts`。Weiwudi の registerSW を呼ぶ・`resolvePwaWorker` を持つ）を
 // 消したので、対象を `src/element/pwa.ts` の `initPwa` へ移した。
 //   - 旧 `resolvePwaWorker` の表（undefined・"" → 既定 ./service-worker.js、false・null → 登録しない、
 //     型の外の値 → 既定）は、要素の `initPwa` が同じ規則で行う（`worker === null` だけ登録しない・
 //     それ以外は `safeWebUrl(worker ?? "./service-worker.js")`）。互換層が旧 API の
 //     `pwaWorker: false / null` を `worker: null` に写すことは
-//     `spec/legacy-stage3-finish.spec.ts` が見る（`disablePwaWorker` を呼ぶ）。
+//     `spec/legacy-finish.spec.ts` が見る（`disablePwaWorker` を呼ぶ）。
 //   - 旧 API の `pwaManifest` 未指定 → 何もしない、は要素の属性のガードなので
 //     `spec/element-share.spec.ts`（PWA の describe）が見る。ここでは `initPwa` 単体の契約だけを見る。
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
@@ -76,7 +76,7 @@ afterEach(() => {
 
 // 旧 API の `pwaWorker` の 4 つの値は 2 つの層に分かれる（`initPwa` が受けるのは後半だけ）:
 //   false・null → 互換層が `disablePwaWorker()` を呼び、`initPwa` には `worker: null` が渡る
-//                  （`spec/legacy-stage3-finish.spec.ts` が spy で確かめる）
+//                  （`spec/legacy-finish.spec.ts` が spy で確かめる）
 //   undefined・"" → 互換層は何も渡さない（空文字は属性へ流さない）。∴ `initPwa` には undefined が渡り、
 //                  既定の ./service-worker.js になる（旧 `resolvePwaWorker` の表と同じ結果）
 // ここでは `initPwa` が受ける値の表を固定する。

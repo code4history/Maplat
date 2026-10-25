@@ -3,7 +3,7 @@
 //   import "@maplat/core/element";   // 層 A（Core）。別の層 A の実装ならその要素の入口。どれかをページが選ぶ
 //   import "<この入口>";              // 層 B（<maplat-ui>）
 //
-// この入口は層 A を import しない（どの層 A と組むかはページが決める。仕様 §4.1・§7）。
+// この入口は層 A を import しない（どの層 A と組むかはページが決める）。
 // 外部の import は @maplat/core/common だけ（spec/element-deps.spec.ts が機械的に確かめる）。
 import { MAPLAT_UI_TAG } from "@maplat/core/common";
 import { MaplatUiElement } from "./maplat-ui";

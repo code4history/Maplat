@@ -11,15 +11,15 @@
 // 状態 URL（state-url）・PWA（pwa-manifest 等）を重ねる。
 // 残りの機能（ヘルプ等の画面と全言語化）は後で移す。
 //
-// **依存の規則（仕様 §4.6）**: 層 A は `<maplat-app>` の公開面（属性・プロパティ・メソッド・イベント）
+// **依存の規則**: 層 A は `<maplat-app>` の公開面（属性・プロパティ・メソッド・イベント）
 // だけを使う。`@maplat/core` の本体（MaplatApp・mapObject・source）・`@maplat/core/element`・OpenLayers を
 // import・参照しない。外部の import は `@maplat/core/common` と、POI のメディアの表示部品 `@c4h/chuci`
 // （地図も層 A も持たない Web Components。初めてメディアを出すときに動的 import する）と、QR の符号化の
 // `qrcode`（共有の QR を初めて出すときに share.ts が動的 import する）だけ（spec/element-deps.spec.ts が機械的に確かめる）。
 // `<maplat-app>` を登録する入口（Core の "@maplat/core/element" か、別の層 A の実装の要素）はページが import する。
 //
-// 正本の仕様: NayutaProducts/docs/superpowers/specs/2026-10-10-maplat-web-components-interface.md
-//   §4（層 B）・§4.3（層 A のキーの流し方）・§5（割り当て表）・§6.4（層 B のキー）・§10.1（人間の決定）
+// 公開の仕様: docs/api/maplat-ui-element.md（属性・プロパティ・メソッド・イベントの一覧）。
+//   移行の手引き: docs/api/migration-ui-shadow-dom.md
 import {
   ELEMENT_ATTRIBUTES,
   ELEMENT_PROPERTIES,
@@ -80,18 +80,18 @@ import { MAPLAT_UI_CSS } from "./styles";
 /** @maplat/ui の版（package.json の version と一致することを spec/element.spec.ts が確かめる）。 */
 export const MAPLAT_UI_VERSION = "1.1.0";
 
-/** コンパスを押したときの動き（U6: 層 B が決める）。auto は north-up が真なら北へ、偽なら回転を 0 へ。 */
+/** コンパスを押したときの動き（層 B が決める）。auto は north-up が真なら北へ、偽なら回転を 0 へ。 */
 export type CompassAction = "auto" | "north" | "rotation";
 
 /**
- * 汎用のメニュー（`part="poi-menu"`。設計 v2 §3 L4・§5.2 B15・D1）の 1 項目。
+ * 汎用のメニュー（`part="poi-menu"`）の 1 項目。
  *
  * メニューは**1 つだけ**持つ。重なった POI の選択はこの一般形の使い方の 1 つで、
  * 旧 API の `showContextMenu([{icon, text, callback}])` も同じ部品へ委譲する（二重にしない）。
  * `text` は `html: false` のとき文字として、それ以外は `sanitizeHtml` を通した HTML として入れる
- * （旧 `contextmenu/html.ts:94` は HTML として差し込んでいた。D6）。
+ * （旧 `contextmenu/html.ts:94` は HTML として差し込んでいた）。
  *
- * @internal 旧 UI の互換層（`src/legacy/`）が使う移行期の口。層 B の公開面（仕様 §4.4）には数えない。
+ * @internal 旧 UI の互換層（`src/legacy/`）が使う移行期の口。層 B の公開面には数えない。
  */
 export interface MaplatMenuItem {
   /** 画像の URL（http/https・相対 URL だけを画像にする。`poi_safe.ts` の許可リスト） */
@@ -117,7 +117,7 @@ export interface MaplatMenuOptions {
   label?: string;
 }
 
-/** 層 A へ流す属性（§3.2 の属性と同期するキー・実装固有の機能に結びつく属性（U3））。 */
+/** 層 A へ流す属性（層 A の属性と同期するキー・層 A 固有の機能に結びつく属性）。 */
 const LAYER_A_ATTRS: readonly AttrDef[] = [
   ...ELEMENT_ATTRIBUTES,
   ...LAYER_A_PRO_ATTRIBUTES
@@ -130,7 +130,7 @@ const LAYER_A_PROPS: readonly PropDef[] = [
 const LAYER_A_ATTR_BY_NAME = new Map(LAYER_A_ATTRS.map(d => [d.attr, d]));
 const LAYER_A_ATTR_BY_PROP = new Map(LAYER_A_ATTRS.map(d => [d.prop, d]));
 /**
- * 層 A の状態のキー（map-id・transparency・display-mode。内部の操作で変わり、子が自分の属性へ書き戻す。§6.2.3）。
+ * 層 A の状態のキー（map-id・transparency・display-mode。内部の操作で変わり、子が自分の属性へ書き戻す）。
  * 子が書き戻した属性を「子が自分で持つキー」と取り違えないよう、子が自分で持つかは最初に繋いだ時点で決める。
  */
 const LAYER_A_STATE_ATTRS: readonly AttrDef[] = LAYER_A_ATTRS.filter(
@@ -139,10 +139,10 @@ const LAYER_A_STATE_ATTRS: readonly AttrDef[] = LAYER_A_ATTRS.filter(
 // 子ごとの「層 B が流したキー」と「最初に繋いだ時点で子が自分で持っていた状態のキー」（繋ぎ直しても取り違えない）
 const FLOWED_BY_CHILD = new WeakMap<Element, Set<string>>();
 const OWNED_STATE_BY_CHILD = new WeakMap<Element, Set<string>>();
-/** restore のうち層 B が使う拡張キー（§4.3。子へは流さない）。 */
+/** restore のうち層 B が使う拡張キー（子へは流さない）。 */
 const LAYER_B_RESTORE_KEYS = ["showBorder", "openedMarker"];
 
-/** 層 B の属性の定義を共有の表（§4.2・§6.4。@maplat/core/common の MAPLAT_UI_ATTRIBUTES）から引く。 */
+/** 層 B の属性の定義を共有の表（@maplat/core/common の MAPLAT_UI_ATTRIBUTES）から引く。 */
 function uiAttr(attr: string): AttrDef {
   const def = MAPLAT_UI_ATTRIBUTES.find(d => d.attr === attr);
   if (!def)
@@ -164,12 +164,12 @@ const ATTR_PRESENTATION_MODE = uiAttr("presentation-mode");
 const ATTR_TAP_DURATION = uiAttr("tap-duration");
 const ATTR_TAP_UI_VANISH = uiAttr("tap-ui-vanish");
 const ATTR_APP_ENVELOPE = uiAttr("app-envelope");
-// 起動時だけ効くキー（§6.4・§6.5: state-url は (i)、pwa-* は (i')。起動後の変更は警告して無視する。U2）
+// 起動時だけ効くキー（state-url・pwa-*。起動後の変更は警告して無視する）
 const ATTR_STATE_URL = uiAttr("state-url");
 const ATTR_PWA_MANIFEST = uiAttr("pwa-manifest");
 const ATTR_PWA_WORKER = uiAttr("pwa-worker");
 const ATTR_PWA_SCOPE = uiAttr("pwa-scope");
-/** 層 B が自分で持つ属性（今の版で効くものだけ。§4.2 にない compass-action は本実装で決めた）。 */
+/** 層 B が自分で持つ属性（今の版で効くものだけ。compass-action は本実装で決めた）。 */
 const UI_ATTRS: readonly AttrDef[] = [
   ATTR_COMPASS_ACTION,
   ATTR_SET_DOCUMENT_TITLE,
@@ -197,8 +197,8 @@ const HELP_GATED_ATTRS = new Set<AttrDef>([
 ]);
 
 /**
- * 枠線（§3.7 の setEnvelopes）の線と塗り。旧 UI（src/ui_init.ts:441-467 の colors）は範囲を持つ地図に
- * 25 色を順に割り振っていた（§3.7「色の割り振り（S5）は層 B が持つ」）。同じ 25 色を 16 進で持つ。
+ * 枠線（setEnvelopes）の線と塗り。旧 UI（src/ui_init.ts:441-467 の colors）は範囲を持つ地図に
+ * 25 色を順に割り振っていた（色の割り振りは層 B が持つ）。同じ 25 色を 16 進で持つ。
  * 線はその色、塗りは同じ色の透明度 0.4（旧 index.ts の setFillEnvelope が色の 4 番目を 0.4 にしていた）。
  */
 const ENVELOPE_COLORS = [
@@ -625,8 +625,8 @@ interface Parts {
 type PoiMediaObject = Exclude<MaplatPoiMedia, string>;
 
 /**
- * <maplat-ui> の実装（最小版）。層 B の公開面（仕様 §4）のうち、最小の機能に要るものを持つ:
- *   - 属性: lang（自分の属性だけを見る。§6.2.1）・compass-action・set-document-title・層 A の全属性（子へ流す）
+ * <maplat-ui> の実装（最小版）。層 B の公開面のうち、最小の機能に要るものを持つ:
+ *   - 属性: lang（自分の属性だけを見る）・compass-action・set-document-title・層 A の全属性（子へ流す）
  *   - プロパティ: 層 A のプロパティのみのキー（子へ流す）・restore（拡張キーを分ける）・appOption
  *   - 読み取り: ready・implementation・version・app・currentLang
  *   - メソッド: translateText・t・openMarker
@@ -643,7 +643,7 @@ export class MaplatUiElement extends BaseElement {
     ];
   }
 
-  /** 層 B の実装名（§4.4）。 */
+  /** 層 B の実装名。 */
   readonly implementation = "ui" as const;
   /** 実装の版。 */
   readonly version: string = MAPLAT_UI_VERSION;
@@ -653,21 +653,21 @@ export class MaplatUiElement extends BaseElement {
   // プロパティのみのキー（層 A へ流すもの・restore・appOption）の値
   #props = new Map<string, unknown>();
   #app: MaplatAppElement | null = null;
-  // 今の子へ層 B が流したキー（近い方が勝つ: 子が自分で持つキーには触れない。§4.3）。子ごとに持つ（FLOWED_BY_CHILD）
+  // 今の子へ層 B が流したキー（近い方が勝つ: 子が自分で持つキーには触れない）。子ごとに持つ（FLOWED_BY_CHILD）
   #flowed = new Set<string>();
   // 層 B の属性を自分で書き戻している最中（attributeChangedCallback で子へ流し直さない）
   #reflecting = false;
-  // 状態 URL の値で、起動時に層 B の map-id・transparency より強くするもの（§6.1・人間の決定「属性への書き戻し」）
+  // 状態 URL の値で、起動時に層 B の map-id・transparency より強くするもの（「属性への書き戻し」）
   #urlOverrides = new Map<string, unknown>();
   #unsubscribe: (() => void) | null = null;
   #ready: Deferred = deferred();
   #appReady = false;
   #generation = 0;
   #maps: MapListItem[] = [];
-  // 範囲を持つ地図に割り振った枠線の色（mapID → 16 進の色。listMaps の順に ENVELOPE_COLORS を回す。旧 S5）
+  // 範囲を持つ地図に割り振った枠線の色（mapID → 16 進の色。listMaps の順に ENVELOPE_COLORS を回す）
   #mapColors = new Map<string, string>();
   #currentMapId: string | null = null;
-  // 最後に選んだ古地図（重ね地図）。ベースマップの上でもこの地図の範囲を塗る（旧 UI のスワイパーの選択。R5）
+  // 最後に選んだ古地図（重ね地図）。ベースマップの上でもこの地図の範囲を塗る（旧 UI のスワイパーの選択）
   #lastOldMapId: string | null = null;
   #currentMeta: MapMeta | null = null;
   #viewpoint: Viewpoint | null = null;
@@ -684,10 +684,10 @@ export class MaplatUiElement extends BaseElement {
   #poiMenuList: MaplatPoi[] = [];
   // clickMarker を受けて、同じ拍に clickMarkers が来なければ単独で開く（旧 UI は clickMarkers だけを見る）
   #pendingMarker: MaplatPoi | null = null;
-  // 地図（子の要素）の最後の pointerdown の位置（選択メニューの位置。仕様 §3.7: 子の要素の DOM の pointerdown）
+  // 地図（子の要素）の最後の pointerdown の位置（選択メニューの位置。子の要素の DOM の pointerdown）
   #lastPointer: { clientX: number; clientY: number } | null = null;
   #sliderDragging = false;
-  // 地図の切り替えスライダー（左＝背景の地図・右＝重ねる地図。設計 §4.6・Stage 2）
+  // 地図の切り替えスライダー（左＝背景の地図・右＝重ねる地図）
   #baseSlider: MapSlider | null = null;
   #overlaySlider: MapSlider | null = null;
   // 重ねる地図のスライダーの中央のカード（枠線の塗りを先に追従させる。旧 updateEnvelope の isActive）
@@ -699,16 +699,16 @@ export class MaplatUiElement extends BaseElement {
   #strings: Record<string, string> | null = null;
   // 言語の読み込みの世代（読み込み中に言語を切り替えたら、古い読み込みの結果で描かない）
   #localeGeneration = 0;
-  // 起動時だけ効く層 B のキーの起動時の値（最初の #setup で取る。以後の変更は警告して無視。U2）
+  // 起動時だけ効く層 B のキーの起動時の値（最初の #setup で取る。以後の変更は警告して無視）
   #startup: Map<string, unknown> | null = null;
-  // appOption の起動時の値（同上。層 B の appOption は起動時だけ効く（§6.4 (i)）ので、要素自身の読み
+  // appOption の起動時の値（同上。層 B の appOption は起動時だけ効くので、要素自身の読み
   // （currentLang・pwa-manifest の既定の appId・プロパティの読み）はこの値を見る。起動後の代入は子へ流すだけ）
   #startupAppOption: Record<string, unknown> | undefined;
   // 旧 API の pwaWorker: false / null（disablePwaWorker）。Service Worker を登録しない
   #pwaNoWorker = false;
-  // 状態 URL（state-url）: 起動時に URL から読んだ復元値（子の restore として流す。§6.1）
+  // 状態 URL（state-url）: 起動時に URL から読んだ復元値（子の restore として流す）
   #urlRestore: Restore | null = null;
-  // 子が restore を自分で持つ・子の作成が先に始まっていた → ready の後に changeMap で当てる（§5.2）
+  // 子が restore を自分で持つ・子の作成が先に始まっていた → ready の後に changeMap で当てる
   #urlRestoreLate = false;
   // URL から状態を当てている間は URL を書かない（旧 restoring）
   #restoring = false;
@@ -726,7 +726,7 @@ export class MaplatUiElement extends BaseElement {
   #cacheStats: TileCacheStats | undefined;
   #cacheFrame = 0;
   // 統計の読み取りの世代（地図情報を閉じた・地図を替えた・言語を変えたら古い読み取りを捨てる）。
-  // 一括取得の印とは分ける（取得は閉じる・言語・地図の切り替えでは捨てない。R1）
+  // 一括取得の印とは分ける（取得は閉じる・言語・地図の切り替えでは捨てない）
   #cacheGeneration = 0;
   // 一括取得の印（進み具合と終わりの受け取り。取得を始めるたび・止めるときに増やす）
   #cacheFetchToken = 0;
@@ -894,7 +894,7 @@ export class MaplatUiElement extends BaseElement {
       if (uiDef === ATTR_COMPASS_ACTION) this.#renderCompass();
       if (uiDef === ATTR_SET_DOCUMENT_TITLE) this.#applyDocumentTitle();
       if (uiDef === ATTR_ENABLE_BORDER) {
-        // 起動後に外されたら、描いた枠線も消す（R6）
+        // 起動後に外されたら、描いた枠線も消す
         if (this.#parseOwnAttribute(ATTR_ENABLE_BORDER) !== true) {
           if (this.#showBorder) this.setShowBorder(false);
         }
@@ -906,7 +906,7 @@ export class MaplatUiElement extends BaseElement {
         if (this.#parseOwnAttribute(ATTR_ENABLE_MARKER_LIST) !== true)
           this.#closeMarkerList();
       }
-      // enable-poi-html-no-scroll は次に開く POI から効く（§6.4 (ii)）
+      // enable-poi-html-no-scroll は次に開く POI から効く
       return;
     }
     const def = LAYER_A_ATTR_BY_NAME.get(name);
@@ -922,13 +922,13 @@ export class MaplatUiElement extends BaseElement {
       string,
       unknown
     >;
-    // 属性と同期するキー（層 A へ流すもの・層 B のもの）。値の解釈は層 A と同じ（§6.2.2）
+    // 属性と同期するキー（層 A へ流すもの・層 B のもの）。値の解釈は層 A と同じ
     for (const def of [...LAYER_A_ATTRS, ...UI_ATTRS]) {
       Object.defineProperty(proto, def.prop, {
         configurable: true,
         enumerable: true,
         get(this: MaplatUiElement) {
-          // 起動時だけ効くキーは起動後は起動時の値を返す（U2）
+          // 起動時だけ効くキーは起動後は起動時の値を返す
           if (this.#startup?.has(def.prop)) return this.#startup.get(def.prop);
           return this.#parseOwnAttribute(def);
         },
@@ -949,7 +949,7 @@ export class MaplatUiElement extends BaseElement {
         configurable: true,
         enumerable: true,
         get(this: MaplatUiElement) {
-          // appOption は起動時だけ効く（起動後は起動時の値を返す。子へは今の値が流れる。§6.4 (i)）
+          // appOption は起動時だけ効く（起動後は起動時の値を返す。子へは今の値が流れる）
           if (def.prop === "appOption") return this.#ownAppOption();
           return this.#props.get(def.prop);
         },
@@ -963,7 +963,7 @@ export class MaplatUiElement extends BaseElement {
     }
   }
 
-  // ---- 状態の読み取り（§4.4）----
+  // ---- 状態の読み取り----
 
   /** 子の ready の後、UI の部品（地図の一覧・題名・ボタンの状態）が揃ったときに解決する。 */
   get ready(): Promise<void> {
@@ -977,7 +977,7 @@ export class MaplatUiElement extends BaseElement {
 
   /**
    * 解決後の言語（lang 属性 → appOption.lang（移行用・起動時の値）→ 設定ファイルの lang → ブラウザ）。
-   * appOption は起動時だけ効く（§6.4 (i)）ので、起動後に代入してもこの解決は変わらない。
+   * appOption は起動時だけ効くので、起動後に代入してもこの解決は変わらない。
    */
   get currentLang(): string {
     const own = this.getAttribute("lang");
@@ -992,7 +992,7 @@ export class MaplatUiElement extends BaseElement {
     return normalizeLang(lang);
   }
 
-  // ---- メソッド（§4.4）----
+  // ---- メソッド----
 
   /** 多言語の文字列から currentLang の値を選ぶ（旧 MaplatUi.translate。HTMLElement.translate と衝突させない）。 */
   translateText(fragment?: Localized): string | undefined {
@@ -1044,7 +1044,7 @@ export class MaplatUiElement extends BaseElement {
   /**
    * 指定した経緯度に重なる（範囲を持つ）地図の mapID を、範囲の狭い順に返す（旧 ui_marker.ts の
    * xyToMapIDs）。層 A の公開面だけで求める: 画面の 4 隅（getViewExtent）と各地図の範囲
-   * （getMapEnvelope）を経緯度で比べる（仕様 §3.7。old は merc と turf を使っていた）。
+   * （getMapEnvelope）を経緯度で比べる（old は merc と turf を使っていた）。
    * 今の地図は候補から外し、範囲の面積が画面の面積の threshold 倍以上の地図は外す（旧と同じ既定 10）。
    * 地図の準備前は空の配列。
    */
@@ -1138,15 +1138,16 @@ export class MaplatUiElement extends BaseElement {
     }, 1500);
   }
 
-  // ---- 旧 UI の互換層（src/legacy/）のための口（移行期だけ。設計 §2.3.6・§3 L1〜L17）----
+  // ---- 旧 UI の互換層（src/legacy/）のための口（移行期だけ）----
   //
-  // ここから下はすべて @internal。層 B の公開面（仕様 §4.4 の 8 メソッド）には数えない。
+  // ここから下はすべて @internal。層 B の公開面（公開の 8 メソッド）には数えない。
   // 旧 API（MaplatUi）の外形を保つために、互換層が要素の部品へ委譲するだけの口を置く。
-  // 旧 API は 1.x の間ずっと残す（メジャー版まで。設計 v2 §7.3 R-5）ので、この口も残す。
+  // 旧 API は 1.x の間ずっと残す（メジャー版まで）ので、この口も残す。
 
   /**
    * 言語ファイルの読み込みが済むまで待つ。
-   * @internal 旧 UI の onUiConfigure は i18n を読んでから利用者の hook を呼んでいた（設計 §3 L11）。
+   * @internal 旧 UI の onUiConfigure は i18n を読んでから利用者の hook を呼んでいた
+   *   （`docs/ui-core-lifecycle.md` の「What Maplat UI does per phase」を参照）。
    *   互換層はこの口を待ってから hook を呼ぶ。読み込みに失敗しても reject しない（en へ落ちる）。
    */
   whenI18nReady(): Promise<void> {
@@ -1260,7 +1261,7 @@ export class MaplatUiElement extends BaseElement {
     if (found) {
       if (found !== this.#app || !this.#unsubscribe) this.#bind(found);
     } else {
-      // 子が無ければ <maplat-app slot="map"> を自分の light DOM の子として作る（§4.1）。
+      // 子が無ければ <maplat-app slot="map"> を自分の light DOM の子として作る。
       // 層 A のキーは繋ぐ前に流す（子は繋がった拍の後で作成を始めるので、同じ拍の値を取りこぼさない）
       const app = document.createElement(MAPLAT_APP_TAG) as MaplatAppElement;
       app.setAttribute("slot", "map");
@@ -1277,7 +1278,7 @@ export class MaplatUiElement extends BaseElement {
       for (const def of UI_ATTRS)
         if (def.startup) snapshot.set(def.prop, this.#parseOwnAttribute(def));
       this.#startup = snapshot;
-      // appOption も起動時の値で固定する（層 B の appOption は起動時だけ効く。§6.4 (i)・§6.5）
+      // appOption も起動時の値で固定する（層 B の appOption は起動時だけ効く）
       this.#startupAppOption = this.#props.get("appOption") as
         Record<string, unknown> | undefined;
     }
@@ -1297,7 +1298,7 @@ export class MaplatUiElement extends BaseElement {
   }
 
   /**
-   * 要素自身が読む appOption（層 B の appOption は起動時だけ効く。§6.4 (i)）。
+   * 要素自身が読む appOption（層 B の appOption は起動時だけ効く）。
    * 起動後は起動時の値（起動前は与えられた値）を返す。起動後の代入は子へ流すだけで、
    * 層 B の読み（言語の解決・pwa-manifest の既定の appId・このプロパティの読み）には効かせない。
    */
@@ -1310,7 +1311,7 @@ export class MaplatUiElement extends BaseElement {
 
   /**
    * 自動非表示の対象（旧 Core の setMapOnOff が隠す .ol-control 全部）。旧は透過度のスライダー・
-   * 地図の切り替えのスワイパー・題名も .ol-control だった（旧 ui_init.ts:1486-1492。レビュー Major 1）。
+   * 地図の切り替えのスワイパー・題名も .ol-control だった（旧 ui_init.ts:1486-1492）。
    */
   #controls(): HTMLElement[] {
     return Array.from(
@@ -1359,7 +1360,7 @@ export class MaplatUiElement extends BaseElement {
 
   /**
    * tap-duration（属性 → 3000。0 も有効）。
-   * 仕様 §10.1「U1 追補」: 要素（新インタフェース）は設定ファイルの機能系キーを読まない
+   * 要素（新インタフェース）は設定ファイルの機能系キーを読まない
    * （`tapDuration`・`tapUIVanish` が名指しされている）。旧クラスだけが設定ファイルを読む。
    */
   #tapDuration(): number {
@@ -1370,7 +1371,7 @@ export class MaplatUiElement extends BaseElement {
 
   /**
    * tap-ui-vanish（属性 → false。旧名 tapUIVanish）。
-   * 設定ファイルの `tapUIVanish` は読まない（仕様 §10.1「U1 追補」。上の `#tapDuration` の注釈と同じ）。
+   * 設定ファイルの `tapUIVanish` は読まない（上の `#tapDuration` の注釈と同じ）。
    */
   #tapUiVanish(): boolean {
     const own = this.#parseOwnAttribute(ATTR_TAP_UI_VANISH);
@@ -1501,7 +1502,7 @@ export class MaplatUiElement extends BaseElement {
     this.#currentMeta = null;
     this.#viewpoint = null;
     this.#pathThatSet = undefined;
-    // 状態 URL: 子へ流す復元値を今の URL から読む（URL は restore より強い。§6.1・旧 index.ts:158-160）
+    // 状態 URL: 子へ流す復元値を今の URL から読む（URL は restore より強い。旧 index.ts:158-160）
     this.#urlRestore = this.#stateUrlOn()
       ? parseStateHash(typeof location !== "undefined" ? location.hash : "")
       : null;
@@ -1530,7 +1531,7 @@ export class MaplatUiElement extends BaseElement {
         }
       ]);
     for (const [type, handler] of handlers) app.addEventListener(type, handler);
-    // 子の要素そのものの pointerdown（仕様 §3.7。子の中身には触れない）: 選択メニューの位置を覚える。
+    // 子の要素そのものの pointerdown（子の中身には触れない）: 選択メニューの位置を覚える。
     // メニューが開いていれば閉じ、その押下は地図へ渡さない（旧 showContextMenu と同じ）
     const onPointerDown = (evt: Event) => {
       if (generation !== this.#generation) return;
@@ -1544,7 +1545,7 @@ export class MaplatUiElement extends BaseElement {
     app.addEventListener("pointerdown", onPointerDown, true);
     // ---- 操作ボタンの自動非表示（旧 src/index.ts:1070-1123 の setMapOnOff）----
     // 旧は OL の click / pointerdrag / moveend を見ていた。層 B は地図（子の要素）の DOM の click と
-    // pointerdown/pointermove（ドラッグ）と、層 A の moveEnd で知る（仕様 §4.1）。
+    // pointerdown/pointermove（ドラッグ）と、層 A の moveEnd で知る。
     let dragStart: { x: number; y: number } | null = null;
     // ドラッグと判定したか。実ブラウザはマウスのドラッグの後にも DOM の click を出すが、旧 OL の click は
     // 出ないので、ドラッグの後の click では戻さない（moveEnd が tap-duration の後に戻す）
@@ -1584,7 +1585,7 @@ export class MaplatUiElement extends BaseElement {
     app.addEventListener("pointercancel", onMapPointerUp, true);
     app.addEventListener("click", onMapClick);
     // 子が書き戻した状態（map-id・transparency・display-mode）を、層 B が流しているキーなら層 B の属性へも映す
-    // （内部の操作の後に <maplat-ui> の属性が古い値のまま残らないように。§6.2.3）
+    // （内部の操作の後に <maplat-ui> の属性が古い値のまま残らないように）
     const observer =
       typeof MutationObserver !== "undefined"
         ? new MutationObserver(() => {
@@ -1634,7 +1635,7 @@ export class MaplatUiElement extends BaseElement {
 
   /**
    * 子の地図の準備を待つ（公開面の ready だけで判定する）。子の ready は破棄が決まった時点で新しい
-   * Promise に替わる（仕様 §3.3）ので、繋ぎ直した直後に読んでも前の解決済みの Promise は掴まない。
+   * Promise に替わるので、繋ぎ直した直後に読んでも前の解決済みの Promise は掴まない。
    * @returns 待ちの途中で外された・作り直されたら false
    */
   async #waitAppReady(
@@ -1685,7 +1686,7 @@ export class MaplatUiElement extends BaseElement {
     this.#splashShown = false;
   }
 
-  // ---- 層 A のキーの流し方（§4.3）----
+  // ---- 層 A のキーの流し方----
 
   #flowAll() {
     for (const def of LAYER_A_ATTRS) this.#flowKey(def.prop);
@@ -1725,7 +1726,7 @@ export class MaplatUiElement extends BaseElement {
   /**
    * 層 B に与えられた値。restore は状態 URL の復元値があればそれ（URL が restore より強い。旧と同じく丸ごと
    * 置き換える）、層 B の拡張キーを除く。restoreExtensionKeys は層 B の拡張キー showBorder を足す
-   * （restoreSession の localStorage から層 A が読む。§5.2）。
+   * （restoreSession の localStorage から層 A が読む）。
    */
   #layerAValue(prop: string): unknown {
     const def = LAYER_A_ATTR_BY_PROP.get(prop);
@@ -2301,7 +2302,7 @@ export class MaplatUiElement extends BaseElement {
     );
     el.slider.title = this.t("control.trans");
     el.slider.setAttribute("aria-label", el.slider.title);
-    // 地図の切り替えスライダー（グループ名と矢印の読み上げ名。Stage 2・Minor 9）
+    // 地図の切り替えスライダー（グループ名と矢印の読み上げ名）
     const groupLabels: Array<[MapSlider | null, string]> = [
       [this.#baseSlider, "slider.base"],
       [this.#overlaySlider, "slider.overlay"]
@@ -2454,8 +2455,8 @@ export class MaplatUiElement extends BaseElement {
   }
 
   /**
-   * 地図の切り替えスライダーを 2 本作る（左＝背景の地図・右＝重ねる地図。設計 §4.6・§5.2 B12/B13）。
-   * `listMaps` の並びは `#renderMaps` で渡す。地図を変えるのは `onSelect` だけ（D5）で、
+   * 地図の切り替えスライダーを 2 本作る（左＝背景の地図・右＝重ねる地図）。
+   * `listMaps` の並びは `#renderMaps` で渡す。地図を変えるのは `onSelect` だけで、
    * 部品が自分で動き始めるので、ここから `step()` は呼ばない。
    */
   #createSliders() {
@@ -2511,7 +2512,7 @@ export class MaplatUiElement extends BaseElement {
     overlay.setItems(overlayItems);
     // 起動時は旧 Swiper の initialSlide と同じく、動かさずに今の地図へ置く。
     // 今の地図が無い側は位置を保ち、`.selected` を付けない（旧 ui_init.ts:173-174 と旧の
-    // setSlideMapID は、両方に今の地図を渡し、無い側は選択を外すだけ。設計 S9・S14）
+    // setSlideMapID は、両方に今の地図を渡し、無い側は選択を外すだけ）
     if (this.#currentMapId) {
       for (const slider of [base, overlay]) {
         if (slider.hasMap(this.#currentMapId))
@@ -2531,7 +2532,7 @@ export class MaplatUiElement extends BaseElement {
 
   /**
    * 今の地図に 2 本の選択を合わせる（`mapChanged`）。旧 ui_init.ts:173-174 と同じく両方に今の地図を
-   * 渡し、今の地図が無い側は位置を保って `.selected` だけ外す（選択は今の地図にだけ付く。設計 S9）。
+   * 渡し、今の地図が無い側は位置を保って `.selected` だけ外す（選択は今の地図にだけ付く）。
    */
   #syncSliders() {
     const current = this.#maps.find(m => m.mapID === this.#currentMapId);
@@ -2546,7 +2547,7 @@ export class MaplatUiElement extends BaseElement {
 
   /**
    * スライダーのカードを選んだ（クリック・Enter）。押したカードは部品がもう動かし始めているので、
-   * `step()` は呼ばない（D5。呼ぶと 2 枚動く）。`.selected` だけ先に合わせてから地図を変える
+   * `step()` は呼ばない（呼ぶと 2 枚動く）。`.selected` だけ先に合わせてから地図を変える
    * （旧 ui_init.ts:582-585 と同じ順序）。
    */
   #onSliderSelect(kind: "base" | "overlay", mapID: string, offset: number) {
@@ -2557,7 +2558,7 @@ export class MaplatUiElement extends BaseElement {
       this.#call("changeMap", app => app.changeMap(mapID));
   }
 
-  /** 重ねる地図のスライダーの中央が変わった（drag 中は先に枠線の塗りだけ追従。設計 §4.6）。 */
+  /** 重ねる地図のスライダーの中央が変わった（drag 中は先に枠線の塗りだけ追従）。 */
   #onOverlayActive(mapID: string | null) {
     this.#activeOverlayMapId = mapID ?? this.#lastOldMapId;
     if (this.#showBorder) this.#updateEnvelope();
@@ -2589,7 +2590,7 @@ export class MaplatUiElement extends BaseElement {
     this.#el.gps.dataset.enabled = enabled ? "true" : "false";
   }
 
-  /** コンパスを押したら北へ向けるか（U6）。auto は子の north-up に従う。 */
+  /** コンパスを押したら北へ向けるか。auto は子の north-up に従う。 */
   #compassUsesNorth(): boolean {
     const action = this.#parseOwnAttribute(ATTR_COMPASS_ACTION) as
       string | undefined;
@@ -2624,7 +2625,7 @@ export class MaplatUiElement extends BaseElement {
 
   // ---- 枠線（旧 index.ts の updateEnvelope・setShowBorder・maplat_control.ts の Border）----
 
-  /** 層 A の機能の問い合わせ（§3.6）。実装による分岐には implementation を使わない（§4.6-2）。 */
+  /** 層 A の機能の問い合わせ。実装による分岐には implementation を使わない。 */
   #supports(feature: string): boolean {
     const app = this.#app;
     if (!app || typeof app.supports !== "function") return false;
@@ -2664,7 +2665,7 @@ export class MaplatUiElement extends BaseElement {
     }
   }
 
-  /** 地図が古地図（重ね地図）なら、最後に選んだ古地図として覚える（R5。ベースマップでは変えない）。 */
+  /** 地図が古地図（重ね地図）なら、最後に選んだ古地図として覚える（ベースマップでは変えない）。 */
   #rememberOldMap(mapID: string | null) {
     if (!mapID) return;
     const item = this.#maps.find(m => m.mapID === mapID);
@@ -2679,7 +2680,7 @@ export class MaplatUiElement extends BaseElement {
 
   /**
    * 範囲を塗る地図: 今の地図が古地図ならその地図、ベースマップの上なら重ねる地図のスライダーの
-   * 中央のカード（旧の isActive。drag 中は preview に追従する。設計 §4.6）。
+   * 中央のカード（旧の isActive。drag 中は preview に追従する）。
    */
   #envelopeFillMapId(): string | null {
     const current = this.#maps.find(m => m.mapID === this.#currentMapId);
@@ -3049,7 +3050,7 @@ export class MaplatUiElement extends BaseElement {
 
   #closeMapInfo() {
     this.#el.info.hidden = true;
-    // 開いている間に始まった統計の読み取り・描画を捨てる（一括取得は止めない・捨てない。R1）
+    // 開いている間に始まった統計の読み取り・描画を捨てる（一括取得は止めない・捨てない）
     this.#cacheGeneration++;
     this.#cacheStats = undefined;
     if (this.#cacheFrame) {
@@ -3129,7 +3130,7 @@ export class MaplatUiElement extends BaseElement {
   /**
    * ライセンスのセル（旧 ui_utils.renderLicenseCell と同じ規則: アイコンがあれば出し、注意書きがあれば
    * その下に文章で出す。アイコンを持たない語彙 "Custom" は文章だけ）。アイコンの URL は PNG を import した
-   * 表（license_images）から引き、表にない語彙は画像を出さずに文言だけを出す（相対 URL を取りに行かない。R3）。
+   * 表（license_images）から引き、表にない語彙は画像を出さずに文言だけを出す（相対 URL を取りに行かない）。
    */
   #licenseCell(license: string, note: string): DocumentFragment {
     const fragment = document.createDocumentFragment();
@@ -3171,7 +3172,7 @@ export class MaplatUiElement extends BaseElement {
 
   /**
    * 一括取得の表示を「取得中」にするか。取得中の地図が今の地図と同じときだけ取得中の表示にする
-   * （地図を替えたら、裏で続いている取得は今の地図の欄に出さない。R1）。
+   * （地図を替えたら、裏で続いている取得は今の地図の欄に出さない）。
    */
   #isCacheFetchingCurrent(): boolean {
     if (!this.#cacheFetching) return false;
@@ -3180,7 +3181,7 @@ export class MaplatUiElement extends BaseElement {
 
   /**
    * キャッシュの欄の出し入れと統計の読み直し（地図情報を開いたとき・地図を切り替えたとき）。
-   * 統計の読み取りだけを `#cacheGeneration` で捨てる（一括取得の印 `#cacheFetchToken` とは別。R1）。
+   * 統計の読み取りだけを `#cacheGeneration` で捨てる（一括取得の印 `#cacheFetchToken` とは別）。
    */
   async #refreshCache() {
     const app = this.#app;
@@ -3270,7 +3271,7 @@ export class MaplatUiElement extends BaseElement {
     }
     if (token !== this.#cacheFetchToken || generation !== this.#generation)
       return;
-    // 取得が終わったら、必ず取得中の印を下ろしてから統計を読み直す（R1）
+    // 取得が終わったら、必ず取得中の印を下ろしてから統計を読み直す
     this.#cacheFetching = false;
     this.#cacheFetchingMapId = null;
     this.#renderCache();
@@ -3517,9 +3518,9 @@ export class MaplatUiElement extends BaseElement {
 
   // ---- 汎用メニュー（旧 contextmenu/*・ui_marker.ts の showContextMenu・POI の重なりの選択）----
   //
-  // メニューは 1 つだけ（設計 §3 L4・§3.3 の 7）。重なった POI の選択はその使い方の 1 つで、
+  // メニューは 1 つだけ。重なった POI の選択はその使い方の 1 つで、
   // 旧 API の showContextMenu もここへ委譲する。part 名は既存の poi-menu / poi-menu-item を引き継ぐ
-  // （D1 の「map-menu 以外」。map-menu は Stage 2 で地図の切り替えメニューとともに消えた）。
+  // （「map-menu 以外」。map-menu は地図の切り替えメニューとともに消えた）。
 
   /** 重なった POI のメニュー（旧 ui_marker.ts の showContextMenu の POI 版）。 */
   #openPoiMenu(list: MaplatPoi[]) {
@@ -3570,7 +3571,7 @@ export class MaplatUiElement extends BaseElement {
       .querySelector<HTMLElement>(".frame")!
       .getBoundingClientRect();
     const box = menu.getBoundingClientRect();
-    // `at` は枠の中の座標（引かない）。最後の pointerdown は client 座標なので枠の左上を引く（M2）
+    // `at` は枠の中の座標（引かない）。最後の pointerdown は client 座標なので枠の左上を引く
     const p = this.#lastPointer;
     let x = options.at
       ? options.at.x
@@ -3590,7 +3591,7 @@ export class MaplatUiElement extends BaseElement {
       .querySelector<HTMLButtonElement>("button")
       ?.focus({ preventScroll: true });
     // `menuopen`・`menuclose`（detail なし・泡立たない）は @internal: 互換層の `ui.contextMenu.on("open"/"close")` の
-    // ためだけに出す移行期のイベント。層 B の公開イベント（仕様 §4.4）には数えない
+    // ためだけに出す移行期のイベント。層 B の公開イベントには数えない
     this.dispatchEvent(new CustomEvent("menuopen"));
   }
 
@@ -3618,7 +3619,7 @@ export class MaplatUiElement extends BaseElement {
       const text = document.createElement("span");
       text.className = "name";
       if (item.html === false) text.textContent = item.text;
-      // 旧 showContextMenu の text は HTML（旧 contextmenu/html.ts:94）。D6 によりサニタイザを通す
+      // 旧 showContextMenu の text は HTML（旧 contextmenu/html.ts:94）。サニタイザを通す
       else text.innerHTML = sanitizeHtml(item.text);
       button.appendChild(text);
       li.appendChild(button);
@@ -3732,7 +3733,7 @@ export class MaplatUiElement extends BaseElement {
     if (desc) {
       const p = document.createElement("p");
       p.className = "poi-desc";
-      // 改行の置換はサニタイズの後（前だと <br> が入力扱いになる。旧 m1-t4 S1 と同じ）
+      // 改行の置換はサニタイズの後（前だと <br> が入力扱いになる）
       p.innerHTML = sanitizeHtml(desc).replace(/\n/g, "<br>");
       el.poiBody.appendChild(p);
     }
@@ -3818,7 +3819,7 @@ export class MaplatUiElement extends BaseElement {
     }
   }
 
-  /** 起動時だけ効く層 B のキーへの起動後の書き込みを警告して無視する（U2）。 */
+  /** 起動時だけ効く層 B のキーへの起動後の書き込みを警告して無視する。 */
   #rejectStartupWrite(def: AttrDef, what: string) {
     this.#warnOnce(
       `startup:${def.prop}`,

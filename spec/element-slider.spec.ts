@@ -1,13 +1,13 @@
 // @vitest-environment jsdom
-// `<maplat-ui>` と地図の切り替えスライダーの配線（Stage 2・設計 §4.6・§5.2 B12/B13）。
+// `<maplat-ui>` と地図の切り替えスライダーの配線。
 //
 // 部品そのもの（循環・drag・キュー）は `spec/slider.spec.ts` が見る。このファイルは要素側:
 //   - 左右 2 本（背景の地図・重ねる地図）に `listMaps` を分けて渡す
 //   - 起動時は animate=false（旧 Swiper の initialSlide と同じ。動かさずに置く）
-//   - 地図を変えるのは onSelect だけ（D5）。矢印・キーボードの移動では changeMap を呼ばない
-//   - 1 枚のスライダーは `single-map`（枠を描かない・矢印を出さない。P3・S8）
-//   - `overlay: false` でもスライダーを隠さない（P3）
-//   - `mapChanged` で選択が追従し、遠い移動は 160ms の連続（N8・M3 の入口）
+//   - 地図を変えるのは onSelect だけ。矢印・キーボードの移動では changeMap を呼ばない
+//   - 1 枚のスライダーは `single-map`（枠を描かない・矢印を出さない）
+//   - `overlay: false` でもスライダーを隠さない
+//   - `mapChanged` で選択が追従し、遠い移動は 160ms の連続
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import {
@@ -143,13 +143,13 @@ describe("地図の切り替えスライダーの配線", () => {
     expect(track(ui, "overlay").style.transform).toContain("0px");
   });
 
-  it("矢印・キーボードでは地図を変えず、Enter とカードの押下だけで changeMap する（D5）", async () => {
+  it("矢印・キーボードでは地図を変えず、Enter とカードの押下だけで changeMap する", async () => {
     const ui = await mountUi();
     const overlay = slider(ui, "overlay");
     const app = ui.app! as any;
 
     const live = () => overlay.querySelector(".map-slider-live")!.textContent;
-    // 矢印: 中央は隣へ動くが、選択も地図も変わらない（地図を変えるのは onSelect だけ。D5）
+    // 矢印: 中央は隣へ動くが、選択も地図も変わらない（地図を変えるのは onSelect だけ）
     (overlay.querySelector('[part="map-slider-next"]') as HTMLElement).click();
     await tick();
     await tick();
@@ -183,7 +183,7 @@ describe("地図の切り替えスライダーの配線", () => {
     expect(selected(ui, "overlay")).toEqual(new Set(["old1"]));
   });
 
-  it("1 枚のスライダーは single-map（枠を描かず、矢印を出さない）。overlay: false でも隠さない（P3・S8）", async () => {
+  it("1 枚のスライダーは single-map（枠を描かず、矢印を出さない）。overlay: false でも隠さない", async () => {
     const setting: any = structuredClone(BASE);
     setting.sources = [
       { mapID: "osm", label: "OSM", isBasemap: true },
@@ -206,14 +206,14 @@ describe("地図の切り替えスライダーの配線", () => {
         (root.querySelector('[part="map-slider-next"]') as HTMLElement).hidden
       ).toBe(true);
     }
-    // P3: overlay: false でも 2 本とも隠さない（旧 UI は透過度のスライダーだけを隠していた）
+    // overlay: false でも 2 本とも隠さない（旧 UI は透過度のスライダーだけを隠していた）
     expect(base.hidden).toBe(false);
     expect(overlay.hidden).toBe(false);
     expect(shadow(ui).querySelectorAll('[part="map-slider"]').length).toBe(2);
   });
 
   it("mapChanged で選択と中央が追従する（遠い地図も飛ばさずに最後まで動く）", async () => {
-    // 時間を 0 にして、動きの途中ではなく「最後にどこへ来たか」を見る（飛ばしの検出は e2e の M3）
+    // 時間を 0 にして、動きの途中ではなく「最後にどこへ来たか」を見る（飛ばしの検出は e2e）
     const setting: any = structuredClone(BASE);
     setting.sources.push({
       mapID: "old4",
@@ -249,7 +249,7 @@ describe("地図の切り替えスライダーの配線", () => {
     setting.startFrom = "osm";
     const ui = await mountUi(setting);
     // 選択は今の地図（osm）にだけ付く。重ねる地図の側は選択を付けない（旧 swiper_ex.ts の
-    // setSlideMapID は無い側の .selected を外すだけ。設計 S9）
+    // setSlideMapID は無い側の .selected を外すだけ）
     expect(selected(ui, "base")).toEqual(new Set(["osm"]));
     expect(selected(ui, "overlay")).toEqual(new Set());
     const controller = getMockLayerAController(ui.app!)!;
@@ -259,7 +259,7 @@ describe("地図の切り替えスライダーの配線", () => {
       undefined,
       undefined
     ]);
-    // 矢印で中央を old2 へ動かすと、地図は変わらないが塗りは先に追従する（設計 §4.6）
+    // 矢印で中央を old2 へ動かすと、地図は変わらないが塗りは先に追従する
     (
       slider(ui, "overlay").querySelector(
         '[part="map-slider-next"]'

@@ -15,10 +15,10 @@ import { test, expect, type Page } from '@playwright/test';
  *
  * 陽性対照（是正の前後とも緑）: ページが READY になる・base のスライドが並ぶ。
  *
- * Stage 3（一本化。旧 API は `<maplat-ui>` の上の互換層）での移植:
+ * 一本化（旧 API は `<maplat-ui>` の上の互換層）での移植:
  *   旧 UI の `.base-swiper .swiper-slide[data=…]`（文書の DOM・Swiper の実物）を、`<maplat-ui>` の
  *   shadow root の `[part="map-slider"][data-kind="base"] [part~="map-slide"][data-map-id=…]` へ移した。
- *   中央のカードは `host.slider('base').slots` の offset 0（`@internal`。設計 v2 §4.7.3 の対応表）。
+ *   中央のカードは `host.slider('base').slots` の offset 0（`@internal`）。
  *   確かめる中身（タグにならない・属性注入が起きない・javascript: は画像にしない・項目がはみ出さない）は変えない。
  *   言い換えた期待値は各テストのコメントに書いた（AC4 の「画像なし」の表し方・属性の数、AC1 (c) の描き方）。
  */
@@ -45,7 +45,7 @@ async function openFixture(page: Page) {
 test.describe('nov26-m5-t1 地図切り替えスワイパーの無害化（B-UI-4）', () => {
   test('陽性対照: READY になり base のスライドが並ぶ', async ({ page }) => {
     await openFixture(page);
-    // 旧は Swiper の複製を含めた枚数。新は 5 スロット（base は 5 枚なので 5 枚とも並ぶ。N>=2 のスロットは 5。設計 v2 §4.7.3 の括弧書き）
+    // 旧は Swiper の複製を含めた枚数。新は 5 スロット（base は 5 枚なので 5 枚とも並ぶ。N>=2 のスロットは 5）
     const n = await page.evaluate(
       sel => document.querySelector('maplat-ui')!.shadowRoot!.querySelectorAll(sel).length,
       BASE_SLIDES

@@ -2,12 +2,12 @@
 // .ol-control・.ol-slidernew・.map-title・.modal・マーカー一覧（.list-group-item.layer 等）、
 // src/styles/contextmenu.scss の .ol-ctx-menu-container、OpenLayers の ol.css の .ol-control）に寄せた。
 //
-// 規則（仕様 §4.6-3）: 層 A（<maplat-app>）の中身の DOM・class には CSS を当てない。当てるのは
+// 規則: 層 A（<maplat-app>）の中身の DOM・class には CSS を当てない。当てるのは
 // スロットに差した要素そのものの箱（::slotted）だけ。
 //
-// 地図の切り替えスライダーの見た目は、Stage 1 の `slider.ts` の暫定の `<style>` からここへ移した
-// （設計 §6.3・§4.5）。数値は `SLIDER_TUNING` から埋め込む（1 か所。Minor 5）。
-// 注意（P2 の調整のとき）: 埋め込みはこのモジュールを読み込んだ時の値で 1 回だけ行う。実行中に
+// 地図の切り替えスライダーの見た目は、`slider.ts` の暫定の `<style>` からここへ移した。
+// 数値は `SLIDER_TUNING` から埋め込む（1 か所）。
+// 注意（数値の調整のとき）: 埋め込みはこのモジュールを読み込んだ時の値で 1 回だけ行う。実行中に
 // `SLIDER_TUNING` を書き換えると、JS の側（幅の境界の判定・枚数・時間）だけが変わり CSS とずれる。
 // 数値を試すときは値を変えてから読み込み直す（ページを開き直す）。
 import { SLIDER_TUNING } from "./slider";
@@ -21,7 +21,7 @@ export const MAPLAT_UI_CSS = `
   /* 書体・文字の大きさ・行の高さ・色はページから継承する（旧 UI と同じ。旧の bootstrap は .maplat の
      下に閉じ込めてあり、body の規則（14px・1.42857・#333）は当たらない＝操作ボタン・スライダーの容器・
      モーダルの本文はページの文字を継ぐ。基準 JSON の計算値は 16px・黒・normal＝ページ既定。
-     レビュー Major 3・積み残し「字の大きさと色をページから継承する」）。
+     積み残し「字の大きさと色をページから継承する」）。
      ここでは何も決めない。大きさを決めるのは、旧も自分で決めていたもの（題名 18px・カード 18px・
      モーダルの見出し 18px・POI のメニュー 13px・知らせ 17px）だけ */
   -webkit-tap-highlight-color: transparent;
@@ -39,7 +39,7 @@ export const MAPLAT_UI_CSS = `
 [hidden] { display: none !important; }
 
 /* ---- 操作ボタン（旧 .ol-control・node_modules/ol/ol.css と src/styles/maplat-specific.scss） ----
-   位置は設計 §5.2 の旧 CSS の px/em をそのまま使う。em の基準は旧と同じ 16px（下の .ctl）。 */
+   位置は旧 CSS（src/styles/maplat-specific.scss）の px/em をそのまま使う。em の基準は旧と同じ 16px（下の .ctl）。 */
 /* 旧 .ol-control の文字はページから継ぐ（基準 JSON の 16px はページ既定の 16px）。位置の .5em も
    ページの文字の大きさに従う（ページが 20px なら 10px。旧と同じ）。容器には何も置かない */
 .ctl {
@@ -91,7 +91,7 @@ export const MAPLAT_UI_CSS = `
 .ctl-compass .needle { display: inline-block; will-change: transform; }
 .ctl-compass .needle svg { transform: rotate(-33deg); }
 /* 右下のボタンの列（旧 .ol-copyright・.ol-border・.ol-hide-marker・.ol-marker-list の積み方）。
-   下から 地図情報・枠線・マーカーの非表示・マーカー一覧 の順（R4）。列は flex なので、隠れている
+   下から 地図情報・枠線・マーカーの非表示・マーカー一覧 の順。列は flex なので、隠れている
    ボタンの分だけ詰めて積まれる（旧 UI と同じく隙間を空けない）。旧の間隔は 40px（33px + 7px）。 */
 .ctl-column {
   position: absolute;
@@ -130,7 +130,7 @@ export const MAPLAT_UI_CSS = `
 .frame.touch .ctl-gps { top: .5em; }
 .frame.touch .ctl-home { top: calc(.5em + 50px); }
 .frame.touch .ctl button { font-size: 1.5em; }
-/* bottom は基本の規則（65px + .5em + 安全領域）のまま。ここで書くと安全領域が消える（レビュー Major 2） */
+/* bottom は基本の規則（65px + .5em + 安全領域）のまま。ここで書くと安全領域が消える */
 .frame.touch .ctl-column { gap: .5px; }
 .frame.touch .ctl-share { bottom: calc(115px + .5em); bottom: calc(115px + .5em + env(safe-area-inset-bottom)); }
 
@@ -210,8 +210,8 @@ export const MAPLAT_UI_CSS = `
   .frame.touch .map-title { width: calc(100% - 130px); left: 65px; }
 }
 
-/* ---- 地図の切り替えスライダー（旧 .base-swiper / .overlay-swiper。設計 §4.5・§5.2 B12/B13） ----
-   位置は旧 CSS の値をそのまま使う（左＝背景の地図、右＝重ねる地図）。P3: overlay: false でも
+/* ---- 地図の切り替えスライダー（旧 .base-swiper / .overlay-swiper） ----
+   位置は旧 CSS の値をそのまま使う（左＝背景の地図、右＝重ねる地図）。overlay: false でも
    隠さない。地図が 1 枚しかないスライダーは枠（背景）を描かないが、位置と幅は変えないので
    左右の釣り合いは保たれる。 */
 .map-switcher { position: absolute; inset: 0; pointer-events: none; }
@@ -234,7 +234,7 @@ export const MAPLAT_UI_CSS = `
 }
 .map-slider[data-kind="base"] { left: calc(50% - 312px); }
 .map-slider[data-kind="overlay"] { left: calc(50% + 88px); }
-/* 1 枚（と 0 枚）のスライダーは枠を描かない（P3。位置は動かさない） */
+/* 1 枚（と 0 枚）のスライダーは枠を描かない（位置は動かさない） */
 .map-slider.single-map { background-color: transparent; }
 .map-slider:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 .map-slider-viewport { position: relative; overflow: hidden; width: 100%; height: 100%; }
@@ -335,7 +335,7 @@ export const MAPLAT_UI_CSS = `
   display: block;
   height: 300px;
   /* ページから変えられるよう、層 B の CSS 変数で公開する（Shadow DOM の中で直接指定すると外から上書きできない。
-     Stage 3 のレビュー m5）。既定は旧と同じ #007aff */
+     レビュー m5）。既定は旧と同じ #007aff */
   --cc-slider-theme-color: var(--maplat-poi-media-theme-color, #007aff);
   --cc-slider-navigation-color: var(--maplat-poi-media-navigation-color, #007aff);
 }

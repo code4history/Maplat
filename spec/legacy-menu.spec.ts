@@ -1,4 +1,4 @@
-// 汎用メニュー（`part="poi-menu"`）の単体テスト（設計 v2 §3 L4・§3.3 の 7・D1・D6）。
+// 汎用メニュー（`part="poi-menu"`）の単体テスト。
 //
 // 旧 API の `showContextMenu([{icon, text, callback}])` と、重なった POI の選択は同じ部品を使う。
 // ここでは層 A（地図）を繋がずに、`<maplat-ui>` のメニューだけを動かす（地図の起動は待たない）。
@@ -23,7 +23,7 @@ beforeEach(() => {
   document.body.innerHTML = "";
 });
 
-describe("汎用メニュー（D1: part 名は poi-menu / poi-menu-item のまま）", () => {
+describe("汎用メニュー（part 名は poi-menu / poi-menu-item のまま）", () => {
   it("項目を出し、part 名は poi-menu・poi-menu-item（map-menu は使わない）", () => {
     const host = mount();
     host.showMenu({
@@ -37,7 +37,7 @@ describe("汎用メニュー（D1: part 名は poi-menu / poi-menu-item のま�
     expect(icon?.getAttribute("src")).toContain("img/no_image.png");
   });
 
-  it("text は HTML（旧 showContextMenu と同じ）だが、サニタイズを通す（D6）", () => {
+  it("text は HTML（旧 showContextMenu と同じ）だが、サニタイズを通す", () => {
     const host = mount();
     host.showMenu({
       items: [
@@ -134,7 +134,7 @@ describe("汎用メニュー（D1: part 名は poi-menu / poi-menu-item のま�
   });
 });
 
-// ---- Stage 4 で旧の実装（contextmenu/html.ts）を消したので、その XSS の回帰をここへ移した ----
+// ---- 旧の実装（contextmenu/html.ts）を消したので、その XSS の回帰をここへ移した ----
 //
 // 旧 nov26-m5-t1-contextmenu-icon.spec.ts: 重なったマーカーのメニューの icon（信頼できない POI
 // データ）が CSS の文字列へ生で入り、他のプロパティを足せた（Maplat#274）。旧は受け口で URL を

@@ -1,9 +1,9 @@
 // @vitest-environment jsdom
 // <maplat-ui>（src/element/）の「残りの画面（後半）」の単体テスト: ヘルプ・スプラッシュ・
 // プレゼンテーションモード・範囲外／GPS エラーのモーダル・トースト・操作ボタンの自動非表示・
-// タッチ端末でズームボタンを隠す処理・mapsAt・app-envelope・地図メニューの色の印（N1）。
+// タッチ端末でズームボタンを隠す処理・mapsAt・app-envelope・地図メニューの色の印。
 // spec/element.spec.ts と同じく @maplat/core/conformance の**模擬の層 A**（公開面だけを持つ
-// <maplat-app>）の上で動かす＝ <maplat-ui> が層 A の公開面だけで動くことの確認（仕様 §4.6・§8.3）。
+// <maplat-app>）の上で動かす＝ <maplat-ui> が層 A の公開面だけで動くことの確認。
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import {
   defineMockMaplatApp,
@@ -124,7 +124,7 @@ describe("ヘルプ（旧 maplat_control.ts の Maplat・ui_init.ts の modal_he
     expect(text).not.toContain("${");
     expect(body.querySelectorAll(".help-icon").length).toBeGreaterThan(0);
     expect(body.querySelector(".help-key")!.textContent).toBe("+");
-    // Stage 2 で地図の変更方法がスライダーに戻ったので、旧 UI の言語ファイルの説明がそのまま出る
+    // 地図の変更方法がスライダーに戻ったので、旧 UI の言語ファイルの説明がそのまま出る
     expect(text).toContain("画面の左下と右下に");
     expect(text).toContain("サムネイル付きのスライダ");
     expect(text).not.toContain("画面上の地図名のボタンで開くメニュー");
@@ -190,7 +190,7 @@ describe("ヘルプ（旧 maplat_control.ts の Maplat・ui_init.ts の modal_he
     expect(part(ui, "help-body").textContent).toContain(
       "How to operate the map"
     );
-    // Stage 2 で地図の変更方法がスライダーに戻ったので、旧 UI の言語ファイルの説明がそのまま出る
+    // 地図の変更方法がスライダーに戻ったので、旧 UI の言語ファイルの説明がそのまま出る
     expect(part(ui, "help-body").textContent).toContain(
       "The two sliders with thumbnail"
     );
@@ -452,7 +452,7 @@ describe("トースト（既存の showToast。旧 showToast を使う画面の�
 });
 
 describe("操作ボタンの自動非表示（tap-duration / tap-ui-vanish。旧 setMapOnOff）", () => {
-  // 旧 setMapOnOff は .ol-control を全部隠す（題名・2 本のスワイパー・透過度も .ol-control。レビュー Major 1）
+  // 旧 setMapOnOff は .ol-control を全部隠す（題名・2 本のスワイパー・透過度も .ol-control）
   const faded = (ui: Ui) => {
     const root = shadow(ui);
     expect(root.querySelectorAll(".map-title").length).toBe(1);
@@ -610,7 +610,7 @@ describe("操作ボタンの自動非表示（tap-duration / tap-ui-vanish。旧
     }
   });
 
-  it("設定ファイルの tapDuration / tapUIVanish（旧名のまま）は読まない（属性だけ。§10.1 U1 追補）", async () => {
+  it("設定ファイルの tapDuration / tapUIVanish（旧名のまま）は読まない（属性だけ）", async () => {
     vi.useFakeTimers();
     try {
       const setting = {
@@ -867,7 +867,7 @@ describe("app-envelope（開発用。旧 ui_init.ts の appBbox）", () => {
   });
 });
 
-describe("地図の切り替えメニューの色の印（N1。旧 .show-border のスライドの枠）", () => {
+describe("地図の切り替えメニューの色の印（旧 .show-border のスライドの枠）", () => {
   const withEnvelopes = () =>
     ({
       ...structuredClone(SETTING),

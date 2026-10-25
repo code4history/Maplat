@@ -1,5 +1,5 @@
-import { q as k, m as E, Y as v, p as L, a as D, r as C, t as R, h as N } from "./index-Bxhe7fqi.js";
-class U {
+import { q as k, m as D, Y as v, p as L, a as U, r as C, t as A, h as R } from "./index-DJ11YeAw.js";
+class N {
   constructor() {
     this.disposed = !1;
   }
@@ -18,7 +18,7 @@ class U {
 }
 function S() {
 }
-function A(c) {
+function P(c) {
   for (const e in c)
     delete c[e];
 }
@@ -45,7 +45,7 @@ class O {
     this.propagationStopped = !0;
   }
 }
-class P extends U {
+class T extends N {
   /**
    * @param {*} [target] Default event target for dispatched events.
    */
@@ -107,7 +107,7 @@ class P extends U {
    * @override
    */
   disposeInternal() {
-    this.listeners_ && A(this.listeners_);
+    this.listeners_ && P(this.listeners_);
   }
   /**
    * Get the listeners for a specified event type. Listeners are returned in the
@@ -142,8 +142,8 @@ class P extends U {
   }
 }
 let b = null;
-function T() {
-  return typeof customElements > "u" || customElements.get(k) ? Promise.resolve() : b || (b = import("./maplat_core_element-BdgpMhG_.js").then(
+function B() {
+  return typeof customElements > "u" || customElements.get(k) ? Promise.resolve() : b || (b = import("./maplat_core_element-bzNs4P6z.js").then(
     () => {
     },
     (c) => {
@@ -151,7 +151,7 @@ function T() {
     }
   ), b);
 }
-function B(c) {
+function H(c) {
   const e = [], t = /* @__PURE__ */ new Map();
   let n = {}, s = !1, l = null;
   const i = () => c(), r = (a, h) => {
@@ -161,7 +161,7 @@ function B(c) {
   }, d = (a) => typeof a == "string" ? { text: a } : {
     icon: typeof a.icon == "string" ? a.icon : void 0,
     text: typeof a.text == "string" ? a.text : "",
-    // 旧 contextmenu の text は HTML（D6 は「層 B でサニタイズする」なので、ここでは HTML のまま渡す）
+    // 旧 contextmenu の text は HTML（「層 B でサニタイズする」なので、ここでは HTML のまま渡す）
     html: !0,
     callback: () => {
       const h = i(), m = h?.app ? h.app.app : void 0, w = {
@@ -247,7 +247,7 @@ function B(c) {
   }
   return p;
 }
-const H = /* @__PURE__ */ new Set([
+const $ = /* @__PURE__ */ new Set([
   "init",
   "use",
   "services",
@@ -268,7 +268,7 @@ const H = /* @__PURE__ */ new Set([
   "languages",
   "resolvedLanguage"
 ]);
-function $(c) {
+function V(c) {
   const e = /* @__PURE__ */ new Set(), t = /* @__PURE__ */ new Set(), n = () => c(), l = {
     get language() {
       const i = n();
@@ -298,7 +298,7 @@ function $(c) {
   };
   return new Proxy(l, {
     get(i, r, d) {
-      return r in i || typeof r != "string" || !H.has(r) ? Reflect.get(i, r, d) : (I(
+      return r in i || typeof r != "string" || !$.has(r) ? Reflect.get(i, r, d) : (I(
         t,
         r,
         `ui.i18n.${r}() is not available on the compatibility layer (backed by <maplat-ui>).`
@@ -312,7 +312,7 @@ function I(c, e, t) {
     t ?? `ui.i18n: "${e}" is not supported by the compatibility layer; ignored.`
   ));
 }
-function V(c) {
+function F(c) {
   const e = /* @__PURE__ */ new Set();
   let t = null, n = -1;
   const s = () => c(), l = (o) => o?.querySelector(":scope > maplat-app") ?? null, i = (o) => {
@@ -386,7 +386,7 @@ function V(c) {
   };
   return g;
 }
-function x(c, e) {
+function _(c, e) {
   const t = () => c()?.slider(e) ?? null, n = () => t()?.items ?? [], s = () => t()?.selectedMapID ?? null;
   return {
     get el() {
@@ -441,12 +441,12 @@ function x(c, e) {
     }
   };
 }
-async function F(c, e, t, n = 10) {
+async function G(c, e, t, n = 10) {
   if (!c || !e || !Array.isArray(t) || t.length < 2) return [];
   const s = c.from;
   if (!s || typeof s.sysCoord2MercAsync != "function") return [];
   const l = await s.sysCoord2MercAsync(t);
-  return !Array.isArray(l) || !l.every((i) => Number.isFinite(Number(i))) ? [] : e.mapsAt(E(l.map(Number)), n);
+  return !Array.isArray(l) || !l.every((i) => Number.isFinite(Number(i))) ? [] : e.mapsAt(D(l.map(Number)), n);
 }
 const j = [
   ["noRotate", "noRotate"],
@@ -477,14 +477,19 @@ const j = [
   ["mapboxToken", "mapboxToken"],
   ["mapboxgl", "mapboxgl"],
   ["maplibregl", "maplibregl"]
-], G = [
+], q = [
   "mobileIF",
   "disableNoimage",
   "northTop",
   "markerList",
   "translateUI"
 ];
-class _ extends P {
+let x = !1;
+const z = "MaplatUi: the MaplatUi class is deprecated and will be removed in 2.0. Use the <maplat-ui> element (@maplat/ui/element) with <maplat-app> instead.";
+function K() {
+  x || (x = !0, console.warn(z));
+}
+class E extends T {
   /** Core の `MaplatApp`（`lifecycle:setting-loaded` で入る。それまでは undefined）。 */
   core;
   appOption;
@@ -528,7 +533,7 @@ class _ extends P {
   lastGPSError;
   selectedMarkerNamespaceID;
   #e;
-  // 層 A のイベントの再送出（設計 §2.3.5・L10）を外す関数
+  // 層 A のイベントの再送出を外す関数
   #s;
   #i;
   #t = !1;
@@ -537,7 +542,7 @@ class _ extends P {
   #l;
   /** 旧 API のコンストラクタ。`stateUrl` のときだけ、旧と同じく自分から起動を始める。 */
   constructor(e) {
-    super(), this.appOption = e ?? {}, this.html_id_seed = `${Math.floor(Math.random() * 9e3) + 1e3}`, this.#r = z(e), this.sliderNew = V(() => this.#e ?? null), this.contextMenu = B(() => this.#e ?? null), this.baseSwiper = x(() => this.#e ?? null, "base"), this.overlaySwiper = x(
+    super(), K(), this.appOption = e ?? {}, this.html_id_seed = `${Math.floor(Math.random() * 9e3) + 1e3}`, this.#r = Y(e), this.sliderNew = F(() => this.#e ?? null), this.contextMenu = H(() => this.#e ?? null), this.baseSwiper = _(() => this.#e ?? null, "base"), this.overlaySwiper = _(
       () => this.#e ?? null,
       "overlay"
     ), this.swipers = { base: this.baseSwiper, overlay: this.overlaySwiper }, this.enableShare = e.enableShare === !0, this.enableBorder = e.enableBorder === !0, this.enableHideMarker = e.enableHideMarker === !0, this.enableMarkerList = e.enableMarkerList === !0, this.enablePoiHtmlNoScroll = e.enablePoiHtmlNoScroll === !0, this.alwaysGpsOn = e.alwaysGpsOn === !0, this.disableNoimage = e.disableNoimage === !0, this.isTouch = typeof window < "u" && "ontouchstart" in window, this.appEnvelope = e.appEnvelope, this.waitReady = () => this.#a(), this.appOption.stateUrl === !0 && queueMicrotask(() => {
@@ -549,9 +554,17 @@ class _ extends P {
       });
     });
   }
-  /** 旧 `MaplatUi.createObject`（文書化された入口）。 */
+  /**
+   * 旧 `MaplatUi.createObject`（文書化された入口）。
+   *
+   * @deprecated 旧 UI API です（中で `new MaplatUi(...)` するので、同じく非推奨）。1.x の間は
+   *   この口を変えずに残し、**次のメジャー版（2.0）で閉じます**。代わりに `<maplat-ui>` 要素
+   *   （`@maplat/ui/element`）と `<maplat-app>` 要素（`@maplat/core/element`）を組み合わせて
+   *   使ってください。移行の案内は `docs/api/maplat-ui-element.md` と
+   *   `docs/api/migration-ui-shadow-dom.md` にあります。
+   */
   static async createObject(e) {
-    return new _(e).waitReady();
+    return new E(e).waitReady();
   }
   // ---- 公開メソッド 19 本（旧と同じ名前・同じ並び。増やさない）----
   /** 旧 `initializer`（UI の初期化。互換層では起動を 1 回だけ始める）。 */
@@ -601,11 +614,11 @@ class _ extends P {
   }
   /** 旧 `xyToMapIDs`（点に重なる地図の mapID。範囲の狭い順）。 */
   async xyToMapIDs(e, t = 10) {
-    return F(this.core, this.#e, e, t);
+    return G(this.core, this.#e, e, t);
   }
   /** 旧 `areaIndex`（4 点の多角形の面積）。 */
   areaIndex(e) {
-    return D(e);
+    return U(e);
   }
   /** 旧 `checkOverlayID`（重ねる地図の行にその地図があるか）。 */
   checkOverlayID(e) {
@@ -635,7 +648,7 @@ class _ extends P {
   remove() {
     this.#t = !0, this.#s?.(), this.#s = void 0, this.contextMenu?.detach(), this.sliderNew?.detach(), this.#e?.remove(), this.#e = void 0, this.core = void 0;
   }
-  // ---- 旧のフィールドのうち、層 B の今の値を読むもの（M6。getter なのでメソッドに数えない）----
+  // ---- 旧のフィールドのうち、層 B の今の値を読むもの（getter なのでメソッドに数えない）----
   /** 旧 `ui.lang`（今の言語）。 */
   get lang() {
     return this.#e ? this.#e.currentLang : this.#r;
@@ -667,7 +680,7 @@ class _ extends P {
         return this.core?.from?.mapID ?? void 0;
       }
   }
-  /** 旧 `ui.transparency`（透過度。ホストの `transparency` 属性を読む。M6）。 */
+  /** 旧 `ui.transparency`（透過度。ホストの `transparency` 属性を読む）。 */
   get transparency() {
     if (!this.#e) return;
     const e = this.#e.getAttribute("transparency");
@@ -694,10 +707,10 @@ class _ extends P {
       `<${v}>: MaplatUi._t is read-only now (translations live in <maplat-ui>); the assignment was ignored.`
     );
   }
-  /** 旧 `ui.i18n`（限定 facade。設計 §3 L8・L9）。 */
+  /** 旧 `ui.i18n`（限定 facade。`docs/api/migration-ui-shadow-dom.md` の「型の変化」を参照）。 */
   get i18n() {
     if (this.#e)
-      return this.#l ??= $(() => this.#e ?? null), this.#l;
+      return this.#l ??= V(() => this.#e ?? null), this.#l;
   }
   /**
    * 旧 `ui.i18n = …` は受けない（翻訳ライブラリのインスタンスはもう無い。限定 facade だけを返す）。
@@ -718,7 +731,7 @@ class _ extends P {
     return this.#i || (this.#i = this.#d()), this.#i;
   }
   async #d() {
-    if (await T(), this.#t) return this;
+    if (await B(), this.#t) return this;
     const e = this.appOption, t = typeof location < "u" ? location.hash : "";
     this.#c() && /[#!&/]s:/.test(t) && (this.restoring = !0);
     const n = this.#h();
@@ -758,7 +771,7 @@ class _ extends P {
       }), n.addEventListener("lifecycle:appdata-ready", () => {
         this.#f(n);
       }), n.addEventListener("lifecycle:error", (u) => {
-        d(q(u));
+        d(W(u));
       }), s && n.ready.then(
         () => {
           this.core = M(n) ?? this.core, this.restoring = !1, d();
@@ -768,14 +781,14 @@ class _ extends P {
     }), this.#t && n.remove(), this;
   }
   /**
-   * 層 A のイベント（子の `<maplat-app>` が出し、ホストまで泡立つ）を `MaplatUi` 自身へ出し直す
-   * （設計 §2.3.5・§3 L10）。旧 `app.addEventListener("clickMarker", fn)`（`demo/dev.ts`）が意味を持つ。
+   * 層 A のイベント（子の `<maplat-app>` が出し、ホストまで泡立つ）を `MaplatUi` 自身へ出し直す。
+   * 旧 `app.addEventListener("clickMarker", fn)`（`demo/dev.ts`）が意味を持つ。
    * `ol/events/Target` の `dispatchEvent` は `target` を代入するので、DOM の Event ではなく
    * `{ type, detail }` のプレーンなオブジェクトで出す（m4）。`uiReady` は要素だけのイベントなので出さない。
    * 子を繋ぐ前に張る（起動の lifecycle も届くように）。
    */
   #u(e) {
-    const t = [...R, ...N], n = (s) => {
+    const t = [...A, ...R], n = (s) => {
       this.#t || this.dispatchEvent({
         type: s.type,
         detail: s.detail
@@ -800,7 +813,7 @@ class _ extends P {
     return s.id = "map_div", document.body.appendChild(s), s;
   }
   /**
-   * `<maplat-ui>` を作り、旧 `option` を属性・プロパティへ流す（§2.3.4）。
+   * `<maplat-ui>` を作り、旧 `option` を属性・プロパティへ流す。
    * 文書へ繋ぐ前に済ませる（繋がった拍で層 A の起動が始まるため）。
    */
   #h() {
@@ -821,8 +834,8 @@ class _ extends P {
       ...t,
       __maplatCompat: !0
     };
-    delete i.div, delete i.uiHooks, delete i.setting, e.appOption = i, e.uiHooks = K(e, t.uiHooks);
-    for (const r of G)
+    delete i.div, delete i.uiHooks, delete i.setting, e.appOption = i, e.uiHooks = X(e, t.uiHooks);
+    for (const r of q)
       t[r] !== void 0 && this.#n(
         `dead:${r}`,
         `<${v}>: appOption.${r} is no longer used and was ignored.`
@@ -830,7 +843,7 @@ class _ extends P {
     return e;
   }
   /**
-   * 設定ファイルの機能系キーのうち、層 B が自分で読む 2 つ（D2）。
+   * 設定ファイルの機能系キーのうち、層 B が自分で読む 2 つ。
    * `lifecycle:appdata-ready` のとき、option に無ければ `appData` から読んで属性へ流す。
    * **設定ファイルを読み直さない**（すでに Core が読んだ `appData` を見る）。
    */
@@ -854,14 +867,14 @@ class _ extends P {
 function M(c) {
   return c.app?.app;
 }
-function q(c) {
+function W(c) {
   const e = c.detail;
   return e?.error instanceof Error ? e.error : typeof e?.message == "string" ? new Error(e.message) : new Error(`<${v}>: the lifecycle failed.`);
 }
-function z(c) {
+function Y(c) {
   return typeof c.lang == "string" && c.lang !== "" ? c.lang : typeof navigator < "u" && navigator.language ? navigator.language : "ja";
 }
-function K(c, e) {
+function X(c, e) {
   const t = { ...e ?? {} }, n = e?.onUiConfigure;
   return t.onUiConfigure = async (s) => {
     try {
@@ -876,5 +889,5 @@ function K(c, e) {
   }, t;
 }
 export {
-  _ as MaplatUi
+  E as MaplatUi
 };

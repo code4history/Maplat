@@ -1,16 +1,16 @@
-// 自前のスライダー（`src/element/slider.ts`）と見出しの省略（`src/shared/text.ts`）の単体（設計 v2 §4.7.1・§6.2）。
+// 自前のスライダー（`src/element/slider.ts`）と見出しの省略（`src/shared/text.ts`）の単体。
 //
 // このファイルが固定するもの:
 //   - 純関数の境界（`mod`・`perViewFor`・`cardWidthFor`・`slotIndex`・`snapSteps`・`baseXFor`）
-//     **P1**: 幅 480px 以下で 1.4 枚・gap 10／481px 以上で 2 枚・gap 15（v4 時代の見た目）
-//     **P2**: 速さのしきい値 0.35px/ms・1 操作 1 枚・250ms・遠いは 160ms で連続・drag は 1 枚上限＋抵抗 0.3 倍
+//     **枚数**: 幅 480px 以下で 1.4 枚・gap 10／481px 以上で 2 枚・gap 15（v4 時代の見た目）
+//     **操作**: 速さのしきい値 0.35px/ms・1 操作 1 枚・250ms・遠いは 160ms で連続・drag は 1 枚上限＋抵抗 0.3 倍
 //   - 5 スロットの循環（複製なし）: 押した要素が同じノードのまま中央へ来る・N=2 は押した側へ動く・
 //     遠端の付け替えで可視のノードの画面座標が動かない
-//   - 地図を変えるのは `onSelect` だけ（矢印・drag・`onActiveChange` では変えない。D5・N5）
-//   - 押した直後に `onSelect` を呼ぶ（step の完了を待たない。D5）
+//   - 地図を変えるのは `onSelect` だけ（矢印・drag・`onActiveChange` では変えない）
+//   - 押した直後に `onSelect` を呼ぶ（step の完了を待たない）
 //   - XSS 3 種（`label` の HTML・`thumbnail` の `javascript:`・`mapID` の属性注入）
-//   - 見出しの 2 行省略（旧 `ellips` と同じ手順。`line-clamp` を第一手段にしない。D8）。
-//     ただし 1 文字の見出しはそのまま出す（旧は `…` だけになっていた。不具合として直した。N5）
+//   - 見出しの 2 行省略（旧 `ellips` と同じ手順。`line-clamp` を第一手段にしない）。
+//     ただし 1 文字の見出しはそのまま出す（旧は `…` だけになっていた。不具合として直した）
 //
 // 時間について: jsdom は CSS の transition を実行しないので、このファイルは `SLIDER_TUNING` の
 // 時間を 0 にして（`beforeEach`）確定を待つ。時間が要る検査（transition が付くこと）だけは
@@ -104,8 +104,7 @@ function pointer(type: string, init: Record<string, any> = {}) {
 }
 
 /**
- * jsdom には `matchMedia` も `ResizeObserver` も無い（実測。`spec/zz-probe-mm.spec.ts` が固定していた
- * 前提はここに書く）。
+ * jsdom には `matchMedia` も `ResizeObserver` も無い（実測）。
  *   - `matchMedia` が無いと `#canAnimate()` が偽になるので、時間を見る検査だけ、`transitionend` の
  *     代わりに保険のタイマー（時間 + 120ms）で確定する経路を通すために、ここで置き換える。
  *   - `ResizeObserver` が無いことは差し替えず、そのまま「ResizeObserver が無い環境でも動き、
@@ -192,7 +191,7 @@ describe("純関数", () => {
     expect(mod(3, 0)).toBe(0); // 0 除算は 0（例外にしない）
   });
 
-  it("perViewFor は P1 の境界（480 は 1.4 枚・481 は 2 枚）", () => {
+  it("perViewFor の境界（480 は 1.4 枚・481 は 2 枚）", () => {
     expect(perViewFor(320)).toEqual({ perView: 1.4, gap: 10 });
     expect(perViewFor(375)).toEqual({ perView: 1.4, gap: 10 });
     expect(perViewFor(479)).toEqual({ perView: 1.4, gap: 10 });
@@ -207,7 +206,7 @@ describe("純関数", () => {
     expect(cardWidthFor(224, 1.4, 10)).toBeCloseTo(157.142857, 5);
     // 2 枚・gap 15 なら 104.5
     expect(cardWidthFor(224, 2, 15)).toBeCloseTo(104.5, 5);
-    // 375px 画面の幅 131（旧 CSS は 35%）。設計 §4.3.2 の例では 58
+    // 375px 画面の幅 131（旧 CSS は 35%）。2 枚・gap 15 なら 58
     expect(cardWidthFor(131, 2, 15)).toBeCloseTo(58, 5);
     // 320px 画面の幅 112（旧 CSS の @media 320px）。1.4 枚・gap 10 で 77.14
     expect(cardWidthFor(112, 1.4, 10)).toBeCloseTo(77.142857, 5);
@@ -263,7 +262,7 @@ describe("純関数", () => {
     expect(snapSteps(step, step, -0.9)).toBe(-1);
   });
 
-  it("しきい値と時間は P2 の数値（0.35px/ms・250ms・160ms・抵抗 0.3・1 枚上限）", () => {
+  it("しきい値と時間の数値（0.35px/ms・250ms・160ms・抵抗 0.3・1 枚上限）", () => {
     // 出荷時の値（このファイルの `beforeEach` は時間を 0 にするので、module 読み込み時の写しを見る）
     expect(SHIPPED_TUNING.thresholdVelocity).toBe(0.35);
     expect(SHIPPED_TUNING.stepDurationMs).toBe(250);
@@ -335,7 +334,7 @@ describe("DOM の骨格", () => {
     expect(calls.length).toBe(prevCalls); // 矢印では地図を変えない
   });
 
-  it("幅 480 と 481 で perView と gap が入れ替わる（P1）", async () => {
+  it("幅 480 と 481 で perView と gap が入れ替わる", async () => {
     const { slider } = make(["a", "b", "c", "d"]);
     (window as any).innerWidth = 480;
     setWidth(slider, 131);
@@ -432,9 +431,9 @@ describe("循環（リングバッファ）", () => {
     );
   });
 
-  it("N=2 は左右どちらの覗きを押しても押した側へ動く（M4(b)・M8）", async () => {
+  it("N=2 は左右どちらの覗きを押しても押した側へ動く", async () => {
     // N=2 では「次」も「前」も同じ地図 b なので、`activeMapID` が "b" になることだけでは
-    // 向きを確かめられない（M8）。**押したノードが offset 0 に来る**ことと、`onSelect` に渡った
+    // 向きを確かめられない。**押したノードが offset 0 に来る**ことと、`onSelect` に渡った
     // `offset` の符号で確かめる。
     for (const [peekOffset, sign] of [
       [-1, -1],
@@ -478,7 +477,7 @@ describe("循環（リングバッファ）", () => {
   });
 });
 
-describe("クリック（D5: 押した直後に onSelect・地図を変えるのは onSelect だけ）", () => {
+describe("クリック（押した直後に onSelect・地図を変えるのは onSelect だけ）", () => {
   it("中央を押すと onSelect(mapID, 0) で、動かない", async () => {
     const { slider, calls } = make(["a", "b", "c"]);
     setWidth(slider, 224);
@@ -538,7 +537,7 @@ describe("クリック（D5: 押した直後に onSelect・地図を変えるの
   });
 });
 
-describe("drag（P2: 1 枚上限＋抵抗 0.3 倍・drag 中は地図を変えない）", () => {
+describe("drag（1 枚上限＋抵抗 0.3 倍・drag 中は地図を変えない）", () => {
   it("1 枚を超えた分は 0.3 倍に落として、1 枚分を上限にする", async () => {
     const { slider } = make(["a", "b", "c"]);
     setWidth(slider, 224);
@@ -661,7 +660,7 @@ describe("setSelectedMapID / setSelectedOnly / setItems", () => {
     slider.setSelectedOnly("b");
     expect(slider.activeMapID).toBe("a");
     expect(slider.selectedMapID).toBe("b");
-    // N=3 で active=a のとき b は offset -2 と +1 に出るので、`.selected` は 2 枚（§4.3.4 の式）
+    // N=3 で active=a のとき b は offset -2 と +1 に出るので、`.selected` は 2 枚
     expect(selectedSlots(slider).map(el => el.dataset.mapId)).toEqual([
       "b",
       "b"
@@ -835,7 +834,7 @@ describe("XSS（3 種）", () => {
   });
 });
 
-describe("見出しの 2 行省略（D8: 旧 ellips と同じ手順・letter-spacing は触らない。1 文字だけは除く＝N5）", () => {
+describe("見出しの 2 行省略（旧 ellips と同じ手順・letter-spacing は触らない。1 文字だけは除く）", () => {
   const heads = (el: HTMLElement) => Array.from(el.querySelectorAll("span"));
   /** 1 行 N 文字とし、表示中の span の数から `offsetHeight` を作る（jsdom はレイアウトしない） */
   function stubLines(el: HTMLElement, perLine: number, lineHeight = 20) {
@@ -922,10 +921,10 @@ describe("見出しの 2 行省略（D8: 旧 ellips と同じ手順・letter-spa
     expect(omitted.style.display).toBe("none");
   });
 
-  // M1: 旧 `ellips` は `thisSpan`（実文字 + 省略記号）で数えていたので、収まるときは
+  // 旧 `ellips` は `thisSpan`（実文字 + 省略記号）で数えていたので、収まるときは
   // 最後の 1 文字まで表示していた。新は省略記号を別に持つため、判定を `spans.length - 2` に
   // すると最後の 1 文字が隠れたまま残る（「あいう」→「あい」）。
-  it("収まるときは全部の文字が表示される（M1）", () => {
+  it("収まるときは全部の文字が表示される", () => {
     for (const [text, perLine] of [
       ["あいう", 10],
       ["あいうえお", 10],
@@ -943,10 +942,10 @@ describe("見出しの 2 行省略（D8: 旧 ellips と同じ手順・letter-spa
     }
   });
 
-  it("1 文字の見出しはそのまま出す（旧の癖を直した。N5）", () => {
+  it("1 文字の見出しはそのまま出す（旧の癖を直した）", () => {
     // 旧 `ellips` は `thisSpan.length - 1 === 1` なので「全部隠す」のループが先頭の文字を
     // 隠し、`…` だけが残っていた（実測の再現）。1 文字の見出しが `…` だけになるのは
-    // 不具合なので、orchestrator の決定（N5）で「そのまま出す」に変えた。
+    // 不具合なので、「そのまま出す」に変えた。
     for (const text of ["A", "あ"]) {
       const el = document.createElement("span");
       el.textContent = text;
@@ -962,7 +961,7 @@ describe("見出しの 2 行省略（D8: 旧 ellips と同じ手順・letter-spa
     }
   });
 
-  it("省略が解けたら minimize を外す（Minor 3）", () => {
+  it("省略が解けたら minimize を外す", () => {
     const el = document.createElement("span");
     el.textContent = "あ".repeat(40);
     document.body.appendChild(el);
@@ -999,8 +998,8 @@ describe("transition の付き方（既定の時間で 1 件だけ）", () => {
     expect(transition).toContain("250ms");
     expect(transition).toContain("cubic-bezier(.22,.61,.36,1)");
     // jsdom には `matchMedia` が無いので `#canAnimate()` が偽になり、**この検査では待たずに
-    // 即座に確定する**（`transitionend` も保険のタイマーも通らない。Minor 17）。
-    // 実際の `transitionend` と「時間 + 120ms」の保険のタイマーの経路は Stage 2 の e2e で確かめる
+    // 即座に確定する**（`transitionend` も保険のタイマーも通らない）。
+    // 実際の `transitionend` と「時間 + 120ms」の保険のタイマーの経路はスライダーの e2e で確かめる
     // （「時間を見る」検査は下の `stubMatchMedia` を使う describe）。
     await promise;
     expect(slider.activeMapID).toBe("b");
@@ -1009,9 +1008,9 @@ describe("transition の付き方（既定の時間で 1 件だけ）", () => {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // レビュー（2026-10-23）の指摘の直しのうち、jsdom で再現できるもの。
-// M3（確定後の強制リフロー）だけは jsdom にレイアウトが無いので再現できない（Stage 2 の e2e）。
-describe("レビュー指摘の直し（M2・Minor 1・2・4〜9・N8）", () => {
-  it("drag 中に環の端でも preview が null にならない（M2）", async () => {
+// 確定後の強制リフローだけは jsdom にレイアウトが無いので再現できない（スライダーの e2e）。
+describe("レビュー指摘の直し（環の端のプレビュー・遠い移動の時間・Promise・refresh・CSS の幅・resize・drag・読み上げ名）", () => {
+  it("drag 中に環の端でも preview が null にならない", async () => {
     const previews: (string | null)[] = [];
     const { slider } = make(["a", "b", "c", "d", "e"], {
       onActivePreview: (id: string | null) => previews.push(id)
@@ -1045,7 +1044,7 @@ describe("レビュー指摘の直し（M2・Minor 1・2・4〜9・N8）", () =>
     expect(previews.every(id => id !== null)).toBe(true);
   });
 
-  it("遠い地図は 1 枚あたり farStepDurationMs（160ms + 120ms の保険）で連続する（Minor 1）", async () => {
+  it("遠い地図は 1 枚あたり farStepDurationMs（160ms + 120ms の保険）で連続する", async () => {
     stubMatchMedia();
     useShippedDurations();
     const delays: number[] = [];
@@ -1082,7 +1081,7 @@ describe("レビュー指摘の直し（M2・Minor 1・2・4〜9・N8）", () =>
     expect(spy).toHaveBeenCalled();
   }, 15000);
 
-  it("積める数（3）を超える遠い地図でも、続きの 1 枚まで 160ms で動く（N8）", async () => {
+  it("積める数（3）を超える遠い地図でも、続きの 1 枚まで 160ms で動く", async () => {
     // 5 枚先だと「キューに積める 3 枚」を超える。旧実装は残りを確定後にもう一度 `#moveTo` で
     // 呼び直していたので、そのときの差が 1 枚（＝近い移動）になり、**最後の 1 枚だけ 250ms** に
     // なっていた（160×4 + 250）。続きも「遠い地図の連続」なので 160ms でなければならない。
@@ -1120,7 +1119,7 @@ describe("レビュー指摘の直し（M2・Minor 1・2・4〜9・N8）", () =>
     expect(spy).toHaveBeenCalled();
   }, 30000);
 
-  it("step() の Promise は、動いている間はすぐ解決しない（Minor 2）", async () => {
+  it("step() の Promise は、動いている間はすぐ解決しない", async () => {
     stubMatchMedia();
     useShippedDurations();
     const { slider } = make(["a", "b", "c"]);
@@ -1138,7 +1137,7 @@ describe("レビュー指摘の直し（M2・Minor 1・2・4〜9・N8）", () =>
     expect(slider.activeMapID).toBe("c");
   }, 15000);
 
-  it("refresh() は前回の minimize を引きずらない（Minor 3）", async () => {
+  it("refresh() は前回の minimize を引きずらない", async () => {
     const { slider } = make(["a", "b", "c"]);
     setWidth(slider, 224);
     const centerLabel = () =>
@@ -1173,8 +1172,8 @@ describe("レビュー指摘の直し（M2・Minor 1・2・4〜9・N8）", () =>
     expect(centerLabel().classList.contains("minimize")).toBe(false);
   });
 
-  it("CSS の幅の境界は SLIDER_TUNING.breakpointWidth と一致する（Minor 4・5）", () => {
-    // Stage 2 で見た目は `styles.ts` の `MAPLAT_UI_CSS` へ移した。部品は自分の `<style>` を持たない。
+  it("CSS の幅の境界は SLIDER_TUNING.breakpointWidth と一致する", () => {
+    // 見た目は `styles.ts` の `MAPLAT_UI_CSS` へ移した。部品は自分の `<style>` を持たない。
     const css = MAPLAT_UI_CSS;
     const media = `@media screen and (max-width: ${SLIDER_TUNING.breakpointWidth}px) {`;
     expect(css).toContain(media);
@@ -1202,7 +1201,7 @@ describe("レビュー指摘の直し（M2・Minor 1・2・4〜9・N8）", () =>
     );
   });
 
-  it("ResizeObserver が無い環境で足した resize のリスナーを destroy が外す（Minor 6）", () => {
+  it("ResizeObserver が無い環境で足した resize のリスナーを destroy が外す", () => {
     const saved = (window as any).ResizeObserver;
     delete (window as any).ResizeObserver;
     try {
@@ -1215,7 +1214,7 @@ describe("レビュー指摘の直し（M2・Minor 1・2・4〜9・N8）", () =>
     }
   });
 
-  it("動いている最中は drag を始めない（Minor 8）", async () => {
+  it("動いている最中は drag を始めない", async () => {
     stubMatchMedia();
     useShippedDurations();
     const { slider } = make(["a", "b", "c"]);
@@ -1233,7 +1232,7 @@ describe("レビュー指摘の直し（M2・Minor 1・2・4〜9・N8）", () =>
     });
   }, 15000);
 
-  it("矢印の読み上げ名を差し替えられる（Minor 9）", () => {
+  it("矢印の読み上げ名を差し替えられる", () => {
     const { slider } = make(["a", "b"], {
       navLabels: { prev: "前の地図（英語）", next: "次の地図（英語）" }
     });
@@ -1243,7 +1242,7 @@ describe("レビュー指摘の直し（M2・Minor 1・2・4〜9・N8）", () =>
         .getAttribute("aria-label");
     expect(label("prev")).toBe("前の地図（英語）");
     expect(label("next")).toBe("次の地図（英語）");
-    // 指定しなければ既定（「次の地図」＝新しい名前。旧 UI にはこの文字は無い。N6）
+    // 指定しなければ既定（「次の地図」＝新しい名前。旧 UI にはこの文字は無い）
     const { slider: plain } = make(["a", "b"]);
     expect(
       plain.element
@@ -1253,7 +1252,7 @@ describe("レビュー指摘の直し（M2・Minor 1・2・4〜9・N8）", () =>
   });
 });
 
-describe("レビュー指摘の直し（Stage 2 の Major・Minor）", () => {
+describe("レビュー指摘の直し（スライダーの Major・Minor）", () => {
   it("遷移の保険: 時間が来ても目標に着いていなければ待ち、transitionend で確定する（Minor）", async () => {
     stubMatchMedia();
     useShippedDurations();
@@ -1454,7 +1453,7 @@ describe("レビュー指摘の直し（Stage 2 の Major・Minor）", () => {
     })
   );
 
-  it("遷移が始まった後に消されたら（transitioncancel）待たずに確定する。始まる前の cancel は無視（Major 1）", async () => {
+  it("遷移が始まった後に消されたら（transitioncancel）待たずに確定する。始まる前の cancel は無視", async () => {
     stubMatchMedia();
     useShippedDurations();
     vi.useFakeTimers();
@@ -1483,7 +1482,7 @@ describe("レビュー指摘の直し（Stage 2 の Major・Minor）", () => {
     }
   });
 
-  it("選択中のカードは part に map-slide-selected も持つ（P4・Major 4）", () => {
+  it("選択中のカードは part に map-slide-selected も持つ", () => {
     const { slider } = make(["a", "b", "c"]);
     setWidth(slider, 224);
     slider.setSelectedMapID("a", false);
@@ -1502,7 +1501,7 @@ describe("レビュー指摘の直し（Stage 2 の Major・Minor）", () => {
       );
   });
 
-  it("サムネイルは crossOrigin を付けず、読めなければ頭文字のプレースホルダに替える（Major 5）", () => {
+  it("サムネイルは crossOrigin を付けず、読めなければ頭文字のプレースホルダに替える", () => {
     const items = makeItems(["a", "b", "c"]).map(item => ({
       ...item,
       thumbnail: `./tmbs/${item.mapID}.jpg`
@@ -1583,7 +1582,7 @@ describe("レビュー指摘の直し（Stage 2 の Major・Minor）", () => {
     expect(placeholderOf("b")).not.toBeNull();
   });
 
-  it("CSS: 自動非表示は題名とスライダーにも効き、タッチの右列は安全領域を消さず、書体を固定しない（Major 1〜3）", () => {
+  it("CSS: 自動非表示は題名とスライダーにも効き、タッチの右列は安全領域を消さず、書体を固定しない", () => {
     const css = MAPLAT_UI_CSS;
     expect(css).toContain(".map-title.fade");
     expect(css).toContain(".map-slider.fade { display: none; }");

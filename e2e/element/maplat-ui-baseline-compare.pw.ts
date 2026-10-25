@@ -1,4 +1,4 @@
-// `<maplat-ui>` の見た目を、旧 UI の基準（`spec/fixtures/legacy-baseline/*.json`）と比べる e2e（Stage 2）。
+// `<maplat-ui>` の見た目を、旧 UI の基準（`spec/fixtures/legacy-baseline/*.json`）と比べる e2e。
 //
 // 基準は `e2e/fixtures/legacy-api.html?buttons=1&base=3&overlay=3` を旧 UI（`MaplatUi`）で開いて
 // 採ったもの（採取スクリプト `e2e/legacy-baseline-capture.spec.ts` は、旧 UI の実装を消したあとは旧の画面を開けず
@@ -7,25 +7,25 @@
 // 「同じはずのもの」が ±1px（計算値は文字列。委任の基準）で一致することを確かめる。
 //
 // **意図して違うもの（比較から外すもの）とその理由**:
-//   1. P1（人間の決定。幅 480px 以下で 1.4 枚・gap 10／481px 以上で 2 枚・gap 15。v4 時代の見た目に戻す）:
+//   1. カードの枚数（幅 480px 以下で 1.4 枚・gap 10／481px 以上で 2 枚・gap 15。v4 時代の見た目に戻す）:
 //      旧 Swiper は逆（480px 以上で 1.4 枚／未満で 2 枚）なので、1280・640・481 は旧 1.4 枚 → 新 2 枚、
 //      375・320 は旧 2 枚 → 新 1.4 枚になる。カードの幅・横位置・見えている枚数と、カードの幅で決まる
 //      見出しの縮小（`minimize`）・省略・行数は、これらの幅では比べない。代わりに perView・gap を
 //      `expectedPerViewByP1` と比べ、幅に依らないもの（中央の地図・カードの縦の位置と高さ・計算値・
 //      見出しの色・サムネイルの大きさと縦の位置）は比べる。480 は旧も新も 1.4 枚なので全部比べる。
-//   2. P3（人間の決定）: 地図が 1 枚しかないスライダーは枠（背景）を描かない（旧は描く）。位置と幅は
-//      旧と同じで左右の釣り合いを保つ。位置と大きさは下の「P3: 地図が 1 枚のスライダーの位置」で
+//   2. 地図が 1 枚しかないスライダーは枠（背景）を描かない（旧は描く）。位置と幅は
+//      旧と同じで左右の釣り合いを保つ。位置と大きさは下の「地図が 1 枚のスライダーの位置」で
 //      **基準 JSON**（`{width}.json` の `base-slider`・`overlay-slider`）と比べ（旧も容器の寸法は地図の
 //      枚数に依らない）、枠（背景）と矢印が無いことだけを新の値として確かめる。
 //   2'. 選択表示の枚数: 旧は Swiper の loop の複製を含む（overlay 2・base 0）。新は 5 スロットなので、
 //      枚数ではなく「選ばれている地図」を比べる。
-//   3. マーカー一覧のボタン（Stage 1 からの差。報告 §3-7）: `<maplat-ui>` は POI が 0 件のとき隠す
+//   3. マーカー一覧のボタン（最初の版からの差）: `<maplat-ui>` は POI が 0 件のとき隠す
 //      （旧 UI は出す）。右列の他のボタンは下（地図情報）から積むので、隠れても位置は動かない。
 //      ここでは「隠れていること」だけを確かめる。
 //   4. サムネイルが無い地図: 旧は `no_image.png`、新は頭文字のプレースホルダ（要素の `#thumbPlaceholder` を
 //      使うと決めた結果。読めなかった画像も頭文字に替える）。この画面の地図はサムネイルを持つので出ない。
 //   5. POI が 0 件のとき: 旧は `poi_number` で `.no_poi` が付くとマーカー非表示のボタンも隠す
-//      （`maplat-specific.scss:833-836`）。新はマーカー一覧だけを隠す（Stage 1 からの差）。
+//      （`maplat-specific.scss:833-836`）。新はマーカー一覧だけを隠す（最初の版からの差）。
 //   6. 地図が 0 枚のスライダー: 透明な空の箱が 224×60 の範囲で地図の操作を受け止める（旧も同じ）。
 //   7. （解消済み）文字の大きさと色: 旧はページから継承する。新も `:host` で決めずにページから継承する
 //      ようにした（書体と同じ。積み残し「字の大きさと色をページから継承する」）。この fixture は文字を
@@ -36,10 +36,10 @@
 // 書体を指定しないので Chromium の既定の Times。新旧の lang の条件を揃えるため、比較用の fixture は
 // `<maplat-ui lang>` を付けず `setting.lang` で言語を決める）・行の高さ（normal）・カードの文字の大きさ（18px）・
 // 選択表示は今の地図にだけ付く・ボタンのアイコンの大きさ（1em）・スライダーの矢印の形と色（Swiper v12 の
-// 山形・#007aff）・位置の em の基準（16px）・タッチ端末の配置・P3 の 1 枚のスライダーの位置。
-// Stage 4 で旧の実装（`src/index.legacy.ts`）を消したので、**旧 UI の画面をその場で開いて比べる**
+// 山形・#007aff）・位置の em の基準（16px）・タッチ端末の配置・1 枚のスライダーの位置。
+// 旧の実装（`src/index.legacy.ts`）を消したので、**旧 UI の画面をその場で開いて比べる**
 // ことはもうできない（`e2e/fixtures/legacy-api-old-impl.html` も消した）。基準 JSON に無い場面のうち
-//   - P3（1 枚のスライダー）: 下で基準 JSON の容器の矩形と比べる（容器の寸法は枚数に依らない）。
+//   - 1 枚のスライダー: 下で基準 JSON の容器の矩形と比べる（容器の寸法は枚数に依らない）。
 //   - ボタンの中のアイコンの大きさ・位置: 基準 JSON にアイコンの矩形が無いので、比べる相手が無い。
 //     アイコンの大きさ（1em）と矢印の形・色は、要素の単体テストと CSS（`src/element/styles.ts`）が持つ。
 //   - タッチ端末の操作ボタンの配置（幅 480・375）: タッチの基準 JSON は題名などの文字だけを持ち、
@@ -60,7 +60,7 @@ const BASELINE_DIR = fileURLToPath(
   new URL("../../spec/fixtures/legacy-baseline/", import.meta.url)
 );
 const WIDTHS = [1280, 640, 481, 480, 375, 320] as const;
-// P1 で意図してカードの枚数・幅が変わる幅（480 だけは旧も新も 1.4 枚なので比べる）
+// カードの枚数・幅が意図して変わる幅（480 だけは旧も新も 1.4 枚なので比べる）
 const CARD_DIFF_WIDTHS = new Set([1280, 640, 481, 375, 320]);
 
 type Baseline = any;
@@ -466,7 +466,7 @@ for (const width of WIDTHS) {
         expect
           .soft(measured.sliders[kind].selectedMapIDs, `${kind}: selected maps`)
           .toEqual(expectedSelected);
-        // P1 の意図差分はカードの枚数・幅だけ。perView は意図した値になっている
+        // 意図した差分はカードの枚数・幅だけ。perView は意図した値になっている
         const wanted =
           width === 480
             ? expected.perView
@@ -500,7 +500,7 @@ for (const width of WIDTHS) {
         "overlay-arrow-next"
       );
 
-      // ---- カード（480 だけ。それ以外は P1 の意図差分） ----
+      // ---- カード（480 だけ。それ以外は意図した差分） ----
       if (!CARD_DIFF_WIDTHS.has(width)) {
         for (const kind of ["base", "overlay"] as const) {
           const expected = baselineElement(baseline, `${kind}-card-3`);
@@ -542,7 +542,7 @@ for (const width of WIDTHS) {
             );
         }
       } else {
-        // P1 でカードの幅と横位置が変わる幅でも、幅に依らないもの（中央の地図・カードの縦の位置と高さ・
+        // カードの幅と横位置が変わる幅でも、幅に依らないもの（中央の地図・カードの縦の位置と高さ・
         // 計算値・見出しの色・サムネイルの大きさと縦の位置）は旧と同じでなければならない。
         // 見出しの文字の大きさ（`minimize` で 0.8em になるか）と省略はカードの幅で決まるので比べない
         for (const kind of ["base", "overlay"] as const) {
@@ -790,7 +790,7 @@ test.describe("タッチ端末の見出し（旧 UI の .ol-touch と同じ縮�
   });
 });
 
-// ---- P3: 地図が 1 枚のスライダー（Stage 4 で旧 UI との突き合わせを基準 JSON へ置き換えた） ----
+// ---- 地図が 1 枚のスライダー（旧 UI との突き合わせを基準 JSON へ置き換えた） ----
 // 1 枚の側も、容器の位置と大きさは 2 枚のときと同じ（旧も容器の寸法は地図の枚数に依らない）ことを
 // **基準 JSON**（`{width}.json` は base=3&overlay=3 のときの旧 UI の矩形）と比べる。
 // 併せて、1 枚の側だけ `single-map`（枠＝背景を描かず、矢印を出さない）であることを確かめる。
@@ -848,7 +848,7 @@ const measureP3 = (page: Page) =>
   });
 
 for (const width of [1280, 375] as const) {
-  test.describe(`P3: 地図が 1 枚のスライダーの位置（幅 ${width}px）`, () => {
+  test.describe(`地図が 1 枚のスライダーの位置（幅 ${width}px）`, () => {
     test.use({ viewport: { width, height: 800 } });
     for (const query of ["base=1&overlay=3", "base=3&overlay=1"]) {
       test(`${query}: 2 本の容器の位置と大きさが基準 JSON と同じ（枠を描かないだけ）`, async ({

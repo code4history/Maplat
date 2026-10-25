@@ -1,4 +1,4 @@
-// 層 A（Core の `<maplat-app>`）の登録（設計 v2 §2.3.1 (1)・§6.4 Stage 3・D5）。
+// 層 A（Core の `<maplat-app>`）の登録。
 //
 // 旧 API の互換層は、地図を司る Core の Custom Element（`<maplat-app>`）が登録されていることが前提。
 // 登録は Core の `element` の入口（`@maplat/core/element`）が行う副作用なので、ここでは

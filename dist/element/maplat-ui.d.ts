@@ -3,17 +3,17 @@ import { ShareUrlType } from './share';
 import { MapSlider } from './slider';
 /** @maplat/ui の版（package.json の version と一致することを spec/element.spec.ts が確かめる）。 */
 export declare const MAPLAT_UI_VERSION = "1.1.0";
-/** コンパスを押したときの動き（U6: 層 B が決める）。auto は north-up が真なら北へ、偽なら回転を 0 へ。 */
+/** コンパスを押したときの動き（層 B が決める）。auto は north-up が真なら北へ、偽なら回転を 0 へ。 */
 export type CompassAction = "auto" | "north" | "rotation";
 /**
- * 汎用のメニュー（`part="poi-menu"`。設計 v2 §3 L4・§5.2 B15・D1）の 1 項目。
+ * 汎用のメニュー（`part="poi-menu"`）の 1 項目。
  *
  * メニューは**1 つだけ**持つ。重なった POI の選択はこの一般形の使い方の 1 つで、
  * 旧 API の `showContextMenu([{icon, text, callback}])` も同じ部品へ委譲する（二重にしない）。
  * `text` は `html: false` のとき文字として、それ以外は `sanitizeHtml` を通した HTML として入れる
- * （旧 `contextmenu/html.ts:94` は HTML として差し込んでいた。D6）。
+ * （旧 `contextmenu/html.ts:94` は HTML として差し込んでいた）。
  *
- * @internal 旧 UI の互換層（`src/legacy/`）が使う移行期の口。層 B の公開面（仕様 §4.4）には数えない。
+ * @internal 旧 UI の互換層（`src/legacy/`）が使う移行期の口。層 B の公開面には数えない。
  */
 export interface MaplatMenuItem {
     /** 画像の URL（http/https・相対 URL だけを画像にする。`poi_safe.ts` の許可リスト） */
@@ -42,8 +42,8 @@ export interface MaplatMenuOptions {
 }
 declare const BaseElement: typeof HTMLElement;
 /**
- * <maplat-ui> の実装（最小版）。層 B の公開面（仕様 §4）のうち、最小の機能に要るものを持つ:
- *   - 属性: lang（自分の属性だけを見る。§6.2.1）・compass-action・set-document-title・層 A の全属性（子へ流す）
+ * <maplat-ui> の実装（最小版）。層 B の公開面のうち、最小の機能に要るものを持つ:
+ *   - 属性: lang（自分の属性だけを見る）・compass-action・set-document-title・層 A の全属性（子へ流す）
  *   - プロパティ: 層 A のプロパティのみのキー（子へ流す）・restore（拡張キーを分ける）・appOption
  *   - 読み取り: ready・implementation・version・app・currentLang
  *   - メソッド: translateText・t・openMarker
@@ -52,7 +52,7 @@ declare const BaseElement: typeof HTMLElement;
 export declare class MaplatUiElement extends BaseElement {
     #private;
     static get observedAttributes(): string[];
-    /** 層 B の実装名（§4.4）。 */
+    /** 層 B の実装名。 */
     readonly implementation: "ui";
     /** 実装の版。 */
     readonly version: string;
@@ -64,7 +64,10 @@ export declare class MaplatUiElement extends BaseElement {
     get ready(): Promise<void>;
     /** 使っている子（層 A の公開面だけを持つ要素）。子を見つける・作る前は null。 */
     get app(): MaplatAppElement | null;
-    /** 解決後の言語（lang 属性 → appOption.lang（移行用）→ 設定ファイルの lang → ブラウザ）。 */
+    /**
+     * 解決後の言語（lang 属性 → appOption.lang（移行用・起動時の値）→ 設定ファイルの lang → ブラウザ）。
+     * appOption は起動時だけ効くので、起動後に代入してもこの解決は変わらない。
+     */
     get currentLang(): string;
     /** 多言語の文字列から currentLang の値を選ぶ（旧 MaplatUi.translate。HTMLElement.translate と衝突させない）。 */
     translateText(fragment?: Localized): string | undefined;
@@ -81,7 +84,7 @@ export declare class MaplatUiElement extends BaseElement {
     /**
      * 指定した経緯度に重なる（範囲を持つ）地図の mapID を、範囲の狭い順に返す（旧 ui_marker.ts の
      * xyToMapIDs）。層 A の公開面だけで求める: 画面の 4 隅（getViewExtent）と各地図の範囲
-     * （getMapEnvelope）を経緯度で比べる（仕様 §3.7。old は merc と turf を使っていた）。
+     * （getMapEnvelope）を経緯度で比べる（old は merc と turf を使っていた）。
      * 今の地図は候補から外し、範囲の面積が画面の面積の threshold 倍以上の地図は外す（旧と同じ既定 10）。
      * 地図の準備前は空の配列。
      */
@@ -104,7 +107,8 @@ export declare class MaplatUiElement extends BaseElement {
     showToast(message: string, target?: HTMLElement): void;
     /**
      * 言語ファイルの読み込みが済むまで待つ。
-     * @internal 旧 UI の onUiConfigure は i18n を読んでから利用者の hook を呼んでいた（設計 §3 L11）。
+     * @internal 旧 UI の onUiConfigure は i18n を読んでから利用者の hook を呼んでいた
+     *   （`docs/ui-core-lifecycle.md` の「What Maplat UI does per phase」を参照）。
      *   互換層はこの口を待ってから hook を呼ぶ。読み込みに失敗しても reject しない（en へ落ちる）。
      */
     whenI18nReady(): Promise<void>;
@@ -161,8 +165,10 @@ export interface MaplatUiElement {
     pwaManifest: string | boolean | undefined;
     pwaWorker: string | undefined;
     pwaScope: string | undefined;
+    appEnvelope: boolean | undefined;
     enableMarkerList: boolean | undefined;
     enablePoiHtmlNoScroll: boolean | undefined;
+    presentationMode: boolean | undefined;
     tapDuration: number | undefined;
     tapUiVanish: boolean | undefined;
     appId: string | undefined;

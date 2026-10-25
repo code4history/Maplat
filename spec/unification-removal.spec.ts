@@ -1,14 +1,14 @@
-// Stage 4（旧の実装の削除・二重実装の解消の完了）を機械で確かめる。
+// 旧の実装の削除と二重実装の解消の完了（一本化）を機械で確かめる。
 //
 // 確かめること:
 //   1. 旧 UI の実装ファイルが `src/` から消えている（git の履歴には残る）
 //   2. 旧 UI の実装を import しているファイルが `src/`・`spec/`・`e2e/`・`demo/`・`scripts/` に無い
-//   3. 受け入れ条件の grep（設計 v2 §6.5 Stage 4）:
+//   3. 受け入れ条件の grep:
 //      - `swiper` の **import** が 0（`src/legacy/` の旧 API の名前は除く。下の ALLOWED に一覧）
 //      - `ol/control` が 0
 //      - `bootstrap.native`・`i18next`・`from "page"` が 0（src と package.json）
 //   4. `package.json` から消した依存が本当に無い・残す依存（`@c4h/weiwudi` 等）がある
-//   5. R1（同じ画面を描く経路が 1 つだけ）: 旧 API のクラスは互換層にだけ在り、互換層は DOM を描かない。
+//   5. 同じ画面を描く経路が 1 つだけ: 旧 API のクラスは互換層にだけ在り、互換層は DOM を描かない。
 //      画面を描くのは `<maplat-ui>` だけ
 //   6. e2e の旧実装の fixture（`legacy-api-old-impl.html`）が無い
 import { describe, it, expect } from "vitest";
@@ -88,7 +88,7 @@ const DELETED = [
 const OLD_IMPL =
   /(^|\/)(index\.legacy|ui_init|ui_marker|ui_utils|maplat_control|swiper_ex|swiper_loop|swiper_augment|contextmenu|pwa_init|pointer_images|function)(\/|\.|$)/;
 
-describe("Stage 4: 旧の実装のファイル", () => {
+describe("一本化: 旧の実装のファイル", () => {
   it("消したファイルがもう無い", () => {
     for (const file of DELETED)
       expect(existsSync(join(ROOT, file)), file).toBe(false);
@@ -147,14 +147,14 @@ describe("Stage 4: 旧の実装のファイル", () => {
 
 // ---- 2. 受け入れ条件の grep ----
 
-/** `src/legacy/` に残してよい「旧 API の名前」（設計 v2 §6.5 Stage 4 の例外）。 */
+/** `src/legacy/` に残してよい「旧 API の名前」（受け入れ条件の例外）。 */
 const ALLOWED_SWIPER_IN_LEGACY = [
   "src/legacy/legacy_swiper.ts",
   "src/legacy/legacy_types.ts",
   "src/legacy/maplat_ui_compat.ts"
 ];
 
-describe("Stage 4: 受け入れ条件の grep", () => {
+describe("一本化: 受け入れ条件の grep", () => {
   const srcFiles = filesUnder("src", [".ts", ".js"]);
   const pkgSource = read("package.json");
   const viteSource = existsSync(join(ROOT, "vite.config.js"))
@@ -177,11 +177,11 @@ describe("Stage 4: 受け入れ条件の grep", () => {
   });
 
   it("`swiper` の語が src に残るのは、旧 API の名前と旧の見た目の注記だけ（一覧を固定する）", () => {
-    // 設計 v2 §6.5 の受け入れ条件は「src 全体で 0」だが、次の 3 種は消せない:
+    // 受け入れ条件は「src 全体で 0」だが、次の 3 種は消せない:
     //   (a) `src/legacy/` の旧 API の公開名（`swipers`・`baseSwiper`・`overlaySwiper`・`SwiperInstance`）
     //   (b) Chuci の要素名 `cc-swiper`・`cc-swiper-slide`（地図のメディアの表示部品。旧 UI とは無関係）
     //   (c) 旧 CSS のクラス名を説明する注記（`.base-swiper`・`.swiper-slide` 等）
-    //   （`poi_safe.ts` の旧の組み立て関数は Stage 4 の仕上げで消したので、ここには入らない）
+    //   （`poi_safe.ts` の旧の組み立て関数は旧 UI の実装の削除の仕上げで消したので、ここには入らない）
     // 増えたら気づけるよう、ファイルの一覧を固定する（新しいファイルに `swiper` を持ち込ませない）。
     const legacy = ALLOWED_SWIPER_IN_LEGACY.slice();
     // 受け入れ条件の grep と同じく**大文字小文字を区別する**（`Swiper` は説明の文なので数えない）
@@ -248,7 +248,7 @@ describe("Stage 4: 受け入れ条件の grep", () => {
   });
 
   it("@c4h/weiwudi は Service Worker のビルドで使うので残す（旧 UI 専用ではない）", () => {
-    // 設計 v2 §6.5 は @c4h/weiwudi を「旧 UI の依存」として挙げていたが、実際は
+    // 当初の設計は @c4h/weiwudi を「旧 UI の依存」として挙げていたが、実際は
     // src/service-worker/index.ts が `@c4h/weiwudi/sw` を読む（タイルキャッシュの受け口）。∴ 残す。
     const sw = read("src/service-worker/index.ts");
     expect(sw).toContain('import "@c4h/weiwudi/sw"');
@@ -257,9 +257,9 @@ describe("Stage 4: 受け入れ条件の grep", () => {
   });
 });
 
-// ---- 3. R1: 同じ画面を描く経路は 1 つ ----
+// ---- 3. 同じ画面を描く経路は 1 つ ----
 
-describe("R1: 同じ画面を描く経路が 1 つだけ", () => {
+describe("同じ画面を描く経路が 1 つだけ", () => {
   const srcTs = filesUnder("src", [".ts"]).map(path => relative(ROOT, path));
 
   it("旧 API のクラスは互換層にだけ在る", () => {

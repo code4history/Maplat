@@ -1,31 +1,32 @@
-// 旧 API `MaplatUi` の互換層（設計 v2 §2.3.1・§2.3.6・§6.4 Stage 3・差分 D1〜D10）。
+// 旧 API `MaplatUi` の互換層。
 //
-// 外形は旧 `MaplatUi`（Stage 3 で `src/index.legacy.ts` に退避し、Stage 4 で消した実装。
+// 外形は旧 `MaplatUi`（`src/index.legacy.ts` に退避したあと、消した実装。
 // 必要なら git の履歴から読める）と同じ:
 //   - `new MaplatUi(option)`・`MaplatUi.createObject(option)`・`waitReady()`（関数プロパティ）
 //   - 公開メソッド 19 本・公開フィールド 41 個・`uiHooks` の 7 段階・`ui.core`（Core の `MaplatApp`）
 //   - `addEventListener` は `ol/events/Target` の外形のまま。層 A のイベント（`MAPLAT_APP_EVENTS`・
-//     `ELEMENT_OWN_EVENTS`）を `{ type, detail }` で自分へ出し直す（設計 §2.3.5・L10。旧は配っていなかった）
+//     `ELEMENT_OWN_EVENTS`）を `{ type, detail }` で自分へ出し直す（旧は配っていなかった。
+//     `docs/api/migration-ui-shadow-dom.md` の「旧 API（`MaplatUi`）を使い続ける場合」を参照）
 //
 // 中は `<maplat-ui>`（層 B）に委譲する。地図は層 B が作る `<maplat-app slot="map">`（層 A）。
-// 旧 UI のファイル（`ui_init.ts` 等）は Stage 4 で消したので、もう import しようがない
+// 旧 UI のファイル（`ui_init.ts` 等）は消したので、もう import しようがない
 // （互換層が旧 UI を読まないことを `spec/legacy-deps.spec.ts`、消えていることを
-// `spec/stage4-removal.spec.ts` が機械で確かめる）。
+// `spec/unification-removal.spec.ts` が機械で確かめる）。
 //
 // 差分（設計からの意図的なもの）:
-//   - 設定ファイルの機能系キー（C1(a)）: 子へ `appOption` を渡し、Core の互換モード
+//   - 設定ファイルの機能系キー: 子へ `appOption` を渡し、Core の互換モード
 //     （`appOption.__maplatCompat === true`）で旧クラスと同じ読み方をする。`div`・`uiHooks`・
-//     `setting` は複製しない（D10）。
+//     `setting` は複製しない。
 //   - `tapDuration`・`tapUIVanish` は `lifecycle:appdata-ready` で `appData` から読み、
-//     option に無ければ `<maplat-ui>` の属性へ流す（D2。設定ファイルは読み直さない）。
-//   - 解決時点（C1(b)）: stateUrl なしは子の `lifecycle:setting-loaded`、ありは `host.ready`。
+//     option に無ければ `<maplat-ui>` の属性へ流す（設定ファイルは読み直さない）。
+//   - 解決時点: stateUrl なしは子の `lifecycle:setting-loaded`、ありは `host.ready`。
 //     リスナーは子を繋ぐ前に張る。`lifecycle:error` は reject。
-//   - uiHooks（C1(c)・D7）: `onUiConfigure` だけ i18n の読み込みを待ってから利用者の hook を呼ぶ。
+//   - uiHooks: `onUiConfigure` だけ i18n の読み込みを待ってから利用者の hook を呼ぶ。
 //     他の段階はそのまま通す（`onAppdataReady`・`onCoreReady`・`onUiReady` の「UI の仕事が
-//     済んでいること」は保証しない。設計 §3 L11）。
-//   - showContextMenu・contextMenu（C1(d)・D1・D6）: 層 B の汎用メニュー 1 つ（`part="poi-menu"`）へ
+//     済んでいること」は保証しない。互換層は段階の順だけを保つ）。
+//   - showContextMenu・contextMenu: 層 B の汎用メニュー 1 つ（`part="poi-menu"`）へ
 //     委譲する。POI の重なりの選択も同じ部品。
-//   - `ui.mapID`・`ui.transparency` はホストの属性を読む（M6）。
+//   - `ui.mapID`・`ui.transparency` はホストの属性を読む。
 
 import EventTarget from "ol/events/Target.js";
 import type { MaplatApp } from "@maplat/core";
@@ -59,7 +60,7 @@ import type {
   SwiperInstance
 } from "./legacy_types";
 
-/** 旧 `appOption` のキー → 層 A／層 B の要素のプロパティ（§2.3.4 の対応表と同じ）。 */
+/** 旧 `appOption` のキー → 層 A／層 B の要素のプロパティ（旧の対応表と同じ）。 */
 const OPTION_PROPS: ReadonlyArray<readonly [string, string]> = [
   ["noRotate", "noRotate"],
   ["northUp", "northUp"],
@@ -91,7 +92,7 @@ const OPTION_PROPS: ReadonlyArray<readonly [string, string]> = [
   ["maplibregl", "maplibregl"]
 ];
 
-/** 旧 UI で廃止したキー（設計 §1.2.1）。警告して無視する（旧の値を写さない）。 */
+/** 旧 UI で廃止したキー。警告して無視する（旧の値を写さない）。 */
 const DEAD_KEYS = [
   "mobileIF",
   "disableNoimage",
@@ -100,7 +101,50 @@ const DEAD_KEYS = [
   "translateUI"
 ] as const;
 
-/** 旧 `MaplatUi` の互換層。外形は旧と同じ、中は `<maplat-ui>`。 */
+// 旧 API `MaplatUi` の非推奨の告知（「実行時に 1 回だけ警告」）。
+// 粒度は「同一プロセスで 1 回」なので、クラスの中の `#warnOnce`（廃止した設定ファイルのキー・
+// `ui._t`／`ui.i18n` への代入の警告。インスタンスごとに 1 回）ではなく、このモジュールの水準で
+// 覚える。∴ `new MaplatUi` を 2 つ作っても警告は 1 回。
+// `<maplat-ui>`（要素）は内部でこのクラスを作らない（要素だけを使うページでは警告しない）。
+// 警告するかどうかの見分けは要らない（旧クラスを作るのは互換層の `new` の 1 か所だけ）。
+let maplatUiDeprecationWarned = false;
+
+const MAPLAT_UI_DEPRECATION_MESSAGE =
+  "MaplatUi: the MaplatUi class is deprecated and will be removed in 2.0. " +
+  "Use the <maplat-ui> element (@maplat/ui/element) with <maplat-app> instead.";
+
+/**
+ * 旧 API `MaplatUi` の非推奨を、同一プロセスで 1 回だけ警告する。
+ * 呼ぶのは `MaplatUi` のコンストラクタだけ（`createObject` も中で `new` するので、ここ 1 か所で足りる）。
+ */
+function warnMaplatUiDeprecated(): void {
+  if (maplatUiDeprecationWarned) return;
+  maplatUiDeprecationWarned = true;
+  console.warn(MAPLAT_UI_DEPRECATION_MESSAGE);
+}
+
+/**
+ * 「1 回だけ」の記憶を戻す（テストの間の初期化用）。
+ * `warnMaplatUiDeprecated` の付属品で、公開面ではない（`src/index.ts` の入口からは出さない）。
+ * @internal
+ */
+export function resetMaplatUiDeprecationWarning(): void {
+  maplatUiDeprecationWarned = false;
+}
+
+/**
+ * 旧 `MaplatUi` の互換層。外形は旧と同じ、中は `<maplat-ui>`。
+ *
+ * @deprecated 旧 UI API です。1.x の間は外形（`createObject`・`waitReady`・公開メソッド・
+ *   公開フィールド・`uiHooks`・`ui.core`）を変えずに残し、**次のメジャー版（2.0）で閉じます**。
+ *   代わりに `<maplat-ui>` 要素（`@maplat/ui/element`）と `<maplat-app>` 要素
+ *   （`@maplat/core/element`）を組み合わせて使ってください（要素が地図の上にビューアを重ねます）。
+ *   移行の案内は `docs/api/maplat-ui-element.md`（要素の属性・プロパティ・メソッド・イベントと
+ *   このクラスとの対応）と `docs/api/migration-ui-shadow-dom.md`（旧 UI の DOM からの移行）に
+ *   あります。
+ *   `new MaplatUi(...)`（`createObject` も同じ）は、同一プロセスで 1 回だけこの旨を
+ *   `console.warn` で警告します。
+ */
 export class MaplatUi extends EventTarget {
   /** Core の `MaplatApp`（`lifecycle:setting-loaded` で入る。それまでは undefined）。 */
   core?: MaplatApp;
@@ -146,7 +190,7 @@ export class MaplatUi extends EventTarget {
   selectedMarkerNamespaceID: string | undefined;
 
   #host: MaplatUiElement | undefined;
-  // 層 A のイベントの再送出（設計 §2.3.5・L10）を外す関数
+  // 層 A のイベントの再送出を外す関数
   #unforward: (() => void) | undefined;
   #starting: Promise<MaplatUi> | undefined;
   #removed = false;
@@ -157,10 +201,13 @@ export class MaplatUi extends EventTarget {
   /** 旧 API のコンストラクタ。`stateUrl` のときだけ、旧と同じく自分から起動を始める。 */
   constructor(appOption: MaplatAppOption) {
     super();
+    // 旧 UI API の非推奨を、同一プロセスで 1 回だけ告知する
+    // （重複の排除は warnMaplatUiDeprecated がモジュール水準で持つ。インスタンスごとではない）
+    warnMaplatUiDeprecated();
     this.appOption = appOption ?? {};
     this.html_id_seed = `${Math.floor(Math.random() * 9000) + 1000}`;
     this.#initialLang = resolveInitialLang(appOption);
-    // 起動前から在る外形（設計 §2.3.6）。中身は `#host` ができるまで空を返す
+    // 起動前から在る外形。中身は `#host` ができるまで空を返す
     this.sliderNew = createLegacySlider(() => this.#host ?? null);
     this.contextMenu = createLegacyContextMenu(() => this.#host ?? null);
     this.baseSwiper = createLegacySwiper(() => this.#host ?? null, "base");
@@ -195,7 +242,15 @@ export class MaplatUi extends EventTarget {
     }
   }
 
-  /** 旧 `MaplatUi.createObject`（文書化された入口）。 */
+  /**
+   * 旧 `MaplatUi.createObject`（文書化された入口）。
+   *
+   * @deprecated 旧 UI API です（中で `new MaplatUi(...)` するので、同じく非推奨）。1.x の間は
+   *   この口を変えずに残し、**次のメジャー版（2.0）で閉じます**。代わりに `<maplat-ui>` 要素
+   *   （`@maplat/ui/element`）と `<maplat-app>` 要素（`@maplat/core/element`）を組み合わせて
+   *   使ってください。移行の案内は `docs/api/maplat-ui-element.md` と
+   *   `docs/api/migration-ui-shadow-dom.md` にあります。
+   */
   static async createObject(option: MaplatAppOption): Promise<MaplatUi> {
     const app = new MaplatUi(option);
     return app.waitReady();
@@ -333,7 +388,7 @@ export class MaplatUi extends EventTarget {
     this.core = undefined;
   }
 
-  // ---- 旧のフィールドのうち、層 B の今の値を読むもの（M6。getter なのでメソッドに数えない）----
+  // ---- 旧のフィールドのうち、層 B の今の値を読むもの（getter なのでメソッドに数えない）----
 
   /** 旧 `ui.lang`（今の言語）。 */
   get lang(): string {
@@ -370,7 +425,7 @@ export class MaplatUi extends EventTarget {
     }
   }
 
-  /** 旧 `ui.transparency`（透過度。ホストの `transparency` 属性を読む。M6）。 */
+  /** 旧 `ui.transparency`（透過度。ホストの `transparency` 属性を読む）。 */
   get transparency(): number | undefined {
     if (!this.#host) return undefined;
     const attr = this.#host.getAttribute("transparency");
@@ -401,7 +456,7 @@ export class MaplatUi extends EventTarget {
     );
   }
 
-  /** 旧 `ui.i18n`（限定 facade。設計 §3 L8・L9）。 */
+  /** 旧 `ui.i18n`（限定 facade。`docs/api/migration-ui-shadow-dom.md` の「型の変化」を参照）。 */
   get i18n(): LegacyI18n | undefined {
     if (!this.#host) return undefined;
     this.#i18n ??= createLegacyI18n(() => this.#host ?? null);
@@ -444,7 +499,7 @@ export class MaplatUi extends EventTarget {
     this.#host = host;
     // 旧 UI は起動時に `@c4h/chuci`（cc-swiper 等）を登録していた。旧 API の利用者のために先に読む
     void host.preloadMediaViewer();
-    // 旧 `splashPromise`（onUiDomReady で置かれていた）は、層 B の `ready` に結ぶ（§2.3.6）
+    // 旧 `splashPromise`（onUiDomReady で置かれていた）は、層 B の `ready` に結ぶ
     this.splashPromise = host.ready.then(
       () => undefined,
       () => undefined
@@ -484,7 +539,7 @@ export class MaplatUi extends EventTarget {
         if (err === undefined) resolve();
         else reject(err);
       };
-      // **子を繋ぐ前に**張る（C1(b)）。`lifecycle:setting-loaded` は hook を await した後に出る
+      // **子を繋ぐ前に**張る。`lifecycle:setting-loaded` は hook を await した後に出る
       host.addEventListener("lifecycle:setting-loaded", () => {
         if (this.#removed) {
           settle();
@@ -520,8 +575,8 @@ export class MaplatUi extends EventTarget {
   }
 
   /**
-   * 層 A のイベント（子の `<maplat-app>` が出し、ホストまで泡立つ）を `MaplatUi` 自身へ出し直す
-   * （設計 §2.3.5・§3 L10）。旧 `app.addEventListener("clickMarker", fn)`（`demo/dev.ts`）が意味を持つ。
+   * 層 A のイベント（子の `<maplat-app>` が出し、ホストまで泡立つ）を `MaplatUi` 自身へ出し直す。
+   * 旧 `app.addEventListener("clickMarker", fn)`（`demo/dev.ts`）が意味を持つ。
    * `ol/events/Target` の `dispatchEvent` は `target` を代入するので、DOM の Event ではなく
    * `{ type, detail }` のプレーンなオブジェクトで出す（m4）。`uiReady` は要素だけのイベントなので出さない。
    * 子を繋ぐ前に張る（起動の lifecycle も届くように）。
@@ -558,7 +613,7 @@ export class MaplatUi extends EventTarget {
   }
 
   /**
-   * `<maplat-ui>` を作り、旧 `option` を属性・プロパティへ流す（§2.3.4）。
+   * `<maplat-ui>` を作り、旧 `option` を属性・プロパティへ流す。
    * 文書へ繋ぐ前に済ませる（繋がった拍で層 A の起動が始まるため）。
    */
   #createHost(): MaplatUiElement {
@@ -602,7 +657,7 @@ export class MaplatUi extends EventTarget {
     if (restore && typeof restore === "object") {
       host.restore = restore as unknown as MaplatUiElement["restore"];
     }
-    // 子へ渡す `appOption`（設計 C1(a)）。`div`・`uiHooks`・`setting` は複製しない（D10）。
+    // 子へ渡す `appOption`。`div`・`uiHooks`・`setting` は複製しない。
     // `__maplatCompat: true` で Core は旧クラスと同じく設定ファイルの機能系キーを読む。
     const appOptionCopy: Record<string, unknown> = {
       ...option,
@@ -612,7 +667,7 @@ export class MaplatUi extends EventTarget {
     delete appOptionCopy.uiHooks;
     delete appOptionCopy.setting;
     host.appOption = appOptionCopy;
-    // uiHooks: `onUiConfigure` だけ i18n の読み込みを待ってから利用者の hook を呼ぶ（C1(c)・D7）
+    // uiHooks: `onUiConfigure` だけ i18n の読み込みを待ってから利用者の hook を呼ぶ
     host.uiHooks = wrapUiHooks(host, option.uiHooks);
     // 廃止したキーは警告して無視する（旧の値を写さない）
     for (const key of DEAD_KEYS) {
@@ -627,7 +682,7 @@ export class MaplatUi extends EventTarget {
   }
 
   /**
-   * 設定ファイルの機能系キーのうち、層 B が自分で読む 2 つ（D2）。
+   * 設定ファイルの機能系キーのうち、層 B が自分で読む 2 つ。
    * `lifecycle:appdata-ready` のとき、option に無ければ `appData` から読んで属性へ流す。
    * **設定ファイルを読み直さない**（すでに Core が読んだ `appData` を見る）。
    */
@@ -679,7 +734,7 @@ function resolveInitialLang(option: MaplatAppOption): string {
 }
 
 /**
- * 旧 `uiHooks` を層 B へ渡す形にする（C1(c)・D7）。
+ * 旧 `uiHooks` を層 B へ渡す形にする。
  * `onUiConfigure` だけ、旧と同じく i18n を読み終えてから利用者の hook を呼ぶ。
  * それ以外の段階はそのまま通す（UI の仕事が済んでいることは保証しない）。
  */

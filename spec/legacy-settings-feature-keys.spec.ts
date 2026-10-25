@@ -1,9 +1,9 @@
-// 設定ファイルの機能系キー（設計 v2 §2.3.1 C1(a)・§1.2.1・差分 D2・D10）。
+// 設定ファイルの機能系キー。
 //
 // 旧 `MaplatUi` は設定ファイル（`setting`）の `noRotate`・`fakeGps` 等を Core が読む経路
 // （`__maplatElementMode === false`）を通していた。互換層は子へ `appOption.__maplatCompat = true`
 // を渡し、Core の互換モードで同じ経路を通す。`tapDuration`・`tapUIVanish` は層 B が自分で読むので、
-// `lifecycle:appdata-ready` で `appData` から読んで属性へ流す（option が優先。D2）。
+// `lifecycle:appdata-ready` で `appData` から読んで属性へ流す（option が優先）。
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { MaplatUi } from "../src/index";
@@ -63,8 +63,8 @@ async function boot(
 
 const host = () => document.querySelector("maplat-ui") as any;
 
-describe("設定ファイルの機能系キー（C1(a)・D10）", () => {
-  it("noRotate / fakeGps は設定ファイルから読む（互換モード）。tapDuration / tapUIVanish は層 B の属性へ（D2）", async () => {
+describe("設定ファイルの機能系キー", () => {
+  it("noRotate / fakeGps は設定ファイルから読む（互換モード）。tapDuration / tapUIVanish は層 B の属性へ", async () => {
     const warned = await boot(
       {
         noRotate: true,
@@ -91,7 +91,7 @@ describe("設定ファイルの機能系キー（C1(a)・D10）", () => {
         noRotate: false,
         tapDuration: 777,
         tapUIVanish: false,
-        // 旧 UI で廃止したキー（§1.2.1。警告して無視する）
+        // 旧 UI で廃止したキー（警告して無視する）
         mobileIF: true
       }
     );

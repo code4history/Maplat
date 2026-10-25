@@ -1,6 +1,6 @@
 // Type definitions for Maplat UI
 //
-// Stage 4: 旧 UI の実装（`src/ui_init.ts` 等）を消したので、旧の実装だけが使っていた型
+// 旧 UI の実装（`src/ui_init.ts` 等）を消したので、旧の実装だけが使っていた型
 // （`SwiperInstance`・`SliderControl`・`ControlOptions`）はここから外した。旧 API の外形として
 // 残す `SwiperInstance` は `src/legacy/legacy_types.ts`（互換層）が持つ（`ui.sliderNew` の型は
 // `src/legacy/legacy_slider.ts` の `LegacySliderFacade`）。

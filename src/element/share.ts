@@ -6,7 +6,7 @@
 // 同じ大きさ（128 px・余白 1 マス・誤り訂正 M＝toCanvas の既定）の SVG にする（DOM の API だけで組み、
 // 文字列の HTML を使わない。jsdom でも描ける）。
 
-/** 共有する URL の種類（仕様 §4.4 getShareUrl）。app はアプリそのもの、view は今の表示（状態 URL 込み）。 */
+/** 共有する URL の種類（getShareUrl）。app はアプリそのもの、view は今の表示（状態 URL 込み）。 */
 export type ShareUrlType = "app" | "view";
 
 /** 旧 getShareUrl と同じ: view は今の URL（state-url なら "#!…" を含む）、それ以外は ? と # を落とした URL。 */

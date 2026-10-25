@@ -168,7 +168,7 @@ describe("内蔵の辞書と旧 UI の言語ファイルの合成", () => {
     const en = await mountUi(u => u.setAttribute("lang", "en"));
     expect(en.t("control.zoom_in")).toBe("Zoom in");
     expect(en.t("slider.overlay")).toBe("Overlay maps");
-    // 使われなくなった地図の切り替えメニューの文言（Stage 2 で消した。レビュー Minor）は引けない
+    // 使われなくなった地図の切り替えメニューの文言（地図の切り替えをスライダーにしたときに消した。レビュー Minor）は引けない
     for (const key of [
       "control.map_menu",
       "menu.base_maps",

@@ -1,6 +1,6 @@
 // oct26-m3-t1: Maplat #260 — Service Worker 登録の Promise 拒否の捕捉。
 //
-// Stage 4: 旧の実装（`src/pwa_init.ts`。Weiwudi.registerSW を呼ぶ）を消したので、対象を
+// 旧の実装（`src/pwa_init.ts`。Weiwudi.registerSW を呼ぶ）を消したので、対象を
 // `src/element/pwa.ts` の `initPwa` へ移した。旧は `registerSW(...)` の戻り値を捨てていたので、
 // 拒否が未捕捉のまま素通りしていた（#260 の本体）。要素の `register` はいま
 // `navigator.serviceWorker.register(...).then(reg => reg, err => console.error)` で自分で受ける。

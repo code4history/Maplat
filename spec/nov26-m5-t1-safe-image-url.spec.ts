@@ -4,7 +4,7 @@
 //
 // - AC6 (a): safeImageUrl の通す／通さない
 //
-// Stage 4 の仕上げ: 旧 UI のスワイパーの HTML を組み立てる `swiperThumbUrl`・`swiperSlideHtml` を消したので、
+// 旧 UI の実装の削除の仕上げ: 旧 UI のスワイパーの HTML を組み立てる `swiperThumbUrl`・`swiperSlideHtml` を消したので、
 // その単体（AC3・AC4・AC5 (a)）も消した。地図の切り替えのカードの無害化（mapID の属性注入・label のタグ化・
 // thumbnail の不正スキーム）は `<maplat-ui>` のスライダーの側（`spec/slider.spec.ts` と
 // `e2e/nov26-m5-t1-swiper-xss.spec.ts`）が確かめる。

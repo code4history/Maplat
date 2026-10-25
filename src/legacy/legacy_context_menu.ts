@@ -1,12 +1,11 @@
-// 旧 `ui.contextMenu`（ol-contextmenu 4.1.0 の fork）の限定 facade（設計 v2 §3 L4・§3.3 の 7・
-// §2.3.6 (7)・D1・D6）。
+// 旧 `ui.contextMenu`（ol-contextmenu 4.1.0 の fork）の限定 facade。
 //
 // 旧 UI は OL の Control として文書にメニューを 1 つ持ち、`extend`/`clear`/`on("open")` で
 // 操作していた。層 B の `<maplat-ui>` は Shadow DOM の中に**汎用のメニューを 1 つ**持つ
 // （`part="poi-menu"`。重なった POI の選択も旧 API の `showContextMenu` も同じ部品）。
 // 互換層はその部品へ委譲し、OpenLayers の Control 層は import しない（`spec/legacy-deps.spec.ts`）。
 //
-// 旧の `text` は HTML として差し込まれていた（`contextmenu/html.ts:94`）。D6 により、層 B の
+// 旧の `text` は HTML として差し込まれていた（`contextmenu/html.ts:94`）。層 B の
 // メニューは `sanitizeHtml` を通してから入れる（サニタイズはあちら側の責務）。
 
 import type { MaplatMenuItem, MaplatUiElement } from "../element";
@@ -69,7 +68,7 @@ export function createLegacyContextMenu(
     return {
       icon: typeof item.icon === "string" ? item.icon : undefined,
       text: typeof item.text === "string" ? item.text : "",
-      // 旧 contextmenu の text は HTML（D6 は「層 B でサニタイズする」なので、ここでは HTML のまま渡す）
+      // 旧 contextmenu の text は HTML（「層 B でサニタイズする」なので、ここでは HTML のまま渡す）
       html: true,
       callback: () => {
         const el = current();

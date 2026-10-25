@@ -1,5 +1,5 @@
-// 旧 API の互換層（`src/legacy/`）の依存の規則を機械的に確かめる（設計 v2 §6.4 Stage 3・
-// 再レビュー D5・D10・差分 D1〜D10）。
+// 旧 API の互換層（`src/legacy/`）の依存の規則を機械的に確かめる（
+// 旧 UI の互換層が守る規則）。
 //
 // 互換層は「旧 UI のファイルを import しない」「地図ライブラリ（OpenLayers）には `ol/events/Target`
 // だけ」「Swiper を import しない」で、層 B（`src/element/`）は「互換層を import しない」。
@@ -7,8 +7,8 @@
 // （変数の specifier にするとバンドラが解決できない）。
 //
 // 型だけの import（`import type`）は実行時に消えるので、公開型は互換層の `legacy_types.ts` に置く
-// （Stage 4 で移した。`src/types.ts` は旧 API の型を再輸出しない）。
-// 旧 UI の実装ファイルそのものが消えていることは `spec/stage4-removal.spec.ts` が確かめる。
+// （旧 UI の実装の削除で移した。`src/types.ts` は旧 API の型を再輸出しない）。
+// 旧 UI の実装ファイルそのものが消えていることは `spec/unification-removal.spec.ts` が確かめる。
 import { describe, it, expect } from "vitest";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";

@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 // <maplat-ui>（src/element/）の単体テスト。@maplat/core/conformance の**模擬の層 A**（公開面だけを持つ
 // <maplat-app>。中身は closed の Shadow DOM に隠れ、地図も OpenLayers も持たない）の上で動かす
-// ＝ <maplat-ui> が層 A の公開面だけで動くことの確認（仕様 §8.3 B-形・B-流し方・B-公開面だけ）。
+// ＝ <maplat-ui> が層 A の公開面だけで動くことの確認（形・流し方・公開面だけ）。
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { readFileSync } from "fs";
@@ -163,7 +163,7 @@ describe("<maplat-ui> の形（B-形）", () => {
 // （`presentationMode`・`appEnvelope`）。層 B の属性のプロパティは全部 interface に載せる。
 // `tsc --noEmit` は spec/ を対象にしない（tsconfig.json の include は src・test・parts）ので、
 // interface に載っているかはソースの interface の本文を読んで確かめる（値の側は実行時にも確かめる）。
-describe("型（interface MaplatUiElement。§4.2・§6.4）", () => {
+describe("型（interface MaplatUiElement）", () => {
   const source = readFileSync(
     resolve(__dirname, "../src/element/maplat-ui.ts"),
     "utf-8"
@@ -213,7 +213,7 @@ describe("型（interface MaplatUiElement。§4.2・§6.4）", () => {
   });
 });
 
-describe("層 A の状態の書き戻し（map-id・transparency。§6.2.3・人間の決定「属性への書き戻し」）", () => {
+describe("層 A の状態の書き戻し（map-id・transparency。「属性への書き戻し」）", () => {
   it("子が内部の操作で書き戻した状態を、<maplat-ui> が流しているキーなら <maplat-ui> の属性へも映す（流し直さない）", async () => {
     const ui = await mountUi(u => {
       u.setAttribute("map-id", "old1");
@@ -273,7 +273,7 @@ describe("層 A の状態の書き戻し（map-id・transparency。§6.2.3・人
   });
 });
 
-describe("層 A のキーの流し方（B-流し方・§4.3）", () => {
+describe("層 A のキーの流し方（流し方）", () => {
   it("ページが置いた子を使い、子が自分で持つキーには触れない（近い方が勝つ）", async () => {
     const ui = document.createElement(MAPLAT_UI_TAG) as Ui;
     ui.setAttribute("map-id", "gsi");
@@ -420,7 +420,7 @@ describe("操作ボタン（公開メソッドを呼ぶ）", () => {
   });
 });
 
-describe("コンパス（U6: 層 B の設定で resetDirection / resetRotation を呼び分ける）", () => {
+describe("コンパス（層 B の設定で resetDirection / resetRotation を呼び分ける）", () => {
   it("north-up が無ければ resetRotation、north-up なら resetDirection（compass-action 既定の auto）", async () => {
     const ui = await mountUi();
     const app = ui.app! as any;
@@ -480,7 +480,7 @@ describe("地図の切り替えスライダー（listMaps と changeMap）", () 
   it("使える地図を 2 本のスライダーに分け、カードを押すと changeMap で切り替わる", async () => {
     const ui = await mountUi(u => u.setAttribute("lang", "ja"));
     const app = ui.app! as any;
-    // 題名は旧 UI と同じ div + span。地図の切り替えメニューは無い（Stage 2 でスライダーへ）
+    // 題名は旧 UI と同じ div + span。地図の切り替えメニューは無い（スライダーへ変えた）
     const title = part(ui, "map-title");
     expect(title.hidden).toBe(false);
     expect(title.querySelector(".text")!.textContent).toBe("古地図の題");
@@ -497,7 +497,7 @@ describe("地図の切り替えスライダー（listMaps と changeMap）", () 
     expect(new Set(slides(overlay).map(b => b.dataset.mapId))).toEqual(
       new Set(["old1"])
     );
-    // 1 枚のスライダー: 枠を描かず（P3）、矢印を出さない（S8）。位置は CSS が保つ
+    // 1 枚のスライダー: 枠を描かず、矢印を出さない。位置は CSS が保つ
     expect(overlay.classList.contains("single-map")).toBe(true);
     expect(
       overlay.querySelector<HTMLButtonElement>(".map-slider-nav.next")!.hidden
@@ -514,7 +514,7 @@ describe("地図の切り替えスライダー（listMaps と changeMap）", () 
       base.querySelector('[data-map-id="gsi"]')!.classList.contains("selected")
     ).toBe(true);
     // 背景の地図に切り替えると、重ねる地図のスライダーは位置（中央の old1）を保ち、`.selected` は外れる
-    // （旧 ui_init.ts:173-174 は両方に setSlideMapID(今の地図) を呼び、無い側は選択を外すだけ。設計 S9）
+    // （旧 ui_init.ts:173-174 は両方に setSlideMapID(今の地図) を呼び、無い側は選択を外すだけ）
     expect(
       overlay
         .querySelector('[data-map-id="old1"]')!
@@ -659,7 +659,7 @@ describe("POI の吹き出し（clickMarkers / clickMarker）", () => {
     ).toBe("https://example.com/");
   });
 
-  // ---- Stage 4 で旧 ui_marker.ts を消したので、その回帰をここへ移した（旧 spec の名前を行頭に書く） ----
+  // ---- 旧 ui_marker.ts を消したので、その回帰をここへ移した（旧 spec の名前を行頭に書く） ----
 
   // 旧 ui_marker_poi_html.spec.ts（m1-t5 AC1/AC10）: html と url の両方なら html を優先する
   it("html と url が両方あるときは html を優先し、iframe を作らない（m1-t5 AC1/AC10）", async () => {
@@ -736,7 +736,7 @@ describe("POI の吹き出し（clickMarkers / clickMarker）", () => {
   });
 
   // 旧 oct26-m16-t1-ui-marker-url.spec.ts（B-UI-3）: directgo は http/https のときだけ遷移する
-  // （旧と同じ一覧をそのまま使う: 拒否 10 件・許可 8 件。Stage 4 の仕上げで、減っていた件数を旧に戻した）
+  // （旧と同じ一覧をそのまま使う: 拒否 10 件・許可 8 件。旧 UI の実装の削除の仕上げで、減っていた件数を旧に戻した）
   describe("directgo は http/https のときだけ遷移する（B-UI-3）", () => {
     const REJECTED_URLS = [
       "javascript:alert(1)",
@@ -1303,8 +1303,8 @@ describe("言語（translateText・t・currentLang）", () => {
     expect(ui.currentLang).toBe("zh-TW");
   });
 
-  // m5（文書のレビュー 2026-10-24）: 層 B の appOption は起動時だけ効く（§6.4 (i)）。起動後の代入は
-  // 子へ流す（§4.3 の流し方はそのまま。子は自分の規則で警告して無視する）が、要素自身の読み
+  // 層 B の appOption は起動時だけ効く。起動後の代入は
+  // 子へ流す（流し方はそのまま。子は自分の規則で警告して無視する）が、要素自身の読み
   // （言語の解決）には効かない。
   it("起動後に appOption を代入しても言語は変わらない（起動時の appOption.lang のまま）", async () => {
     const ui = await mountUi(u => {
@@ -1416,7 +1416,7 @@ describe("公開面だけを使う（B-公開面だけ）", () => {
   });
 });
 
-// Stage 3 の再レビューの Info: ページから変えられる色の**変数の名前**を固定する。名前は外から見える
+// 再レビューの Info: ページから変えられる色の**変数の名前**を固定する。名前は外から見える
 // 契約（`docs/api/migration-ui-shadow-dom.md` の表）なので、改名は利用者の CSS を壊す。
 // Chuci の変数（`--cc-slider-*`）を要素が中で包んでいる理由も、ここで固定しておく。
 describe("POI のメディアの色の CSS 変数（ページが指定する名前）", () => {

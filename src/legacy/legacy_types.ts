@@ -1,9 +1,9 @@
-// 旧 API の型（設計 v2 §2.3.1 (4)・§6.4 Stage 3・Stage 4）。
+// 旧 API の型。
 //
 // 互換層は旧 UI の実装ファイルを **実行時に** import しないが、公開型は同じものを出す必要が
 // あるので、ここで `src/types.ts` から型だけを再輸出する（`import type` は実行時に消える）。
 //
-// Stage 4 で地図切り替え部品と OpenLayers の Control 層への依存を消したので、旧 API の外形として
+// 旧 UI の実装を削除したときに地図切り替え部品と OpenLayers の Control 層への依存を消したので、旧 API の外形として
 // 残す `SwiperInstance` は、その部品のクラス型ではなく、互換層が返す限定 facade の形（構造型）として
 // ここで定義する（旧の呼び手が読む口だけ）。`ui.sliderNew` の型は `LegacySliderFacade`（`legacy_slider.ts`）、
 // `ui.contextMenu` の型は `LegacyContextMenuFacade`（`legacy_context_menu.ts`）。

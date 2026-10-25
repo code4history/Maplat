@@ -1,4 +1,4 @@
-// Stage 3（一本化）: 旧 API のデモ `demo/dev.ts`（`/index.html`）が互換層の上で起動し、
+// 一本化: 旧 API のデモ `demo/dev.ts`（`/index.html`）が互換層の上で起動し、
 // 地図・スライダー・ボタン・POI と `app.addEventListener("clickMarker")` が動くことの確認。
 //
 // - 旧 API の `MaplatUi.createObject(option)` が解決し、`#status` が `READY appid=sample lang=ja` になる
@@ -7,10 +7,10 @@
 // - スライダー（`part="map-slider"`）のカードを押すと地図が替わる
 // - ボタン（`part="zoom"` 等）が見えていて、ズームと一覧（`part="marker-list"`）が動く
 // - 地図の POI を実クリックすると、POI の画面（`part="poi-modal"`）が開き、デモの
-//   `app.addEventListener("clickMarker", e => console.log(e))` が呼ばれる（互換層の再送出。設計 §2.3.5）
+//   `app.addEventListener("clickMarker", e => console.log(e))` が呼ばれる（互換層の再送出）
 //
 // 実行（dev サーバーは playwright.config.ts の webServer が立てる）:
-//   PLAYWRIGHT_SKIP_BROWSER_GC=1 node_modules/.bin/playwright test --workers=1 e2e/stage3-legacy-demo.spec.ts
+//   PLAYWRIGHT_SKIP_BROWSER_GC=1 node_modules/.bin/playwright test --workers=1 e2e/legacy-demo.spec.ts
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { test, expect, type Page } from "@playwright/test";
 

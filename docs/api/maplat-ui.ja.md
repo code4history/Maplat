@@ -2,6 +2,17 @@
 
 `@maplat/ui` のメインクラスです。
 
+> **非推奨。** `MaplatUi` クラスは非推奨で、次のメジャー版（2.0）で閉じます。
+> 新しいコードは `<maplat-ui>` 要素（`@maplat/ui/element`）と `<maplat-app>` 要素
+> （`@maplat/core/element`）を組み合わせて使ってください。要素の属性・プロパティ・
+> メソッド・イベントとこのクラスとの対応は
+> [`maplat-ui-element.ja.md`](maplat-ui-element.ja.md)、旧 UI の DOM からの移行は
+> [`migration-ui-shadow-dom.md`](migration-ui-shadow-dom.md) にあります。
+> `new MaplatUi(...)`・`MaplatUi.createObject(...)` は、同一プロセスで 1 回だけ
+> （インスタンスごとではなく）この旨を `console.warn` で警告します。この文書は 1.x の
+> クラス（静的メソッド・コンストラクタ・インスタンスメソッド・`waitReady`・`uiHooks`・
+> `ui.core`。2.0 までは従来どおり使えます）を記すものです。
+
 ## 静的メソッド
 
 - **`createObject(option: MaplatAppOption): Promise<MaplatUi>`**

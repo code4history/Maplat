@@ -1,13 +1,13 @@
 /**
- * 地図切替スライダー（1 本ぶん）。設計 v2 §4・§6.2。
+ * 地図切替スライダー（1 本ぶん）。
  *
  * - **OL 非依存・Shadow DOM 非依存**（DOM だけ。外から `element` を差し込む側が影に入れる）
  * - Swiper を使わない。**5 スロットの循環（リングバッファ）**で、DOM ノードは作り直さない。
- *   移動のたびに論理 offset を回し、遠端の 1 個だけを付け替える（§4.3.3）。
- * - 地図を変えるのは `onSelect` だけ。矢印・drag・`onActiveChange` からは呼ばない（D5・N5）。
+ *   移動のたびに論理 offset を回し、遠端の 1 個だけを付け替える。
+ * - 地図を変えるのは `onSelect` だけ。矢印・drag・`onActiveChange` からは呼ばない。
  *   覗いているカードを押したら、**動かし始めてすぐ** `onSelect(mapID, offset)` を呼ぶ（step の完了を待たない）。
  *
- * 数値はすべて先頭の `SLIDER_TUNING` に集めてある（P1・P2 の人間の決定を含む）。
+ * 数値はすべて先頭の `SLIDER_TUNING` に集めてある（幅ごとの枚数と操作の数値を含む）。
  * `src/legacy`・`ol`・`swiper` は import しない（`spec/element-deps.spec.ts`）。
  */
 import type { Localized } from "@maplat/core/common";
@@ -35,29 +35,29 @@ const NAV_ARROW_PATH =
   "M0.38296 20.0762C0.111788 19.805 0.111788 19.3654 0.38296 19.0942L9.19758 10.2796L0.38296 1.46497C0.111788 1.19379 0.111788 0.754138 0.38296 0.482966C0.654131 0.211794 1.09379 0.211794 1.36496 0.482966L10.4341 9.55214C10.8359 9.9539 10.8359 10.6053 10.4341 11.007L1.36496 20.0762C1.09379 20.3474 0.654131 20.3474 0.38296 20.0762Z";
 
 /**
- * スライダーの調整値。**数値はここ 1 か所だけ**に置く（設計 §4.7.1・P1・P2）。
+ * スライダーの調整値。**数値はここ 1 か所だけ**に置く。
  *
- * P1（幅ごとの枚数。v4 時代の見た目に戻す）:
+ * 幅ごとの枚数（v4 時代の見た目に戻す）:
  *   幅 480px 以下 → 1.4 枚・gap 10 ／ 481px 以上 → 2 枚・gap 15
- * P2（操作）:
+ * 操作:
  *   速さのしきい値 0.35px/ms・1 操作で 1 枚・250ms（`cubic-bezier(.22,.61,.36,1)`）・
  *   遠い地図は 160ms で 1 枚ずつ連続・drag は 1 枚上限＋はみ出しは 0.3 倍の抵抗・drag 中は地図を変えない
  */
 export const SLIDER_TUNING = {
-  /** P1: この幅（px）**以下**を「狭い」とし、1.4 枚・gap 10 にする */
+  /** この幅（px）**以下**を「狭い」とし、1.4 枚・gap 10 にする */
   breakpointWidth: 480,
-  /** P1: 狭いときの枚数・間隔 */
+  /** 狭いときの枚数・間隔 */
   perViewNarrow: 1.4,
   gapNarrow: 10,
-  /** P1: 広いときの枚数・間隔 */
+  /** 広いときの枚数・間隔 */
   perViewWide: 2,
   gapWide: 15,
 
-  /** 1 枚動かすアニメの時間（P2） */
+  /** 1 枚動かすアニメの時間 */
   stepDurationMs: 250,
-  /** 遠い地図を続けて動かすときの 1 枚あたりの時間（P2） */
+  /** 遠い地図を続けて動かすときの 1 枚あたりの時間 */
   farStepDurationMs: 160,
-  /** アニメの曲線（P2） */
+  /** アニメの曲線 */
   easing: "cubic-bezier(.22,.61,.36,1)",
   /** `transitionend` が来ない環境で確定するまでの余裕（ms。遷移がまだ走っていれば、その終わりを待つ） */
   transitionFallbackSlackMs: 120,
@@ -66,22 +66,22 @@ export const SLIDER_TUNING = {
    * その回数の上限（止まった遷移・観測できない環境では 1 回だけ待って確定する。待ち続ける経路は無い）
    */
   transitionWatchMaxRounds: 8,
-  /** 払いの速さのしきい値（px/ms。P2） */
+  /** 払いの速さのしきい値（px/ms） */
   thresholdVelocity: 0.35,
-  /** 1 操作で動かす枚数の上限（P2） */
+  /** 1 操作で動かす枚数の上限 */
   maxStepsPerGesture: 1,
-  /** drag で 1 枚を超えた分に掛ける抵抗（P2） */
+  /** drag で 1 枚を超えた分に掛ける抵抗 */
   dragResistance: 0.3,
-  /** drag で指に追従させる枚数の上限（P2） */
+  /** drag で指に追従させる枚数の上限 */
   dragLimitCards: 1,
-  /** これ未満の移動はクリックとして扱う（px。S12） */
+  /** これ未満の移動はクリックとして扱う（px） */
   clickThresholdPx: 2,
   /** 矢印の連打で積む枚数の上限 */
   maxQueuedSteps: 3,
 
-  /** 見出しの行数（D8） */
+  /** 見出しの行数 */
   labelLines: 2,
-  /** 1 画面に置くスロットの数（§4.3.1） */
+  /** 1 画面に置くスロットの数 */
   slotCount: 5,
   /** カードの高さ（旧 CSS と同じ 60px。見た目の基準は baseline JSON） */
   cardHeightPx: 60
@@ -104,9 +104,8 @@ export interface MapSliderOptions {
   /**
    * クリック/Enter で地図を切り替える。`offset` は押したスロットの相対位置（-2..2）。
    *
-   * **部品はこの呼び出しのすぐ後に自分で 1 枚動き始める**（D5。step の完了を待たない）。
-   * したがって呼ぶ側は `step()` を呼ばない（呼ぶと 2 枚動く）。設計 §4.6 の擬似コードの
-   * `await slider.step(...)` は D5 で古くなっている（Minor 7）。
+   * **部品はこの呼び出しのすぐ後に自分で 1 枚動き始める**（step の完了を待たない）。
+   * したがって呼ぶ側は `step()` を呼ばない（呼ぶと 2 枚動く。`step()` の完了を待つ必要もない）。
    */
   onSelect: (mapID: string, offset: number) => void;
   /** 中央のカードが変わった（確定）。 */
@@ -116,14 +115,14 @@ export interface MapSliderOptions {
   /** 読み上げ用のグループ名（"背景地図" / "重ね地図"） */
   groupLabel: string;
   /**
-   * 矢印の読み上げ名（既定「前の地図」「次の地図」。Minor 9）。既定は**新しい名前**で、旧 UI には
-   * この文字が無い（N6）ので、呼び手は言語に合わせて渡す。
+   * 矢印の読み上げ名（既定「前の地図」「次の地図」）。既定は**新しい名前**で、旧 UI には
+   * この文字が無いので、呼び手は言語に合わせて渡す。
    */
   navLabels?: { prev?: string; next?: string };
   /**
    * サムネイルが無い（または許可リストを通らない）ときの代わりの要素。`<maplat-ui>` は
    * 要素が既に持っている `#thumbPlaceholder`（頭文字の入った `span.thumb.none`）を渡す
-   * （Stage 2 の申し送り: プレースホルダを 2 つ作らない）。省略すると何も置かない。
+   * （申し送り: プレースホルダを 2 つ作らない）。省略すると何も置かない。
    */
   placeholder?: (label: string) => HTMLElement;
 }
@@ -135,7 +134,7 @@ export function mod(n: number, m: number): number {
   return r === 0 ? 0 : r;
 }
 
-/** P1: 画面の幅から枚数と間隔を決める（480px 以下は 1.4 枚・gap 10） */
+/** 画面の幅から枚数と間隔を決める（480px 以下は 1.4 枚・gap 10） */
 export function perViewFor(width: number): { perView: number; gap: number } {
   return width <= SLIDER_TUNING.breakpointWidth
     ? { perView: SLIDER_TUNING.perViewNarrow, gap: SLIDER_TUNING.gapNarrow }
@@ -154,7 +153,7 @@ export function cardWidthFor(
 
 /**
  * トラックの基準位置。5 スロットを等間隔に並べたとき、中央スロット（物理 index 2）の中心を
- * 容器の中心へ持ってくる（§4.3.2。v1 の `C/2 - 1.5W - g` は 3 スロット前提で 1 枚ずれる）。
+ * 容器の中心へ持ってくる（v1 の `C/2 - 1.5W - g` は 3 スロット前提で 1 枚ずれる）。
  */
 export function baseXFor(
   containerWidth: number,
@@ -174,7 +173,7 @@ export function slotIndex(
 }
 
 /**
- * 払い（dx）と速さ（velocity）から、動かす枚数を決める（-1・0・+1 のいずれか。P2）。
+ * 払い（dx）と速さ（velocity）から、動かす枚数を決める（-1・0・+1 のいずれか）。
  * 符号: **右へ払ったら前（-1）**、左へ払ったら次（+1）。`dx` が半分以上なら dx を優先する。
  */
 export function snapSteps(
@@ -189,7 +188,7 @@ export function snapSteps(
   return 0;
 }
 
-// 見た目は `src/element/styles.ts` の `MAPLAT_UI_CSS` が持つ（Stage 2 で移した。設計 §6.3・Minor 4・5）。
+// 見た目は `src/element/styles.ts` の `MAPLAT_UI_CSS` が持つ（見た目をここへ移した）。
 // この部品は Shadow DOM を知らないので、外から `element` を影に入れる呼び手（`<maplat-ui>`）が
 // 同じスタイルを当てる。数値は `SLIDER_TUNING` から `styles.ts` が埋め込む（1 か所）。
 
@@ -204,7 +203,7 @@ type DragState = {
   moved: boolean;
 };
 
-/** キューに積む 1 手（`duration` は「遠い地図か」で決まる。Minor 1） */
+/** キューに積む 1 手（`duration` は「遠い地図か」で決まる） */
 type QueuedStep = { dir: -1 | 1; duration: number };
 
 const now = () =>
@@ -239,12 +238,12 @@ export class MapSlider {
 
   #queue: QueuedStep[] = [];
   #pumping = false;
-  /** 動いているキューが空になるまで解決しない Promise（`step()` がすぐ解決しないように。Minor 2） */
+  /** 動いているキューが空になるまで解決しない Promise（`step()` がすぐ解決しないように） */
   #drained: Promise<void> | null = null;
   #pendingSelected: string | null = null;
   /** 読み込みに失敗したサムネイルの URL（プレースホルダで出す） */
   #brokenThumbs = new Set<string>();
-  /** 続きを呼ぶときも「遠い地図の連続」の時間を使うか（積める数を超えた移動の続き。N8） */
+  /** 続きを呼ぶときも「遠い地図の連続」の時間を使うか（積める数を超えた移動の続き） */
   #pendingFar = false;
   #animating = false;
   #drag: DragState | null = null;
@@ -311,7 +310,7 @@ export class MapSlider {
     return this.#activeMapID();
   }
 
-  /** この行（背景／重ねる）にその地図があるか（要素が「無い側の選択を外す」ために使う。設計 S9・S14） */
+  /** この行（背景／重ねる）にその地図があるか（要素が「無い側の選択を外す」ために使う） */
   hasMap(mapID: string | null): boolean {
     return mapID !== null && this.#items.some(item => item.mapID === mapID);
   }
@@ -339,7 +338,7 @@ export class MapSlider {
 
   /**
    * 動いているか（キューを流している・1 歩のアニメの途中・drag の途中）。
-   * @internal テスト専用（旧 e2e の `swiper.animating` の移植先。設計 v2 §4.7.3 の対応表）。
+   * @internal テスト専用（旧 e2e の `swiper.animating` の移植先）。
    */
   get animating(): boolean {
     return this.#pumping || this.#animating || this.#drag !== null;
@@ -389,7 +388,7 @@ export class MapSlider {
   }
 
   /**
-   * 地図の選択を合わせる。隣は 1 枚のアニメ、遠いは飛ばさずに 1 枚ずつ連続で動かす（§4.3.4・P2）。
+   * 地図の選択を合わせる。隣は 1 枚のアニメ、遠いは飛ばさずに 1 枚ずつ連続で動かす。
    * 中央は変わらないので `.selected` だけ先に合わせる（押した直後の見た目のため）。
    */
   setSelectedMapID(mapID: string | null, animate = true): void {
@@ -412,7 +411,7 @@ export class MapSlider {
     }
     if (this.#pumping || this.#animating) {
       // 遷移中は 1 つだけ覚えておき、確定後に処理する（連打で列を伸ばさない）。
-      // 利用者の選び直しは「近い移動」から数え直す（N8 の続きの扱いを持ち越さない）
+      // 利用者の選び直しは「近い移動」から数え直す（前の続きの扱いを持ち越さない）
       this.#pendingSelected = mapID;
       this.#pendingFar = false;
       this.#setSelected(mapID);
@@ -441,7 +440,7 @@ export class MapSlider {
     this.element.setAttribute("aria-label", label || "");
   }
 
-  /** 矢印の読み上げ名を差し替える（言語の切り替えで呼ぶ。Minor 9・Stage 2） */
+  /** 矢印の読み上げ名を差し替える（言語の切り替えで呼ぶ） */
   setNavLabels(labels: { prev?: string; next?: string }): void {
     this.#navLabels = { ...labels };
     this.#prev.setAttribute("aria-label", labels.prev ?? "前の地図");
@@ -462,7 +461,7 @@ export class MapSlider {
   refresh(): void {
     if (this.#destroyed) return;
     this.#applyLayout();
-    // `minimize` は `ellipsize` が毎回外して付け直す（Minor 3。ここで外す必要はない）
+    // `minimize` は `ellipsize` が毎回外して付け直す（ここで外す必要はない）
     for (let i = 0; i < this.#labels.length; i++) {
       const item = this.#slotItems[i];
       if (!item) continue;
@@ -483,7 +482,7 @@ export class MapSlider {
     this.#detachDragListeners();
     this.#observer?.disconnect();
     this.#observer = null;
-    // `ResizeObserver` が無い環境で足したリスナーも外す（Minor 6）
+    // `ResizeObserver` が無い環境で足したリスナーも外す
     window.removeEventListener("resize", this.#onResize);
     this.element.removeEventListener("keydown", this.#onKeyDown);
     this.#viewport.removeEventListener("pointerdown", this.#onPointerDown);
@@ -500,9 +499,9 @@ export class MapSlider {
       "part",
       kind === "prev" ? "map-slider-prev" : "map-slider-next"
     );
-    // 読み上げ名は呼び手が差し替えられる（Minor 9）。既定の「前の地図」「次の地図」は**新しい名前**で、
+    // 読み上げ名は呼び手が差し替えられる。既定の「前の地図」「次の地図」は**新しい名前**で、
     // 旧 UI には無い（`src/` にこの文字は無い。旧の切り替えは Swiper の `navigation`
-    // `src/ui_init.ts:573-576`・`:611-614` で、ボタンの名は Swiper の a11y の既定（英語）任せ。N6）。
+    // `src/ui_init.ts:573-576`・`:611-614` で、ボタンの名は Swiper の a11y の既定（英語）任せ）。
     // 呼び手が言語に合わせて `navLabels` で渡す（`setNavLabels` で切り替えられる）。
     const labels = this.#navLabels;
     button.setAttribute(
@@ -598,7 +597,7 @@ export class MapSlider {
       button.setAttribute("aria-label", this.#labelText(item));
       // サムネイル: `javascript:` などは画像にしない（`poi_safe.ts` の許可リスト）。
       // 無いときは呼び手から渡されたプレースホルダ（`<maplat-ui>` の `#thumbPlaceholder`）を使う。
-      // 読めなかった画像（404・壊れた画像）は頭文字のプレースホルダに替える（レビュー Major 5）
+      // 読めなかった画像（404・壊れた画像）は頭文字のプレースホルダに替える
       const safe = safeImageUrl(item.thumbnail ?? undefined);
       const url = safe && !this.#brokenThumbs.has(safe) ? safe : undefined;
       if (url) {
@@ -610,7 +609,7 @@ export class MapSlider {
           img.setAttribute("part", "map-slide-thumb");
           img.alt = "";
           // crossOrigin は付けない（旧 UI も付けていない。キャンバスに描かないので要らず、付けると
-          // CORS の応答ヘッダを返さないサーバーのサムネイルが壊れた画像になる。レビュー Major 5）
+          // CORS の応答ヘッダを返さないサーバーのサムネイルが壊れた画像になる）
           img.addEventListener("error", () => {
             const src = img.getAttribute("src");
             if (!src || this.#destroyed) return;
@@ -659,7 +658,7 @@ export class MapSlider {
       const selected =
         !!item && this.#selected !== null && item.mapID === this.#selected;
       this.#slotEls[i].classList.toggle("selected", selected);
-      // P4 の part 名（設計 §4.5.4）: 選択中のカードは `map-slide map-slide-selected`（レビュー Major 4）
+      // part 名: 選択中のカードは `map-slide map-slide-selected`（docs/api/migration-ui-shadow-dom.md）
       this.#slotEls[i].setAttribute(
         "part",
         selected ? "map-slide map-slide-selected" : "map-slide"
@@ -734,7 +733,7 @@ export class MapSlider {
 
   /**
    * キューを 1 本ずつ流す。**返す Promise はキューが空になるまで解決しない**
-   * （動いている最中の `step()` がすぐ解決していたのを直す。Minor 2）。
+   * （動いている最中の `step()` がすぐ解決していたのを直す）。
    */
   #pump(): Promise<void> {
     if (this.#pumping) return this.#drained ?? Promise.resolve();
@@ -761,7 +760,7 @@ export class MapSlider {
           const index = this.#items.findIndex(item => item.mapID === pending);
           if (index >= 0) {
             this.#setSelected(pending);
-            // 積める数を超えた続きは、遠い移動の一部なので 160ms を引き継ぐ（N8）
+            // 積める数を超えた続きは、遠い移動の一部なので 160ms を引き継ぐ
             this.#moveTo(index, far);
           }
         }
@@ -772,8 +771,8 @@ export class MapSlider {
   }
 
   /**
-   * 遠い地図へは 1 枚ずつ動かす（飛ばさない。P2）。
-   * `farContinuation` は「積める数を超えた続き」から呼ばれたことを示す（N8）。
+   * 遠い地図へは 1 枚ずつ動かす（飛ばさない）。
+   * `farContinuation` は「積める数を超えた続き」から呼ばれたことを示す。
    */
   #moveTo(index: number, farContinuation = false): void {
     let delta = mod(index - this.#active, this.count);
@@ -783,10 +782,10 @@ export class MapSlider {
       return;
     }
     const dir: -1 | 1 = delta > 0 ? 1 : -1;
-    // 1 枚だけなら 250ms、2 枚以上先なら 1 枚あたり 160ms（P2・§4.3.4）。
+    // 1 枚だけなら 250ms、2 枚以上先なら 1 枚あたり 160ms。
     // 「キューに残っている数」で決めると、最初の 1 枚が必ず 250ms になり、
-    // 3 枚先が 250・160・250ms になっていた（Minor 1）。
-    // 積める数を超えた続きも「遠い移動の一部」なので 160ms のまま（N8。ここで続きを近い移動と
+    // 3 枚先が 250・160・250ms になっていた。
+    // 積める数を超えた続きも「遠い移動の一部」なので 160ms のまま（ここで続きを近い移動と
     // 数えると、5 枚先が 160×4 + 250ms になる）
     const far = farContinuation || Math.abs(delta) >= 2;
     const duration = far
@@ -842,7 +841,7 @@ export class MapSlider {
         if ((ev as TransitionEvent).propertyName === "transform") finish();
       };
       // 遷移が途中で消された（自動非表示の display:none・大きさの変化の描き直し等）ときは、
-      // 保険の時間を待たずに確定する（レビュー Major 1）
+      // 保険の時間を待たずに確定する
       const onCancel = (ev: Event) => {
         if (started && (ev as TransitionEvent).propertyName === "transform")
           finish();
@@ -970,12 +969,12 @@ export class MapSlider {
     this.#track.style.transition = "none";
     this.#renderSlots();
     this.#applyLayout();
-    // 強制リフロー（設計 §4.3.3 (3)）。これが無いと、続けて動かすときに
+    // 強制リフロー。これが無いと、続けて動かすときに
     // 次の `#animateTo` と同じタスクで transform を書き換えることになり、
     // 「transition: none の付け替え」がコミットされないまま次のアニメが始まる
     // ＝1 枚分の跳びが出て `transitionend` も来ない（毎回「時間 + 120ms」の保険待ち）。
-    // 遠い地図・矢印の連打・遷移中のクリックで出る（M3）。
-    // jsdom ではレイアウトが無いので**再現できない**。Stage 2 の e2e で確かめる。
+    // 遠い地図・矢印の連打・遷移中のクリックで出る。
+    // jsdom ではレイアウトが無いので**再現できない**。スライダーの e2e で確かめる。
     void this.#track.offsetWidth;
     // transition を戻す（次に動かすときに `#animateTo` が付け直す）
     this.#track.style.transition = "";
@@ -992,7 +991,7 @@ export class MapSlider {
   #handleClick(ev: MouseEvent, index: number): void {
     if (this.#destroyed || !this.#enabled) return;
     if (this.#suppressClick) {
-      // drag の直後の click は地図へ渡さない（S12）
+      // drag の直後の click は地図へ渡さない
       this.#suppressClick = false;
       ev.preventDefault();
       ev.stopPropagation();
@@ -1005,7 +1004,7 @@ export class MapSlider {
     ev.stopPropagation();
     if (this.count > 1 && slot.offset !== 0) {
       const dir: -1 | 1 = slot.offset > 0 ? 1 : -1;
-      // 動かし始めてすぐに onSelect を呼ぶ（step の完了は待たない。D5）
+      // 動かし始めてすぐに onSelect を呼ぶ（step の完了は待たない）
       void this.#enqueue(dir);
       this.#options.onSelect(item.mapID, slot.offset);
     } else {
@@ -1018,7 +1017,7 @@ export class MapSlider {
   #handlePointerDown(ev: PointerEvent): void {
     if (this.#destroyed || !this.#enabled || this.count < 2) return;
     // 動いている最中に drag を始めると `transition: none` で遷移が打ち切られ、
-    // 途中の位置から確定してしまう（Minor 8）
+    // 途中の位置から確定してしまう
     if (this.#animating) return;
     if (typeof ev.button === "number" && ev.button !== 0) return;
     const t = now();
@@ -1101,7 +1100,7 @@ export class MapSlider {
     // `steps` は「動かす向き」。+1 なら offset +1 のカードが中央へ来る。
     // 中心が物理スロットのどこにあるかは commit で回るので、**物理位置で数えない**。
     // `indexOf(steps)` で「offset === steps のスロット」を引く（循環の境目で null に
-    // ならなかったのを直す。M2。旧 `index + steps` は 5 枚の環の端で範囲外になっていた）。
+    // ならなかったのを直す。旧 `index + steps` は 5 枚の環の端で範囲外になっていた）。
     const slot = this.#offsets.indexOf(steps);
     const target = slot >= 0 ? this.#slotItems[slot] : null;
     this.#options.onActivePreview?.(target?.mapID ?? null);
