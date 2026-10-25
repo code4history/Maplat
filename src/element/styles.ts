@@ -61,13 +61,17 @@ export const MAPLAT_UI_CSS = `
   font-weight: normal;
   line-height: normal;
   color: rgb(255, 255, 255);
-  background-color: rgba(120, 5, 8, .5);
   border: none;
   border-radius: 2px;
   cursor: pointer;
   text-align: center;
   touch-action: manipulation;
 }
+/* 実物の操作ボタンとヘルプの印（アイコン・＋−）・透過度スライダーのつまみで同じ背景色を使う（1 か所） */
+.ctl button,
+.help-modal .help-icon,
+.help-modal .help-key,
+.help-modal .help-slider::after { background-color: rgba(120, 5, 8, .5); }
 .ctl button:focus-visible { outline: 2px solid rgba(120, 5, 8, .9); outline-offset: 1px; }
 @media (hover: hover) {
   .ctl button:hover { background-color: rgba(120, 5, 8, .7); }
@@ -81,39 +85,51 @@ export const MAPLAT_UI_CSS = `
    旧 CSS に .fa-lg の規則は無いので、実際の大きさはボタンの文字の大きさ（16px・タッチ 24px）と同じ 1em。
    新も 1em にする（仕上げで実測。旧 16×16・ボタンの左上から 8.5px/7.5px） */
 .ctl .icon { display: inline-block; font-size: 1em; line-height: 1; }
-.ctl-zoom { top: .5em; left: .5em; left: calc(.5em + env(safe-area-inset-left)); }
 .ctl-zoom button { height: 2.0625em; width: 2.0625em; font-weight: normal; }
 .ctl-zoom button:first-child { border-radius: 2px 2px 0 0; }
 .ctl-zoom button:last-child { border-radius: 0 0 2px 2px; }
-.ctl-gps { top: 80px; left: .5em; left: calc(.5em + env(safe-area-inset-left)); }
-.ctl-home { top: 120px; left: .5em; left: calc(.5em + env(safe-area-inset-left)); }
 .ctl-compass { top: .5em; right: .5em; right: calc(.5em + env(safe-area-inset-right)); }
 .ctl-compass .needle { display: inline-block; will-change: transform; }
 .ctl-compass .needle svg { transform: rotate(-33deg); }
-/* 右下のボタンの列（旧 .ol-copyright・.ol-border・.ol-hide-marker・.ol-marker-list の積み方）。
-   下から 地図情報・枠線・マーカーの非表示・マーカー一覧 の順。列は flex なので、隠れている
-   ボタンの分だけ詰めて積まれる（旧 UI と同じく隙間を空けない）。旧の間隔は 40px（33px + 7px）。 */
+/* 操作ボタンの列（旧 .ol-copyright・.ol-border・.ol-hide-marker・.ol-marker-list の積み方）。
+   右下は下から 地図情報・枠線・マーカーの非表示・マーカー一覧、左上は上から ズーム・GPS・ホーム、
+   左下は上から 共有・ヘルプ。列は flex なので、隠れているボタンの分だけ詰めて積まれる。
+   間隔は 1 か所（この gap）で決め、左上・左下・右下のすべてが同じ値を使う（既定 7px）。 */
 .ctl-column {
   position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: var(--maplat-ui-control-gap, 7px);
+  /* ボタンの間の隙間では地図を操作できるようにする（列そのものは押せない） */
+  pointer-events: none;
+}
+.ctl-column-top-left {
+  top: .5em;
+  left: .5em;
+  left: calc(.5em + env(safe-area-inset-left));
+}
+.ctl-column-bottom-left {
+  left: .5em;
+  left: calc(.5em + env(safe-area-inset-left));
+  bottom: calc(65px + .5em);
+  bottom: calc(65px + .5em + env(safe-area-inset-bottom));
+  flex-direction: column-reverse;
+}
+.ctl-column-bottom-right {
   right: .5em;
   right: calc(.5em + env(safe-area-inset-right));
   bottom: calc(65px + .5em);
   bottom: calc(65px + .5em + env(safe-area-inset-bottom));
-  display: flex;
   flex-direction: column-reverse;
-  gap: 7px;
 }
 .ctl-column > .ctl {
+  pointer-events: auto;
   position: relative;
   top: auto;
   right: auto;
   bottom: auto;
   left: auto;
 }
-/* 共有のボタン（旧 .ol-share: 左下。共有のボタンの上にヘルプ） */
-.ctl-share { left: .5em; left: calc(.5em + env(safe-area-inset-left)); bottom: calc(105px + .5em); bottom: calc(105px + .5em + env(safe-area-inset-bottom)); }
-/* ヘルプのボタン（旧 .ol-maplat: 左下） */
-.ctl-help { left: .5em; left: calc(.5em + env(safe-area-inset-left)); bottom: calc(65px + .5em); bottom: calc(65px + .5em + env(safe-area-inset-bottom)); }
 /* 押されている状態（旧は class の付け替えで表していた） */
 .ctl button[aria-pressed="true"] { background-color: rgba(120, 5, 8, .9); }
 /* 操作ボタンの自動非表示（旧 .ol-control.fade / .ol-slidercommon.fade） */
@@ -123,16 +139,10 @@ export const MAPLAT_UI_CSS = `
 .map-slider.fade { display: none; }
 /* タッチ端末ではズームのボタンを隠す（旧 &.ol-touch .ol-zoom { display: none; }） */
 .frame.touch .ctl-zoom { display: none; }
-/* タッチ端末はズームを隠した分、GPS とホームを上へ詰め、ボタンを指で押せる大きさにする
-   （旧 ol-touch: src/styles/maplat-specific.scss の .gps / .home の top と、
-   node_modules/ol/ol.css の .ol-touch .ol-control button { font-size: 1.5em }＝ページ既定の 16px なら 24px）。
-   右列は flex の自動積みで旧の 115px+.5em / 165px+.5em / 215px+.5em に寄せる（ボタン 49.5px）。 */
-.frame.touch .ctl-gps { top: .5em; }
-.frame.touch .ctl-home { top: calc(.5em + 50px); }
+/* タッチ端末はボタンを指で押せる大きさにする（旧 ol.css の
+   .ol-touch .ol-control button { font-size: 1.5em }＝ページ既定の 16px なら 24px）。
+   間隔はタッチでも同じ変数（左上・左下・右下とも同じ値）を使う。 */
 .frame.touch .ctl button { font-size: 1.5em; }
-/* bottom は基本の規則（65px + .5em + 安全領域）のまま。ここで書くと安全領域が消える */
-.frame.touch .ctl-column { gap: .5px; }
-.frame.touch .ctl-share { bottom: calc(115px + .5em); bottom: calc(115px + .5em + env(safe-area-inset-bottom)); }
 
 /* ---- 透過度のスライダー（旧 .ol-slidernew） ---- */
 .slider {
@@ -544,29 +554,153 @@ export const MAPLAT_UI_CSS = `
 .help-modal h4 { margin: 1em 0 .3em; font-size: 1em; font-weight: bold; color: #333; }
 .help-modal .help-list { margin: 0 0 .6em; padding-inline-start: 1.4em; }
 .help-modal .help-list li { margin: 0 0 .4em; }
-.help-modal .help-icon { display: inline-block; height: 1em; width: 1em; vertical-align: -0.125em; }
-.help-modal .help-icon svg { height: 1em; width: 1em; }
-.help-modal .help-img { max-height: 1.4em; width: auto; vertical-align: middle; }
+/* 実物の操作ボタン（.ctl button）と同じ見た目: 赤茶の半透明の背景・白いアイコンか文字・角の丸み 2px。
+   大きさは実物と同じではないが、行の中に収まる 1.4em 角の小さな四角にする */
+.help-modal .help-icon,
 .help-modal .help-key {
-  display: inline-block;
-  min-width: 1.2em;
-  padding: 0 .3em;
-  border: 1px solid #999;
-  border-radius: 3px;
-  background: #eee;
-  font-weight: bold;
-  line-height: 1.4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 1.4em;
+  height: 1.4em;
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+  color: #fff;
+  font-weight: normal;
+  line-height: 1;
   text-align: center;
   vertical-align: middle;
 }
+/* アイコンは箱の半分（実物は 2.0625em の箱に 1em のアイコン）。大きいと塗りつぶしのアイコン（ⓘ・一覧）が
+   箱からはみ出して見える */
+/* getIcon の SVG は style 属性に 1em を持つので、ここは !important で上書きする */
+.help-modal .help-icon svg { height: 50% !important; width: 50% !important; vertical-align: 0 !important; }
+/* 本文の中の印は少し大きく（旧のヘルプは 33px のボタンの画像を文の中に置いていた）。全体の図の中は 1.4em のまま */
+.help-modal .help-text .help-icon,
+.help-modal .help-text .help-key,
+.help-modal .help-list .help-icon,
+.help-modal .help-list .help-key { width: 1.8em; height: 1.8em; }
+.help-modal .help-img { max-height: 1.4em; width: auto; vertical-align: middle; }
+/* 実物の透過度のスライダー（.slider）に似せる: 白い半透明の可動部分（灰色の枠・丸角）の上に、
+   右端へ赤茶のつまみを置く。つまみと可動部分のそれぞれに影を付ける */
 .help-modal .help-slider {
+  position: relative;
   display: inline-block;
-  width: 2.2em;
-  height: .8em;
+  box-sizing: border-box;
+  width: 3.5em;
+  height: .95em;
   border: 2px solid #666;
   border-radius: 4px;
   background: rgba(255, 255, 255, .6);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .35);
   vertical-align: middle;
+}
+.help-modal .help-slider::after {
+  content: "";
+  position: absolute;
+  top: -1px;
+  right: 1px;
+  bottom: -1px;
+  width: .8em;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .45);
+}
+/* ヘルプの冒頭の全体の図（旧 fullscreen.png の位置）。その場にスマホの画面を組む。
+   背景は今の地図を写したもの（canvas）。写せないときは先頭の古地図のサムネイル（どちらも object-fit: cover） */
+.help-modal .help-figure { margin: 0 0 1em; text-align: center; }
+.help-modal .help-phone {
+  position: relative;
+  display: inline-block;
+  box-sizing: border-box;
+  width: 180px;
+  padding: 6px;
+  background: #111;
+  border-radius: 24px;
+  vertical-align: middle;
+}
+.help-modal .help-phone-screen {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 200 / 394;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #d9d9d9;
+}
+.help-modal .help-phone-map {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.help-modal .help-phone-ui { position: absolute; inset: 0; }
+.help-modal .help-phone-title {
+  position: absolute;
+  top: 8px;
+  right: 18%;
+  left: 18%;
+  height: 10px;
+  border-radius: 2px;
+  background: rgba(32, 32, 32, .5);
+}
+.help-modal .help-phone-stack {
+  position: absolute;
+  display: flex;
+  gap: 2px;
+}
+.help-modal .help-phone-stack-top-left {
+  top: 8px;
+  left: 8px;
+  flex-direction: column;
+}
+.help-modal .help-phone-stack-top-right { top: 8px; right: 8px; }
+.help-modal .help-phone-stack-bottom-left,
+.help-modal .help-phone-stack-bottom-right {
+  bottom: 40px;
+  flex-direction: column-reverse;
+}
+.help-modal .help-phone-stack-bottom-left { left: 8px; }
+.help-modal .help-phone-stack-bottom-right { right: 8px; }
+/* 地図の切り替えスライダー: サムネイル付きのカードを簡略化したもの（サムネイルの上に見出しの帯） */
+.help-modal .help-phone-map-slider {
+  position: absolute;
+  bottom: 8px;
+  width: 35%;
+  height: 24px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: rgba(32, 32, 32, .5);
+}
+.help-modal .help-phone-map-slider[data-kind="base"] { left: 1.25%; }
+.help-modal .help-phone-map-slider[data-kind="overlay"] { right: 1.25%; }
+.help-modal .help-phone-card-thumb {
+  position: absolute;
+  inset: 0;
+  max-width: 100%;
+  max-height: 100%;
+  margin: auto;
+}
+.help-modal .help-phone-card-label {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 6px;
+  background: rgba(32, 32, 32, .5);
+}
+/* 透過度のスライダーは 2 本の地図スライダーの間に置く（実物の幅の比に合わせる） */
+.help-modal .help-phone-transparency {
+  position: absolute;
+  bottom: 13px;
+  left: 37.5%;
+  width: 25%;
+  font-size: 11px;
+}
+.help-modal .help-phone-transparency .help-slider {
+  display: block;
+  width: 100%;
 }
 .help-modal .help-footer { margin: 1em 0 0; font-size: .9em; color: #555; }
 

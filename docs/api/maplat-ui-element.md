@@ -347,14 +347,16 @@ legacy class names, the list of parts and the CSS variables are in the
 parts only); the source of truth for the part names is
 `src/element/maplat-ui.ts`, `src/element/slider.ts`, `src/element/share.ts`
 (`qr-code`) and `src/element/poi-html.ts` (`poi-html`, `poi-iframe`).
-The two variables are `--maplat-poi-media-theme-color` /
+The three variables are `--maplat-poi-media-theme-color` /
 `--maplat-poi-media-navigation-color` (the colours of the POI media swiper,
-default `#007aff`) and `--maplat-envelope-color` (the default colour of the
+default `#007aff`), `--maplat-envelope-color` (the default colour of the
 dashed frame on the map-slider cards while borders are shown; a card that has
 an extent always carries a per-map colour set by the element, which wins, so
 a value set by the page is not visible in the current release — see the
-migration guide). The child map is styled as `maplat-ui > maplat-app` (its
-inside is the layer-A DOM).
+migration guide) and `--maplat-ui-control-gap` (the gap between the control
+buttons in the top-left, bottom-left and bottom-right columns, default `7px`;
+the same value is used on touch devices). The child map is styled as
+`maplat-ui > maplat-app` (its inside is the layer-A DOM).
 
 ```css
 maplat-ui { width: 100%; height: 100vh; --maplat-poi-media-theme-color: #a00; }

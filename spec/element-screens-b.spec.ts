@@ -664,7 +664,7 @@ describe("タッチ端末でズームのボタンを隠す（旧 ol-touch・.ol-
     ).toBe(false);
   });
 
-  it("タッチ端末では GPS とホームを上へ詰め、ボタンを 1.5 倍にする（旧 ol-touch）", async () => {
+  it("タッチ端末でもボタンを 1.5 倍にし、左上・左下は右下と同じ列に積む（旧 ol-touch）", async () => {
     Object.defineProperty(window, "ontouchstart", {
       configurable: true,
       value: null
@@ -675,45 +675,43 @@ describe("タッチ端末でズームのボタンを隠す（旧 ol-touch・.ol-
       expect(frame.classList.contains("touch")).toBe(true);
       const gps = part(touch, "gps");
       const home = part(touch, "home");
+      const zoom = part(touch, "zoom");
+      const share = part(touch, "share");
+      const help = part(touch, "help");
       const button = gps.querySelector("button") as HTMLButtonElement;
       // em の基準（親から継承する文字の大きさ。jsdom は layout をしないので、計算後の px で比べる）
       const base = parseFloat(getComputedStyle(gps).fontSize);
-      // 旧: .ol-touch .gps { top: .5em }・.ol-touch .home { top: calc(.5em + 50px) } 相当
-      expect(parseFloat(getComputedStyle(gps).top)).toBeCloseTo(base * 0.5);
-      expect(parseFloat(getComputedStyle(home).top)).toBeCloseTo(
-        base * 0.5 + 50
+      // 左上は ズーム（タッチでは CSS で隠す）・GPS・ホームを、右下と同じ flex の列に積む
+      const topLeft = gps.parentElement!;
+      expect(topLeft).toBe(home.parentElement);
+      expect(topLeft).toBe(zoom.parentElement);
+      expect(topLeft.classList.contains("ctl-column")).toBe(true);
+      expect(topLeft.classList.contains("ctl-column-top-left")).toBe(true);
+      // 列の始まりの位置（左上は top: .5em）は変えない
+      expect(parseFloat(getComputedStyle(topLeft).top)).toBeCloseTo(base * 0.5);
+      // 左下は ヘルプ・共有を、右下と同じ flex の列に積む（下から ヘルプ・共有）
+      const bottomLeft = help.parentElement!;
+      expect(bottomLeft).toBe(share.parentElement);
+      expect(bottomLeft.classList.contains("ctl-column")).toBe(true);
+      expect(bottomLeft.classList.contains("ctl-column-bottom-left")).toBe(
+        true
       );
+      expect([...bottomLeft.children]).toEqual([help, share]);
       // 旧 ol.css: .ol-touch .ol-control button { font-size: 1.5em }
       expect(parseFloat(getComputedStyle(button).fontSize)).toBeCloseTo(
         base * 1.5
       );
-      // n1: 左下の共有は、大きくなったボタンの高さの分だけヘルプの上へずれる（重ならない）。
-      // jsdom は env() を含む calc() を解かないので、calc() の px の項を取り出して比べる。
-      const share = part(touch, "share");
-      const help = part(touch, "help");
-      const helpButton = help.querySelector("button") as HTMLButtonElement;
-      // jsdom は env() を含む calc() を解かないので、px の項を全部足して比べる
-      // （env() は安全領域が無い画面では 0。旧 UI と同じ）
-      const bottom = (el: Element) => {
-        const raw = getComputedStyle(el).bottom;
-        const px = raw.match(/-?\d+(?:\.\d+)?px/g);
-        return px
-          ? px.reduce((sum, value) => sum + parseFloat(value), 0)
-          : parseFloat(raw);
-      };
-      expect(bottom(share)).toBeGreaterThanOrEqual(
-        bottom(help) + parseFloat(getComputedStyle(helpButton).height)
-      );
     } finally {
       delete (window as unknown as Record<string, unknown>).ontouchstart;
     }
-    // タッチでない端末は旧 UI の位置（GPS 80px・ホーム 120px・ボタン 16px）
+    // タッチでない端末も同じ列に積み、ボタンはページの文字の大きさ（16px）のまま
     const plain = await mountUi();
     const gps = part(plain, "gps");
     const home = part(plain, "home");
+    const zoom = part(plain, "zoom");
     const button = gps.querySelector("button") as HTMLButtonElement;
-    expect(parseFloat(getComputedStyle(gps).top)).toBeCloseTo(80);
-    expect(parseFloat(getComputedStyle(home).top)).toBeCloseTo(120);
+    expect(gps.parentElement).toBe(home.parentElement);
+    expect(gps.parentElement).toBe(zoom.parentElement);
     expect(parseFloat(getComputedStyle(button).fontSize)).toBeCloseTo(16);
   });
 });

@@ -50,6 +50,7 @@
 | --- | --- |
 | `--maplat-poi-media-theme-color` / `--maplat-poi-media-navigation-color` | POI のメディア（Chuci のスワイパー）の色。中で Chuci の `--cc-slider-theme-color` / `--cc-slider-navigation-color` に渡す（既定 `#007aff`）。Chuci の変数を直接ページで指定しても、Shadow DOM の中の指定が勝つので効かない |
 | `--maplat-envelope-color` | 枠線の表示中の、範囲を持つ地図のカード（`::part(map-slide)`）の点線の**既定色**だけ。地図ごとの色（要素が割り当てる 25 色）があればそちらが勝つので、ふつうは見えない（範囲を持つカードには必ず付くので、今の版ではページで指定した値は見えない）。`::part(border)` のボタンにも、地図の上の範囲の線にも効かない |
+| `--maplat-ui-control-gap` | 操作ボタンの列（左上・左下・右下）の、隣り合うボタンの間隔。既定は `7px`。タッチ端末も同じ値を使う。`<maplat-ui>` に指定する |
 
 ## 例
 

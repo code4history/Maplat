@@ -110,9 +110,13 @@ test("ページの文字の大きさと色を継ぐ（操作ボタン・容器�
   ]);
   expect(zoom, "zoom control").not.toBeNull();
   expect(px(zoom!.fontSize)).toBeCloseTo(PAGE_FONT_PX, 1);
-  expect(px(zoom!.top)).toBeCloseTo(PAGE_FONT_PX * 0.5, 1);
-  expect(px(zoom!.left)).toBeCloseTo(PAGE_FONT_PX * 0.5, 1);
   expect(zoom!.color).toBe(PAGE_COLOR);
+  // 左上のボタンは列（.ctl-column-top-left）に積むので、.5em の位置は列が持つ
+  const topLeft = await computed(page, ".ctl-column-top-left", ["fontSize", "top", "left"]);
+  expect(topLeft, "top-left column").not.toBeNull();
+  expect(px(topLeft!.fontSize)).toBeCloseTo(PAGE_FONT_PX, 1);
+  expect(px(topLeft!.top)).toBeCloseTo(PAGE_FONT_PX * 0.5, 1);
+  expect(px(topLeft!.left)).toBeCloseTo(PAGE_FONT_PX * 0.5, 1);
   const zoomIn = await computed(page, '[part="zoom-in"]', [
     "fontSize",
     "color",

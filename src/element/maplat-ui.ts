@@ -456,21 +456,25 @@ const TEMPLATE = `
   <slot name="map"></slot>
   <div class="map-title" part="map-title" hidden><span class="text"></span></div>
   <div class="map-switcher" part="map-switcher"></div>
-  <div class="ctl ctl-zoom" part="zoom">
-    <button type="button" class="zoom-in" part="zoom-in">+</button>
-    <button type="button" class="zoom-out" part="zoom-out">&#8722;</button>
+  <div class="ctl-column ctl-column-top-left">
+    <div class="ctl ctl-zoom" part="zoom">
+      <button type="button" class="zoom-in" part="zoom-in">+</button>
+      <button type="button" class="zoom-out" part="zoom-out">&#8722;</button>
+    </div>
+    <div class="ctl ctl-gps disable" part="gps"><button type="button"><span class="icon">${getIcon("location-crosshairs")}</span></button></div>
+    <div class="ctl ctl-home" part="home"><button type="button"><span class="icon">${getIcon("house")}</span></button></div>
   </div>
-  <div class="ctl ctl-gps disable" part="gps"><button type="button"><span class="icon">${getIcon("location-crosshairs")}</span></button></div>
-  <div class="ctl ctl-home" part="home"><button type="button"><span class="icon">${getIcon("house")}</span></button></div>
   <div class="ctl ctl-compass disable" part="compass"><button type="button"><span class="icon needle">${getIcon("compass")}</span></button></div>
-  <div class="ctl-column">
+  <div class="ctl-column ctl-column-bottom-right">
     <div class="ctl ctl-info" part="info" hidden><button type="button" aria-haspopup="dialog"><span class="icon">${getIcon("circle-info")}</span></button></div>
     <div class="ctl ctl-border" part="border" hidden><button type="button" aria-pressed="false"><span class="icon">${getIcon("layer-group")}</span></button></div>
     <div class="ctl ctl-hide-marker" part="hide-marker" hidden><button type="button" aria-pressed="false"><span class="icon">${getIcon("map-pin")}</span></button></div>
     <div class="ctl ctl-marker-list" part="marker-list" hidden><button type="button" aria-haspopup="dialog"><span class="icon">${getIcon("list")}</span></button></div>
   </div>
-  <div class="ctl ctl-share" part="share" hidden><button type="button" aria-haspopup="dialog"><span class="icon">${getIcon("share-from-square")}</span></button></div>
-  <div class="ctl ctl-help" part="help"><button type="button" aria-haspopup="dialog"><span class="icon">${getIcon("circle-question")}</span></button></div>
+  <div class="ctl-column ctl-column-bottom-left">
+    <div class="ctl ctl-help" part="help"><button type="button" aria-haspopup="dialog"><span class="icon">${getIcon("circle-question")}</span></button></div>
+    <div class="ctl ctl-share" part="share" hidden><button type="button" aria-haspopup="dialog"><span class="icon">${getIcon("share-from-square")}</span></button></div>
+  </div>
   <input class="slider" part="slider" type="range" min="0" max="100" step="1" value="100" hidden>
   <div class="poi-menu" part="poi-menu" role="menu" hidden><ul></ul></div>
   <div class="modal map-info-modal" part="map-info-modal" hidden>
@@ -882,9 +886,6 @@ export class MaplatUiElement extends BaseElement {
           this.#rejectStartupWrite(uiDef, `attribute "${name}"`);
         return;
       }
-      // ヘルプの付随の行（共有・枠線・マーカーの非表示・マーカー一覧）は enable-* に従う
-      if (HELP_GATED_ATTRS.has(uiDef) && !this.#el.help.hidden)
-        this.#renderHelp();
       if (uiDef === ATTR_ENABLE_SHARE) {
         this.#renderShareButton();
         if (this.#parseOwnAttribute(ATTR_ENABLE_SHARE) !== true)
@@ -906,6 +907,10 @@ export class MaplatUiElement extends BaseElement {
         if (this.#parseOwnAttribute(ATTR_ENABLE_MARKER_LIST) !== true)
           this.#closeMarkerList();
       }
+      // ヘルプの付随の行（共有・枠線・マーカーの非表示・マーカー一覧）と全体の図は enable-* に従う。
+      // 全体の図は実物のボタンの出し分けを読むので、ボタンを更新した後で作り直す
+      if (HELP_GATED_ATTRS.has(uiDef) && !this.#el.help.hidden)
+        this.#renderHelp();
       // enable-poi-html-no-scroll は次に開く POI から効く
       return;
     }
@@ -2896,6 +2901,7 @@ export class MaplatUiElement extends BaseElement {
    * 持たないので、同じ位置にボタンの SVG（src/icons.ts）と共通の画像（既定のピン・GPS の点）を置く。
    * その他の行（共有・枠線・マーカーの非表示・マーカー一覧）は enable-* のときだけ出す
    * （旧 CSS の &.enable_share .share_help 等と同じ規則）。
+   * 冒頭の説明の後には、旧の fullscreen.png の位置に全体の図（#helpFigure）をその場で組む。
    */
   #renderHelp() {
     const body = this.#el.helpBody;
@@ -2908,6 +2914,7 @@ export class MaplatUiElement extends BaseElement {
       return node;
     };
     section("p", "html.help_using_maplat");
+    body.appendChild(this.#helpFigure());
     section("h4", "html.help_operation_title");
     section("p", "html.help_operation_content");
     section("h4", "html.help_selection_title");
@@ -2949,6 +2956,219 @@ export class MaplatUiElement extends BaseElement {
       document.createTextNode(" © 2015- Kohei Otsuka, Code for History")
     );
     body.appendChild(footer);
+  }
+
+  /**
+   * 全体の図の背景: 子（slot="map"）の地図の canvas（2D）を、画面に見えている位置と不透明度のまま
+   * 1 枚の canvas に重ねて写す（背景の地図と重ねる地図の 2 つの層を含む）。縦長への切り出しは CSS の
+   * object-fit: cover。画素は読み出さず写して見せるだけなので、タイルのサーバーが CORS を返さなくても描ける。
+   * 写せる canvas が無いときは null。
+   */
+  #helpMapSnapshot(): HTMLCanvasElement | null {
+    const host = this.#app as unknown as HTMLElement | null;
+    if (!host || typeof host.querySelectorAll !== "function") return null;
+    const box = host.getBoundingClientRect();
+    if (!(box.width > 0 && box.height > 0)) return null;
+    const layers = [...host.querySelectorAll("canvas")].filter(c => {
+      const r = c.getBoundingClientRect();
+      if (!(r.width > 0 && r.height > 0) || !(c.width > 0 && c.height > 0))
+        return false;
+      try {
+        return c.getContext("2d") !== null;
+      } catch {
+        return false;
+      }
+    });
+    if (layers.length === 0) return null;
+    // 地図の表示の大きさの 2 倍で写し、長い辺は 1440px まで（図は 168px 幅なので、高い画素密度の画面でも足りる）
+    const scale = Math.min(1, 720 / Math.max(box.width, box.height)) * 2;
+    const out = document.createElement("canvas");
+    out.width = Math.round(box.width * scale);
+    out.height = Math.round(box.height * scale);
+    const ctx = out.getContext("2d");
+    if (!ctx) return null;
+    for (const layer of layers) {
+      let alpha = 1;
+      for (
+        let el: Element | null = layer;
+        el && el !== host.parentElement;
+        el = el.parentElement
+      ) {
+        const style = getComputedStyle(el);
+        if (style.visibility === "hidden" || style.display === "none")
+          alpha = 0;
+        const opacity = parseFloat(style.opacity);
+        if (Number.isFinite(opacity)) alpha *= opacity;
+      }
+      if (alpha <= 0) continue;
+      const r = layer.getBoundingClientRect();
+      ctx.globalAlpha = alpha;
+      try {
+        ctx.drawImage(
+          layer,
+          (r.left - box.left) * scale,
+          (r.top - box.top) * scale,
+          r.width * scale,
+          r.height * scale
+        );
+      } catch {
+        return null;
+      }
+    }
+    out.setAttribute("aria-hidden", "true");
+    return out;
+  }
+
+  /**
+   * ヘルプの冒頭に出す「全体の図」。旧 UI の fullscreen.png（iPhone の枠の中の画面）と同じ位置に、
+   * その場で組む。スマホの枠の中に今の地図を写し（写せないときは先頭の古地図のサムネイル）、
+   * タッチ端末の配置（ズーム無し・左上に GPS とホーム・右上にコンパス・左下にヘルプと共有・右下の列・
+   * 下に 2 本の地図スライダーと透過度・上に題名）を小さな部品で並べる。出すボタンは、実物で今
+   * 出ているものだけ。図は読み上げない（説明は既存の html.help_* の文が担う）。
+   */
+  #helpFigure(): HTMLElement {
+    const figure = document.createElement("div");
+    figure.className = "help-figure";
+    figure.setAttribute("aria-hidden", "true");
+
+    const phone = document.createElement("div");
+    phone.className = "help-phone";
+    const screen = document.createElement("div");
+    screen.className = "help-phone-screen";
+    phone.appendChild(screen);
+
+    // 背景は今の地図を写す。写せないとき（地図がまだ描かれていない・2D の canvas が無い）は
+    // 先頭の古地図のサムネイル（小さい画像なので引き伸ばすとぼやける）
+    const snapshot = this.#helpMapSnapshot();
+    const thumbnail = snapshot ? undefined : this.#helpOldMapThumbnail();
+    if (snapshot) {
+      snapshot.className = "help-phone-map";
+      screen.appendChild(snapshot);
+    } else if (thumbnail) {
+      const map = document.createElement("img");
+      map.className = "help-phone-map";
+      map.alt = "";
+      map.src = thumbnail;
+      screen.appendChild(map);
+    }
+
+    const ui = document.createElement("div");
+    ui.className = "help-phone-ui";
+    screen.appendChild(ui);
+
+    const title = document.createElement("span");
+    title.className = "help-phone-title";
+    ui.appendChild(title);
+
+    const topLeft = this.#helpFigureStack("help-phone-stack-top-left");
+    topLeft.appendChild(this.#helpFigureButton("gps", "location-crosshairs"));
+    topLeft.appendChild(this.#helpFigureButton("home", "house"));
+    ui.appendChild(topLeft);
+
+    const topRight = this.#helpFigureStack("help-phone-stack-top-right");
+    topRight.appendChild(this.#helpFigureButton("compass", "compass"));
+    ui.appendChild(topRight);
+
+    // 右列は実物と同じく下から 地図情報・枠線・マーカーの非表示・マーカー一覧
+    const bottomRight = this.#helpFigureStack("help-phone-stack-bottom-right");
+    this.#helpFigureVisible(bottomRight, "info", "circle-info", true);
+    this.#helpFigureVisible(
+      bottomRight,
+      "border",
+      "layer-group",
+      !this.#el.borderButton.hidden
+    );
+    this.#helpFigureVisible(
+      bottomRight,
+      "hide-marker",
+      "map-pin",
+      !this.#el.hideMarkerButton.hidden
+    );
+    this.#helpFigureVisible(
+      bottomRight,
+      "marker-list",
+      "list",
+      !this.#el.markerListButton.hidden
+    );
+    ui.appendChild(bottomRight);
+
+    // 左下は実物と同じく下から ヘルプ・共有
+    const bottomLeft = this.#helpFigureStack("help-phone-stack-bottom-left");
+    bottomLeft.appendChild(this.#helpFigureButton("help", "circle-question"));
+    this.#helpFigureVisible(
+      bottomLeft,
+      "share",
+      "share-from-square",
+      !this.#el.shareButton.hidden
+    );
+    ui.appendChild(bottomLeft);
+
+    ui.appendChild(this.#helpFigureMapSlider("base"));
+    ui.appendChild(this.#helpFigureMapSlider("overlay"));
+
+    const transparency = document.createElement("div");
+    transparency.className = "help-phone-transparency";
+    const slider = this.#helpImage("slider");
+    if (slider) transparency.appendChild(slider);
+    ui.appendChild(transparency);
+
+    figure.appendChild(phone);
+    return figure;
+  }
+
+  /** 図の中のボタンの列（見た目は本文の中の印（.help-icon）の小さなボタンを使い回す）。 */
+  #helpFigureStack(className: string): HTMLElement {
+    const stack = document.createElement("div");
+    stack.className = `help-phone-stack ${className}`;
+    return stack;
+  }
+
+  /** 図の中の 1 つのボタン。実物のボタンと同じ背景・白いアイコン・角の丸み 2px。 */
+  #helpFigureButton(control: string, icon: string): HTMLElement {
+    const span = document.createElement("span");
+    span.className = "help-icon";
+    span.dataset.control = control;
+    span.setAttribute("aria-hidden", "true");
+    span.innerHTML = getIcon(icon);
+    return span;
+  }
+
+  /** 図の列へ、実際に出ているボタンだけを足す（実物のボタンの hidden に従う。属性・層 A の機能・POI の有無で出し分けている）。 */
+  #helpFigureVisible(
+    stack: HTMLElement,
+    control: string,
+    icon: string,
+    show: boolean
+  ) {
+    if (!show) return;
+    stack.appendChild(this.#helpFigureButton(control, icon));
+  }
+
+  /** 図の中の地図の切り替えスライダー（サムネイル付きのカードを簡略化したもの）。 */
+  #helpFigureMapSlider(kind: "base" | "overlay"): HTMLElement {
+    const card = document.createElement("div");
+    card.className = "help-phone-map-slider";
+    card.dataset.kind = kind;
+    const item = this.#maps.find(map =>
+      kind === "base" ? map.isBasemap : map.isOldMap
+    );
+    const thumbnail = safeImageUrl(item?.thumbnail);
+    if (thumbnail) {
+      const img = document.createElement("img");
+      img.className = "help-phone-card-thumb";
+      img.alt = "";
+      img.src = thumbnail;
+      card.appendChild(img);
+    }
+    const label = document.createElement("span");
+    label.className = "help-phone-card-label";
+    card.appendChild(label);
+    return card;
+  }
+
+  /** 今の地図の一覧の先頭の古地図のサムネイル（旧 UI の overlay の絵と同じ選び方）。 */
+  #helpOldMapThumbnail(): string | undefined {
+    return safeImageUrl(this.#maps.find(m => m.isOldMap)?.thumbnail);
   }
 
   /**
@@ -3008,8 +3228,7 @@ export class MaplatUiElement extends BaseElement {
       }
       case "overlay": {
         // 旧はスライダーのサムネイルの絵。今の地図の一覧の先頭の古地図の画像を使う
-        const thumbnail = this.#maps.find(m => m.isOldMap)?.thumbnail;
-        const src = safeImageUrl(thumbnail);
+        const src = this.#helpOldMapThumbnail();
         if (src === undefined) return null;
         const img = document.createElement("img");
         img.className = "help-img";

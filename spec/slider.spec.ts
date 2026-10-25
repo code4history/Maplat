@@ -1609,11 +1609,15 @@ describe("レビュー指摘の直し（スライダーの Major・Minor）", ()
     expect(placeholderOf("b")).not.toBeNull();
   });
 
-  it("CSS: 自動非表示は題名とスライダーにも効き、タッチの右列は安全領域を消さず、書体を固定しない", () => {
+  it("CSS: 自動非表示は題名とスライダーにも効き、列の間隔は 1 つの変数で揃え、書体を固定しない", () => {
     const css = MAPLAT_UI_CSS;
     expect(css).toContain(".map-title.fade");
     expect(css).toContain(".map-slider.fade { display: none; }");
-    expect(css).toMatch(/\.frame\.touch \.ctl-column \{ gap: \.5px; \}/);
+    // 左上・左下・右下の列は同じ変数を使う（タッチ端末だけ別の値、にしない）
+    expect(css).toMatch(
+      /\.ctl-column \{[^}]*gap: var\(--maplat-ui-control-gap, 7px\);/
+    );
+    expect(css).not.toMatch(/\.frame\.touch \.ctl-column \{[^}]*gap/);
     expect(css).not.toMatch(/\.frame\.touch \.ctl-column \{[^}]*bottom/);
     expect(css).not.toContain("font-family: Times");
     expect(css).not.toContain("Helvetica");

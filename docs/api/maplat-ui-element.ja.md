@@ -311,7 +311,9 @@ MaplatCore-Pro と組んだときは、ページは `ui.app` を通して子の 
 `--maplat-poi-media-theme-color`・`--maplat-poi-media-navigation-color`（POI のメディアの
 スワイパーの色。既定 `#007aff`）と `--maplat-envelope-color`（枠線の表示中、地図の
 切り替えのカードの点線の既定色。範囲を持つカードには、要素が地図ごとの色を必ず付けて
-それが勝つので、今の版ではページで指定した値は見えません。移行ガイドを参照）です。子の地図は `maplat-ui > maplat-app` で当てられ
+それが勝つので、今の版ではページで指定した値は見えません。移行ガイドを参照）と
+`--maplat-ui-control-gap`（操作ボタンの列（左上・左下・右下）の、隣り合うボタンの
+間隔。既定 `7px`。タッチ端末も同じ値）です。子の地図は `maplat-ui > maplat-app` で当てられ
 ます（中は層 A の DOM です）。
 
 ```css
