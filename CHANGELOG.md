@@ -24,7 +24,6 @@
 - `::part` と CSS 変数の一覧は[移行ガイド](docs/api/migration-ui-shadow-dom.md)にある
 
 ### Added
-- `pwaWorker: false`（`null` も同じ）で Service Worker を登録しないようにした。manifest の `<link>` と apple-touch-icon は従来どおり足す。登録済みの Service Worker は解除しない（MaplatEditor#106）
 - POI の吹き出しの本文（html・url）の組み立てを `src/element/poi-html.ts` に集約した。`<maplat-ui>` と、実ブラウザで隔離を確かめる probe（`e2e/fixtures/poi-html-probe.ts`）が同じ関数を読む
 
 ### Deprecated
@@ -46,6 +45,13 @@
 - 旧 API の `ui.xyToMapIDs(xy)` が必ず reject していたのを直した（層 A の `sysCoord2MercAsync` の戻り値の扱いの誤り）。判定は `<maplat-ui>` の `mapsAt` に一本化した
 - 旧 API の `ui.showContextMenu` のメニューが、地図の箱が画面の左上に無いページで、ホストの位置のぶん左上へずれていたのを直した
 - 旧 API の `ui.sliderNew.get("slidervalue")`・`propertychange` が、利用者がスライダーを動かした値を返さなかったのを直した
+
+## [1.2.0-rc.1] - 2026-10-26
+
+### Added
+- `pwaWorker: false`（`null` も同じ）で Service Worker を登録しないようにした。manifest の `<link>` と apple-touch-icon は従来どおり足す。登録済みの Service Worker は解除しない（MaplatEditor#106）
+
+### Fixed
 - 地図切り替えスワイパーで、地図設定の `mapID`・`thumbnail`・`label` を無害化して表示するようにした（NayutaProducts#28 B-UI-4）。**地図 JSON の `label` に書いた HTML はタグとして解釈されず、文字のまま表示される。** `thumbnail` は http/https・相対 URL・`data:image/` だけを使い、それ以外は「画像なし」の絵になる
 - 重なったマーカーのメニューで、POI の `icon` を CSS の文字列へ生のまま入れていたのをやめ、画像の URL として検査してから設定するようにした（#274）
 - 開発用デモ（`code4history.dev/Maplat/`）が URL のクエリから受け付けるキーを `appid`・`lang` に限り、値の形を検査するようにした。以前はすべてのキーを設定に入れており、`?poiTemplate=…` で任意のスクリプトが動いた（反射型 XSS・NayutaProducts#28 B-UI-5）。npm の配布物には影響しない

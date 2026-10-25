@@ -1,6 +1,13 @@
 import { defineConfig } from "vitest/config";
+import { readFileSync } from "node:fs";
+
+// <maplat-ui> の版（src/element/maplat-ui.ts の __MAPLAT_UI_VERSION__）。vite.config.js と同じく package.json から入れる
+const PACKAGE_VERSION = JSON.parse(
+  readFileSync(new URL("./package.json", import.meta.url), "utf-8")
+).version;
 
 export default defineConfig({
+  define: { __MAPLAT_UI_VERSION__: JSON.stringify(PACKAGE_VERSION) },
   test: {
     environment: "jsdom",
     include: ["spec/**/*.test.ts", "spec/**/*.spec.ts"],

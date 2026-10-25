@@ -7,6 +7,9 @@ import dts from 'vite-plugin-dts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+// <maplat-ui> の版（src/element/maplat-ui.ts の __MAPLAT_UI_VERSION__）。外側のビルドと入れ子の UMD のビルドの両方に入れる
+const PACKAGE_VERSION = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'package.json'), 'utf-8')).version;
+const VERSION_DEFINE = { __MAPLAT_UI_VERSION__: JSON.stringify(PACKAGE_VERSION) };
 
 // Detect build mode: 'package' for npm package, anything else for demo
 const BUILD_MODE = process.env.BUILD_MODE;
@@ -39,6 +42,7 @@ export default defineConfig(({ command }) => ({
     // Package build: use '/' (library, base doesn't matter)
     // Demo build: use '/Maplat/' for GitHub Pages
     base: command === 'serve' ? '/' : (isPackageBuild ? '/' : '/Maplat/'),
+    define: VERSION_DEFINE,
     resolve: {},
     plugins: [
         {
@@ -95,6 +99,7 @@ export default defineConfig(({ command }) => ({
                     await build({
                         configFile: false,
                         logLevel: 'warn',
+                        define: VERSION_DEFINE,
                         css: CSS_OPTIONS,
                         build: {
                             outDir: 'dist',

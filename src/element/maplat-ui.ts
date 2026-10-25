@@ -77,8 +77,15 @@ import { pointInPolygon, polygonArea } from "../shared/geo";
 import { resolveRelativeLink } from "../shared/text";
 import { MAPLAT_UI_CSS } from "./styles";
 
-/** @maplat/ui の版（package.json の version と一致することを spec/element.spec.ts が確かめる）。 */
-export const MAPLAT_UI_VERSION = "1.1.0";
+// @maplat/ui の版。ビルド時に vite の define で package.json の version を埋め込む（vite.config.js・
+// vitest.config.ts。@maplat/core と同じ）。決め打ちにすると、RC の commit が package.json の版だけを上げたときに
+// 置き去りになる。一致は spec/element.spec.ts が確かめる。
+declare const __MAPLAT_UI_VERSION__: string | undefined;
+/** @maplat/ui の版（package.json の version と同じ）。 */
+export const MAPLAT_UI_VERSION: string =
+  typeof __MAPLAT_UI_VERSION__ !== "undefined"
+    ? __MAPLAT_UI_VERSION__
+    : "0.0.0-dev";
 
 /** コンパスを押したときの動き（層 B が決める）。auto は north-up が真なら北へ、偽なら回転を 0 へ。 */
 export type CompassAction = "auto" | "north" | "rotation";
