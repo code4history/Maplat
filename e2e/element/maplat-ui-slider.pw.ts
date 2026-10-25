@@ -587,3 +587,80 @@ test("主スレッドが止まって遷移の開始と終わりの通知が遅�
   expect(await currentMap(page)).toBe(before);
   expect(errors, errors.join("\n")).toEqual([]);
 });
+
+// サムネイルの上から始めた drag でもスライドする（ラベルの上だけでなく）。
+// サムネイルの `<img>` は既定で draggable なので、押したまま動かすとブラウザの画像の drag
+// （dragstart → pointercancel）が始まり、スライダーの drag が取り消されていた
+test("サムネイルの上から始めた drag でも、ラベルの上と同じように 1 枚動く", async ({ page }) => {
+  test.setTimeout(240_000);
+  const errors = await openFixture(page, "base=3&overlay=3", 1280);
+  // 起動直後はスプラッシュがスライダーの上に被っている（消えるまで待つ）
+  await expect
+    .poll(
+      () =>
+        page.evaluate(() => {
+          const sp = (window as any).__maplatUi.shadowRoot.querySelector(".splash");
+          if (!sp) return true;
+          const cs = getComputedStyle(sp);
+          return sp.hidden || cs.display === "none" || cs.visibility === "hidden" || cs.opacity === "0";
+        }),
+      { timeout: 30_000 }
+    )
+    .toBe(true);
+  const overlay = slider(page, "overlay");
+  const live = overlay.locator(".map-slider-live");
+  const start = await currentMap(page);
+
+  /** 中央のカードの、サムネイルとラベルの中心（画面座標） */
+  const centerCard = () =>
+    page.evaluate(() => {
+      const root = (window as any).__maplatUi.shadowRoot;
+      const el = root.querySelector(
+        '[part="map-slider"][data-kind="overlay"]'
+      ) as HTMLElement;
+      const box = el.getBoundingClientRect();
+      const mid = box.x + box.width / 2;
+      const slides = [...el.querySelectorAll('[part~="map-slide"]')] as HTMLElement[];
+      const card = slides
+        .map(s => ({ s, r: s.getBoundingClientRect() }))
+        .sort(
+          (a, b) =>
+            Math.abs(a.r.x + a.r.width / 2 - mid) - Math.abs(b.r.x + b.r.width / 2 - mid)
+        )[0]!.s;
+      const at = (e: Element | null) => {
+        if (!e) return null;
+        const r = e.getBoundingClientRect();
+        return { x: r.x + r.width / 2, y: r.y + r.height / 2, tag: e.tagName };
+      };
+      return {
+        thumb: at(card.querySelector('[part~="map-slide-thumb"]')),
+        label: at(card.querySelector('[part~="map-slide-label"]')),
+        width: card.getBoundingClientRect().width
+      };
+    });
+
+  const dragFrom = async (p: { x: number; y: number }, dx: number) => {
+    await page.mouse.move(p.x, p.y);
+    await page.mouse.down();
+    for (let i = 1; i <= 12; i++) {
+      await page.mouse.move(p.x + (dx * i) / 12, p.y);
+      await page.waitForTimeout(16);
+    }
+    await page.mouse.up();
+  };
+
+  // サムネイルが画像で出ていること（プレースホルダだと再現しない）
+  let card = await centerCard();
+  expect(card.thumb?.tag).toBe("IMG");
+  await dragFrom(card.thumb!, -card.width * 0.8);
+  await expect(live).toHaveText("カード・B", { timeout: 10_000 });
+  expect(await currentMap(page)).toBe(start);
+
+  // ラベルの上からも同じ（対照）
+  await page.waitForTimeout(500);
+  card = await centerCard();
+  await dragFrom(card.label!, -card.width * 0.8);
+  await expect(live).toHaveText("カード・C", { timeout: 10_000 });
+  expect(await currentMap(page)).toBe(start);
+  expect(errors, errors.join("\n")).toEqual([]);
+});

@@ -253,6 +253,8 @@ export class MapSlider {
   #observer: { disconnect(): void } | null = null;
 
   #onPointerDown = (ev: Event) => this.#handlePointerDown(ev as PointerEvent);
+  // サムネイルの画像などをブラウザが drag し始めると pointercancel でスライダーの drag が取り消される
+  #onDragStart = (ev: Event) => ev.preventDefault();
   #onPointerMove = (ev: Event) => this.#handlePointerMove(ev as PointerEvent);
   #onPointerUp = (ev: Event) => this.#handlePointerUp(ev as PointerEvent);
   #onKeyDown = (ev: Event) => this.#handleKeyDown(ev as KeyboardEvent);
@@ -295,6 +297,7 @@ export class MapSlider {
     this.#next.addEventListener("click", () => void this.step(1));
     root.addEventListener("keydown", this.#onKeyDown);
     this.#viewport.addEventListener("pointerdown", this.#onPointerDown);
+    this.#viewport.addEventListener("dragstart", this.#onDragStart);
 
     this.#buildSlots();
     this.#selected = this.#activeMapID();
@@ -486,6 +489,7 @@ export class MapSlider {
     window.removeEventListener("resize", this.#onResize);
     this.element.removeEventListener("keydown", this.#onKeyDown);
     this.#viewport.removeEventListener("pointerdown", this.#onPointerDown);
+    this.#viewport.removeEventListener("dragstart", this.#onDragStart);
     this.element.remove();
   }
 
@@ -608,6 +612,8 @@ export class MapSlider {
           img.className = "map-slide-thumb";
           img.setAttribute("part", "map-slide-thumb");
           img.alt = "";
+          // 画像の drag を始めさせない（サムネイルの上から始めた drag もスライダーが受ける）
+          img.draggable = false;
           // crossOrigin は付けない（旧 UI も付けていない。キャンバスに描かないので要らず、付けると
           // CORS の応答ヘッダを返さないサーバーのサムネイルが壊れた画像になる）
           img.addEventListener("error", () => {
@@ -1015,6 +1021,9 @@ export class MapSlider {
   // ───────────────────────── drag
 
   #handlePointerDown(ev: PointerEvent): void {
+    // 新しく押されたら、前の drag の click の抑止は外す（drag の click が来なかったとき、
+    // 抑止が残ったまま次のタップの click を捨てないように。新しいタップは必ず pointerdown から始まる）
+    this.#suppressClick = false;
     if (this.#destroyed || !this.#enabled || this.count < 2) return;
     // 動いている最中に drag を始めると `transition: none` で遷移が打ち切られ、
     // 途中の位置から確定してしまう

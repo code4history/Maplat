@@ -728,7 +728,9 @@ for (const n of [2, 3]) {
     const rec: any[] = [];
     const settleAndJudge = async (k: Kind, scenario: string, extra: any) => {
       const calls: string[] = await page.evaluate(() => (window as any).__m9changeMap.slice());
-      const last = calls[calls.length - 1];
+      // 押したカードが押す前の地図と同じなら changeMap は呼ばれない（同じ地図へは切り替えない）。
+      // そのときは押したカードを「最後に選ばれた地図」として判定する
+      const last = calls[calls.length - 1] ?? (extra.sameAsCurrent ? extra.clicked : undefined);
       const wait = last ? await waitActive(page, k, last, 8000, 1200) : { reached: false, stable: false };
       const sel = await selectedData(page, k);
       const title = last ? await titleState(page, last) : { expected: null, actual: null };
@@ -740,7 +742,8 @@ for (const n of [2, 3]) {
         return hit ? hit.getAttribute('data-m9-mark') === '1' : null;
       }, sliderSel(k));
       rec.push({ k, scenario, calls, last, wait, sel, title, centerIsClickedElement: centerIsMark, ...extra });
-      expect.soft(calls.length, `${scenario} ${k}: カードのクリックが changeMap まで届いた`).toBeGreaterThan(0);
+      if (!extra.sameAsCurrent)
+        expect.soft(calls.length, `${scenario} ${k}: カードのクリックが changeMap まで届いた`).toBeGreaterThan(0);
       expect.soft(wait, `${scenario} ${k}: active mapID = 最後に選ばれた地図 ${last}`).toEqual({ reached: true, stable: true });
       expect.soft(sel, `${scenario} ${k}: .selected`).toEqual(Array(selectedCount(n)).fill(last));
       expect.soft(title.actual, `${scenario} ${k}: 地図タイトル`).toBe(title.expected);
@@ -776,8 +779,10 @@ for (const n of [2, 3]) {
         const q = await markEdgeCard(page, k, 'next');
         expect.soft(q?.point, `D3 ${k}: ドラッグ直後の押せる点`).toBeTruthy();
         if (q?.point) {
+          // drag は地図を変えないので、n=2 では 1 枚動かした先の右端が今の地図のカードになる
+          const before = await page.evaluate(() => (window as any).__maplatUi.core.from?.mapID);
           await page.mouse.click(q.point.x, q.point.y);
-          await settleAndJudge(k, 'D3 ドラッグ直後', { clicked: q.id });
+          await settleAndJudge(k, 'D3 ドラッグ直後', { clicked: q.id, sameAsCurrent: q.id === before });
         }
       }
       // D4: 矢印を押した 40ms 後（遷移中）に、その時点の右隣をクリック

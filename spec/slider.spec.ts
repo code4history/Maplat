@@ -819,6 +819,33 @@ describe("XSS（3 種）", () => {
     expect(good.getAttribute("src")).toBe("https://example.com/ok.png");
   });
 
+  it("サムネイルの画像はブラウザに drag させない（サムネイルの上から始めた drag もスライダーが受ける）", () => {
+    const { slider } = make([]);
+    slider.setItems([
+      {
+        mapID: "a",
+        label: "a",
+        thumbnail: "https://example.com/a.png",
+        isBasemap: false
+      },
+      {
+        mapID: "b",
+        label: "b",
+        thumbnail: "https://example.com/b.png",
+        isBasemap: false
+      }
+    ]);
+    setWidth(slider, 224);
+    const img = slider.slots
+      .find(s => s.offset === 0)!
+      .element.querySelector("img") as HTMLImageElement;
+    expect(img.draggable).toBe(false);
+    // スライダーの中で始まった dragstart は打ち消す（画像以外の要素も含めて）
+    const ev = new Event("dragstart", { bubbles: true, cancelable: true });
+    img.dispatchEvent(ev);
+    expect(ev.defaultPrevented).toBe(true);
+  });
+
   it("mapID の属性注入は起きない（data-map-id は生の文字列）", () => {
     const evil = `x" onmouseover="window.__xss=1`;
     const { slider } = make([]);
