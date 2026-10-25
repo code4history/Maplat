@@ -1,4 +1,4 @@
-import { q as k, m as D, Y as v, p as L, a as U, r as C, t as A, h as R } from "./index-BsWnRu0Q.js";
+import { C as k, m as D, r as v, p as L, a as C, b as U, d as A, G as R } from "./index-ZMOV31TM.js";
 class N {
   constructor() {
     this.disposed = !1;
@@ -143,7 +143,7 @@ class T extends N {
 }
 let b = null;
 function B() {
-  return typeof customElements > "u" || customElements.get(k) ? Promise.resolve() : b || (b = import("./maplat_core_element-CDPg9T-V.js").then(
+  return typeof customElements > "u" || customElements.get(k) ? Promise.resolve() : b || (b = import("./maplat_core_element-CWpHsQ5n.js").then(
     () => {
     },
     (c) => {
@@ -312,7 +312,7 @@ function I(c, e, t) {
     t ?? `ui.i18n: "${e}" is not supported by the compatibility layer; ignored.`
   ));
 }
-function F(c) {
+function G(c) {
   const e = /* @__PURE__ */ new Set();
   let t = null, n = -1;
   const s = () => c(), l = (o) => o?.querySelector(":scope > maplat-app") ?? null, i = (o) => {
@@ -441,7 +441,7 @@ function _(c, e) {
     }
   };
 }
-async function G(c, e, t, n = 10) {
+async function F(c, e, t, n = 10) {
   if (!c || !e || !Array.isArray(t) || t.length < 2) return [];
   const s = c.from;
   if (!s || typeof s.sysCoord2MercAsync != "function") return [];
@@ -477,7 +477,7 @@ const j = [
   ["mapboxToken", "mapboxToken"],
   ["mapboxgl", "mapboxgl"],
   ["maplibregl", "maplibregl"]
-], q = [
+], z = [
   "mobileIF",
   "disableNoimage",
   "northTop",
@@ -485,9 +485,9 @@ const j = [
   "translateUI"
 ];
 let x = !1;
-const z = "MaplatUi: the MaplatUi class is deprecated and will be removed in 2.0. Use the <maplat-ui> element (@maplat/ui/element) with <maplat-app> instead.";
+const q = "MaplatUi: the MaplatUi class is deprecated and will be removed in 2.0. Use the <maplat-ui> element (@maplat/ui/element) with <maplat-app> instead.";
 function K() {
-  x || (x = !0, console.warn(z));
+  x || (x = !0, console.warn(q));
 }
 class E extends T {
   /** Core の `MaplatApp`（`lifecycle:setting-loaded` で入る。それまでは undefined）。 */
@@ -542,7 +542,7 @@ class E extends T {
   #l;
   /** 旧 API のコンストラクタ。`stateUrl` のときだけ、旧と同じく自分から起動を始める。 */
   constructor(e) {
-    super(), K(), this.appOption = e ?? {}, this.html_id_seed = `${Math.floor(Math.random() * 9e3) + 1e3}`, this.#r = Y(e), this.sliderNew = F(() => this.#e ?? null), this.contextMenu = H(() => this.#e ?? null), this.baseSwiper = _(() => this.#e ?? null, "base"), this.overlaySwiper = _(
+    super(), K(), this.appOption = e ?? {}, this.html_id_seed = `${Math.floor(Math.random() * 9e3) + 1e3}`, this.#r = Y(e), this.sliderNew = G(() => this.#e ?? null), this.contextMenu = H(() => this.#e ?? null), this.baseSwiper = _(() => this.#e ?? null, "base"), this.overlaySwiper = _(
       () => this.#e ?? null,
       "overlay"
     ), this.swipers = { base: this.baseSwiper, overlay: this.overlaySwiper }, this.enableShare = e.enableShare === !0, this.enableBorder = e.enableBorder === !0, this.enableHideMarker = e.enableHideMarker === !0, this.enableMarkerList = e.enableMarkerList === !0, this.enablePoiHtmlNoScroll = e.enablePoiHtmlNoScroll === !0, this.alwaysGpsOn = e.alwaysGpsOn === !0, this.disableNoimage = e.disableNoimage === !0, this.isTouch = typeof window < "u" && "ontouchstart" in window, this.appEnvelope = e.appEnvelope, this.waitReady = () => this.#a(), this.appOption.stateUrl === !0 && queueMicrotask(() => {
@@ -614,11 +614,11 @@ class E extends T {
   }
   /** 旧 `xyToMapIDs`（点に重なる地図の mapID。範囲の狭い順）。 */
   async xyToMapIDs(e, t = 10) {
-    return G(this.core, this.#e, e, t);
+    return F(this.core, this.#e, e, t);
   }
   /** 旧 `areaIndex`（4 点の多角形の面積）。 */
   areaIndex(e) {
-    return U(e);
+    return C(e);
   }
   /** 旧 `checkOverlayID`（重ねる地図の行にその地図があるか）。 */
   checkOverlayID(e) {
@@ -638,7 +638,7 @@ class E extends T {
   }
   /** 旧 `resolveRelativeLink`（相対 URL の解決）。 */
   resolveRelativeLink(e, t) {
-    return C(e, t);
+    return U(e, t);
   }
   /** 旧 `showToast`（短い知らせ）。 */
   showToast(e, t) {
@@ -835,7 +835,7 @@ class E extends T {
       __maplatCompat: !0
     };
     delete i.div, delete i.uiHooks, delete i.setting, e.appOption = i, e.uiHooks = X(e, t.uiHooks);
-    for (const r of q)
+    for (const r of z)
       t[r] !== void 0 && this.#n(
         `dead:${r}`,
         `<${v}>: appOption.${r} is no longer used and was ignored.`

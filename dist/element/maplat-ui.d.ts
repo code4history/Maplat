@@ -1,8 +1,8 @@
 import { LngLat, Localized, MaplatAppElement, Restore } from '@maplat/core/common';
 import { ShareUrlType } from './share';
 import { MapSlider } from './slider';
-/** @maplat/ui の版（package.json の version と一致することを spec/element.spec.ts が確かめる）。 */
-export declare const MAPLAT_UI_VERSION = "1.1.0";
+/** @maplat/ui の版（package.json の version と同じ）。 */
+export declare const MAPLAT_UI_VERSION: string;
 /** コンパスを押したときの動き（層 B が決める）。auto は north-up が真なら北へ、偽なら回転を 0 へ。 */
 export type CompassAction = "auto" | "north" | "rotation";
 /**
