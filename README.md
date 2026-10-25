@@ -44,7 +44,7 @@ Maplat is open-source under the Apache License 2.0 (from version 0.12.2).
 ## Quick Start
 
 <!-- release-pinned:start -->
-> **Current release: `1.1.0`**. This block is the only place in
+> **Current release: `1.2.0-rc.1`**. This block is the only place in
 > this repository that carries a release version (ADR-0012); everything outside it is
 > written against the 1.0 release.
 > npm: [`@maplat/ui`](https://www.npmjs.com/package/@maplat/ui)
@@ -88,8 +88,8 @@ separately.
 <script src="https://cdn.jsdelivr.net/npm/ol@10/dist/ol.min.js"></script>
 
 <!-- Maplat UI -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@maplat/ui@1.1.0/dist/maplat_ui.css">
-<script src="https://cdn.jsdelivr.net/npm/@maplat/ui@1.1.0/dist/maplat_ui.umd.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@maplat/ui@1.2.0-rc.1/dist/maplat_ui.css">
+<script src="https://cdn.jsdelivr.net/npm/@maplat/ui@1.2.0-rc.1/dist/maplat_ui.umd.js"></script>
 
 <div id="map_div"></div>
 <script>

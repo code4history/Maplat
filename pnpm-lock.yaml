@@ -16,14 +16,14 @@ importers:
   .:
     dependencies:
       '@c4h/chuci':
-        specifier: ^1.0.1
-        version: 1.0.1
+        specifier: ^1.0.2-rc.1
+        version: 1.0.2-rc.1
       '@c4h/weiwudi':
-        specifier: ^1.1.0
-        version: 1.1.0(workbox-routing@7.4.1)
+        specifier: ^1.1.1-rc.1
+        version: 1.1.1-rc.1(workbox-routing@7.4.1)
       '@maplat/core':
-        specifier: ^1.1.0
-        version: 1.1.0(mapbox-gl@3.32.0)(maplibre-gl@6.9.0)(ol@10.11.0)(workbox-routing@7.4.1)
+        specifier: ^1.2.0-rc.1
+        version: 1.2.0-rc.1(mapbox-gl@3.32.0)(maplibre-gl@6.9.0)(ol@10.11.0)(workbox-routing@7.4.1)
       '@turf/turf':
         specifier: ^7.4.0
         version: 7.4.0
@@ -664,12 +664,12 @@ packages:
     resolution: {integrity: sha512-0GEz8qJWokkUVYQYRukmkSHIFNoBH8QTreeHrAFbvz1XFYc3Y+puhMs8PQ5x8GNugiC2l5jvDBXKLbBIByeSBw==}
     hasBin: true
 
-  '@c4h/chuci@1.0.1':
-    resolution: {integrity: sha512-+1AQLS8dH17l6N/KgUH7PZOEjZ2BDM6JmfWJcum/IF3Ki5pfsDuDdLrMB3uNmPm1XD0dGFc2IvaToAMBkDdoWQ==}
+  '@c4h/chuci@1.0.2-rc.1':
+    resolution: {integrity: sha512-rSg2iqDi+HnoiOjjwL5voeKBW92Ato/rDC4zZ4qA21cHxs7Y8ublpxQkb+cb0eG3q1DHkV00P7dFSSTWt21XJg==}
     engines: {pnpm: '>=9.0.0'}
 
-  '@c4h/weiwudi@1.1.0':
-    resolution: {integrity: sha512-7sMmBQ+1hyLqvTYZvaoZZEY7Ce+HZinmTtEaDY7mhfnyEnkBtkPTaKleXEbLLyLuIyFUeVb0vXHibO0Kd4aaFw==}
+  '@c4h/weiwudi@1.1.1-rc.1':
+    resolution: {integrity: sha512-vKmUytM+w8seuDGTkPcsrEIP7mktj1RMJTiR+xCx3GrMDExZqGdO40xbhst+sVqiNJvaM/uFHWijHkDVUZPb0A==}
     engines: {node: '>=20.0.0', pnpm: '>=9.0.0'}
     peerDependencies:
       workbox-routing: ^7.4.0
@@ -991,8 +991,8 @@ packages:
   '@mapbox/vector-tile@3.0.0':
     resolution: {integrity: sha512-Qf10S1uIHMk20ri/IVBnpS+esUEkVaR5Hftmz88jTInrpmWgPGJfPe3LVjjlE77trLx8tH6qjTG7uWH9hIq/0Q==}
 
-  '@maplat/core@1.1.0':
-    resolution: {integrity: sha512-0QUkgTKhigdWc9oWUei/G1Uv90DHD+AQ1a/jDdAbwb2mIskDWM7TGyaC8rLDd3lI8dGtM89mrKaXaYm2/2NHNg==}
+  '@maplat/core@1.2.0-rc.1':
+    resolution: {integrity: sha512-4Wo6eT51tjjijPROlUzM8VIVK1Ax2OEhBxt+Lzdkd/BX7FdmhtYqN7pN2L7a16VFC8sPvWzckA+DaLE0Lu4QPg==}
     engines: {pnpm: '>=9'}
     peerDependencies:
       mapbox-gl: ^2.0.0 || ^3.0.0
@@ -2080,8 +2080,8 @@ packages:
   dijkstrajs@1.0.3:
     resolution: {integrity: sha512-qiSlmBq9+BCdCA/L46dw8Uy93mloxsPSbwnm5yrKn2vMPiy8KyAskTF6zuV/j5BMsmOGZDPs7KjU+mjb670kfA==}
 
-  dompurify@3.4.16:
-    resolution: {integrity: sha512-sqo+pNp3qRhCIpbgRi1y8Tgk27Bo2Ry7w0dC1NBeNTdZChWjz9Xb/KOoZbRP/R6pQZ80Qw8YhXw13hWWBbMRnQ==}
+  dompurify@3.4.17:
+    resolution: {integrity: sha512-B/pSlYVHQ58kqISD/yDjuJ1yfzI34m1gF4lAod2bwSRhiN4K5Cl3H8Af7hqB2PmTL911tdEudnnXn5FnhRoz0w==}
 
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
@@ -3174,8 +3174,8 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  three@0.171.0:
-    resolution: {integrity: sha512-Y/lAXPaKZPcEdkKjh0JOAHVv8OOnv/NDJqm0wjfCzyQmfKxV7zvkwsnBgPBKTzJHToSOhRGQAGbPJObT59B/PQ==}
+  three@0.186.1:
+    resolution: {integrity: sha512-blFeqb49wRCSGUGj7gtpfnSGHy2lwDk94RhUmS1c/hTby70kvChbWpkJ4Pm1390LqzzvTmzgXKHPEafJwCb8jA==}
 
   tinybench@6.2.2:
     resolution: {integrity: sha512-nIZ2N2dFpjBsg2hgitKu7mA+FvsIJuGJOwysRngmVRRmWgR/UyPjwJj8c/fT/dhm8EkHnF5EOogRf+0Z2qrimA==}
@@ -4308,14 +4308,14 @@ snapshots:
     dependencies:
       css-tree: 3.2.1
 
-  '@c4h/chuci@1.0.1':
+  '@c4h/chuci@1.0.2-rc.1':
     dependencies:
       gsplat: 1.2.9
       swiper: 12.2.0
-      three: 0.171.0
+      three: 0.186.1
       viewerjs: 1.15.2
 
-  '@c4h/weiwudi@1.1.0(workbox-routing@7.4.1)':
+  '@c4h/weiwudi@1.1.1-rc.1(workbox-routing@7.4.1)':
     dependencies:
       workbox-routing: 7.4.1
 
@@ -4535,12 +4535,12 @@ snapshots:
       '@types/geojson': 7946.0.16
       pbf: 5.1.2
 
-  '@maplat/core@1.1.0(mapbox-gl@3.32.0)(maplibre-gl@6.9.0)(ol@10.11.0)(workbox-routing@7.4.1)':
+  '@maplat/core@1.2.0-rc.1(mapbox-gl@3.32.0)(maplibre-gl@6.9.0)(ol@10.11.0)(workbox-routing@7.4.1)':
     dependencies:
-      '@c4h/weiwudi': 1.1.0(workbox-routing@7.4.1)
+      '@c4h/weiwudi': 1.1.1-rc.1(workbox-routing@7.4.1)
       '@maplat/transform': 1.1.0
       '@turf/turf': 7.4.0
-      dompurify: 3.4.16
+      dompurify: 3.4.17
       lodash.template: 4.18.1
       ol: 10.11.0
       whatwg-fetch: 3.6.20
@@ -6359,7 +6359,7 @@ snapshots:
 
   dijkstrajs@1.0.3: {}
 
-  dompurify@3.4.16:
+  dompurify@3.4.17:
     optionalDependencies:
       '@types/trusted-types': 2.0.7
 
@@ -7609,7 +7609,7 @@ snapshots:
       commander: 2.20.3
       source-map-support: 0.5.21
 
-  three@0.171.0: {}
+  three@0.186.1: {}
 
   tinybench@6.2.2: {}
 
