@@ -67,7 +67,7 @@
     "@turf/turf": "^7.4.0",
     "@types/page": "^1.11.9",
     "bootstrap.native": "^5.1.6",
-    "i18next": "^25.10.10",
+    "i18next": "^26",
     "i18next-http-backend": "^4.0.2",
     "page": "^1.11.6",
     "qrcode": "^1.5.4",
