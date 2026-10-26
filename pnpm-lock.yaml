@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  '@maplat/core': github:code4history/MaplatCore#f6d987e4431b51e1647b4b7bdad8994e8de304f1
+  '@maplat/core': github:code4history/MaplatCore#6461c0f6b245fe50b7ea473b12c2f489d0fdcc93
   js-yaml: ^4.3.1
   fast-uri: ^3.1.5
   postcss: ^8.5.23
@@ -23,8 +23,8 @@ importers:
         specifier: ^1.1.1-rc.1
         version: 1.1.1-rc.1(workbox-routing@7.4.1)
       '@maplat/core':
-        specifier: github:code4history/MaplatCore#f6d987e4431b51e1647b4b7bdad8994e8de304f1
-        version: https://codeload.github.com/code4history/MaplatCore/tar.gz/f6d987e4431b51e1647b4b7bdad8994e8de304f1(mapbox-gl@3.32.0)(maplibre-gl@6.9.0)(ol@10.11.0)(workbox-routing@7.4.1)
+        specifier: github:code4history/MaplatCore#6461c0f6b245fe50b7ea473b12c2f489d0fdcc93
+        version: https://codeload.github.com/code4history/MaplatCore/tar.gz/6461c0f6b245fe50b7ea473b12c2f489d0fdcc93(mapbox-gl@3.32.0)(maplibre-gl@6.9.0)(ol@10.11.0)(workbox-routing@7.4.1)
       mapbox-gl:
         specifier: ^2.0.0 || ^3.0.0
         version: 3.32.0
@@ -971,8 +971,8 @@ packages:
   '@mapbox/vector-tile@3.0.0':
     resolution: {integrity: sha512-Qf10S1uIHMk20ri/IVBnpS+esUEkVaR5Hftmz88jTInrpmWgPGJfPe3LVjjlE77trLx8tH6qjTG7uWH9hIq/0Q==}
 
-  '@maplat/core@https://codeload.github.com/code4history/MaplatCore/tar.gz/f6d987e4431b51e1647b4b7bdad8994e8de304f1':
-    resolution: {gitHosted: true, integrity: sha512-+udCserEFDikyNDuCQlJ2bCMflYJ7ENAXi5dvI3YyE+lf1uj3hHS/T9LNGh8t+dOPa+38J35q1Y0NuMZjL47EQ==, tarball: https://codeload.github.com/code4history/MaplatCore/tar.gz/f6d987e4431b51e1647b4b7bdad8994e8de304f1}
+  '@maplat/core@https://codeload.github.com/code4history/MaplatCore/tar.gz/6461c0f6b245fe50b7ea473b12c2f489d0fdcc93':
+    resolution: {gitHosted: true, integrity: sha512-x7twWxkhcFSUOqcIDxXdgZHRdO58MCtV2O7ZMFOnaRcyToeHFr08+8dMMILUGa9hOsRqUq1Yt0qALnxqGLvecA==, tarball: https://codeload.github.com/code4history/MaplatCore/tar.gz/6461c0f6b245fe50b7ea473b12c2f489d0fdcc93}
     version: 1.2.0-rc.1
     engines: {pnpm: '>=9'}
     peerDependencies:
@@ -4476,7 +4476,7 @@ snapshots:
       '@types/geojson': 7946.0.16
       pbf: 5.1.2
 
-  '@maplat/core@https://codeload.github.com/code4history/MaplatCore/tar.gz/f6d987e4431b51e1647b4b7bdad8994e8de304f1(mapbox-gl@3.32.0)(maplibre-gl@6.9.0)(ol@10.11.0)(workbox-routing@7.4.1)':
+  '@maplat/core@https://codeload.github.com/code4history/MaplatCore/tar.gz/6461c0f6b245fe50b7ea473b12c2f489d0fdcc93(mapbox-gl@3.32.0)(maplibre-gl@6.9.0)(ol@10.11.0)(workbox-routing@7.4.1)':
     dependencies:
       '@c4h/weiwudi': 1.1.1-rc.1(workbox-routing@7.4.1)
       '@maplat/transform': 1.1.0
