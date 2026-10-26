@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8" />
+  <base href="/" />
+  <title>Maplat E2E — poiTemplate 陽性対照 Nunjucks (nov26-m5-t2)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.6.1/mapbox-gl.css" rel="stylesheet" />
+</head>
+
+<body>
+  <!--
+    nov26-m5-t2（NayutaProducts#28 B-UI-5）の陽性対照（C3-control）の Nunjucks 側。
+    payload は Nunjucks の記法で、Nunjucks の Core（@maplat/core 1.3 から）で発火する側。
+    lodash の Core で発火する側は nov26-m5-t2-poitemplate-control.html。
+    クエリを通さず、createObject のオプションに直接 poiTemplate を入れる。是正の前でも後でも、
+    観測窓（SETTLE_MS）の中で window.__nov26m5t2 === 1 になることを e2e で確かめ、C3 の緑が
+    「マーカーが描かれなかっただけ」の空振りでないことを担保する。
+    オプションは demo/dev.ts の option と同じ値に appid・lang・poiTemplate を足したもの。
+    index.html・デモの build の入力からは参照しない（e2e 専用）。
+  -->
+  <span id="status">読み込み中…</span>
+  <div style="position: relative; width: 100%; height: 600px;">
+    <div id="map_div" style="position: relative; width: 100%; height: 100%;"></div>
+  </div>
+  <script src="js/geolocate.js"></script>
+  <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v1.6.1/mapbox-gl.js"></script>
+  <script type="module">
+    import { MaplatUi } from '/src/index.ts';
+    import '/src/styles/ui.scss';
+
+    const statusEl = document.getElementById('status');
+    const option = {
+      enableCache: true,
+      restoreSession: false,
+      stateUrl: true,
+      markerList: true,
+      enableShare: true,
+      enableHideMarker: true,
+      enableMarkerList: true,
+      enableBorder: true,
+      presentationMode: true,
+      pwaManifest: true,
+      northTop: true,
+      mapboxgl: window.mapboxgl,
+      maplibregl: window.maplibregl,
+      mapboxToken:
+        'pk.eyJ1IjoicmVraXNoaWtva3VkbyIsImEiOiJjazRoMmF3dncwODU2M2ttdzI2aDVqYXVwIn0.8Hb9sekgjfck6Setxk5uVg',
+      lang: 'ja',
+      appid: 'sample',
+      // demo-query-checks.mjs の XSS_PAYLOAD_NUNJUCKS と同一（e2e がファイル本文で照合する）
+      poiTemplate: '{{range.constructor("Reflect.set(window,/__nov26m5t2/.source,1)")()}}'
+    };
+    MaplatUi.createObject(option).then(() => {
+      statusEl.textContent = 'READY appid=sample lang=ja';
+    }).catch(err => {
+      console.error(err);
+      statusEl.textContent = '読み込み失敗（console を参照）';
+    });
+  </script>
+</body>
+
+</html>

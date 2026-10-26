@@ -22,6 +22,7 @@
 - 地図の切り替えカードの枚数が変わる。幅 480px 以下は 1.4 枚、それより広い画面は 2 枚（今の版は 480px 以上で 1.4 枚・それ未満で 2 枚だった。Swiper の版上げで入った逆転を、v4 時代の見た目に戻した）
 - `dist/maplat_ui.css` は約 494 KB から約 5 KB になった。旧 UI の bootstrap を含む大きな CSS を配るのをやめ、`<maplat-ui>` の Shadow DOM の中の CSS だけにしたため。ページが旧 UI の bootstrap の CSS（`.btn` などの class）を間借りしていた場合は、それが効かなくなる
 - `::part` と CSS 変数の一覧は[移行ガイド](docs/api/migration-ui-shadow-dom.md)にある
+- `poiTemplate`・`iconTemplate` の記法は `@maplat/core` 1.3 で Nunjucks に変わった（lodash.template の記法は評価されない）。書き換え方は `@maplat/core` の CHANGELOG の「Removed」
 
 ### Added
 - POI の吹き出しの本文（html・url）の組み立てを `src/element/poi-html.ts` に集約した。`<maplat-ui>` と、実ブラウザで隔離を確かめる probe（`e2e/fixtures/poi-html-probe.ts`）が同じ関数を読む

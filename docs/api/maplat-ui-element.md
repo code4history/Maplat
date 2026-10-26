@@ -37,7 +37,7 @@ import '@maplat/ui/element';      // layer B: registers <maplat-ui> (side effect
 
 <script type="module">
   const ui = document.querySelector('maplat-ui');
-  ui.poiTemplate = '<h3>${name}</h3>';          // property-only key, passed to the child
+  ui.poiTemplate = '<h3>{{ name }}</h3>';       // property-only key, passed to the child
   await ui.ready;
   ui.addEventListener('mapChanged', (e) => console.log(e.detail.mapID)); // layer-A event, bubbles through
   console.log(ui.app.currentMapId, ui.currentLang);

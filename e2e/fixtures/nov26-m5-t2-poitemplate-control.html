@@ -11,7 +11,9 @@
 
 <body>
   <!--
-    nov26-m5-t2（NayutaProducts#28 B-UI-5）の陽性対照（C3-control）。
+    nov26-m5-t2（NayutaProducts#28 B-UI-5）の陽性対照（C3-control）の lodash 側。
+    payload は lodash.template の記法で、lodash の Core（@maplat/core 1.2 まで）で発火する側。
+    Nunjucks の Core で発火する側は nov26-m5-t2-poitemplate-control-nunjucks.html。
     クエリを通さず、createObject のオプションに直接 poiTemplate を入れる。是正の前でも後でも、
     観測窓（SETTLE_MS）の中で window.__nov26m5t2 === 1 になることを e2e で確かめ、C3 の緑が
     「マーカーが描かれなかっただけ」の空振りでないことを担保する。
