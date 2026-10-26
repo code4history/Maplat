@@ -22,6 +22,12 @@ allowBuilds:
   less: true
 
 overrides:
+  # 12 月トレインの PR の間だけ: @maplat/core の未公開の入口（/element・/common・/conformance）を、
+  # GitHub の MaplatCore の commit から入れる（Core は dist/ を追跡し prepare を持たないので、pnpm は build せず
+  # files で pack したものを置く）。今は Core の PR（code4history/MaplatCore#142）の先頭。Core を合流したら
+  # master の SHA に向け直す。RC（release/1.3）で package.json を ^1.3.0-rc.1 に書き換えるとき、この行を消して
+  # lock を作り直す。
+  "@maplat/core": "github:code4history/MaplatCore#f6d987e4431b51e1647b4b7bdad8994e8de304f1"
   # eslint / vitest まわりが引く js-yaml。>=4.0.0 <4.3.1 の high。4系の最新へ留める。
   js-yaml: "^4.3.1"
   # ajv > fast-uri ほか。>=3.0.0 <3.1.5 の high。
