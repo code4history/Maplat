@@ -33,7 +33,7 @@ import '@maplat/ui/element';      // 層 B: <maplat-ui> を登録する（副作
 
 <script type="module">
   const ui = document.querySelector('maplat-ui');
-  ui.poiTemplate = '<h3>${name}</h3>';          // プロパティのみのキー。子へ渡る
+  ui.poiTemplate = '<h3>{{ name }}</h3>';       // プロパティのみのキー。子へ渡る
   await ui.ready;
   ui.addEventListener('mapChanged', (e) => console.log(e.detail.mapID)); // 層 A のイベントが泡立って届く
   console.log(ui.app.currentMapId, ui.currentLang);
