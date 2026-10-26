@@ -28,9 +28,7 @@ const MAPLAT_APP_DEPRECATION_PREFIX =
 
 /** 旧 UI API の警告だけを取り出す（ほかの警告は判定に混ぜない） */
 const said = (warn: { mock: { calls: unknown[][] } }) =>
-  warn.mock.calls
-    .map(c => String(c[0]))
-    .filter(m => m === DEPRECATION_MESSAGE);
+  warn.mock.calls.map(c => String(c[0])).filter(m => m === DEPRECATION_MESSAGE);
 
 /** Core の旧クラスの警告だけを取り出す */
 const saidCore = (warn: { mock: { calls: unknown[][] } }) =>
