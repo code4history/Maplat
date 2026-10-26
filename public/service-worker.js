@@ -2970,7 +2970,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     }
   };
 
-  // node_modules/.pnpm/@c4h+weiwudi@1.1.0_workbox-routing@7.4.1/node_modules/@c4h/weiwudi/dist/weiwudi-sw.es.js
+  // node_modules/.pnpm/@c4h+weiwudi@1.1.1-rc.1_workbox-routing@7.4.1/node_modules/@c4h/weiwudi/dist/weiwudi-sw.es.js
   function W(S) {
     const u = 20037508342789244e-9, M = {};
     let A;
@@ -3283,7 +3283,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
               }
               switch (t.type) {
                 case "xyz":
-                  if (o = l(t, ["width", "height"]), !o) {
+                  if (o || (o = l(t, ["width", "height"])), !o) {
                     t.width = parseInt(t.width), t.height = parseInt(t.height);
                     const e = (n) => Math.ceil(Math.log(n / t.tileSize) / Math.log(2));
                     t.maxZoom = Math.max(e(t.width), e(t.height)), t.minZoom = t.minZoom ? parseInt(t.minZoom) : 0, t.minX = 0, t.minY = 0, t.maxX = Math.ceil(t.width / t.tileSize) - 1, t.maxY = Math.ceil(t.height / t.tileSize) - 1;
@@ -3391,7 +3391,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
   registerRoute(
     /(?:maps\/.+\.json|pwa\/.+|pois\/.+\.json|apps\/.+\.json|tmbs\/.+\.jpg|images\/.+\.(?:png|jpg))$/,
     new StaleWhileRevalidate({
-      cacheName: `resourcesCache-${"2026-10-17-05-10"}`,
+      cacheName: `resourcesCache-${"2026-10-26-07-52"}`,
       plugins: [
         new ExpirationPlugin({
           maxAgeSeconds: 86400,

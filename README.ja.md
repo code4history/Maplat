@@ -42,7 +42,7 @@ Maplat は Apache License 2.0（バージョン 0.12.2 以降）のオープン�
 ## クイックスタート
 
 <!-- release-pinned:start -->
-> **現在のリリース: `1.1.0`**。このブロックは本リポジトリで唯一
+> **現在のリリース: `1.2.0-rc.1`**。このブロックは本リポジトリで唯一
 > リリース版数を持つ場所です（ADR-0012）。ブロックの外はすべて 1.0 正式版を前提に
 > 書かれています。
 > npm: [`@maplat/ui`](https://www.npmjs.com/package/@maplat/ui)
@@ -60,6 +60,10 @@ npm install @maplat/ui
 
 ### 最小利用例
 
+> **非推奨。** `MaplatUi` クラスは次のメジャー版（2.0）で閉じます。新しいコードは
+> `<maplat-ui>` 要素（[Custom Element `<maplat-ui>`](#custom-element-maplat-ui)）
+> を使ってください。下の例は 1.x の間は動きます。
+
 ```typescript
 import { MaplatUi } from '@maplat/ui';
 import '@maplat/ui/dist/maplat_ui.css'; // スタイルのインポート
@@ -74,6 +78,31 @@ MaplatUi.createObject(option).then(app => {
 });
 ```
 
+### Custom Element `<maplat-ui>`
+
+ビューアは Custom Element としても使えます。`@maplat/core/element`（地図。`<maplat-app>` を
+登録します）と `@maplat/ui/element`（ビューア。タグを登録します）を一度ずつ import して
+タグを書けば、要素が地図の上にビューアを重ね、メソッドとイベントは要素の上にあります。
+
+```typescript
+import 'ol/ol.css';
+import '@maplat/core/element';
+import '@maplat/ui/element';
+```
+
+```html
+<maplat-ui app-id="morioka" enable-share></maplat-ui>
+<script type="module">
+  const ui = document.querySelector('maplat-ui');
+  await ui.ready;
+  ui.addEventListener('mapChanged', (e) => console.log(e.detail.mapID));
+</script>
+```
+
+属性・プロパティ・メソッド・イベントと `::part()`・CSS 変数は
+[`docs/api/maplat-ui-element.ja.md`](docs/api/maplat-ui-element.ja.md) を参照してください。
+`MaplatUi` クラスは非推奨で、1.x の間はそのまま使え、次のメジャー版（2.0）で閉じます。
+
 ### CDN（jsDelivr）
 
 バンドルせずにブラウザで直接利用する場合は、依存関係（OpenLayers）を先に読み込む
@@ -85,8 +114,8 @@ MaplatUi.createObject(option).then(app => {
 <script src="https://cdn.jsdelivr.net/npm/ol@10/dist/ol.min.js"></script>
 
 <!-- Maplat UI -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@maplat/ui@1.1.0/dist/maplat_ui.css">
-<script src="https://cdn.jsdelivr.net/npm/@maplat/ui@1.1.0/dist/maplat_ui.umd.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@maplat/ui@1.2.0-rc.1/dist/maplat_ui.css">
+<script src="https://cdn.jsdelivr.net/npm/@maplat/ui@1.2.0-rc.1/dist/maplat_ui.umd.js"></script>
 
 <div id="map_div"></div>
 <script>
@@ -126,8 +155,18 @@ Maplat UI はアプリ/地図設定の `pois` フィールドをそのまま
 ### API リファレンス
 
 - **API シグネチャ**（リリース依存）: [`docs/api/`](docs/api/) を参照
+  （`<maplat-ui>` 要素: [docs/api/maplat-ui-element.ja.md](docs/api/maplat-ui-element.ja.md)）
 - **概念解説**（リリース非依存）:
   [Wiki API-Reference](https://github.com/code4history/Maplat/wiki/API-Reference) を参照
+- 旧 DOM からの移行: [docs/api/migration-ui-shadow-dom.md](docs/api/migration-ui-shadow-dom.md) を参照
+
+#### 旧 UI のスタイル（`src/styles/`）
+
+`src/styles/` の SCSS（`ui.scss`・`maplat-specific.scss`・`contextmenu.scss`）は、**旧 API `MaplatUi` の後方互換の
+ためだけ**に残しています。画面は `<maplat-ui>` が Shadow DOM の中に持つ自分の CSS で描くので、これらのファイルは
+見た目に効かず、パッケージのどこからも import していません。配布物の `dist/maplat_ui.css` は一本化の後は OpenLayers の
+CSS だけ（約 5 KB。以前は旧 UI の CSS を含めて約 494 KB）で、旧の SCSS が利用者に届くのは、パッケージに同梱される
+原稿（`package.json` の `files` の `src/`）としてだけです。削除は次のメジャー版で行います。
 
 ### 開発
 

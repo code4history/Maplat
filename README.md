@@ -44,7 +44,7 @@ Maplat is open-source under the Apache License 2.0 (from version 0.12.2).
 ## Quick Start
 
 <!-- release-pinned:start -->
-> **Current release: `1.1.0`**. This block is the only place in
+> **Current release: `1.2.0-rc.1`**. This block is the only place in
 > this repository that carries a release version (ADR-0012); everything outside it is
 > written against the 1.0 release.
 > npm: [`@maplat/ui`](https://www.npmjs.com/package/@maplat/ui)
@@ -62,6 +62,11 @@ npm install @maplat/ui
 
 ### Minimal usage
 
+> **Deprecated.** The `MaplatUi` class closes in the next major version (2.0);
+> new code should use the `<maplat-ui>` element instead
+> ([Custom Element `<maplat-ui>`](#custom-element-maplat-ui)). The example below
+> keeps working in 1.x.
+
 ```typescript
 import { MaplatUi } from '@maplat/ui';
 import '@maplat/ui/dist/maplat_ui.css'; // Import styles
@@ -76,6 +81,33 @@ MaplatUi.createObject(option).then(app => {
 });
 ```
 
+### Custom Element `<maplat-ui>`
+
+The viewer is also available as a Custom Element. Import `@maplat/core/element`
+(the map; it registers `<maplat-app>`) and `@maplat/ui/element` (the viewer; it
+registers the tag) once, and write the tag; the element lays the viewer over
+the map and its methods and events are on the element.
+
+```typescript
+import 'ol/ol.css';
+import '@maplat/core/element';
+import '@maplat/ui/element';
+```
+
+```html
+<maplat-ui app-id="morioka" enable-share></maplat-ui>
+<script type="module">
+  const ui = document.querySelector('maplat-ui');
+  await ui.ready;
+  ui.addEventListener('mapChanged', (e) => console.log(e.detail.mapID));
+</script>
+```
+
+See [`docs/api/maplat-ui-element.md`](docs/api/maplat-ui-element.md) for the
+attributes, properties, methods and events and the `::part()` / CSS variables.
+The `MaplatUi` class is deprecated and stays available in 1.x; it closes in the
+next major version (2.0).
+
 ### CDN (jsDelivr)
 
 For usage directly in the browser without a bundler, you must load OpenLayers
@@ -88,8 +120,8 @@ separately.
 <script src="https://cdn.jsdelivr.net/npm/ol@10/dist/ol.min.js"></script>
 
 <!-- Maplat UI -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@maplat/ui@1.1.0/dist/maplat_ui.css">
-<script src="https://cdn.jsdelivr.net/npm/@maplat/ui@1.1.0/dist/maplat_ui.umd.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@maplat/ui@1.2.0-rc.1/dist/maplat_ui.css">
+<script src="https://cdn.jsdelivr.net/npm/@maplat/ui@1.2.0-rc.1/dist/maplat_ui.umd.js"></script>
 
 <div id="map_div"></div>
 <script>
@@ -130,8 +162,20 @@ in the MaplatCore README.
 ### API reference
 
 - **API signatures** (release-dependent): see [`docs/api/`](docs/api/)
+  (the `<maplat-ui>` element: [docs/api/maplat-ui-element.md](docs/api/maplat-ui-element.md))
 - **Conceptual guide** (release-independent): see the
   [Wiki API-Reference](https://github.com/code4history/Maplat/wiki/API-Reference)
+- Migrating from the legacy DOM: see
+  [docs/api/migration-ui-shadow-dom.md](docs/api/migration-ui-shadow-dom.md)
+
+#### Legacy styles (`src/styles/`)
+
+The SCSS files in `src/styles/` (`ui.scss`, `maplat-specific.scss`, `contextmenu.scss`) are kept **only for backward
+compatibility with the legacy `MaplatUi` API**. The UI is drawn by `<maplat-ui>` with its own CSS inside a Shadow DOM,
+so these files no longer affect the viewer's appearance and nothing in the package imports them. Since the unification,
+the shipped `dist/maplat_ui.css` contains only the OpenLayers CSS (about 5 KB; previously about 494 KB including the legacy
+UI CSS), so the legacy SCSS reaches users only as source files bundled through `files: ["src/"]` in `package.json`.
+They will be removed in the next major version.
 
 ### Development
 

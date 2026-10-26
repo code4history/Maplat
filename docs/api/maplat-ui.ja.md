@@ -2,6 +2,17 @@
 
 `@maplat/ui` のメインクラスです。
 
+> **非推奨。** `MaplatUi` クラスは非推奨で、次のメジャー版（2.0）で閉じます。
+> 新しいコードは `<maplat-ui>` 要素（`@maplat/ui/element`）と `<maplat-app>` 要素
+> （`@maplat/core/element`）を組み合わせて使ってください。要素の属性・プロパティ・
+> メソッド・イベントとこのクラスとの対応は
+> [`maplat-ui-element.ja.md`](maplat-ui-element.ja.md)、旧 UI の DOM からの移行は
+> [`migration-ui-shadow-dom.md`](migration-ui-shadow-dom.md) にあります。
+> `new MaplatUi(...)`・`MaplatUi.createObject(...)` は、同一プロセスで 1 回だけ
+> （インスタンスごとではなく）この旨を `console.warn` で警告します。この文書は 1.x の
+> クラス（静的メソッド・コンストラクタ・インスタンスメソッド・`waitReady`・`uiHooks`・
+> `ui.core`。2.0 までは従来どおり使えます）を記すものです。
+
 ## 静的メソッド
 
 - **`createObject(option: MaplatAppOption): Promise<MaplatUi>`**
@@ -17,7 +28,23 @@
 - **`remove()`**: アプリケーションを破棄し、リソースを解放します。
 - **`updateUrl()`**: 現在の状態に合わせて URL を更新します（`stateUrl` オプション有効時）。
 
+## 注意（Shadow DOM 化）
+
+UI の表示は `<maplat-ui>`（Shadow DOM open）に移りました。`MaplatUi` の外形（`createObject`・`waitReady`・
+`uiHooks`・`ui.core` など）は変わりませんが、旧 UI の DOM の class 名（`.ol-*`・`.swiper-*`・`.modal_*` など）は
+無くなり、スタイルは `::part()` と CSS 変数で当てる形になりました。また、旧 API の互換層は Core の
+`<maplat-app>` の上だけで動きます。移行の手順と対応表は
+[旧 UI の DOM からの移行（Shadow DOM 化）](migration-ui-shadow-dom.md) を参照してください。
+要素そのもの（`<maplat-ui>` の属性・プロパティ・メソッド・イベントと、このクラスとの対応）は
+[`<maplat-ui>` 要素 API](maplat-ui-element.ja.md) を参照してください。
+
+旧 UI の実装（`src/ui_init.ts` など）は削除済みで、このクラスは `<maplat-ui>` の上の**互換層**だけです
+（同じ画面を描く経路は 1 つ）。`ui.sliderNew`・`ui.contextMenu`・`ui.baseSwiper`/`ui.overlaySwiper`・`ui.i18n`・
+`ui._t` の型は限定 facade になっています（くわしくは移行ガイドの「型の変化」）。
+
 ## 関連
 
+- [`<maplat-ui>` 要素 API](maplat-ui-element.ja.md) — このクラスの土台になっている Custom Element
 - [MaplatAppOption](maplat-app-option.ja.md) — オプションオブジェクトのプロパティ
 - [UI コアライフサイクル](../ui-core-lifecycle.ja.md) — ライフサイクルフェーズと uiHooks
+- [旧 UI の DOM からの移行（Shadow DOM 化）](migration-ui-shadow-dom.md) — `::part` の対応表

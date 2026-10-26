@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { defineConfig, build } from 'vite';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -7,16 +7,42 @@ import dts from 'vite-plugin-dts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+// <maplat-ui> の版（src/element/maplat-ui.ts の __MAPLAT_UI_VERSION__）。外側のビルドと入れ子の UMD のビルドの両方に入れる
+const PACKAGE_VERSION = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'package.json'), 'utf-8')).version;
+const VERSION_DEFINE = { __MAPLAT_UI_VERSION__: JSON.stringify(PACKAGE_VERSION) };
 
 // Detect build mode: 'package' for npm package, anything else for demo
 const BUILD_MODE = process.env.BUILD_MODE;
 const isPackageBuild = BUILD_MODE === 'package';
+const PACKAGE_EXTERNAL = [
+    'ol',
+    'mapbox-gl',
+    'maplibre-gl',
+    /^.*\/service-worker\// // Exclude service-worker from library build
+];
+const PACKAGE_GLOBALS = {
+    ol: 'ol',
+    'mapbox-gl': 'mapboxgl',
+    'maplibre-gl': 'maplibregl'
+};
+const UMD_FOOTER = 'if (typeof window !== "undefined" && window.MaplatUi && window.MaplatUi.MaplatUi) { window.MaplatUi = window.MaplatUi.MaplatUi; }';
+// CSS（SCSS）の設定。外側のビルドと、入れ子の UMD ビルド（`configFile: false` なので外側の設定を
+// 継がない）の両方に同じものを渡す（1 か所で持つ）。
+const CSS_OPTIONS = {
+    preprocessorOptions: {
+        scss: {
+            silenceDeprecations: ['legacy-js-api', 'import', 'color-functions', 'global-builtin', 'if-function'],
+            api: 'modern-compiler'
+        }
+    }
+};
 
 export default defineConfig(({ command }) => ({
     // Dev server: always use '/'
     // Package build: use '/' (library, base doesn't matter)
     // Demo build: use '/Maplat/' for GitHub Pages
     base: command === 'serve' ? '/' : (isPackageBuild ? '/' : '/Maplat/'),
+    define: VERSION_DEFINE,
     resolve: {},
     plugins: [
         {
@@ -58,45 +84,74 @@ export default defineConfig(({ command }) => ({
         ...(isPackageBuild ? [
             dts({
                 insertTypesEntry: true,
-            })
+                entryRoot: 'src',
+            }),
+            {
+                // ES は複数の入口（`.` と `./element`）を 1 回で作れるが、UMD は Vite が
+                // 「output formats に umd/iife を含むときは複数の入口を許さない」と断る。
+                // そこで UMD（と CSS）だけを、ES のビルドが終わったあとに 1 入口で作り直す。
+                // `configFile: false` なので、このプラグインも外側の `css` の設定も入れ子のビルドには
+                // 入らない。CSS の設定は `CSS_OPTIONS` を明示して渡す（外側と同じ 1 つの定数）。
+                name: 'maplat-ui-legacy-umd',
+                apply: 'build',
+                async closeBundle() {
+                    if (!isPackageBuild) return;
+                    await build({
+                        configFile: false,
+                        logLevel: 'warn',
+                        define: VERSION_DEFINE,
+                        css: CSS_OPTIONS,
+                        build: {
+                            outDir: 'dist',
+                            emptyOutDir: false,
+                            copyPublicDir: false,
+                            lib: {
+                                entry: path.resolve(__dirname, 'src/index.ts'),
+                                name: 'MaplatUi',
+                                formats: ['umd'],
+                                fileName: () => 'maplat_ui.umd.js',
+                                cssFileName: 'maplat_ui'
+                            },
+                            rollupOptions: {
+                                external: PACKAGE_EXTERNAL,
+                                output: {
+                                    globals: PACKAGE_GLOBALS,
+                                    footer: UMD_FOOTER
+                                }
+                            }
+                        }
+                    });
+                }
+            }
         ] : [])
     ],
-    css: {
-        preprocessorOptions: {
-            scss: {
-                silenceDeprecations: ['legacy-js-api', 'import', 'color-functions', 'global-builtin', 'if-function'],
-                api: 'modern-compiler'
-            }
-        }
-    },
+    css: CSS_OPTIONS,
     build: {
         outDir: isPackageBuild ? 'dist' : 'dist-demo',
         copyPublicDir: !isPackageBuild,
         ...(isPackageBuild ? {
             lib: {
-                entry: path.resolve(__dirname, 'src/index.ts'),
+                // 入口は 2 つ: 旧 UI（`.`）と UI Elements API（`./element`）。どちらも ES で出す。
+                entry: {
+                    index: path.resolve(__dirname, 'src/index.ts'),
+                    'element/index': path.resolve(__dirname, 'src/element/index.ts')
+                },
                 name: 'MaplatUi',
-                fileName: (format) => `maplat_ui.${format}.js`,
-                formats: ['es', 'umd']
+                formats: ['es'],
+                fileName: (_format, entryName) =>
+                    entryName === 'index'
+                        ? 'maplat_ui.es.js'
+                        : `${entryName}.js`,
+                cssFileName: 'maplat_ui'
             },
             rollupOptions: {
-                external: [
-                    'ol',
-                    'mapbox-gl',
-                    'maplibre-gl',
-                    /^.*\/service-worker\// // Exclude service-worker from library build
-                ],
+                external: PACKAGE_EXTERNAL,
                 output: {
                     assetFileNames: (assetInfo) => {
                         if (assetInfo.name && assetInfo.name.endsWith('.css')) return 'maplat_ui.css';
                         return assetInfo.name;
                     },
-                    globals: {
-                        ol: 'ol',
-                        'mapbox-gl': 'mapboxgl',
-                        'maplibre-gl': 'maplibregl'
-                    },
-                    footer: 'if (typeof window !== "undefined" && window.MaplatUi && window.MaplatUi.MaplatUi) { window.MaplatUi = window.MaplatUi.MaplatUi; }'
+                    globals: PACKAGE_GLOBALS
                 }
             }
         } : {

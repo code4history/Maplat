@@ -5,6 +5,12 @@ import { test, expect, type Page } from '@playwright/test';
  *
  * 設計書 §6.3 の E-1〜E-4 を検証する。
  * fixture: e2e/fixtures/marker-list.html（mode=nocollision / collision）
+ *
+ * 一本化（旧 API は `<maplat-ui>` の上の互換層）での移植: 旧 UI の `.ol-marker-list button`・
+ * `.modal_marker_list_content .list-group-item.layer label.check` を、`<maplat-ui>` の shadow root の
+ * `[part="marker-list"] button`・`[part="marker-list-layer"] label.switch`（`[part="marker-list-layer-switch"]` の
+ * チェックボックスを包むラベル）へ移した（Playwright の CSS locator は shadow root を貫く）。
+ * 判定（層の表示・非表示を `ui.core` の listPoiLayers / getPoiLayer で読む）は変えない。
  */
 
 async function waitForReady(page: Page) {
@@ -19,11 +25,11 @@ async function waitForReady(page: Page) {
 }
 
 async function openMarkerList(page: Page) {
-  // Click the MarkerList control button (ol-marker-list class)
-  const btn = page.locator('.ol-marker-list button').first();
+  // マーカー一覧のボタン（旧 .ol-marker-list → 新 part="marker-list"）
+  const btn = page.locator('[part="marker-list"] button').first();
   await btn.click();
-  // Wait for the layer list items to appear inside the modal
-  await page.waitForSelector('.modal_marker_list_content .list-group-item.layer', {
+  // 一覧の層の行が出るのを待つ（旧 .modal_marker_list_content .list-group-item.layer → 新 part="marker-list-layer"）
+  await page.waitForSelector('[part="marker-list-layer"]', {
     timeout: 10000
   });
 }
@@ -54,7 +60,8 @@ async function getLayerHide(page: Page, namespaceID: string): Promise<boolean | 
 }
 
 async function toggleLayerByIndex(page: Page, layerIndex: number) {
-  const labels = page.locator('.modal_marker_list_content .list-group-item.layer label.check');
+  // 旧 label.check（チェックボックスのラベル）→ 新 label.switch（part="marker-list-layer-switch" を包む）
+  const labels = page.locator('[part="marker-list-layer"] label.switch');
   await labels.nth(layerIndex).click();
   await page.waitForTimeout(300);
 }
