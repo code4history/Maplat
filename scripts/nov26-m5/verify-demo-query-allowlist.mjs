@@ -7,7 +7,7 @@
  * 使い方: node scripts/nov26-m5/verify-demo-query-allowlist.mjs [baseUrl]
  *   baseUrl の既定は https://code4history.dev/Maplat/（"/" で終わり "?"・"#" を含まないこと）
  *
- * 公開デモ（または手元のデモ）に demo-query-checks.mjs の CHECKS（C1〜C3）を当て、
+ * 公開デモ（または手元のデモ）に demo-query-checks.mjs の CHECKS（C1〜C3n）を当て、
  * 1 本ごとに 1 行の JSON を出し、最後に {"exit":N,...} を出して終了する。
  *
  * 終了コードの契約:
