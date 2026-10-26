@@ -10,6 +10,10 @@ const baseURL = `http://localhost:${PORT}`;
 export default defineConfig({
   testDir: "./e2e/element",
   testMatch: /\.pw\.ts$/,
+  // 旧 UI の基準と見た目を比べる e2e は、基準の JSON（spec/fixtures/legacy-baseline/）を macOS の Chromium で
+  // 採っている。Linux の CI では既定の書体（Times と "Times New Roman"）と文字の幅が違い、位置が 2〜3px ずれる
+  // ので CI では流さない（手元の macOS で流す）
+  testIgnore: process.env.CI ? [/maplat-ui-baseline-compare\.pw\.ts$/] : [],
   outputDir: "./test-results/element",
   timeout: 120_000,
   workers: 1,
