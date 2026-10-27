@@ -38,7 +38,7 @@
 | `.modal_poi` など `.modalBase` | `::part(poi-modal)`・`::part(share-modal)`・`::part(help-modal)`・`::part(map-info-modal)`・`::part(marker-list-modal)`・`::part(gps-modal)`・`::part(splash)` | 旧は 1 つのモーダルの class を付け替えていた |
 | `.modal_poi .title` | `::part(poi-title)` | ほかに `share-title`・`help-title`・`map-info-title`・`marker-list-title`・`gps-title` |
 | `.modal_poi .body` | `::part(poi-body)` | |
-| POI のメディア（Chuci） | `::part(poi-media)` / `::part(poi-swiper)` | |
+| POI のメディア（Quyuan のスライダー `qy-swiper`。中身は Chuci） | `::part(poi-media)` / `::part(poi-swiper)` | |
 | POI の `html` / `url` の本文 | `::part(poi-html)` / `::part(poi-iframe)` | `html` の本文は `poi-html`、`url` の本文は iframe の `poi-iframe` |
 | `.custom-toast` | `::part(toast)` | |
 | 地図情報のメタデータ | `::part(map-meta)` | 行は `part="map-meta-<キー>"` |
@@ -48,7 +48,7 @@
 
 | 変数 | 効く場所 |
 | --- | --- |
-| `--maplat-poi-media-theme-color` / `--maplat-poi-media-navigation-color` | POI のメディア（Chuci のスワイパー）の色。中で Chuci の `--cc-slider-theme-color` / `--cc-slider-navigation-color` に渡す（既定 `#007aff`）。Chuci の変数を直接ページで指定しても、Shadow DOM の中の指定が勝つので効かない |
+| `--maplat-poi-media-theme-color` / `--maplat-poi-media-navigation-color` | POI のメディア（Quyuan のスライダー `qy-swiper`）の色。中で Chuci の `--cc-slider-theme-color` / `--cc-slider-navigation-color` に渡す（既定 `#007aff`）。Chuci の変数を直接ページで指定しても、Shadow DOM の中の指定が勝つので効かない |
 | `--maplat-envelope-color` | 枠線の表示中の、範囲を持つ地図のカード（`::part(map-slide)`）の点線の**既定色**だけ。地図ごとの色（要素が割り当てる 25 色）があればそちらが勝つので、ふつうは見えない（範囲を持つカードには必ず付くので、今の版ではページで指定した値は見えない）。`::part(border)` のボタンにも、地図の上の範囲の線にも効かない |
 | `--maplat-ui-control-gap` | 操作ボタンの列（左上・左下・右下）の、隣り合うボタンの間隔。既定は `7px`。タッチ端末も同じ値を使う。`<maplat-ui>` に指定する |
 
@@ -68,7 +68,7 @@ maplat-ui::part(map-title) {
   color: #402;
 }
 
-/* POI のメディア（Chuci のスワイパー）の色 */
+/* POI のメディア（Quyuan のスライダー）の色 */
 maplat-ui {
   --maplat-poi-media-theme-color: #a00;
   --maplat-poi-media-navigation-color: #a00;
