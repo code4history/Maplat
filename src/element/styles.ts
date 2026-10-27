@@ -12,6 +12,18 @@
 // 数値を試すときは値を変えてから読み込み直す（ページを開き直す）。
 import { SLIDER_TUNING } from "./slider";
 
+/**
+ * POI のスライダー（qy-swiper）の宣言。media から組んだもの（`.poi-media qy-swiper`）と、POI の html
+ * （テンプレート）が書いたもの（入れ子の Shadow DOM の `qy-swiper`）の両方に当てる（2 か所に書かない）。
+ * 色はページから変えられるよう、層 B の CSS 変数で公開する（Shadow DOM の中で直接指定すると外から上書きできない。
+ * レビュー m5）。既定は旧と同じ #007aff。qy-swiper は Chuci の cc-swiper を継承するので、変数も Chuci の
+ * `--cc-slider-*` を使う。
+ */
+export const POI_SWIPER_DECLARATIONS =
+  "display: block; height: 300px; " +
+  "--cc-slider-theme-color: var(--maplat-poi-media-theme-color, #007aff); " +
+  "--cc-slider-navigation-color: var(--maplat-poi-media-navigation-color, #007aff);";
+
 export const MAPLAT_UI_CSS = `
 :host {
   display: block;
@@ -339,16 +351,9 @@ export const MAPLAT_UI_CSS = `
 .poi-html.scroll { max-height: 60vh; overflow-y: auto; }
 .poi-iframe { width: 100%; min-height: 50vh; border: 0; }
 .poi-iframe.no-scroll { min-height: 0; height: 60vh; }
-/* POI のメディア（旧 .poi_img_swiper と、旧が文書の head に入れていた cc-swiper の style） */
+/* POI のメディア（旧 .poi_img_swiper と、旧が文書の head に入れていた Chuci のスライダーの style） */
 .poi-media { margin-bottom: 10px; }
-.poi-media cc-swiper {
-  display: block;
-  height: 300px;
-  /* ページから変えられるよう、層 B の CSS 変数で公開する（Shadow DOM の中で直接指定すると外から上書きできない。
-     レビュー m5）。既定は旧と同じ #007aff */
-  --cc-slider-theme-color: var(--maplat-poi-media-theme-color, #007aff);
-  --cc-slider-navigation-color: var(--maplat-poi-media-navigation-color, #007aff);
-}
+.poi-media qy-swiper { ${POI_SWIPER_DECLARATIONS} }
 .poi-address { color: #555; margin: 0 0 10px; }
 .poi-desc { margin: 0 0 10px; }
 /* ---- マーカー一覧（旧 .modal_marker_list・.list-group-item.layer / .poi） ---- */
@@ -727,3 +732,10 @@ export const MAPLAT_UI_CSS = `
 
 .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
 `;
+
+/**
+ * POI の html を描く入れ子の Shadow DOM の CSS（poi-html.ts）。`<maplat-ui>` の CSS はこの中へ届かない ∴
+ * テンプレートが書いた qy-swiper にも、media のスライダーと同じ宣言をここで当てる（無いと高さが 0 になる）。
+ * CSS 変数（`--maplat-poi-media-*`）は継承で届く。
+ */
+export const POI_HTML_SHADOW_CSS = `img { width: 100%; } qy-swiper { ${POI_SWIPER_DECLARATIONS} }`;

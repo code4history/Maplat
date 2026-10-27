@@ -498,6 +498,7 @@ export class MaplatUi extends EventTarget {
     const host = this.#createHost();
     this.#host = host;
     // 旧 UI は起動時に `@c4h/chuci`（cc-swiper 等）を登録していた。旧 API の利用者のために先に読む
+    // （今は `@c4h/quyuan` を読み、Quyuan が同梱の Chuci の cc-* を登録する）
     void host.preloadMediaViewer();
     // 旧 `splashPromise`（onUiDomReady で置かれていた）は、層 B の `ready` に結ぶ
     this.splashPromise = host.ready.then(

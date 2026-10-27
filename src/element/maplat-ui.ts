@@ -6,15 +6,15 @@
 //
 // 地図（層 A の <maplat-app>）に、操作ボタン（ズーム・ホーム・コンパス・GPS・透過度・地図情報・枠線・
 // マーカーの非表示）・地図の切り替えスライダー（旧 UI の `.base-swiper` / `.overlay-swiper`）・
-// POI の吹き出し（メディアは Chuci のスワイパー）・マーカー一覧・
+// POI の吹き出し（メディアは Quyuan のスライダー）・マーカー一覧・
 // 重なった POI の選択メニュー・地図情報（メタデータ・ライセンス・タイルキャッシュ）・共有（SNS・コピー・QR）・
 // 状態 URL（state-url）・PWA（pwa-manifest 等）を重ねる。
 // 残りの機能（ヘルプ等の画面と全言語化）は後で移す。
 //
 // **依存の規則**: 層 A は `<maplat-app>` の公開面（属性・プロパティ・メソッド・イベント）
 // だけを使う。`@maplat/core` の本体（MaplatApp・mapObject・source）・`@maplat/core/element`・OpenLayers を
-// import・参照しない。外部の import は `@maplat/core/common` と、POI のメディアの表示部品 `@c4h/chuci`
-// （地図も層 A も持たない Web Components。初めてメディアを出すときに動的 import する）と、QR の符号化の
+// import・参照しない。外部の import は `@maplat/core/common` と、POI のメディアの表示部品 `@c4h/quyuan`
+// （Chuci を同梱する。地図も層 A も持たない Web Components。初めてメディアを出すときに動的 import する）と、QR の符号化の
 // `qrcode`（共有の QR を初めて出すときに share.ts が動的 import する）だけ（spec/element-deps.spec.ts が機械的に確かめる）。
 // `<maplat-app>` を登録する入口（Core の "@maplat/core/element" か、別の層 A の実装の要素）はページが import する。
 //
@@ -398,24 +398,28 @@ function poiKey(poi: MaplatPoi): string | undefined {
   return undefined;
 }
 
-/** Chuci（cc-swiper 等）の読み込み。最初にメディアを出すときに 1 回だけ。読めなければ次の機会に読み直す。 */
-let chuciLoading: Promise<void> | null = null;
-function loadChuci(): Promise<void> {
-  if (typeof customElements !== "undefined" && customElements.get("cc-swiper"))
+/**
+ * Quyuan（qy-swiper 等。同梱の Chuci の cc-* も未登録なら登録する）の読み込み。最初にメディアを出すときに
+ * 1 回だけ。読めなければ次の機会に読み直す。読み込み済みの判定は qy-swiper で行う（cc-swiper で判定すると、
+ * ページが先に別の版の Chuci を登録していたときに Quyuan が読まれず qy-swiper が定義されない）。
+ */
+let quyuanLoading: Promise<void> | null = null;
+function loadQuyuan(): Promise<void> {
+  if (typeof customElements !== "undefined" && customElements.get("qy-swiper"))
     return Promise.resolve();
-  if (!chuciLoading) {
-    chuciLoading = import("@c4h/chuci").then(
+  if (!quyuanLoading) {
+    quyuanLoading = import("@c4h/quyuan").then(
       () => undefined,
       (err: unknown) => {
-        chuciLoading = null;
+        quyuanLoading = null;
         console.warn(
-          `<${MAPLAT_UI_TAG}>: failed to load @c4h/chuci (POI media viewer)`,
+          `<${MAPLAT_UI_TAG}>: failed to load @c4h/quyuan (POI media viewer)`,
           err
         );
       }
     );
   }
-  return chuciLoading;
+  return quyuanLoading;
 }
 
 const CLOSE_BUTTON = (part: string) =>
@@ -1198,12 +1202,13 @@ export class MaplatUiElement extends BaseElement {
   }
 
   /**
-   * @internal POI のメディアの表示部品（`@c4h/chuci` の `cc-swiper` 等）を先に読み込む。
+   * @internal POI のメディアの表示部品（`@c4h/quyuan` の `qy-swiper` 等）を先に読み込む。
    *   旧 UI は起動時に Chuci を静的に import して登録していた（旧 ui_marker.ts）。旧 API の利用者は
    *   起動の後に `cc-swiper` を自分のページで使えたので、互換層が起動時に呼ぶ（新 UI は最初のメディアで読む）。
+   *   Quyuan は同梱の Chuci の `cc-*` を未登録のときだけ登録する ∴ 起動の後も `cc-swiper` は使える。
    */
   preloadMediaViewer(): Promise<void> {
-    return loadChuci();
+    return loadQuyuan();
   }
 
   /**
@@ -3937,6 +3942,13 @@ export class MaplatUiElement extends BaseElement {
     );
     if (body.kind !== "none") {
       if (body.node) el.poiBody.appendChild(body.node);
+      // テンプレートが <qy-swiper> を書いた POI は、メディアの POI を開く前でも表示部品を読む。
+      // 判定はサニタイズの後の DOM で行う（文字列では見ない。sanitizer が落とした要素では読まない）
+      if (
+        body.kind === "html" &&
+        body.node.shadowRoot?.querySelector("qy-swiper")
+      )
+        void loadQuyuan();
       return;
     }
     const swiper = this.#buildMediaSwiper(data);
@@ -3946,7 +3958,7 @@ export class MaplatUiElement extends BaseElement {
       media.setAttribute("part", "poi-media");
       media.appendChild(swiper);
       el.poiBody.appendChild(media);
-      void loadChuci();
+      void loadQuyuan();
     }
     const address = this.translateText(data.address);
     if (address) {
@@ -3966,9 +3978,9 @@ export class MaplatUiElement extends BaseElement {
   }
 
   /**
-   * POI の image / media を Chuci のスワイパー（<cc-swiper> と <cc-swiper-slide>）にする（旧 poiWebControl と同じ組み方）。
-   * 種類（image・video・youtube・3dmodel・gaussian・panorama）は type か src の拡張子で決め、表示は Chuci の
-   * ビューアに任せる。属性は共有の buildSlideAttrs（cc-swiper-slide の許可リスト・URL と文字の無害化）で組む。
+   * POI の image / media を Quyuan のスライダー（<qy-swiper> と <qy-swiper-slide>）にする（旧 poiWebControl と同じ組み方）。
+   * 種類（image・video・youtube・3dmodel・gaussian・panorama）は type か src の拡張子で決め、表示は Quyuan の
+   * ビューア（中身は同梱の Chuci）に任せる。属性は共有の buildSlideAttrs（スライドの許可リスト・URL と文字の無害化）で組む。
    * @returns メディアが 1 件も無ければ null
    */
   #buildMediaSwiper(data: MaplatPoi): HTMLElement | null {
@@ -4015,13 +4027,13 @@ export class MaplatUiElement extends BaseElement {
       const attrs = buildSlideAttrs(slide);
       // 本体の URL を buildSlideAttrs が落としたら（":" を含む相対パス等）スライドにしない
       if (!/(^|\s)image-url="/.test(attrs)) continue;
-      slides.push(`<cc-swiper-slide ${attrs}></cc-swiper-slide>`);
+      slides.push(`<qy-swiper-slide ${attrs}></qy-swiper-slide>`);
     }
     if (slides.length === 0) return null;
     // 値は buildSlideAttrs が属性の文脈へエスケープ済み。<template> の中で組み（登録・実行されない）、
-    // 子まで揃えてから文書へ入れる（cc-swiper は繋がった時点の子からスライドを作る）
+    // 子まで揃えてから文書へ入れる（qy-swiper は繋がった時点の子からスライドを作る）
     const holder = document.createElement("template");
-    holder.innerHTML = `<cc-swiper>${slides.join("")}</cc-swiper>`;
+    holder.innerHTML = `<qy-swiper>${slides.join("")}</qy-swiper>`;
     const swiper = holder.content.firstElementChild as HTMLElement;
     swiper.setAttribute("part", "poi-swiper");
     return document.importNode(swiper, true) as HTMLElement;
