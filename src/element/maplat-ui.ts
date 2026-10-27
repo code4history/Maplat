@@ -400,7 +400,7 @@ function poiKey(poi: MaplatPoi): string | undefined {
 
 /**
  * Quyuan（qy-swiper 等。同梱の Chuci の cc-* も未登録なら登録する）の読み込み。最初にメディアを出すときに
- * 1 回だけ。読めなければ次の機会に読み直す。読み込み済みの判定は qy-swiper で行う（cc-swiper で判定すると、
+ * 1 回だけ。読めなければ次の機会に読み直す。読み込み済みの判定は qy-swiper で行う（Chuci の要素で判定すると、
  * ページが先に別の版の Chuci を登録していたときに Quyuan が読まれず qy-swiper が定義されない）。
  */
 let quyuanLoading: Promise<void> | null = null;

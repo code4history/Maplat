@@ -36,7 +36,7 @@
       "caption": "YouTube Video"
      }
     ],
-    "desc": "m1-t3 の swiper 目視確認用に追加した POI。複数画像を持つため cc-swiper が生成される。"
+    "desc": "m1-t3 の swiper 目視確認用に追加した POI。複数画像を持つため qy-swiper が生成される。"
    },
    "geometry": {
     "type": "Point",
@@ -65,7 +65,7 @@
       "caption": "Gaussian Splatting Model"
      }
     ],
-    "desc": "m1-t3 の swiper 目視確認用に追加した POI。複数画像を持つため cc-swiper が生成される。"
+    "desc": "m1-t3 の swiper 目視確認用に追加した POI。複数画像を持つため qy-swiper が生成される。"
    },
    "geometry": {
     "type": "Point",

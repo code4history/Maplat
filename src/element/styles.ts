@@ -16,7 +16,7 @@ import { SLIDER_TUNING } from "./slider";
  * POI のスライダー（qy-swiper）の宣言。media から組んだもの（`.poi-media qy-swiper`）と、POI の html
  * （テンプレート）が書いたもの（入れ子の Shadow DOM の `qy-swiper`）の両方に当てる（2 か所に書かない）。
  * 色はページから変えられるよう、層 B の CSS 変数で公開する（Shadow DOM の中で直接指定すると外から上書きできない。
- * レビュー m5）。既定は旧と同じ #007aff。qy-swiper は Chuci の cc-swiper を継承するので、変数も Chuci の
+ * レビュー m5）。既定は旧と同じ #007aff。qy-swiper は Chuci のスライダーを継承するので、変数も Chuci の
  * `--cc-slider-*` を使う。
  */
 export const POI_SWIPER_DECLARATIONS =
