@@ -126,9 +126,10 @@ export declare class MaplatUiElement extends BaseElement {
      */
     disablePwaWorker(): void;
     /**
-     * @internal POI のメディアの表示部品（`@c4h/chuci` の `cc-swiper` 等）を先に読み込む。
+     * @internal POI のメディアの表示部品（`@c4h/quyuan` の `qy-swiper` 等）を先に読み込む。
      *   旧 UI は起動時に Chuci を静的に import して登録していた（旧 ui_marker.ts）。旧 API の利用者は
      *   起動の後に `cc-swiper` を自分のページで使えたので、互換層が起動時に呼ぶ（新 UI は最初のメディアで読む）。
+     *   Quyuan は同梱の Chuci の `cc-*` を未登録のときだけ登録する ∴ 起動の後も `cc-swiper` は使える。
      */
     preloadMediaViewer(): Promise<void>;
     /**
