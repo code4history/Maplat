@@ -128,6 +128,11 @@ describe("11 言語の言語ファイル", () => {
     expect(de.t("app.copy_toast")).toBe("In die Zwischenablage kopiert");
     const es = await mountUi(u => u.setAttribute("lang", "es"));
     expect(es.t("control.home")).toBe("Volver a la posición inicial");
+    // 標準位置へは自動で戻るので、利用者への指示の文にしない
+    const zh = await mountUi(u => u.setAttribute("lang", "zh"));
+    expect(zh.t("app.out_of_map_area")).toBe(
+      "已经超出地图范围以外。将返回地图标准位置。"
+    );
     const ko = await mountUi(u => u.setAttribute("lang", "ko"));
     expect(ko.t("control.home")).toBe("홈 위치로 이동");
     const viLang = await mountUi(u => u.setAttribute("lang", "vi"));

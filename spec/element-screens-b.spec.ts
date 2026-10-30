@@ -553,6 +553,19 @@ describe("範囲外のトーストの出し方", () => {
     expect(style.maxWidth).toBe("284px");
   });
 
+  it("箱が画面の右へはみ出していたら、見えている部分の中で中央に置く", async () => {
+    vi.stubGlobal("innerWidth", 500);
+    vi.stubGlobal("innerHeight", 800);
+    const ui = await mountUi();
+    vi.spyOn(ui, "getBoundingClientRect").mockReturnValue(
+      frame(300, 50, 400, 300)
+    );
+    getMockLayerAController(ui.app!)!.fire("outOfMap", {});
+    const { style } = part(ui, "toast");
+    expect(style.left).toBe("400px");
+    expect(style.maxWidth).toBe("184px");
+  });
+
   it("後から showToast() を呼ぶと、今までの出し方（下の中央・1.5 秒・幅の指定なし）に戻る", async () => {
     vi.useFakeTimers();
     try {
