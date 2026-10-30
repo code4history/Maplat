@@ -393,7 +393,7 @@ and the open balloon in the new language.
 ### Sharing
 
 With `enable-share`, the share button opens a dialog with the app URL
-(`getShareUrl("app")`) — copy to clipboard, Twitter, Facebook, and a QR code
+(`getShareUrl("app")`) — copy to clipboard, X, Facebook, and a QR code
 (`share-qr-app`) — and, when `state-url` is on, the URL of the current view
 (`getShareUrl("view")`, `share-qr-view`). With `enable-share` **and**
 `state-url`, the POI balloon also shows the QR code of the current view

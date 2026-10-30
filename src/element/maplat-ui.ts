@@ -469,11 +469,11 @@ const GPS_ERROR_KEYS: Record<string, string> = {
   gps_timeout: "app.gps_timeout"
 };
 
-/** 共有のボタンの組（コピー・Twitter・Facebook。data-share は旧の data 属性と同じ "cp_app" 等）。 */
+/** 共有のボタンの組（コピー・X・Facebook。data-share は旧の data 属性と同じ "cp_app" 等）。 */
 const SHARE_BUTTONS = (kind: ShareUrlType) => `
       <div class="share-buttons">
         <button type="button" class="share-button" part="share-button" data-share="cp_${kind}"><svg viewBox="0 0 512 512" aria-hidden="true"><path fill="currentColor" d="${SHARE_ICONS.cp}"/></svg><small class="share-copy-label"></small></button>
-        <button type="button" class="share-button" part="share-button" data-share="tw_${kind}" title="Twitter"><svg viewBox="0 0 512 512" aria-hidden="true"><path fill="currentColor" d="${SHARE_ICONS.tw}"/></svg><small>Twitter</small></button>
+        <button type="button" class="share-button" part="share-button" data-share="tw_${kind}" title="X"><svg viewBox="0 0 512 512" aria-hidden="true"><path fill="currentColor" d="${SHARE_ICONS.tw}"/></svg><small>X</small></button>
         <button type="button" class="share-button" part="share-button" data-share="fb_${kind}" title="Facebook"><svg viewBox="0 0 512 512" aria-hidden="true"><path fill="currentColor" d="${SHARE_ICONS.fb}"/></svg><small>Facebook</small></button>
       </div>`;
 

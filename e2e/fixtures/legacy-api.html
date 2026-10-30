@@ -32,6 +32,7 @@
     stateUrl=1  URL の `#!` による状態復元を有効にする（`e2e/legacy-api.spec.ts` の A4・A9）
     buttons=1   enableShare / enableBorder / enableHideMarker / enableMarkerList を全部有効にする
                 （`e2e/legacy-baseline-capture.spec.ts` の「全ボタン」の採取）
+    poi=1       POI を 1 つ載せる（開いた POI の状態 URL の確認）
     base=<1..3>・overlay=<1..3>  地図の枚数（既定 3・2）
 -->
 <body>
@@ -83,7 +84,10 @@
       defaultZoom: 17,
       startFrom: 'tatebayashi_ojozu',
       sources: [...overlays, ...bases],
-      pois: []
+      pois:
+        params.get('poi') === '1'
+          ? [{ id: 'legacy_api_poi', name: '旧APIのPOI', lnglat: [139.5321, 36.249302] }]
+          : []
     };
 
     MaplatUi.createObject({

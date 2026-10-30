@@ -348,7 +348,7 @@ UI の文言は 11 言語あります: `de`・`en`・`es`・`fr`・`id`・`ja`�
 ### 共有
 
 `enable-share` のとき、共有のボタンはアプリの URL（`getShareUrl("app")`）— クリップボード
-へのコピー・Twitter・Facebook・QR コード（`share-qr-app`）— と、`state-url` のときに
+へのコピー・X・Facebook・QR コード（`share-qr-app`）— と、`state-url` のときに
 今の表示の URL（`getShareUrl("view")`・`share-qr-view`）の画面を開きます。
 `enable-share` かつ `state-url` のときは、POI の吹き出しにも今の表示の URL の QR コード
 （`poi-share`・`poi-qr`）を出します（開いている POI を含みます）。QR の符号化の
