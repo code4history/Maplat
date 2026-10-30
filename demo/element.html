@@ -38,6 +38,8 @@
     window.__maplatUi = ui; // e2e から読む
     // ?pwa を付けて開いたら PWA を有効にする（pwa-manifest は起動時のみのキーなので、要素の登録の前に書く）
     if (new URLSearchParams(location.search).has("pwa")) ui.setAttribute("pwa-manifest", "");
+    // ?always-gps を付けて開いたら always-gps-on にする（範囲外の知らせをボタンの経路で確かめる）
+    if (new URLSearchParams(location.search).has("always-gps")) ui.setAttribute("always-gps-on", "");
     customElements.whenDefined("maplat-ui").then(() => ui.ready).then(
       () => {
         const app = ui.app;

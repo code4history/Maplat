@@ -502,6 +502,7 @@ export const MAPLAT_UI_CSS = `
   color: #fff;
   font-size: 17px;
   text-align: center;
+  overflow-wrap: break-word;
   opacity: 0;
   transition: opacity .3s;
   pointer-events: none;

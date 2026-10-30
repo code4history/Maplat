@@ -35,7 +35,7 @@
 | `.base-swiper` / `.overlay-swiper` | `::part(map-slider)` | カードは `::part(map-slide)`（選択中は `map-slide map-slide-selected`）。前後のボタンは `::part(map-slider-prev)` / `::part(map-slider-next)` |
 | `.swiper-slide` | `::part(map-slide)` | Swiper の DOM ではない（カードはボタン） |
 | `.ol-ctx-menu-container`（右クリックメニュー） | `::part(poi-menu)` | 項目は `::part(poi-menu-item)`。重なった POI の選択も同じ部品 |
-| `.modal_poi` など `.modalBase` | `::part(poi-modal)`・`::part(share-modal)`・`::part(help-modal)`・`::part(map-info-modal)`・`::part(marker-list-modal)`・`::part(gps-modal)`・`::part(splash)` | 旧は 1 つのモーダルの class を付け替えていた |
+| `.modal_poi` など `.modalBase` | `::part(poi-modal)`・`::part(share-modal)`・`::part(help-modal)`・`::part(map-info-modal)`・`::part(marker-list-modal)`・`::part(gps-modal)`・`::part(splash)` | 旧は 1 つのモーダルの class を付け替えていた。`::part(gps-modal)` は GPS のエラーの画面で、地図の範囲外の知らせはトースト（`::part(toast)`）になった |
 | `.modal_poi .title` | `::part(poi-title)` | ほかに `share-title`・`help-title`・`map-info-title`・`marker-list-title`・`gps-title` |
 | `.modal_poi .body` | `::part(poi-body)` | |
 | POI のメディア（Chuci） | `::part(poi-media)` / `::part(poi-swiper)` | |

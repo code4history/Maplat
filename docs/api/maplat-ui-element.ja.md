@@ -116,7 +116,7 @@ import '@maplat/ui/element';      // 層 B: <maplat-ui> を登録する（副作
 | `enable-hide-marker` | `enableHideMarker` | boolean | `false` | いいえ | マーカー非表示のボタンを出し入れする |
 | `enable-marker-list` | `enableMarkerList` | boolean | `false` | いいえ | マーカー一覧のボタンを出し入れする（地図に POI がある間だけ出す）。偽にすると一覧も閉じる |
 | `enable-poi-html-no-scroll` | `enablePoiHtmlNoScroll` | boolean | `false` | いいえ | 次に開く POI から、`html`・`url` の本文に内部のスクロールを持たせない |
-| `presentation-mode` | `presentationMode` | boolean | `false` | いいえ | `true` は `outOfMap` で開く画面を出さない（`gps_out` のエラーでは出る） |
+| `presentation-mode` | `presentationMode` | boolean | `false` | いいえ | `true` は `outOfMap` と、`always-gps-on` の GPS ボタンで出すトーストを止める（`gps_out` の結果のトーストと、GPS のエラーの画面は止めない） |
 | `compass-action` | `compassAction` | `"auto"` \| `"north"` \| `"rotation"` | `"auto"` | いいえ | コンパスのボタンを押したときの動き: `north`＝`resetDirection()`（北を上に）、`rotation`＝`resetRotation()`（画面の回転を 0 に）、`auto`＝子の `north-up` が `true` なら `north`、そうでなければ `rotation`。ほかの値は 1 回警告して `auto` として扱う |
 | `tap-duration` | `tapDuration` | number（ms） | `3000`（`0` も有効） | いいえ | 次の操作ボタンの自動非表示から |
 | `tap-ui-vanish` | `tapUiVanish` | boolean | `false` | いいえ | 地図のドラッグ中は、このキーに関係なく操作ボタンを常に隠し、地図が止まってから `tap-duration` の後に戻す。このキーが決めるのは地図の**タップ**で隠すかどうかだけ: `true` ならタップでも隠れる（`tap-duration` の後か、隠れている間の次のタップで戻る） |
@@ -224,9 +224,10 @@ import '@maplat/ui/element';      // 層 B: <maplat-ui> を登録する（副作
 | ヘルプ（`help`）＋画面（`help-modal`） | 常時（ボタンは最初から出るが、画面が開くのは `ready` の後） | ヘルプの本文。共有・枠線・マーカー非表示・マーカー一覧の行は、対応する `enable-*` のときに出す |
 | POI の吹き出し（`poi-modal`・`poi-title`・`poi-body`・`poi-media`） | POI が 1 件の `clickMarker`・`clickMarkers`、`openMarker()`、一覧 | 名前・メディア（Chuci のスワイパー）・住所・説明、または POI の `html`・`url`。`directgo` の POI は遷移する。地図のマーカーを選ぶ |
 | POI のメニュー（`poi-menu`・`poi-menu-item`） | POI が複数の `clickMarkers` | 重なった POI から 1 つ選ぶ |
-| 範囲外・GPS の画面（`gps-modal`） | `outOfMap`（`presentation-mode` のとき以外）と GPS のエラー | 題名と本文 |
+| GPS のエラーの画面（`gps-modal`） | GPS のエラー（拒否・未取得・タイムアウト） | 題名と本文 |
 | スプラッシュ（`splash`） | 起動時、地図を復元しないとき（`initialRestore.mapID` が空）だけ | `appName` と `splash` の画像。地図の準備ができたら 200 ms（画像ありは 1000 ms）で隠す |
-| 知らせ（`toast`） | `showToast()` と共有の URL を写した後 | 1.5 秒 |
+| 知らせ（`toast`） | `showToast()` と共有の URL を写した後 | 1.5 秒。画面の下の中央（コピーの知らせはボタンの近く） |
+| 範囲外の知らせ（`toast`） | `outOfMap`（`presentation-mode` のとき以外）、`gps_out` の結果、`always-gps-on` で範囲外のときの GPS ボタン（`presentation-mode` のとき以外） | 3 秒。`<maplat-ui>` の下端の中央。開いている画面は閉じず、フォーカスも動かさない。文は実際の動きを表す（標準位置に戻る・GPS を切る・範囲外であることだけ） |
 
 操作ボタン・透過度のスライダー・題名・地図の切り替えスライダーは、自動非表示の対象です:
 地図のドラッグ中は常に隠れ、`tap-ui-vanish` のときは地図のタップでも隠れます。地図が

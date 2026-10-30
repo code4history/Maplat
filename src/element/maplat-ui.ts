@@ -443,6 +443,25 @@ const HELP_ICONS: Record<string, string> = {
   marker_list: "list"
 };
 
+/** showToast() のトーストの長さ。 */
+const TOAST_MS = 1500;
+/**
+ * 範囲外の知らせの文言。Core の実際の動きと 1 対 1 に揃える。
+ *   view: 表示位置が地図の範囲外（既定の位置へ戻る）
+ *   gpsOff: GPS の結果が地図の範囲外（GPS が切れる。地図は動かない）
+ *   gpsKept: always-gps-on で範囲外のまま（GPS は続く。地図は動かない）
+ */
+const OUT_OF_MAP_NOTICE = {
+  view: "app.out_of_map_area",
+  gpsOff: "app.out_of_map_desc",
+  gpsKept: "app.out_of_map"
+} as const;
+/** 範囲外の知らせの長さ（2 文を読み切れる長さ）。 */
+const OUT_OF_MAP_TOAST_MS = 3000;
+/** 範囲外の知らせと <maplat-ui> の箱の下端・左右の間隔。 */
+const OUT_OF_MAP_TOAST_BOTTOM_PX = 30;
+const OUT_OF_MAP_TOAST_SIDE_PX = 8;
+
 /** GPS のエラーの種類 → 文言のキー（旧 initGpsHandlers の errorMap）。 */
 const GPS_ERROR_KEYS: Record<string, string> = {
   user_gps_deny: "app.user_gps_deny",
@@ -1124,30 +1143,46 @@ export class MaplatUiElement extends BaseElement {
    * target を渡すとその近く（.recipient の囲みがあればその中央）に、無ければ下の中央に 1.5 秒出す。
    */
   showToast(message: string, target?: HTMLElement): void {
-    const toast = this.#el.toast;
-    toast.textContent = String(message);
     const anchor =
       target && typeof target.getBoundingClientRect === "function"
         ? ((target.closest?.(".recipient") as HTMLElement | null) ?? target)
         : null;
-    if (anchor) {
-      const rect = anchor.getBoundingClientRect();
-      toast.style.left = `${rect.left + rect.width / 2}px`;
-      toast.style.top = `${rect.top + rect.height / 2}px`;
-      toast.style.bottom = "auto";
-      toast.style.transform = "translate(-50%, -50%)";
-    } else {
-      toast.style.left = "50%";
-      toast.style.top = "auto";
-      toast.style.bottom = "30px";
-      toast.style.transform = "translateX(-50%)";
-    }
+    this.#presentToast(message, TOAST_MS, style => {
+      if (anchor) {
+        const rect = anchor.getBoundingClientRect();
+        style.left = `${rect.left + rect.width / 2}px`;
+        style.top = `${rect.top + rect.height / 2}px`;
+        style.bottom = "auto";
+        style.transform = "translate(-50%, -50%)";
+      } else {
+        style.left = "50%";
+        style.top = "auto";
+        style.bottom = "30px";
+        style.transform = "translateX(-50%)";
+      }
+    });
+  }
+
+  /**
+   * トーストの本体。1 枚を使い回すので、続けて出すと文言を替えて時間を測り直す（後の知らせが見える）。
+   * 位置は place が決める。幅の指定は毎回消してから place に渡す。
+   */
+  #presentToast(
+    message: string,
+    durationMs: number,
+    place: (style: CSSStyleDeclaration) => void
+  ) {
+    const toast = this.#el.toast;
+    toast.textContent = String(message);
+    toast.style.width = "";
+    toast.style.maxWidth = "";
+    place(toast.style);
     toast.classList.add("show");
     if (this.#toastTimer) clearTimeout(this.#toastTimer);
     this.#toastTimer = setTimeout(() => {
       this.#toastTimer = undefined;
       toast.classList.remove("show");
-    }, 1500);
+    }, durationMs);
   }
 
   // ---- 旧 UI の互換層（src/legacy/）のための口（移行期だけ）----
@@ -1866,9 +1901,7 @@ export class MaplatUiElement extends BaseElement {
         break;
       }
       case "outOfMap":
-        // 旧 initGpsHandlers: presentation-mode が真なら出さない（enableOutOfMap）
-        if (this.#parseOwnAttribute(ATTR_PRESENTATION_MODE) !== true)
-          this.#showGpsModal(true);
+        this.#notifyOutOfMap(OUT_OF_MAP_NOTICE.view);
         break;
       case "gps_error":
         this.#showGpsModal(
@@ -1891,14 +1924,15 @@ export class MaplatUiElement extends BaseElement {
         }
         if (error === "gps_out_hide") {
           // 層 A の契約（element_contract.ts の gps_result）: always-gps-on の範囲外。
-          // モーダルは出さず、GPS のボタンで出し直せるよう「範囲外」としてだけ覚えておく
+          // 位置が更新されるたびに来るので何も出さず、GPS のボタンで知らせるよう「範囲外」としてだけ覚えておく
           this.#lastGpsError = "gps_out";
           break;
         }
         this.#lastGpsError = error;
-        // 旧と同じ: always-gps-on のときの gps_out は黙って戻る（モーダルを出さない）
+        // 旧と同じ: always-gps-on のときの gps_out は黙って戻る（知らせはボタンの経路が出す）
         if (this.#app?.alwaysGpsOn === true && error === "gps_out") break;
-        if (error === "gps_out") this.#showGpsModal(true);
+        if (error === "gps_out")
+          this.#showOutOfMapToast(OUT_OF_MAP_NOTICE.gpsOff);
         else this.#showGpsModal(false, error);
         break;
       }
@@ -2180,10 +2214,11 @@ export class MaplatUiElement extends BaseElement {
     el.gps.querySelector("button")!.addEventListener("click", () =>
       this.#call("handleGPS", app => {
         // 旧 SetGPS と同じ: always-gps-on なら常に開始、そうでなければ切り替え。
-        // 範囲外のまま（最後の結果が gps_out）なら、旧は outOfMap を出し直していた（範囲外モーダル）
+        // 範囲外のまま（最後の結果が gps_out）なら、旧は outOfMap を出し直していた（ここでは知らせを出す）
         if (app.alwaysGpsOn === true) {
           const result = app.handleGPS(true);
-          if (this.#lastGpsError === "gps_out") this.#notifyOutOfMap();
+          if (this.#lastGpsError === "gps_out")
+            this.#notifyOutOfMap(OUT_OF_MAP_NOTICE.gpsKept);
           return result;
         }
         return app.handleGPS(!app.gpsEnabled);
@@ -2836,13 +2871,35 @@ export class MaplatUiElement extends BaseElement {
   // ---- 範囲外・GPS のエラー（旧 ui_init.ts:341-419 の initGpsHandlers・modal_gpsD）----
 
   /** 範囲外を知らせる（旧 outOfMap の処理。presentation-mode が真なら出さない）。 */
-  #notifyOutOfMap() {
+  #notifyOutOfMap(key: string) {
     if (this.#parseOwnAttribute(ATTR_PRESENTATION_MODE) === true) return;
-    this.#showGpsModal(true);
+    this.#showOutOfMapToast(key);
   }
 
   /**
-   * 範囲外／GPS のエラーのモーダル（旧 modal_gpsD。題名と本文だけの画面）。
+   * 範囲外の知らせを、<maplat-ui> の箱の下端の中央にトーストで出す。操作を止めない知らせなので、
+   * 開いている画面は閉じず、フォーカスも動かさない。地図の準備前は出さない。
+   * トーストは position: fixed で CSS の割合が画面基準になるので、見えている箱の大きさを読んで幅を決める。
+   */
+  #showOutOfMapToast(key: string) {
+    if (!this.#app || !this.#appReady) return;
+    const box = this.getBoundingClientRect();
+    const left = Math.max(box.left, 0);
+    const right = Math.min(box.right, window.innerWidth);
+    const bottom = Math.min(box.bottom, window.innerHeight);
+    this.#presentToast(this.t(key), OUT_OF_MAP_TOAST_MS, style => {
+      style.left = `${(left + right) / 2}px`;
+      style.top = `${bottom - OUT_OF_MAP_TOAST_BOTTOM_PX}px`;
+      style.bottom = "auto";
+      style.transform = "translate(-50%, -100%)";
+      style.width = "max-content";
+      style.maxWidth = `${right - left - OUT_OF_MAP_TOAST_SIDE_PX * 2}px`;
+    });
+  }
+
+  /**
+   * GPS のエラーのモーダル（旧 modal_gpsD。題名と本文だけの画面）。範囲外の文言は旧 API の
+   * modalSetting("gpsD") から開くときだけ使う（範囲外の知らせ自体はトースト）。
    * 旧と同じ文言: 範囲外は app.out_of_map / app.out_of_map_area、エラーは app.gps_error と
    * 種類ごとの app.user_gps_deny・app.gps_miss・app.gps_timeout（知らない種類は app.gps_error）。
    * 地図の準備前は出さない（旧も core-ready の後に購読していた）。
