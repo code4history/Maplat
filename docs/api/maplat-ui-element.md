@@ -53,8 +53,8 @@ import '@maplat/ui/element';      // layer B: registers <maplat-ui> (side effect
 
 - `@maplat/ui/element` is an ES module entry (`dist/element/index.js`); there
   is no UMD build of the element. It imports `@maplat/core/common` (and,
-  lazily, `@c4h/chuci` for POI media and `qrcode` for the share QR code), so it
-  needs a bundler or an import map. It does **not** import a layer-A
+  lazily, `@c4h/quyuan` for POI media — it bundles `@c4h/chuci` — and `qrcode`
+  for the share QR code), so it needs a bundler or an import map. It does **not** import a layer-A
   implementation: the page imports `@maplat/core/element` (or the Core-Pro
   entry) itself. The element does not use OpenLayers; `ol/ol.css` and the
   `ol` / `mapbox-gl` / `maplibre-gl` peer dependencies belong to the layer-A
@@ -251,7 +251,7 @@ parentheses); the main parts are in the
 | Marker list (`marker-list`) + dialog (`marker-list-modal`) | `enable-marker-list` and the map has POIs | Lists the POI layers (`marker-list-layer`) and POIs (`marker-list-poi`); a layer switch toggles `showPoiLayer` / `hidePoiLayer`, a POI row opens the balloon |
 | Share (`share`) + dialog (`share-modal`) | after `ready`, with `enable-share` | See [Sharing](#sharing) |
 | Help (`help`) + dialog (`help-modal`) | always (the button is there from the start, but the dialog opens only after `ready`) | The help text; the rows for share, border, hide-marker and marker-list appear with the matching `enable-*` |
-| POI balloon (`poi-modal`, `poi-title`, `poi-body`, `poi-media`) | on `clickMarker` / `clickMarkers` with one POI, `openMarker()`, the list | Name, media (Chuci swiper), address, description; or the POI's `html` / `url`. A POI with `directgo` navigates instead. Selects the marker on the map |
+| POI balloon (`poi-modal`, `poi-title`, `poi-body`, `poi-media`) | on `clickMarker` / `clickMarkers` with one POI, `openMarker()`, the list | Name, media (Quyuan slider, `qy-swiper`), address, description; or the POI's `html` / `url`. A POI with `directgo` navigates instead. Selects the marker on the map |
 | POI menu (`poi-menu`, `poi-menu-item`) | on `clickMarkers` with several POIs | Choose one of the overlapping POIs |
 | GPS error dialog (`gps-modal`) | on GPS errors (denied, unavailable, timed out) | Title and message |
 | Splash (`splash`) | at startup, only when no map is restored (`initialRestore.mapID` is empty) | `appName` and the `splash` image; hidden after 200 ms (1000 ms with an image) once the map is ready |
@@ -262,6 +262,34 @@ The controls, the transparency slider, the title and the map sliders are the
 targets of the auto-hide: they hide while the map is dragged (always) and, with
 `tap-ui-vanish`, on a tap on the map; they come back `tap-duration` after the
 map stops.
+
+### POI media and templates
+
+The POI media (`media` / `image`) is shown with the Quyuan slider
+(`<qy-swiper>` / `<qy-swiper-slide>`, part `poi-swiper`). The element loads
+`@c4h/quyuan` the first time it shows media, or the first time a POI's `html`
+contains a `<qy-swiper>` after sanitizing. Quyuan registers the bundled Chuci
+elements (`cc-swiper`, `cc-viewer`, …) only when they are not registered yet, so
+`cc-swiper` stays available to pages that used it. If the page has already
+registered another version of Chuci, the `cc-viewer` inside `qy-viewer` is the
+page's version.
+
+A POI template (`poiTemplate`, Nunjucks syntax) can write the same slider. It is
+drawn inside the POI's `html` (part `poi-html`) with the same height and colour
+variables as the media slider. Boolean attributes such as `has-thumb` are
+written without a value. The attributes that remain after sanitizing are listed
+in the `@maplat/core` documentation (`docs/api/maplat-app.md`, POI templates).
+
+```html
+<qy-swiper has-thumb>
+  {% for p in photos %}
+  <qy-swiper-slide image-url="{{ p.src }}" image-type="image" caption="{{ p.caption }}"></qy-swiper-slide>
+  {% endfor %}
+</qy-swiper>
+```
+
+The template is evaluated when the marker is drawn, so the slider appears when
+the POI is opened from its marker (`clickMarker`).
 
 ## State (read-only properties)
 

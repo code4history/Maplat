@@ -1,6 +1,6 @@
-import { M as t, f as M, g as f } from "../index-ZMOV31TM.js";
+import { M as t, d as M, e as i } from "../index-DRoncYsZ.js";
 export {
   t as MAPLAT_UI_VERSION,
   M as MaplatUiElement,
-  f as defineMaplatUi
+  i as defineMaplatUi
 };

@@ -16,13 +16,18 @@
 - `ui.showContextMenu([{icon, text, callback}])` の `text` は、サニタイズを通した HTML として入る（スクリプト・イベント属性は落ちる）。`ui.lastClickPixel` が無いときは、開かない代わりに最後に地図を押した位置（それも無ければ地図の中央）に出る
 - 旧 API の型が変わった: `ui.i18n` は i18next の `i18n` から限定 facade（`LegacyI18n`）に、`ui._t` は i18next の `TFunction` から `(key, option?) => string` に、`ui.sliderNew` は OL の Control（`SliderNew`）から `LegacySliderFacade` に、`ui.contextMenu` は ol-contextmenu の fork（`ContextMenu`）から `LegacyContextMenuFacade` に（どちらも旧の呼び手が使う口だけを持つ限定 facade。`instanceof` や OL の Control のメソッドは無い）。`ui._t`・`ui.i18n` への代入は警告して無視する（例外にはしない）。`ui.lang` への代入は `<maplat-ui>` の `lang` 属性へ流れる
 - 旧 API のホスト（`<maplat-ui>`）は旧の地図と同じく `position: absolute; top/left/right/bottom: 0` で、いちばん近い位置指定の祖先いっぱいに広がる
-- POI のメディア（Chuci）の色は `--maplat-poi-media-theme-color`・`--maplat-poi-media-navigation-color` で変える（Shadow DOM の中なので、Chuci の `--cc-slider-*` をページで指定しても効かない）
+- POI のメディア（スライダー）の色は `--maplat-poi-media-theme-color`・`--maplat-poi-media-navigation-color` で変える（Shadow DOM の中なので、Chuci の `--cc-slider-*` をページで指定しても効かない）
 - 状態 URL の書き込みは `history.replaceState`（履歴を増やさない）。旧 UI の page.js は `pushState` だった
 - `<maplat-ui>` の文字の大きさ・行の高さ・色は、書体と同じくページから継承する（旧 UI と同じ。旧は bootstrap を `.maplat` の下に閉じ込めていたので body の 14px・#333 は当たらず、操作ボタン・スライダーの容器・モーダルの本文はページの文字を継いでいた）。題名（18px・白）・地図切り替えのカード（18px）・モーダルの見出し（18px）・スプラッシュの題名（18px）・共有ボタンと地図情報のキャッシュのボタン（旧 bootstrap の `.btn` の 14px・行の高さ 1.42857）・地図情報の項目名と値の行の高さ（旧 bootstrap の `dt, dd` の 1.42857）など、旧も自分で決めていたものは従来どおり。一本化の途中の版では `:host` で 14px・#333 を決めていたため、文字の大きさを指定したページで旧と見た目がずれていた
 - `package.json` に `exports` を足した（`.`・`./element`・`./dist/*`・`./src/*`）。`require("@maplat/ui")` は `default` の ES 版（`dist/maplat_ui.es.js`）に解決され、Node 20.19 / 22.12 以降の `require(esm)` とバンドラーで読める。1.1.0 では `main` の `dist/maplat_ui.umd.js` が `"type": "module"` の下で ES モジュールとして読まれ、UMD の包みが `exports` も `require("ol")` も使えずに空の名前空間を返していたが、この問題も解消した。`exports` が付いたので、`assets/` の深いパスは Node とバンドラーから読めなくなった（`./dist/*` 経由なら読める）。`src/` は `./src/*` で開いてある（MaplatEditor が `src/styles/` の SCSS を import しているため）。`dist/maplat_ui.umd.js` の名前と置き場所は変えていない（`<script>` と `main` は従来どおり）
 - 地図の切り替えカードの枚数が変わる。幅 480px 以下は 1.4 枚、それより広い画面は 2 枚（今の版は 480px 以上で 1.4 枚・それ未満で 2 枚だった。Swiper の版上げで入った逆転を、v4 時代の見た目に戻した）
 - `dist/maplat_ui.css` は約 494 KB から約 5 KB になった。旧 UI の bootstrap を含む大きな CSS を配るのをやめ、`<maplat-ui>` の Shadow DOM の中の CSS だけにしたため。ページが旧 UI の bootstrap の CSS（`.btn` などの class）を間借りしていた場合は、それが効かなくなる
 - `::part` と CSS 変数の一覧は[移行ガイド](docs/api/migration-ui-shadow-dom.md)にある
+- POI のマルチメディアの表示部品を、`@c4h/chuci` の直接依存から [Quyuan](https://github.com/code4history/Quyuan)（`@c4h/quyuan`）に替えた。表示は `<qy-swiper>`／`<qy-swiper-slide>`／`<qy-viewer>`（中身は従来と同じ Chuci）になる。依存は `@c4h/chuci` が外れ `@c4h/quyuan` が入る。Chuci は Quyuan の中に同梱されているので、別に入れる必要は無い
+  - メディアの部品は従来どおり、POI のメディアを最初に開くときに読み込む（初期表示の大きさは変わらない）。部品の大きさは gzip でおよそ 306 KB → 342 KB（`dist/chuci-*.js` 306,195 バイト → `dist/quyuan-*.js` 342,123 バイト）
+  - 旧 API（`MaplatUi`）の利用者が自分のページで使っていた `cc-swiper` などの要素は、引き続き登録される
+  - スライダーの見た目の CSS 変数（`--maplat-poi-media-theme-color`・`--maplat-poi-media-navigation-color`）は変わらない
+- POI のテンプレート（`poiTemplate`）で `<qy-swiper>`・`<qy-swiper-slide>` を書くと、情報窓の中にスライダーを出せる（`@maplat/core` 1.3 の `sanitizeHtml` が残す要素と属性に限る）
 - `poiTemplate`・`iconTemplate` の記法は `@maplat/core` 1.3 で Nunjucks に変わった（lodash.template の記法は評価されない）。書き換え方は `@maplat/core` の CHANGELOG の「Removed」
 
 ### Added

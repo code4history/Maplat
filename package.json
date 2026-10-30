@@ -76,7 +76,7 @@
     "pnpm": ">=9.0.0"
   },
   "dependencies": {
-    "@c4h/chuci": "^1.0.2-rc.1",
+    "@c4h/quyuan": "^1.1.1-rc.1",
     "@c4h/weiwudi": "^1.1.1-rc.1",
     "@maplat/core": "^1.2.0-rc.1",
     "qrcode": "^1.5.4",
