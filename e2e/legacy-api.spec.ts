@@ -189,6 +189,31 @@ test.describe("地図の切り替え（A3）と題名の文字（A5）", () => {
   });
 });
 
+test.describe("範囲外の知らせ", () => {
+  test("地図の切り替えで視点が範囲外になると、モーダルではなくトーストの文だけが出る", async ({
+    page
+  }) => {
+    test.setTimeout(240000);
+    // 背景の地図のタイルは外のネットワークに依らないよう空で返す
+    await page.route(/tile\.openstreetmap\.org/, route =>
+      route.fulfill({ status: 204 })
+    );
+    const { errors } = await open(page);
+    await waitText(page, TITLES.start);
+    await page.evaluate(async () => {
+      const core = (window as any).__maplatUi.core;
+      await core.changeMap("osm");
+      core.setViewpoint({ longitude: 139.7671, latitude: 35.6812 });
+      await new Promise(resolve => setTimeout(resolve, 500));
+      await core.changeMap("tatebayashi_ojozu");
+    });
+    await waitText(page, "表示位置が地図範囲外です。地図標準位置に戻します。");
+    // モーダルなら題名も出る（トーストは本文だけ）
+    expect(await hasText(page, "地図範囲外")).toBe(false);
+    expect(errors, errors.join("\n")).toEqual([]);
+  });
+});
+
 test.describe("URL の #! の復元（A4）", () => {
   test("location.hash の #!s:<id> が changeMap(<id>) を呼び、その地図になる", async ({
     page

@@ -134,7 +134,7 @@ it passes on to the child.
 | `enable-hide-marker` | `enableHideMarker` | boolean | `false` | no | Shows / hides the hide-marker button |
 | `enable-marker-list` | `enableMarkerList` | boolean | `false` | no | Shows / hides the marker-list button (shown only while the map has POIs); turning it off closes the list |
 | `enable-poi-html-no-scroll` | `enablePoiHtmlNoScroll` | boolean | `false` | no | From the next POI balloon opened: an `html` / `url` body gets no inner scroll |
-| `presentation-mode` | `presentationMode` | boolean | `false` | no | `true` suppresses the dialog opened by `outOfMap` (a `gps_out` error still opens it) |
+| `presentation-mode` | `presentationMode` | boolean | `false` | no | `true` suppresses the toast shown on `outOfMap` and by the GPS button with `always-gps-on` (a `gps_out` result still shows its toast, and GPS errors still open the dialog) |
 | `compass-action` | `compassAction` | `"auto"` \| `"north"` \| `"rotation"` | `"auto"` | no | What the compass button does: `north` = `resetDirection()` (north up), `rotation` = `resetRotation()` (screen rotation 0), `auto` = `north` when the child's `north-up` is `true`, otherwise `rotation`. Another value warns once and counts as `auto` |
 | `tap-duration` | `tapDuration` | number (ms) | `3000` (`0` is valid) | no | From the next auto-hide of the controls |
 | `tap-ui-vanish` | `tapUiVanish` | boolean | `false` | no | The controls are always hidden while the map is dragged, whatever this key says, and come back `tap-duration` after the map stops. This key decides only whether a **tap** on the map hides them: with `true` a tap hides them (they come back after `tap-duration`, or at the next tap while hidden) |
@@ -253,9 +253,10 @@ parentheses); the main parts are in the
 | Help (`help`) + dialog (`help-modal`) | always (the button is there from the start, but the dialog opens only after `ready`) | The help text; the rows for share, border, hide-marker and marker-list appear with the matching `enable-*` |
 | POI balloon (`poi-modal`, `poi-title`, `poi-body`, `poi-media`) | on `clickMarker` / `clickMarkers` with one POI, `openMarker()`, the list | Name, media (Chuci swiper), address, description; or the POI's `html` / `url`. A POI with `directgo` navigates instead. Selects the marker on the map |
 | POI menu (`poi-menu`, `poi-menu-item`) | on `clickMarkers` with several POIs | Choose one of the overlapping POIs |
-| Out-of-map / GPS dialog (`gps-modal`) | on `outOfMap` (unless `presentation-mode`) and on GPS errors | Title and message |
+| GPS error dialog (`gps-modal`) | on GPS errors (denied, unavailable, timed out) | Title and message |
 | Splash (`splash`) | at startup, only when no map is restored (`initialRestore.mapID` is empty) | `appName` and the `splash` image; hidden after 200 ms (1000 ms with an image) once the map is ready |
-| Toast (`toast`) | `showToast()` and after copying a share URL | 1.5 s |
+| Toast (`toast`) | `showToast()` and after copying a share URL | 1.5 s, at the bottom centre of the window (or next to the copied control) |
+| Out-of-map toast (`toast`) | on `outOfMap` (unless `presentation-mode`), on a `gps_out` result, and when the GPS button is pressed outside the map with `always-gps-on` (unless `presentation-mode`) | 3 s, at the bottom centre of `<maplat-ui>`. Does not close open screens or move focus. The message says what happens: back to the default position, GPS turned off, or just out of map |
 
 The controls, the transparency slider, the title and the map sliders are the
 targets of the auto-hide: they hide while the map is dragged (always) and, with

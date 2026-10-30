@@ -4,7 +4,10 @@
 import { describe, it, expect, afterEach, vi } from "vitest";
 import { readFileSync } from "fs";
 import { resolve } from "path";
-import { defineMockMaplatApp } from "@maplat/core/conformance";
+import {
+  defineMockMaplatApp,
+  getMockLayerAController
+} from "@maplat/core/conformance";
 import { MAPLAT_UI_TAG } from "@maplat/core/common";
 import { defineMaplatUi, type MaplatUiElement } from "../src/element";
 
@@ -99,6 +102,25 @@ describe("11 言語の言語ファイル", () => {
         expect(ui.t(key), `${lang}: ${key}`).toBe(dict[key]);
     }
   );
+
+  it.each(LANGS)("%s は範囲外の知らせの文が訳になる", async lang => {
+    const ui = await mountUi(u => u.setAttribute("lang", lang));
+    const dict = locale(lang);
+    for (const key of [
+      "app.out_of_map",
+      "app.out_of_map_area",
+      "app.out_of_map_desc"
+    ]) {
+      expect(ui.t(key), `${lang}: ${key}`).toBe(dict[key]);
+      expect(ui.t(key), `${lang}: ${key}`).not.toBe(key);
+      expect(ui.t(key).trim(), `${lang}: ${key}`).not.toBe("");
+    }
+    // 実際に出るトーストもその言語の文
+    getMockLayerAController(ui.app!)!.fire("gps_result", { error: "gps_out" });
+    expect(part(ui, "toast").textContent, lang).toBe(
+      dict["app.out_of_map_desc"]
+    );
+  });
 
   it("代表の訳（言語ファイルの中身そのもの）を返す", async () => {
     const de = await mountUi(u => u.setAttribute("lang", "de"));
