@@ -2,7 +2,14 @@
 
 このプロジェクトの主な変更を記録します。版数は [Semantic Versioning](https://semver.org/) に従います。
 
-## [Unreleased]
+## [1.2.0] - 2026-11-02
+
+1.2.0-rc.1 と同じ内容の正式版です（版番号と、内部依存の指定を RC から正式版（^1.0.2・^1.1.1・^1.2.0）へ戻したことだけが違います）。変更点は 1.2.0-rc.1 までの各項を参照してください。
+
+### 既知の問題
+- POI の `cc-swiper`（画像 2 枚以上）で、`@c4h/chuci` の既知の問題の影響を受けます。「前へ」で 1 回戻したあと `cc-viewer` で画像を送ると、閉じたときに別の画像が表示されます。Chuci の修正は次の月次リリースで入ります。
+
+## [1.2.0-rc.1] - 2026-10-26
 
 ### Added
 - `pwaWorker: false`（`null` も同じ）で Service Worker を登録しないようにした。manifest の `<link>` と apple-touch-icon は従来どおり足す。登録済みの Service Worker は解除しない（MaplatEditor#106）
