@@ -15,7 +15,7 @@ import { test, expect } from '@playwright/test';
 test('AC-10: cc-swiper の左右の矢印は ::after の chevron だけが描かれ、swiper 12 の SVG アイコンは非表示', async ({ page }) => {
   test.setTimeout(120000);
   await page.setViewportSize({ width: 1280, height: 800 });
-  // Maplat UI（ui_marker.ts）が @c4h/chuci を import して cc-swiper を登録する
+  // 旧 API の互換層が起動時に <maplat-ui> の preloadMediaViewer() で @c4h/chuci を読み、cc-swiper を登録する
   await page.goto('/e2e/fixtures/swiper-loop.html?base=1&overlay=1');
   await page.waitForFunction(() => document.getElementById('status')?.textContent === 'READY', null, { timeout: 90000 });
   await page.waitForFunction(() => !!customElements.get('cc-swiper'), null, { timeout: 30000 });

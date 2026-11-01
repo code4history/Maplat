@@ -12,7 +12,14 @@
  * - 本モジュールはブラウザを用意しない。呼び出し側が起動済みの browser を渡す
  */
 
+/** lodash.template の記法の payload（lodash の Core で評価されると発火する） */
 export const XSS_PAYLOAD = "${Reflect.set(window,/__nov26m5t2/.source,1)}";
+/**
+ * Nunjucks の記法の payload（Nunjucks の Core で評価されると発火する。lodash の Core では発火しない）。
+ * クエリに入れたときの "+"・"%20" の揺れを避けるため空白を含めない
+ */
+export const XSS_PAYLOAD_NUNJUCKS =
+  '{{range.constructor("Reflect.set(window,/__nov26m5t2/.source,1)")()}}';
 /** #status が終端状態になるまで待つ上限（公開デモは重い） */
 export const READY_TIMEOUT_MS = 60_000;
 /** 終端状態の後に payload の発火を待つ観測窓 */
@@ -37,6 +44,14 @@ export const CHECKS = [
   {
     id: "C3",
     query: `appid=sample&poiTemplate=${XSS_PAYLOAD}`,
+    expectStatus: "READY appid=sample lang=ja",
+    xss: true
+  },
+  {
+    // C3 と同じ役を Nunjucks の Core で負う（Nunjucks の Core では C3 の payload は許可リストが
+    // 壊れても発火せず、C3 の緑が空振りになるため）
+    id: "C3n",
+    query: `appid=sample&poiTemplate=${XSS_PAYLOAD_NUNJUCKS}`,
     expectStatus: "READY appid=sample lang=ja",
     xss: true
   }

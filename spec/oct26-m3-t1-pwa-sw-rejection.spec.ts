@@ -1,36 +1,24 @@
-// oct26-m3-t1: Maplat #260 — Weiwudi.registerSW の Promise 拒否の捕捉。
-// ui_init.ts の initDom から抽出される initPwa（src/pwa_init.ts）を直接呼び、
-// AC1: registerSW が rejected Promise を返すとき、未捕捉 rejection にならず
-//      観測先（console.error）がちょうど1回呼ばれること、
-// AC2: resolved Promise を返すとき、manifest link 挿入・既定値解決・
-//      apple-touch-icon 生成という既存の後続処理が維持されること、
-// を試験する（マイルストーン設計 §3.1 oct26-m3-t1/AC1・AC2 相当）。
+// oct26-m3-t1: Maplat #260 — Service Worker 登録の Promise 拒否の捕捉。
 //
-// AC1 の registerSW 差し替えに vi.fn を使わない理由: vitest のモック結果追跡が
-// モックの返す拒否へハンドラを付けるため、未捕捉 rejection として process の
-// unhandledRejection に届かなくなる（設計段階に実測。記録:
-// oct26-m3-t1-vitest-mock-rejection-semantics.spec.ts）。∴ AC1 は素の関数で
-// 差し替え、未捕捉軸を直接観測する。
+// 旧の実装（`src/pwa_init.ts`。Weiwudi.registerSW を呼ぶ）を消したので、対象を
+// `src/element/pwa.ts` の `initPwa` へ移した。旧は `registerSW(...)` の戻り値を捨てていたので、
+// 拒否が未捕捉のまま素通りしていた（#260 の本体）。要素の `register` はいま
+// `navigator.serviceWorker.register(...).then(reg => reg, err => console.error)` で自分で受ける。
+//
+// ここで固定するのは、その**観測できる性質**:
+//   AC1: 登録が拒否されても未捕捉 rejection にならず、`console.error` がちょうど 1 回呼ばれる
+//   AC2: 登録が解決したら、manifest の link・既定値の解決・apple-touch-icon の生成という後続処理が残る
+// 属性レベルの「pwa-manifest が無ければ何もしない」は `spec/element-share.spec.ts`（PWA の describe）が見る。
+//
+// AC1 で vi.fn の拒否を使わない理由（旧 spec から引き継ぐ）: vitest のモック結果追跡が拒否へ
+// ハンドラを付けるため、未捕捉 rejection として process の unhandledRejection に届かなくなる
+// （記録: spec/oct26-m3-t1-vitest-mock-rejection-semantics.spec.ts）。∴ AC1 は素の関数で差し替える。
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import type { MaplatApp } from "@maplat/core";
-import type { MaplatAppOption } from "../src/types";
-
-vi.mock("@c4h/weiwudi", () => ({
-  default: {
-    registerSW: vi.fn()
-  }
-}));
-
-import Weiwudi from "@c4h/weiwudi";
-import { initPwa } from "../src/pwa_init";
-
-const registerSW = vi.mocked(Weiwudi.registerSW);
+import { initPwa, resetPwaRegistryForTest } from "../src/element/pwa";
 
 // マイクロタスクを排出させたうえで unhandledRejection の発火を待つため、
 // イベントループを1回（setTimeout 0）回す
 const flush = () => new Promise<void>(resolve => setTimeout(resolve, 0));
-
-const core = { appid: "oct26m3t1" } as unknown as MaplatApp;
 
 // manifest fetch の stub（AC1 では中身を使わない。jsdom の fetch 有無という
 // 環境差を排すため、fetch を呼ぶ試験ではすべて明示的に差し替える）
@@ -42,6 +30,14 @@ const stubFetch = (manifestJson: unknown) => {
   return fetchMock;
 };
 
+/** navigator.serviceWorker を差し替える（jsdom には無い）。afterEach で外す。 */
+const stubServiceWorker = (register: unknown) => {
+  Object.defineProperty(navigator, "serviceWorker", {
+    configurable: true,
+    get: () => ({ register })
+  });
+};
+
 describe("initPwa: Service Worker 登録拒否の捕捉 (oct26-m3-t1)", () => {
   let unhandled: unknown[];
   const onUnhandled = (reason: unknown) => {
@@ -51,62 +47,59 @@ describe("initPwa: Service Worker 登録拒否の捕捉 (oct26-m3-t1)", () => {
   beforeEach(() => {
     document.head.innerHTML = "";
     unhandled = [];
+    resetPwaRegistryForTest();
     process.on("unhandledRejection", onUnhandled);
     vi.spyOn(console, "error").mockImplementation(() => {});
-    registerSW.mockReset();
   });
 
   afterEach(() => {
     process.off("unhandledRejection", onUnhandled);
+    delete (navigator as unknown as Record<string, unknown>).serviceWorker;
     vi.unstubAllGlobals();
     vi.restoreAllMocks();
   });
 
-  it("AC1: registerSW が拒否したら未捕捉 rejection にならず console.error が1回呼ばれる", async () => {
+  it("AC1: 登録が拒否したら未捕捉 rejection にならず console.error が1回呼ばれる", async () => {
     const calls: Array<[string, unknown]> = [];
-    const original = Weiwudi.registerSW;
-    Weiwudi.registerSW = ((_sw: string | URL, _swOptions?: unknown) => {
-      calls.push([String(_sw), _swOptions]);
-      return Promise.reject(
-        new Error("A bad HTTP response code (404) was received")
-      );
-    }) as typeof Weiwudi.registerSW;
-    try {
-      stubFetch({});
-      const appOption: MaplatAppOption = { pwaManifest: true };
+    const error = new Error("A bad HTTP response code (404) was received");
+    stubServiceWorker((sw: string, swOptions?: unknown) => {
+      calls.push([String(sw), swOptions]);
+      return Promise.reject(error);
+    });
+    stubFetch({});
 
-      initPwa(core, appOption);
-      await flush();
+    const registration = initPwa({ manifest: "./pwa/m_manifest.json" });
+    await flush();
 
-      expect(calls).toHaveLength(1);
-      // #260 の本体: 拒否が未捕捉のまま素通りしていないこと
-      expect(unhandled).toEqual([]);
-      // 定めた観測先（console.error）がちょうど1回呼ばれること
-      expect(console.error).toHaveBeenCalledTimes(1);
-      expect(console.error).toHaveBeenCalledWith(
-        "Failed to register service worker:",
-        expect.any(Error)
-      );
-    } finally {
-      Weiwudi.registerSW = original;
-    }
+    expect(calls).toEqual([["./service-worker.js", { scope: "./" }]]);
+    // #260 の本体: 拒否が未捕捉のまま素通りしていないこと
+    expect(unhandled).toEqual([]);
+    // 定めた観測先（console.error）がちょうど1回呼ばれること
+    expect(console.error).toHaveBeenCalledTimes(1);
+    expect(console.error).toHaveBeenCalledWith(
+      "Failed to register service worker:",
+      error
+    );
+    // 失敗しても呼び出し側は解決を待てる（undefined に解決する）
+    await expect(registration).resolves.toBeUndefined();
   });
 
-  it("AC2: registerSW が解決したら既存の manifest link 挿入・既定値解決・apple-touch-icon 生成が維持される", async () => {
-    registerSW.mockResolvedValueOnce({} as ServiceWorkerRegistration);
+  it("AC2: 登録が解決したら既存の manifest link 挿入・既定値解決・apple-touch-icon 生成が維持される", async () => {
+    const register = vi.fn(() =>
+      Promise.resolve({} as ServiceWorkerRegistration)
+    );
+    stubServiceWorker(register);
     const fetchMock = stubFetch({
       icons: [{ src: "icons/icon-192.png", sizes: "192x192" }]
     });
-    const appOption: MaplatAppOption = { pwaManifest: true };
 
-    initPwa(core, appOption);
+    initPwa({ manifest: "./pwa/oct26m3t1_manifest.json" });
     await flush();
     await flush();
 
-    // 既定値解決の維持: pwaManifest=true は ./pwa/<appid>_manifest.json、
-    // pwaWorker / pwaScope 未指定は ./service-worker.js / ./ へ落ちる
-    expect(registerSW).toHaveBeenCalledTimes(1);
-    expect(registerSW).toHaveBeenCalledWith("./service-worker.js", {
+    // 既定値解決の維持: pwa-worker / pwa-scope 未指定は ./service-worker.js / ./ へ落ちる
+    expect(register).toHaveBeenCalledTimes(1);
+    expect(register).toHaveBeenCalledWith("./service-worker.js", {
       scope: "./"
     });
     // manifest link の既存生成
@@ -131,13 +124,19 @@ describe("initPwa: Service Worker 登録拒否の捕捉 (oct26-m3-t1)", () => {
     expect(console.error).not.toHaveBeenCalled();
   });
 
-  it("AC2: pwaManifest が無効値なら registerSW も manifest link 挿入も行わない（既存ガードの維持）", async () => {
-    const appOption: MaplatAppOption = {};
-    initPwa(core, appOption);
+  it("AC2: manifest が http(s)/相対 URL でなければ登録も link 挿入もせず、警告する（既存ガードの維持）", async () => {
+    const register = vi.fn(() => Promise.resolve({}));
+    stubServiceWorker(register);
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+
+    expect(initPwa({ manifest: "javascript:alert(1)" })).toBeUndefined();
     await flush();
 
-    expect(registerSW).not.toHaveBeenCalled();
+    expect(register).not.toHaveBeenCalled();
     expect(document.head.querySelector('link[rel="manifest"]')).toBeNull();
     expect(console.error).not.toHaveBeenCalled();
+    expect(warn).toHaveBeenCalledWith(
+      "<maplat-ui>: PWA was not enabled because pwa-manifest / pwa-worker / pwa-scope is not an http(s) or relative URL."
+    );
   });
 });

@@ -1,4 +1,7 @@
 import { test, expect } from "@playwright/test";
+import { existsSync, readFileSync, statSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 // m1-t5 AC5 / AC6 / AC10: POI html の隔離を**実ブラウザ**で検証する。
 //
@@ -11,6 +14,47 @@ import { test, expect } from "@playwright/test";
 
 const PROBE = "/e2e/fixtures/poi-html-probe.html";
 const PROBE_JS = "/e2e/fixtures/dist-probe/poi-html-probe.js";
+
+// ---- probe の事前バンドルが古くないか（旧 UI の実装の削除の仕上げ）----
+// probe は `pretest:e2e`（`vite build --config e2e/fixtures/vite.probe-t5.config.js`）で作るが、
+// `playwright test` を直接流すとその手順が走らず、**消した旧の実装を焼き込んだままの古い束**を読んで落ちた
+// （旧の class 名 `poi_html_host` が出た。2026-10-24 の実測）。probe が読むリポジトリの中のファイル
+// （相対 import を辿ったもの）と設定のどれかが束より新しければ、ここで作り直す（作るのは probe の束だけ。
+// `emptyOutDir: false` なので dist-probe の他のファイルには触れない）。
+const FIXTURES = resolve(dirname(fileURLToPath(import.meta.url)), "fixtures");
+const PROBE_ENTRY = resolve(FIXTURES, "poi-html-probe.ts");
+const PROBE_CONFIG = resolve(FIXTURES, "vite.probe-t5.config.js");
+const PROBE_BUNDLE = resolve(FIXTURES, "dist-probe/poi-html-probe.js");
+
+/** 入口から相対 import（`./`・`../`）を辿り、probe に焼き込まれるリポジトリの中のファイルを集める */
+function probeSources(entry: string): string[] {
+  const seen = new Set<string>();
+  const visit = (file: string) => {
+    if (seen.has(file) || !existsSync(file)) return;
+    seen.add(file);
+    const src = readFileSync(file, "utf-8");
+    for (const m of src.matchAll(/(?:from|import)\s*["'](\.{1,2}\/[^"']+)["']/g)) {
+      const base = resolve(dirname(file), m[1]);
+      for (const cand of [base, `${base}.ts`, `${base}/index.ts`]) {
+        if (existsSync(cand) && statSync(cand).isFile()) {
+          visit(cand);
+          break;
+        }
+      }
+    }
+  };
+  visit(entry);
+  return [...seen];
+}
+
+test.beforeAll(async () => {
+  test.setTimeout(120_000);
+  const inputs = [...probeSources(PROBE_ENTRY), PROBE_CONFIG];
+  const newest = Math.max(...inputs.map(f => statSync(f).mtimeMs));
+  if (existsSync(PROBE_BUNDLE) && statSync(PROBE_BUNDLE).mtimeMs >= newest) return;
+  const { build } = await import("vite");
+  await build({ configFile: PROBE_CONFIG, logLevel: "warn" });
+});
 
 // 最初に**配信元そのもの**を検証する。
 // 別 worktree の Vite に繋がっていると probe asset の代わりに index.html が返り、
@@ -98,7 +142,9 @@ test.describe("M1-T5: POI html の隔離（実ブラウザ）", () => {
         overflowY: getComputedStyle(host).overflowY
       };
     });
-    expect(m.cls).toContain("poi_html_host--scroll");
+    // 要素（<maplat-ui>）のクラス: 内部スクロールを持つ側は "poi-html scroll"
+    expect(m.cls).toContain("poi-html");
+    expect(m.cls).toContain("scroll");
     expect(m.overflowY).toBe("auto");
     expect(m.scrollable).toBe(true);
   });
@@ -119,7 +165,8 @@ test.describe("M1-T5: POI html の隔離（実ブラウザ）", () => {
         scrollable: host.scrollHeight > host.clientHeight + 1
       };
     });
-    expect(m.cls).not.toContain("poi_html_host--scroll");
+    // スクロールを持たない側は "poi-html" だけ
+    expect(m.cls).toBe("poi-html");
     expect(m.scrollable).toBe(false);
   });
 
@@ -135,7 +182,7 @@ test.describe("M1-T5: POI html の隔離（実ブラウザ）", () => {
         hasIframe: !!iframe,
         src: iframe?.getAttribute("src"),
         onload: iframe?.getAttribute("onload"),
-        hasHost: !!div.querySelector(".poi_html_host")
+        hasHost: !!div.querySelector(".poi-html")
       };
     });
     expect(m.hasIframe).toBe(true);
@@ -153,7 +200,7 @@ test.describe("M1-T5: POI html の隔離（実ブラウザ）", () => {
         "https://example.com/"
       );
       return {
-        hasHost: !!div.querySelector(".poi_html_host"),
+        hasHost: !!div.querySelector(".poi-html"),
         hasIframe: !!div.querySelector("iframe")
       };
     });

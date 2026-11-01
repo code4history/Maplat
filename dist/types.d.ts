@@ -1,6 +1,3 @@
-import { Swiper as SwiperClass } from 'swiper';
-import { Control } from 'ol/control';
-import { MaplatUi } from './index';
 export interface MaplatAppOption {
     appid?: string;
     fake?: boolean;
@@ -136,34 +133,10 @@ export interface ClickMarkersEvent {
     list: MarkerData[];
 }
 export type EventCallback = (event: unknown) => void;
-export type SwiperInstance = SwiperClass;
-export type SliderControl = Control & {
-    get(prop: string): number;
-    set(prop: string, value: number): void;
-    element?: HTMLElement;
-    setEnable(flag: boolean): void;
-};
 export interface RGB {
     red: number;
     green: number;
     blue: number;
-}
-export interface ControlOptions {
-    target?: HTMLElement | string;
-    render?: (event: import('ol').MapEvent) => void;
-    className?: string;
-    tipLabel?: string;
-    initialValue?: number;
-    character?: string;
-    callback?: (this: Control) => void;
-    long_callback?: (this: Control) => void;
-    cls?: string;
-    ui?: MaplatUi;
-    zoomInLabel?: string | HTMLElement;
-    zoomOutLabel?: string | HTMLElement;
-    autoHide?: boolean;
-    label?: string | HTMLElement;
-    reverse?: boolean;
 }
 export interface ContextMenuItem {
     text?: string;

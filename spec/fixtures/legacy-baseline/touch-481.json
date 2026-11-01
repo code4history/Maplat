@@ -1,0 +1,145 @@
+{
+ "mode": "touch",
+ "width": 481,
+ "height": 800,
+ "url": "http://localhost:5176/e2e/fixtures/legacy-api.html?buttons=1&base=3&overlay=3",
+ "capturedAt": "2026-10-23T08:23:10.860Z",
+ "touch": {
+  "appliedBy": "ui",
+  "note": "旧 UI が自分で .ol-touch を付けた（ellips もタッチの文字の大きさで走っている）",
+  "labels": [
+   {
+    "kind": "base",
+    "index": 0,
+    "mapID": "osm",
+    "className": "minimize",
+    "fontSize": "14.4px",
+    "lineHeight": "normal",
+    "lines": 1,
+    "text": "カード・背景1…",
+    "visibleText": "カード・背景1"
+   },
+   {
+    "kind": "base",
+    "index": 1,
+    "mapID": "legacy_api_base2",
+    "className": "minimize",
+    "fontSize": "14.4px",
+    "lineHeight": "normal",
+    "lines": 1,
+    "text": "カード・背景2…",
+    "visibleText": "カード・背景2"
+   },
+   {
+    "kind": "base",
+    "index": 2,
+    "mapID": "legacy_api_base3",
+    "className": "minimize",
+    "fontSize": "14.4px",
+    "lineHeight": "normal",
+    "lines": 1,
+    "text": "カード・背景3…",
+    "visibleText": "カード・背景3"
+   },
+   {
+    "kind": "base",
+    "index": 3,
+    "mapID": "osm",
+    "className": "minimize",
+    "fontSize": "14.4px",
+    "lineHeight": "normal",
+    "lines": 1,
+    "text": "カード・背景1…",
+    "visibleText": "カード・背景1"
+   },
+   {
+    "kind": "base",
+    "index": 4,
+    "mapID": "legacy_api_base2",
+    "className": "minimize",
+    "fontSize": "14.4px",
+    "lineHeight": "normal",
+    "lines": 1,
+    "text": "カード・背景2…",
+    "visibleText": "カード・背景2"
+   },
+   {
+    "kind": "base",
+    "index": 5,
+    "mapID": "legacy_api_base3",
+    "className": "minimize",
+    "fontSize": "14.4px",
+    "lineHeight": "normal",
+    "lines": 1,
+    "text": "カード・背景3…",
+    "visibleText": "カード・背景3"
+   },
+   {
+    "kind": "overlay",
+    "index": 0,
+    "mapID": "tatebayashi_ojozu",
+    "className": "",
+    "fontSize": "18px",
+    "lineHeight": "normal",
+    "lines": 1,
+    "text": "カード・A…",
+    "visibleText": "カード・A"
+   },
+   {
+    "kind": "overlay",
+    "index": 1,
+    "mapID": "tatebayashi_castle_akimoto",
+    "className": "",
+    "fontSize": "18px",
+    "lineHeight": "normal",
+    "lines": 1,
+    "text": "カード・B…",
+    "visibleText": "カード・B"
+   },
+   {
+    "kind": "overlay",
+    "index": 2,
+    "mapID": "tatebayashi_kaei_jokamachi",
+    "className": "",
+    "fontSize": "18px",
+    "lineHeight": "normal",
+    "lines": 1,
+    "text": "カード・C…",
+    "visibleText": "カード・C"
+   },
+   {
+    "kind": "overlay",
+    "index": 3,
+    "mapID": "tatebayashi_ojozu",
+    "className": "",
+    "fontSize": "18px",
+    "lineHeight": "normal",
+    "lines": 1,
+    "text": "カード・A…",
+    "visibleText": "カード・A"
+   },
+   {
+    "kind": "overlay",
+    "index": 4,
+    "mapID": "tatebayashi_castle_akimoto",
+    "className": "",
+    "fontSize": "18px",
+    "lineHeight": "normal",
+    "lines": 1,
+    "text": "カード・B…",
+    "visibleText": "カード・B"
+   },
+   {
+    "kind": "overlay",
+    "index": 5,
+    "mapID": "tatebayashi_kaei_jokamachi",
+    "className": "",
+    "fontSize": "18px",
+    "lineHeight": "normal",
+    "lines": 1,
+    "text": "カード・C…",
+    "visibleText": "カード・C"
+   }
+  ]
+ }
+}

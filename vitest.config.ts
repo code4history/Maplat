@@ -1,7 +1,13 @@
 import { defineConfig } from "vitest/config";
-import { fileURLToPath } from "node:url";
+import { readFileSync } from "node:fs";
+
+// <maplat-ui> の版（src/element/maplat-ui.ts の __MAPLAT_UI_VERSION__）。vite.config.js と同じく package.json から入れる
+const PACKAGE_VERSION = JSON.parse(
+  readFileSync(new URL("./package.json", import.meta.url), "utf-8")
+).version;
 
 export default defineConfig({
+  define: { __MAPLAT_UI_VERSION__: JSON.stringify(PACKAGE_VERSION) },
   test: {
     environment: "jsdom",
     include: ["spec/**/*.test.ts", "spec/**/*.spec.ts"],
@@ -20,17 +26,6 @@ export default defineConfig({
       deps: {
         inline: [/@maplat\/core/]
       }
-    }
-  },
-  resolve: {
-    alias: {
-      // m19-t9: @maplat/core（MaplatCore submodule）は package.json の exports map で
-      // "./dist/functions" サブパスを公開していない。src/function.ts のテストのみを
-      // 目的として、テスト専用スタブへ差し替える。本番ビルド用の vite.config.js には
-      // 一切影響しない（別ファイル。設計書 §5.2 参照）。
-      "@maplat/core/dist/functions": fileURLToPath(
-        new URL("./spec/support/maplat-core-functions.stub.ts", import.meta.url)
-      )
     }
   }
 });

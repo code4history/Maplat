@@ -1,7 +1,9 @@
 // Type definitions for Maplat UI
-
-import { Swiper as SwiperClass } from "swiper";
-import type { Control } from "ol/control";
+//
+// 旧 UI の実装（`src/ui_init.ts` 等）を消したので、旧の実装だけが使っていた型
+// （`SwiperInstance`・`SliderControl`・`ControlOptions`）はここから外した。旧 API の外形として
+// 残す `SwiperInstance` は `src/legacy/legacy_types.ts`（互換層）が持つ（`ui.sliderNew` の型は
+// `src/legacy/legacy_slider.ts` の `LegacySliderFacade`）。
 
 export interface MaplatAppOption {
   appid?: string;
@@ -146,38 +148,11 @@ export interface ClickMarkersEvent {
 }
 
 export type EventCallback = (event: unknown) => void;
-export type SwiperInstance = SwiperClass;
-export type SliderControl = Control & {
-  get(prop: string): number;
-  set(prop: string, value: number): void;
-  element?: HTMLElement; // Changed from HTMLInputElement to HTMLElement to match common control pattern or just optional
-  setEnable(flag: boolean): void;
-};
 
 export interface RGB {
   red: number;
   green: number;
   blue: number;
-}
-
-import type { MaplatUi } from "./index";
-
-export interface ControlOptions {
-  target?: HTMLElement | string;
-  render?: (event: import("ol").MapEvent) => void;
-  className?: string;
-  tipLabel?: string;
-  initialValue?: number;
-  character?: string;
-  callback?: (this: Control) => void;
-  long_callback?: (this: Control) => void;
-  cls?: string;
-  ui?: MaplatUi;
-  zoomInLabel?: string | HTMLElement;
-  zoomOutLabel?: string | HTMLElement;
-  autoHide?: boolean;
-  label?: string | HTMLElement;
-  reverse?: boolean;
 }
 
 export interface ContextMenuItem {
