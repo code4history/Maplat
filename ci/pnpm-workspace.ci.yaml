@@ -29,8 +29,8 @@ overrides:
   "@maplat/core": "github:code4history/MaplatCore#08a17703d93e5a3145c0cc2e8e4a646a7b7998b4"
   # eslint / vitest まわりが引く js-yaml。>=4.0.0 <4.3.1 の high。4系の最新へ留める。
   js-yaml: "^4.3.1"
-  # ajv > fast-uri ほか。>=3.0.0 <3.1.5 の high。
-  fast-uri: "^3.1.5"
+  # ajv > fast-uri ほか。<3.1.9 の medium（GHSA-w74x-v6f9-j3xg ほか）。以前の <3.1.5 の high も含む。
+  fast-uri: "^3.1.9"
   # ビルド系各所が引く postcss。<8.5.23 の high。8系の最新へ留める。
   postcss: "^8.5.23"
 
@@ -47,6 +47,18 @@ overrides:
 #   修正版 5.0.12・2.1.7 はどちらも引いている側の範囲の中にある ∴ lock の再解決で閉じた。override しない。
 #   旧注記の前提（require("brace-expansion") を関数として呼ぶ minimatch 3.x）は lock に存在しない。
   path-to-regexp: "~1.9.0"
+  # undici: <8.12.2 の high（GHSA-4w7w-5xrc-9h26 ほか）。8 系のまま上げる
+  undici: "^8.12.2"
+  # serialize-javascript: <7.1.3 の low（GHSA-m5mm-p8h7-m29v）。7 系のまま上げる
+  serialize-javascript: "^7.1.3"
+  # eslint の系が引く minimatch: <11.0.1 の medium（GHSA-g3hv-75wg-m249）。修正版は 11 系だけ。
+  # glob 10・11 は minimatch 11 と組めないので、全体ではなく eslint の系の親に限って上げる
+  "eslint>minimatch": "^11.0.1"
+  "@eslint/config-array>minimatch": "^11.0.1"
+  "@typescript-eslint/typescript-estree>minimatch": "^11.0.1"
+  # glob: >=9.0.0 <=14.0.1 の medium（GHSA-3g3m-2fjr-6pw4）。親が使う API（globSync・hasMagic）は
+  # 14 にもあるので、親に限って 14 へ上げる（14 は minimatch 11 を引く）
+  "workbox-build>glob": "^14.0.2"
 
 # 自組織パッケージは publisher が我々自身のため、pnpm 11 既定の 24h 隔離
 # （minimumReleaseAge=1440・サプライチェーン保護）の対象外とする。第三者依存への
