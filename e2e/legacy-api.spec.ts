@@ -18,6 +18,9 @@ import { test, expect, type Page } from "@playwright/test";
 
 const FIXTURE = "/e2e/fixtures/legacy-api.html";
 
+/** fixture の `poi=1` で載る POI の名前 */
+const POI_NAME = "旧APIのPOI";
+
 /** 地図の題名（fixture の `title`／`officialTitle`。カードの `label` とは別の文字列） */
 const TITLES = {
   start: "旧API題名・壱",
@@ -35,12 +38,14 @@ type Opened = { page: Page; errors: string[] };
 /** fixture を開き、`createObject` が解決する（`#status` が READY）まで待つ。 */
 async function open(
   page: Page,
-  options: { stateUrl?: boolean } = {}
+  options: { stateUrl?: boolean; url?: string } = {}
 ): Promise<Opened> {
   const errors: string[] = [];
   page.on("pageerror", e => errors.push(String(e.message ?? e)));
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.goto(`${FIXTURE}${options.stateUrl ? "?stateUrl=1" : ""}`);
+  await page.goto(
+    options.url ?? `${FIXTURE}${options.stateUrl ? "?stateUrl=1" : ""}`
+  );
   await page.waitForFunction(
     () => {
       const status = document.getElementById("status")?.textContent || "";
@@ -189,6 +194,31 @@ test.describe("地図の切り替え（A3）と題名の文字（A5）", () => {
   });
 });
 
+test.describe("範囲外の知らせ", () => {
+  test("地図の切り替えで視点が範囲外になると、モーダルではなくトーストの文だけが出る", async ({
+    page
+  }) => {
+    test.setTimeout(240000);
+    // 背景の地図のタイルは外のネットワークに依らないよう空で返す
+    await page.route(/tile\.openstreetmap\.org/, route =>
+      route.fulfill({ status: 204 })
+    );
+    const { errors } = await open(page);
+    await waitText(page, TITLES.start);
+    await page.evaluate(async () => {
+      const core = (window as any).__maplatUi.core;
+      await core.changeMap("osm");
+      core.setViewpoint({ longitude: 139.7671, latitude: 35.6812 });
+      await new Promise(resolve => setTimeout(resolve, 500));
+      await core.changeMap("tatebayashi_ojozu");
+    });
+    await waitText(page, "表示位置が地図範囲外です。地図標準位置に戻します。");
+    // モーダルなら題名も出る（トーストは本文だけ）
+    expect(await hasText(page, "地図範囲外")).toBe(false);
+    expect(errors, errors.join("\n")).toEqual([]);
+  });
+});
+
 test.describe("URL の #! の復元（A4）", () => {
   test("location.hash の #!s:<id> が changeMap(<id>) を呼び、その地図になる", async ({
     page
@@ -214,6 +244,63 @@ test.describe("URL の #! の復元（A4）", () => {
       await waitText(page, title);
     }
     expect(errors).toEqual([]);
+  });
+});
+
+test.describe("開いた POI の状態 URL", () => {
+  /** URL の `#!` の後ろ（% を解いたもの）。 */
+  const statePath = (page: Page) =>
+    page.evaluate(() => decodeURIComponent(location.hash.slice(2)));
+
+  test("開いた POI が URL の om: に載り、その URL で開き直すと同じ POI が開く。閉じると om: が消える", async ({
+    page,
+    context
+  }) => {
+    test.setTimeout(240000);
+    const { errors } = await open(page, {
+      url: `${FIXTURE}?stateUrl=1&buttons=1&poi=1`
+    });
+    await waitText(page, TITLES.start);
+    const id = await page.evaluate(name => {
+      const ui = (window as any).__maplatUi;
+      for (const layer of ui.core.listPoiLayers(false, true)) {
+        for (const poi of layer.pois ?? []) {
+          if (poi.name === name) return poi.namespaceID as string;
+        }
+      }
+      return null;
+    }, POI_NAME);
+    expect(id, "fixture の POI がある").not.toBeNull();
+
+    expect(await hasText(page, POI_NAME)).toBe(false);
+    await page.evaluate(
+      i => (window as any).__maplatUi.handleMarkerActionById(i),
+      id
+    );
+    await waitText(page, POI_NAME, 20000);
+    await expect
+      .poll(() => statePath(page), { timeout: 20000 })
+      .toContain(`/om:${id}`);
+    // 共有する URL（`getShareUrl("view")`）にも載る
+    const shared = await page.evaluate(() =>
+      (window as any).__maplatUi.getShareUrl("view")
+    );
+    expect(decodeURIComponent(shared)).toContain(`/om:${id}`);
+
+    const second = await context.newPage();
+    const reopened = await open(second, { url: shared });
+    await waitText(second, POI_NAME, 60000);
+    expect(await statePath(second)).toContain(`/om:${id}`);
+
+    await second.keyboard.press("Escape");
+    await expect
+      .poll(() => statePath(second), { timeout: 20000 })
+      .not.toContain("/om:");
+    expect(await hasText(second, POI_NAME)).toBe(false);
+    await second.close();
+
+    expect(errors, errors.join("\n")).toEqual([]);
+    expect(reopened.errors, reopened.errors.join("\n")).toEqual([]);
   });
 });
 

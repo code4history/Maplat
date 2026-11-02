@@ -48,6 +48,8 @@ const STRINGS: Record<string, Dict> = {
     // 範囲外・GPS のエラー（旧 assets/locales/ja/translation.json の app.* と同じ文言）
     "app.out_of_map": "地図範囲外",
     "app.out_of_map_area": "表示位置が地図範囲外です。地図標準位置に戻します。",
+    "app.out_of_map_desc":
+      "GPSの取得結果が地図範囲外です。GPS機能をオフにします。",
     "app.gps_error": "位置情報を使用できません",
     "app.user_gps_deny":
       "現在位置を表示するには、webブラウザの「位置情報の使用」を許可にして、QRコードかURLをもう一度読み込んでください。",
@@ -130,6 +132,7 @@ const STRINGS: Record<string, Dict> = {
     "app.copy_toast": "Copied to clipboard",
     // Out of map / GPS errors (same wording as the legacy assets/locales/en/translation.json app.*)
     "app.out_of_map": "Out of map",
+    "app.out_of_map_desc": "GPS result is out of map. GPS function turns off.",
     "app.out_of_map_area":
       "Showing area is out of map. The area moves to default position.",
     "app.gps_error": "Location information is not available",

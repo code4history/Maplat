@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  '@maplat/core': github:code4history/MaplatCore#642fda6915bdb889e9bd0febe03bc0e8e0262dd3
+  '@maplat/core': github:code4history/MaplatCore#08a17703d93e5a3145c0cc2e8e4a646a7b7998b4
   js-yaml: ^4.3.1
   fast-uri: ^3.1.5
   postcss: ^8.5.23
@@ -17,14 +17,14 @@ importers:
   .:
     dependencies:
       '@c4h/quyuan':
-        specifier: ^1.1.1-rc.1
-        version: 1.1.1-rc.1
+        specifier: ^1.1.1
+        version: 1.1.1(@c4h/chuci@1.0.2)
       '@c4h/weiwudi':
-        specifier: ^1.1.1-rc.1
-        version: 1.1.1-rc.1(workbox-routing@7.4.1)
+        specifier: ^1.1.1
+        version: 1.1.1(workbox-routing@7.4.1)
       '@maplat/core':
-        specifier: github:code4history/MaplatCore#642fda6915bdb889e9bd0febe03bc0e8e0262dd3
-        version: https://codeload.github.com/code4history/MaplatCore/tar.gz/642fda6915bdb889e9bd0febe03bc0e8e0262dd3(mapbox-gl@3.32.0)(maplibre-gl@6.9.0)(ol@10.11.0)(workbox-routing@7.4.1)
+        specifier: github:code4history/MaplatCore#08a17703d93e5a3145c0cc2e8e4a646a7b7998b4
+        version: https://codeload.github.com/code4history/MaplatCore/tar.gz/08a17703d93e5a3145c0cc2e8e4a646a7b7998b4(@c4h/chuci@1.0.2)(mapbox-gl@3.32.0)(maplibre-gl@6.9.0)(ol@10.11.0)(workbox-routing@7.4.1)
       mapbox-gl:
         specifier: ^2.0.0 || ^3.0.0
         version: 3.32.0
@@ -644,26 +644,21 @@ packages:
     resolution: {integrity: sha512-0GEz8qJWokkUVYQYRukmkSHIFNoBH8QTreeHrAFbvz1XFYc3Y+puhMs8PQ5x8GNugiC2l5jvDBXKLbBIByeSBw==}
     hasBin: true
 
-  '@c4h/quyuan@1.1.0':
-    resolution: {integrity: sha512-bqSjjMtcv7+mNiQzPLfAJyF7iNP1zBfA0ZQIb1+LE8dTjdEhQsD6aUEoiTdgnAa8q/XoAt+6Jo63Zqat5Thl4w==}
+  '@c4h/chuci@1.0.2':
+    resolution: {integrity: sha512-riPtOEI6t9VDHEOgjQLOcXrIckjoytmGGbrjosAylpg/dSjc4MnC8DX71YmR5CH1nkkK/nM8kWETxbJ6RQOBdQ==}
+    engines: {pnpm: '>=9.0.0'}
+
+  '@c4h/quyuan@1.1.1':
+    resolution: {integrity: sha512-CwAzx5rQ6W819KHPXP31SDLZ2OkFcU+0KqOd7qN/jtAOIIaTf3NYrsV+kb95N4wqDTh6sve0n9dw3yuOZbkjIg==}
     engines: {node: '>=20.0.0', pnpm: '>=9.0.0'}
     peerDependencies:
-      '@c4h/chuci': ^1.0.1
+      '@c4h/chuci': ^1.0.2
     peerDependenciesMeta:
       '@c4h/chuci':
         optional: true
 
-  '@c4h/quyuan@1.1.1-rc.1':
-    resolution: {integrity: sha512-NdwHSw+8Tmrrb7vw1WHEM2Mg1iMfFUDtIdMkubJtJCRemur8fRFzu2NW6WiH1pKTaW5NCFrtHA5XdoCmLcml4g==}
-    engines: {node: '>=20.0.0', pnpm: '>=9.0.0'}
-    peerDependencies:
-      '@c4h/chuci': ^1.0.2-rc.1
-    peerDependenciesMeta:
-      '@c4h/chuci':
-        optional: true
-
-  '@c4h/weiwudi@1.1.1-rc.1':
-    resolution: {integrity: sha512-vKmUytM+w8seuDGTkPcsrEIP7mktj1RMJTiR+xCx3GrMDExZqGdO40xbhst+sVqiNJvaM/uFHWijHkDVUZPb0A==}
+  '@c4h/weiwudi@1.1.1':
+    resolution: {integrity: sha512-hgk0fpXUohUAmfLBXzAct5GsfNndQTsORGqbvM2Qa4S6NvasrGVZNa63SUhA7FldCwKjngflgVt5S6Un1B3OMg==}
     engines: {node: '>=20.0.0', pnpm: '>=9.0.0'}
     peerDependencies:
       workbox-routing: ^7.4.0
@@ -985,9 +980,9 @@ packages:
   '@mapbox/vector-tile@3.0.0':
     resolution: {integrity: sha512-Qf10S1uIHMk20ri/IVBnpS+esUEkVaR5Hftmz88jTInrpmWgPGJfPe3LVjjlE77trLx8tH6qjTG7uWH9hIq/0Q==}
 
-  '@maplat/core@https://codeload.github.com/code4history/MaplatCore/tar.gz/642fda6915bdb889e9bd0febe03bc0e8e0262dd3':
-    resolution: {gitHosted: true, integrity: sha512-uye3pEEJlaWQdQq0OUfh7dAfL9ECqvkT4TAlRTabmBPBJWku4BqyAJdRmbdwN4EAcTKcN5VIoE5OHDh2MzLz1A==, tarball: https://codeload.github.com/code4history/MaplatCore/tar.gz/642fda6915bdb889e9bd0febe03bc0e8e0262dd3}
-    version: 1.2.0-rc.1
+  '@maplat/core@https://codeload.github.com/code4history/MaplatCore/tar.gz/08a17703d93e5a3145c0cc2e8e4a646a7b7998b4':
+    resolution: {gitHosted: true, integrity: sha512-8QG38vzOxR2BrCHSm7MdxhNXk6BsZIdyMiV9Z8RwAoHuVpC1EYKru+B+pNluU5S0lO/WNyf10F5YGXv1Dbw+2w==, tarball: https://codeload.github.com/code4history/MaplatCore/tar.gz/08a17703d93e5a3145c0cc2e8e4a646a7b7998b4}
+    version: 1.2.0
     engines: {pnpm: '>=9'}
     peerDependencies:
       mapbox-gl: ^2.0.0 || ^3.0.0
@@ -2349,6 +2344,9 @@ packages:
   graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
 
+  gsplat@1.2.9:
+    resolution: {integrity: sha512-zfpaL9TEQD4oHNesL77KYeRgWvIy2+7P3jRsOA0d8So4Cv/OELRoMXo687ZEXqUMCekiXJgpFw9dz12021NFlw==}
+
   has-bigints@1.1.0:
     resolution: {integrity: sha512-R3pbpkcIqv2Pm3dUwgjclDRVmWpTJW2DcMzcIhEXEx1oh/CEMObMm3KLmRJOdvhM7o4uQBnwr8pzRK2sJWIqfg==}
     engines: {node: '>= 0.4'}
@@ -3119,6 +3117,10 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
 
+  swiper@12.2.0:
+    resolution: {integrity: sha512-K8uXsBZU6ME97Ia3xbBge8IRCnR1lOmIILzvY/jGVic7dSTQ530s3uO8RvXbPUtkkXLWIwmZLRPbtDxRWVAFdg==}
+    engines: {node: '>= 4.7.0'}
+
   temp-dir@2.0.0:
     resolution: {integrity: sha512-aoBAniQmmwtcKp/7BzsH8Cxzv8OL736p7v1ihGb5e9DJ9kTwGWHrQrVB5+lfVDzfGrdRzXch+ig7LHaY1JTOrg==}
     engines: {node: '>=8'}
@@ -3131,6 +3133,9 @@ packages:
     resolution: {integrity: sha512-bWnjSNscmuI+GJze6ZupnHP8G/cTcsJF+bXCeQknk2SHQsgbNJnLrqiH9jZ2W4STPVXH2mDKKRX3iwPhc9Cn/Q==}
     engines: {node: '>=10'}
     hasBin: true
+
+  three@0.186.1:
+    resolution: {integrity: sha512-blFeqb49wRCSGUGj7gtpfnSGHy2lwDk94RhUmS1c/hTby70kvChbWpkJ4Pm1390LqzzvTmzgXKHPEafJwCb8jA==}
 
   tinybench@6.2.2:
     resolution: {integrity: sha512-nIZ2N2dFpjBsg2hgitKu7mA+FvsIJuGJOwysRngmVRRmWgR/UyPjwJj8c/fT/dhm8EkHnF5EOogRf+0Z2qrimA==}
@@ -3310,6 +3315,9 @@ packages:
 
   uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
+
+  viewerjs@1.15.2:
+    resolution: {integrity: sha512-CYEqSFfPUSnmn1PjrhYxXOScaUC7n8+NpSqI+MrOSM8wcKPe35MlwQYwksuD5rjFkYv/ePmY5NsUa51uRNN2jA==}
 
   vite-plugin-dts@5.1.2:
     resolution: {integrity: sha512-1bXUz836sWq6ewEMQre3ZtNFVfZk/92DppgCCKP8tWx/NWwV2wHuXlRHb2TztHjbikPxvyAGLGu7hVh94Plwww==}
@@ -4260,19 +4268,23 @@ snapshots:
     dependencies:
       css-tree: 3.2.1
 
-  '@c4h/quyuan@1.1.0':
+  '@c4h/chuci@1.0.2':
+    dependencies:
+      gsplat: 1.2.9
+      swiper: 12.2.0
+      three: 0.186.1
+      viewerjs: 1.15.2
+    optional: true
+
+  '@c4h/quyuan@1.1.1(@c4h/chuci@1.0.2)':
     dependencies:
       nunjucks: 3.2.4
+    optionalDependencies:
+      '@c4h/chuci': 1.0.2
     transitivePeerDependencies:
       - chokidar
 
-  '@c4h/quyuan@1.1.1-rc.1':
-    dependencies:
-      nunjucks: 3.2.4
-    transitivePeerDependencies:
-      - chokidar
-
-  '@c4h/weiwudi@1.1.1-rc.1(workbox-routing@7.4.1)':
+  '@c4h/weiwudi@1.1.1(workbox-routing@7.4.1)':
     dependencies:
       workbox-routing: 7.4.1
 
@@ -4492,10 +4504,10 @@ snapshots:
       '@types/geojson': 7946.0.16
       pbf: 5.1.2
 
-  '@maplat/core@https://codeload.github.com/code4history/MaplatCore/tar.gz/642fda6915bdb889e9bd0febe03bc0e8e0262dd3(mapbox-gl@3.32.0)(maplibre-gl@6.9.0)(ol@10.11.0)(workbox-routing@7.4.1)':
+  '@maplat/core@https://codeload.github.com/code4history/MaplatCore/tar.gz/08a17703d93e5a3145c0cc2e8e4a646a7b7998b4(@c4h/chuci@1.0.2)(mapbox-gl@3.32.0)(maplibre-gl@6.9.0)(ol@10.11.0)(workbox-routing@7.4.1)':
     dependencies:
-      '@c4h/quyuan': 1.1.0
-      '@c4h/weiwudi': 1.1.1-rc.1(workbox-routing@7.4.1)
+      '@c4h/quyuan': 1.1.1(@c4h/chuci@1.0.2)
+      '@c4h/weiwudi': 1.1.1(workbox-routing@7.4.1)
       '@maplat/transform': 1.1.0
       '@turf/turf': 7.4.0
       dompurify: 3.4.17
@@ -6695,6 +6707,9 @@ snapshots:
 
   graceful-fs@4.2.11: {}
 
+  gsplat@1.2.9:
+    optional: true
+
   has-bigints@1.1.0: {}
 
   has-property-descriptors@1.0.2:
@@ -7519,6 +7534,9 @@ snapshots:
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
+  swiper@12.2.0:
+    optional: true
+
   temp-dir@2.0.0: {}
 
   tempy@0.6.0:
@@ -7534,6 +7552,9 @@ snapshots:
       acorn: 8.19.0
       commander: 2.20.3
       source-map-support: 0.5.21
+
+  three@0.186.1:
+    optional: true
 
   tinybench@6.2.2: {}
 
@@ -7698,6 +7719,9 @@ snapshots:
   uri-js@4.4.1:
     dependencies:
       punycode: 2.3.1
+
+  viewerjs@1.15.2:
+    optional: true
 
   vite-plugin-dts@5.1.2(esbuild@0.28.2)(rollup@4.64.5)(supports-color@10.2.2)(typescript@6.0.3)(vite@7.3.7(@types/node@26.6.5)(sass@1.105.1)(terser@5.51.2)):
     dependencies:

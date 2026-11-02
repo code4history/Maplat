@@ -1,4 +1,4 @@
-import { t as D, m as L, u as v, p as A, a as U, r as C, h as R, W as N } from "./index-DRoncYsZ.js";
+import { t as D, m as L, b as v, p as A, a as U, r as C, E as R, V as N } from "./index-Bp1hbGXH.js";
 class T {
   constructor() {
     this.disposed = !1;
@@ -18,13 +18,13 @@ class T {
 }
 function ee(i, e, t) {
   let n, s;
-  t = t || E;
+  t = t || x;
   let o = 0, r = i.length, a = !1;
   for (; o < r; )
     n = o + (r - o >> 1), s = +t(i[n], e), s < 0 ? o = n + 1 : (r = n, a = !s);
   return a ? o : ~o;
 }
-function E(i, e) {
+function x(i, e) {
   return i > e ? 1 : i < e ? -1 : 0;
 }
 function te(i, e) {
@@ -87,7 +87,7 @@ function O(i, e) {
   return !0;
 }
 function re(i, e, t) {
-  const n = e || E;
+  const n = e || x;
   return i.every(function(s, o) {
     if (o === 0)
       return !0;
@@ -238,7 +238,7 @@ class H extends T {
 }
 let b = null;
 function $() {
-  return typeof customElements > "u" || customElements.get(D) ? Promise.resolve() : b || (b = import("./maplat_core_element-CL77UEaI.js").then(
+  return typeof customElements > "u" || customElements.get(D) ? Promise.resolve() : b || (b = import("./maplat_core_element-ClNrV8Li.js").then(
     () => {
     },
     (i) => {
@@ -481,7 +481,7 @@ function j(i) {
   };
   return g;
 }
-function _(i, e) {
+function E(i, e) {
   const t = () => i()?.slider(e) ?? null, n = () => t()?.items ?? [], s = () => t()?.selectedMapID ?? null;
   return {
     get el() {
@@ -543,7 +543,7 @@ async function z(i, e, t, n = 10) {
   const o = await s.sysCoord2MercAsync(t);
   return !Array.isArray(o) || !o.every((r) => Number.isFinite(Number(r))) ? [] : e.mapsAt(L(o.map(Number)), n);
 }
-const W = [
+const q = [
   ["noRotate", "noRotate"],
   ["northUp", "northUp"],
   ["homeMarginPixels", "homeMarginPixels"],
@@ -572,17 +572,17 @@ const W = [
   ["mapboxToken", "mapboxToken"],
   ["mapboxgl", "mapboxgl"],
   ["maplibregl", "maplibregl"]
-], q = [
+], K = [
   "mobileIF",
   "disableNoimage",
   "northTop",
   "markerList",
   "translateUI"
 ];
-let x = !1;
-const K = "MaplatUi: the MaplatUi class is deprecated and will be removed in 2.0. Use the <maplat-ui> element (@maplat/ui/element) with <maplat-app> instead.";
+let _ = !1;
+const W = "MaplatUi: the MaplatUi class is deprecated and will be removed in 2.0. Use the <maplat-ui> element (@maplat/ui/element) with <maplat-app> instead.";
 function Y() {
-  x || (x = !0, console.warn(K));
+  _ || (_ = !0, console.warn(W));
 }
 class k extends H {
   /** Core の `MaplatApp`（`lifecycle:setting-loaded` で入る。それまでは undefined）。 */
@@ -637,7 +637,7 @@ class k extends H {
   #l;
   /** 旧 API のコンストラクタ。`stateUrl` のときだけ、旧と同じく自分から起動を始める。 */
   constructor(e) {
-    super(), Y(), this.appOption = e ?? {}, this.html_id_seed = `${Math.floor(Math.random() * 9e3) + 1e3}`, this.#r = J(e), this.sliderNew = j(() => this.#e ?? null), this.contextMenu = V(() => this.#e ?? null), this.baseSwiper = _(() => this.#e ?? null, "base"), this.overlaySwiper = _(
+    super(), Y(), this.appOption = e ?? {}, this.html_id_seed = `${Math.floor(Math.random() * 9e3) + 1e3}`, this.#r = J(e), this.sliderNew = j(() => this.#e ?? null), this.contextMenu = V(() => this.#e ?? null), this.baseSwiper = E(() => this.#e ?? null, "base"), this.overlaySwiper = E(
       () => this.#e ?? null,
       "overlay"
     ), this.swipers = { base: this.baseSwiper, overlay: this.overlaySwiper }, this.enableShare = e.enableShare === !0, this.enableBorder = e.enableBorder === !0, this.enableHideMarker = e.enableHideMarker === !0, this.enableMarkerList = e.enableMarkerList === !0, this.enablePoiHtmlNoScroll = e.enablePoiHtmlNoScroll === !0, this.alwaysGpsOn = e.alwaysGpsOn === !0, this.disableNoimage = e.disableNoimage === !0, this.isTouch = typeof window < "u" && "ontouchstart" in window, this.appEnvelope = e.appEnvelope, this.waitReady = () => this.#a(), this.appOption.stateUrl === !0 && queueMicrotask(() => {
@@ -915,7 +915,7 @@ class k extends H {
     const e = document.createElement(v);
     e.style.display = "block", e.style.position = "absolute", e.style.top = "0", e.style.left = "0", e.style.right = "0", e.style.bottom = "0", e.style.width = "auto", e.style.height = "auto";
     const t = this.appOption;
-    for (const [a, u] of W) {
+    for (const [a, u] of q) {
       const d = t[a];
       d != null && (e[u] = d);
     }
@@ -930,7 +930,7 @@ class k extends H {
       __maplatCompat: !0
     };
     delete r.div, delete r.uiHooks, delete r.setting, e.appOption = r, e.uiHooks = Q(e, t.uiHooks);
-    for (const a of q)
+    for (const a of K)
       t[a] !== void 0 && this.#n(
         `dead:${a}`,
         `<${v}>: appOption.${a} is no longer used and was ignored.`
@@ -989,7 +989,7 @@ export {
   k as M,
   H as T,
   S as V,
-  E as a,
+  x as a,
   ee as b,
   P as c,
   ie as d,

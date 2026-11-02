@@ -461,6 +461,27 @@ describe("共有のモーダル（enable-share）", () => {
     expect(String(fbCall[2])).toContain("height=450");
   });
 
+  it("SNS の共有ボタンの表記は X（ラベル・title・ロゴ）。共有のモーダルと吹き出しの両方で同じ", async () => {
+    const ui = await mountUi(u => {
+      u.setAttribute("enable-share", "");
+      u.setAttribute("state-url", "");
+    });
+    for (const button of [
+      part(ui, "share-modal").querySelector('[data-share="tw_app"]'),
+      part(ui, "share-modal").querySelector('[data-share="tw_view"]'),
+      part(ui, "poi-share").querySelector('[data-share="tw_view"]')
+    ]) {
+      expect(button).not.toBeNull();
+      expect(button!.getAttribute("title")).toBe("X");
+      expect(button!.querySelector("small")!.textContent).toBe("X");
+      // X のロゴ（鳥のロゴではない）
+      expect(button!.querySelector("path")!.getAttribute("d")).toMatch(
+        /^M389\.2 48h70\.6L305\.6 224\.2 487 464H345/
+      );
+    }
+    expect(shadow(ui).innerHTML).not.toContain("Twitter");
+  });
+
   it("吹き出しの共有は enable-share かつ state-url のときだけ。QR は開いた POI を含む今の表示の URL", async () => {
     const plain = await mountUi(u => u.setAttribute("enable-share", ""));
     plain.openMarker("main#p1");

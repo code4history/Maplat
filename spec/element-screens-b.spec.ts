@@ -66,6 +66,9 @@ function press(ui: Ui, name: string) {
   (part(ui, name).querySelector("button") as HTMLButtonElement).click();
 }
 
+const OUT_OF_MAP_TOAST_MS = 3000;
+const toastShown = (ui: Ui) => part(ui, "toast").classList.contains("show");
+
 beforeEach(() => {
   history.replaceState(null, "", BASE);
   try {
@@ -297,25 +300,26 @@ describe("スプラッシュ（旧 ui_init.ts の initSplash・設定ファイ�
 });
 
 describe("プレゼンテーションモード（presentation-mode。旧 enableOutOfMap）", () => {
-  it("範囲外（outOfMap）のモーダルは既定で出し、presentation-mode のときは出さない", async () => {
+  it("範囲外（outOfMap）の知らせは既定でトーストに出し、presentation-mode のときは出さない", async () => {
     const ui = await mountUi();
     const controller = getMockLayerAController(ui.app!)!;
     controller.fire("outOfMap", {});
-    expect(part(ui, "gps-modal").hidden).toBe(false);
-    expect(part(ui, "gps-title").textContent).toBe("Out of map");
-    expect(part(ui, "gps-message").textContent).toBe(
+    expect(toastShown(ui)).toBe(true);
+    expect(part(ui, "toast").textContent).toBe(
       "Showing area is out of map. The area moves to default position."
     );
-    part(ui, "gps-close").click();
     expect(part(ui, "gps-modal").hidden).toBe(true);
 
     // presentation-mode は起動後に反映する（ii）
-    ui.presentationMode = true;
-    controller.fire("outOfMap", {});
-    expect(part(ui, "gps-modal").hidden).toBe(true);
-    ui.presentationMode = false;
-    controller.fire("outOfMap", {});
-    expect(part(ui, "gps-modal").hidden).toBe(false);
+    const quiet = await mountUi();
+    const quietController = getMockLayerAController(quiet.app!)!;
+    quiet.presentationMode = true;
+    quietController.fire("outOfMap", {});
+    expect(toastShown(quiet)).toBe(false);
+    expect(part(quiet, "gps-modal").hidden).toBe(true);
+    quiet.presentationMode = false;
+    quietController.fire("outOfMap", {});
+    expect(toastShown(quiet)).toBe(true);
   });
 
   it("presentation-mode は GPS のエラー（gps_error・gps_result）のモーダルは止めない（旧と同じ）", async () => {
@@ -346,12 +350,15 @@ describe("範囲外・GPS エラーのモーダル（旧 initGpsHandlers の mod
     );
   });
 
-  it("gps_result の gps_out は範囲外、ほかのエラーは GPS のエラー、gps_off・成功は出さない", async () => {
+  it("gps_result の gps_out はトースト、ほかのエラーはモーダル、gps_off・成功は出さない", async () => {
     const ui = await mountUi();
     const controller = getMockLayerAController(ui.app!)!;
     controller.fire("gps_result", { error: "gps_out" });
-    expect(part(ui, "gps-title").textContent).toBe("Out of map");
-    part(ui, "gps-close").click();
+    expect(toastShown(ui)).toBe(true);
+    expect(part(ui, "toast").textContent).toBe(
+      "GPS result is out of map. GPS function turns off."
+    );
+    expect(part(ui, "gps-modal").hidden).toBe(true);
     controller.fire("gps_result", { error: "gps_miss" });
     expect(part(ui, "gps-title").textContent).toBe(
       "Location information is not available"
@@ -366,20 +373,57 @@ describe("範囲外・GPS エラーのモーダル（旧 initGpsHandlers の mod
     expect(part(ui, "gps-modal").hidden).toBe(true);
   });
 
-  it("always-gps-on のときの gps_out_hide は出さず、GPS のボタンで出し直す（旧 SetGPS）", async () => {
-    const ui = await mountUi(u => (u.alwaysGpsOn = true));
+  it("gps_result の成功では範囲外のトーストを出さない", async () => {
+    const ui = await mountUi();
     const controller = getMockLayerAController(ui.app!)!;
-    // 実物の層 A（Core・Pro）は always-gps-on の範囲外で gps_out_hide を送る
-    controller.fire("gps_result", { error: "gps_out_hide" });
-    expect(part(ui, "gps-modal").hidden).toBe(true);
-    press(ui, "gps");
-    expect(part(ui, "gps-modal").hidden).toBe(false);
-    expect(part(ui, "gps-title").textContent).toBe("Out of map");
-    // gps_off で最後のエラーを忘れる
-    part(ui, "gps-close").click();
+    controller.fire("gps_result", { lnglat: [139.7, 35.7], acc: 10 });
     controller.fire("gps_result", { error: "gps_off" });
-    press(ui, "gps");
+    expect(toastShown(ui)).toBe(false);
+  });
+
+  it("always-gps-on のときの gps_out_hide は出さず、GPS のボタンでトーストに出す（押すたびに出る）", async () => {
+    vi.useFakeTimers();
+    try {
+      const ui = await mountUi(u => (u.alwaysGpsOn = true));
+      const controller = getMockLayerAController(ui.app!)!;
+      // 実物の層 A（Core・Pro）は always-gps-on の範囲外で gps_out_hide を送る
+      controller.fire("gps_result", { error: "gps_out_hide" });
+      expect(toastShown(ui)).toBe(false);
+      expect(part(ui, "gps-modal").hidden).toBe(true);
+      press(ui, "gps");
+      expect(toastShown(ui)).toBe(true);
+      expect(part(ui, "toast").textContent).toBe("Out of map");
+      expect(part(ui, "gps-modal").hidden).toBe(true);
+      vi.advanceTimersByTime(OUT_OF_MAP_TOAST_MS);
+      expect(toastShown(ui)).toBe(false);
+      press(ui, "gps");
+      expect(toastShown(ui)).toBe(true);
+      vi.advanceTimersByTime(OUT_OF_MAP_TOAST_MS);
+      // gps_off で最後のエラーを忘れる
+      controller.fire("gps_result", { error: "gps_off" });
+      press(ui, "gps");
+      expect(toastShown(ui)).toBe(false);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("always-gps-on の gps_out は黙って戻る（ボタンの経路だけが知らせる）", async () => {
+    const ui = await mountUi(u => (u.alwaysGpsOn = true));
+    getMockLayerAController(ui.app!)!.fire("gps_result", { error: "gps_out" });
+    expect(toastShown(ui)).toBe(false);
     expect(part(ui, "gps-modal").hidden).toBe(true);
+  });
+
+  it("presentation-mode のとき always-gps-on のボタンでも範囲外のトーストを出さない", async () => {
+    const ui = await mountUi(u => {
+      u.alwaysGpsOn = true;
+      u.presentationMode = true;
+    });
+    const controller = getMockLayerAController(ui.app!)!;
+    controller.fire("gps_result", { error: "gps_out_hide" });
+    press(ui, "gps");
+    expect(toastShown(ui)).toBe(false);
   });
 
   it("always-gps-on でないときの gps_out_hide も出さない（範囲外は黙って覚えるだけ）", async () => {
@@ -387,6 +431,7 @@ describe("範囲外・GPS エラーのモーダル（旧 initGpsHandlers の mod
     const controller = getMockLayerAController(ui.app!)!;
     controller.fire("gps_result", { error: "gps_out_hide" });
     expect(part(ui, "gps-modal").hidden).toBe(true);
+    expect(toastShown(ui)).toBe(false);
     // ほかのエラー（この型を知らない実装の取りこぼし）は今までどおり出す
     controller.fire("gps_result", { error: "gps_miss" });
     expect(part(ui, "gps-title").textContent).toBe(
@@ -394,10 +439,21 @@ describe("範囲外・GPS エラーのモーダル（旧 initGpsHandlers の mod
     );
   });
 
+  it('openModalByLegacyName("gpsD") は今までどおり範囲外のモーダルを開く', async () => {
+    const ui = await mountUi();
+    ui.openModalByLegacyName("gpsD");
+    expect(part(ui, "gps-modal").hidden).toBe(false);
+    expect(part(ui, "gps-title").textContent).toBe("Out of map");
+    expect(part(ui, "gps-message").textContent).toBe(
+      "Showing area is out of map. The area moves to default position."
+    );
+    expect(toastShown(ui)).toBe(false);
+  });
+
   it("開いたまま言語を変えると、題名と本文を今の言語で描き直す（範囲外とエラーの種類は覚えている）", async () => {
     const ui = await mountUi(u => u.setAttribute("lang", "ja"));
     const controller = getMockLayerAController(ui.app!)!;
-    controller.fire("gps_result", { error: "gps_out" });
+    ui.openModalByLegacyName("gpsD");
     expect(part(ui, "gps-title").textContent).toBe("地図範囲外");
     ui.lang = "en";
     await vi.waitFor(() =>
@@ -428,6 +484,135 @@ describe("範囲外・GPS エラーのモーダル（旧 initGpsHandlers の mod
     app.dispatchEvent(new CustomEvent("gps_error", { detail: "gps_miss" }));
     await ui.ready;
     expect(part(ui, "gps-modal").hidden).toBe(true);
+  });
+});
+
+describe("範囲外のトーストの出し方", () => {
+  const frame = (left: number, top: number, width: number, height: number) =>
+    ({
+      left,
+      top,
+      right: left + width,
+      bottom: top + height,
+      width,
+      height,
+      x: left,
+      y: top,
+      toJSON: () => ({})
+    }) as DOMRect;
+
+  it("3 秒出し、続けて来たら後の知らせに替えて測り直す", async () => {
+    vi.useFakeTimers();
+    try {
+      const ui = await mountUi();
+      const controller = getMockLayerAController(ui.app!)!;
+      controller.fire("outOfMap", {});
+      vi.advanceTimersByTime(OUT_OF_MAP_TOAST_MS - 1);
+      expect(toastShown(ui)).toBe(true);
+      controller.fire("gps_result", { error: "gps_out" });
+      expect(part(ui, "toast").textContent).toBe(
+        "GPS result is out of map. GPS function turns off."
+      );
+      vi.advanceTimersByTime(OUT_OF_MAP_TOAST_MS - 1);
+      expect(toastShown(ui)).toBe(true);
+      vi.advanceTimersByTime(1);
+      expect(toastShown(ui)).toBe(false);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("<maplat-ui> の箱の下端の中央に置き、幅を箱の内側に留める", async () => {
+    vi.stubGlobal("innerWidth", 1280);
+    vi.stubGlobal("innerHeight", 800);
+    const ui = await mountUi();
+    vi.spyOn(ui, "getBoundingClientRect").mockReturnValue(
+      frame(100, 50, 400, 300)
+    );
+    getMockLayerAController(ui.app!)!.fire("outOfMap", {});
+    const { style } = part(ui, "toast");
+    expect(style.left).toBe("300px");
+    expect(style.top).toBe("320px");
+    expect(style.bottom).toBe("auto");
+    expect(style.transform).toBe("translate(-50%, -100%)");
+    expect(style.width).toBe("max-content");
+    expect(style.maxWidth).toBe("384px");
+  });
+
+  it("箱が画面の外へはみ出していたら、見えている部分の中で下端の中央に置く", async () => {
+    vi.stubGlobal("innerWidth", 500);
+    vi.stubGlobal("innerHeight", 200);
+    const ui = await mountUi();
+    vi.spyOn(ui, "getBoundingClientRect").mockReturnValue(
+      frame(-100, 50, 400, 300)
+    );
+    getMockLayerAController(ui.app!)!.fire("outOfMap", {});
+    const { style } = part(ui, "toast");
+    expect(style.left).toBe("150px");
+    expect(style.top).toBe("170px");
+    expect(style.maxWidth).toBe("284px");
+  });
+
+  it("箱が画面の右へはみ出していたら、見えている部分の中で中央に置く", async () => {
+    vi.stubGlobal("innerWidth", 500);
+    vi.stubGlobal("innerHeight", 800);
+    const ui = await mountUi();
+    vi.spyOn(ui, "getBoundingClientRect").mockReturnValue(
+      frame(300, 50, 400, 300)
+    );
+    getMockLayerAController(ui.app!)!.fire("outOfMap", {});
+    const { style } = part(ui, "toast");
+    expect(style.left).toBe("400px");
+    expect(style.maxWidth).toBe("184px");
+  });
+
+  it("後から showToast() を呼ぶと、今までの出し方（下の中央・1.5 秒・幅の指定なし）に戻る", async () => {
+    vi.useFakeTimers();
+    try {
+      const ui = await mountUi();
+      getMockLayerAController(ui.app!)!.fire("outOfMap", {});
+      ui.showToast("Copied to clipboard");
+      const toast = part(ui, "toast");
+      expect(toast.style.left).toBe("50%");
+      expect(toast.style.top).toBe("auto");
+      expect(toast.style.bottom).toBe("30px");
+      expect(toast.style.transform).toBe("translateX(-50%)");
+      expect(toast.style.width).toBe("");
+      expect(toast.style.maxWidth).toBe("");
+      vi.advanceTimersByTime(1500);
+      expect(toastShown(ui)).toBe(false);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("開いている吹き出しを閉じず、URL の om: も残し、フォーカスも動かさない", async () => {
+    const ui = await mountUi(u => u.setAttribute("state-url", ""));
+    const controller = getMockLayerAController(ui.app!)!;
+    controller.fire("clickMarkers", [
+      { namespaceID: "main#spot", id: "spot", name: "Spot" }
+    ]);
+    const modal = part(ui, "poi-modal");
+    expect(modal.hidden).toBe(false);
+    await vi.waitFor(() =>
+      expect(decodeURIComponent(location.hash)).toContain("/om:main#spot")
+    );
+    const close = part(ui, "poi-close");
+    close.focus();
+    controller.fire("gps_result", { error: "gps_out" });
+    expect(modal.hidden).toBe(false);
+    expect(ui.shadowRoot!.activeElement).toBe(close);
+    expect(toastShown(ui)).toBe(true);
+    expect(decodeURIComponent(location.hash)).toContain("/om:main#spot");
+  });
+
+  it("地図の準備前のイベントでは出さない", async () => {
+    const ui = document.createElement(MAPLAT_UI_TAG) as Ui;
+    ui.setting = structuredClone(SETTING);
+    document.body.appendChild(ui);
+    ui.app!.dispatchEvent(new CustomEvent("outOfMap", { detail: {} }));
+    await ui.ready;
+    expect(toastShown(ui)).toBe(false);
   });
 });
 

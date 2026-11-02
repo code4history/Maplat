@@ -1,6 +1,6 @@
-import { M as t, d as M, e as i } from "../index-DRoncYsZ.js";
+import { M as t, e as M, f } from "../index-Bp1hbGXH.js";
 export {
   t as MAPLAT_UI_VERSION,
   M as MaplatUiElement,
-  i as defineMaplatUi
+  f as defineMaplatUi
 };
