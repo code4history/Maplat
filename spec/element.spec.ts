@@ -806,7 +806,54 @@ describe("POI の吹き出し（clickMarkers / clickMarker）", () => {
       ]);
       // directgo は吹き出しを出さない（旧と同じ）
       expect(part(ui, "poi-modal").hidden).toBe(true);
+      return ui;
     };
+
+    /** トーストの文が書き換わった回数を数える（知らせを出すたびに 1 回書き換わる）。 */
+    const countToasts = (ui: Ui) => {
+      const records: MutationRecord[] = [];
+      const observer = new MutationObserver(list => records.push(...list));
+      observer.observe(part(ui, "toast"), { childList: true });
+      return async () => {
+        await Promise.resolve();
+        records.push(...observer.takeRecords());
+        observer.disconnect();
+        return records.filter(r => r.addedNodes.length > 0).length;
+      };
+    };
+
+    it.each(REJECTED_URLS)(
+      "文字列 %s では「このリンクは開けません」の知らせを 1 回出す",
+      async url => {
+        const ui = await mountUi();
+        installFakeLocation();
+        const toast = part(ui, "toast");
+        const count = countToasts(ui);
+        getMockLayerAController(ui.app!)!.fire("clickMarkers", [
+          { namespaceID: "d", name: "D", directgo: url }
+        ]);
+        expect(part(ui, "poi-modal").hidden).toBe(true);
+        expect(hrefSet).toEqual([]);
+        expect(openSpy).not.toHaveBeenCalled();
+        expect(toast.classList.contains("show")).toBe(true);
+        expect(toast.textContent).toBe(ui.t("app.cannot_open_link"));
+        expect(toast.textContent).not.toBe("app.cannot_open_link");
+        expect(await count()).toBe(1);
+      }
+    );
+
+    it("blank 指定でも拒否したら知らせを出す", async () => {
+      const ui = await fire({ href: "javascript:alert(1)", blank: true });
+      expect(part(ui, "toast").classList.contains("show")).toBe(true);
+      expect(part(ui, "toast").textContent).toBe(ui.t("app.cannot_open_link"));
+    });
+
+    it.each(ACCEPTED_URLS)("文字列 %s では知らせを出さない", async url => {
+      const ui = await fire(url);
+      expect(hrefSet).toEqual([url]);
+      expect(part(ui, "toast").classList.contains("show")).toBe(false);
+      expect(part(ui, "toast").textContent).toBe("");
+    });
 
     it("テストの前提: window.location の差し替えが効いている", () => {
       installFakeLocation();

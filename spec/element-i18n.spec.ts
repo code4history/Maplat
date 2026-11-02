@@ -122,6 +122,23 @@ describe("11 言語の言語ファイル", () => {
     );
   });
 
+  it.each(LANGS)("%s は開けないリンクの知らせの文が訳になる", async lang => {
+    const ui = await mountUi(u => u.setAttribute("lang", lang));
+    const dict = locale(lang);
+    const key = "app.cannot_open_link";
+    expect(dict[key], `${lang}: ${key}`).toBeTruthy();
+    expect(ui.t(key), `${lang}: ${key}`).toBe(dict[key]);
+    expect(ui.t(key), `${lang}: ${key}`).not.toBe(key);
+    expect(ui.t(key).trim(), `${lang}: ${key}`).not.toBe("");
+    if (lang !== "en")
+      expect(ui.t(key), `${lang}: ${key}`).not.toBe(locale("en")[key]);
+  });
+
+  it("開けないリンクの知らせの日本語は「このリンクは開けません」", async () => {
+    const ui = await mountUi(u => u.setAttribute("lang", "ja"));
+    expect(ui.t("app.cannot_open_link")).toBe("このリンクは開けません");
+  });
+
   it("代表の訳（言語ファイルの中身そのもの）を返す", async () => {
     const de = await mountUi(u => u.setAttribute("lang", "de"));
     expect(de.t("control.home")).toBe("Zur Startposition");

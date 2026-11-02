@@ -50,6 +50,8 @@ const STRINGS: Record<string, Dict> = {
     "app.out_of_map_area": "表示位置が地図範囲外です。地図標準位置に戻します。",
     "app.out_of_map_desc":
       "GPSの取得結果が地図範囲外です。GPS機能をオフにします。",
+    // POI のリンクが安全でない URL で開かなかったとき（assets/locales/ja/translation.json の app.* と同じ文言）
+    "app.cannot_open_link": "このリンクは開けません",
     "app.gps_error": "位置情報を使用できません",
     "app.user_gps_deny":
       "現在位置を表示するには、webブラウザの「位置情報の使用」を許可にして、QRコードかURLをもう一度読み込んでください。",
@@ -140,6 +142,8 @@ const STRINGS: Record<string, Dict> = {
     "app.out_of_map_desc": "GPS result is out of map. GPS function turns off.",
     "app.out_of_map_area":
       "Showing area is out of map. The area moves to default position.",
+    // A POI link was not opened because its URL is unsafe (same wording as assets/locales/en/translation.json app.*)
+    "app.cannot_open_link": "This link cannot be opened",
     "app.gps_error": "Location information is not available",
     "app.user_gps_deny":
       'To display the current location, please enable "Use Location" in your web browser and read the QR code or URL again.',
