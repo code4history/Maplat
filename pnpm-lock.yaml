@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  '@maplat/core': github:code4history/MaplatCore#6461c0f6b245fe50b7ea473b12c2f489d0fdcc93
+  '@maplat/core': github:code4history/MaplatCore#08a17703d93e5a3145c0cc2e8e4a646a7b7998b4
   js-yaml: ^4.3.1
   fast-uri: ^3.1.5
   postcss: ^8.5.23
@@ -23,8 +23,8 @@ importers:
         specifier: ^1.1.1
         version: 1.1.1(workbox-routing@7.4.1)
       '@maplat/core':
-        specifier: github:code4history/MaplatCore#6461c0f6b245fe50b7ea473b12c2f489d0fdcc93
-        version: https://codeload.github.com/code4history/MaplatCore/tar.gz/6461c0f6b245fe50b7ea473b12c2f489d0fdcc93(mapbox-gl@3.32.0)(maplibre-gl@6.9.0)(ol@10.11.0)(workbox-routing@7.4.1)
+        specifier: github:code4history/MaplatCore#08a17703d93e5a3145c0cc2e8e4a646a7b7998b4
+        version: https://codeload.github.com/code4history/MaplatCore/tar.gz/08a17703d93e5a3145c0cc2e8e4a646a7b7998b4(@c4h/chuci@1.0.2)(mapbox-gl@3.32.0)(maplibre-gl@6.9.0)(ol@10.11.0)(workbox-routing@7.4.1)
       mapbox-gl:
         specifier: ^2.0.0 || ^3.0.0
         version: 3.32.0
@@ -648,6 +648,15 @@ packages:
     resolution: {integrity: sha512-riPtOEI6t9VDHEOgjQLOcXrIckjoytmGGbrjosAylpg/dSjc4MnC8DX71YmR5CH1nkkK/nM8kWETxbJ6RQOBdQ==}
     engines: {pnpm: '>=9.0.0'}
 
+  '@c4h/quyuan@1.1.1':
+    resolution: {integrity: sha512-CwAzx5rQ6W819KHPXP31SDLZ2OkFcU+0KqOd7qN/jtAOIIaTf3NYrsV+kb95N4wqDTh6sve0n9dw3yuOZbkjIg==}
+    engines: {node: '>=20.0.0', pnpm: '>=9.0.0'}
+    peerDependencies:
+      '@c4h/chuci': ^1.0.2
+    peerDependenciesMeta:
+      '@c4h/chuci':
+        optional: true
+
   '@c4h/weiwudi@1.1.1':
     resolution: {integrity: sha512-hgk0fpXUohUAmfLBXzAct5GsfNndQTsORGqbvM2Qa4S6NvasrGVZNa63SUhA7FldCwKjngflgVt5S6Un1B3OMg==}
     engines: {node: '>=20.0.0', pnpm: '>=9.0.0'}
@@ -971,9 +980,9 @@ packages:
   '@mapbox/vector-tile@3.0.0':
     resolution: {integrity: sha512-Qf10S1uIHMk20ri/IVBnpS+esUEkVaR5Hftmz88jTInrpmWgPGJfPe3LVjjlE77trLx8tH6qjTG7uWH9hIq/0Q==}
 
-  '@maplat/core@https://codeload.github.com/code4history/MaplatCore/tar.gz/6461c0f6b245fe50b7ea473b12c2f489d0fdcc93':
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/code4history/MaplatCore/tar.gz/6461c0f6b245fe50b7ea473b12c2f489d0fdcc93}
-    version: 1.2.0-rc.1
+  '@maplat/core@https://codeload.github.com/code4history/MaplatCore/tar.gz/08a17703d93e5a3145c0cc2e8e4a646a7b7998b4':
+    resolution: {gitHosted: true, integrity: sha512-8QG38vzOxR2BrCHSm7MdxhNXk6BsZIdyMiV9Z8RwAoHuVpC1EYKru+B+pNluU5S0lO/WNyf10F5YGXv1Dbw+2w==, tarball: https://codeload.github.com/code4history/MaplatCore/tar.gz/08a17703d93e5a3145c0cc2e8e4a646a7b7998b4}
+    version: 1.2.0
     engines: {pnpm: '>=9'}
     peerDependencies:
       mapbox-gl: ^2.0.0 || ^3.0.0
@@ -1769,6 +1778,9 @@ packages:
   '@zarrita/storage@0.2.0':
     resolution: {integrity: sha512-855ZXqtnds7spnT8vNvD+MXa3QExP1m2GqShe8yt7uZXHnQLgJHgkpVwFjE1B0KDDRO0ki09hmk6OboTaIfPsQ==}
 
+  a-sync-waterfall@1.0.1:
+    resolution: {integrity: sha512-RYTOHHdWipFUliRFMCS4X2Yn2X8M87V/OpSqWzKKOGhzqyUxzyVmhHDH9sAvG+ZuQf/TAOFsLCpMw09I1ufUnA==}
+
   acorn-jsx@5.3.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
     peerDependencies:
@@ -1812,6 +1824,9 @@ packages:
   arraybuffer.prototype.slice@1.0.4:
     resolution: {integrity: sha512-BNoCY6SXXPQ7gF2opIP4GBE+Xw7U+pHMYKuzjgCN3GwiaIR09UUeKfheyIry77QtrCBlC0KK0q5/TER/tYh3PQ==}
     engines: {node: '>= 0.4'}
+
+  asap@2.0.6:
+    resolution: {integrity: sha512-BSHWgDSAiKs50o2Re8ppvp3seVHXSRM44cdSsT9FfNEUUZLOGWVCsiWaRPWM1Znn+mqZ1OfVZ3z3DWEzSp7hRA==}
 
   assertion-error@2.0.1:
     resolution: {integrity: sha512-Izi8RQcffqCeNVgFigKli1ssklIbpHnCYc6AknXGYoB6grJqyeby7jv12JUQgmTAnIDnbck1uxksT4dzN3PWBA==}
@@ -1933,6 +1948,10 @@ packages:
 
   commander@2.20.3:
     resolution: {integrity: sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==}
+
+  commander@5.1.0:
+    resolution: {integrity: sha512-P0CysNDQ7rtVw4QIQtm+MRxV66vKFSvlsQvGYXZWR3qFU0jlMKHZZZgw8e+8DSah4UDKMqnknRDQz+xuQXQ/Zg==}
+    engines: {node: '>= 6'}
 
   common-tags@1.8.2:
     resolution: {integrity: sha512-gk/Z852D2Wtb//0I+kRFNKKE9dIIVirjoqPoA1wJU+XePVXZfGeBpk45+A1rKO4Q43prqWBNY/MiIeRLbPWUaA==}
@@ -2604,18 +2623,8 @@ packages:
     resolution: {integrity: sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==}
     engines: {node: '>=10'}
 
-  lodash._reinterpolate@3.0.0:
-    resolution: {integrity: sha512-xYHt68QRoYGjeeM/XOE1uJtvXQAgvszfBhjV4yvsQH0u2i9I6cI6c6/eG4Hh3UAOVn0y/xAXwmTzEay49Q//HA==}
-
   lodash.debounce@4.0.8:
     resolution: {integrity: sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==}
-
-  lodash.template@4.18.1:
-    resolution: {integrity: sha512-5urZrLnV/VD6zHK5KsVtZgt7H19v51mIzoS0aBNH8yp3I8tbswrEjOABOPY8m8uB7NuibubLrMX+Y0PXsU9X+w==}
-    deprecated: This package is deprecated. Use https://socket.dev/npm/package/eta instead.
-
-  lodash.templatesettings@4.2.0:
-    resolution: {integrity: sha512-stgLz+i3Aa9mZgnjr/O+v9ruKZsPsndy7qPZOchbqk2cnTU1ZaldKK+v7m54WoKIyxiuMZTKT2H81F8BeAc3ZQ==}
 
   lru-cache@11.5.3:
     resolution: {integrity: sha512-U4N8FgzmWxc8k1VH8Kr6lQg18U7Fjvby6wXHVRX/ZZ7IwWbRMgrRbP0Wrb5q5NVinryp4SQampHKdvtecItxUg==}
@@ -2685,6 +2694,16 @@ packages:
 
   numcodecs@0.3.2:
     resolution: {integrity: sha512-6YSPnmZgg0P87jnNhi3s+FVLOcIn3y+1CTIgUulA3IdASzK9fJM87sUFkpyA+be9GibGRaST2wCgkD+6U+fWKw==}
+
+  nunjucks@3.2.4:
+    resolution: {integrity: sha512-26XRV6BhkgK0VOxfbU5cQI+ICFUtMLixv1noZn1tGU38kQH5A5nmmbk/O45xdyBhD1esk47nKrY0mvQpZIhRjQ==}
+    engines: {node: '>= 6.9.0'}
+    hasBin: true
+    peerDependencies:
+      chokidar: ^3.3.0
+    peerDependenciesMeta:
+      chokidar:
+        optional: true
 
   object-inspect@1.13.4:
     resolution: {integrity: sha512-W67iLl4J2EXEGTbfeHCffrjDfitvLANg0UlX3wFUUSTx92KXRFegMHUVgSqE+wvhAbi4WqjGg9czysTV2Epbew==}
@@ -4256,6 +4275,14 @@ snapshots:
       three: 0.186.1
       viewerjs: 1.15.2
 
+  '@c4h/quyuan@1.1.1(@c4h/chuci@1.0.2)':
+    dependencies:
+      nunjucks: 3.2.4
+    optionalDependencies:
+      '@c4h/chuci': 1.0.2
+    transitivePeerDependencies:
+      - chokidar
+
   '@c4h/weiwudi@1.1.1(workbox-routing@7.4.1)':
     dependencies:
       workbox-routing: 7.4.1
@@ -4476,19 +4503,21 @@ snapshots:
       '@types/geojson': 7946.0.16
       pbf: 5.1.2
 
-  '@maplat/core@https://codeload.github.com/code4history/MaplatCore/tar.gz/6461c0f6b245fe50b7ea473b12c2f489d0fdcc93(mapbox-gl@3.32.0)(maplibre-gl@6.9.0)(ol@10.11.0)(workbox-routing@7.4.1)':
+  '@maplat/core@https://codeload.github.com/code4history/MaplatCore/tar.gz/08a17703d93e5a3145c0cc2e8e4a646a7b7998b4(@c4h/chuci@1.0.2)(mapbox-gl@3.32.0)(maplibre-gl@6.9.0)(ol@10.11.0)(workbox-routing@7.4.1)':
     dependencies:
+      '@c4h/quyuan': 1.1.1(@c4h/chuci@1.0.2)
       '@c4h/weiwudi': 1.1.1(workbox-routing@7.4.1)
       '@maplat/transform': 1.1.0
       '@turf/turf': 7.4.0
       dompurify: 3.4.17
-      lodash.template: 4.18.1
       ol: 10.11.0
       whatwg-fetch: 3.6.20
     optionalDependencies:
       mapbox-gl: 3.32.0
       maplibre-gl: 6.9.0
     transitivePeerDependencies:
+      - '@c4h/chuci'
+      - chokidar
       - workbox-routing
 
   '@maplat/transform@1.1.0':
@@ -6000,6 +6029,8 @@ snapshots:
       reference-spec-reader: 0.2.0
       unzipit: 2.0.0
 
+  a-sync-waterfall@1.0.1: {}
+
   acorn-jsx@5.3.2(acorn@8.19.0):
     dependencies:
       acorn: 8.19.0
@@ -6046,6 +6077,8 @@ snapshots:
       es-errors: 1.3.0
       get-intrinsic: 1.3.0
       is-array-buffer: 3.0.5
+
+  asap@2.0.6: {}
 
   assertion-error@2.0.1: {}
 
@@ -6171,6 +6204,8 @@ snapshots:
   color-name@1.1.4: {}
 
   commander@2.20.3: {}
+
+  commander@5.1.0: {}
 
   common-tags@1.8.2: {}
 
@@ -6941,18 +6976,7 @@ snapshots:
     dependencies:
       p-locate: 5.0.0
 
-  lodash._reinterpolate@3.0.0: {}
-
   lodash.debounce@4.0.8: {}
-
-  lodash.template@4.18.1:
-    dependencies:
-      lodash._reinterpolate: 3.0.0
-      lodash.templatesettings: 4.2.0
-
-  lodash.templatesettings@4.2.0:
-    dependencies:
-      lodash._reinterpolate: 3.0.0
 
   lru-cache@11.5.3: {}
 
@@ -7030,6 +7054,12 @@ snapshots:
   numcodecs@0.3.2:
     dependencies:
       fflate: 0.8.3
+
+  nunjucks@3.2.4:
+    dependencies:
+      a-sync-waterfall: 1.0.1
+      asap: 2.0.6
+      commander: 5.1.0
 
   object-inspect@1.13.4: {}
 
