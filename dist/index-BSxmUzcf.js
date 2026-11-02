@@ -1,4 +1,4 @@
-import { t as D, m as L, b as v, p as A, a as U, r as C, E as R, V as N } from "./index-Bp1hbGXH.js";
+import { t as D, m as L, b as v, p as A, a as U, r as C, E as R, V as N } from "./index-9I9prk0i.js";
 class T {
   constructor() {
     this.disposed = !1;
@@ -238,7 +238,7 @@ class H extends T {
 }
 let b = null;
 function $() {
-  return typeof customElements > "u" || customElements.get(D) ? Promise.resolve() : b || (b = import("./maplat_core_element-ClNrV8Li.js").then(
+  return typeof customElements > "u" || customElements.get(D) ? Promise.resolve() : b || (b = import("./maplat_core_element-DLhgXLEE.js").then(
     () => {
     },
     (i) => {
