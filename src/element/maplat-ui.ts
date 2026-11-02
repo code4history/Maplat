@@ -465,7 +465,9 @@ const OUT_OF_MAP_NOTICE = {
   gpsOff: "app.out_of_map_desc",
   gpsKept: "app.out_of_map"
 } as const;
-/** 範囲外の知らせの長さ（2 文を読み切れる長さ）。 */
+/** POI の directgo が安全でない URL で、遷移しなかったときの知らせの文言。 */
+const CANNOT_OPEN_LINK_NOTICE = "app.cannot_open_link";
+/** 範囲外の知らせの長さ（2 文を読み切れる長さ）。開けないリンクの知らせも同じ長さで出す。 */
 const OUT_OF_MAP_TOAST_MS = 3000;
 /** 範囲外の知らせと <maplat-ui> の箱の下端・左右の間隔。 */
 const OUT_OF_MAP_TOAST_BOTTOM_PX = 30;
@@ -1942,7 +1944,7 @@ export class MaplatUiElement extends BaseElement {
         // 旧と同じ: always-gps-on のときの gps_out は黙って戻る（知らせはボタンの経路が出す）
         if (this.#app?.alwaysGpsOn === true && error === "gps_out") break;
         if (error === "gps_out")
-          this.#showOutOfMapToast(OUT_OF_MAP_NOTICE.gpsOff);
+          this.#showBottomToast(OUT_OF_MAP_NOTICE.gpsOff);
         else this.#showGpsModal(false, error);
         break;
       }
@@ -2883,15 +2885,15 @@ export class MaplatUiElement extends BaseElement {
   /** 範囲外を知らせる（旧 outOfMap の処理。presentation-mode が真なら出さない）。 */
   #notifyOutOfMap(key: string) {
     if (this.#parseOwnAttribute(ATTR_PRESENTATION_MODE) === true) return;
-    this.#showOutOfMapToast(key);
+    this.#showBottomToast(key);
   }
 
   /**
-   * 範囲外の知らせを、<maplat-ui> の箱の下端の中央にトーストで出す。操作を止めない知らせなので、
+   * 知らせ（範囲外・開けないリンク）を、<maplat-ui> の箱の下端の中央にトーストで出す。操作を止めない知らせなので、
    * 開いている画面は閉じず、フォーカスも動かさない。地図の準備前は出さない。
    * トーストは position: fixed で CSS の割合が画面基準になるので、見えている箱の大きさを読んで幅を決める。
    */
-  #showOutOfMapToast(key: string) {
+  #showBottomToast(key: string) {
     if (!this.#app || !this.#appReady) return;
     const box = this.getBoundingClientRect();
     const left = Math.max(box.left, 0);
@@ -4016,7 +4018,11 @@ export class MaplatUiElement extends BaseElement {
       const blank = typeof data.directgo === "object" && !!data.directgo?.blank;
       // safeWebUrl は通した値をそのまま返す（http/https・相対 URL のとき）
       const safe = safeWebUrl(href);
-      if (safe === undefined) return;
+      if (safe === undefined) {
+        // 黙って何もしないと押しても反応が無いように見えるので、開けないことだけを知らせる
+        this.#showBottomToast(CANNOT_OPEN_LINK_NOTICE);
+        return;
+      }
       // SR-NOV26-B-3（逆タブナビング・Referer を渡さない）: 旧と同じく noopener,noreferrer
       if (blank) window.open(safe, "_blank", "noopener,noreferrer");
       else window.location.href = safe;

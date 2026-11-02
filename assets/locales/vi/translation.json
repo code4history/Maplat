@@ -62,6 +62,7 @@
     "out_of_map": "Ngoài phạm vi bản đồ",
     "out_of_map_desc": "Kết quả GPS nằm ngoài phạm vi bản đồ. Chức năng GPS sẽ tắt.",
     "out_of_map_area": "Khu vực hiển thị nằm ngoài phạm vi bản đồ. Di chuyển về vị trí mặc định.",
+    "cannot_open_link": "Không thể mở liên kết này",
     "copy_toast": "Đã sao chép vào khay nhớ tạm",
     "gps_error": "Thông tin vị trí không khả dụng",
     "user_gps_deny": "Để hiển thị vị trí hiện tại, vui lòng bật \"Sử dụng vị trí\" trong trình duyệt của bạn và quét lại mã QR hoặc URL.",
