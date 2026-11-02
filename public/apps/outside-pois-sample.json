@@ -1,0 +1,26 @@
+{
+ "appName": {
+  "ja": "地図の範囲外の POI の見本",
+  "en": "Points outside the map sample"
+ },
+ "lang": "ja",
+ "homePosition": [
+  139.5321,
+  36.249302
+ ],
+ "defaultZoom": 17,
+ "startFrom": "tatebayashi_ojozu",
+ "sources": [
+  {
+   "mapID": "tatebayashi_ojozu",
+   "label": {
+    "ja": "綱吉時代",
+    "en": "Tsunayoshi Era"
+   }
+  },
+  "gsi"
+ ],
+ "pois": [
+  "outside-pois-sample.geojson"
+ ]
+}
