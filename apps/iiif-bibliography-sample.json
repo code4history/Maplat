@@ -1,0 +1,62 @@
+{
+ "appName": {
+  "ja": "IIIF の書誌の見本",
+  "en": "IIIF bibliography sample"
+ },
+ "lang": "ja",
+ "homePosition": [
+  139.0495,
+  37.93
+ ],
+ "defaultZoom": 15,
+ "startFrom": "iiif_bibliography_sample",
+ "sources": [
+  {
+   "mapID": "iiif_bibliography_sample",
+   "label": {
+    "ja": "IIIF の書誌の見本",
+    "en": "IIIF bibliography sample"
+   },
+   "iiifMetadata": "all"
+  },
+  {
+   "mapID": "iiif_bibliography_hidden_sample",
+   "label": {
+    "ja": "書誌の表を出さない（hidden）",
+    "en": "Bibliography hidden"
+   },
+   "iiifMetadata": "hidden"
+  },
+  {
+   "mapID": "iiif_bibliography_unspecified_sample",
+   "label": {
+    "ja": "書誌の表を出さない（指定なし）",
+    "en": "Bibliography not specified"
+   }
+  },
+  {
+   "mapID": "iiif_bibliography_upper_sample",
+   "label": {
+    "ja": "書誌の表を出さない（ALL）",
+    "en": "Bibliography with an unknown value"
+   },
+   "iiifMetadata": "ALL"
+  },
+  {
+   "mapID": "iiif_bibliography_unsafe_sample",
+   "label": {
+    "ja": "危険な値を混ぜた書誌",
+    "en": "Bibliography with unsafe values"
+   },
+   "iiifMetadata": "all"
+  },
+  {
+   "mapID": "iiif_bibliography_broken_sample",
+   "label": {
+    "ja": "使えない地図（壊れた delivery）",
+    "en": "Unusable map (broken delivery)"
+   }
+  },
+  "gsi"
+ ]
+}

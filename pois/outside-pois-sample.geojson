@@ -1,0 +1,32 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "inside-sample",
+      "properties": {
+        "name": "範囲内の見本",
+        "desc": "古地図の紙の内側にある POI の見本です。"
+      },
+      "geometry": { "type": "Point", "coordinates": [139.5416, 36.248] }
+    },
+    {
+      "type": "Feature",
+      "id": "outside-near-sample",
+      "properties": {
+        "name": "範囲外の見本",
+        "desc": "古地図の紙のすぐ外にある POI の見本です。背景の地図の上に描かれます。"
+      },
+      "geometry": { "type": "Point", "coordinates": [139.541583, 36.23833] }
+    },
+    {
+      "type": "Feature",
+      "id": "outside-far-sample",
+      "properties": {
+        "name": "遠くの範囲外の見本",
+        "desc": "古地図の紙から遠く離れた POI の見本です。"
+      },
+      "geometry": { "type": "Point", "coordinates": [139.06, 36.39] }
+    }
+  ]
+}
