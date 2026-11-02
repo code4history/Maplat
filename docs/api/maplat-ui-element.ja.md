@@ -143,10 +143,11 @@ import '@maplat/ui/element';      // 層 B: <maplat-ui> を登録する（副作
 ### 子へ流す層 A のキー
 
 `<maplat-app>` の全キーを `<maplat-ui>` に書けます。要素はそれを子へ渡します。属性と
-同期するキー（18 個）: `app-id`・`app-src`・`map-id`・`transparency`・`no-rotate`・
+同期するキー（19 個）: `app-id`・`app-src`・`map-id`・`transparency`・`no-rotate`・
 `north-up`・`home-margin-pixels`・`always-gps-on`・`fake`・`enable-cache`・
 `restore-session`・`overlay`・`debug`・`icon`・`selected-icon`・`no-center-marker`・
-`center-marker-src` と、Pro 専用の `display-mode`。プロパティのみのキー（12 個）:
+`center-marker-src`・`hide-outside-pois`（[地図の範囲外の POI](#地図の範囲外の-poi)）と、
+Pro 専用の `display-mode`。プロパティのみのキー（12 個）:
 `setting`・`restore`・`restoreExtensionKeys`・`googleApiKey`・`mapboxToken`・
 `maplibregl`・`mapboxgl`・`uiHooks`・`appOption`・`poiTemplate`・`poiStyle`・
 `iconTemplate`。意味・既定値・起動時の規則は
@@ -216,7 +217,7 @@ import '@maplat/ui/element';      // 層 B: <maplat-ui> を登録する（副作
 | コンパス（`compass`） | 常時 | `compass-action` に従い `resetDirection()` か `resetRotation()`。針は実世界の方位を指す。押しても変わらない状態では薄く出す |
 | GPS（`gps`） | 常時 | `handleGPS()`（切り替え。`always-gps-on` なら常に開始）。GPS が切れている間は薄く出す |
 | 透過度のスライダー（`slider`） | `ready` の後、子の `overlay` が `false` のとき以外。背景の地図の表示中は使えない | `setTransparency()`（スライダーの値 100 が不透明） |
-| 地図情報（`info`）＋画面（`map-info-modal`） | ボタンは `ready` の後 | メタデータ（`map-meta`）・ライセンスと、3 つがそろったときのタイルキャッシュの欄（`map-cache`）: 子が `supports("tile-cache")`・子の `enable-cache` が真・今の地図で `getMapCacheEnable()` が真 |
+| 地図情報（`info`）＋画面（`map-info-modal`） | ボタンは `ready` の後 | メタデータ（`map-meta`）・ライセンス・IIIF の書誌の表（`map-meta-iiif`。[IIIF の書誌](#iiif-の書誌)）と、3 つがそろったときのタイルキャッシュの欄（`map-cache`）: 子が `supports("tile-cache")`・子の `enable-cache` が真・今の地図で `getMapCacheEnable()` が真（IIIF Image API のサービスから画像を配信する地図では偽なので、欄は出ない） |
 | 枠線（`border`） | `ready` の後、`enable-border` かつ `supports("envelopes")` | `setShowBorder()`。`setEnvelopes()` で各地図の範囲を描く（`listMaps()` の順に 25 色） |
 | マーカー非表示（`hide-marker`） | `ready` の後、`enable-hide-marker` | `setHideMarker()` |
 | マーカー一覧（`marker-list`）＋画面（`marker-list-modal`） | `enable-marker-list` かつ地図に POI がある | POI のレイヤー（`marker-list-layer`）と POI（`marker-list-poi`）を並べる。レイヤーの切り替えは `showPoiLayer`・`hidePoiLayer`、POI の行は吹き出しを開く |
@@ -255,6 +256,56 @@ POI のテンプレート（`poiTemplate`。Nunjucks の記法）でも同じス
 ```
 
 テンプレートはマーカーを描くときに評価されるので、スライダーは POI をマーカーから開いたとき（`clickMarker`）に出ます。
+
+### 地図の範囲外の POI
+
+古地図の範囲の外にある POI は、子が背景の地図の上に、範囲内の POI と同じアイコンで描きます
+（`maplat-app.ja.md` の
+[範囲外の POI](https://github.com/code4history/MaplatCore/blob/master/docs/api/maplat-app.ja.md#範囲外の-poi)）。
+`<maplat-ui>` はこのための処理を持ちません。
+
+- **範囲外のピンを押すと POI の吹き出し（`poi-modal`）が開きます**。子が同じ
+  `clickMarker`・`clickMarkers` のイベントで知らせるので、範囲内の POI と同じ画面です。
+- `state-url` のとき、開いた POI は URL に `om:<id>` として書かれ、その URL を開くと同じ
+  吹き出しがもう一度開きます（範囲外の POI でも同じ）。
+- 古地図の紙に覆われた点では、透過度にかかわらず背景のピンは押せません。
+
+既定は「描く」です。`hide-outside-pois` で描かないようにできます。起動後にも変えられ、変えると
+マーカーを描き直します。渡し方は 4 つあり、どれも子の同じ値に入ります:
+
+| 渡し方 | 書き方 |
+|---|---|
+| 属性 | `<maplat-ui hide-outside-pois>`（ほかの層 A のキーと同じく子へ渡す） |
+| プロパティ | `ui.hideOutsidePois = true` |
+| `appOption` プロパティ | 要素が起動する前に `ui.appOption = { hideOutsidePois: true }`（起動時だけ効く） |
+| `MaplatUi` クラス | `MaplatUi.createObject({ appid: "…", hideOutsidePois: true })`（起動時だけ効く。option は `appOption` の一部として子へ渡る。起動後に変えるときは要素の `hideOutsidePois` を使う） |
+
+### IIIF の書誌
+
+地図データの `iiif` 節に書誌の写し（MaplatEditor が IIIF Presentation の Manifest から写したもの）
+がある地図では、地図情報の画面の最後に、その書誌を表として出せます。表を出すのは、設定ファイルの
+`sources[]` のその地図の項目で指定したときだけです:
+
+```json
+{ "mapID": "my_iiif_map", "iiifMetadata": "all" }
+```
+
+`iiifMetadata` を書かない・`"hidden"` と書く・それ以外の値を書く、のどれでも表は出ません（既定は
+`"hidden"`。子が決め、`getMapMeta(mapID).iiif.display` で返します）。通常のメタデータへ写した鍵
+（`title`・`attr` など）は、どちらでもいつもの行に出ます。
+
+表（`map-meta-iiif`）の中身:
+
+- Manifest から写した項目（`iiif-manifest`）と canvas から写した項目（`iiif-canvas`）。それぞれ
+  別の見出しの下に、写した順で並べます。項目が無い群は出しません
+- 写した日時が分かるときは、`copiedAt` を書かれたまま（`iiif-copied-at`）
+- Manifest の URL が `http(s)` の絶対 URL のときは、Manifest へのリンク（`iiif-manifest-link`。
+  新しいタブで開く）
+
+項目名は文字として入れます。値は `@maplat/core/common` の IIIF 向けのサニタイズ
+（`sanitizeIiifHtml`）を通してから HTML として入れます。`<br>` やリンクなどの簡単な書式は残り、
+画像・スクリプト・イベントの属性は除かれます。Viewer は Manifest を取りに行きません。表に出るのは
+地図データに写した値だけです。
 
 ## 状態（読み取り専用プロパティ）
 
@@ -436,6 +487,7 @@ UI の文言は 11 言語あります: `de`・`en`・`es`・`fr`・`id`・`ja`�
 | `appOption.div` | 要素そのもの |
 | `ui.core`（`MaplatApp`） | `ui.app`（`<maplat-app>` 要素。公開面だけ） |
 | `appOption` の UI のキー（`enableShare`・`tapUIVanish`・`stateUrl`・`pwaManifest` など） | [層 B の表](#層-b-のキー属性と同期) の属性（`tapUIVanish` → `tap-ui-vanish`） |
+| `appOption.hideOutsidePois`（起動時だけ） | `hide-outside-pois` 属性か `hideOutsidePois` プロパティ（起動後にも変えられる） |
 | `ui.translate(fragment)` | `ui.translateText(fragment)`（クラスは `translate` のまま） |
 | `ui.t`・`setShowBorder`・`setHideMarker`・`getShareUrl`・`showToast` | 同じ名前 |
 | `ui.handleMarkerActionById(id)` | `ui.openMarker(id)` |

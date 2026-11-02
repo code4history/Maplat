@@ -1,4 +1,4 @@
-import { M as p } from "./index-D3jvLLCH.js";
+import { M as p } from "./index-BSxmUzcf.js";
 export {
   p as MaplatUi
 };

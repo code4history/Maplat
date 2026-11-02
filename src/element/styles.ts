@@ -532,6 +532,12 @@ export const MAPLAT_UI_CSS = `
 .map-info-modal .license-text { display: block; }
 .map-info-modal .license_note { margin-top: .3em; font-size: .85em; color: #555; }
 .map-info-modal .map-cache { margin-top: 15px; padding-top: 10px; border-top: 1px solid #e5e5e5; }
+/* IIIF の書誌の表（項目名は折り返さず、長い値を折り返す） */
+[part="map-meta-iiif"] table { width: 100%; border-collapse: collapse; font-size: .85em; }
+[part="map-meta-iiif"] th, [part="map-meta-iiif"] td { text-align: left; vertical-align: top; padding: .15em .4em .15em 0; }
+[part="map-meta-iiif"] th { white-space: nowrap; font-weight: normal; color: #555; }
+[part="map-meta-iiif"] td { overflow-wrap: anywhere; }
+[part="map-meta-iiif"] h4 { margin: .6em 0 .2em; font-size: .9em; }
 .map-info-modal .cache-heading { margin: 0 0 .4em; font-size: .95em; font-weight: bold; color: #555; }
 .map-info-modal .cache-size { margin: 0 0 .6em; overflow-wrap: anywhere; }
 .map-info-modal .cache-buttons { margin: 0; text-align: right; }

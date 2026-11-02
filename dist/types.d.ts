@@ -17,6 +17,11 @@ export interface MaplatAppOption {
     stateUrl?: boolean;
     enableShare?: boolean;
     enablePoiHtmlNoScroll?: boolean;
+    /**
+     * true にすると、古地図の範囲外にある POI を描かない（既定は false＝背景の地図の上に描く）。
+     * 起動時だけ効く（起動後に変えるときは要素のプロパティ `hideOutsidePois` を使う）。
+     */
+    hideOutsidePois?: boolean;
     disableNoimage?: boolean;
     alwaysGpsOn?: boolean;
     mobileIF?: boolean;

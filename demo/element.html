@@ -40,6 +40,11 @@
     if (new URLSearchParams(location.search).has("pwa")) ui.setAttribute("pwa-manifest", "");
     // ?always-gps を付けて開いたら always-gps-on にする（範囲外の知らせをボタンの経路で確かめる）
     if (new URLSearchParams(location.search).has("always-gps")) ui.setAttribute("always-gps-on", "");
+    // ?app=<appID> で開く設定ファイル（apps/<appID>.json）を替える（既定は sample。app-id は起動時のみのキー）
+    const appParam = new URLSearchParams(location.search).get("app");
+    if (appParam && /^[\w-]+$/.test(appParam)) ui.setAttribute("app-id", appParam);
+    // ?cache=1 でタイルのキャッシュの節を有効にする（enable-cache も起動時のみのキー）
+    if (new URLSearchParams(location.search).get("cache") === "1") ui.setAttribute("enable-cache", "");
     customElements.whenDefined("maplat-ui").then(() => ui.ready).then(
       () => {
         const app = ui.app;

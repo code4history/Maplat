@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <!-- 互換層は apps/<appid>.json を相対の fetch で読むので、基点を公開ルート（public/ が載る / ）にそろえる -->
+  <base href="/" />
+  <title></title>
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+  <link rel="icon" type="image/png" href="/parts/favicon.png" />
+  <style>
+    .mainview {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+  </style>
+</head>
+
+<!--
+  旧 API（`MaplatUi`）の option `hideOutsidePois` の e2e 用の fixture。
+  `e2e/element/maplat-ui-outside-pois.pw.ts` が開く。設定ファイルは public/apps/outside-pois-sample.json。
+
+  クエリ:
+    hideOutsidePois=0  option を渡さない（既定＝範囲外の POI を描く）。無ければ true を渡す
+-->
+<body>
+  <div class="mainview">
+    <div id="map_div"></div>
+  </div>
+  <div id="status">Initializing</div>
+  <script type="module">
+    import { MaplatUi } from '/src/index.ts';
+
+    const params = new URLSearchParams(location.search);
+    const option = {
+      appid: 'outside-pois-sample',
+      pwaManifest: false,
+      restoreSession: false,
+      enableCache: false
+    };
+    if (params.get('hideOutsidePois') !== '0') option.hideOutsidePois = true;
+
+    MaplatUi.createObject(option)
+      .then(ui => {
+        window.__maplatUi = ui;
+        document.getElementById('status').textContent = 'READY';
+      })
+      .catch(err => {
+        console.error('MaplatUi init error:', err);
+        document.getElementById('status').textContent = 'ERROR: ' + err.message;
+      });
+  </script>
+</body>
+
+</html>
