@@ -162,10 +162,11 @@ the compass calls).
 ### Layer-A keys passed to the child
 
 All keys of `<maplat-app>` can be written on `<maplat-ui>`; the element passes
-them to the child. The attribute-backed ones (18): `app-id`, `app-src`,
+them to the child. The attribute-backed ones (19): `app-id`, `app-src`,
 `map-id`, `transparency`, `no-rotate`, `north-up`, `home-margin-pixels`,
 `always-gps-on`, `fake`, `enable-cache`, `restore-session`, `overlay`,
-`debug`, `icon`, `selected-icon`, `no-center-marker`, `center-marker-src` and
+`debug`, `icon`, `selected-icon`, `no-center-marker`, `center-marker-src`,
+`hide-outside-pois` (see [POIs outside the map](#pois-outside-the-map)) and
 the Pro-only `display-mode`. The property-only ones (12): `setting`,
 `restore`, `restoreExtensionKeys`, `googleApiKey`, `mapboxToken`,
 `maplibregl`, `mapboxgl`, `uiHooks`, `appOption`, `poiTemplate`, `poiStyle`,
@@ -245,7 +246,7 @@ parentheses); the main parts are in the
 | Compass (`compass`) | always | `resetDirection()` or `resetRotation()` per `compass-action`; the needle shows the real-world direction; dimmed when pressing would change nothing |
 | GPS (`gps`) | always | `handleGPS()` (toggle; with `always-gps-on` always on). Dimmed while GPS is off |
 | Transparency slider (`slider`) | after `ready`, unless the child's `overlay` is `false`; enabled only while a non-basemap is shown | `setTransparency()` (slider value 100 = opaque) |
-| Map info (`info`) + dialog (`map-info-modal`) | button after `ready` | Metadata (`map-meta`), licence, and the tile-cache section (`map-cache`) when all three hold: the child `supports("tile-cache")`, the child's `enable-cache` is true, and `getMapCacheEnable()` is true for the current map |
+| Map info (`info`) + dialog (`map-info-modal`) | button after `ready` | Metadata (`map-meta`), licence, the IIIF bibliography table (`map-meta-iiif`, see [IIIF bibliography](#iiif-bibliography)), and the tile-cache section (`map-cache`) when all three hold: the child `supports("tile-cache")`, the child's `enable-cache` is true, and `getMapCacheEnable()` is true for the current map (it is false for a map whose image is delivered by an IIIF Image API service, so the section stays hidden there) |
 | Border (`border`) | after `ready`, with `enable-border` and `supports("envelopes")` | `setShowBorder()`; draws the extent of the maps with `setEnvelopes()` (25 colours in `listMaps()` order) |
 | Hide marker (`hide-marker`) | after `ready`, with `enable-hide-marker` | `setHideMarker()` |
 | Marker list (`marker-list`) + dialog (`marker-list-modal`) | `enable-marker-list` and the map has POIs | Lists the POI layers (`marker-list-layer`) and POIs (`marker-list-poi`); a layer switch toggles `showPoiLayer` / `hidePoiLayer`, a POI row opens the balloon |
@@ -290,6 +291,63 @@ in the `@maplat/core` documentation (`docs/api/maplat-app.md`, POI templates).
 
 The template is evaluated when the marker is drawn, so the slider appears when
 the POI is opened from its marker (`clickMarker`).
+
+### POIs outside the map
+
+The child draws a POI that lies outside the historical map on the background
+map, with the same icons as an inside POI (see
+[POIs outside the map](https://github.com/code4history/MaplatCore/blob/master/docs/api/maplat-app.md#pois-outside-the-map)
+in `maplat-app.md`). `<maplat-ui>` adds no code of its own for it:
+
+- **Pressing an outside pin opens the POI balloon** (`poi-modal`), the same
+  screen as an inside POI, because the child reports the press with the same
+  `clickMarker` / `clickMarkers` events.
+- With `state-url`, the opened POI is written to the URL as `om:<id>` and
+  opening that URL opens the same balloon again, also for an outside POI.
+- A point that the paper covers never presses a background pin, whatever the
+  transparency is.
+
+Drawing is on by default. `hide-outside-pois` turns it off; it can be changed
+after startup and redraws the markers. There are four ways to give it, and all
+of them set the same field of the child:
+
+| Way | How |
+|---|---|
+| Attribute | `<maplat-ui hide-outside-pois>` (passed to the child like the other layer-A keys) |
+| Property | `ui.hideOutsidePois = true` |
+| `appOption` property | `ui.appOption = { hideOutsidePois: true }` before the element starts (startup only) |
+| `MaplatUi` class | `MaplatUi.createObject({ appid: "…", hideOutsidePois: true })` (startup only; the option is passed to the child as part of `appOption`. To change it later, set `hideOutsidePois` on the element) |
+
+### IIIF bibliography
+
+A map whose map data holds an `iiif` section with copied metadata (written by
+MaplatEditor from an IIIF Presentation manifest) can show that metadata as a
+table at the end of the map information dialog. The table is shown only when
+the setting file asks for it on the map's entry in `sources[]`:
+
+```json
+{ "mapID": "my_iiif_map", "iiifMetadata": "all" }
+```
+
+Without `iiifMetadata`, with `"hidden"`, or with any other value, the table is
+not shown (the default is `"hidden"`; the child decides it and reports it as
+`getMapMeta(mapID).iiif.display`). The keys copied into the regular metadata
+(`title`, `attr`, …) are shown in their usual rows either way.
+
+The table (`map-meta-iiif`) holds:
+
+- the entries copied from the manifest (`iiif-manifest`) and from the canvas
+  (`iiif-canvas`), each under its own heading and in the copied order; a group
+  with no entries is left out;
+- when the copy time is known, `copiedAt` as written (`iiif-copied-at`);
+- a link to the manifest (`iiif-manifest-link`, opened in a new tab) when its
+  URL is an absolute `http(s)` URL.
+
+Labels are inserted as text. Values are inserted as HTML after the IIIF
+sanitizer of `@maplat/core/common` (`sanitizeIiifHtml`), which keeps simple
+formatting such as `<br>` and links and removes images, scripts and event
+handlers. The viewer never fetches the manifest: the table shows only the
+values copied into the map data.
 
 ## State (read-only properties)
 
@@ -496,6 +554,7 @@ keeps the element API only.
 | `appOption.div` | the element itself |
 | `ui.core` (`MaplatApp`) | `ui.app` (the `<maplat-app>` element; its public surface only) |
 | UI keys of `appOption` (`enableShare`, `tapUIVanish`, `stateUrl`, `pwaManifest`, …) | the attributes of the [layer-B table](#layer-b-keys-attribute-backed) (`tapUIVanish` → `tap-ui-vanish`) |
+| `appOption.hideOutsidePois` (startup only) | the `hide-outside-pois` attribute or the `hideOutsidePois` property (can be changed after startup) |
 | `ui.translate(fragment)` | `ui.translateText(fragment)` (the class keeps `translate`) |
 | `ui.t`, `setShowBorder`, `setHideMarker`, `getShareUrl`, `showToast` | same names |
 | `ui.handleMarkerActionById(id)` | `ui.openMarker(id)` |

@@ -33,6 +33,9 @@
 
 ### Added
 - POI の吹き出しの本文（html・url）の組み立てを `src/element/poi-html.ts` に集約した。`<maplat-ui>` と、実ブラウザで隔離を確かめる probe（`e2e/fixtures/poi-html-probe.ts`）が同じ関数を読む
+- 地図の範囲外の POI: 古地図の範囲の外にある POI を背景の地図の上に描く（`@maplat/core` の機能。既定は描く）。範囲外のピンを押すと範囲内と同じ吹き出しが開き、`state-url` の `om:<id>` で開き直せる。`<maplat-ui hide-outside-pois>`（プロパティ `hideOutsidePois`・起動後も変えられる）で描かないようにできる。旧 API の option の型に `hideOutsidePois` を足した（起動時だけ効く）
+- IIIF の書誌の表: 地図データに IIIF の書誌の写し（`iiif` 節）がある地図で、設定ファイルの `sources[]` の項目に `"iiifMetadata": "all"` と書いたときだけ、地図情報の最後に Manifest と canvas の書誌の表・写した日時・Manifest へのリンクを出す（既定は出さない）。値は `@maplat/core/common` の `sanitizeIiifHtml` を通す。Viewer は Manifest を取りに行かない。新しい `part` は `map-meta-iiif`・`iiif-manifest`・`iiif-canvas`・`iiif-copied-at`・`iiif-manifest-link`
+- `<maplat-ui>` の確認ページ（`demo/element.html`）に `?app=<appID>`（開く設定ファイル）と `?cache=1`（`enable-cache`）を足した。見本の設定ファイル `apps/outside-pois-sample.json`・`apps/iiif-bibliography-sample.json` を足した
 
 ### Deprecated
 - 旧 UI API（`MaplatUi` クラス。`new MaplatUi(option)`・`MaplatUi.createObject(option)`）を非推奨にした。**削除は次のメジャー（2.0）で行う。** 代わりに `<maplat-ui>`（`@maplat/ui/element`）を使う。1.x の間は外形（`createObject`・`waitReady`・公開メソッド・公開フィールド・`uiHooks`・`ui.core`）を変えずに残す（[移行ガイド](docs/api/migration-ui-shadow-dom.md)）。型定義（配布物の `dist/legacy/maplat_ui_compat.d.ts`）のクラスと `createObject` には `@deprecated` と代替 API を記した。`new MaplatUi(option)`（`MaplatUi.createObject(option)` も中で `new` する）すると、**同一プロセスで 1 回だけ**（インスタンスごとではなく）英語の警告を `console.warn` で出す。`<maplat-ui>` 要素の経路は内部で `MaplatUi` を作らないため、要素だけを使うページでは警告は出ない

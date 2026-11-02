@@ -42,6 +42,7 @@
 | POI の `html` / `url` の本文 | `::part(poi-html)` / `::part(poi-iframe)` | `html` の本文は `poi-html`、`url` の本文は iframe の `poi-iframe` |
 | `.custom-toast` | `::part(toast)` | |
 | 地図情報のメタデータ | `::part(map-meta)` | 行は `part="map-meta-<キー>"` |
+| IIIF の書誌の表（新規） | `::part(map-meta-iiif)` | 地図情報の最後の行。中の表は `::part(iiif-manifest)`・`::part(iiif-canvas)`、写した日時は `::part(iiif-copied-at)`、Manifest へのリンクは `::part(iiif-manifest-link)` |
 | キャッシュの欄 | `::part(map-cache)`・`::part(cache-heading)`・`::part(cache-size)`・`::part(cache-fetch)`・`::part(cache-delete)` | |
 
 ## CSS 変数
@@ -98,6 +99,9 @@ maplat-ui::part(map-slide-selected) {
 - `ui.addEventListener(type, fn)` に、層 A のイベント（`mapChanged`・`clickMarker`・`clickMap`・
   `lifecycle:*` など）が `{ type, detail }` の形で届くようになりました（旧 `MaplatUi` は配っていませんでした。
   `ui.core.addEventListener` も従来どおり使えます）。
+- option の `hideOutsidePois: true` で、古地図の範囲外の POI を描かないようにできます（option は
+  `appOption` として子へ渡るので、効くのは起動時だけです）。起動後に変えるときは `<maplat-ui>` の
+  `hideOutsidePois` プロパティ（`hide-outside-pois` 属性）を使ってください。
 - `ui.showContextMenu([{icon, text, callback}])` の `text` は、サニタイズを通した HTML として入ります
   （スクリプト・イベント属性は落ちます）。`ui.lastClickPixel` が無いときは、旧のように開かないのではなく
   最後に地図を押した位置（それも無ければ地図の中央）に出ます。
