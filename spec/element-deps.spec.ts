@@ -1,10 +1,11 @@
 // <maplat-ui> の依存の規則（層 A の公開面だけを使う）の機械検査。
 //   <maplat-ui> の入口（src/element/index.ts）から相対 import を再帰でたどり、
-//   1. 外部のパッケージは @maplat/core/common と @c4h/chuci（POI のメディアの表示部品）と qrcode（共有の
-//      QR の符号化）だけ（@maplat/core の本体・@maplat/core/element・ほかの層 A の実装のパッケージ・OpenLayers・
-//      Weiwudi 等の @c4h のほかのパッケージを含まない。パッケージの中の深いパスも許さない）。@c4h/chuci と
+//   1. 外部のパッケージは @maplat/core/common と @c4h/quyuan（POI のメディアの表示部品。Chuci を同梱し、
+//      Chuci は Quyuan の内側に隠す ∴ @c4h/chuci を直接 import すると赤）と qrcode（共有の QR の符号化）だけ
+//      （@maplat/core の本体・@maplat/core/element・ほかの層 A の実装のパッケージ・OpenLayers・
+//      Weiwudi 等の @c4h のほかのパッケージを含まない。パッケージの中の深いパスも許さない）。@c4h/quyuan と
 //      qrcode は動的 import だけで読み（要素の読み込みで読まない）、それ自身も地図・層 A に依らない
-//      （package.json の依存で確かめる）
+//      （package.json の依存で確かめる。Quyuan の optional peer の @c4h/chuci は許す）
 //   2. 旧 UI のうち @maplat/core・OpenLayers に触れるファイル（index.ts・ui_init.ts・maplat_control.ts 等）を含まない
 //   3. ソースに層 A の内部（mapObject・cacheHash・from 等）への参照が無い
 // 方式は MaplatCore の spec/common-entry.spec.ts と同じ（型だけの import・動的 import も数える）。
@@ -16,19 +17,19 @@ const ROOT = resolve(__dirname, "..");
 const ENTRY = "src/element/index.ts";
 const ALLOWED_EXTERNAL = new Set([
   "@maplat/core/common",
-  "@c4h/chuci",
+  "@c4h/quyuan",
   "qrcode"
 ]);
 /** 動的 import でしか読まないもの（静的な import・副作用 import を禁じる）。 */
-const DYNAMIC_ONLY = new Set(["@c4h/chuci", "qrcode"]);
-/** 許した外部のパッケージが依ってはならないもの（地図・層 A・地図ライブラリ）。 */
+const DYNAMIC_ONLY = new Set(["@c4h/quyuan", "qrcode"]);
+/** 許した外部のパッケージが依ってはならないもの（地図・層 A・地図ライブラリ）。Quyuan の optional peer の Chuci は許す。 */
 const FORBIDDEN_TRANSITIVE =
-  /^(@maplat\/|ol$|ol-|maplibre-gl$|mapbox-gl$|@c4h\/(?!chuci$)|@turf\/)/;
+  /^(@maplat\/|ol$|ol-|maplibre-gl$|mapbox-gl$|@c4h\/(?!(?:chuci|quyuan)$)|@turf\/)/;
 /** 層 A の内部（旧クラスのフィールド・試作の逃げ道）への参照。 */
 const INTERNAL =
   /\.(mapObject|cacheHash|mapDivDocument|stateBuffer|waitReady)\b|(?<!Array)\.from\b|\bapp\.app\b|\.core\b/;
 const FORBIDDEN =
-  /^(@maplat\/core(\/(element|dist\/.*))?$|ol(\/|$)|maplibre-gl|mapbox-gl|@c4h\/(?!chuci$)|@turf\/|i18next|bootstrap)/;
+  /^(@maplat\/core(\/(element|dist\/.*))?$|ol(\/|$)|maplibre-gl|mapbox-gl|@c4h\/(?!quyuan$)|@turf\/|i18next|bootstrap)/;
 
 /** コメントを除いたソース（コメント内の import の例は数えない）。 */
 function stripComments(src: string): string {
@@ -89,7 +90,7 @@ function walk(entry: string) {
 describe("<maplat-ui> は <maplat-app> の公開面と @maplat/core/common だけに依る", () => {
   const { files, external, staticExternal } = walk(ENTRY);
 
-  it("外部の import は @maplat/core/common と @c4h/chuci と qrcode だけ", () => {
+  it("外部の import は @maplat/core/common と @c4h/quyuan と qrcode だけ", () => {
     const bad = [...external.keys()].filter(
       s => !ALLOWED_EXTERNAL.has(s) || FORBIDDEN.test(s)
     );
@@ -98,13 +99,13 @@ describe("<maplat-ui> は <maplat-app> の公開面と @maplat/core/common だ�
       `forbidden imports: ${bad.map(b => `${b} ← ${[...external.get(b)!]}`).join(", ")}`
     ).toEqual([]);
     expect([...external.keys()].sort()).toEqual([
-      "@c4h/chuci",
+      "@c4h/quyuan",
       "@maplat/core/common",
       "qrcode"
     ]);
   });
 
-  it("@c4h/chuci と qrcode は動的 import だけで読む（要素の読み込みで表示部品・QR の符号化を読まない）", () => {
+  it("@c4h/quyuan と qrcode は動的 import だけで読む（要素の読み込みで表示部品・QR の符号化を読まない）", () => {
     for (const spec of DYNAMIC_ONLY) {
       expect(staticExternal.has(spec), `${spec} is imported statically`).toBe(
         false
@@ -112,7 +113,7 @@ describe("<maplat-ui> は <maplat-app> の公開面と @maplat/core/common だ�
     }
   });
 
-  it("許した外部のパッケージ（@c4h/chuci・qrcode）は地図・層 A・地図ライブラリに依らない", () => {
+  it("許した外部のパッケージ（@c4h/quyuan・qrcode）は地図・層 A・地図ライブラリに依らない", () => {
     for (const name of [...ALLOWED_EXTERNAL].filter(
       n => !n.startsWith("@maplat/core/")
     )) {
@@ -220,7 +221,11 @@ describe("<maplat-ui> は <maplat-app> の公開面と @maplat/core/common だ�
     expect(FORBIDDEN.test("ol")).toBe(true);
     expect(FORBIDDEN.test("ol/control")).toBe(true);
     expect(FORBIDDEN.test("@maplat/core/common")).toBe(false);
-    expect(FORBIDDEN.test("@c4h/chuci")).toBe(false);
+    // UI が読むのは Quyuan だけ（Chuci は Quyuan の内側）。Chuci を直接 import すると赤
+    expect(FORBIDDEN.test("@c4h/chuci")).toBe(true);
+    expect(FORBIDDEN.test("@c4h/quyuan")).toBe(false);
+    expect(FORBIDDEN.test("@c4h/quyuan/template")).toBe(true);
+    expect(FORBIDDEN_TRANSITIVE.test("@c4h/chuci")).toBe(false);
     expect(FORBIDDEN.test("qrcode")).toBe(false);
     // 許すのはパッケージの入口だけ（qrcode の server 側の深いパス等は許さない）
     expect(ALLOWED_EXTERNAL.has("qrcode/lib/server.js")).toBe(false);

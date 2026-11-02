@@ -12,6 +12,7 @@
 //     iframe にインラインの `onload` は付けない（message の受け口を置かない）。
 import { sanitizeHtml } from "@maplat/core/common";
 import { safeWebUrl } from "../poi_safe";
+import { POI_HTML_SHADOW_CSS } from "./styles";
 
 /**
  * POI の html を Shadow DOM の中へ描いた入れ物を返す。
@@ -24,7 +25,7 @@ export function buildPoiHtml(html: string, noScroll: boolean): HTMLElement {
   host.setAttribute("part", "poi-html");
   const shadow = host.attachShadow({ mode: "open" });
   const style = document.createElement("style");
-  style.textContent = "img { width: 100%; }";
+  style.textContent = POI_HTML_SHADOW_CSS;
   shadow.appendChild(style);
   const body = document.createElement("div");
   body.innerHTML = sanitizeHtml(html);

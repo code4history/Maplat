@@ -38,6 +38,25 @@
 
   <div class="c4h-note">地図セットと言語を選ぶと URL クエリ付きで再読み込みします。</div>
 
+  <!-- POI のテンプレートの対比（sample の地図セット）。警告の欄は Core のテンプレートの警告だけを写す（demo/dev.ts） -->
+  <div id="template-warning" class="c4h-note" data-testid="template-warning" hidden>
+    テンプレートの警告: <span id="template-warning-text"></span>
+  </div>
+  <details id="template-demo" class="c4h-note">
+    <summary>POI のメディアとテンプレートの対比</summary>
+    <p>ボタンで地図をその POI の位置へ寄せ、地図の中央のマーカーを押すと吹き出しが開きます
+      （テンプレートはマーカーを描くときに評価されます）。</p>
+    <div>
+      <button type="button" data-goto-poi="139.539,36.251">(a) スライダー: media で指定</button>
+      <button type="button" data-goto-poi="139.5385,36.2505">(b) スライダー: テンプレートで指定（新しい記法）</button>
+      <button type="button" data-goto-poi="139.538,36.25">(c) テンプレート: 旧い記法</button>
+    </div>
+    <p>(b) の poiTemplate（Nunjucks）:</p>
+    <pre id="template-source-nunjucks" style="white-space: pre-wrap;"></pre>
+    <p>(c) の poiTemplate（lodash の旧い記法。評価されない）:</p>
+    <pre id="template-source-legacy" style="white-space: pre-wrap;"></pre>
+  </details>
+
   <div class="c4h-panels">
     <div class="c4h-panel" style="width: 100%; height: calc(100vh - 210px); min-height: 320px;">
       <div id="map_div" style="position: relative; width: 100%; height: 100%;"></div>

@@ -5,7 +5,7 @@
 //  2. 層 A のイベントの再送出: `ui.addEventListener("clickMarker", fn)` に
 //     `{ type, detail }` が届く。`uiReady` は出さない。`remove()` の後は出さない
 //  3. 旧 `pwaWorker: false / null` は Service Worker を登録しない（`disablePwaWorker`。e2e nov26-m5-t3）
-//  4. 旧 UI と同じく、起動時に Chuci（cc-swiper）を先に読む（`preloadMediaViewer`。e2e oct26-m9-t1-chuci-arrow）
+//  4. 旧 UI と同じく、起動時にメディアの表示部品を先に読む（Quyuan。同梱の Chuci の cc-swiper も登録される。`preloadMediaViewer`。e2e oct26-m9-t1-chuci-arrow）
 //  5. 汎用メニュー（旧 showContextMenu）は地図の切り替え（mapChanged）では閉じない（e2e legacy-api で確認する）
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
@@ -198,7 +198,7 @@ describe("旧 pwaWorker: false / null（Service Worker を登録しない）", (
   });
 });
 
-describe("Chuci の先読み（旧 UI は起動時に cc-swiper を登録していた）", () => {
+describe("Quyuan の先読み（旧 UI は起動時に cc-swiper を登録していた。Quyuan が同梱の Chuci を登録する）", () => {
   it("互換層は起動時に preloadMediaViewer を 1 回呼ぶ", async () => {
     const spy = vi
       .spyOn(MaplatUiElement.prototype, "preloadMediaViewer")

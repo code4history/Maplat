@@ -395,12 +395,12 @@ const MEDIA_POI_B = "m1-t3-swiper-b";
 const OVERLAP = { longitude: 139.5352, latitude: 36.2468 };
 const MEDIA_HOSTS = /code4history\.dev|w3schools\.com/;
 
-/** POI のスワイパーのスライドの種類（cc-swiper-slide の image-type）。 */
+/** POI のスライダーのスライドの種類（qy-swiper-slide の image-type）。 */
 const slideTypes = (page: Page) =>
   page.evaluate(() =>
     Array.from(
       (window as any).__maplatUi.shadowRoot.querySelectorAll(
-        '[part="poi-swiper"] > cc-swiper-slide'
+        '[part="poi-swiper"] > qy-swiper-slide'
       )
     ).map((s: any) => s.getAttribute("image-type"))
   );
@@ -532,7 +532,7 @@ test("POI まわり: マーカー一覧・重なった POI の選択メニュー
     )
     .toBeLessThan(0.0005);
 
-  // ---- メディア（Chuci の cc-swiper。<maplat-ui> の Shadow DOM の中で Chuci の Shadow DOM が動く）----
+  // ---- メディア（Quyuan の qy-swiper。<maplat-ui> の Shadow DOM の中で Quyuan〔中身は Chuci〕の Shadow DOM が動く）----
   expect(await slideTypes(page)).toEqual([
     "image",
     "image",
@@ -556,9 +556,12 @@ test("POI まわり: マーカー一覧・重なった POI の選択メニュー
   expect(box!.height).toBeGreaterThan(200);
   await page.waitForTimeout(1000);
   await shot(page, "8-poi-media", testInfo);
-  // 中央の画像を押すと Chuci のビューア（文書の body に置かれる）が吹き出しの上に開く
+  expect(await swiper.evaluate((el: Element) => el.localName)).toBe(
+    "qy-swiper"
+  );
+  // 中央の画像を押すと Quyuan のビューア（qy-viewer。文書の body に置かれる）が吹き出しの上に開く
   await swiper.locator(".swiper-slide-active img.viewer").click();
-  const viewerImage = page.locator("cc-viewer cc-viewer-image");
+  const viewerImage = page.locator("qy-viewer cc-viewer cc-viewer-image");
   await expect(viewerImage.locator(".backdrop")).toBeVisible({
     timeout: 15_000
   });
@@ -634,5 +637,172 @@ test("POI まわり: マーカー一覧・重なった POI の選択メニュー
   await shot(page, "11-poi-from-menu", testInfo);
   await ui.locator('[part="poi-close"]').click();
 
+  expect(errors, errors.join("\n")).toEqual([]);
+});
+
+// ---- POI のテンプレート（poiTemplate）が書いた qy-swiper（public/pois/poi-template-*.json）----
+// テンプレートはマーカーを描くときに評価される（クリックの detail に html が載る）ので、地図のマーカーを押して開く。
+const TEMPLATE_POI = { longitude: 139.5385, latitude: 36.2505 };
+const LEGACY_TEMPLATE_POI = { longitude: 139.538, latitude: 36.25 };
+const TEMPLATE_DESC_HEAD = "同じデータ（name・desc・photos）を";
+
+/** スライドの属性（image-url・image-type）。root の下の qy-swiper-slide（open な Shadow DOM を貫く）。 */
+const slideAttrs = (root: ReturnType<Page["locator"]>) =>
+  root
+    .locator("qy-swiper > qy-swiper-slide")
+    .evaluateAll(els =>
+      els.map(el => ({
+        url: el.getAttribute("image-url"),
+        type: el.getAttribute("image-type")
+      }))
+    );
+
+test("POI のテンプレートが書いた qy-swiper: 最初に開いても描け、media のスライダーと同じ属性になる。旧い記法は評価されない", async ({
+  page
+}, testInfo) => {
+  test.setTimeout(240_000);
+  if (!realTiles) {
+    await page.route(MEDIA_HOSTS, route =>
+      route.fulfill({ status: 200, contentType: "image/png", body: TILE_PNG })
+    );
+  }
+  const dialogs: string[] = [];
+  page.on("dialog", d => {
+    dialogs.push(d.message());
+    void d.dismiss();
+  });
+  const errors = await openPage(page);
+  const ui = page.locator("maplat-ui#ui");
+  const poiModal = ui.locator('[part="poi-modal"]');
+  // 新しいページで、メディアの POI を一度も開いていない（表示部品はまだ読まれていない）
+  expect(
+    await page.evaluate(() => !!customElements.get("qy-swiper"))
+  ).toBe(false);
+
+  // ---- 新しい記法（Nunjucks）のテンプレートの POI を最初に開く ----
+  await app(page, "setViewpoint", { ...TEMPLATE_POI, mercZoom: 18 });
+  await page.waitForTimeout(1500);
+  expect(
+    await clickMarkerAt(page, TEMPLATE_POI, poiModal),
+    "clicking the template POI should open the info window"
+  ).toBe(true);
+  await expect(ui.locator('[part="poi-title"]')).toContainText(
+    "テンプレートで指定"
+  );
+  const htmlHost = ui.locator('[part="poi-html"]');
+  await expect(htmlHost).toBeVisible();
+  // テンプレートが組んだ見出しと、入れ子の Shadow DOM の中の qy-swiper（サニタイズの後も残る）
+  await expect(htmlHost.locator("b").first()).toContainText(
+    "スライダー: テンプレートで指定"
+  );
+  const tplSwiper = htmlHost.locator("qy-swiper");
+  await expect(tplSwiper).toHaveCount(1);
+  const tplSlides = await slideAttrs(htmlHost);
+  expect(tplSlides).toHaveLength(3);
+  await expect
+    .poll(() => page.evaluate(() => !!customElements.get("qy-swiper")), {
+      timeout: 20_000
+    })
+    .toBe(true);
+  await expect
+    .poll(
+      () =>
+        tplSwiper.evaluate(
+          (el: any) =>
+            el.shadowRoot?.querySelectorAll(".swiper-slide img.viewer")
+              .length ?? 0
+        ),
+      { timeout: 20_000 }
+    )
+    .toBeGreaterThanOrEqual(3);
+  // 入れ子の Shadow DOM の中でも高さが付く（無いと 0 になる）
+  const tplBox = await tplSwiper.boundingBox();
+  expect(tplBox!.height).toBeGreaterThan(200);
+  await page.waitForTimeout(1000);
+  await shot(page, "12-poi-template-swiper", testInfo);
+  // 画像を押すとビューア（qy-viewer。文書の body）が開く
+  await tplSwiper.locator(".swiper-slide-active img.viewer").click();
+  const viewerImage = page.locator("qy-viewer cc-viewer cc-viewer-image");
+  await expect(viewerImage.locator(".backdrop")).toBeVisible({
+    timeout: 15_000
+  });
+  await shot(page, "13-poi-template-viewer", testInfo);
+  await viewerImage.locator(".nav-close").click();
+  await expect(viewerImage.locator(".backdrop")).toBeHidden({
+    timeout: 10_000
+  });
+  await ui.locator('[part="poi-close"]').click();
+  await expect(poiModal).toBeHidden();
+
+  // ---- media で指定した POI（同じ画像）と、1 枚目のスライドの属性が揃っている ----
+  await page.evaluate(
+    id => (window as any).__maplatUi.openMarker(id),
+    MEDIA_POI_A.id
+  );
+  await expect(poiModal).toBeVisible();
+  const mediaSlides = await slideAttrs(ui.locator('[part="poi-media"]'));
+  expect(mediaSlides.map(s => s.type)).toEqual([
+    "image",
+    "image",
+    "image",
+    "youtube"
+  ]);
+  expect(tplSlides[0]).toEqual(mediaSlides[0]);
+  expect(tplSlides.map(s => s.url)).toEqual(
+    mediaSlides.slice(0, 3).map(s => s.url)
+  );
+  await ui.locator('[part="poi-close"]').click();
+  await expect(poiModal).toBeHidden();
+
+  // ---- 旧い記法（lodash）のテンプレートの POI: 評価されず、題名と desc だけ ----
+  await app(page, "setViewpoint", { ...LEGACY_TEMPLATE_POI, mercZoom: 18 });
+  await page.waitForTimeout(1500);
+  expect(
+    await clickMarkerAt(page, LEGACY_TEMPLATE_POI, poiModal),
+    "clicking the legacy-template POI should open the info window"
+  ).toBe(true);
+  await expect(ui.locator('[part="poi-title"]')).toHaveText(
+    "テンプレート: 旧い記法"
+  );
+  await expect(ui.locator('[part="poi-html"]')).toHaveCount(0);
+  await expect(ui.locator('[part="poi-media"]')).toHaveCount(0);
+  const desc = ui.locator('[part="poi-body"] .poi-desc');
+  await expect(desc).toContainText(TEMPLATE_DESC_HEAD);
+  await shot(page, "14-poi-template-legacy", testInfo);
+  await ui.locator('[part="poi-close"]').click();
+  await expect(poiModal).toBeHidden();
+
+  // ---- caption に実体参照で書いたタグは、受け手（スライダーの説明）で文字のまま出る ----
+  const capId = await page.evaluate(() =>
+    (window as any).__maplatUi.app.addMarker(
+      {
+        lnglat: [139.537, 36.249],
+        name: "caption",
+        html: '<qy-swiper><qy-swiper-slide image-url="https://t.tilemap.jp/maplat/img/Tatebayashi/Stones/no256-DSC_7083.JPG" image-type="image" caption="&amp;lt;img src=x onerror=alert(1)&amp;gt;"></qy-swiper-slide></qy-swiper>'
+      },
+      "main"
+    )
+  );
+  expect(capId).toBeTruthy();
+  await page.evaluate(
+    id => (window as any).__maplatUi.openMarker(id),
+    String(capId)
+  );
+  await expect(poiModal).toBeVisible();
+  const capSwiper = ui.locator('[part="poi-html"] qy-swiper');
+  const caption = capSwiper.locator(".slider-caption");
+  await expect(caption).toContainText("img src=x onerror=alert(1)", {
+    timeout: 20_000
+  });
+  // 説明の中も、スライダーの Shadow DOM の中も、onerror を持つ要素が無い（文字として出ている）
+  expect(
+    await capSwiper.evaluate(
+      (el: any) => el.shadowRoot?.querySelectorAll("[onerror]").length ?? -1
+    )
+  ).toBe(0);
+  await expect(caption.locator("img")).toHaveCount(0);
+  await ui.locator('[part="poi-close"]').click();
+
+  expect(dialogs).toEqual([]);
   expect(errors, errors.join("\n")).toEqual([]);
 });

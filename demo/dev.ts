@@ -84,6 +84,65 @@ const reloadWithQuery = () => {
 appSelect?.addEventListener("change", reloadWithQuery);
 langSelect?.addEventListener("change", reloadWithQuery);
 
+// POI のテンプレートの対比（デモだけの処理。製品は変えない）:
+//   1. Core のテンプレートの警告（文頭が "MaplatApp: " で poiTemplate を含む文）を画面の欄に写す（元の console.warn も呼ぶ）
+//   2. 対比に使う 2 つの poiTemplate の文字列をそのまま見せる（textContent で入れる）
+//   3. ボタンで地図を (a)・(b)・(c) の POI の位置へ寄せる（吹き出しはマーカーを押して開く。テンプレートは
+//      マーカーを描くときに評価され、openMarker〔getMarker〕の datum には当たらないため）
+const warningEl = document.getElementById("template-warning");
+const warningTextEl = document.getElementById("template-warning-text");
+const originalWarn = console.warn.bind(console);
+console.warn = (...args: unknown[]) => {
+  originalWarn(...args);
+  const first = args[0];
+  if (
+    typeof first === "string" &&
+    first.startsWith("MaplatApp: ") &&
+    first.includes("poiTemplate") &&
+    warningEl &&
+    warningTextEl
+  ) {
+    warningTextEl.textContent = first;
+    warningEl.hidden = false;
+  }
+};
+const showTemplateSource = async (file: string, id: string) => {
+  const el = document.getElementById(id);
+  if (!el) return;
+  try {
+    const res = await fetch(`pois/${file}`);
+    const json = (await res.json()) as {
+      properties?: { poiTemplate?: string };
+    };
+    el.textContent = json.properties?.poiTemplate ?? "";
+  } catch {
+    el.textContent = "（読み込めませんでした）";
+  }
+};
+void showTemplateSource(
+  "poi-template-nunjucks-demo.json",
+  "template-source-nunjucks"
+);
+void showTemplateSource(
+  "poi-template-legacy-demo.json",
+  "template-source-legacy"
+);
+document
+  .querySelectorAll<HTMLButtonElement>("[data-goto-poi]")
+  .forEach(button => {
+    button.addEventListener("click", () => {
+      const [longitude, latitude] = button.dataset
+        .gotoPoi!.split(",")
+        .map(Number);
+      const ui = document.querySelector("maplat-ui") as
+        | (HTMLElement & {
+            app?: { setViewpoint(v: Record<string, number>): unknown };
+          })
+        | null;
+      void ui?.app?.setViewpoint({ longitude, latitude, zoom: 17 });
+    });
+  });
+
 MaplatUi.createObject(appOption)
   .then(app => {
     if (statusEl) {

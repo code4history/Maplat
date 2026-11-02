@@ -179,7 +179,7 @@ describe("一本化: 受け入れ条件の grep", () => {
   it("`swiper` の語が src に残るのは、旧 API の名前と旧の見た目の注記だけ（一覧を固定する）", () => {
     // 受け入れ条件は「src 全体で 0」だが、次の 3 種は消せない:
     //   (a) `src/legacy/` の旧 API の公開名（`swipers`・`baseSwiper`・`overlaySwiper`・`SwiperInstance`）
-    //   (b) Chuci の要素名 `cc-swiper`・`cc-swiper-slide`（地図のメディアの表示部品。旧 UI とは無関係）
+    //   (b) Quyuan の要素名 `qy-swiper`・`qy-swiper-slide`（地図のメディアの表示部品。旧 UI とは無関係）
     //   (c) 旧 CSS のクラス名を説明する注記（`.base-swiper`・`.swiper-slide` 等）
     //   （`poi_safe.ts` の旧の組み立て関数は旧 UI の実装の削除の仕上げで消したので、ここには入らない）
     // 増えたら気づけるよう、ファイルの一覧を固定する（新しいファイルに `swiper` を持ち込ませない）。
@@ -227,14 +227,16 @@ describe("一本化: 受け入れ条件の grep", () => {
       "i18next",
       "i18next-http-backend",
       "page",
-      "@types/page"
+      "@types/page",
+      // Chuci は Quyuan の内側に隠す（UI は @c4h/quyuan だけを読む）
+      "@c4h/chuci"
     ]) {
       expect(all, name).not.toHaveProperty(name);
     }
-    // 残すもの: 地図（層 A）・地図ライブラリ・Chuci・QR・Service Worker の土台・タイルキャッシュの受け口
+    // 残すもの: 地図（層 A）・地図ライブラリ・Quyuan（POI のメディア）・QR・Service Worker の土台・タイルキャッシュの受け口
     for (const name of [
       "@maplat/core",
-      "@c4h/chuci",
+      "@c4h/quyuan",
       "qrcode",
       "@c4h/weiwudi",
       "workbox-core",

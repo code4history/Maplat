@@ -22,9 +22,9 @@ importers:
 
   .:
     dependencies:
-      '@c4h/chuci':
-        specifier: ^1.0.2
-        version: 1.0.2
+      '@c4h/quyuan':
+        specifier: ^1.1.1
+        version: 1.1.1(@c4h/chuci@1.0.2)
       '@c4h/weiwudi':
         specifier: ^1.1.1
         version: 1.1.1(workbox-routing@7.4.1)
@@ -4262,6 +4262,7 @@ snapshots:
       swiper: 12.2.0
       three: 0.186.1
       viewerjs: 1.15.2
+    optional: true
 
   '@c4h/quyuan@1.1.1(@c4h/chuci@1.0.2)':
     dependencies:
@@ -6686,7 +6687,8 @@ snapshots:
 
   graceful-fs@4.2.11: {}
 
-  gsplat@1.2.9: {}
+  gsplat@1.2.9:
+    optional: true
 
   has-bigints@1.1.0: {}
 
@@ -7505,7 +7507,8 @@ snapshots:
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
-  swiper@12.2.0: {}
+  swiper@12.2.0:
+    optional: true
 
   temp-dir@2.0.0: {}
 
@@ -7523,7 +7526,8 @@ snapshots:
       commander: 2.20.3
       source-map-support: 0.5.21
 
-  three@0.186.1: {}
+  three@0.186.1:
+    optional: true
 
   tinybench@6.2.2: {}
 
@@ -7689,7 +7693,8 @@ snapshots:
     dependencies:
       punycode: 2.3.1
 
-  viewerjs@1.15.2: {}
+  viewerjs@1.15.2:
+    optional: true
 
   vite-plugin-dts@5.1.2(esbuild@0.28.2)(rollup@4.64.5)(supports-color@10.2.2)(typescript@6.0.3)(vite@7.3.7(@types/node@26.6.5)(sass@1.105.1)(terser@5.51.2)):
     dependencies:

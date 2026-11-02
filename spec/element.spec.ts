@@ -20,7 +20,7 @@ import {
   MAPLAT_UI_VERSION,
   defineMaplatUi
 } from "../src/element";
-import { MAPLAT_UI_CSS } from "../src/element/styles";
+import { MAPLAT_UI_CSS, POI_HTML_SHADOW_CSS } from "../src/element/styles";
 
 defineMockMaplatApp();
 
@@ -562,9 +562,9 @@ describe("POI の吹き出し（clickMarkers / clickMarker）", () => {
     expect(desc.querySelector("b")!.textContent).toBe("bold");
     expect(desc.innerHTML).not.toMatch(/onerror/);
     expect(desc.innerHTML).toMatch(/<br>line2/);
-    // 画像は Chuci のスワイパー（旧 poiWebControl と同じ組み方）。相対の名前は img/ の下
+    // 画像は Quyuan のスライダー（旧 poiWebControl と同じ組み方）。相対の名前は img/ の下
     const slide = body.querySelector(
-      '[part="poi-media"] cc-swiper[part="poi-swiper"] > cc-swiper-slide'
+      '[part="poi-media"] qy-swiper[part="poi-swiper"] > qy-swiper-slide'
     )!;
     expect(slide.getAttribute("image-url")).toBe("img/castle.jpg");
     expect(slide.getAttribute("image-type")).toBe("image");
@@ -880,10 +880,10 @@ describe("POI の吹き出し（clickMarkers / clickMarker）", () => {
   });
 });
 
-describe("POI のメディア（Chuci のスワイパー・旧 ui_marker.ts の poiWebControl）", () => {
+describe("POI のメディア（Quyuan のスライダー・旧 ui_marker.ts の poiWebControl）", () => {
   const slidesOf = (ui: Ui) =>
     Array.from(
-      part(ui, "poi-body").querySelectorAll("cc-swiper > cc-swiper-slide")
+      part(ui, "poi-body").querySelectorAll("qy-swiper > qy-swiper-slide")
     ).map(el => {
       const attrs: Record<string, string> = {};
       for (const a of Array.from(el.attributes)) attrs[a.name] = a.value;
@@ -977,22 +977,24 @@ describe("POI のメディア（Chuci のスワイパー・旧 ui_marker.ts の 
     expect(slides[1]).not.toHaveProperty("thumbnail-url");
   });
 
-  it("メディアが無ければスワイパーを作らない。メディアを出すと Chuci（cc-swiper）を読み込む", async () => {
+  it("メディアが無ければスライダーを作らない。メディアを出すと Quyuan（qy-swiper）を読み込む", async () => {
     const ui = await mountUi();
     const ctl = getMockLayerAController(ui.app!)!;
     ctl.fire("clickMarkers", [
       { namespaceID: "n", name: "N", desc: "only text" }
     ]);
-    expect(part(ui, "poi-body").querySelector("cc-swiper")).toBeNull();
+    expect(part(ui, "poi-body").querySelector("qy-swiper")).toBeNull();
     ctl.fire("clickMarkers", [{ namespaceID: "i", name: "I", image: "i.jpg" }]);
     await vi.waitFor(
-      () => expect(customElements.get("cc-swiper")).toBeTruthy(),
+      () => expect(customElements.get("qy-swiper")).toBeTruthy(),
       {
         timeout: 20_000
       }
     );
-    const swiper = part(ui, "poi-body").querySelector("cc-swiper")!;
-    expect(swiper.shadowRoot).not.toBeNull(); // 文書の中で Chuci の要素に格上げされた
+    const swiper = part(ui, "poi-body").querySelector("qy-swiper")!;
+    expect(swiper.shadowRoot).not.toBeNull(); // 文書の中で Quyuan の要素に格上げされた
+    // Quyuan は同梱の Chuci の cc-* も登録する（旧 API の利用者が cc-swiper を使えたことの互換）
+    expect(customElements.get("cc-swiper")).toBeTruthy();
   });
 });
 
@@ -1435,6 +1437,17 @@ describe("POI のメディアの色の CSS 変数（ページが指定する名�
     // 名前は要素の CSS（Shadow DOM の中）で決めている
     expect(MAPLAT_UI_CSS).toContain(rule);
     expect(MAPLAT_UI_CSS).toContain(name);
+    // POI の html（入れ子の Shadow DOM）のテンプレートが書いた qy-swiper にも同じ宣言を当てる
+    expect(POI_HTML_SHADOW_CSS).toContain(rule);
+  });
+
+  it("media のスライダーとテンプレートのスライダーは同じ宣言（高さ 300px）を持つ", () => {
+    expect(MAPLAT_UI_CSS).toMatch(
+      /\.poi-media qy-swiper \{[^}]*height: 300px;/
+    );
+    expect(POI_HTML_SHADOW_CSS).toMatch(/qy-swiper \{[^}]*height: 300px;/);
+    expect(POI_HTML_SHADOW_CSS).toContain("img { width: 100%; }");
+    expect(MAPLAT_UI_CSS).not.toContain("cc-swiper");
   });
 
   it("名前は移行のドキュメント（CSS 変数の表）と同じ", () => {

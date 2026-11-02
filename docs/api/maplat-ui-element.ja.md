@@ -49,7 +49,7 @@ import '@maplat/ui/element';      // 層 B: <maplat-ui> を登録する（副作
 
 - `@maplat/ui/element` は ES モジュールの入口（`dist/element/index.js`）で、要素の
   UMD ビルドはありません。`@maplat/core/common`（と、POI のメディアの
-  `@c4h/chuci`・共有の QR の `qrcode` を遅延 import）を import するので、
+  `@c4h/quyuan`〔`@c4h/chuci` を同梱〕・共有の QR の `qrcode` を遅延 import）を import するので、
   バンドラーか import map が必要です。層 A の実装は import **しません**: ページが
   `@maplat/core/element`（か Core-Pro の入口）を自分で import します。要素は
   OpenLayers を使いません。`ol/ol.css` と `ol`・`mapbox-gl`・`maplibre-gl` の peer
@@ -222,7 +222,7 @@ import '@maplat/ui/element';      // 層 B: <maplat-ui> を登録する（副作
 | マーカー一覧（`marker-list`）＋画面（`marker-list-modal`） | `enable-marker-list` かつ地図に POI がある | POI のレイヤー（`marker-list-layer`）と POI（`marker-list-poi`）を並べる。レイヤーの切り替えは `showPoiLayer`・`hidePoiLayer`、POI の行は吹き出しを開く |
 | 共有（`share`）＋画面（`share-modal`） | `ready` の後、`enable-share` | [共有](#共有) を参照 |
 | ヘルプ（`help`）＋画面（`help-modal`） | 常時（ボタンは最初から出るが、画面が開くのは `ready` の後） | ヘルプの本文。共有・枠線・マーカー非表示・マーカー一覧の行は、対応する `enable-*` のときに出す |
-| POI の吹き出し（`poi-modal`・`poi-title`・`poi-body`・`poi-media`） | POI が 1 件の `clickMarker`・`clickMarkers`、`openMarker()`、一覧 | 名前・メディア（Chuci のスワイパー）・住所・説明、または POI の `html`・`url`。`directgo` の POI は遷移する。地図のマーカーを選ぶ |
+| POI の吹き出し（`poi-modal`・`poi-title`・`poi-body`・`poi-media`） | POI が 1 件の `clickMarker`・`clickMarkers`、`openMarker()`、一覧 | 名前・メディア（Quyuan のスライダー〔`qy-swiper`〕）・住所・説明、または POI の `html`・`url`。`directgo` の POI は遷移する。地図のマーカーを選ぶ |
 | POI のメニュー（`poi-menu`・`poi-menu-item`） | POI が複数の `clickMarkers` | 重なった POI から 1 つ選ぶ |
 | GPS のエラーの画面（`gps-modal`） | GPS のエラー（拒否・未取得・タイムアウト） | 題名と本文 |
 | スプラッシュ（`splash`） | 起動時、地図を復元しないとき（`initialRestore.mapID` が空）だけ | `appName` と `splash` の画像。地図の準備ができたら 200 ms（画像ありは 1000 ms）で隠す |
@@ -232,6 +232,29 @@ import '@maplat/ui/element';      // 層 B: <maplat-ui> を登録する（副作
 操作ボタン・透過度のスライダー・題名・地図の切り替えスライダーは、自動非表示の対象です:
 地図のドラッグ中は常に隠れ、`tap-ui-vanish` のときは地図のタップでも隠れます。地図が
 止まってから `tap-duration` の後に戻ります。
+
+### POI のメディアとテンプレート
+
+POI のメディア（`media`・`image`）は Quyuan のスライダー（`<qy-swiper>`・`<qy-swiper-slide>`。part は
+`poi-swiper`）で出します。要素は、初めてメディアを出すとき、または POI の `html` をサニタイズした結果に
+`<qy-swiper>` があるときに `@c4h/quyuan` を読み込みます。Quyuan は同梱の Chuci の要素（`cc-swiper`・
+`cc-viewer` など）を、まだ登録されていないときだけ登録します。∴ `cc-swiper` を使っていたページでも引き続き
+使えます。ページが先に別の版の Chuci を登録していた場合、`qy-viewer` の中の `cc-viewer` はページの版になります。
+
+POI のテンプレート（`poiTemplate`。Nunjucks の記法）でも同じスライダーを書けます。POI の `html`（part は
+`poi-html`）の中に、メディアのスライダーと同じ高さと色の変数で描きます。`has-thumb` などの真偽値の属性は値なしで
+書きます。サニタイズの後に残る属性は `@maplat/core` の文書（`docs/api/maplat-app.ja.md` の POI のテンプレート）を
+参照してください。
+
+```html
+<qy-swiper has-thumb>
+  {% for p in photos %}
+  <qy-swiper-slide image-url="{{ p.src }}" image-type="image" caption="{{ p.caption }}"></qy-swiper-slide>
+  {% endfor %}
+</qy-swiper>
+```
+
+テンプレートはマーカーを描くときに評価されるので、スライダーは POI をマーカーから開いたとき（`clickMarker`）に出ます。
 
 ## 状態（読み取り専用プロパティ）
 

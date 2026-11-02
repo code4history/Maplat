@@ -151,6 +151,8 @@
  "pois": [
   "tatebayashi.json",
   "stones_poi.geojson",
-  "m1-t3-swiper-demo.json"
+  "m1-t3-swiper-demo.json",
+  "poi-template-nunjucks-demo.json",
+  "poi-template-legacy-demo.json"
  ]
 }
