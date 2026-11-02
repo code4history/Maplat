@@ -34,12 +34,14 @@ import {
   formatAttributeValue,
   parseAttributeValue,
   sanitizeHtml,
+  sanitizeIiifHtml,
   type AttrDef,
   type EnvelopeSpec,
   type LngLat,
   type Localized,
   type MapListItem,
   type MapMeta,
+  type MapMetaIiif,
   type MaplatAppElement,
   type MaplatAppEventDetailMap,
   type MaplatPoi,
@@ -123,6 +125,9 @@ export interface MaplatMenuOptions {
   /** 読み上げ名（既定は POI の候補の文言） */
   label?: string;
 }
+
+/** IIIF の書誌の写し（getMapMeta().iiif.metadata）の要素の並び。 */
+type IiifMetadataEntries = NonNullable<MapMetaIiif["metadata"]>;
 
 /** 層 A へ流す属性（層 A の属性と同期するキー・層 A 固有の機能に結びつく属性）。 */
 const LAYER_A_ATTRS: readonly AttrDef[] = [
@@ -3402,6 +3407,7 @@ export class MaplatUiElement extends BaseElement {
       dd.innerHTML = sanitizeHtml(text);
       this.#appendMetaRow(key, dd);
     }
+    this.#appendIiifMetadata(current?.iiif);
     void this.#refreshCache();
   }
 
@@ -3413,6 +3419,73 @@ export class MaplatUiElement extends BaseElement {
     dd.setAttribute("part", `map-meta-${key}`);
     dd.appendChild(content);
     this.#el.infoMeta.append(dt, dd);
+  }
+
+  /**
+   * IIIF の書誌の表（地図情報の最後の行）。地図データに写した書誌があり、アプリの設定で表を出す（display が
+   * "all"）ときだけ足す。書誌は地図データに写した値だけを使い、Manifest は取りに行かない。
+   * 項目名は文字のまま、値は Core の IIIF 向けのサニタイズを通して入れる。
+   */
+  #appendIiifMetadata(iiif: MapMetaIiif | undefined) {
+    if (!iiif || iiif.display !== "all") return;
+    // 写す元（from）で群に分ける。manifest・canvas のどちらでもない要素は出さない（地図データは信頼できない入力）
+    const groups: Record<"manifest" | "canvas", IiifMetadataEntries> = {
+      manifest: [],
+      canvas: []
+    };
+    for (const entry of Array.isArray(iiif.metadata) ? iiif.metadata : []) {
+      if (!entry) continue;
+      const { from } = entry;
+      if (from === "manifest" || from === "canvas") groups[from].push(entry);
+    }
+    if (groups.manifest.length + groups.canvas.length === 0) return;
+    const content = document.createDocumentFragment();
+    this.#appendIiifRows(content, "manifest", groups.manifest);
+    this.#appendIiifRows(content, "canvas", groups.canvas);
+    if (typeof iiif.copiedAt === "string" && iiif.copiedAt) {
+      const copiedAt = document.createElement("p");
+      copiedAt.setAttribute("part", "iiif-copied-at");
+      copiedAt.textContent = `${this.t("html.iiif_copied_at")} ${iiif.copiedAt}`;
+      content.appendChild(copiedAt);
+    }
+    // Manifest へのリンクは http(s) の絶対 URL のときだけ作る
+    const href = safeWebUrl(iiif.manifest);
+    if (href && /^https?:\/\//i.test(href)) {
+      const link = document.createElement("a");
+      link.setAttribute("part", "iiif-manifest-link");
+      link.href = href;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = this.t("html.iiif_manifest_link");
+      content.appendChild(link);
+    }
+    this.#appendMetaRow("iiif", content);
+  }
+
+  /** 書誌の表の 1 群（Manifest か canvas）。空の群は見出しごと出さない。 */
+  #appendIiifRows(
+    parent: DocumentFragment,
+    from: "manifest" | "canvas",
+    entries: IiifMetadataEntries
+  ) {
+    if (entries.length === 0) return;
+    const heading = document.createElement("h4");
+    heading.textContent = this.t(`html.iiif_${from}`);
+    const table = document.createElement("table");
+    table.setAttribute("part", `iiif-${from}`);
+    const tbody = document.createElement("tbody");
+    for (const entry of entries) {
+      const row = document.createElement("tr");
+      const th = document.createElement("th");
+      th.scope = "row";
+      th.textContent = this.translateText(entry.label) || "";
+      const td = document.createElement("td");
+      td.innerHTML = sanitizeIiifHtml(this.translateText(entry.value) || "");
+      row.append(th, td);
+      tbody.appendChild(row);
+    }
+    table.appendChild(tbody);
+    parent.append(heading, table);
   }
 
   /**

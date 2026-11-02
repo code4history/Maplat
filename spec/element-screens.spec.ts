@@ -619,6 +619,20 @@ describe("地図情報・ライセンス・タイルキャッシュ（操作ボ�
     expect(part(ui, "map-cache").hidden).toBe(true);
   });
 
+  it("キャッシュの欄の出し分けは層 A の getMapCacheEnable の戻りに従う（IIIF の画像の地図は偽を返す）", async () => {
+    const ui = await mountUi(u => u.setAttribute("enable-cache", ""));
+    const app = ui.app!;
+    await app.changeMap("osm");
+    const spy = vi.spyOn(app, "getMapCacheEnable").mockReturnValue(true);
+    open(ui);
+    await vi.waitFor(() => expect(part(ui, "map-cache").hidden).toBe(false));
+    (part(ui, "map-info-close") as HTMLButtonElement).click();
+    spy.mockReturnValue(false);
+    open(ui);
+    await vi.waitFor(() => expect(part(ui, "map-cache").hidden).toBe(true));
+    expect(spy).toHaveBeenCalled();
+  });
+
   it("キャッシュの統計・一括ダウンロード・削除（旧 showStats・fetchAll・clean）", async () => {
     const ui = await mountUi(u => u.setAttribute("enable-cache", ""));
     const app = ui.app!;
