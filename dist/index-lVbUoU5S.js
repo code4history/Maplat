@@ -1,4 +1,4 @@
-import { C as D, m as L, r as v, p as A, a as C, b as U, d as R, G as N } from "./index-CPp-jJ06.js";
+import { t as D, m as L, b as v, p as A, a as U, r as C, E as R, V as N } from "./index-CZAeISG4.js";
 class T {
   constructor() {
     this.disposed = !1;
@@ -18,13 +18,13 @@ class T {
 }
 function ee(i, e, t) {
   let n, s;
-  t = t || E;
+  t = t || x;
   let o = 0, r = i.length, a = !1;
   for (; o < r; )
     n = o + (r - o >> 1), s = +t(i[n], e), s < 0 ? o = n + 1 : (r = n, a = !s);
   return a ? o : ~o;
 }
-function E(i, e) {
+function x(i, e) {
   return i > e ? 1 : i < e ? -1 : 0;
 }
 function te(i, e) {
@@ -87,7 +87,7 @@ function O(i, e) {
   return !0;
 }
 function re(i, e, t) {
-  const n = e || E;
+  const n = e || x;
   return i.every(function(s, o) {
     if (o === 0)
       return !0;
@@ -238,7 +238,7 @@ class H extends T {
 }
 let b = null;
 function $() {
-  return typeof customElements > "u" || customElements.get(D) ? Promise.resolve() : b || (b = import("./maplat_core_element-Hb8DfGWD.js").then(
+  return typeof customElements > "u" || customElements.get(D) ? Promise.resolve() : b || (b = import("./maplat_core_element-CGKD5CaO.js").then(
     () => {
     },
     (i) => {
@@ -342,7 +342,7 @@ function V(i) {
   }
   return p;
 }
-const G = /* @__PURE__ */ new Set([
+const F = /* @__PURE__ */ new Set([
   "init",
   "use",
   "services",
@@ -363,7 +363,7 @@ const G = /* @__PURE__ */ new Set([
   "languages",
   "resolvedLanguage"
 ]);
-function F(i) {
+function G(i) {
   const e = /* @__PURE__ */ new Set(), t = /* @__PURE__ */ new Set(), n = () => i(), o = {
     get language() {
       const r = n();
@@ -393,7 +393,7 @@ function F(i) {
   };
   return new Proxy(o, {
     get(r, a, u) {
-      return a in r || typeof a != "string" || !G.has(a) ? Reflect.get(r, a, u) : (I(
+      return a in r || typeof a != "string" || !F.has(a) ? Reflect.get(r, a, u) : (I(
         t,
         a,
         `ui.i18n.${a}() is not available on the compatibility layer (backed by <maplat-ui>).`
@@ -481,7 +481,7 @@ function j(i) {
   };
   return g;
 }
-function _(i, e) {
+function E(i, e) {
   const t = () => i()?.slider(e) ?? null, n = () => t()?.items ?? [], s = () => t()?.selectedMapID ?? null;
   return {
     get el() {
@@ -579,10 +579,10 @@ const q = [
   "markerList",
   "translateUI"
 ];
-let x = !1;
+let _ = !1;
 const W = "MaplatUi: the MaplatUi class is deprecated and will be removed in 2.0. Use the <maplat-ui> element (@maplat/ui/element) with <maplat-app> instead.";
 function Y() {
-  x || (x = !0, console.warn(W));
+  _ || (_ = !0, console.warn(W));
 }
 class k extends H {
   /** Core の `MaplatApp`（`lifecycle:setting-loaded` で入る。それまでは undefined）。 */
@@ -637,7 +637,7 @@ class k extends H {
   #l;
   /** 旧 API のコンストラクタ。`stateUrl` のときだけ、旧と同じく自分から起動を始める。 */
   constructor(e) {
-    super(), Y(), this.appOption = e ?? {}, this.html_id_seed = `${Math.floor(Math.random() * 9e3) + 1e3}`, this.#r = J(e), this.sliderNew = j(() => this.#e ?? null), this.contextMenu = V(() => this.#e ?? null), this.baseSwiper = _(() => this.#e ?? null, "base"), this.overlaySwiper = _(
+    super(), Y(), this.appOption = e ?? {}, this.html_id_seed = `${Math.floor(Math.random() * 9e3) + 1e3}`, this.#r = J(e), this.sliderNew = j(() => this.#e ?? null), this.contextMenu = V(() => this.#e ?? null), this.baseSwiper = E(() => this.#e ?? null, "base"), this.overlaySwiper = E(
       () => this.#e ?? null,
       "overlay"
     ), this.swipers = { base: this.baseSwiper, overlay: this.overlaySwiper }, this.enableShare = e.enableShare === !0, this.enableBorder = e.enableBorder === !0, this.enableHideMarker = e.enableHideMarker === !0, this.enableMarkerList = e.enableMarkerList === !0, this.enablePoiHtmlNoScroll = e.enablePoiHtmlNoScroll === !0, this.alwaysGpsOn = e.alwaysGpsOn === !0, this.disableNoimage = e.disableNoimage === !0, this.isTouch = typeof window < "u" && "ontouchstart" in window, this.appEnvelope = e.appEnvelope, this.waitReady = () => this.#a(), this.appOption.stateUrl === !0 && queueMicrotask(() => {
@@ -713,7 +713,7 @@ class k extends H {
   }
   /** 旧 `areaIndex`（4 点の多角形の面積）。 */
   areaIndex(e) {
-    return C(e);
+    return U(e);
   }
   /** 旧 `checkOverlayID`（重ねる地図の行にその地図があるか）。 */
   checkOverlayID(e) {
@@ -733,7 +733,7 @@ class k extends H {
   }
   /** 旧 `resolveRelativeLink`（相対 URL の解決）。 */
   resolveRelativeLink(e, t) {
-    return U(e, t);
+    return C(e, t);
   }
   /** 旧 `showToast`（短い知らせ）。 */
   showToast(e, t) {
@@ -805,7 +805,7 @@ class k extends H {
   /** 旧 `ui.i18n`（限定 facade。`docs/api/migration-ui-shadow-dom.md` の「型の変化」を参照）。 */
   get i18n() {
     if (this.#e)
-      return this.#l ??= F(() => this.#e ?? null), this.#l;
+      return this.#l ??= G(() => this.#e ?? null), this.#l;
   }
   /**
    * 旧 `ui.i18n = …` は受けない（翻訳ライブラリのインスタンスはもう無い。限定 facade だけを返す）。
@@ -989,7 +989,7 @@ export {
   k as M,
   H as T,
   S as V,
-  E as a,
+  x as a,
   ee as b,
   P as c,
   ie as d,
