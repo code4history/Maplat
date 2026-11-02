@@ -56,6 +56,9 @@ overrides:
   "eslint>minimatch": "^11.0.1"
   "@eslint/config-array>minimatch": "^11.0.1"
   "@typescript-eslint/typescript-estree>minimatch": "^11.0.1"
+  # workbox-build > … > ejs > jake > filelist が引く minimatch 5 系も同じ勧告に当たる。filelist が使うのは
+  # minimatch.match() だけで 11 系にもある（ejs は jake を CLI でしか読まないので、ビルドでは読み込まれない）
+  "filelist>minimatch": "^11.0.1"
   # glob: >=9.0.0 <=14.0.1 の medium（GHSA-3g3m-2fjr-6pw4）。親が使う API（globSync・hasMagic）は
   # 14 にもあるので、親に限って 14 へ上げる（14 は minimatch 11 を引く）
   "workbox-build>glob": "^14.0.2"
