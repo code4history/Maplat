@@ -154,6 +154,8 @@ Pro 専用の `display-mode`。プロパティのみのキー（12 個）:
 [`maplat-app.ja.md`](https://github.com/code4history/MaplatCore/blob/master/docs/api/maplat-app.ja.md#属性とプロパティ)
 のとおりです。
 
+`app-src`・`app-id` は読み込む設定ファイルを決めます。[`<maplat-app>` の文書の信頼の境界の注意](https://github.com/code4history/MaplatCore/blob/master/docs/api/maplat-app.ja.md#属性と同期するキー)を読んでください。
+
 流し方の規則:
 
 - **近い方が勝つ。** 子が自分で持つキーには層 B は触れません。子が持たないキーだけを

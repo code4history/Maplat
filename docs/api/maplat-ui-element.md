@@ -173,6 +173,8 @@ the Pro-only `display-mode`. The property-only ones (12): `setting`,
 `iconTemplate`. Their meaning, defaults and startup rules are those of
 [`maplat-app.md`](https://github.com/code4history/MaplatCore/blob/master/docs/api/maplat-app.md#attributes-and-properties).
 
+`app-src` and `app-id` choose the setting file. See the [trust boundary note](https://github.com/code4history/MaplatCore/blob/master/docs/api/maplat-app.md#attribute-backed-keys) in the `<maplat-app>` documentation.
+
 The rules of the hand-off:
 
 - **The nearer one wins.** A key the child holds itself is never touched by
