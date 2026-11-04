@@ -62,6 +62,7 @@
     "out_of_map": "超出地圖範圍",
     "out_of_map_desc": "GPS定位結果超出地圖範圍。GPS功能將關閉。",
     "out_of_map_area": "顯示位置超出地圖範圍。將回到地圖預設位置。",
+    "cannot_open_link": "無法開啟此連結",
     "copy_toast": "已複製到剪貼簿",
     "gps_error": "無法使用定位資訊",
     "user_gps_deny": "若要顯示目前位置，請在瀏覽器中允許「取用位置資訊」，然後重新掃描QR碼或重新開啟網址。",

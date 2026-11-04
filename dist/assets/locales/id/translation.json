@@ -62,6 +62,7 @@
     "out_of_map": "Di luar peta",
     "out_of_map_desc": "Hasil GPS berada di luar peta. Fungsi GPS dinonaktifkan.",
     "out_of_map_area": "Area yang ditampilkan berada di luar peta. Tampilan kembali ke posisi awal.",
+    "cannot_open_link": "Tautan ini tidak dapat dibuka",
     "copy_toast": "Disalin ke papan klip",
     "gps_error": "Informasi lokasi tidak tersedia",
     "user_gps_deny": "Untuk menampilkan lokasi saat ini, izinkan \"Gunakan Lokasi\" di browser web Anda, lalu pindai ulang kode QR atau buka kembali URL.",
