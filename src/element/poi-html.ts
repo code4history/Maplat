@@ -3,9 +3,9 @@
 // 旧 `src/ui_marker.ts` の `poiWebControl` のうち、`<maplat-ui>` が使う組み立てだけを残したもの
 // （旧の実装を消したときに、要素の中の非公開メソッドから出した）。要素の
 // `#renderPoi` が呼ぶ。**実ブラウザでの隔離の検証**（`e2e/fixtures/poi-html-probe.ts`）も同じ関数を
-// 読む（テスト側にロジックを写さない。m1-t5 の約束）。
+// 読む（テスト側にロジックを写さない）。
 //
-// 安全の前提（m1-t4 の脅威モデル）: `html`・`url` は外から取ってくる POI の JSON 由来で信頼できない。
+// 安全の前提: `html`・`url` は外から取ってくる POI の JSON 由来で信頼できない。
 //   - html は iframe ではなく Shadow DOM へ描く（スタイルの隔離）。**Shadow DOM はセキュリティ境界では
 //     ない**ので、防御は `sanitizeHtml`（@maplat/core/common）。生の html を innerHTML へ入れる分岐は作らない。
 //   - url は http/https（相対 URL を含む）のときだけ iframe の src へ入れる（`safeWebUrl`）。
@@ -61,7 +61,7 @@ export type PoiBody =
 /**
  * POI の吹き出しの本文の分岐（**html があれば url は見ない**。旧 `poiWebControl` と同じ優先順）。
  * 要素の `#renderPoi` と、実ブラウザの隔離の検証（`e2e/fixtures/poi-html-probe.ts`）の両方がこれを呼ぶ
- * （テスト側に分岐を写さない。m1-t5 の約束）。
+ * （テスト側に分岐を写さない）。
  *
  * @param data POI の `html`・`url`（多言語の値でもよい。分岐は値があるかどうかで決め、文字は `translate` で選ぶ）
  * @param noScroll 真なら内部のスクロールを持たせない

@@ -62,6 +62,7 @@
     "out_of_map": "Außerhalb der Karte",
     "out_of_map_desc": "GPS-Ergebnis ist außerhalb der Karte. GPS-Funktion wird deaktiviert.",
     "out_of_map_area": "Angezeigter Bereich ist außerhalb der Karte. Die Karte wird auf die Standardposition verschoben.",
+    "cannot_open_link": "Dieser Link kann nicht geöffnet werden",
     "copy_toast": "In die Zwischenablage kopiert",
     "gps_error": "Standortinformationen sind nicht verfügbar",
     "user_gps_deny": "Um den aktuellen Standort anzuzeigen, aktivieren Sie bitte \"Standort verwenden\" in Ihrem Webbrowser und scannen Sie den QR-Code oder die URL erneut.",

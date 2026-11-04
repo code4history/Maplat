@@ -76,7 +76,7 @@ describe("MaplatUi.translate（互換層）", () => {
     expect(ui.translate({ ja: "地図名", en: "Map Name" })).toBe("地図名");
   });
 
-  // 積み残し（再レビューの Info）: 起動前の `ui.lang = "en"` は**起動までの読み値だけ**。
+  // 起動前の `ui.lang = "en"` は**起動までの読み値だけ**。
   // 起動すると `#createHost` は `option.lang` しか流さないので、属性の言語（要素の選び方）に従う。
   it("起動前の lang の代入は、起動前の translate に効く（起動後の値は持たない）", () => {
     const ui = newUi("ja");

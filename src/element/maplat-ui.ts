@@ -3387,7 +3387,7 @@ export class MaplatUiElement extends BaseElement {
     el.infoMeta.replaceChildren();
     for (const key of META_KEYS) {
       if (key === "title" || key === "officialTitle") continue;
-      // 注意書きはライセンスのセルの中で出す（独立の行にはしない。旧 m6-t2 の設計と同じ）
+      // 注意書きはライセンスのセルの中で出す（独立の行にはしない）
       if (key === "licenseNote" || key === "dataLicenseNote") continue;
       const raw = values?.[key];
       if (key === "license" || key === "dataLicense") {
@@ -4070,7 +4070,7 @@ export class MaplatUiElement extends BaseElement {
     el.poiTitle.textContent = this.translateText(data.name) || "";
     el.poiBody.replaceChildren();
     // html があれば Shadow DOM（スタイルの隔離。防御は sanitizeHtml）、無くて url があれば http/https の
-    // ときだけ iframe。分岐と組み立ては poi-html.ts の buildPoiBody（実ブラウザの検証 m1-t5 と共有）
+    // ときだけ iframe。分岐と組み立ては poi-html.ts の buildPoiBody（実ブラウザの隔離の検証と共有）
     const body = buildPoiBody(
       data,
       noScroll,

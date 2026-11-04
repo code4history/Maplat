@@ -13,7 +13,7 @@
 // （互換層が旧 UI を読まないことを `spec/legacy-deps.spec.ts`、消えていることを
 // `spec/unification-removal.spec.ts` が機械で確かめる）。
 //
-// 差分（設計からの意図的なもの）:
+// 意図した差分:
 //   - 設定ファイルの機能系キー: 子へ `appOption` を渡し、Core の互換モード
 //     （`appOption.__maplatCompat === true`）で旧クラスと同じ読み方をする。`div`・`uiHooks`・
 //     `setting` は複製しない。

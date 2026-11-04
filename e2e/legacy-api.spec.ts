@@ -1,4 +1,4 @@
-// 旧 API（`MaplatUi`）の**API 水準**の回帰テスト（実ブラウザ。設計 v2 §2.5.1・§6.1・再レビュー D4）。
+// 旧 API（`MaplatUi`）の**API 水準**の回帰テスト（実ブラウザ）。
 //
 // 位置付け:
 //   - `spec/legacy-api.spec.ts`（jsdom・層 A は実物だが地図は作らない）の姉妹。こちらは実 Core・
@@ -7,7 +7,7 @@
 //     Swiper の実物も読まない。使うのは `window.__maplatUi` の公開面（`ui.core`・イベント・戻り値）と、
 //     文書全体＋shadow root を再帰で探した**文字**だけ。fixture の `#status` は判定対象ではなく
 //     起動の合図（旧 e2e と同じ扱い）。
-//   - **旧の実装で緑になるように書く**（D4）。Stage 3 で `MaplatUi` を `<maplat-ui>` の互換層に
+//   - **旧の実装で緑になるように書く**。`MaplatUi` を `<maplat-ui>` の互換層に
 //     差し替えたあと、このファイルを `git diff` で無変更のまま緑にすることが受け入れ条件。
 //   - 仕分けの根拠は `spec/fixtures/legacy-e2e-classification.md`（A1〜A9）。
 //
@@ -364,7 +364,7 @@ test.describe("文書化された API が例外を投げない（A9）", () => {
   }) => {
     test.setTimeout(240000);
     const { errors } = await open(page, { stateUrl: true });
-    // `updateUrl()` が効いたことを、**旧の内部フィールド（`pathThatSet`）に触らずに**確かめる（N4）。
+    // `updateUrl()` が効いたことを、**旧の内部フィールド（`pathThatSet`）に触らずに**確かめる。
     // 旧の重複判定（同じ文字列なら書かない）を回避するために `pathThatSet` を `undefined` にすると、
     // 互換層の正しい `updateUrl()`（書き込みを省く）でも落ちる＝旧の実装に依る判定になる。
     // 代わりに「起動時のハッシュを控えて消す → 地図を替える → `updateUrl()` を呼ぶ」とし、
@@ -421,7 +421,7 @@ test.describe("文書化された API が例外を投げない（A9）", () => {
     });
     expect(updateError, "updateUrl() が例外を投げない").toBe(null);
 
-    // トーストの文字は、ハッシュの待ちより先に確かめる（N4。旧のトーストは 1.5 秒で消える）
+    // トーストの文字は、ハッシュの待ちより先に確かめる（旧のトーストは 1.5 秒で消える）
     await page.evaluate(() =>
       (window as any).__maplatUi.showToast("旧APIのトースト")
     );
