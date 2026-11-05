@@ -1,4 +1,5 @@
 name: Publish to npm
+run-name: publish ${{ inputs.dist_tag }} ver=${{ inputs.expected_version }} sha=${{ inputs.expected_sha }} dry_run=${{ inputs.dry_run }}
 
 on:
   workflow_dispatch:
@@ -28,7 +29,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  # ---- repo ごとに変える（設計書 §3.2 の表） ----
+  # ---- repo ごとに変える ----
   CI_WORKFLOW_FILE: ci.yml
   RELEASE_CHECK: pnpm run typecheck && pnpm exec vitest run && pnpm run build
   # ---- 共通 ----
@@ -63,7 +64,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          # 形式検査（Minor #2）: expected_version は semver、expected_sha は 40 桁の 16 進数。誤入力・注入文字列を早期に fail する
+          # 形式検査: expected_version は semver、expected_sha は 40 桁の 16 進数。誤入力・注入文字列を早期に fail する
           VER_RE='^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$'
           SHA_RE='^[0-9a-fA-F]{40}$'
           [[ "${EXPECTED_VERSION}" =~ ${VER_RE} ]] || { echo "::error::expected_version が semver でない: ${EXPECTED_VERSION}"; exit 1; }
@@ -162,7 +163,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           # registry-url は渡さない（.npmrc にトークン行を作らない）
 
-      - name: OIDC 交換の確認（dry_run のときだけ・HTTP status だけを出す）
+      - name: OIDC 交換の確認（dry_run のときだけ・失敗時は切り分けの情報を出す）
         if: ${{ inputs.dry_run }}
         env:
           NAME: ${{ needs.verify.outputs.name }}
@@ -173,11 +174,21 @@ jobs:
             | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>process.stdout.write(JSON.parse(s).value||""))')
           [ -n "${ID}" ] || { echo "::error::GitHub から ID トークンを取れない（id-token 権限を確認）"; exit 1; }
           echo "::add-mask::${ID}"
-          ESC=$(node -p 'encodeURIComponent(process.env.NAME).replace(/^%40/,"@")')
-          CODE=$(curl -sS -o /dev/null -w '%{http_code}' -X POST -H "Authorization: Bearer ${ID}" \
+          # npm CLI（npm-package-arg の escapedName）と同じ形にする: スコープの区切りは小文字の %2f
+          ESC=$(node -p 'process.env.NAME.replace("/","%2f")')
+          BODY="${RUNNER_TEMP}/oidc-exchange-body"
+          CODE=$(curl -sS -o "${BODY}" -w '%{http_code}' -X POST -H "Authorization: Bearer ${ID}" \
             "https://registry.npmjs.org/-/npm/v1/oidc/token/exchange/package/${ESC}")
           echo "- OIDC exchange: HTTP ${CODE}" >> "$GITHUB_STEP_SUMMARY"
-          case "${CODE}" in 2??) ;; *) echo "::error::OIDC 交換が HTTP ${CODE}。npm の trusted publisher 登録（repo・publish.yml・npm-publish）を確認"; exit 1 ;; esac
+          case "${CODE}" in
+            2??) rm -f "${BODY}" ;;  # 成功時の本文は公開用の短命トークンを含むので出さない
+            *)
+              # 失敗時の本文は npm のエラーの説明だけ（秘密を含まない）。原因の切り分けのために出す
+              echo "::error::OIDC 交換が HTTP ${CODE}: $(head -c 500 "${BODY}" | tr -d '\r\n')"
+              # ID トークンの claim（秘密ではない部分）も切り分けのために出す
+              node -e 'const p=JSON.parse(Buffer.from(process.argv[1].split(".")[1],"base64url"));for(const k of ["repository","workflow_ref","job_workflow_ref","environment","ref","event_name","aud"])console.log(k+": "+p[k])' "${ID}"
+              rm -f "${BODY}"; exit 1 ;;
+          esac
 
       - name: publish
         working-directory: ${{ runner.temp }}/pack
@@ -191,15 +202,31 @@ jobs:
           [ "${DRY_RUN}" = "true" ] && ARGS+=(--dry-run)
           pnpm publish "./${TARBALL}" "${ARGS[@]}"
 
+  confirm:
+    name: 公開結果の確認（registry に版と dist-tag が見えるまで待つ）
+    needs: [verify, publish]
+    if: ${{ !inputs.dry_run }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions: {}
+    env:
+      NAME: ${{ needs.verify.outputs.name }}
+      VERSION: ${{ needs.verify.outputs.version }}
+      DIST_TAG: ${{ inputs.dist_tag }}
+      CONFIRM_WAIT_SECONDS: 1800
+      CONFIRM_VIEW_TIMEOUT_SECONDS: 20
+      CONFIRM_INTERVAL_SECONDS: 15
+    steps:
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
       - name: 公開結果の確認
-        if: ${{ !inputs.dry_run }}
-        env:
-          NAME: ${{ needs.verify.outputs.name }}
-          VERSION: ${{ needs.verify.outputs.version }}
-          DIST_TAG: ${{ inputs.dist_tag }}
         run: |
           set -euo pipefail
-          # 版と dist-tag が一致するまで待つ（NayutaProducts#30）。404 の JSON・JSON でない出力では抜けない
+          # 版と dist-tag が一致するまで待つ（npm の registry は公開の直後に古い応答を返すことがある）。
+          # 404 の JSON・JSON でない出力では抜けない。待つのは経過時間で、1 回の npm view にも上限を付ける
+          # trustedPublisher だけが欠けるときは、同じ待ちの予算の中で間隔を置いて取り直す（公開の直後は古い応答が返る）
           [ -n "${VERSION}" ] || { echo "::error::VERSION が空（verify job の出力を確認）"; exit 1; }
           JUDGE='
             let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{
@@ -212,19 +239,49 @@ jobs:
               const prov=ok&&!!(p.dist&&p.dist.attestations&&p.dist.attestations.provenance);
               let t=null; try{t=JSON.parse(process.env.TP_JSON||"")}catch(e){t=null}
               const tp=!!t&&typeof t==="object"&&!Array.isArray(t)&&!t.error&&typeof t.id==="string"&&t.id!=="";
-              console.log(`- registry: version=${ok?p.version:"(応答なし)"} dist-tags.${tag}=${tagOk} provenance=${prov} trustedPublisher=${tp}`);
               const errs=[];
               if(!ver)errs.push(`${want} が registry で見えない`);
               if(!tagOk)errs.push(`dist-tag ${tag} が ${want} を指していない`);
               if(!prov)errs.push("provenance が付いていない");
               if(!tp)errs.push("trustedPublisher が付いていない");
-              if(errs.length){for(const m of errs)console.log(`::error::${m}`);console.log("::error::公開は済んだが照合に落ちた（取り消しはできない）。下流の波を止める");process.exit(1)}
+              if(errs.length===1&&!tp&&process.env.TP_RETRY==="1"){process.exit(2)}
+              console.log(`- registry: version=${ok?p.version:"(応答なし)"} dist-tags.${tag}=${tagOk} provenance=${prov} trustedPublisher=${tp}`);
+              if(errs.length){for(const m of errs)console.log(`::error::${m}`);console.log("::error::公開は済んだが照合に落ちた（取り消しはできない）。後続の公開を止める");process.exit(1)}
             })'
+          START=${SECONDS}
+          TRIES=0
+          MAX_TRIES=$(( CONFIRM_WAIT_SECONDS / CONFIRM_INTERVAL_SECONDS + 1 ))
+          NEXT_NOTE=60
+          TIMED_OUT=0
           J=""
-          for i in $(seq 1 20); do
-            J=$(npm view "${NAME}@${VERSION}" --json 2>/dev/null || true)
+          while :; do
+            TRIES=$(( TRIES + 1 ))
+            J=$(timeout "${CONFIRM_VIEW_TIMEOUT_SECONDS}" npm view "${NAME}@${VERSION}" --json 2>/dev/null || true)
             if printf '%s' "${J}" | FINAL=0 node -e "${JUDGE}"; then break; fi
-            sleep 15
+            ELAPSED=$(( SECONDS - START ))
+            if [ "${ELAPSED}" -ge "${CONFIRM_WAIT_SECONDS}" ] || [ "${TRIES}" -ge "${MAX_TRIES}" ]; then TIMED_OUT=1; break; fi
+            if [ "${ELAPSED}" -ge "${NEXT_NOTE}" ]; then echo "まだ見えない（経過 ${ELAPSED} 秒）"; NEXT_NOTE=$(( NEXT_NOTE + 60 )); fi
+            sleep "${CONFIRM_INTERVAL_SECONDS}"
           done
-          TP=$(npm view "${NAME}@${VERSION}" _npmUser.trustedPublisher --json 2>/dev/null || true)
-          printf '%s' "${J}" | FINAL=1 TP_JSON="${TP}" node -e "${JUDGE}" | tee -a "$GITHUB_STEP_SUMMARY"
+          TP_TRIES=0
+          while :; do
+            TP_TRIES=$(( TP_TRIES + 1 ))
+            TP=$(timeout "${CONFIRM_VIEW_TIMEOUT_SECONDS}" npm view "${NAME}@${VERSION}" _npmUser.trustedPublisher --json 2>/dev/null || true)
+            ELAPSED=$(( SECONDS - START ))
+            RETRY=1
+            if [ "${TIMED_OUT}" = 1 ] || [ "${ELAPSED}" -ge "${CONFIRM_WAIT_SECONDS}" ] || [ "${TP_TRIES}" -ge "${MAX_TRIES}" ]; then RETRY=0; fi
+            RC=0
+            printf '%s' "${J}" | FINAL=1 TP_RETRY="${RETRY}" TP_JSON="${TP}" node -e "${JUDGE}" | tee -a "$GITHUB_STEP_SUMMARY" || RC=$?
+            if [ "${RC}" = 0 ]; then break; fi
+            if [ "${RC}" = 2 ]; then
+              echo "trustedPublisher がまだ見えない（${TP_TRIES} 回目・経過 ${ELAPSED} 秒）。取り直す"
+              sleep "${CONFIRM_INTERVAL_SECONDS}"
+              continue
+            fi
+            if [ "${TIMED_OUT}" = 1 ]; then
+              echo "::error::registry の反映待ちが上限（${CONFIRM_WAIT_SECONDS} 秒）に達した。公開は済んでいる。registry の反映を後から照合する" | tee -a "$GITHUB_STEP_SUMMARY"
+            elif [ "${TP_TRIES}" -gt 1 ]; then
+              echo "::error::trustedPublisher の反映を ${TP_TRIES} 回取り直したが見えない（待ちの上限 ${CONFIRM_WAIT_SECONDS} 秒）。公開は済んでいる。registry の反映を後から照合する" | tee -a "$GITHUB_STEP_SUMMARY"
+            fi
+            exit 1
+          done
