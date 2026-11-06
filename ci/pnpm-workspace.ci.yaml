@@ -26,7 +26,7 @@ overrides:
   # GitHub の MaplatCore の commit から入れる（Core は dist/ を追跡し prepare を持たないので、pnpm は build せず
   # files で pack したものを置く）。MaplatCore の master の commit を指す。RC（release/1.3）で package.json を
   # ^1.3.0-rc.1 に書き換えるとき、この行を消して lock を作り直す。
-  "@maplat/core": "github:code4history/MaplatCore#08a17703d93e5a3145c0cc2e8e4a646a7b7998b4"
+  "@maplat/core": "github:code4history/MaplatCore#e9a7f48545f4e1609fdba86547280d87faebf375"
   # eslint / vitest まわりが引く js-yaml。>=4.0.0 <4.3.1 の high。4系の最新へ留める。
   js-yaml: "^4.3.1"
   # ajv > fast-uri ほか。<3.1.9 の medium（GHSA-w74x-v6f9-j3xg ほか）。以前の <3.1.5 の high も含む。

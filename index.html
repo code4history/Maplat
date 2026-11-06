@@ -44,12 +44,11 @@
   </div>
   <details id="template-demo" class="c4h-note">
     <summary>POI のメディアとテンプレートの対比</summary>
-    <p>ボタンで地図をその POI の位置へ寄せ、地図の中央のマーカーを押すと吹き出しが開きます
-      （テンプレートはマーカーを描くときに評価されます）。</p>
+    <p>ボタンでその POI を開きます（openMarker）。地図のマーカーを押したときと同じ本文になります。</p>
     <div>
-      <button type="button" data-goto-poi="139.539,36.251">(a) スライダー: media で指定</button>
-      <button type="button" data-goto-poi="139.5385,36.2505">(b) スライダー: テンプレートで指定（新しい記法）</button>
-      <button type="button" data-goto-poi="139.538,36.25">(c) テンプレート: 旧い記法</button>
+      <button type="button" data-open-poi="m1-t3-swiper-a">(a) スライダー: media で指定</button>
+      <button type="button" data-open-poi="poi-template-nunjucks">(b) スライダー: テンプレートで指定（新しい記法）</button>
+      <button type="button" data-open-poi="poi-template-legacy">(c) テンプレート: 旧い記法</button>
     </div>
     <p>(b) の poiTemplate（Nunjucks）:</p>
     <pre id="template-source-nunjucks" style="white-space: pre-wrap;"></pre>
