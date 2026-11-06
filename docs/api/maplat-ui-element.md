@@ -291,8 +291,9 @@ in the `@maplat/core` documentation (`docs/api/maplat-app.md`, POI templates).
 </qy-swiper>
 ```
 
-The template is evaluated when the marker is drawn, so the slider appears when
-the POI is opened from its marker (`clickMarker`).
+The template is also applied when the POI is opened, so the same body appears
+whether it is opened from the marker, `openMarker()`, the marker list, or the
+state URL (`@maplat/core` 1.3 or later).
 
 ### POIs outside the map
 

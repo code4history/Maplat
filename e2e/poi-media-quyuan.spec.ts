@@ -24,6 +24,7 @@ const PNG_1X1 = Buffer.from(
 const MEDIA_IMAGES = /t\.tilemap\.jp\/maplat\/img\/|code4history\.dev\//;
 
 const MEDIA_POI_ID = "m1-t3-swiper-a";
+const TEMPLATE_POI_ID = "poi-template-nunjucks";
 const TEMPLATE_POI = { longitude: 139.5385, latitude: 36.2505 };
 
 async function openDemo(page: Page): Promise<string[]> {
@@ -160,6 +161,19 @@ test("旧 API の経路: POI のメディアとテンプレートの <qy-swiper>
   await expect(tplSwiper).toHaveCount(1);
   await expect(tplSwiper.locator("qy-swiper-slide")).toHaveCount(3);
   await expectViewerOpens(page, tplSwiper);
+  await ui.locator('[part="poi-close"]').click();
+  await expect(poiModal).toBeHidden();
+
+  // ---- 同じ POI を openMarker() で開いても、テンプレートの <qy-swiper> が出る ----
+  await page.evaluate(
+    id => (document.querySelector("maplat-ui") as any).openMarker(id),
+    TEMPLATE_POI_ID
+  );
+  await expect(poiModal).toBeVisible();
+  const tplSwiperByOpen = ui.locator('[part="poi-html"] qy-swiper');
+  await expect(tplSwiperByOpen).toHaveCount(1);
+  await expect(tplSwiperByOpen.locator("qy-swiper-slide")).toHaveCount(3);
+  await expectViewerOpens(page, tplSwiperByOpen);
   await ui.locator('[part="poi-close"]').click();
 
   expect(errors, errors.join("\n")).toEqual([]);

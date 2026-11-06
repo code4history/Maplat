@@ -87,8 +87,7 @@ langSelect?.addEventListener("change", reloadWithQuery);
 // POI のテンプレートの対比（デモだけの処理。製品は変えない）:
 //   1. Core のテンプレートの警告（文頭が "MaplatApp: " で poiTemplate を含む文）を画面の欄に写す（元の console.warn も呼ぶ）
 //   2. 対比に使う 2 つの poiTemplate の文字列をそのまま見せる（textContent で入れる）
-//   3. ボタンで地図を (a)・(b)・(c) の POI の位置へ寄せる（吹き出しはマーカーを押して開く。テンプレートは
-//      マーカーを描くときに評価され、openMarker〔getMarker〕の datum には当たらないため）
+//   3. ボタンで (a)・(b)・(c) の POI を openMarker で開く（POI の位置への移動は openMarker が行う）
 const warningEl = document.getElementById("template-warning");
 const warningTextEl = document.getElementById("template-warning-text");
 const originalWarn = console.warn.bind(console);
@@ -128,18 +127,12 @@ void showTemplateSource(
   "template-source-legacy"
 );
 document
-  .querySelectorAll<HTMLButtonElement>("[data-goto-poi]")
+  .querySelectorAll<HTMLButtonElement>("[data-open-poi]")
   .forEach(button => {
     button.addEventListener("click", () => {
-      const [longitude, latitude] = button.dataset
-        .gotoPoi!.split(",")
-        .map(Number);
       const ui = document.querySelector("maplat-ui") as
-        | (HTMLElement & {
-            app?: { setViewpoint(v: Record<string, number>): unknown };
-          })
-        | null;
-      void ui?.app?.setViewpoint({ longitude, latitude, zoom: 17 });
+        (HTMLElement & { openMarker?(id: string): unknown }) | null;
+      void ui?.openMarker?.(button.dataset.openPoi!);
     });
   });
 

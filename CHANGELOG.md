@@ -57,6 +57,7 @@
 - 旧 API の `ui.xyToMapIDs(xy)` が必ず reject していたのを直した（層 A の `sysCoord2MercAsync` の戻り値の扱いの誤り）。判定は `<maplat-ui>` の `mapsAt` に一本化した
 - 旧 API の `ui.showContextMenu` のメニューが、地図の箱が画面の左上に無いページで、ホストの位置のぶん左上へずれていたのを直した
 - 旧 API の `ui.sliderNew.get("slidervalue")`・`propertychange` が、利用者がスライダーを動かした値を返さなかったのを直した
+- `poiTemplate` で本文を作る POI を `openMarker()`・マーカー一覧・状態 URL（`om:`）から開いたときに本文が空になっていたのを直した。`@maplat/core` 1.3 の `getMarker` がテンプレートを当てた POI を返すようになり、地図上のマーカーを押したときと同じ本文（テンプレートの `<qy-swiper>` を含む）になる。旧 API（`MaplatUi.openMarker`）も同じ
 
 ## [1.2.0] - 2026-11-02
 

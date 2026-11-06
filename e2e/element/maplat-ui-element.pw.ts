@@ -641,7 +641,8 @@ test("POI まわり: マーカー一覧・重なった POI の選択メニュー
 });
 
 // ---- POI のテンプレート（poiTemplate）が書いた qy-swiper（public/pois/poi-template-*.json）----
-// テンプレートはマーカーを描くときに評価される（クリックの detail に html が載る）ので、地図のマーカーを押して開く。
+// テンプレートは POI を開くときにも当たる（マーカーのクリック・openMarker・マーカー一覧・状態 URL のどれからでも同じ本文）。
+// 最初の試験は地図のマーカーを押して開き、後ろの試験でほかの開き方が同じ本文になることを確かめる。
 const TEMPLATE_POI = { longitude: 139.5385, latitude: 36.2505 };
 const LEGACY_TEMPLATE_POI = { longitude: 139.538, latitude: 36.25 };
 const TEMPLATE_DESC_HEAD = "同じデータ（name・desc・photos）を";
@@ -804,5 +805,150 @@ test("POI のテンプレートが書いた qy-swiper: 最初に開いても描�
   await ui.locator('[part="poi-close"]').click();
 
   expect(dialogs).toEqual([]);
+  expect(errors, errors.join("\n")).toEqual([]);
+});
+
+// ---- テンプレートの POI を、マーカーのクリック以外（openMarker・マーカー一覧・状態 URL）で開く ----
+const TEMPLATE_POI_ID = "poi-template-nunjucks";
+const LEGACY_TEMPLATE_POI_ID = "poi-template-legacy";
+const TEMPLATE_LAYER = "poi_template_nunjucks_demo";
+
+async function routeMedia(page: Page) {
+  if (!realTiles) {
+    await page.route(MEDIA_HOSTS, route =>
+      route.fulfill({ status: 200, contentType: "image/png", body: TILE_PNG })
+    );
+  }
+}
+
+/** テンプレートの POI の吹き出しが開いていて、テンプレートの本文（見出し・qy-swiper 1 つ・スライド 3）が出ている。スライドの属性を返す。 */
+async function expectTemplateBody(ui: ReturnType<Page["locator"]>) {
+  await expect(ui.locator('[part="poi-modal"]')).toBeVisible();
+  const htmlHost = ui.locator('[part="poi-html"]');
+  await expect(htmlHost).toBeVisible();
+  await expect(htmlHost.locator("b").first()).toContainText(
+    "スライダー: テンプレートで指定"
+  );
+  await expect(htmlHost.locator("qy-swiper")).toHaveCount(1);
+  const slides = await slideAttrs(htmlHost);
+  expect(slides).toHaveLength(3);
+  return slides;
+}
+
+test("POI のテンプレート: openMarker() で開いても、マーカーを押したときと同じ本文になる", async ({
+  page
+}) => {
+  test.setTimeout(240_000);
+  await routeMedia(page);
+  const errors = await openPage(page);
+  const ui = page.locator("maplat-ui#ui");
+  const poiModal = ui.locator('[part="poi-modal"]');
+
+  // マーカーを押して開く（基準）
+  await app(page, "setViewpoint", { ...TEMPLATE_POI, mercZoom: 18 });
+  await page.waitForTimeout(1500);
+  expect(await clickMarkerAt(page, TEMPLATE_POI, poiModal)).toBe(true);
+  const byMarker = await expectTemplateBody(ui);
+  await ui.locator('[part="poi-close"]').click();
+  await expect(poiModal).toBeHidden();
+
+  // openMarker で開く
+  await page.evaluate(
+    id => (window as any).__maplatUi.openMarker(id),
+    TEMPLATE_POI_ID
+  );
+  const byOpenMarker = await expectTemplateBody(ui);
+  expect(byOpenMarker).toEqual(byMarker);
+  expect(errors, errors.join("\n")).toEqual([]);
+});
+
+test("POI のテンプレート: マーカー一覧の行から開いても同じ本文になる", async ({
+  page
+}) => {
+  test.setTimeout(240_000);
+  await routeMedia(page);
+  const errors = await openPage(page);
+  const ui = page.locator("maplat-ui#ui");
+
+  await ui.locator('[part="marker-list"] button').click();
+  const list = ui.locator('[part="marker-list-modal"]');
+  await expect(list).toBeVisible();
+  const row = list.locator(
+    `[part="marker-list-layer"][data-layer-key="${TEMPLATE_LAYER}"]`
+  );
+  await row.locator('[part="marker-list-layer-label"]').click();
+  const item = row.locator(
+    `[part="marker-list-poi"][data-poi-id$="${TEMPLATE_POI_ID}"]`
+  );
+  await expect(item).toBeVisible();
+  await item.click();
+  await expect(list).toBeHidden();
+  await expectTemplateBody(ui);
+  expect(errors, errors.join("\n")).toEqual([]);
+});
+
+test("POI のテンプレート: 状態 URL（om:）で開き直しても同じ本文になる", async ({
+  page,
+  context
+}) => {
+  test.setTimeout(240_000);
+  await routeMedia(page);
+  const errors = await openPage(page);
+  const ui = page.locator("maplat-ui#ui");
+
+  await page.evaluate(
+    id => (window as any).__maplatUi.openMarker(id),
+    TEMPLATE_POI_ID
+  );
+  await expectTemplateBody(ui);
+  const url = await page.evaluate(() =>
+    (window as any).__maplatUi.getShareUrl("view")
+  );
+  expect(decodeURIComponent(url)).toContain("/om:");
+
+  const second = await context.newPage();
+  const secondErrors: string[] = [];
+  second.on("pageerror", err => secondErrors.push(String(err.stack ?? err)));
+  await routeMedia(second);
+  await second.goto(url);
+  await expect(second.getByTestId("status")).toHaveAttribute(
+    "data-state",
+    "ready",
+    { timeout: 90_000 }
+  );
+  const secondUi = second.locator("maplat-ui#ui");
+  await expectTemplateBody(secondUi);
+  // 閉じると URL から om が消える
+  await secondUi.locator('[part="poi-close"]').click();
+  await expect
+    .poll(() =>
+      second.evaluate(() => decodeURIComponent(location.hash.slice(2)))
+    )
+    .not.toContain("/om:");
+  await second.close();
+  expect(errors, errors.join("\n")).toEqual([]);
+  expect(secondErrors, secondErrors.join("\n")).toEqual([]);
+});
+
+test("POI のテンプレート: 旧い記法の POI は openMarker() で開いても評価されず、題名と desc だけ", async ({
+  page
+}) => {
+  test.setTimeout(240_000);
+  await routeMedia(page);
+  const errors = await openPage(page);
+  const ui = page.locator("maplat-ui#ui");
+
+  await page.evaluate(
+    id => (window as any).__maplatUi.openMarker(id),
+    LEGACY_TEMPLATE_POI_ID
+  );
+  await expect(ui.locator('[part="poi-modal"]')).toBeVisible();
+  await expect(ui.locator('[part="poi-title"]')).toHaveText(
+    "テンプレート: 旧い記法"
+  );
+  await expect(ui.locator('[part="poi-html"]')).toHaveCount(0);
+  await expect(ui.locator('[part="poi-body"] .poi-desc')).toContainText(
+    TEMPLATE_DESC_HEAD
+  );
   expect(errors, errors.join("\n")).toEqual([]);
 });
