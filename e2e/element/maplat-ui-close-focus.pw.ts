@@ -27,6 +27,9 @@ async function openPage(page: Page, url = "/demo/element.html") {
     "ready",
     { timeout: 90_000 }
   );
+  // 読み込み中の覆い（splash）が消えるまで待つ。ready の直後は覆いが操作ボタンの上に残り、
+  // 座標で押したクリックが覆いに当たる（遅い環境で起きる）。
+  await expect(ui(page).locator('[part="splash"]')).toBeHidden();
 }
 async function tabTo(page: Page, target: Locator) {
   for (let i = 0; i < 100; i++) {
@@ -89,13 +92,13 @@ async function shot(page: Page, name: string) {
   console.log(name, JSON.stringify(await ring(close(page))));
 }
 
-test("F1: スクリプトで開くと囲いを出さずフォーカスを保つ", async ({ page }) => {
+test("スクリプトで開くと囲いを出さずフォーカスを保つ", async ({ page }) => {
   await openPage(page);
   await openPoi(page);
   await shot(page, "script");
   await expectRing(close(page));
 });
-test("F2: 状態 URL から復元しても囲いを出さない", async ({ page, browser }) => {
+test("状態 URL から復元しても囲いを出さない", async ({ page, browser }) => {
   await openPage(page);
   await openPoi(page);
   const url = await page.evaluate(() =>
@@ -111,9 +114,7 @@ test("F2: 状態 URL から復元しても囲いを出さない", async ({ page,
     await fresh.close();
   }
 });
-test("F3a: フォーカスできるボタンを押した後も囲いを出さない", async ({
-  page
-}) => {
+test("フォーカスできるボタンを押した後も囲いを出さない", async ({ page }) => {
   await openPage(page);
   const control = button(page, "zoom-in");
   const box = await control.boundingBox();
@@ -122,7 +123,7 @@ test("F3a: フォーカスできるボタンを押した後も囲いを出さな
   await openPoi(page);
   await expectRing(close(page));
 });
-test("F3b: 地図 canvas を押しただけの後も囲いを出さない", async ({ page }) => {
+test("地図 canvas を押しただけの後も囲いを出さない", async ({ page }) => {
   await openPage(page);
   const canvas = ui(page).locator("maplat-app canvas").first();
   await expect(canvas).toBeVisible();
@@ -135,13 +136,13 @@ test("F3b: 地図 canvas を押しただけの後も囲いを出さない", asyn
   await shot(page, "canvas");
   await expectRing(close(page));
 });
-test("F4: Tab と Enter で一覧から開くと共通の囲いを出す", async ({ page }) => {
+test("Tab と Enter で一覧から開くと共通の囲いを出す", async ({ page }) => {
   await openPage(page);
   await keyboardPoi(page);
   await shot(page, "keyboard");
   await expectRing(close(page), true);
 });
-test("F5: Tab で離れて Shift+Tab で戻ると囲いを出す", async ({ page }) => {
+test("Tab で離れて Shift+Tab で戻ると囲いを出す", async ({ page }) => {
   await openPage(page);
   await openPoi(page);
   await page.keyboard.press("Tab");
@@ -149,13 +150,13 @@ test("F5: Tab で離れて Shift+Tab で戻ると囲いを出す", async ({ page
   await shot(page, "tab-return");
   await expectRing(close(page), true);
 });
-test("F6: フォーカスを残したまま矢印キーで囲いを出す", async ({ page }) => {
+test("フォーカスを残したまま矢印キーで囲いを出す", async ({ page }) => {
   await openPage(page);
   await openPoi(page);
   await page.keyboard.press("ArrowRight");
   await expectRing(close(page), true);
 });
-test("F7: Shift だけでは囲いを出さない", async ({ page }) => {
+test("Shift だけでは囲いを出さない", async ({ page }) => {
   await openPage(page);
   await openPoi(page);
   await page.keyboard.press("Shift");
@@ -170,7 +171,7 @@ for (const [prefix, control, legacy] of [
   ["help", "help", "help"]
 ]) {
   for (const keyboard of [false, true]) {
-    test(`F8: ${prefix} を${keyboard ? "キーボード" : "スクリプト"}で開く`, async ({
+    test(`ダイアログ: ${prefix} を${keyboard ? "キーボード" : "スクリプト"}で開く`, async ({
       page
     }) => {
       await openPage(page);
@@ -196,9 +197,7 @@ for (const [prefix, control, legacy] of [
     });
   }
 }
-test("F9: Escape で閉じて開き直しても属性が残らず例外もない", async ({
-  page
-}) => {
+test("Escape で閉じて開き直しても属性が残らず例外もない", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", e => errors.push(e.message));
   await openPage(page);
@@ -212,7 +211,7 @@ test("F9: Escape で閉じて開き直しても属性が残らず例外もない
   await expectRing(close(page));
   expect(errors).toEqual([]);
 });
-test("F11: hover は属性を解除せず、濃さを 0.5 にする", async ({ page }) => {
+test("hover は属性を解除せず、濃さを 0.5 にする", async ({ page }) => {
   await openPage(page);
   await openPoi(page);
   const before = await close(page).getAttribute("data-focus-origin");

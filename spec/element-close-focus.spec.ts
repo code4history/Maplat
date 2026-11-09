@@ -40,24 +40,24 @@ afterEach(() => {
   document.body.replaceChildren();
   vi.restoreAllMocks();
 });
-it("V1: 入力なしで開くとスクリプト由来の属性が付く", async () => {
+it("入力なしで開くとスクリプト由来の属性が付く", async () => {
   const ui = await mountUi();
   const close = openPoi(ui);
   expect(ui.shadowRoot!.activeElement).toBe(close);
   expect(close.dataset.focusOrigin).toBe("script");
 });
-it("V2: キーボードで開くと属性が付かない", async () => {
+it("キーボードで開くと属性が付かない", async () => {
   const ui = await mountUi();
   key("Tab");
   expect(openPoi(ui).dataset.focusOrigin).toBeUndefined();
 });
-it("V3: ポインタで開くと属性が付く", async () => {
+it("ポインタで開くと属性が付く", async () => {
   const ui = await mountUi();
   key("Tab");
   pointer();
   expect(openPoi(ui).dataset.focusOrigin).toBe("script");
 });
-it.each(["ArrowRight", "Tab", "Enter"])("V4: %s で属性を外す", async value => {
+it.each(["ArrowRight", "Tab", "Enter"])("%s で属性を外す", async value => {
   const ui = await mountUi();
   const close = openPoi(ui);
   expect(close.dataset.focusOrigin).toBe("script");
@@ -65,7 +65,7 @@ it.each(["ArrowRight", "Tab", "Enter"])("V4: %s で属性を外す", async value
   expect(close.dataset.focusOrigin).toBeUndefined();
 });
 it.each(["Shift", "Control", "Alt", "Meta"])(
-  "V4: 修飾キー %s だけでは属性を外さない",
+  "修飾キー %s だけでは属性を外さない",
   async value => {
     const ui = await mountUi();
     const close = openPoi(ui);
@@ -75,14 +75,14 @@ it.each(["Shift", "Control", "Alt", "Meta"])(
     expect(openPoi(ui).dataset.focusOrigin).toBe("script");
   }
 );
-it("V5: blur で属性を外す", async () => {
+it("blur で属性を外す", async () => {
   const ui = await mountUi();
   const close = openPoi(ui);
   expect(close.dataset.focusOrigin).toBe("script");
   close.blur();
   expect(close.dataset.focusOrigin).toBeUndefined();
 });
-it("V6: 取り外すと document の捕捉リスナーを解除し、再接続で復帰する", async () => {
+it("取り外すと document の捕捉リスナーを解除し、再接続で復帰する", async () => {
   const add = vi.spyOn(document, "addEventListener");
   const remove = vi.spyOn(document, "removeEventListener");
   const ui = await mountUi();
@@ -116,7 +116,7 @@ it.each([
   ["map", "map-info"],
   ["marker_list", "marker-list"],
   ["poi", "poi"]
-])("V7: %s の閉じるボタンも同じ規則でフォーカスする", async (name, prefix) => {
+])("%s の閉じるボタンも同じ規則でフォーカスする", async (name, prefix) => {
   const ui = await mountUi();
   if (name === "poi") openPoi(ui);
   else ui.openModalByLegacyName(name);

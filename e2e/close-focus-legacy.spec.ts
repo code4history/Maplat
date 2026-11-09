@@ -2,7 +2,7 @@
 import { test, expect } from "@playwright/test";
 
 test.use({ serviceWorkers: "block" });
-test("F10: 旧 API の起動経路でもスクリプトのフォーカスに囲いを出さない", async ({
+test("旧 API の起動経路でもスクリプトのフォーカスに囲いを出さない", async ({
   page
 }) => {
   test.setTimeout(120_000);
