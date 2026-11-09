@@ -691,6 +691,17 @@ export class MaplatUiElement extends BaseElement {
 
   #root: ShadowRoot;
   #el: Parts;
+  #lastInput: "none" | "keyboard" | "pointer" = "none";
+  #onDocumentKeyDown = (evt: KeyboardEvent) => {
+    if (["Shift", "Control", "Alt", "Meta"].includes(evt.key)) return;
+    this.#lastInput = "keyboard";
+    const button = this.#root.activeElement;
+    if (button instanceof HTMLButtonElement && button.matches(".modal .close"))
+      delete button.dataset.focusOrigin;
+  };
+  #onDocumentPointerDown = () => {
+    this.#lastInput = "pointer";
+  };
   // プロパティのみのキー（層 A へ流すもの・restore・appOption）の値
   #props = new Map<string, unknown>();
   #app: MaplatAppElement | null = null;
@@ -1327,6 +1338,8 @@ export class MaplatUiElement extends BaseElement {
       this.#bind(app);
       this.appendChild(app);
     }
+    document.addEventListener("keydown", this.#onDocumentKeyDown, true);
+    document.addEventListener("pointerdown", this.#onDocumentPointerDown, true);
     this.#startPwa();
   }
 
@@ -1710,6 +1723,13 @@ export class MaplatUiElement extends BaseElement {
   }
 
   #detach() {
+    document.removeEventListener("keydown", this.#onDocumentKeyDown, true);
+    document.removeEventListener(
+      "pointerdown",
+      this.#onDocumentPointerDown,
+      true
+    );
+    this.#lastInput = "none";
     this.#generation++;
     // 読み込み中の言語ファイルの結果で、外した後の UI を描き直さない
     this.#localeGeneration++;
@@ -2201,10 +2221,25 @@ export class MaplatUiElement extends BaseElement {
     }
   }
 
+  /** フォーカスは保ち、キーボードの操作が無い移動だけ囲いを抑える。 */
+  #focusDialogClose(button: HTMLButtonElement) {
+    if (this.#lastInput === "keyboard") delete button.dataset.focusOrigin;
+    else button.dataset.focusOrigin = "script";
+    button.focus({ preventScroll: true });
+  }
+
   // ---- 部品 ----
 
   #wire() {
     const el = this.#el;
+    this.#root.addEventListener("focusout", evt => {
+      const button = evt.target;
+      if (
+        button instanceof HTMLButtonElement &&
+        button.matches(".modal .close")
+      )
+        delete button.dataset.focusOrigin;
+    });
     el.zoomIn.addEventListener("click", () =>
       this.#call("zoomBy", app => app.zoomBy(1))
     );
@@ -2811,7 +2846,7 @@ export class MaplatUiElement extends BaseElement {
     const label = this.t("html.share_qr");
     void renderQr(el.qrApp, this.getShareUrl("app"), label);
     if (view) void renderQr(el.qrView, this.getShareUrl("view"), label);
-    el.shareClose.focus({ preventScroll: true });
+    this.#focusDialogClose(el.shareClose);
   }
 
   #closeShare() {
@@ -2929,7 +2964,7 @@ export class MaplatUiElement extends BaseElement {
     this.#closeHelp();
     this.#closePoi();
     el.gpsModal.hidden = false;
-    el.gpsClose.focus({ preventScroll: true });
+    this.#focusDialogClose(el.gpsClose);
   }
 
   /**
@@ -2963,7 +2998,7 @@ export class MaplatUiElement extends BaseElement {
     this.#closePoi();
     this.#renderHelp();
     this.#el.help.hidden = false;
-    this.#el.helpClose.focus({ preventScroll: true });
+    this.#focusDialogClose(this.#el.helpClose);
   }
 
   #closeHelp() {
@@ -3340,7 +3375,7 @@ export class MaplatUiElement extends BaseElement {
     this.#closePoi();
     this.#renderMapInfo();
     this.#el.info.hidden = false;
-    this.#el.infoClose.focus({ preventScroll: true });
+    this.#focusDialogClose(this.#el.infoClose);
   }
 
   #closeMapInfo() {
@@ -3753,7 +3788,7 @@ export class MaplatUiElement extends BaseElement {
     this.#closeMapInfo();
     this.#renderMarkerList();
     this.#el.markerList.hidden = false;
-    this.#el.markerListClose.focus({ preventScroll: true });
+    this.#focusDialogClose(this.#el.markerListClose);
   }
 
   #closeMarkerList() {
@@ -4042,7 +4077,7 @@ export class MaplatUiElement extends BaseElement {
     // 状態 URL に開いた POI（om）を書いてから、吹き出しの共有の QR を作る
     this.#updateUrl();
     this.#renderPoiShare();
-    this.#el.poiClose.focus({ preventScroll: true });
+    this.#focusDialogClose(this.#el.poiClose);
   }
 
   #closePoi() {
