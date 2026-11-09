@@ -346,6 +346,9 @@ export const MAPLAT_UI_CSS = `
   cursor: pointer;
 }
 .modal .close:hover { opacity: .5; }
+.modal .close:focus-visible { outline: 2px solid rgba(120, 5, 8, .9); outline-offset: 1px; opacity: 1; }
+.modal .close[data-focus-origin="script"]:focus-visible { outline: none; opacity: .2; }
+.modal .close[data-focus-origin="script"]:focus-visible:hover { opacity: .5; }
 .modal .body { padding: 15px; overflow-wrap: anywhere; }
 .poi-html { display: block; width: 100%; }
 .poi-html.scroll { max-height: 60vh; overflow-y: auto; }
