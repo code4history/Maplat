@@ -5,9 +5,8 @@ import path from 'node:path';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 /**
- * oct26-m9-t1: 地図切り替えスワイパーの少数枚ループ（code4history/Maplat#259）— 実 UI E2E
+ * 地図切り替えスワイパーの少数枚ループ（code4history/Maplat#259）— 実 UI E2E
  *
- * 設計書: docs/superpowers/specs/2026-09-14-oct26-m9-t1-design.md v2 §8
  * fixture: e2e/fixtures/swiper-loop.html?base=<n>&overlay=<n>
  *
  * - AC-1（主判定）: 矢印の実クリックで active mapID が正順 / 逆順の巡回と完全一致（幅 1280・375）

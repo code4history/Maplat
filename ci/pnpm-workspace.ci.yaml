@@ -35,14 +35,14 @@ overrides:
   postcss: "^8.5.23"
 
   # postcss > nanoid。<3.3.18 の high（CVE-2026-67213）。3系の最新へ留める。
-  # 正本: scripts/m1-t3/overrides.json（outer）。ここは その部分集合である
+  # 開発用の親リポジトリの overrides の一覧の部分集合である
   nanoid: "^3.3.18"
 # ---- 恒久 override（m1-t3）----
 # 第三者依存の脆弱性。上流の更新を待つしかないため恒久。
 # audit の下限（>=X）ではなく系列を留める spec を書くこと（>=X だと未検証の上位メジャーを引く）。
 #   例: path-to-regexp は page@1.11.6 が 1.x API 前提のため ~1.9.0 に留める（>=1.9.0 だと 8.4.2 へ解決して壊れる）。
 #
-# brace-expansion（GHSA-q2hr-2g5m-vwhr 等）: nov26-m9-t2 で再評価した（2026-10）。
+# brace-expansion（GHSA-q2hr-2g5m-vwhr 等）: 2026-10 に再評価した。
 #   lock の解決版は 5.x（minimatch 10 系が ^5.0.2／^5.0.8 で引く）と 2.x（minimatch 9・5 系が ^2.0.x）だけで、
 #   修正版 5.0.12・2.1.7 はどちらも引いている側の範囲の中にある ∴ lock の再解決で閉じた。override しない。
 #   旧注記の前提（require("brace-expansion") を関数として呼ぶ minimatch 3.x）は lock に存在しない。

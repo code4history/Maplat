@@ -1,4 +1,4 @@
-// oct26-m3-t1: Maplat #260 — Service Worker 登録の Promise 拒否の捕捉。
+// Maplat #260 — Service Worker 登録の Promise 拒否の捕捉。
 //
 // 旧の実装（`src/pwa_init.ts`。Weiwudi.registerSW を呼ぶ）を消したので、対象を
 // `src/element/pwa.ts` の `initPwa` へ移した。旧は `registerSW(...)` の戻り値を捨てていたので、
@@ -38,7 +38,7 @@ const stubServiceWorker = (register: unknown) => {
   });
 };
 
-describe("initPwa: Service Worker 登録拒否の捕捉 (oct26-m3-t1)", () => {
+describe("initPwa: Service Worker 登録拒否の捕捉", () => {
   let unhandled: unknown[];
   const onUnhandled = (reason: unknown) => {
     unhandled.push(reason);

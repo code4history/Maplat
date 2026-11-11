@@ -1,7 +1,5 @@
 /**
- * demo-query-checks.mjs — nov26-m5-t2（NayutaProducts#28 B-UI-5）開発用デモのクエリ許可リストの検査の共通部
- *
- * 正本: docs/superpowers/specs/2026-10-11-nov26-m5-t2-task-design.md（v2）§3.3
+ * demo-query-checks.mjs — 開発用デモのクエリ許可リストの検査の共通部
  *
  * e2e（e2e/nov26-m5-t2-demo-query.spec.ts）と配備後検査（verify-demo-query-allowlist.mjs）が
  * 同じ判定を使うために、検査の定義と 1 本ごとの実行関数をここだけに置く。
@@ -20,6 +18,22 @@ export const XSS_PAYLOAD = "${Reflect.set(window,/__nov26m5t2/.source,1)}";
  */
 export const XSS_PAYLOAD_NUNJUCKS =
   '{{range.constructor("Reflect.set(window,/__nov26m5t2/.source,1)")()}}';
+/**
+ * Core がテンプレートの評価の例外を握りつぶすときの警告（MaplatCore の src/template_works.ts の文言）のうち、
+ * Nunjucks の payload が評価まで届いて拒まれたことを示すもの。警告の本体と、警告の末尾に付く
+ * 「最初のテンプレート」の先頭（payload の書き出し）の両方を含むものだけを数える。
+ * 別のテンプレートの評価の失敗を payload の拒否と取り違えないため
+ */
+export const RENDER_IGNORED_WARNING = "failed to render and was ignored";
+export const RENDER_IGNORED_FIRST_TEMPLATE = 'First template: "{{range.constructor';
+/** console の警告の文が「Nunjucks の payload が評価で拒まれた」警告か */
+export function isPayloadRenderIgnoredWarning(text) {
+  return (
+    typeof text === "string" &&
+    text.includes(RENDER_IGNORED_WARNING) &&
+    text.includes(RENDER_IGNORED_FIRST_TEMPLATE)
+  );
+}
 /** #status が終端状態になるまで待つ上限（公開デモは重い） */
 export const READY_TIMEOUT_MS = 60_000;
 /** 終端状態の後に payload の発火を待つ観測窓 */
@@ -110,7 +124,9 @@ export async function observeFire(page, settleMs = SETTLE_MS) {
 
 /**
  * 検査 1 本を走らせる。
- * → { id, verdict: "pass"|"red"|"error", status, fired, firedAfterReadyMs, detail }
+ * → { id, verdict: "pass"|"red"|"error", status, fired, firedAfterReadyMs, renderIgnoredWarnings, detail }
+ * renderIgnoredWarnings は「Nunjucks の payload が評価で拒まれた」警告の件数（xss の検査だけ数える。判定には使わず、
+ * 呼び出し側が陽性対照と組にして使う）
  */
 export async function runCheck(browser, baseUrl, check) {
   const result = {
@@ -119,6 +135,7 @@ export async function runCheck(browser, baseUrl, check) {
     status: null,
     fired: null,
     firedAfterReadyMs: null,
+    renderIgnoredWarnings: null,
     detail: ""
   };
   if (!isValidBaseUrl(baseUrl)) {
@@ -135,6 +152,13 @@ export async function runCheck(browser, baseUrl, check) {
     const page = await context.newPage();
     page.on("dialog", d => {
       d.dismiss().catch(() => {});
+    });
+    // 読み込みの前から警告を数える（評価は READY の前にも後にも起こりうる）
+    let renderIgnoredWarnings = 0;
+    page.on("console", msg => {
+      if (msg.type() === "warning" && isPayloadRenderIgnoredWarning(msg.text())) {
+        renderIgnoredWarnings += 1;
+      }
     });
     const url = checkUrl(baseUrl, check);
     const resp = await page.goto(url, {
@@ -165,6 +189,7 @@ export async function runCheck(browser, baseUrl, check) {
       const obs = await observeFire(page);
       result.fired = obs.fired;
       result.firedAfterReadyMs = obs.firedAfterReadyMs;
+      result.renderIgnoredWarnings = renderIgnoredWarnings;
     }
     const statusOk = status === check.expectStatus;
     const xssOk = !check.xss || result.fired === false;

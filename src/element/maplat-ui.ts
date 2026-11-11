@@ -4058,7 +4058,7 @@ export class MaplatUiElement extends BaseElement {
         this.#showBottomToast(CANNOT_OPEN_LINK_NOTICE);
         return;
       }
-      // SR-NOV26-B-3（逆タブナビング・Referer を渡さない）: 旧と同じく noopener,noreferrer
+      // 逆タブナビングを防ぎ Referer を渡さない: 旧と同じく noopener,noreferrer
       if (blank) window.open(safe, "_blank", "noopener,noreferrer");
       else window.location.href = safe;
       return;

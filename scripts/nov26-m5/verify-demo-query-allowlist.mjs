@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 /**
- * verify-demo-query-allowlist.mjs — nov26-m5-t2（NayutaProducts#28 B-UI-5）配備後検査
+ * verify-demo-query-allowlist.mjs — 開発用デモのクエリ許可リストの配備後検査
  *
- * 正本: docs/superpowers/specs/2026-10-11-nov26-m5-t2-task-design.md（v2）§3.4・§8
  *
  * 使い方: node scripts/nov26-m5/verify-demo-query-allowlist.mjs [baseUrl]
  *   baseUrl の既定は https://code4history.dev/Maplat/（"/" で終わり "?"・"#" を含まないこと）
@@ -15,7 +14,6 @@
  *   1 = 検査が赤（許可リスト外のキーが効いた・payload が発火した・表示が期待と違う）
  *   2 = 走らせられなかった（ブラウザが無い・起動できない・ページが開けない・#status が終端状態に
  *       ならない・引数の誤り・内部例外・件数不足）。2 は緑ではない
- *   ※ oct26-m10 の検査（2 = FAIL・3 = 環境エラー）とは数の割り当てが違う
  *
  * ブラウザは共有の置き場にあるものを使うだけで、このスクリプトは用意しない（無ければ exit 2）。
  *

@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <base href="/" />
-  <title>Maplat E2E — Swiper loop (oct26-m9-t1)</title>
+  <title>Maplat E2E — Swiper loop</title>
   <meta content="yes" name="apple-mobile-web-app-capable" />
   <meta name="viewport"
     content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
@@ -66,7 +66,7 @@
   <script type="module">
     import { MaplatUi } from '/src/index.ts';
 
-    // oct26-m9-t1: 地図切り替えスワイパーのループ（少数枚）を確かめる fixture。
+    // 地図切り替えスワイパーのループ（少数枚）を確かめる fixture。
     // クエリ: base=<1..5>（ベース地図の枚数）・overlay=<1..6>（非線形地図の枚数）・stateUrl=1（#! の状態復元を有効にする）
     const params = new URLSearchParams(location.search);
     const clamp = (v, lo, hi, def) => {
@@ -96,7 +96,7 @@
     });
     const bases = [osm('osm', 'OSM'), 'gsi', 'gsi_ortho', osm('m9_base_4', 'B4'), osm('m9_base_5', 'B5')];
     const setting = {
-      appName: 'oct26-m9-t1 swiper loop',
+      appName: 'swiper loop',
       lang: 'ja',
       homePosition: [139.5321, 36.249302],
       defaultZoom: 17,

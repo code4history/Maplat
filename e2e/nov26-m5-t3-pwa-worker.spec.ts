@@ -1,5 +1,4 @@
-// nov26-m5-t3 AC4: 実ブラウザで pwaWorker: false / null のとき Service Worker を登録しない。
-// 設計: NayutaProducts docs/superpowers/specs/2026-10-11-nov26-m5-t3-task-design.md（v2）§7 AC4
+// 実ブラウザで pwaWorker: false / null のとき Service Worker を登録しない（MaplatEditor#106 の viewer 側）。
 //
 // 観測: page.addInitScript で navigator.serviceWorker.register を包み、呼ばれた URL を
 // window.__swRegisterCalls に積んでから元の関数を呼ぶ。陽性対照（worker=default）で

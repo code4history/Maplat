@@ -326,7 +326,7 @@ input[type="checkbox"].markerlist:checked+label.check>div {
   padding-bottom: 60vh;
 }
 
-// m1-t5: POI html の描画先（Shadow DOM の host）。
+// POI html の描画先（Shadow DOM の host）。
 // .embed-responsive-60vh は padding-bottom 方式で、内部の iframe が自前で
 // スクロールすることを前提にした高さ確保である。host には iframe が無く
 // padding では内部スクロールが生じないため、流用せず専用クラスを設ける。

@@ -1,9 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 /**
- * oct26-m9-t1 AC-10: Chuci の cc-swiper のナビゲーション矢印が 1 本ずつであること（見た目の判定）
- *
- * 設計書: docs/superpowers/specs/2026-09-14-oct26-m9-t1-design.md v2 §6・§8.2 AC-10
+ * Chuci の cc-swiper のナビゲーション矢印が 1 本ずつであること（見た目の判定）
  *
  * swiper 12 の Navigation は空のボタンに <svg class="swiper-navigation-icon"> を挿入し、cc-swiper は ::after に
  * chevron を描くため、修正前は矢印が 2 本ずつ描かれる。修正後は svg が display: none で、::after の chevron（44px）だけが残る。
@@ -62,7 +60,7 @@ for (const tag of ['cc-swiper', 'qy-swiper'] as const) {
       });
     }, tag);
     test.info().annotations.push({ type: 'm9-arrow', description: JSON.stringify(buttons) });
-    console.log(`[oct26-m9-t1 AC-10 ${tag}] ${JSON.stringify(buttons)}`);
+    console.log(`[chuci-arrow ${tag}] ${JSON.stringify(buttons)}`);
     for (const b of buttons) {
       expect.soft(b.svgDisplay, `${b.sel} の swiper 12 の SVG アイコン`).toBe('none');
       expect.soft(b.afterBackgroundImage, `${b.sel} の ::after の chevron`).not.toBe('none');

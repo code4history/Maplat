@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <base href="/" />
-  <title>Maplat E2E — Swiper slide XSS (nov26-m5-t1)</title>
+  <title>Maplat E2E — Swiper slide XSS</title>
   <meta name="viewport"
     content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
   <link href="https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.css" rel="stylesheet" />
@@ -30,7 +30,7 @@
   <script type="module">
     import { MaplatUi } from '/src/index.ts';
 
-    // nov26-m5-t1（NayutaProducts#28 B-UI-4）: 地図設定の label・mapID・thumbnail に注入値を入れた base 地図を並べる fixture。
+    // 地図の切り替えのスワイパーの無害化: 地図設定の label・mapID・thumbnail に注入値を入れた base 地図を並べる fixture。
     // 是正前はスライドの HTML 文字列へ生で補間され、label の <img onerror>・mapID の onmouseover・thumbnail の onerror が
     // DOM に入って発火した（window.__nov26m5t1 / __nov26m5t1m / __nov26m5t1t が 1 になる）。
     // mapID に引用符を含む地図は、MaplatCore が ./tmbs/<mapID>_menu.jpg を取りに行かないよう thumbnail を明示する（設計 R-T1-5）。
@@ -49,7 +49,7 @@
       thumbnail
     });
     const setting = {
-      appName: 'nov26-m5-t1 swiper xss',
+      appName: 'swiper xss',
       lang: 'ja',
       homePosition: [139.5321, 36.249302],
       defaultZoom: 17,

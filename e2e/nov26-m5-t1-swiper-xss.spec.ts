@@ -3,14 +3,13 @@
 import { test, expect, type Page } from '@playwright/test';
 
 /**
- * nov26-m5-t1 — 実ブラウザ（Chromium）での無害化の確認
+ * 地図の切り替えのスワイパーと重なったマーカーのメニュー — 実ブラウザ（Chromium）での無害化の確認
  *
- * 設計書: docs/superpowers/specs/2026-10-11-nov26-m5-t1-task-design.md v2 §7
  * fixture: e2e/fixtures/nov26-m5-t1-swiper-xss.html
  *
- * - AC2（B-UI-4・label）: label の HTML がタグにならず文字のまま表示され、onerror が発火しない
- * - AC3（B-UI-4・mapID）: mapID の属性注入が起きず、data 属性は元の文字列で、クリックで core.changeMap に元の mapID が渡る
- * - AC4（B-UI-4・thumbnail）: javascript: は「画像なし」の絵になり、属性注入は起きない
+ * - AC2（label）: label の HTML がタグにならず文字のまま表示され、onerror が発火しない
+ * - AC3（mapID）: mapID の属性注入が起きず、data 属性は元の文字列で、クリックで core.changeMap に元の mapID が渡る
+ * - AC4（thumbnail）: javascript: は「画像なし」の絵になり、属性注入は起きない
  * - AC1 (c)（Maplat#274）: 重なったマーカーのメニュー項目の icon が他の CSS プロパティへはみ出さない
  *
  * 陽性対照（是正の前後とも緑）: ページが READY になる・base のスライドが並ぶ。
@@ -37,12 +36,12 @@ async function openFixture(page: Page) {
     BASE_SLIDES,
     { timeout: 30000 }
   );
-  // 初期化の遷移が落ち着くのを待つ（oct26-m9-t1 の e2e と同じ扱い）
+  // 初期化の遷移が落ち着くのを待つ（スワイパーのループの e2e と同じ扱い）
   await page.waitForTimeout(3000);
   return page.evaluate(() => (window as any).__nov26m5t1Payload as { P: string; M: string });
 }
 
-test.describe('nov26-m5-t1 地図切り替えスワイパーの無害化（B-UI-4）', () => {
+test.describe('地図切り替えスワイパーの無害化', () => {
   test('陽性対照: READY になり base のスライドが並ぶ', async ({ page }) => {
     await openFixture(page);
     // 旧は Swiper の複製を含めた枚数。新は 5 スロット（base は 5 枚なので 5 枚とも並ぶ。N>=2 のスロットは 5）
@@ -100,7 +99,7 @@ test.describe('nov26-m5-t1 地図切り替えスワイパーの無害化（B-UI-
       { timeout: 8000 }
     );
     await page.waitForTimeout(1200);
-    // 中央のカードの上端寄り（矢印を避ける位置。oct26-m9-t1 の e2e と同じ求め方）。
+    // 中央のカードの上端寄り（矢印を避ける位置。スワイパーのループの e2e と同じ求め方）。
     // 当たり判定は shadow root の elementFromPoint（文書の elementFromPoint はホストを返す）
     const center = await page.evaluate(() => {
       const host = document.querySelector('maplat-ui') as any;
@@ -196,7 +195,7 @@ test.describe('nov26-m5-t1 地図切り替えスワイパーの無害化（B-UI-
   });
 });
 
-test.describe('nov26-m5-t1 重なったマーカーのメニューの icon（Maplat#274）', () => {
+test.describe('重なったマーカーのメニューの icon（Maplat#274）', () => {
   test('AC1 (c): icon の注入値で項目が position: fixed にならず、宣言が 1 つ以下', async ({ page }) => {
     await openFixture(page);
     const INJ = 'x);position:fixed;inset:0;z-index:99999;background:url(y';

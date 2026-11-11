@@ -3,14 +3,14 @@ import { parseDemoQuery } from "../demo/query";
 import {
   CHECKS,
   decideExit,
+  isPayloadRenderIgnoredWarning,
   READY_TIMEOUT_MS,
   SETTLE_MS,
   XSS_PAYLOAD,
   XSS_PAYLOAD_NUNJUCKS
 } from "../scripts/nov26-m5/demo-query-checks.mjs";
 
-// nov26-m5-t2（NayutaProducts#28 B-UI-5）: 開発用デモのクエリ許可リストと、配備後検査の終了コードの判定。
-// 設計書: docs/superpowers/specs/2026-10-11-nov26-m5-t2-task-design.md v2（AC1・AC4 (a)）
+// 開発用デモのクエリ許可リストと、配備後検査の終了コードの判定。
 
 const expectEmpty = (r: object) => {
   expect(Object.keys(r).length).toBe(0);
@@ -135,6 +135,23 @@ describe("demo-query-checks の定義", () => {
     expect(XSS_PAYLOAD_NUNJUCKS).not.toMatch(/\s/);
     // lodash の記法（${ … }・<% … %>）を含まない ∴ lodash の Core では発火しない
     expect(XSS_PAYLOAD_NUNJUCKS).not.toMatch(/\$\{|<%/);
+  });
+
+  it("評価の拒否の警告は、本体と payload の書き出しの両方を含むものだけを数える", () => {
+    // Core の警告の形: `MaplatApp: a poiTemplate/iconTemplate failed to render and was ignored: <理由>. First template: "<先頭 80 字>".`
+    const head = Array.from(XSS_PAYLOAD_NUNJUCKS).slice(0, 80).join("");
+    const warn = (first: string) =>
+      `MaplatApp: a poiTemplate/iconTemplate failed to render and was ignored: Unable to call \`range["constructor"]\`. First template: "${first}".`;
+    expect(isPayloadRenderIgnoredWarning(warn(head))).toBe(true);
+    // 別のテンプレートの評価の失敗は数えない
+    expect(
+      isPayloadRenderIgnoredWarning(warn("{{ name | nosuchfilter }}"))
+    ).toBe(false);
+    // 本体を欠くものも数えない
+    expect(isPayloadRenderIgnoredWarning(`First template: "${head}".`)).toBe(
+      false
+    );
+    expect(isPayloadRenderIgnoredWarning(undefined)).toBe(false);
   });
 });
 

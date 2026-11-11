@@ -443,7 +443,7 @@ describe("共有のモーダル（enable-share）", () => {
     expect(open.mock.lastCall![0]).toBe(
       `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(BASE)}&display=popup&ref=plugin&src=like&kid_directed_site=0`
     );
-    // SR-NOV26-B-3（逆タブナビング）: 旧 spec `nov26-m12-noopener-window-open.spec.ts` の移植（期待値も旧と同じ）。
+    // 逆タブナビングの対策: 旧 UI の共有ボタンの spec の移植（期待値も旧と同じ）。
     // Twitter は features がちょうど "noopener,noreferrer"、Facebook はポップアップ指定を保ったまま noopener と
     // noreferrer の両方を持つ
     const twCall = open.mock.calls.find(c =>

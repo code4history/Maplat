@@ -40,7 +40,7 @@ const option = {
   lang: "ja"
 };
 
-// nov26-m5-t2: URL のクエリは appid・lang だけを、形を検査して受け付ける（B-UI-5）
+// URL のクエリは appid・lang だけを、形を検査して受け付ける（反射型 XSS の対策）
 const query = parseDemoQuery(window.location.search);
 const appid = query.appid ?? "sample";
 const lang = query.lang ?? "ja";
