@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 //
-// nov26-m5-t1: 画像の URL の許可リスト（safeImageUrl。Maplat#274 の受け口でも使う）の単体テスト。
+// 画像の URL の許可リスト（safeImageUrl。Maplat#274 の受け口でも使う）の単体テスト。
 //
 // - AC6 (a): safeImageUrl の通す／通さない
 //

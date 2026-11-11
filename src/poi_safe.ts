@@ -1,5 +1,4 @@
-// oct26-m16-t1: POI データ（信頼できない外部 JSON。m1-t4 の脅威モデル）を
-// DOM や遷移先へ渡す前の無害化ヘルパー。セキュリティレビュー B の B-UI-1〜3 の是正。
+// POI データ（信頼できない外部 JSON）を DOM や遷移先へ渡す前の無害化ヘルパー。
 //
 // 旧 UI の実装の削除の仕上げ: 旧 UI の画面の HTML を文字列で組み立てるための関数（`escapeHtml`・`layerListItemHtml`・
 // `poiListItemHtml` と、地図の切り替えのカードのサムネイル・カードの組み立て 2 本）は、呼び手（旧 UI）が無くなったので消した。
@@ -7,7 +6,7 @@
 
 /**
  * 遷移先・iframe の src として許すスキーム（許可リスト）。
- * B-UI-2（iframe の src）と B-UI-3（directgo の遷移先）はこの 1 つの関数で判定する。
+ * POI の url（iframe の src）と directgo の遷移先はこの 1 つの関数で判定する。
  */
 const ALLOWED_PROTOCOLS = ["http:", "https:"];
 

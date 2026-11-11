@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <base href="/" />
-  <title>Maplat E2E — pwaWorker (nov26-m5-t3)</title>
+  <title>Maplat E2E — pwaWorker</title>
   <meta name="viewport"
     content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
   <link href="https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.css" rel="stylesheet" />
@@ -30,7 +30,7 @@
   <script type="module">
     import { MaplatUi } from '/src/index.ts';
 
-    // nov26-m5-t3: pwaWorker: false / null で Service Worker を登録しないことを確かめる fixture。
+    // pwaWorker: false / null で Service Worker を登録しないことを確かめる fixture。
     // クエリ: worker=false|null|default（default は "/service-worker.js"）・cache=1（enableCache: true）
     const params = new URLSearchParams(location.search);
     const workerParam = params.get('worker');
@@ -48,7 +48,7 @@
       maptype: 'base'
     };
     const setting = {
-      appName: 'nov26-m5-t3 pwaWorker',
+      appName: 'pwaWorker',
       lang: 'ja',
       homePosition: [139.5321, 36.249302],
       defaultZoom: 17,

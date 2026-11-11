@@ -693,8 +693,8 @@ describe("POI の吹き出し（clickMarkers / clickMarker）", () => {
     ).toEqual(["class", "part", "src"]);
   });
 
-  // 旧 oct26-m16-t1-ui-marker-url.spec.ts（B-UI-2）: url の許可リスト（同じ一覧をそのまま使う）
-  it("url は http/https（相対 URL を含む）のときだけ iframe に入れる（B-UI-2）", async () => {
+  // 旧 UI のマーカーの url の spec: url の許可リスト（同じ一覧をそのまま使う）
+  it("url は http/https（相対 URL を含む）のときだけ iframe に入れる", async () => {
     const REJECTED_URLS = [
       "javascript:alert(1)",
       "JaVaScRiPt:alert(1)",
@@ -735,9 +735,9 @@ describe("POI の吹き出し（clickMarkers / clickMarker）", () => {
     }
   });
 
-  // 旧 oct26-m16-t1-ui-marker-url.spec.ts（B-UI-3）: directgo は http/https のときだけ遷移する
+  // 旧 UI のマーカーの url の spec: directgo は http/https のときだけ遷移する
   // （旧と同じ一覧をそのまま使う: 拒否 10 件・許可 8 件。旧 UI の実装の削除の仕上げで、減っていた件数を旧に戻した）
-  describe("directgo は http/https のときだけ遷移する（B-UI-3）", () => {
+  describe("directgo は http/https のときだけ遷移する", () => {
     const REJECTED_URLS = [
       "javascript:alert(1)",
       "JaVaScRiPt:alert(1)",
@@ -885,7 +885,7 @@ describe("POI の吹き出し（clickMarkers / clickMarker）", () => {
       }
     );
 
-    // SR-NOV26-B-3: 逆タブナビング対策で noopener,noreferrer を付ける（旧 `oct26-m16-t1-ui-marker-url.spec.ts` と同じ期待値）
+    // 逆タブナビング対策で noopener,noreferrer を付ける（旧 UI のマーカーの url の spec と同じ期待値）
     it.each(ACCEPTED_URLS)(
       "blank 指定 %s では window.open(_blank, noopener,noreferrer)",
       async url => {

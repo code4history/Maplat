@@ -1,4 +1,4 @@
-// oct26-m3-t1 の設計根拠の記録（canary）: この vitest 環境における
+// Service Worker 登録拒否の spec の設計根拠の記録（canary）: この vitest 環境における
 // unhandledRejection と vi.fn モックの相互関係を実測どおりに固定する。
 //
 // 設計段階の実測（2026-09-10・vitest 3.2.7 / jsdom 30.0.1）:
@@ -16,7 +16,7 @@ import { describe, it, expect, vi } from "vitest";
 
 const flush = () => new Promise<void>(resolve => setTimeout(resolve, 0));
 
-describe("vitest モック拒否の unhandledRejection 到達性 (oct26-m3-t1 設計根拠)", () => {
+describe("vitest モック拒否の unhandledRejection 到達性 (設計根拠)", () => {
   it("素の Promise.reject は unhandledRejection リスナへ届く", async () => {
     const seen: unknown[] = [];
     const on = (r: unknown) => {

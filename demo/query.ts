@@ -1,4 +1,4 @@
-// nov26-m5-t2（NayutaProducts#28 B-UI-5）: 開発用デモが URL のクエリから受け付けるキーの許可リスト。
+// 開発用デモが URL のクエリから受け付けるキーの許可リスト。
 // 以前は全キーを option へ入れており、?poiTemplate=${…} で反射型 XSS になった。
 export interface DemoQuery {
   appid?: string;

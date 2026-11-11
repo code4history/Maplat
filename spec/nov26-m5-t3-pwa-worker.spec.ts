@@ -1,7 +1,6 @@
-// nov26-m5-t3: MaplatEditor#106（viewer 側）— pwaWorker: false / null で Service Worker を登録しない。
-// あわせて M5-SEC-I-1: <link rel="manifest">・<link rel="apple-touch-icon"> を HTML 文字列ではなく
+// MaplatEditor#106（viewer 側）— pwaWorker: false / null で Service Worker を登録しない。
+// あわせて、<link rel="manifest">・<link rel="apple-touch-icon"> を HTML 文字列ではなく
 // DOM の組み立て（createElement("link") + setAttribute）で作る。
-// 設計: NayutaProducts docs/superpowers/specs/2026-10-11-nov26-m5-t3-task-design.md（v2）§3.2・§7 AC2・AC3
 //
 // 旧の実装（`src/pwa_init.ts`。Weiwudi の registerSW を呼ぶ・`resolvePwaWorker` を持つ）を
 // 消したので、対象を `src/element/pwa.ts` の `initPwa` へ移した。
@@ -154,7 +153,7 @@ describe("AC3 (a): 要素を作るのに HTML 文字列を使わない（静的�
   });
 });
 
-describe("AC3 (b): M5-SEC-I-1 — 注入値は属性の値として入り、要素にならない", () => {
+describe("AC3 (b): 注入値は属性の値として入り、要素にならない", () => {
   const PAYLOAD = 'x"><img src=y onerror=window.__nov26m5t3=1>';
 
   it("pwaManifest に注入値 → manifest link の href がその文字列そのもの・head は link だけ", async () => {
