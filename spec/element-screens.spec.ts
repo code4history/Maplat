@@ -834,4 +834,91 @@ describe("地図情報・ライセンス・タイルキャッシュ（操作ボ�
       false
     );
   });
+
+  it("統計が 0 のときは少し待って 1 回だけ読み直す（1 回目 0・2 回目 5 で 5 が出る）", async () => {
+    vi.useFakeTimers();
+    try {
+      const ui = await mountUi(u => u.setAttribute("enable-cache", ""));
+      const app = ui.app!;
+      const statsAsync = vi
+        .spyOn(app, "getMapTileCacheStatsAsync")
+        .mockResolvedValueOnce({ size: 0, count: 0 })
+        .mockResolvedValue({ size: 5, count: 5 });
+      await app.changeMap("osm");
+      open(ui);
+      await vi.advanceTimersByTimeAsync(0);
+      // 1 回目は 0（削除は押せない）
+      expect(part(ui, "cache-size").textContent).toBe("0 Bytes (0 tiles)");
+      expect((part(ui, "cache-delete") as HTMLButtonElement).disabled).toBe(
+        true
+      );
+      expect(statsAsync).toHaveBeenCalledTimes(1);
+      // 少し待つまでは 0 のまま
+      await vi.advanceTimersByTimeAsync(499);
+      expect(part(ui, "cache-size").textContent).toBe("0 Bytes (0 tiles)");
+      // 読み直した 2 回目の 5 が出る（削除も押せる）
+      await vi.advanceTimersByTimeAsync(1);
+      expect(part(ui, "cache-size").textContent).toBe("5 Bytes (5 tiles)");
+      expect((part(ui, "cache-delete") as HTMLButtonElement).disabled).toBe(
+        false
+      );
+      expect(statsAsync).toHaveBeenCalledTimes(2);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("1 回読み直しても 0 のときは 0 のままで、読み直しは 1 回だけ", async () => {
+    vi.useFakeTimers();
+    try {
+      const ui = await mountUi(u => u.setAttribute("enable-cache", ""));
+      const app = ui.app!;
+      const statsAsync = vi
+        .spyOn(app, "getMapTileCacheStatsAsync")
+        .mockResolvedValue({ size: 0, count: 0 });
+      await app.changeMap("osm");
+      open(ui);
+      await vi.advanceTimersByTimeAsync(0);
+      expect(part(ui, "cache-size").textContent).toBe("0 Bytes (0 tiles)");
+      expect(statsAsync).toHaveBeenCalledTimes(1);
+      await vi.advanceTimersByTimeAsync(500);
+      expect(part(ui, "cache-size").textContent).toBe("0 Bytes (0 tiles)");
+      expect(statsAsync).toHaveBeenCalledTimes(2);
+      // これ以上は読み直さない（待っても 0 のまま）
+      await vi.advanceTimersByTimeAsync(2000);
+      expect(part(ui, "cache-size").textContent).toBe("0 Bytes (0 tiles)");
+      expect((part(ui, "cache-delete") as HTMLButtonElement).disabled).toBe(
+        true
+      );
+      expect(statsAsync).toHaveBeenCalledTimes(2);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("読み直しの前に地図情報を閉じたら、読み直しの結果で画面を書き換えない", async () => {
+    vi.useFakeTimers();
+    try {
+      const ui = await mountUi(u => u.setAttribute("enable-cache", ""));
+      const app = ui.app!;
+      vi.spyOn(app, "getMapTileCacheStatsAsync")
+        .mockResolvedValueOnce({ size: 0, count: 0 })
+        .mockResolvedValue({ size: 5, count: 5 });
+      await app.changeMap("osm");
+      open(ui);
+      await vi.advanceTimersByTimeAsync(0);
+      expect(part(ui, "cache-size").textContent).toBe("0 Bytes (0 tiles)");
+      // 読み直しの前に閉じる
+      (part(ui, "map-info-close") as HTMLButtonElement).click();
+      await vi.advanceTimersByTimeAsync(500);
+      await vi.advanceTimersByTimeAsync(0);
+      // 閉じた後の読み直し（2 回目は 5）では画面を書き換えない
+      expect(part(ui, "cache-size").textContent).toBe("0 Bytes (0 tiles)");
+      expect((part(ui, "cache-delete") as HTMLButtonElement).disabled).toBe(
+        true
+      );
+    } finally {
+      vi.useRealTimers();
+    }
+  });
 });

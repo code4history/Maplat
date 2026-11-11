@@ -473,6 +473,12 @@ const OUT_OF_MAP_TOAST_MS = 3000;
 const OUT_OF_MAP_TOAST_BOTTOM_PX = 30;
 const OUT_OF_MAP_TOAST_SIDE_PX = 8;
 
+/**
+ * タイルキャッシュの統計が 0 のとき、読み直しまで待つ長さ。
+ * Weiwudi の移行中は統計が 0 で返ることがあるので、0 のときは少し待って 1 回だけ読み直す。
+ */
+const CACHE_STATS_RETRY_MS = 500;
+
 /** GPS のエラーの種類 → 文言のキー（旧 initGpsHandlers の errorMap）。 */
 const GPS_ERROR_KEYS: Record<string, string> = {
   user_gps_deny: "app.user_gps_deny",
@@ -3580,6 +3586,8 @@ export class MaplatUiElement extends BaseElement {
   /**
    * キャッシュの欄の出し入れと統計の読み直し（地図情報を開いたとき・地図を切り替えたとき）。
    * 統計の読み取りだけを `#cacheGeneration` で捨てる（一括取得の印 `#cacheFetchToken` とは別）。
+   * 統計が 0（キャッシュが空）のときは `CACHE_STATS_RETRY_MS` 待って 1 回だけ読み直す
+   * （Weiwudi の移行中は 0 で返ることがあり、そのままでは削除ボタンが押せないままになる）。
    */
   async #refreshCache() {
     const app = this.#app;
@@ -3601,6 +3609,24 @@ export class MaplatUiElement extends BaseElement {
       console.warn(`<${MAPLAT_UI_TAG}>: getMapTileCacheStatsAsync failed`, err);
     }
     if (token !== this.#cacheGeneration) return;
+    this.#cacheStats = stats;
+    this.#renderCache();
+    const size = typeof stats.size === "number" ? stats.size : 0;
+    const count = typeof stats.count === "number" ? stats.count : 0;
+    if (size > 0 || count > 0) return;
+    await new Promise<void>(resolve =>
+      setTimeout(resolve, CACHE_STATS_RETRY_MS)
+    );
+    // 読み直しの前に地図情報が閉じていたら、結果では画面を書き換えない
+    if (token !== this.#cacheGeneration || this.#el.info.hidden) return;
+    try {
+      stats =
+        (await app.getMapTileCacheStatsAsync(app.currentMapId ?? undefined)) ??
+        {};
+    } catch (err) {
+      console.warn(`<${MAPLAT_UI_TAG}>: getMapTileCacheStatsAsync failed`, err);
+    }
+    if (token !== this.#cacheGeneration || this.#el.info.hidden) return;
     this.#cacheStats = stats;
     this.#renderCache();
   }
