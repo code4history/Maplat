@@ -1,144 +1,161 @@
-# 旧 UI の DOM からの移行（Shadow DOM 化）
+# Migration from the legacy UI DOM (Shadow DOM)
 
-`@maplat/ui` の UI は `<maplat-ui>`（**Shadow DOM open**）に一本化しました。旧 API `MaplatUi` は
-互換層として残っており、`new MaplatUi(option)`・`createObject`・`waitReady`・`uiHooks`・`ui.core`
-などの外形は変わりません。変わるのは**見た目を当てる場所**です。
+The UI of `@maplat/ui` is now a single `<maplat-ui>` element (**Shadow DOM open**). The legacy
+`MaplatUi` API remains as a compatibility layer, and its public shape (`new MaplatUi(option)`,
+`createObject`, `waitReady`, `uiHooks`, `ui.core` and so on) is unchanged. What changes is
+**where you apply your styles**.
 
-- 旧 UI の class 名（`.ol-zoom`・`.swiper-slide`・`.modal_poi`・`.map-title span` など）と、
-  `#map_div` の直下に組み立てられていた DOM は**無くなりました**。
-- UI の内部は Shadow DOM の中なので、ページの CSS セレクタ（`.modal_poi .title` など）は届きません。
-  スタイルは **`::part()`** と **CSS 変数**で当ててください。
-- 旧 API の互換層は **Core の `<maplat-app>`（層 A）の上だけで動きます**。Pro など別の層 A 実装との
-  組み合わせは対象外です（`<maplat-ui>` 自体は層 A を選びません）。
-- 地図（OpenLayers）は `<maplat-ui>` の light DOM の子 `<maplat-app slot="map">` に居ます。子の要素は
-  light DOM なので、ページの CSS から `maplat-ui > maplat-app` で当てられます（`::slotted()` は
-  Shadow DOM の中の書き方で、ページの CSS には使いません。内部は層 A の DOM です）。
+- The legacy UI class names (`.ol-zoom`, `.swiper-slide`, `.modal_poi`, `.map-title span`, etc.)
+  and the DOM that used to be built directly under `#map_div` are **gone**.
+- The UI internals live inside a Shadow DOM, so page CSS selectors (such as `.modal_poi .title`)
+  do not reach them. Style the UI with **`::part()`** and **CSS variables**.
+- The compatibility layer for the legacy API **runs only on top of Core's `<maplat-app>`
+  (layer A)**. Combining it with another layer A implementation such as Pro is out of scope
+  (`<maplat-ui>` itself does not depend on a particular layer A).
+- The map (OpenLayers) lives in `<maplat-app slot="map">`, a light DOM child of `<maplat-ui>`.
+  Because the child element is in the light DOM, page CSS can target it with
+  `maplat-ui > maplat-app` (`::slotted()` is a selector for use inside a Shadow DOM and is not
+  used from page CSS; the internals are layer A's DOM).
 
-## 対応表（旧 DOM / class → `::part` / 属性）
+## Mapping (legacy DOM / class → `::part` / attribute)
 
-`part` 名は `src/element/maplat-ui.ts`・`src/element/slider.ts` が正本です（ここは主なものだけ）。
+`src/element/maplat-ui.ts` and `src/element/slider.ts` are the source of truth for `part` names
+(only the main ones are listed here).
 
-| 旧（DOM / class） | 新（`::part` / 属性） | 備考 |
+| Legacy (DOM / class) | New (`::part` / attribute) | Notes |
 | --- | --- | --- |
-| `.maplat`（`#map_div` 全体） | `maplat-ui::part(frame)` | 枠。位置は `:host` が基準 |
-| `.map-title` / `.map-title span` | `::part(map-title)` | 内部の `.text` に part は無い（文字だけ変えるなら `map-title` の `color`・`font`） |
+| `.maplat` (the whole `#map_div`) | `maplat-ui::part(frame)` | The frame. Positioned relative to `:host` |
+| `.map-title` / `.map-title span` | `::part(map-title)` | The inner `.text` has no part (to change only the text, use `color` / `font` on `map-title`) |
 | `.ol-zoom` / `.ol-zoom-in` / `.ol-zoom-out` | `::part(zoom)` / `::part(zoom-in)` / `::part(zoom-out)` | |
 | `.home` | `::part(home)` | |
-| `.ol-compass`（コンパス） | `::part(compass)` | |
+| `.ol-compass` (compass) | `::part(compass)` | |
 | `.gps` | `::part(gps)` | |
-| 地図情報のボタン | `::part(info)` | |
-| `.border`（枠線のボタン） | `::part(border)` | 地図の上の範囲の線の色は地図ごとに要素が決める（CSS 変数では変えられない） |
+| Map information button | `::part(info)` | |
+| `.border` (map boundary button) | `::part(border)` | The color of the boundary lines drawn on the map is chosen per map by the element (CSS variables cannot change it) |
 | `.hide_marker` | `::part(hide-marker)` | |
-| マーカー一覧のボタン / 画面 | `::part(marker-list)` / `::part(marker-list-modal)` | 一覧の行は `::part(marker-list-layer)`・`::part(marker-list-poi)` |
-| 共有のボタン / 画面 | `::part(share)` / `::part(share-modal)` | `::part(share-button)` は画面の中の SNS・コピーのボタン。QR は `::part(share-qr-app)`・`::part(share-qr-view)`（QR の SVG 自体は `::part(qr-code)`） |
-| `.ol-slidernew input`（透過度） | `::part(slider)` | `<input type="range">` |
-| `.base-swiper` / `.overlay-swiper` | `::part(map-slider)` | カードは `::part(map-slide)`（選択中は `map-slide map-slide-selected`）。前後のボタンは `::part(map-slider-prev)` / `::part(map-slider-next)` |
-| `.swiper-slide` | `::part(map-slide)` | Swiper の DOM ではない（カードはボタン） |
-| `.ol-ctx-menu-container`（右クリックメニュー） | `::part(poi-menu)` | 項目は `::part(poi-menu-item)`。重なった POI の選択も同じ部品 |
-| `.modal_poi` など `.modalBase` | `::part(poi-modal)`・`::part(share-modal)`・`::part(help-modal)`・`::part(map-info-modal)`・`::part(marker-list-modal)`・`::part(gps-modal)`・`::part(splash)` | 旧は 1 つのモーダルの class を付け替えていた。`::part(gps-modal)` は GPS のエラーの画面で、地図の範囲外の知らせはトースト（`::part(toast)`）になった |
-| `.modal_poi .title` | `::part(poi-title)` | ほかに `share-title`・`help-title`・`map-info-title`・`marker-list-title`・`gps-title` |
+| Marker list button / screen | `::part(marker-list)` / `::part(marker-list-modal)` | List rows are `::part(marker-list-layer)` and `::part(marker-list-poi)` |
+| Share button / screen | `::part(share)` / `::part(share-modal)` | `::part(share-button)` is the SNS / copy buttons inside the screen. QR codes are `::part(share-qr-app)` and `::part(share-qr-view)` (the QR SVG itself is `::part(qr-code)`) |
+| `.ol-slidernew input` (transparency) | `::part(slider)` | `<input type="range">` |
+| `.base-swiper` / `.overlay-swiper` | `::part(map-slider)` | Cards are `::part(map-slide)` (the selected one is `map-slide map-slide-selected`). The previous / next buttons are `::part(map-slider-prev)` / `::part(map-slider-next)` |
+| `.swiper-slide` | `::part(map-slide)` | Not Swiper's DOM (each card is a button) |
+| `.ol-ctx-menu-container` (context menu) | `::part(poi-menu)` | Items are `::part(poi-menu-item)`. The chooser for overlapping POIs is the same component |
+| `.modalBase` such as `.modal_poi` | `::part(poi-modal)`, `::part(share-modal)`, `::part(help-modal)`, `::part(map-info-modal)`, `::part(marker-list-modal)`, `::part(gps-modal)`, `::part(splash)` | The legacy UI switched classes on a single modal. `::part(gps-modal)` is the GPS error screen; the out-of-map-range notice is now a toast (`::part(toast)`) |
+| `.modal_poi .title` | `::part(poi-title)` | Also `share-title`, `help-title`, `map-info-title`, `marker-list-title`, `gps-title` |
 | `.modal_poi .body` | `::part(poi-body)` | |
-| POI のメディア（Quyuan のスライダー `qy-swiper`。中身は Chuci） | `::part(poi-media)` / `::part(poi-swiper)` | |
-| POI の `html` / `url` の本文 | `::part(poi-html)` / `::part(poi-iframe)` | `html` の本文は `poi-html`、`url` の本文は iframe の `poi-iframe` |
+| POI media (Quyuan's slider `qy-swiper`, built on Chuci) | `::part(poi-media)` / `::part(poi-swiper)` | |
+| POI `html` / `url` body | `::part(poi-html)` / `::part(poi-iframe)` | The `html` body is `poi-html`; the `url` body is the iframe `poi-iframe` |
 | `.custom-toast` | `::part(toast)` | |
-| 地図情報のメタデータ | `::part(map-meta)` | 行は `part="map-meta-<キー>"` |
-| IIIF の書誌の表（新規） | `::part(map-meta-iiif)` | 地図情報の最後の行。中の表は `::part(iiif-manifest)`・`::part(iiif-canvas)`、写した日時は `::part(iiif-copied-at)`、Manifest へのリンクは `::part(iiif-manifest-link)` |
-| キャッシュの欄 | `::part(map-cache)`・`::part(cache-heading)`・`::part(cache-size)`・`::part(cache-fetch)`・`::part(cache-delete)` | |
+| Map information metadata | `::part(map-meta)` | Each row is `part="map-meta-<key>"` |
+| IIIF bibliographic table (new) | `::part(map-meta-iiif)` | The last row of the map information. The inner tables are `::part(iiif-manifest)` and `::part(iiif-canvas)`, the copy date is `::part(iiif-copied-at)`, and the link to the Manifest is `::part(iiif-manifest-link)` |
+| Cache section | `::part(map-cache)`, `::part(cache-heading)`, `::part(cache-size)`, `::part(cache-fetch)`, `::part(cache-delete)` | |
 
-## CSS 変数
+## CSS variables
 
-| 変数 | 効く場所 |
+| Variable | Where it applies |
 | --- | --- |
-| `--maplat-poi-media-theme-color` / `--maplat-poi-media-navigation-color` | POI のメディア（Quyuan のスライダー `qy-swiper`）の色。中で Chuci の `--cc-slider-theme-color` / `--cc-slider-navigation-color` に渡す（既定 `#007aff`）。Chuci の変数を直接ページで指定しても、Shadow DOM の中の指定が勝つので効かない |
-| `--maplat-envelope-color` | 枠線の表示中の、範囲を持つ地図のカード（`::part(map-slide)`）の点線の**既定色**だけ。地図ごとの色（要素が割り当てる 25 色）があればそちらが勝つので、ふつうは見えない（範囲を持つカードには必ず付くので、今の版ではページで指定した値は見えない）。`::part(border)` のボタンにも、地図の上の範囲の線にも効かない |
-| `--maplat-ui-control-gap` | 操作ボタンの列（左上・左下・右下）の、隣り合うボタンの間隔。既定は `7px`。タッチ端末も同じ値を使う。`<maplat-ui>` に指定する |
+| `--maplat-poi-media-theme-color` / `--maplat-poi-media-navigation-color` | Colors of the POI media (Quyuan's slider `qy-swiper`). Passed internally to Chuci's `--cc-slider-theme-color` / `--cc-slider-navigation-color` (default `#007aff`). Setting Chuci's variables directly on the page has no effect, because the declaration inside the Shadow DOM wins |
+| `--maplat-envelope-color` | Only the **default color** of the dotted outline on the cards (`::part(map-slide)`) of maps that have a boundary, while boundaries are shown. A per-map color (one of the 25 colors the element assigns) wins when present, so it is normally not visible (every card with a boundary gets one, so in the current version a value set by the page is never visible). It affects neither the `::part(border)` button nor the boundary lines on the map |
+| `--maplat-ui-control-gap` | The gap between adjacent buttons in the control columns (top left, bottom left, bottom right). Default `7px`. Touch devices use the same value. Set it on `<maplat-ui>` |
 
-## 例
+## Example
 
 ```css
-/* 操作ボタンの見た目 */
+/* Control buttons */
 maplat-ui::part(zoom),
 maplat-ui::part(home),
 maplat-ui::part(gps) {
   background: rgba(0, 0, 0, 0.75);
 }
 
-/* 地図の題名 */
+/* Map title */
 maplat-ui::part(map-title) {
   font-family: "Clarendon", serif;
   color: #402;
 }
 
-/* POI のメディア（Quyuan のスライダー）の色 */
+/* Colors of the POI media (Quyuan's slider) */
 maplat-ui {
   --maplat-poi-media-theme-color: #a00;
   --maplat-poi-media-navigation-color: #a00;
 }
 
-/* 地図の切り替えのカード */
+/* Map switcher cards */
 maplat-ui::part(map-slide-selected) {
   outline: 2px solid #a00;
 }
 ```
 
-## 旧 API（`MaplatUi`）を使い続ける場合
+## If you keep using the legacy API (`MaplatUi`)
 
-- `new MaplatUi(option)`・`MaplatUi.createObject(option)`・`waitReady`・`ui.core`（Core の
-  `MaplatApp`）・`uiHooks` の 7 段階はそのままです。地図の大きさは、旧と同じくページの CSS で決めてください。
-  `<maplat-ui>` のホストは旧の地図と同じく `position: absolute; top/left/right/bottom: 0` で、
-  **いちばん近い位置指定の祖先いっぱい**に広がります（`#map_div` 自体の高さが 0 でもよいのは旧と同じ）。
-- `ui.contextMenu` は限定 facade です。`extend`・`clear`・`on("open"/"close")` は動きますが、
-  `contextMenu.container` は旧の class 名（`.ol-ctx-menu-container`）を持ちません。
-- `ui.baseSwiper`・`ui.overlaySwiper` は限定 facade です。`slides` は旧と同じ形の**見かけの配列**で、
-  実物の DOM（Swiper の `.swiper-slide`）ではありません。
-- `ui.i18n` は限定 facade（`language`・`t`・`exists`・`changeLanguage`）です。i18next の
-  `addResourceBundle` などは警告して無視します。
-- `ui.sliderNew` は透過度の facade です。`set("slidervalue", 0..1)` は `<maplat-ui>` の `transparency` 属性
-  （0 が不透明・100 が透明）を書き、`get("slidervalue")` と `on("propertychange")` は利用者の操作も含めた
-  今の値（子の `<maplat-app>` が書き戻す `transparency`）を返します。`setEnable` は `<maplat-ui>` へ委譲します。
-- `ui.addEventListener(type, fn)` に、層 A のイベント（`mapChanged`・`clickMarker`・`clickMap`・
-  `lifecycle:*` など）が `{ type, detail }` の形で届くようになりました（旧 `MaplatUi` は配っていませんでした。
-  `ui.core.addEventListener` も従来どおり使えます）。
-- option の `hideOutsidePois: true` で、古地図の範囲外の POI を描かないようにできます（option は
-  `appOption` として子へ渡るので、効くのは起動時だけです）。起動後に変えるときは `<maplat-ui>` の
-  `hideOutsidePois` プロパティ（`hide-outside-pois` 属性）を使ってください。
-- `ui.showContextMenu([{icon, text, callback}])` の `text` は、サニタイズを通した HTML として入ります
-  （スクリプト・イベント属性は落ちます）。`ui.lastClickPixel` が無いときは、旧のように開かないのではなく
-  最後に地図を押した位置（それも無ければ地図の中央）に出ます。
-- **型の変化**（旧の実装を消したので、型は互換層が自前で定義しています）:
-  - `ui.i18n` は i18next のインスタンス（型 `i18n`）ではなく限定 facade（型 `LegacyI18n`）、
-    `ui._t` は i18next の `TFunction` ではなく `(key, option?) => string` です。`ui._t = …`・`ui.i18n = …` の
-    代入は警告して無視します（例外にはしません）。`ui.lang = "en"` は `<maplat-ui>` の `lang` 属性へ流れ、
-    表示の言語が切り替わります（**起動前**の `ui.lang = …` は起動するまでの読み値だけで、起動後の言語は
-    要素が決めます。旧も起動時に言語を決め直していたので振る舞いは同じです）。
-  - `ui.sliderNew` の型は `LegacySliderFacade` です（`element`・`get`・`set`・`setValue`・`setEnable`・
-    `on`/`off`/`un("propertychange")`。ほかに互換層だけが使う `attach`・`detach`）。旧は OL の Control
-    （`SliderNew`）でしたが、いまは限定 facade なので `instanceof` や OL の Control のメソッド
-    （`setMap`・`getMap` など）はありません。
-  - `ui.contextMenu` の型は `LegacyContextMenuFacade` です。旧は ol-contextmenu の fork（`ContextMenu`）でした。
-    facade が持つ口は `container`・`Internal`（`openMenu`・`closeMenu`・`opened`）・`extend`・`clear`・
-    `push`・`pop`・`shift`・`countItems`・`isOpen`・`close`・`updatePosition`・`on`/`un`/`off`
-    （ほかに互換層だけが使う `attach`・`detach`）だけです。ふつうのオブジェクトなので、これ以外の名前
-    （旧の `getDefaultItems` など）は警告なしに `undefined` で、呼ぶと `TypeError` になります。
-  - `ui.baseSwiper`・`ui.overlaySwiper` の型は `SwiperInstance`（= `LegacySwiper`）です。`slides` の
-    1 枚は本物の DOM 要素ではなく、`dataset.swiperSlideIndex` と `classList.contains("selected")` を
-    持つ**見かけの**オブジェクトです（`el`・`slides`・`activeIndex`・`slideTo` などは動きます）。
-- 旧 UI の CSS（`src/styles/ui.scss` の bootstrap・`ol/ol.css` の UI 部分）は同梱されなくなりました。
-  地図（OpenLayers）の CSS は従来どおり入口（`@maplat/ui`）が読み込みます。
-  `src/styles/*.scss`（`maplat-specific.scss`・`ui.scss`・`contextmenu.scss`）はリポジトリに残していますが、
-  これは**旧 API の後方互換のためだけ**のもので、`<maplat-ui>` の見た目には効きません（新 UI は Shadow DOM
-  の中に自分の CSS を持ちます）。配布物の `dist/maplat_ui.css` はもう OpenLayers の CSS だけ（約 5 KB。以前は
-  旧 UI の CSS を含めて約 494 KB）で、旧の SCSS が利用者に届くのは、パッケージに同梱される原稿
-  （`files` の `src/`）としてだけです。削除はメジャー版で行います。
-- **旧 UI の実装そのものは消しました**（`src/ui_init.ts`・`ui_marker.ts`・`ui_utils.ts`・
-  `maplat_control.ts`・`contextmenu/`・`swiper_*`・`pwa_init.ts`・`pointer_images.ts`・`function.ts`・
-  `index.legacy.ts`）。同じ画面を描く経路は `<maplat-ui>` の 1 つだけで、旧 API はその上の互換層です。
-  依存からも `swiper`・`@turf/turf`・`bootstrap.native`・`i18next`・`i18next-http-backend`・`page` を外しました
-  （`@c4h/weiwudi` は Service Worker のビルドで使うので残しています）。
+- `new MaplatUi(option)`, `MaplatUi.createObject(option)`, `waitReady`, `ui.core` (Core's
+  `MaplatApp`) and the 7 phases of `uiHooks` are unchanged. As before, decide the map size with
+  page CSS. The `<maplat-ui>` host is `position: absolute; top/left/right/bottom: 0`, like the
+  legacy map, and fills **its nearest positioned ancestor** (as before, `#map_div` itself may
+  have a height of 0).
+- `ui.contextMenu` is a limited facade. `extend`, `clear` and `on("open"/"close")` work, but
+  `contextMenu.container` does not carry the legacy class name (`.ol-ctx-menu-container`).
+- `ui.baseSwiper` and `ui.overlaySwiper` are limited facades. `slides` is an **array-like
+  stand-in** shaped like the legacy one, not real DOM (Swiper's `.swiper-slide`).
+- `ui.i18n` is a limited facade (`language`, `t`, `exists`, `changeLanguage`). i18next methods
+  such as `addResourceBundle` print a warning and are ignored.
+- `ui.sliderNew` is a facade for transparency. `set("slidervalue", 0..1)` writes the
+  `transparency` attribute of `<maplat-ui>` (0 is opaque, 100 is transparent), and
+  `get("slidervalue")` and `on("propertychange")` return the current value including user
+  operations (the `transparency` written back by the child `<maplat-app>`). `setEnable`
+  delegates to `<maplat-ui>`.
+- `ui.addEventListener(type, fn)` now receives layer A events (`mapChanged`, `clickMarker`,
+  `clickMap`, `lifecycle:*`, etc.) in the form `{ type, detail }` (the legacy `MaplatUi` did not
+  dispatch them; `ui.core.addEventListener` still works as before).
+- With the option `hideOutsidePois: true`, POIs outside the range of the old map are not drawn
+  (the option is passed to the child as `appOption`, so it takes effect only at startup). To
+  change it after startup, use the `hideOutsidePois` property (`hide-outside-pois` attribute) of
+  `<maplat-ui>`.
+- The `text` of `ui.showContextMenu([{icon, text, callback}])` is inserted as sanitized HTML
+  (scripts and event attributes are dropped). When `ui.lastClickPixel` is absent, the menu is
+  not suppressed as in the legacy UI; it opens at the last position where the map was clicked
+  (or at the center of the map if there is none).
+- **Type changes** (the legacy implementation was removed, so the compatibility layer defines
+  its own types):
+  - `ui.i18n` is not an i18next instance (type `i18n`) but a limited facade (type `LegacyI18n`),
+    and `ui._t` is not i18next's `TFunction` but `(key, option?) => string`. Assignments such as
+    `ui._t = …` and `ui.i18n = …` print a warning and are ignored (no exception is thrown).
+    `ui.lang = "en"` flows to the `lang` attribute of `<maplat-ui>` and switches the display
+    language (a `ui.lang = …` **before startup** only affects the value read until startup; the
+    language after startup is decided by the element. The legacy UI also re-decided the
+    language at startup, so the behavior is the same).
+  - The type of `ui.sliderNew` is `LegacySliderFacade` (`element`, `get`, `set`, `setValue`,
+    `setEnable`, `on`/`off`/`un("propertychange")`, plus `attach` and `detach`, which only the
+    compatibility layer uses). It used to be an OL Control (`SliderNew`); now that it is a
+    limited facade, `instanceof` and OL Control methods (`setMap`, `getMap`, etc.) are not
+    available.
+  - The type of `ui.contextMenu` is `LegacyContextMenuFacade`. It used to be a fork of
+    ol-contextmenu (`ContextMenu`). The facade has only `container`, `Internal` (`openMenu`,
+    `closeMenu`, `opened`), `extend`, `clear`, `push`, `pop`, `shift`, `countItems`, `isOpen`,
+    `close`, `updatePosition`, `on`/`un`/`off` (plus `attach` and `detach`, which only the
+    compatibility layer uses). It is a plain object, so any other name (such as the legacy
+    `getDefaultItems`) is silently `undefined`, and calling it throws a `TypeError`.
+  - The type of `ui.baseSwiper` and `ui.overlaySwiper` is `SwiperInstance` (= `LegacySwiper`).
+    Each entry of `slides` is not a real DOM element but a **stand-in** object with
+    `dataset.swiperSlideIndex` and `classList.contains("selected")` (`el`, `slides`,
+    `activeIndex`, `slideTo`, etc. work).
+- The legacy UI CSS (bootstrap in `src/styles/ui.scss` and the UI part of `ol/ol.css`) is no
+  longer bundled. The map (OpenLayers) CSS is still loaded by the entry point (`@maplat/ui`).
+  `src/styles/*.scss` (`maplat-specific.scss`, `ui.scss`, `contextmenu.scss`) remain in the
+  repository **only for backward compatibility of the legacy API** and have no effect on the
+  look of `<maplat-ui>` (the new UI carries its own CSS inside its Shadow DOM). The distributed
+  `dist/maplat_ui.css` now contains only the OpenLayers CSS (about 5 KB; previously about 494 KB
+  including the legacy UI CSS), and the legacy SCSS reaches users only as source files shipped in
+  the package (`src/` in `files`). They will be removed in a major version.
+- **The legacy UI implementation itself has been removed** (`src/ui_init.ts`, `ui_marker.ts`,
+  `ui_utils.ts`, `maplat_control.ts`, `contextmenu/`, `swiper_*`, `pwa_init.ts`,
+  `pointer_images.ts`, `function.ts`, `index.legacy.ts`). There is now a single path that draws
+  the screen, `<maplat-ui>`, and the legacy API is a compatibility layer on top of it. The
+  dependencies `swiper`, `@turf/turf`, `bootstrap.native`, `i18next`, `i18next-http-backend` and
+  `page` were also removed (`@c4h/weiwudi` stays because the Service Worker build uses it).
 
-## 参考
+## See also
 
-- [`<maplat-ui>` 要素の API](maplat-ui-element.ja.md)
-- [旧 `MaplatUi` クラス](maplat-ui.ja.md)
-- ライフサイクル: [`docs/ui-core-lifecycle.ja.md`](../ui-core-lifecycle.ja.md)
-- `part` 名の正本: `src/element/maplat-ui.ts`・`src/element/slider.ts`
+- [`<maplat-ui>` element API](maplat-ui-element.md)
+- [Legacy `MaplatUi` class](maplat-ui.md)
+- Lifecycle: [`docs/ui-core-lifecycle.md`](../ui-core-lifecycle.md)
+- Source of truth for `part` names: `src/element/maplat-ui.ts`, `src/element/slider.ts`

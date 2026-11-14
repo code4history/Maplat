@@ -6,7 +6,7 @@
 > [README](../../README.md#quick-start).
 > For the legacy `MaplatUi` class see [`maplat-ui.md`](maplat-ui.md).
 > For the `::part()` names and CSS variables see the
-> [migration guide](migration-ui-shadow-dom.md) (Japanese).
+> [migration guide](migration-ui-shadow-dom.md).
 > For the conceptual guide see the
 > [Wiki API-Reference](https://github.com/code4history/Maplat/wiki/API-Reference).
 
@@ -254,12 +254,13 @@ parentheses); the main parts are in the
 | Marker list (`marker-list`) + dialog (`marker-list-modal`) | `enable-marker-list` and the map has POIs | Lists the POI layers (`marker-list-layer`) and POIs (`marker-list-poi`); a layer switch toggles `showPoiLayer` / `hidePoiLayer`, a POI row opens the balloon |
 | Share (`share`) + dialog (`share-modal`) | after `ready`, with `enable-share` | See [Sharing](#sharing) |
 | Help (`help`) + dialog (`help-modal`) | always (the button is there from the start, but the dialog opens only after `ready`) | The help text; the rows for share, border, hide-marker and marker-list appear with the matching `enable-*` |
-| POI balloon (`poi-modal`, `poi-title`, `poi-body`, `poi-media`) | on `clickMarker` / `clickMarkers` with one POI, `openMarker()`, the list | Name, media (Quyuan slider, `qy-swiper`), address, description; or the POI's `html` / `url`. A POI with `directgo` navigates instead. Selects the marker on the map |
+| POI balloon (`poi-modal`, `poi-title`, `poi-body`, `poi-media`) | on `clickMarker` / `clickMarkers` with one POI, `openMarker()`, the list | Name, media (Quyuan slider, `qy-swiper`), address, description; or the POI's `html` / `url`. A POI with `directgo` navigates instead of opening the balloon (only for `http`, `https` and relative URLs; for any other URL it does not navigate and shows the cannot-open-link toast below). Selects the marker on the map |
 | POI menu (`poi-menu`, `poi-menu-item`) | on `clickMarkers` with several POIs | Choose one of the overlapping POIs |
 | GPS error dialog (`gps-modal`) | on GPS errors (denied, unavailable, timed out) | Title and message |
 | Splash (`splash`) | at startup, only when no map is restored (`initialRestore.mapID` is empty) | `appName` and the `splash` image; hidden after 200 ms (1000 ms with an image) once the map is ready |
 | Toast (`toast`) | `showToast()` and after copying a share URL | 1.5 s, at the bottom centre of the window (or next to the copied control) |
 | Out-of-map toast (`toast`) | on `outOfMap` (unless `presentation-mode`), on a `gps_out` result, and when the GPS button is pressed outside the map with `always-gps-on` (unless `presentation-mode`) | 3 s, at the bottom centre of `<maplat-ui>`. Does not close open screens or move focus. The message says what happens: back to the default position, GPS turned off, or just out of map |
+| Cannot-open-link toast (`toast`) | when a POI's `directgo` is not an `http`, `https` or relative URL (`javascript:`, `data:`, `blob:`, `file:`, etc.; also with `blank`) | The same toast as the out-of-map toast (3 s, at the bottom centre of `<maplat-ui>`). The message is `app.cannot_open_link` ("This link cannot be opened"). No navigation, no new tab and no balloon. Shown even with `presentation-mode` |
 
 The controls, the transparency slider, the title and the map sliders are the
 targets of the auto-hide: they hide while the map is dragged (always) and, with
@@ -433,7 +434,7 @@ The element dispatches no other public event.
 The parts live in the Shadow DOM, so page selectors do not reach them; style
 them with `maplat-ui::part(name)` and the CSS variables. The mapping from the
 legacy class names, the list of parts and the CSS variables are in the
-[migration guide](migration-ui-shadow-dom.md) (Japanese; it lists the main
+[migration guide](migration-ui-shadow-dom.md) (it lists the main
 parts only); the source of truth for the part names is
 `src/element/maplat-ui.ts`, `src/element/slider.ts`, `src/element/share.ts`
 (`qr-code`) and `src/element/poi-html.ts` (`poi-html`, `poi-iframe`).

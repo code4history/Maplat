@@ -3,7 +3,7 @@
 //
 // - 起動の後に `cc-swiper` と `qy-swiper` の両方が登録されている（互換層が起動時に Quyuan を読み、
 //   Quyuan が同梱の Chuci の cc-* を登録する ∴ 旧 API の利用者は起動の後も cc-swiper を使える）
-// - media で指定した POI（m1-t3-swiper-a）を `openMarker` で開くと qy-swiper で描け、画像を押すとビューアが開く
+// - media で指定した POI（swiper-a）を `openMarker` で開くと qy-swiper で描け、画像を押すとビューアが開く
 // - テンプレート（poiTemplate）が <qy-swiper> を書いた POI を地図のマーカーから開くと、POI の html の
 //   入れ子の Shadow DOM の中に qy-swiper が描け、高さが付き、画像を押すとビューアが開く
 //   （テンプレートはマーカーを描くときに評価され、クリックの detail に html が載る）
@@ -23,7 +23,7 @@ const PNG_1X1 = Buffer.from(
 );
 const MEDIA_IMAGES = /t\.tilemap\.jp\/maplat\/img\/|code4history\.dev\//;
 
-const MEDIA_POI_ID = "m1-t3-swiper-a";
+const MEDIA_POI_ID = "swiper-a";
 const TEMPLATE_POI_ID = "poi-template-nunjucks";
 const TEMPLATE_POI = { longitude: 139.5385, latitude: 36.2505 };
 

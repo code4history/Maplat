@@ -45,7 +45,7 @@ Maplat is open-source under the Apache License 2.0 (from version 0.12.2).
 
 <!-- release-pinned:start -->
 > **Current release: `1.2.0`**. This block is the only place in
-> this repository that carries a release version (ADR-0012); everything outside it is
+> this repository that carries a release version; everything outside it is
 > written against the 1.0 release.
 > npm: [`@maplat/ui`](https://www.npmjs.com/package/@maplat/ui)
 > [![npm](https://img.shields.io/npm/v/@maplat/ui)](https://www.npmjs.com/package/@maplat/ui)
@@ -197,6 +197,24 @@ pnpm dev
 
 Access `http://localhost:5173/` in your browser.
 
+The check page for the `<maplat-ui>` element (on Core's `<maplat-app>`) is
+`http://localhost:5173/demo/element.html`. It opens `public/apps/sample.json` by
+default, and accepts these query parameters (they are read at startup only):
+
+- `?app=<appID>` — open `public/apps/<appID>.json` instead (sets `app-id`;
+  letters, digits, `_` and `-` only). Sample apps:
+  - [`outside-pois-sample`](public/apps/outside-pois-sample.json) — POIs outside
+    the old map (`/demo/element.html?app=outside-pois-sample`)
+  - [`iiif-bibliography-sample`](public/apps/iiif-bibliography-sample.json) —
+    the IIIF bibliography table in the map information
+    (`/demo/element.html?app=iiif-bibliography-sample`)
+- `?cache=1` — turn on the tile cache section of the map information (sets
+  `enable-cache`); shown only for maps that can be cached (not for IIIF maps)
+- `?pwa` — turn on the PWA (sets `pwa-manifest`)
+- `?always-gps` — sets `always-gps-on`
+
+Parameters can be combined, e.g. `/demo/element.html?app=outside-pois-sample&cache=1`.
+
 #### Build
 
 ```bash
@@ -216,7 +234,7 @@ pnpm lint         # Run linter and formatter (ESLint/Prettier)
 <!-- SECTION 6: Prerequisites -->
 ## Prerequisites
 
-> Derived from the `engines` field in `package.json` (ADR-0012: release-dependent).
+> Derived from the `engines` field in `package.json` (release-dependent).
 
 - Node.js: v20 or v22 (LTS tested via GitHub Actions)
 - pnpm: `>=9.0.0` (required; `package.json` enforces pnpm)
@@ -273,7 +291,7 @@ repository; the Sister repositories table below is the public substitute)*
 | Project info / features / cases | <https://www.maplat.jp/en/> | Product site |
 | Sponsor / business inquiry | <https://www.nayuta-inc.co.jp/en/> | Corporate site (Nayuta, Inc.) |
 
-> ADR-0013: Apache-licensed repositories (this one) link to both sites.
+> Apache-licensed repositories (this one) link to both sites.
 > MIT-licensed sister repos (Weiwudi / Quyuan / Chuci) carry no Nayuta link.
 
 <!-- SECTION 10: License -->

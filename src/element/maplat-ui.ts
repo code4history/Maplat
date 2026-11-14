@@ -19,7 +19,7 @@
 // `<maplat-app>` を登録する入口（Core の "@maplat/core/element" か、別の層 A の実装の要素）はページが import する。
 //
 // 公開の仕様: docs/api/maplat-ui-element.md（属性・プロパティ・メソッド・イベントの一覧）。
-//   移行の手引き: docs/api/migration-ui-shadow-dom.md
+//   移行の手引き: docs/api/migration-ui-shadow-dom.ja.md
 import {
   ELEMENT_ATTRIBUTES,
   ELEMENT_PROPERTIES,

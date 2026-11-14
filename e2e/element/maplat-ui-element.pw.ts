@@ -383,14 +383,14 @@ test("GPS ボタン（handleGPS・gpsEnabledChanged）", async ({
 
 // ---- POI まわり（マーカー一覧・重なった POI の選択メニュー・メディア）----
 
-// public/pois/m1-t3-swiper-demo.json（画像 3 枚＋YouTube／動画・3D・点群の POI）
-const MEDIA_LAYER = "m1_t3_swiper_demo";
+// public/pois/swiper-demo.json（画像 3 枚＋YouTube／動画・3D・点群の POI）
+const MEDIA_LAYER = "swiper_demo";
 const MEDIA_POI_A = {
-  id: "m1-t3-swiper-a",
+  id: "swiper-a",
   longitude: 139.539,
   latitude: 36.251
 };
-const MEDIA_POI_B = "m1-t3-swiper-b";
+const MEDIA_POI_B = "swiper-b";
 // 重なった POI の選択メニューの確かめに、同じ点へ 2 つ置く（既存の POI の無いところ）
 const OVERLAP = { longitude: 139.5352, latitude: 36.2468 };
 const MEDIA_HOSTS = /code4history\.dev|w3schools\.com/;

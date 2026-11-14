@@ -10,7 +10,7 @@
 - 地図の範囲外の知らせをモーダルからトーストに替えた。`<maplat-ui>` の枠の下端の中央に 3 秒出し、細い枠でも枠の内側に収める。開いている画面は閉じず、フォーカスも動かさない。文言は実際の動きに合わせた（視点が範囲外で標準位置へ戻るときは `app.out_of_map_area`、GPS の結果が範囲外で GPS が切れるときは `app.out_of_map_desc`、`always-gps-on` の範囲外で GPS ボタンを押したときは `app.out_of_map`）。GPS のエラー（拒否・未取得・タイムアウト）は `gps-modal` のまま。`::part(gps-modal)` で範囲外の表示を作り込んでいたページは `::part(toast)` へ移す。旧 API の `modalSetting("gpsD")` は今までどおり開く。自動で戻るのに利用者への指示に読めていた中国語（zh）の `app.out_of_map_area` も直した
 - 操作ボタンの間隔を、左上（ズーム・GPS・ホーム）・左下（共有・ヘルプ）・右下の列で揃えた。3 つの列は同じ flex の列と同じ CSS 変数 `--maplat-ui-control-gap`（既定 7px・タッチ端末も同じ）で積む
 - ヘルプの印（ボタンのアイコン・＋−）に実物のボタンと同じ背景色を付け、透過度スライダーの印に可動部分とつまみの影を付けた。ヘルプの冒頭には、スマホの枠の中に今の地図を写し（地図がまだ描かれていなければ古地図のサムネイル）、その上に実物の部品を縮小して並べた全体の図を、その場で組み立てて出す
-- UI の表示を `<maplat-ui>`（Shadow DOM open）に一本化した。旧 API `MaplatUi` は互換層として残り、`createObject`・`waitReady`・公開メソッド 19 本・公開フィールド・`uiHooks` の 7 段階・`ui.core`（Core の `MaplatApp`）の外形は変わらない。ただし互換層は Core の `<maplat-app>` の上だけで動く。旧 UI の DOM の class 名（`.ol-*`・`.swiper-*`・`.modal_*` など）は無くなり、スタイルは `::part()` と CSS 変数で当てる（スタイリングの変更。[移行ガイド](docs/api/migration-ui-shadow-dom.md)）
+- UI の表示を `<maplat-ui>`（Shadow DOM open）に一本化した。旧 API `MaplatUi` は互換層として残り、`createObject`・`waitReady`・公開メソッド 19 本・公開フィールド・`uiHooks` の 7 段階・`ui.core`（Core の `MaplatApp`）の外形は変わらない。ただし互換層は Core の `<maplat-app>` の上だけで動く。旧 UI の DOM の class 名（`.ol-*`・`.swiper-*`・`.modal_*` など）は無くなり、スタイルは `::part()` と CSS 変数で当てる（スタイリングの変更。[移行ガイド](docs/api/migration-ui-shadow-dom.ja.md)）
 - 旧 UI の CSS（bootstrap を含む `src/styles/ui.scss`）を入口から読まなくなった。地図（OpenLayers）の CSS は従来どおり入口が読み込む
 - `ui.contextMenu`・`ui.baseSwiper`・`ui.overlaySwiper`・`ui.sliderNew`・`ui.i18n` は限定 facade になった。旧 UI が使っていた口（`extend`/`clear`/`on`・`slides`・`get`/`set("slidervalue")`・`language`/`t`/`exists`/`changeLanguage`）は動くが、実物の Swiper・i18next・OL Control ではない
 - 設定ファイルの機能系キーは、旧 API の経路（`MaplatUi`）では従来どおり設定ファイルから読む。`noRotate`・`northUp`・`homeMarginPixels`・`controls`・`fakeGps`・`fakeRadius` は Core の互換モード（子の `<maplat-app>` が読む）、`tapDuration`・`tapUIVanish` は互換層が設定ファイルの中身（`appData`）から読んで `<maplat-ui>` の属性へ流す（option で与えたときは option が勝つ）。`<maplat-ui>` を直接使う場合は属性・プロパティで与える
@@ -24,7 +24,7 @@
 - `package.json` に `exports` を足した（`.`・`./element`・`./dist/*`・`./src/*`）。`require("@maplat/ui")` は `default` の ES 版（`dist/maplat_ui.es.js`）に解決され、Node 20.19 / 22.12 以降の `require(esm)` とバンドラーで読める。1.1.0 では `main` の `dist/maplat_ui.umd.js` が `"type": "module"` の下で ES モジュールとして読まれ、UMD の包みが `exports` も `require("ol")` も使えずに空の名前空間を返していたが、この問題も解消した。`exports` が付いたので、`assets/` の深いパスは Node とバンドラーから読めなくなった（`./dist/*` 経由なら読める）。`src/` は `./src/*` で開いてある（MaplatEditor が `src/styles/` の SCSS を import しているため）。`dist/maplat_ui.umd.js` の名前と置き場所は変えていない（`<script>` と `main` は従来どおり）
 - 地図の切り替えカードの枚数が変わる。幅 480px 以下は 1.4 枚、それより広い画面は 2 枚（今の版は 480px 以上で 1.4 枚・それ未満で 2 枚だった。Swiper の版上げで入った逆転を、v4 時代の見た目に戻した）
 - `dist/maplat_ui.css` は約 494 KB から約 5 KB になった。旧 UI の bootstrap を含む大きな CSS を配るのをやめ、`<maplat-ui>` の Shadow DOM の中の CSS だけにしたため。ページが旧 UI の bootstrap の CSS（`.btn` などの class）を間借りしていた場合は、それが効かなくなる
-- `::part` と CSS 変数の一覧は[移行ガイド](docs/api/migration-ui-shadow-dom.md)にある
+- `::part` と CSS 変数の一覧は[移行ガイド](docs/api/migration-ui-shadow-dom.ja.md)にある
 - POI のマルチメディアの表示部品を、`@c4h/chuci` の直接依存から [Quyuan](https://github.com/code4history/Quyuan)（`@c4h/quyuan`）に替えた。表示は `<qy-swiper>`／`<qy-swiper-slide>`／`<qy-viewer>`（中身は従来と同じ Chuci）になる。依存は `@c4h/chuci` が外れ `@c4h/quyuan` が入る。Chuci は Quyuan の中に同梱されているので、別に入れる必要は無い
   - メディアの部品は従来どおり、POI のメディアを最初に開くときに読み込む（初期表示の大きさは変わらない）。部品の大きさは gzip でおよそ 306 KB → 342 KB（`dist/chuci-*.js` 306,195 バイト → `dist/quyuan-*.js` 342,123 バイト）
   - 旧 API（`MaplatUi`）の利用者が自分のページで使っていた `cc-swiper` などの要素は、引き続き登録される
@@ -39,7 +39,7 @@
 - `<maplat-ui>` の確認ページ（`demo/element.html`）に `?app=<appID>`（開く設定ファイル）と `?cache=1`（`enable-cache`）を足した。見本の設定ファイル `apps/outside-pois-sample.json`・`apps/iiif-bibliography-sample.json` を足した
 
 ### Deprecated
-- 旧 UI API（`MaplatUi` クラス。`new MaplatUi(option)`・`MaplatUi.createObject(option)`）を非推奨にした。**削除は次のメジャー（2.0）で行う。** 代わりに `<maplat-ui>`（`@maplat/ui/element`）を使う。1.x の間は外形（`createObject`・`waitReady`・公開メソッド・公開フィールド・`uiHooks`・`ui.core`）を変えずに残す（[移行ガイド](docs/api/migration-ui-shadow-dom.md)）。型定義（配布物の `dist/legacy/maplat_ui_compat.d.ts`）のクラスと `createObject` には `@deprecated` と代替 API を記した。`new MaplatUi(option)`（`MaplatUi.createObject(option)` も中で `new` する）すると、**同一プロセスで 1 回だけ**（インスタンスごとではなく）英語の警告を `console.warn` で出す。`<maplat-ui>` 要素の経路は内部で `MaplatUi` を作らないため、要素だけを使うページでは警告は出ない
+- 旧 UI API（`MaplatUi` クラス。`new MaplatUi(option)`・`MaplatUi.createObject(option)`）を非推奨にした。**削除は次のメジャー（2.0）で行う。** 代わりに `<maplat-ui>`（`@maplat/ui/element`）を使う。1.x の間は外形（`createObject`・`waitReady`・公開メソッド・公開フィールド・`uiHooks`・`ui.core`）を変えずに残す（[移行ガイド](docs/api/migration-ui-shadow-dom.ja.md)）。型定義（配布物の `dist/legacy/maplat_ui_compat.d.ts`）のクラスと `createObject` には `@deprecated` と代替 API を記した。`new MaplatUi(option)`（`MaplatUi.createObject(option)` も中で `new` する）すると、**同一プロセスで 1 回だけ**（インスタンスごとではなく）英語の警告を `console.warn` で出す。`<maplat-ui>` 要素の経路は内部で `MaplatUi` を作らないため、要素だけを使うページでは警告は出ない
 
 ### Removed
 - **旧 UI の実装を削除した**。画面を描く経路は `<maplat-ui>` の 1 つだけになり、旧 API `MaplatUi` は互換層（`src/legacy/`）だけを通る（二重実装の解消）。消したファイル: `src/index.legacy.ts`・`ui_init.ts`・`ui_marker.ts`・`ui_utils.ts`・`maplat_control.ts`・`contextmenu.ts`・`src/contextmenu/`（7 ファイル）・`swiper_ex.ts`・`swiper_loop.ts`・`swiper_augment.d.ts`・`pwa_init.ts`・`pointer_images.ts`・`function.ts`。旧 API の互換層と旧 UI の SCSS（`src/styles/`）は 1.x の間は残す（削除はメジャー版）
@@ -50,6 +50,7 @@
 - 旧 UI の見た目の基準を採るスクリプト `e2e/legacy-baseline-capture.spec.ts` を削除した（旧 UI が無いので採れず、凍結した基準 JSON を新 UI の値で上書きしうるため。基準 JSON は残す）
 
 ### Fixed
+- 地図情報の窓のキャッシュの欄で、Weiwudi の移行中に窓を開いたり地図を切り替えたりするとタイルの数と大きさが 0 で返り、削除のボタンが押せないままになることがあったのを直した。数と大きさがどちらも 0 のときは 500 ms 待って 1 回だけ読み直す（読み直しの前に窓を閉じていたら、その結果では画面を書き換えない）。本当に 0 のときは、1 回読み直した後の表示は今までと同じ
 - 地図切り替えスライダーで、主スレッドが止まって遷移の開始と終わりの通知が遅れたとき（負荷の高い機械での矢印の連打など）に、保険が固定の時間で早く確定して遷移を消し、1 枚分跳んで見えることがあったのを直した。最後の保険は時間ではなく「遷移が実際に進んでいるか」（`getAnimations()` の進み具合）で判断し、進んでいるあいだは残りの時間だけ待ち直す（上限回数つき。待ち続ける経路は無い）
 - 地図切り替えスライダーで、読めなかったサムネイルの記録が地図の一覧を入れ替えても残り、一時的に読めなかった画像がページを開き直すまで頭文字のままだったのを直した（一覧の入れ替えで記録を消し、同じ URL でも読み直す）
 - `vite.config.js` の入れ子の UMD ビルド（`configFile: false`）に外側と同じ CSS（SCSS）の設定を渡すようにした（`silenceDeprecations` を 1 か所で持つ。ビルドの出力は変わらない）

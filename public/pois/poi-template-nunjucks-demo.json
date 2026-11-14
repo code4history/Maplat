@@ -12,7 +12,7 @@
   "icon": "img/stones.png",
   "poiTemplate": "<p><b>{{ name }}</b>（テンプレートで組んだ見出し）</p><qy-swiper>{% for p in photos %}<qy-swiper-slide image-url=\"{{ p.src }}\" image-type=\"image\" thumbnail-url=\"{{ p.src }}\" caption=\"{{ p.caption }}\"></qy-swiper-slide>{% endfor %}</qy-swiper><p>{{ desc }}</p>"
  },
- "_note": "POI のテンプレート（poiTemplate・Nunjucks の記法）で <qy-swiper> を組む確認用。写真は m1-t3-swiper-demo.json の swiper確認A の 1〜3 枚目と同じ（media で指定したスライダーと同じ見た目になる）。",
+ "_note": "POI のテンプレート（poiTemplate・Nunjucks の記法）で <qy-swiper> を組む確認用。写真は swiper-demo.json の swiper確認A の 1〜3 枚目と同じ（media で指定したスライダーと同じ見た目になる）。",
  "features": [
   {
    "type": "Feature",
