@@ -1,7 +1,7 @@
 {
- "id": "m1_t3_swiper_demo",
+ "id": "swiper_demo",
  "type": "FeatureCollection",
- "name": "swiper 目視確認用 POI（m1-t3）",
+ "name": "swiper 目視確認用 POI",
  "crs": {
   "type": "name",
   "properties": {
@@ -11,11 +11,11 @@
  "properties": {
   "icon": "img/stones.png"
  },
- "_note": "m1-t3 で追加。swiper（複数画像ビューア）は POI の画像が2枚以上のときだけ生成されるため、目視確認の入口として固定 id を持つ POI を用意した。画像 URL は既存の公開データ（t.tilemap.jp）から採取している。設計書 §9.2 / AC12。",
+ "_note": "swiper（複数画像ビューア）は POI の画像が2枚以上のときだけ生成されるため、目視確認の入口として固定 id を持つ POI を用意した。画像 URL は既存の公開データ（t.tilemap.jp）から採取している。",
  "features": [
   {
    "type": "Feature",
-   "id": "m1-t3-swiper-a",
+   "id": "swiper-a",
    "properties": {
     "name": "swiper確認A（画像4枚）",
     "image": [
@@ -36,7 +36,7 @@
       "caption": "YouTube Video"
      }
     ],
-    "desc": "m1-t3 の swiper 目視確認用に追加した POI。複数画像を持つため qy-swiper が生成される。"
+    "desc": "swiper の目視確認用の POI。複数画像を持つため qy-swiper が生成される。"
    },
    "geometry": {
     "type": "Point",
@@ -48,7 +48,7 @@
   },
   {
    "type": "Feature",
-   "id": "m1-t3-swiper-b",
+   "id": "swiper-b",
    "properties": {
     "name": "swiper確認B（画像3枚）",
     "image": [
@@ -65,7 +65,7 @@
       "caption": "Gaussian Splatting Model"
      }
     ],
-    "desc": "m1-t3 の swiper 目視確認用に追加した POI。複数画像を持つため qy-swiper が生成される。"
+    "desc": "swiper の目視確認用の POI。複数画像を持つため qy-swiper が生成される。"
    },
    "geometry": {
     "type": "Point",
