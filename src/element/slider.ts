@@ -664,7 +664,7 @@ export class MapSlider {
       const selected =
         !!item && this.#selected !== null && item.mapID === this.#selected;
       this.#slotEls[i].classList.toggle("selected", selected);
-      // part 名: 選択中のカードは `map-slide map-slide-selected`（docs/api/migration-ui-shadow-dom.md）
+      // part 名: 選択中のカードは `map-slide map-slide-selected`（docs/api/migration-ui-shadow-dom.ja.md）
       this.#slotEls[i].setAttribute(
         "part",
         selected ? "map-slide map-slide-selected" : "map-slide"

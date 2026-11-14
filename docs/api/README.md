@@ -14,7 +14,7 @@ The conceptual explanation and usage patterns live in the
 - [MaplatUi class](maplat-ui.md) — static methods, constructor, instance methods
   (**deprecated**; closes in 2.0)
 - [MaplatAppOption](maplat-app-option.md) — option object properties
-- [Migration from the legacy UI DOM (Shadow DOM)](migration-ui-shadow-dom.md) — `::part` / CSS variables mapping (Japanese)
+- [Migration from the legacy UI DOM (Shadow DOM)](migration-ui-shadow-dom.md) — `::part` / CSS variables mapping
 
 ## Related
 

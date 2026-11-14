@@ -7,7 +7,7 @@
 > （`@maplat/core/element`）を組み合わせて使ってください。要素の属性・プロパティ・
 > メソッド・イベントとこのクラスとの対応は
 > [`maplat-ui-element.ja.md`](maplat-ui-element.ja.md)、旧 UI の DOM からの移行は
-> [`migration-ui-shadow-dom.md`](migration-ui-shadow-dom.md) にあります。
+> [`migration-ui-shadow-dom.ja.md`](migration-ui-shadow-dom.ja.md) にあります。
 > `new MaplatUi(...)`・`MaplatUi.createObject(...)` は、同一プロセスで 1 回だけ
 > （インスタンスごとではなく）この旨を `console.warn` で警告します。この文書は 1.x の
 > クラス（静的メソッド・コンストラクタ・インスタンスメソッド・`waitReady`・`uiHooks`・
@@ -34,7 +34,7 @@ UI の表示は `<maplat-ui>`（Shadow DOM open）に移りました。`MaplatUi
 `uiHooks`・`ui.core` など）は変わりませんが、旧 UI の DOM の class 名（`.ol-*`・`.swiper-*`・`.modal_*` など）は
 無くなり、スタイルは `::part()` と CSS 変数で当てる形になりました。また、旧 API の互換層は Core の
 `<maplat-app>` の上だけで動きます。移行の手順と対応表は
-[旧 UI の DOM からの移行（Shadow DOM 化）](migration-ui-shadow-dom.md) を参照してください。
+[旧 UI の DOM からの移行（Shadow DOM 化）](migration-ui-shadow-dom.ja.md) を参照してください。
 要素そのもの（`<maplat-ui>` の属性・プロパティ・メソッド・イベントと、このクラスとの対応）は
 [`<maplat-ui>` 要素 API](maplat-ui-element.ja.md) を参照してください。
 
@@ -47,4 +47,4 @@ UI の表示は `<maplat-ui>`（Shadow DOM open）に移りました。`MaplatUi
 - [`<maplat-ui>` 要素 API](maplat-ui-element.ja.md) — このクラスの土台になっている Custom Element
 - [MaplatAppOption](maplat-app-option.ja.md) — オプションオブジェクトのプロパティ
 - [UI コアライフサイクル](../ui-core-lifecycle.ja.md) — ライフサイクルフェーズと uiHooks
-- [旧 UI の DOM からの移行（Shadow DOM 化）](migration-ui-shadow-dom.md) — `::part` の対応表
+- [旧 UI の DOM からの移行（Shadow DOM 化）](migration-ui-shadow-dom.ja.md) — `::part` の対応表

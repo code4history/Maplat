@@ -6,7 +6,7 @@
 //   - 公開メソッド 19 本・公開フィールド 41 個・`uiHooks` の 7 段階・`ui.core`（Core の `MaplatApp`）
 //   - `addEventListener` は `ol/events/Target` の外形のまま。層 A のイベント（`MAPLAT_APP_EVENTS`・
 //     `ELEMENT_OWN_EVENTS`）を `{ type, detail }` で自分へ出し直す（旧は配っていなかった。
-//     `docs/api/migration-ui-shadow-dom.md` の「旧 API（`MaplatUi`）を使い続ける場合」を参照）
+//     `docs/api/migration-ui-shadow-dom.ja.md` の「旧 API（`MaplatUi`）を使い続ける場合」を参照）
 //
 // 中は `<maplat-ui>`（層 B）に委譲する。地図は層 B が作る `<maplat-app slot="map">`（層 A）。
 // 旧 UI のファイル（`ui_init.ts` 等）は消したので、もう import しようがない
@@ -140,7 +140,7 @@ export function resetMaplatUiDeprecationWarning(): void {
  *   代わりに `<maplat-ui>` 要素（`@maplat/ui/element`）と `<maplat-app>` 要素
  *   （`@maplat/core/element`）を組み合わせて使ってください（要素が地図の上にビューアを重ねます）。
  *   移行の案内は `docs/api/maplat-ui-element.md`（要素の属性・プロパティ・メソッド・イベントと
- *   このクラスとの対応）と `docs/api/migration-ui-shadow-dom.md`（旧 UI の DOM からの移行）に
+ *   このクラスとの対応）と `docs/api/migration-ui-shadow-dom.ja.md`（旧 UI の DOM からの移行）に
  *   あります。
  *   `new MaplatUi(...)`（`createObject` も同じ）は、同一プロセスで 1 回だけこの旨を
  *   `console.warn` で警告します。
@@ -249,7 +249,7 @@ export class MaplatUi extends EventTarget {
    *   この口を変えずに残し、**次のメジャー版（2.0）で閉じます**。代わりに `<maplat-ui>` 要素
    *   （`@maplat/ui/element`）と `<maplat-app>` 要素（`@maplat/core/element`）を組み合わせて
    *   使ってください。移行の案内は `docs/api/maplat-ui-element.md` と
-   *   `docs/api/migration-ui-shadow-dom.md` にあります。
+   *   `docs/api/migration-ui-shadow-dom.ja.md` にあります。
    */
   static async createObject(option: MaplatAppOption): Promise<MaplatUi> {
     const app = new MaplatUi(option);
@@ -456,7 +456,7 @@ export class MaplatUi extends EventTarget {
     );
   }
 
-  /** 旧 `ui.i18n`（限定 facade。`docs/api/migration-ui-shadow-dom.md` の「型の変化」を参照）。 */
+  /** 旧 `ui.i18n`（限定 facade。`docs/api/migration-ui-shadow-dom.ja.md` の「型の変化」を参照）。 */
   get i18n(): LegacyI18n | undefined {
     if (!this.#host) return undefined;
     this.#i18n ??= createLegacyI18n(() => this.#host ?? null);

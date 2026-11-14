@@ -8,7 +8,7 @@
 //
 // 地図は OpenLayers なので、旧の入口と同じく `ol/ol.css` を読み込む（層 A の要素は CSS を
 // 同梱しない）。旧 UI のスタイル（`./styles/ui.scss`）は Shadow DOM 化で不要になったので読まない
-// （移行は `docs/api/migration-ui-shadow-dom.md`）。
+// （移行は `docs/api/migration-ui-shadow-dom.ja.md`）。
 
 import "ol/ol.css";
 

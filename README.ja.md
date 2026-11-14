@@ -43,7 +43,7 @@ Maplat は Apache License 2.0（バージョン 0.12.2 以降）のオープン�
 
 <!-- release-pinned:start -->
 > **現在のリリース: `1.2.0`**。このブロックは本リポジトリで唯一
-> リリース版数を持つ場所です（ADR-0012）。ブロックの外はすべて 1.0 正式版を前提に
+> リリース版数を持つ場所です。ブロックの外はすべて 1.0 正式版を前提に
 > 書かれています。
 > npm: [`@maplat/ui`](https://www.npmjs.com/package/@maplat/ui)
 > [![npm](https://img.shields.io/npm/v/@maplat/ui)](https://www.npmjs.com/package/@maplat/ui)
@@ -158,7 +158,7 @@ Maplat UI はアプリ/地図設定の `pois` フィールドをそのまま
   （`<maplat-ui>` 要素: [docs/api/maplat-ui-element.ja.md](docs/api/maplat-ui-element.ja.md)）
 - **概念解説**（リリース非依存）:
   [Wiki API-Reference](https://github.com/code4history/Maplat/wiki/API-Reference) を参照
-- 旧 DOM からの移行: [docs/api/migration-ui-shadow-dom.md](docs/api/migration-ui-shadow-dom.md) を参照
+- 旧 DOM からの移行: [docs/api/migration-ui-shadow-dom.ja.md](docs/api/migration-ui-shadow-dom.ja.md) を参照
 
 #### 旧 UI のスタイル（`src/styles/`）
 
@@ -188,6 +188,20 @@ pnpm dev
 
 ブラウザで `http://localhost:5173/` にアクセスしてください。
 
+`<maplat-ui>` 要素（Core の `<maplat-app>` の上）の確認ページは
+`http://localhost:5173/demo/element.html` です。既定では `public/apps/sample.json` を開きます。
+次のクエリを受け付けます（どれも起動時だけ読みます）。
+
+- `?app=<appID>` — `public/apps/<appID>.json` を開く（`app-id` を替える。英数字・`_`・`-` だけ）。見本のアプリ:
+  - [`outside-pois-sample`](public/apps/outside-pois-sample.json) — 古地図の範囲外の POI
+    （`/demo/element.html?app=outside-pois-sample`）
+  - [`iiif-bibliography-sample`](public/apps/iiif-bibliography-sample.json) — 地図情報の IIIF の書誌の表
+    （`/demo/element.html?app=iiif-bibliography-sample`）
+- `?cache=1` — 地図情報のタイルのキャッシュの欄を有効にする（`enable-cache` を付ける）
+- `?pwa` — PWA を有効にする（`pwa-manifest` を付ける）。`?always-gps` — `always-gps-on` を付ける
+
+クエリは組み合わせられます（例: `/demo/element.html?app=iiif-bibliography-sample&cache=1`）。
+
 #### ビルド
 
 ```bash
@@ -207,7 +221,7 @@ pnpm lint         # リントとフォーマット (ESLint/Prettier)
 <!-- SECTION 6: Prerequisites -->
 ## 動作環境
 
-> `package.json` の `engines` フィールドから自動抽出（ADR-0012: 特定リリースに紐づく）。
+> `package.json` の `engines` フィールドから自動抽出（特定のリリースに紐づく値）。
 
 - Node.js: v20 or v22（GitHub Actions で検証済みの LTS）
 - pnpm: `>=9.0.0`（必須・`package.json` が pnpm を強制）
@@ -264,7 +278,7 @@ Maplat エコシステムの一部です。全容は下記エコシステム図�
 | プロジェクト情報・機能紹介・事例 | <https://www.maplat.jp/> | 製品サイト |
 | 支援企業・案件問い合わせ | <https://www.nayuta-inc.co.jp/> | コーポレートサイト（那由多社） |
 
-> ADR-0013: Apache ライセンスのリポジトリ（本リポジトリ）は両サイトへリンクします。
+> Apache ライセンスのリポジトリ（本リポジトリ）は両サイトへリンクします。
 > MIT ライセンスの姉妹リポジトリ（Weiwudi / Quyuan / Chuci）へは那由多社リンクを置きません。
 
 <!-- SECTION 10: License -->

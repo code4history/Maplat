@@ -5,7 +5,7 @@
 > 記載しています。
 > 旧 `MaplatUi` クラスは [`maplat-ui.ja.md`](maplat-ui.ja.md) を参照してください。
 > `::part()` の名前と CSS 変数は
-> [移行ガイド](migration-ui-shadow-dom.md) を参照してください。
+> [移行ガイド](migration-ui-shadow-dom.ja.md) を参照してください。
 > 概念解説は [Wiki API-Reference](https://github.com/code4history/Maplat/wiki/API-Reference) を参照してください。
 
 `<maplat-ui>` は Maplat のビューア（「層 B」）の要素の形です。ビューア（地図の題名・
@@ -208,7 +208,7 @@ Pro 専用の `display-mode`。プロパティのみのキー（12 個）:
 ## 操作ボタンと画面
 
 要素が何をいつ出すか。各項目は `::part()` です（名前は括弧の中）。主な部品は
-[移行ガイド](migration-ui-shadow-dom.md) にあります。
+[移行ガイド](migration-ui-shadow-dom.ja.md) にあります。
 
 | 項目 | 出す条件 | すること |
 |---|---|---|
@@ -225,12 +225,13 @@ Pro 専用の `display-mode`。プロパティのみのキー（12 個）:
 | マーカー一覧（`marker-list`）＋画面（`marker-list-modal`） | `enable-marker-list` かつ地図に POI がある | POI のレイヤー（`marker-list-layer`）と POI（`marker-list-poi`）を並べる。レイヤーの切り替えは `showPoiLayer`・`hidePoiLayer`、POI の行は吹き出しを開く |
 | 共有（`share`）＋画面（`share-modal`） | `ready` の後、`enable-share` | [共有](#共有) を参照 |
 | ヘルプ（`help`）＋画面（`help-modal`） | 常時（ボタンは最初から出るが、画面が開くのは `ready` の後） | ヘルプの本文。共有・枠線・マーカー非表示・マーカー一覧の行は、対応する `enable-*` のときに出す |
-| POI の吹き出し（`poi-modal`・`poi-title`・`poi-body`・`poi-media`） | POI が 1 件の `clickMarker`・`clickMarkers`、`openMarker()`、一覧 | 名前・メディア（Quyuan のスライダー〔`qy-swiper`〕）・住所・説明、または POI の `html`・`url`。`directgo` の POI は遷移する。地図のマーカーを選ぶ |
+| POI の吹き出し（`poi-modal`・`poi-title`・`poi-body`・`poi-media`） | POI が 1 件の `clickMarker`・`clickMarkers`、`openMarker()`、一覧 | 名前・メディア（Quyuan のスライダー〔`qy-swiper`〕）・住所・説明、または POI の `html`・`url`。`directgo` の POI は吹き出しを出さずに遷移する（`http`・`https`・相対 URL のときだけ。開けない URL なら遷移せず、下の「開けないリンクの知らせ」を出す）。地図のマーカーを選ぶ |
 | POI のメニュー（`poi-menu`・`poi-menu-item`） | POI が複数の `clickMarkers` | 重なった POI から 1 つ選ぶ |
 | GPS のエラーの画面（`gps-modal`） | GPS のエラー（拒否・未取得・タイムアウト） | 題名と本文 |
 | スプラッシュ（`splash`） | 起動時、地図を復元しないとき（`initialRestore.mapID` が空）だけ | `appName` と `splash` の画像。地図の準備ができたら 200 ms（画像ありは 1000 ms）で隠す |
 | 知らせ（`toast`） | `showToast()` と共有の URL を写した後 | 1.5 秒。画面の下の中央（コピーの知らせはボタンの近く） |
 | 範囲外の知らせ（`toast`） | `outOfMap`（`presentation-mode` のとき以外）、`gps_out` の結果、`always-gps-on` で範囲外のときの GPS ボタン（`presentation-mode` のとき以外） | 3 秒。`<maplat-ui>` の下端の中央。開いている画面は閉じず、フォーカスも動かさない。文は実際の動きを表す（標準位置に戻る・GPS を切る・範囲外であることだけ） |
+| 開けないリンクの知らせ（`toast`） | POI の `directgo` が `http`・`https`・相対 URL でないとき（`javascript:`・`data:`・`blob:`・`file:` など。`blank` 指定でも同じ） | 範囲外の知らせと同じトースト（3 秒・`<maplat-ui>` の下端の中央）。文は `app.cannot_open_link`（「このリンクは開けません」）。遷移も新しいタブも吹き出しも出さない。`presentation-mode` でも出る |
 
 操作ボタン・透過度のスライダー・題名・地図の切り替えスライダーは、自動非表示の対象です:
 地図のドラッグ中は常に隠れ、`tap-ui-vanish` のときは地図のタップでも隠れます。地図が
@@ -381,7 +382,7 @@ MaplatCore-Pro と組んだときは、ページは `ui.app` を通して子の 
 
 部品は Shadow DOM の中にあるので、ページのセレクタは届きません。
 `maplat-ui::part(name)` と CSS 変数で当ててください。旧の class 名からの対応・部品の
-一覧・CSS 変数は [移行ガイド](migration-ui-shadow-dom.md) にあります（主な部品だけです）。
+一覧・CSS 変数は [移行ガイド](migration-ui-shadow-dom.ja.md) にあります（主な部品だけです）。
 `part` 名の正本は `src/element/maplat-ui.ts`・`src/element/slider.ts`・
 `src/element/share.ts`（`qr-code`）・`src/element/poi-html.ts`（`poi-html`・`poi-iframe`）
 です。CSS 変数は
