@@ -209,11 +209,11 @@ default, and accepts these query parameters (they are read at startup only):
     the IIIF bibliography table in the map information
     (`/demo/element.html?app=iiif-bibliography-sample`)
 - `?cache=1` — turn on the tile cache section of the map information (sets
-  `enable-cache`)
-- `?pwa` — turn on the PWA (sets `pwa-manifest`); `?always-gps` — sets
-  `always-gps-on`
+  `enable-cache`); shown only for maps that can be cached (not for IIIF maps)
+- `?pwa` — turn on the PWA (sets `pwa-manifest`)
+- `?always-gps` — sets `always-gps-on`
 
-Parameters can be combined, e.g. `/demo/element.html?app=iiif-bibliography-sample&cache=1`.
+Parameters can be combined, e.g. `/demo/element.html?app=outside-pois-sample&cache=1`.
 
 #### Build
 

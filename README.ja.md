@@ -197,10 +197,11 @@ pnpm dev
     （`/demo/element.html?app=outside-pois-sample`）
   - [`iiif-bibliography-sample`](public/apps/iiif-bibliography-sample.json) — 地図情報の IIIF の書誌の表
     （`/demo/element.html?app=iiif-bibliography-sample`）
-- `?cache=1` — 地図情報のタイルのキャッシュの欄を有効にする（`enable-cache` を付ける）
-- `?pwa` — PWA を有効にする（`pwa-manifest` を付ける）。`?always-gps` — `always-gps-on` を付ける
+- `?cache=1` — 地図情報のタイルのキャッシュの欄を有効にする（`enable-cache` を付ける）。キャッシュを扱える地図だけに出ます（IIIF の地図には出ません）
+- `?pwa` — PWA を有効にする（`pwa-manifest` を付ける）
+- `?always-gps` — `always-gps-on` を付ける
 
-クエリは組み合わせられます（例: `/demo/element.html?app=iiif-bibliography-sample&cache=1`）。
+クエリは組み合わせられます（例: `/demo/element.html?app=outside-pois-sample&cache=1`）。
 
 #### ビルド
 
