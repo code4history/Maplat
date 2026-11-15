@@ -53,11 +53,11 @@ jobs:
 
       - name: Check UI glossary
         env:
-          # 用語集の関門 1・2 の比較元（PR は base、master への push は直前の commit）。手本の MaplatEditor と同じく、
-          # 関門は PR と master への push だけにかける。作業ブランチの push は直前の commit との差分に、merge で
-          # 取り込んだ別のブランチの変更が入り、正本側と locale が同じ範囲に見えて偽の赤になるため、base を渡さない
-          # （訳語の検査そのものは走る。関門は PR の側で見る）
-          MAPLAT_GLOSSARY_BASE: ${{ github.event.pull_request.base.sha || (github.ref == 'refs/heads/master' && github.event.before) || '' }}
+          # 用語集の関門 1・2 の比較元（PR は base、長く使うブランチ（master と release/*）への push は直前の commit）。
+          # 手本の MaplatEditor が長く使うブランチの push でだけ関門をかけるのにそろえる。作業ブランチの push は
+          # 直前の commit との差分に、merge で取り込んだ別のブランチの変更が入り、正本側と locale が同じ範囲に
+          # 見えて偽の赤になるため、base を渡さない（訳語の検査そのものは走る。関門は PR の側で見る）
+          MAPLAT_GLOSSARY_BASE: ${{ github.event.pull_request.base.sha || ((github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/release/')) && github.event.before) || '' }}
         run: node scripts/maplat-glossary-check.mjs
 
       - name: Run UI glossary fixtures
