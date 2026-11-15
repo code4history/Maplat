@@ -796,6 +796,12 @@ export class MaplatUiElement extends BaseElement {
   // 範囲外・GPS エラーのモーダルに出している内容（開いたまま言語を変えたら、これで題名と本文を描き直す）
   #gpsModalOutOfMap = false;
   #gpsModalError: string | undefined;
+  // 開いているモーダルと、開く前にフォーカスがあった要素（閉じたときにそこへ戻す。<dialog> を使わずに
+  // WAI-ARIA の dialog の作法を満たすための要件: フォーカスを戻す・背景を inert にする）
+  #modalInvokers = new Map<HTMLElement, HTMLElement | null>();
+  // モーダルを開いたときに自分で inert を付けた背景の要素（閉じるときはこれだけを外す。
+  // ページ側が light DOM の子に付けていた inert は触らない）
+  #inertByModal = new Set<Element>();
   #toastTimer: ReturnType<typeof setTimeout> | undefined;
   // スプラッシュ（旧 initSplash）: 起動時に 1 回だけ出し、fade の後に隠す
   #splashShown = false;
@@ -1300,7 +1306,7 @@ export class MaplatUiElement extends BaseElement {
         this.#showSplash();
         return;
       case "poi":
-        if (this.#poi) this.#el.modal.hidden = false;
+        if (this.#poi) this.#openModal(this.#el.modal);
         return;
       case "share":
         this.#openShare();
@@ -2234,6 +2240,59 @@ export class MaplatUiElement extends BaseElement {
     button.focus({ preventScroll: true });
   }
 
+  /** モーダルを開く共通の入口: 開く前のフォーカスを覚え、背景を inert にする。 */
+  #openModal(modal: HTMLElement) {
+    if (!this.#modalInvokers.has(modal)) {
+      const active = (this.#root.activeElement ??
+        document.activeElement) as HTMLElement | null;
+      this.#modalInvokers.set(modal, active);
+      this.#setBackgroundInert();
+    }
+    modal.hidden = false;
+  }
+
+  /** モーダルを閉じる共通の出口: 背景の inert を外し、開く前にフォーカスがあった要素へ戻す。 */
+  #closeModal(modal: HTMLElement) {
+    modal.hidden = true;
+    const invoker = this.#modalInvokers.get(modal);
+    if (!this.#modalInvokers.delete(modal)) return;
+    this.#setBackgroundInert();
+    if (!this.isConnected || !this.#focusReturnable(invoker)) return;
+    invoker.focus({ preventScroll: true });
+  }
+
+  /** フォーカスを戻せる要素か（まだ DOM にあり、hidden で隠されていないこと）。 */
+  #focusReturnable(el: HTMLElement | null | undefined): el is HTMLElement {
+    if (!el || !el.isConnected) return false;
+    for (let node: Element | null = el; node; node = node.parentElement)
+      if (node.hasAttribute("hidden")) return false;
+    return true;
+  }
+
+  /**
+   * モーダルを開いている間だけ背景（地図・コントロール類）を inert にする。モーダル自身とトーストは
+   * 除く（トーストは開いたままのモーダルから出す知らせなので、知らせを届けるために残す）。
+   * 入れ子があり得るので、最後のモーダルを閉じたときに外す。開く前から inert だった要素
+   * （ページ側が付けたもの）は覚えておかず、閉じても外さない。
+   */
+  #setBackgroundInert() {
+    if (this.#modalInvokers.size === 0) {
+      for (const el of this.#inertByModal) el.removeAttribute("inert");
+      this.#inertByModal.clear();
+      return;
+    }
+    const background = [
+      ...Array.from(this.#el.frame.children),
+      ...Array.from(this.children)
+    ];
+    for (const el of background) {
+      if (el.classList.contains("modal") || el === this.#el.toast) continue;
+      if (el.hasAttribute("inert")) continue;
+      el.setAttribute("inert", "");
+      this.#inertByModal.add(el);
+    }
+  }
+
   // ---- 部品 ----
 
   #wire() {
@@ -2848,7 +2907,7 @@ export class MaplatUiElement extends BaseElement {
     // 状態 URL の欄は state-url のときだけ（旧 .state_url .modal_share_state）
     const view = this.#stateUrlOn();
     el.shareView.hidden = !view;
-    el.share.hidden = false;
+    this.#openModal(el.share);
     const label = this.t("html.share_qr");
     void renderQr(el.qrApp, this.getShareUrl("app"), label);
     if (view) void renderQr(el.qrView, this.getShareUrl("view"), label);
@@ -2856,7 +2915,7 @@ export class MaplatUiElement extends BaseElement {
   }
 
   #closeShare() {
-    this.#el.share.hidden = true;
+    this.#closeModal(this.#el.share);
   }
 
   /** 吹き出しの共有（旧: enable-share かつ state-url のときだけ。QR は今の表示の URL＝開いた POI を含む）。 */
@@ -2969,7 +3028,7 @@ export class MaplatUiElement extends BaseElement {
     this.#closeShare();
     this.#closeHelp();
     this.#closePoi();
-    el.gpsModal.hidden = false;
+    this.#openModal(el.gpsModal);
     this.#focusDialogClose(el.gpsClose);
   }
 
@@ -2989,7 +3048,7 @@ export class MaplatUiElement extends BaseElement {
   }
 
   #closeGpsModal() {
-    this.#el.gpsModal.hidden = true;
+    this.#closeModal(this.#el.gpsModal);
   }
 
   // ---- ヘルプ（旧 maplat_control.ts の Maplat ボタン・ui_init.ts の modal_help・html.help_*）----
@@ -3003,12 +3062,12 @@ export class MaplatUiElement extends BaseElement {
     this.#closeShare();
     this.#closePoi();
     this.#renderHelp();
-    this.#el.help.hidden = false;
+    this.#openModal(this.#el.help);
     this.#focusDialogClose(this.#el.helpClose);
   }
 
   #closeHelp() {
-    this.#el.help.hidden = true;
+    this.#closeModal(this.#el.help);
   }
 
   /**
@@ -3380,12 +3439,12 @@ export class MaplatUiElement extends BaseElement {
     this.#closeShare();
     this.#closePoi();
     this.#renderMapInfo();
-    this.#el.info.hidden = false;
+    this.#openModal(this.#el.info);
     this.#focusDialogClose(this.#el.infoClose);
   }
 
   #closeMapInfo() {
-    this.#el.info.hidden = true;
+    this.#closeModal(this.#el.info);
     // 開いている間に始まった統計の読み取り・描画を捨てる（一括取得は止めない・捨てない）
     this.#cacheGeneration++;
     this.#cacheStats = undefined;
@@ -3813,12 +3872,12 @@ export class MaplatUiElement extends BaseElement {
     this.#closeMenu();
     this.#closeMapInfo();
     this.#renderMarkerList();
-    this.#el.markerList.hidden = false;
+    this.#openModal(this.#el.markerList);
     this.#focusDialogClose(this.#el.markerListClose);
   }
 
   #closeMarkerList() {
-    this.#el.markerList.hidden = true;
+    this.#closeModal(this.#el.markerList);
   }
 
   /** 一覧を作り直す（開くたび・地図の切り替え・言語の変更で。層の表示状態は listPoiLayers の hide から）。 */
@@ -4096,7 +4155,7 @@ export class MaplatUiElement extends BaseElement {
     this.#closeMapInfo();
     this.#closeShare();
     this.#renderPoi(data);
-    this.#el.modal.hidden = false;
+    this.#openModal(this.#el.modal);
     const id = data.namespaceID;
     if (id !== undefined)
       this.#call("selectMarker", app => app.selectMarker(id));
@@ -4108,12 +4167,12 @@ export class MaplatUiElement extends BaseElement {
 
   #closePoi() {
     if (!this.#poi) {
-      this.#el.modal.hidden = true;
+      this.#closeModal(this.#el.modal);
       return;
     }
     this.#unselect();
     this.#poi = null;
-    this.#el.modal.hidden = true;
+    this.#closeModal(this.#el.modal);
     this.#el.poiBody.replaceChildren();
     this.#renderPoiShare();
     this.#updateUrl();
