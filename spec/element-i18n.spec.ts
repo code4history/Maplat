@@ -153,7 +153,7 @@ describe("11 言語の言語ファイル", () => {
     const ko = await mountUi(u => u.setAttribute("lang", "ko"));
     expect(ko.t("control.home")).toBe("홈 위치로 이동");
     const viLang = await mountUi(u => u.setAttribute("lang", "vi"));
-    expect(viLang.t("control.home")).toBe("Về vị trí chính");
+    expect(viLang.t("control.home")).toBe("Về vị trí ban đầu");
   });
 });
 
@@ -170,7 +170,7 @@ describe("言語の選び方（旧 UI の i18nLoader と同じ）", () => {
   it("無い言語は en に落ちる（言語ファイルの en と内蔵の en）", async () => {
     const ui = await mountUi(u => u.setAttribute("lang", "pt"));
     expect(ui.currentLang).toBe("pt");
-    expect(ui.t("control.home")).toBe("Go Home Position");
+    expect(ui.t("control.home")).toBe("Return to Home Position");
     expect(ui.t("app.copy_toast")).toBe("Copied to clipboard");
     // 言語ファイルに無いキーは内蔵の en
     expect(ui.t("control.zoom_in")).toBe("Zoom in");
@@ -178,7 +178,7 @@ describe("言語の選び方（旧 UI の i18nLoader と同じ）", () => {
 
   it("言語の基底にも落ちる（en-US は en、de-DE は de）", async () => {
     const en = await mountUi(u => u.setAttribute("lang", "en-US"));
-    expect(en.t("control.home")).toBe("Go Home Position");
+    expect(en.t("control.home")).toBe("Return to Home Position");
     const de = await mountUi(u => u.setAttribute("lang", "de-DE"));
     expect(de.t("control.home")).toBe("Zur Startposition");
   });
@@ -207,7 +207,7 @@ describe("内蔵の辞書と旧 UI の言語ファイルの合成", () => {
     const ja = await mountUi(u => u.setAttribute("lang", "ja"));
     expect(ja.t("control.zoom_in")).toBe("拡大");
     expect(ja.t("control.zoom_out")).toBe("縮小");
-    expect(ja.t("slider.base")).toBe("背景の地図");
+    expect(ja.t("slider.base")).toBe("ベースマップ");
     expect(ja.t("html.share_qr")).toBe("QR コード");
     const en = await mountUi(u => u.setAttribute("lang", "en"));
     expect(en.t("control.zoom_in")).toBe("Zoom in");
@@ -270,7 +270,7 @@ describe("層 B の上書き（画面の作りが旧 UI と違う文言）", () 
   /** 言語 → [旧 UI の言語ファイルのスライダーの説明にだけ出る語, メニューの説明にだけ出る語]。 */
   const SELECTION: Record<string, [string, string]> = {
     ja: ["サムネイル付きのスライダ", "メニュー"],
-    en: ["two sliders with thumbnail", "menu"],
+    en: ["Two sliders with thumbnails", "menu"],
     de: ["Schieberegler mit Thumbnails", "Menü"],
     es: ["controles deslizantes con miniaturas", "menú"],
     fr: ["curseurs avec des vignettes", "menu"],
@@ -285,7 +285,7 @@ describe("層 B の上書き（画面の作りが旧 UI と違う文言）", () 
   /** 言語 → [除く一文, 残る一文（パソコン・スマホの切り替え）]。 */
   const BORDER: Record<string, [string, string]> = {
     ja: ["境界の内側をクリック", "パソコンではマウスオーバーで地図を選び"],
-    en: ["clicking inside the boundary", "select a map with a mouse over"],
+    en: ["clicking inside a border", "hover over a map to select it"],
     de: ["innerhalb der Grenze", "wählen Sie eine Karte mit der Maus aus"],
     es: ["dentro de un límite", "seleccione un mapa pasando el ratón"],
     fr: [
@@ -293,10 +293,10 @@ describe("層 B の上書き（画面の作りが旧 UI と違う文言）", () 
       "sélectionnez une carte en la survolant"
     ],
     id: ["bagian dalam batas", "pilih peta dengan mengarahkan mouse"],
-    ko: ["경계 안쪽을 클릭", "마우스 오버로 지도를 선택합니다"],
+    ko: ["경계 안쪽을 클릭", "마우스를 올려 지도를 선택하고"],
     th: ["ภายในขอบเขต", "เลื่อนเมาส์ไปเลือกแผนที่แล้วคลิก"],
     vi: ["bên trong đường biên", "chọn bản đồ bằng cách di chuột"],
-    zh: ["在边界内点击", "可以用鼠标在地图上上移动选择"],
+    zh: ["边界内侧", "用鼠标移到想看的地图上"],
     "zh-TW": ["邊界內側", "以滑鼠移到想看的地圖上並點擊切換"]
   };
 

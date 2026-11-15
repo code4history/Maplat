@@ -142,17 +142,19 @@ describe("ヘルプ（旧 maplat_control.ts の Maplat・ui_init.ts の modal_he
       );
     // 既定は「地図情報」「ヘルプ」「スライダ」の 3 行（旧も share/border/hide/marker は隠れていた）
     expect(items().length).toBe(3);
-    expect(items().some(t => t.includes("SNS"))).toBe(false);
+    expect(items().some(t => t.includes("social networks"))).toBe(false);
     // 開いたまま属性を変えると、その場で本文を作り直す（旧は class の付け替えで出し入れしていた）
     ui.enableShare = true;
     ui.enableBorder = true;
     ui.enableHideMarker = true;
     ui.enableMarkerList = true;
     expect(items().length).toBe(7);
-    expect(items().some(t => t.includes("SNS"))).toBe(true);
-    expect(items().some(t => t.includes("map border lines"))).toBe(true);
-    expect(items().some(t => t.includes("Toggles the display"))).toBe(true);
-    expect(items().some(t => t.includes("for each marker layer"))).toBe(true);
+    expect(items().some(t => t.includes("social networks"))).toBe(true);
+    expect(items().some(t => t.includes("Shows map borders"))).toBe(true);
+    expect(items().some(t => t.includes("Toggles marker visibility"))).toBe(
+      true
+    );
+    expect(items().some(t => t.includes("each marker layer"))).toBe(true);
     ui.enableShare = false;
     ui.enableBorder = false;
     ui.enableHideMarker = false;
@@ -195,7 +197,7 @@ describe("ヘルプ（旧 maplat_control.ts の Maplat・ui_init.ts の modal_he
     );
     // 地図の変更方法がスライダーに戻ったので、旧 UI の言語ファイルの説明がそのまま出る
     expect(part(ui, "help-body").textContent).toContain(
-      "The two sliders with thumbnail"
+      "Two sliders with thumbnails"
     );
     expect(part(ui, "help-body").textContent).not.toContain(
       "at the top of the screen"
@@ -221,9 +223,7 @@ describe("スプラッシュ（旧 ui_init.ts の initSplash・設定ファイ�
       // jsdom は getBoundingClientRect が 0 でも、表示の入れ物は作る（画像が無いので中身は文言だけ）
       expect(splash.hidden).toBe(false);
       expect(part(ui, "splash-title").textContent).toBe("Test App");
-      expect(part(ui, "splash-loading").textContent).toBe(
-        "Now loading application..."
-      );
+      expect(part(ui, "splash-loading").textContent).toBe("Loading app...");
       expect(part(ui, "splash-image").hidden).toBe(true);
       vi.advanceTimersByTime(199);
       expect(splash.hidden).toBe(false);
@@ -306,7 +306,7 @@ describe("プレゼンテーションモード（presentation-mode。旧 enableO
     controller.fire("outOfMap", {});
     expect(toastShown(ui)).toBe(true);
     expect(part(ui, "toast").textContent).toBe(
-      "Showing area is out of map. The area moves to default position."
+      "The displayed area is outside the map. Returning to the default position."
     );
     expect(part(ui, "gps-modal").hidden).toBe(true);
 
@@ -356,7 +356,7 @@ describe("範囲外・GPS エラーのモーダル（旧 initGpsHandlers の mod
     controller.fire("gps_result", { error: "gps_out" });
     expect(toastShown(ui)).toBe(true);
     expect(part(ui, "toast").textContent).toBe(
-      "GPS result is out of map. GPS function turns off."
+      "The GPS position is outside the map. GPS turns off."
     );
     expect(part(ui, "gps-modal").hidden).toBe(true);
     controller.fire("gps_result", { error: "gps_miss" });
@@ -364,7 +364,7 @@ describe("範囲外・GPS エラーのモーダル（旧 initGpsHandlers の mod
       "Location information is not available"
     );
     expect(part(ui, "gps-message").textContent).toContain(
-      "System failed to acquire location"
+      "The system could not acquire your location"
     );
     part(ui, "gps-close").click();
     controller.fire("gps_result", { error: "gps_off" });
@@ -445,7 +445,7 @@ describe("範囲外・GPS エラーのモーダル（旧 initGpsHandlers の mod
     expect(part(ui, "gps-modal").hidden).toBe(false);
     expect(part(ui, "gps-title").textContent).toBe("Out of map");
     expect(part(ui, "gps-message").textContent).toBe(
-      "Showing area is out of map. The area moves to default position."
+      "The displayed area is outside the map. Returning to the default position."
     );
     expect(toastShown(ui)).toBe(false);
   });
@@ -460,13 +460,13 @@ describe("範囲外・GPS エラーのモーダル（旧 initGpsHandlers の mod
       expect(part(ui, "gps-title").textContent).toBe("Out of map")
     );
     expect(part(ui, "gps-message").textContent).toContain(
-      "Showing area is out of map"
+      "The displayed area is outside the map"
     );
     // エラーの種類も覚えている（種類ごとの本文がその言語で出る）
     part(ui, "gps-close").click();
     controller.fire("gps_result", { error: "gps_miss" });
     expect(part(ui, "gps-message").textContent).toContain(
-      "System failed to acquire location"
+      "The system could not acquire your location"
     );
     ui.lang = "ja";
     await vi.waitFor(() =>
@@ -511,7 +511,7 @@ describe("範囲外のトーストの出し方", () => {
       expect(toastShown(ui)).toBe(true);
       controller.fire("gps_result", { error: "gps_out" });
       expect(part(ui, "toast").textContent).toBe(
-        "GPS result is out of map. GPS function turns off."
+        "The GPS position is outside the map. GPS turns off."
       );
       vi.advanceTimersByTime(OUT_OF_MAP_TOAST_MS - 1);
       expect(toastShown(ui)).toBe(true);

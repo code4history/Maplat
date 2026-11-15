@@ -180,7 +180,7 @@ test.describe("iiif-metadata-table", () => {
     );
     await expect(section.locator("h4")).toHaveText([
       "Manifest の書誌",
-      "canvas の書誌"
+      "コマの書誌"
     ]);
     expect(net.manifestHits).toBe(0);
     expect(net.strayHits).toEqual([]);

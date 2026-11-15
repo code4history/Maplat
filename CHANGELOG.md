@@ -7,6 +7,7 @@
 ### Changed
 - POI の `directgo` が安全でない URL（`javascript:` など）で開かなかったとき、黙って何もしないのをやめ、範囲外の知らせと同じトースト（`::part(toast)`）で「このリンクは開けません」と知らせる（文言のキーは `app.cannot_open_link`。11 言語）。遷移も吹き出しも出さないのは今までどおり。`http`・`https`・相対 URL の `directgo` は今までどおり開き、知らせは出ない
 - 共有のボタンの表記を「Twitter」から「X」に替えた（ラベルと `title`）。共有先の URL は変えていない
+- 11 言語の UI の文言を用語集（`docs/i18n/maplat-glossary.md`）に揃え、あわせて直訳・誤訳を直した（直した行の一覧は `docs/i18n/maplat-glossary-initial-fixes.md`）。主な例: en のホームのボタンの `title`（`control.home`）を「Go Home Position」から「Return to Home Position」に、出典の見出し（`html.reference`）を「Reference」から「Source」に、「application」を「app」に（`html.share_app_title` など）。ja の IIIF の書誌の見出し（`html.iiif_canvas`）を「canvas の書誌」から「コマの書誌」に、スライダーの「背景の地図」を「ベースマップ」に（`slider.base`）。文言のキーは変えていない。ボタンの `title` や見出しの文言で要素を選んでいるページ（旧 API の利用者を含む）は、新しい文言に合わせるか `::part()` で選ぶ形に替える
 - 地図の範囲外の知らせをモーダルからトーストに替えた。`<maplat-ui>` の枠の下端の中央に 3 秒出し、細い枠でも枠の内側に収める。開いている画面は閉じず、フォーカスも動かさない。文言は実際の動きに合わせた（視点が範囲外で標準位置へ戻るときは `app.out_of_map_area`、GPS の結果が範囲外で GPS が切れるときは `app.out_of_map_desc`、`always-gps-on` の範囲外で GPS ボタンを押したときは `app.out_of_map`）。GPS のエラー（拒否・未取得・タイムアウト）は `gps-modal` のまま。`::part(gps-modal)` で範囲外の表示を作り込んでいたページは `::part(toast)` へ移す。旧 API の `modalSetting("gpsD")` は今までどおり開く。自動で戻るのに利用者への指示に読めていた中国語（zh）の `app.out_of_map_area` も直した
 - 操作ボタンの間隔を、左上（ズーム・GPS・ホーム）・左下（共有・ヘルプ）・右下の列で揃えた。3 つの列は同じ flex の列と同じ CSS 変数 `--maplat-ui-control-gap`（既定 7px・タッチ端末も同じ）で積む
 - ヘルプの印（ボタンのアイコン・＋−）に実物のボタンと同じ背景色を付け、透過度スライダーの印に可動部分とつまみの影を付けた。ヘルプの冒頭には、スマホの枠の中に今の地図を写し（地図がまだ描かれていなければ古地図のサムネイル）、その上に実物の部品を縮小して並べた全体の図を、その場で組み立てて出す
