@@ -34,6 +34,31 @@ TypeScript with `strict: true` in `tsconfig.json`. ESLint is configured via `esl
 
 Vitest is the test runner (`pnpm test`, jsdom environment). Tests live in `spec/` as `*.spec.ts` files (e.g. `ui_utils.spec.ts`, `translate.spec.ts`, `locales.spec.ts`); mirror this naming when adding new suites.
 
+## UI Wording & Glossary
+
+All 11 UI locales (`assets/locales/*/translation.json`) are checked against `docs/i18n/maplat-glossary.json` by `node scripts/maplat-glossary-check.mjs` (`pnpm smoke:maplat-glossary`). CI also runs `node scripts/maplat-glossary-check-smoke.mjs`. `docs/i18n/maplat-glossary.md` is the generated human-readable list.
+
+- Before designing new UI text, look up the concept in `docs/i18n/maplat-glossary.md` and use its preferred term in all 11 languages. Put the concept word into the Japanese text as well: a key whose concept word appears only in English needs one omission exception per language.
+- The guarded side and locale files must not change in the same pull request. The guarded side is the canonical files (`docs/i18n/maplat-glossary.json`, `maplat-glossary.exceptions.json`, `maplat-glossary.schema.json`), the checker and its fixtures (`scripts/maplat-glossary-check.mjs`, `scripts/maplat-glossary-check-smoke.mjs`), what runs them (`.github/workflows/ci.yml`), and the `smoke:maplat-glossary*` entries of `package.json`. Generated files may change together with locales.
+- Regenerate `maplat-glossary.bindings.json` and `maplat-glossary.md` with `node scripts/maplat-glossary-check.mjs --write`. It never edits locales or canonical files.
+- The checker covers the locale JSON files. The Web Components implementation also has built-in strings and overrides in `src/element/i18n.ts`; review duplicate wording there when changing a locale, without treating it as a second canonical glossary source.
+- Concepts shared with MaplatEditor keep the editor's concept ID, preferred terms, accepted forms and former forms (`docs/i18n/editor-glossary.json` in MaplatEditor). The shared IDs are `map`, `basemap`, `attribution`, `citation`, `app`, `layer` and `viewer`; `marker` is Maplat-specific. Only the root keys and descriptions are Maplat's own.
+- The checker is a copy of MaplatEditor's `scripts/editor-glossary-check.mjs`; its header names the source commit. Keep the logic identical and compare with the original when changing it. Differences (file locations, names, the guarded-side list) live in the block of constants at the top.
+
+### Exceptions
+
+Exceptions live in `docs/i18n/maplat-glossary.exceptions.json`. Each names one concept and one full key and matches the full text, so it expires as soon as the text changes. Globs and blanket waivers are not allowed. Use an exception only for a row that actually violates; an exception that suppresses nothing is reported as a warning.
+
+| Type | Use when | Fields |
+|---|---|---|
+| `untranslated` | The value is still the English text (identical to `en`) and lacks the required form. It also expires when the `en` text changes | `concept`, `locale`, `key`, `value`, `reason` |
+| `omission` | The language omits the concept word without using a different word for it | `concept`, `locale`, `key`, `value`, `reason` |
+| `anchorExclusion` | The `ja` or `en` text contains the concept's anchor word but means something else, so the key must not be bound to the concept | `concept`, `key`, `ja`, `en`, `reason` |
+
+To add a key or change text that needs a new exception, first merge a guarded-side-only pull request containing the exception, then change the locale in another pull request. A `pending-key` warning is expected until the key exists. Remove expired exceptions in a separate guarded-side-only pull request, not together with the locale edit.
+
+Each violation is printed as `<lang> <key> <concept> <ruleId> <hit> → <preferred>`. Run the fixture suite whenever the checker changes. Reviews must reject accepted forms added only to silence violations, misuse of anchor exclusions, and unreviewed translations presented as approved.
+
 ## Commit & Pull Request Guidelines
 
 Recent `git log` shows a mix of Conventional Commits (`fix:`, `chore:`, `docs:`) and task-ID-prefixed messages (e.g. `m15-t1:`, `c2-m3-t1:`) tied to this project's internal task tracking. Keep commits scoped to one concern; when a message is not part of a tracked task, prefer a Conventional Commits prefix. Pull requests should describe the change, note any affected viewer behavior, and confirm lint, typecheck, and tests pass locally before requesting review.

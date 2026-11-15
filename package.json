@@ -36,6 +36,8 @@
     "build:demo": "pnpm build:sw && vite build",
     "preview": "vite preview",
     "test": "vitest",
+    "smoke:maplat-glossary": "node scripts/maplat-glossary-check.mjs",
+    "smoke:maplat-glossary-fixtures": "node scripts/maplat-glossary-check-smoke.mjs",
     "typecheck": "tsc --noEmit",
     "lint": "pnpm lint:eslint && pnpm lint:prettier",
     "lint:eslint": "eslint \"{src,spec,demo}/**/*.{ts,js}\" --fix",
