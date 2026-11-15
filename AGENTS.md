@@ -30,6 +30,16 @@ Core viewer logic lives in `src/` (`index.ts`, `maplat_control.ts`, `ui_init.ts`
 
 TypeScript with `strict: true` in `tsconfig.json`. ESLint is configured via `eslint.config.js` (`@typescript-eslint` rules, `pnpm lint:eslint` autofixes). Prettier formatting is enforced via `.prettierrc` (double quotes, 80-char width, no trailing commas); run `pnpm lint:prettier` to reformat. Run `pnpm lint` (both) before committing.
 
+## Browser Policy
+
+- Targets are the latest two versions of Chrome, Edge, Firefox, and Safari (including iOS).
+- Baseline Widely available features may be used without feature detection.
+- Baseline Newly available and Limited availability features may be used only if they do not break browsers that lack them: purely visual features as-is, layout-affecting CSS behind `@supports`, behavior behind feature detection with a fallback of 20 lines or fewer.
+- Do not add polyfill dependencies. If one is unavoidable, load it with `import()` only when feature detection shows it is needed.
+- iOS Safari (WebKit) has caused real failures before. When a change may behave differently on WebKit, check it in Safari (or by temporarily adding a Playwright `webkit` project), and write in the PR how you checked it. The Playwright configs in this repository (`playwright*.config.ts`) define Chromium projects only.
+- Stop or replace motion when `prefers-reduced-motion: reduce` is set. Do not blanket-disable the short transitions that convey a change of state.
+- Text inputs that submit or confirm on Enter must ignore Enter while an IME is composing (`event.isComposing` or `keyCode === 229`).
+
 ## Testing Guidelines
 
 Vitest is the test runner (`pnpm test`, jsdom environment). Tests live in `spec/` as `*.spec.ts` files (e.g. `ui_utils.spec.ts`, `translate.spec.ts`, `locales.spec.ts`); mirror this naming when adding new suites.
