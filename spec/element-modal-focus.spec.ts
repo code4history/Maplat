@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-// モーダルのフォーカスの復帰と背景の inert（手引き dialog の <dialog> を使わない場合の要件）。
-// 共有・POI・地図の情報を、閉じるボタンと Escape の両方で閉じて確かめる。
+// モーダルのフォーカスの復帰と背景の inert（<dialog> を使わずに WAI-ARIA の dialog の作法を満たすための要件）。
+// 共有・POI・地図の情報・ヘルプ・GPS を、閉じるボタンと Escape の両方で閉じて確かめる。
 import { it, expect, beforeEach, afterEach, vi } from "vitest";
 import {
   defineMockMaplatApp,
@@ -66,6 +66,21 @@ const cases: Array<{
     modal: "map-info-modal",
     close: "map-info-close",
     open: (ui: MaplatUiElement, opener: HTMLButtonElement) => opener.click()
+  },
+  {
+    name: "ヘルプ",
+    opener: "help",
+    modal: "help-modal",
+    close: "help-close",
+    open: (ui: MaplatUiElement, opener: HTMLButtonElement) => opener.click()
+  },
+  {
+    name: "GPS",
+    opener: "gps",
+    modal: "gps-modal",
+    close: "gps-close",
+    open: (ui: MaplatUiElement) =>
+      getMockLayerAController(ui.app!)!.fire("gps_error", "gps_miss")
   }
 ];
 it.each(cases)(
@@ -100,7 +115,7 @@ it.each(cases)(
   }
 );
 it.each(cases)(
-  "$name: 開いている間は背景（地図・コントロール）が inert、閉じると外る",
+  "$name: 開いている間は背景（地図・コントロール）が inert、閉じると外れる",
   async c => {
     const ui = await mountUi();
     const opener = part(ui, c.opener).querySelector(
@@ -137,4 +152,19 @@ it("モーダルを重ねたときは、最後に閉じたときに背景の ine
   expect(part(ui, "compass").hasAttribute("inert")).toBe(true);
   (part(ui, "poi-close") as HTMLButtonElement).click();
   expect(part(ui, "compass").hasAttribute("inert")).toBe(false);
+});
+it("ページ側が付けていた inert は、モーダルを閉じても残る", async () => {
+  const ui = await mountUi();
+  const pageChild = document.createElement("div");
+  pageChild.setAttribute("inert", "");
+  ui.append(pageChild);
+  const opener = part(ui, "share").querySelector("button") as HTMLButtonElement;
+  opener.focus();
+  opener.click();
+  expect(pageChild.hasAttribute("inert")).toBe(true);
+  expect(ui.app!.hasAttribute("inert")).toBe(true);
+  (part(ui, "share-close") as HTMLButtonElement).click();
+  // 自分が付けたもの（地図）だけを外し、ページが付けていたものは残す
+  expect(ui.app!.hasAttribute("inert")).toBe(false);
+  expect(pageChild.hasAttribute("inert")).toBe(true);
 });

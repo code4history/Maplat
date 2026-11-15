@@ -796,9 +796,12 @@ export class MaplatUiElement extends BaseElement {
   // 範囲外・GPS エラーのモーダルに出している内容（開いたまま言語を変えたら、これで題名と本文を描き直す）
   #gpsModalOutOfMap = false;
   #gpsModalError: string | undefined;
-  // 開いているモーダルと、開く前にフォーカスがあった要素（閉じたときにそこへ戻す。手引き dialog の
-  // <dialog> を使わない場合の要件: フォーカスを戻す・背景を inert にする）
+  // 開いているモーダルと、開く前にフォーカスがあった要素（閉じたときにそこへ戻す。<dialog> を使わずに
+  // WAI-ARIA の dialog の作法を満たすための要件: フォーカスを戻す・背景を inert にする）
   #modalInvokers = new Map<HTMLElement, HTMLElement | null>();
+  // モーダルを開いたときに自分で inert を付けた背景の要素（閉じるときはこれだけを外す。
+  // ページ側が light DOM の子に付けていた inert は触らない）
+  #inertByModal = new Set<Element>();
   #toastTimer: ReturnType<typeof setTimeout> | undefined;
   // スプラッシュ（旧 initSplash）: 起動時に 1 回だけ出し、fade の後に隠す
   #splashShown = false;
@@ -2269,18 +2272,24 @@ export class MaplatUiElement extends BaseElement {
   /**
    * モーダルを開いている間だけ背景（地図・コントロール類）を inert にする。モーダル自身とトーストは
    * 除く（トーストは開いたままのモーダルから出す知らせなので、知らせを届けるために残す）。
-   * 入れ子があり得るので、最後のモーダルを閉じたときに外す。
+   * 入れ子があり得るので、最後のモーダルを閉じたときに外す。開く前から inert だった要素
+   * （ページ側が付けたもの）は覚えておかず、閉じても外さない。
    */
   #setBackgroundInert() {
-    const on = this.#modalInvokers.size > 0;
+    if (this.#modalInvokers.size === 0) {
+      for (const el of this.#inertByModal) el.removeAttribute("inert");
+      this.#inertByModal.clear();
+      return;
+    }
     const background = [
       ...Array.from(this.#el.frame.children),
       ...Array.from(this.children)
     ];
     for (const el of background) {
       if (el.classList.contains("modal") || el === this.#el.toast) continue;
-      if (on) el.setAttribute("inert", "");
-      else el.removeAttribute("inert");
+      if (el.hasAttribute("inert")) continue;
+      el.setAttribute("inert", "");
+      this.#inertByModal.add(el);
     }
   }
 

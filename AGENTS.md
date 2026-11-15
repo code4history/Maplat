@@ -30,15 +30,15 @@ Core viewer logic lives in `src/` (`index.ts`, `maplat_control.ts`, `ui_init.ts`
 
 TypeScript with `strict: true` in `tsconfig.json`. ESLint is configured via `eslint.config.js` (`@typescript-eslint` rules, `pnpm lint:eslint` autofixes). Prettier formatting is enforced via `.prettierrc` (double quotes, 80-char width, no trailing commas); run `pnpm lint:prettier` to reformat. Run `pnpm lint` (both) before committing.
 
-## ブラウザの方針
+## Browser Policy
 
-- 対象は Chrome・Edge・Firefox・Safari（iOS を含む）の最新 2 版。
-- Baseline Widely available の機能は、機能検出なしで使ってよい。
-- Baseline Newly available と Limited availability の機能は、使えないブラウザでも壊れないことを条件に使う。見た目だけの機能はそのまま、配置が崩れるものは `@supports`、振る舞いは機能検出つきの 20 行以内の代わりの実装で受ける。
-- polyfill の依存を足さない。どうしても要るときは、機能検出のうえで `import()` で必要なときだけ読む。
-- iOS Safari（WebKit）で実際に障害が出たことがある。WebKit で挙動が変わりうる変更は Playwright の webkit でも確かめる。
-- 動きのある表現は `prefers-reduced-motion: reduce` のとき止めるか、切り替えだけにする。状態の変化を伝える短い遷移まで一括で消さない。
-- Enter で送信・確定する文字入力は、IME の変換中（`event.isComposing` か `keyCode === 229`）を除外する。
+- Targets are the latest two versions of Chrome, Edge, Firefox, and Safari (including iOS).
+- Baseline Widely available features may be used without feature detection.
+- Baseline Newly available and Limited availability features may be used only if they do not break browsers that lack them: purely visual features as-is, layout-affecting CSS behind `@supports`, behavior behind feature detection with a fallback of 20 lines or fewer.
+- Do not add polyfill dependencies. If one is unavoidable, load it with `import()` only when feature detection shows it is needed.
+- iOS Safari (WebKit) has caused real failures before. When a change may behave differently on WebKit, check it in Safari (or by temporarily adding a Playwright `webkit` project), and write in the PR how you checked it. The Playwright configs in this repository (`playwright*.config.ts`) define Chromium projects only.
+- Stop or replace motion when `prefers-reduced-motion: reduce` is set. Do not blanket-disable the short transitions that convey a change of state.
+- Text inputs that submit or confirm on Enter must ignore Enter while an IME is composing (`event.isComposing` or `keyCode === 229`).
 
 ## Testing Guidelines
 
