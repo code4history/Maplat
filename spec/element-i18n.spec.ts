@@ -275,7 +275,7 @@ describe("層 B の上書き（画面の作りが旧 UI と違う文言）", () 
     es: ["controles deslizantes con miniaturas", "menú"],
     fr: ["curseurs avec des vignettes", "menu"],
     id: ["penggeser dengan gambar mini", "menu"],
-    ko: ["썸네일이 있는 슬라이더", "메뉴"],
+    ko: ["섬네일이 있는 슬라이더", "메뉴"],
     th: ["แถบเลื่อนพร้อมภาพขนาดย่อ", "เมนู"],
     vi: ["thanh trượt với hình thu nhỏ", "menu"],
     zh: ["缩略图", "菜单"],

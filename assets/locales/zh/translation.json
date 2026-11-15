@@ -33,7 +33,7 @@
     "cache_cancel": "停止下载",
     "cache_processing": "正在计算...",
     "help_title": "Maplat 帮助",
-    "help_using_maplat": "本网站使用开源的插画地图与历史地图查看器<a href='https://www.maplat.jp/' target='_blank'>Maplat</a>构建。",
+    "help_using_maplat": "本网站使用开源的手绘地图与历史地图查看器<a href='https://www.maplat.jp/' target='_blank'>Maplat</a>构建。",
     "help_operation_title": "地图的操作方法",
     "help_operation_content": "用电脑访问时可以用鼠标拖动地图。使用手机访问时用手指拖动地图。<br>调整地图大小时，用电脑时，点击左上角的<img src='${plus.png}'> <img src='${minus.png}'>按钮来操作，使用手机时使用两个手指缩放来进行操作。<br>在手机上可以使用两个手指按住旋转地图。<br>按下<img src='${home.png}'>按钮可以返回地图的起点。<br><img src='${compass.png}'>按钮上显示的罗盘显示着当前方向与北方向的角度，如果按下这个按钮，地图的旋转角度会恢复成正北方向表示。<br>移动地图时，为显示整个地图，按钮会消失。要恢复消失的按钮，请稍等片刻或点击/轻触屏幕一次。",
     "help_selection_title": "地图的切换选择方法",
