@@ -2,22 +2,22 @@
 
 > **注意: この一覧は、用語集の初版を入れたときに直した訳の記録です。** 既存の揺れと明確な言語の誤りを、機械の照合と目視で見つけて直しました。各言語の母語話者の確認を経たものではなく、ここに載っていることは訳文の承認を意味しません。誤りに気づいたら訳文の PR で直してください（この一覧は直した時点の記録で、後の変更に合わせて書き直しません）。
 
-直した件数は 66 件（言語×キー）です。「要確認」は 5 件です。同じ文言を持つ `src/element/i18n.ts` の内蔵の辞書（ja・en）も同じ内容に揃えましたが、件数には数えていません。
+直した件数は 66 件（言語×キー）です。同じ文言を持つ `src/element/i18n.ts` の内蔵の辞書（ja・en）も同じ内容に揃えましたが、件数には数えていません。
 
-| 言語 | 直した件数 | うち要確認 |
-|---|---:|---:|
-| de（ドイツ語） | 6 | 0 |
-| en（英語） | 19 | 0 |
-| es（スペイン語） | 2 | 0 |
-| fr（フランス語） | 3 | 0 |
-| id（インドネシア語） | 2 | 0 |
-| ja（日本語） | 2 | 0 |
-| ko（韓国語） | 10 | 0 |
-| th（タイ語） | 3 | 0 |
-| vi（ベトナム語） | 5 | 2 |
-| zh（中国語（簡体字）） | 10 | 0 |
-| zh-TW（中国語（繁体字）） | 4 | 3 |
-| 計 | 66 | 5 |
+| 言語 | 直した件数 |
+|---|---:|
+| de（ドイツ語） | 6 |
+| en（英語） | 19 |
+| es（スペイン語） | 2 |
+| fr（フランス語） | 3 |
+| id（インドネシア語） | 2 |
+| ja（日本語） | 2 |
+| ko（韓国語） | 10 |
+| th（タイ語） | 3 |
+| vi（ベトナム語） | 5 |
+| zh（中国語（簡体字）） | 10 |
+| zh-TW（中国語（繁体字）） | 4 |
+| 計 | 66 |
 
 概念と統一先の語は `docs/i18n/maplat-glossary.md`（生成物）を見てください。「概念」の列が概念 ID の行は、用語集を MaplatEditor と同じ形に締めたとき（必須にする言語を広げ、統一前の形を足したとき）に、直さなければ違反になっていた行です。「言語の誤り」は用語集とは別に直した直訳・不自然な訳・誤訳で、意味は変えていません。
 
@@ -108,12 +108,12 @@
 | `html.help_etc_marker_list` | layer | ปุ่ม <img src='${marker_list.png}'>: แสดงหน้าจอสำหรับเปิด/ปิดการแสดงหมุดแยกตามชั้นข้อมูล | ปุ่ม <img src='${marker_list.png}'>: แสดงหน้าจอสำหรับเปิด/ปิดการแสดงหมุดแยกตามเลเยอร์ |
 | `html.help_etc_slider` | basemap | แถบเลื่อน <img src='${slider.png}'>: ปรับความโปร่งใสของแผนที่ที่แสดงอยู่ เพื่อให้มองเห็นแผนที่พื้นหลังทะลุขึ้นมา<br>ใช้งานได้เฉพาะขณะแสดงแผนที่ประวัติศาสตร์หรือแผนที่ภาพวาดเท่านั้น ไม่ทำงานขณะแสดงแผนที่พื้นฐาน | แถบเลื่อน <img src='${slider.png}'>: ปรับความโปร่งใสของแผนที่ที่แสดงอยู่ เพื่อให้มองเห็นแผนที่พื้นฐานทะลุขึ้นมา<br>ใช้งานได้เฉพาะขณะแสดงแผนที่ประวัติศาสตร์หรือแผนที่ภาพวาดเท่านั้น ไม่ทำงานขณะแสดงแผนที่พื้นฐาน |
 
-## vi（ベトナム語）: 5 件（うち要確認 2 件）
+## vi（ベトナム語）: 5 件
 
 | キー | 概念 | 変更前 | 変更後 |
 |---|---|---|---|
-| `control.compass` | 言語の誤り（要確認） | Đặt lại xoay | Đặt lại góc xoay |
-| `control.home` | 言語の誤り（要確認） | Về vị trí chính | Về vị trí ban đầu |
+| `control.compass` | 言語の誤り | Đặt lại xoay | Đặt lại góc xoay |
+| `control.home` | 言語の誤り | Về vị trí chính | Về vị trí ban đầu |
 | `html.reference` | citation | Tham khảo | Nguồn |
 | `html.help_selection_content` | basemap | Hai thanh trượt với hình thu nhỏ như <Img src='${overlay.png}'> hiển thị ở góc trái dưới và góc phải dưới của màn hình, bạn có thể chọn bản đồ để hiển thị bằng chúng.<br>Trượt thanh trượt để chọn bản đồ bạn muốn, và nhấp vào hình thu nhỏ, sau đó bản đồ sẽ thay đổi.<br>Thanh trượt bản đồ góc trái dưới dùng để chọn bản đồ cơ bản (bản đồ chính xác), thanh trượt bản đồ góc phải dưới dùng để chọn bản đồ lịch sử/bản đồ minh họa. | Hai thanh trượt với hình thu nhỏ như <Img src='${overlay.png}'> hiển thị ở góc trái dưới và góc phải dưới của màn hình, bạn có thể chọn bản đồ để hiển thị bằng chúng.<br>Trượt thanh trượt để chọn bản đồ bạn muốn, và nhấp vào hình thu nhỏ, sau đó bản đồ sẽ thay đổi.<br>Thanh trượt bản đồ góc trái dưới dùng để chọn bản đồ nền (bản đồ chính xác), thanh trượt bản đồ góc phải dưới dùng để chọn bản đồ lịch sử/bản đồ minh họa. |
 | `html.help_etc_slider` | 言語の誤り | <img src='${slider.png}'> Thanh trượt: Chuyển đổi độ trong suốt của bản đồ hiển thị để thấy được bản đồ nền.<br>Chỉ hoạt động khi hiển thị bản đồ lịch sử hoặc minh họa, không hoạt động khi hiển thị bản đồ cơ bản. | <img src='${slider.png}'> Thanh trượt: Điều chỉnh độ trong suốt của bản đồ hiển thị để thấy được bản đồ nền.<br>Chỉ hoạt động khi hiển thị bản đồ lịch sử hoặc minh họa, không hoạt động khi hiển thị bản đồ nền. |
@@ -133,11 +133,11 @@
 | `html.help_etc_slider` | basemap | <img src='${slider.png}'>滑块: 显示中的地图的透明度调整，可以将背景中的地图透明地看到。<br>只支持在手绘地图、历史地图中使用，基本地图显示时不可用。 | <img src='${slider.png}'>滑块：调整显示中地图的透明度，以便透出底图。<br>仅在显示手绘地图或历史地图时可用，显示底图时不可用。 |
 | `app.gps_error` | 言語の誤り | 位置信息不详 | 无法使用位置信息 |
 
-## zh-TW（中国語（繁体字））: 4 件（うち要確認 3 件）
+## zh-TW（中国語（繁体字））: 4 件
 
 | キー | 概念 | 変更前 | 変更後 |
 |---|---|---|---|
-| `html.help_using_maplat` | 言語の誤り（要確認） | 本網站使用開放原始碼繪圖／古地圖檢視器<a href='https://www.maplat.jp/' target='_blank'>Maplat</a>建置。 | 本網站使用開放原始碼手繪地圖／古地圖檢視器<a href='https://www.maplat.jp/' target='_blank'>Maplat</a>建置。 |
-| `html.help_selection_content` | 言語の誤り（要確認） | 畫面左下與右下會顯示像<Img src='${overlay.png}'>這樣附縮圖的滑桿，可用來選擇要顯示的地圖。<br>左右滑動選擇想看的地圖，點一下縮圖即可切換。<br>左下的滑桿用於選擇底圖(準確的現代地圖)，右下的滑桿用於選擇繪圖或古地圖。 | 畫面左下與右下會顯示像<Img src='${overlay.png}'>這樣附縮圖的滑桿，可用來選擇要顯示的地圖。<br>左右滑動選擇想看的地圖，點一下縮圖即可切換。<br>左下的滑桿用於選擇底圖(準確的現代地圖)，右下的滑桿用於選擇手繪地圖或古地圖。 |
+| `html.help_using_maplat` | 言語の誤り | 本網站使用開放原始碼繪圖／古地圖檢視器<a href='https://www.maplat.jp/' target='_blank'>Maplat</a>建置。 | 本網站使用開放原始碼手繪地圖／古地圖檢視器<a href='https://www.maplat.jp/' target='_blank'>Maplat</a>建置。 |
+| `html.help_selection_content` | 言語の誤り | 畫面左下與右下會顯示像<Img src='${overlay.png}'>這樣附縮圖的滑桿，可用來選擇要顯示的地圖。<br>左右滑動選擇想看的地圖，點一下縮圖即可切換。<br>左下的滑桿用於選擇底圖(準確的現代地圖)，右下的滑桿用於選擇繪圖或古地圖。 | 畫面左下與右下會顯示像<Img src='${overlay.png}'>這樣附縮圖的滑桿，可用來選擇要顯示的地圖。<br>左右滑動選擇想看的地圖，點一下縮圖即可切換。<br>左下的滑桿用於選擇底圖(準確的現代地圖)，右下的滑桿用於選擇手繪地圖或古地圖。 |
 | `html.help_share_help` | app | <img src='${share.png}'>按鈕：顯示分享到社群網站等的畫面。 | <img src='${share.png}'>按鈕：顯示將此應用程式分享到社群網站等的畫面。 |
-| `html.help_etc_slider` | basemap・言語の誤り（要確認） | <img src='${slider.png}'>滑桿：調整顯示中地圖的透明度，讓背景地圖能透出顯示。<br>僅在顯示繪圖或古地圖時有效，顯示底圖時無法使用。 | <img src='${slider.png}'>滑桿：調整顯示中地圖的透明度，讓底圖能透出顯示。<br>僅在顯示手繪地圖或古地圖時有效，顯示底圖時無法使用。 |
+| `html.help_etc_slider` | basemap・言語の誤り | <img src='${slider.png}'>滑桿：調整顯示中地圖的透明度，讓背景地圖能透出顯示。<br>僅在顯示繪圖或古地圖時有效，顯示底圖時無法使用。 | <img src='${slider.png}'>滑桿：調整顯示中地圖的透明度，讓底圖能透出顯示。<br>僅在顯示手繪地圖或古地圖時有效，顯示底圖時無法使用。 |
