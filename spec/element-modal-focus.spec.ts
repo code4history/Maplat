@@ -273,7 +273,20 @@ it("開いている間にページが付け直した inert は、閉じても残
   expect(child.hasAttribute("inert")).toBe(true);
   expect(ui.app!.hasAttribute("inert")).toBe(false);
 });
-it("外したとき（#detach）は light DOM の見張りを止める", async () => {
+it("ページが inert を付け直して同じ拍で最後のモーダルを閉じても、ページの inert は残す", async () => {
+  const ui = await mountUi();
+  const child = document.createElement("div");
+  ui.append(child);
+  openShare(ui);
+  expect(child.hasAttribute("inert")).toBe(true);
+  // 知らせが届く前（await を挟まず）に閉じる: 見張りを止めるときに届いていない知らせを処理する
+  child.setAttribute("inert", "");
+  closeShare(ui);
+  expect(child.hasAttribute("inert")).toBe(true);
+  expect(ui.app!.hasAttribute("inert")).toBe(false);
+});
+// 外すとき（#detach）は開いているモーダルをすべて閉じるので、見張りは最後のモーダルを閉じた時点で止まる
+it("外したとき（#detach）は開いていたモーダルを閉じ、light DOM の見張りも止まる", async () => {
   const ui = await mountUi();
   const observe = vi.spyOn(MutationObserver.prototype, "observe");
   const disconnect = vi.spyOn(MutationObserver.prototype, "disconnect");

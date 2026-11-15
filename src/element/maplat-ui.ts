@@ -1769,6 +1769,7 @@ export class MaplatUiElement extends BaseElement {
     this.#closeShare();
     this.#closeHelp();
     this.#closeGpsModal();
+    // 上でモーダルをすべて閉じた時点で見張りは止まっている。開閉の経路が増えたときの保険として残す
     this.#stopInertObserver();
     this.#lastGpsError = undefined;
     this.#clearFadeTimer();
