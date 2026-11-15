@@ -254,7 +254,10 @@
         "fr",
         "id",
         "ja",
+        "ko",
         "th",
+        "vi",
+        "zh",
         "zh-TW"
       ],
       "locales": {
@@ -262,6 +265,9 @@
           "preferred": "basiskarte",
           "acceptedForms": [
             "basiskarte"
+          ],
+          "formerForms": [
+            "hintergrundkarte"
           ]
         },
         "en": {
@@ -271,6 +277,10 @@
             "base maps",
             "basemap",
             "basemaps"
+          ],
+          "formerForms": [
+            "background map",
+            "background maps"
           ]
         },
         "es": {
@@ -278,6 +288,10 @@
           "acceptedForms": [
             "mapa base",
             "mapas base"
+          ],
+          "formerForms": [
+            "mapa de fondo",
+            "mapas de fondo"
           ]
         },
         "fr": {
@@ -296,6 +310,9 @@
           "preferred": "peta dasar",
           "acceptedForms": [
             "peta dasar"
+          ],
+          "formerForms": [
+            "peta latar"
           ]
         },
         "ja": {
@@ -322,6 +339,7 @@
             "แผนที่พื้นฐาน"
           ],
           "formerForms": [
+            "แผนที่พื้นหลัง",
             "แผนที่ฐาน"
           ]
         },
@@ -344,6 +362,9 @@
           "preferred": "底圖",
           "acceptedForms": [
             "底圖"
+          ],
+          "formerForms": [
+            "背景地圖"
           ]
         }
       },
@@ -354,6 +375,7 @@
       "description": "地図画像・データの帰属（著作権表示）",
       "rootKey": "html.attr",
       "requiredLocales": [
+        "de",
         "en",
         "es",
         "fr",
@@ -398,7 +420,8 @@
             "quellenangabe"
           ],
           "formerForms": [
-            "attribution"
+            "attribution",
+            "datenattribution"
           ]
         },
         "en": {
@@ -492,9 +515,14 @@
       "rootKey": "html.reference",
       "requiredLocales": [
         "de",
+        "en",
+        "es",
+        "fr",
+        "id",
         "ja",
         "ko",
         "th",
+        "vi",
         "zh",
         "zh-TW"
       ],
@@ -586,13 +614,17 @@
       "description": "地図と POI をまとめて公開するアプリ",
       "rootKey": "html.share_app_title",
       "requiredLocales": [
+        "de",
+        "en",
         "es",
         "fr",
         "id",
         "ja",
+        "ko",
         "th",
         "vi",
-        "zh"
+        "zh",
+        "zh-TW"
       ],
       "excludePhrases": {
         "ja": [
@@ -747,7 +779,9 @@
         "id",
         "ja",
         "ko",
+        "th",
         "vi",
+        "zh",
         "zh-TW"
       ],
       "excludePhrases": {
@@ -828,6 +862,9 @@
           "preferred": "เลเยอร์",
           "acceptedForms": [
             "เลเยอร์"
+          ],
+          "formerForms": [
+            "ชั้น"
           ]
         },
         "vi": {
@@ -856,12 +893,16 @@
       "description": "Maplat の地図を表示する部分（Maplat UI そのもの）",
       "rootKey": "html.help_using_maplat",
       "requiredLocales": [
+        "de",
         "en",
         "es",
+        "fr",
         "id",
         "ja",
         "ko",
+        "th",
         "vi",
+        "zh",
         "zh-TW"
       ],
       "locales": {
@@ -887,6 +928,9 @@
           "preferred": "visionneuse",
           "acceptedForms": [
             "visionneuse"
+          ],
+          "formerForms": [
+            "visualiseur"
           ]
         },
         "id": {

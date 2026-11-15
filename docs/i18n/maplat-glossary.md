@@ -44,31 +44,31 @@
 
 古地図の下に敷く地図（ベースマップ）
 
-根拠キー `html.help_selection_content`。必須形を求める言語: de, en, es, fr, id, ja, th, zh-TW
+根拠キー `html.help_selection_content`。必須形を求める言語: de, en, es, fr, id, ja, ko, th, vi, zh, zh-TW
 
 | 言語 | 代表語 | 許容形 | 統一前の形 | 禁止形 | 除外語 |
 |---|---|---|---|---|---|
-| de | basiskarte | basiskarte | — | — | — |
-| en | base map | base map、base maps、basemap、basemaps | — | — | — |
-| es | mapa base | mapa base、mapas base | — | — | — |
+| de | basiskarte | basiskarte | hintergrundkarte | — | — |
+| en | base map | base map、base maps、basemap、basemaps | background map、background maps | — | — |
+| es | mapa base | mapa base、mapas base | mapa de fondo、mapas de fondo | — | — |
 | fr | fond de carte | fond de carte、fonds de carte | carte de fond、carte de base、cartes de fond | — | — |
-| id | peta dasar | peta dasar | — | — | — |
+| id | peta dasar | peta dasar | peta latar | — | — |
 | ja | ベースマップ | ベースマップ | 背景地図 | — | — |
 | ko | 베이스맵 | 베이스맵 | 배경 지도 | — | — |
-| th | แผนที่พื้นฐาน | แผนที่พื้นฐาน | แผนที่ฐาน | — | — |
+| th | แผนที่พื้นฐาน | แผนที่พื้นฐาน | แผนที่พื้นหลัง、แผนที่ฐาน | — | — |
 | vi | bản đồ nền | bản đồ nền | — | — | — |
 | zh | 底图 | 底图 | 背景地图 | — | — |
-| zh-TW | 底圖 | 底圖 | — | — | — |
+| zh-TW | 底圖 | 底圖 | 背景地圖 | — | — |
 
 ## attribution
 
 地図画像・データの帰属（著作権表示）
 
-根拠キー `html.attr`。必須形を求める言語: en, es, fr, id, ja, ko, th, vi, zh, zh-TW
+根拠キー `html.attr`。必須形を求める言語: de, en, es, fr, id, ja, ko, th, vi, zh, zh-TW
 
 | 言語 | 代表語 | 許容形 | 統一前の形 | 禁止形 | 除外語 |
 |---|---|---|---|---|---|
-| de | quellenangabe | quellenangabe | attribution | — | — |
+| de | quellenangabe | quellenangabe | attribution、datenattribution | — | — |
 | en | attribution | attribution、attributions | — | — | Creative Commons Attribution、クリエイティブ・コモンズ 表示 |
 | es | atribución | atribución、atribuciones | — | — | — |
 | fr | attribution | attribution、attributions | — | — | — |
@@ -84,7 +84,7 @@
 
 地図・ベースマップの出所（書誌的な典拠）
 
-根拠キー `html.reference`。必須形を求める言語: de, ja, ko, th, zh, zh-TW
+根拠キー `html.reference`。必須形を求める言語: de, en, es, fr, id, ja, ko, th, vi, zh, zh-TW
 
 | 言語 | 代表語 | 許容形 | 統一前の形 | 禁止形 | 除外語 |
 |---|---|---|---|---|---|
@@ -104,7 +104,7 @@
 
 地図と POI をまとめて公開するアプリ
 
-根拠キー `html.share_app_title`。必須形を求める言語: es, fr, id, ja, th, vi, zh
+根拠キー `html.share_app_title`。必須形を求める言語: de, en, es, fr, id, ja, ko, th, vi, zh, zh-TW
 
 | 言語 | 代表語 | 許容形 | 統一前の形 | 禁止形 | 除外語 |
 |---|---|---|---|---|---|
@@ -124,7 +124,7 @@
 
 地図のレイヤー・POI のレイヤー
 
-根拠キー `html.help_etc_marker_list`。必須形を求める言語: de, en, es, fr, id, ja, ko, vi, zh-TW
+根拠キー `html.help_etc_marker_list`。必須形を求める言語: de, en, es, fr, id, ja, ko, th, vi, zh, zh-TW
 
 | 言語 | 代表語 | 許容形 | 統一前の形 | 禁止形 | 除外語 |
 |---|---|---|---|---|---|
@@ -135,7 +135,7 @@
 | id | lapisan | lapisan、sublapisan | layer | — | — |
 | ja | レイヤ | レイヤ | — | — | line-layer-opacity |
 | ko | 레이어 | 레이어 | — | — | — |
-| th | เลเยอร์ | เลเยอร์ | — | — | — |
+| th | เลเยอร์ | เลเยอร์ | ชั้น | — | — |
 | vi | lớp | lớp | — | — | — |
 | zh | 图层 | 图层 | — | — | — |
 | zh-TW | 圖層 | 圖層 | — | — | — |
@@ -144,14 +144,14 @@
 
 Maplat の地図を表示する部分（Maplat UI そのもの）
 
-根拠キー `html.help_using_maplat`。必須形を求める言語: en, es, id, ja, ko, vi, zh-TW
+根拠キー `html.help_using_maplat`。必須形を求める言語: de, en, es, fr, id, ja, ko, th, vi, zh, zh-TW
 
 | 言語 | 代表語 | 許容形 | 統一前の形 | 禁止形 | 除外語 |
 |---|---|---|---|---|---|
 | de | viewer | viewer | — | — | — |
 | en | viewer | viewer | — | — | — |
 | es | visor | visor | — | — | — |
-| fr | visionneuse | visionneuse | — | — | — |
+| fr | visionneuse | visionneuse | visualiseur | — | — |
 | id | penampil | penampil | viewer | — | — |
 | ja | ビューア | ビューア | — | — | — |
 | ko | 뷰어 | 뷰어 | — | — | — |
