@@ -30,6 +30,16 @@ Core viewer logic lives in `src/` (`index.ts`, `maplat_control.ts`, `ui_init.ts`
 
 TypeScript with `strict: true` in `tsconfig.json`. ESLint is configured via `eslint.config.js` (`@typescript-eslint` rules, `pnpm lint:eslint` autofixes). Prettier formatting is enforced via `.prettierrc` (double quotes, 80-char width, no trailing commas); run `pnpm lint:prettier` to reformat. Run `pnpm lint` (both) before committing.
 
+## ブラウザの方針
+
+- 対象は Chrome・Edge・Firefox・Safari（iOS を含む）の最新 2 版。
+- Baseline Widely available の機能は、機能検出なしで使ってよい。
+- Baseline Newly available と Limited availability の機能は、使えないブラウザでも壊れないことを条件に使う。見た目だけの機能はそのまま、配置が崩れるものは `@supports`、振る舞いは機能検出つきの 20 行以内の代わりの実装で受ける。
+- polyfill の依存を足さない。どうしても要るときは、機能検出のうえで `import()` で必要なときだけ読む。
+- iOS Safari（WebKit）で実際に障害が出たことがある。WebKit で挙動が変わりうる変更は Playwright の webkit でも確かめる。
+- 動きのある表現は `prefers-reduced-motion: reduce` のとき止めるか、切り替えだけにする。状態の変化を伝える短い遷移まで一括で消さない。
+- Enter で送信・確定する文字入力は、IME の変換中（`event.isComposing` か `keyCode === 229`）を除外する。
+
 ## Testing Guidelines
 
 Vitest is the test runner (`pnpm test`, jsdom environment). Tests live in `spec/` as `*.spec.ts` files (e.g. `ui_utils.spec.ts`, `translate.spec.ts`, `locales.spec.ts`); mirror this naming when adding new suites.
