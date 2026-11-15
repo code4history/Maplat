@@ -802,6 +802,9 @@ export class MaplatUiElement extends BaseElement {
   // モーダルを開いたときに自分で inert を付けた背景の要素（閉じるときはこれだけを外す。
   // ページ側が light DOM の子に付けていた inert は触らない）
   #inertByModal = new Set<Element>();
+  // モーダルを開いている間だけ light DOM の子の出し入れを見張る（足された子にも inert を付け、
+  // 外へ移された子からは自分が付けた inert を外す）
+  #inertObserver: MutationObserver | null = null;
   #toastTimer: ReturnType<typeof setTimeout> | undefined;
   // スプラッシュ（旧 initSplash）: 起動時に 1 回だけ出し、fade の後に隠す
   #splashShown = false;
@@ -1766,6 +1769,8 @@ export class MaplatUiElement extends BaseElement {
     this.#closeShare();
     this.#closeHelp();
     this.#closeGpsModal();
+    // 上でモーダルをすべて閉じた時点で見張りは止まっている。開閉の経路が増えたときの保険として残す
+    this.#stopInertObserver();
     this.#lastGpsError = undefined;
     this.#clearFadeTimer();
     if (this.#splashTimer) {
@@ -2277,20 +2282,81 @@ export class MaplatUiElement extends BaseElement {
    */
   #setBackgroundInert() {
     if (this.#modalInvokers.size === 0) {
+      this.#stopInertObserver();
       for (const el of this.#inertByModal) el.removeAttribute("inert");
       this.#inertByModal.clear();
       return;
     }
-    const background = [
-      ...Array.from(this.#el.frame.children),
-      ...Array.from(this.children)
-    ];
-    for (const el of background) {
-      if (el.classList.contains("modal") || el === this.#el.toast) continue;
-      if (el.hasAttribute("inert")) continue;
-      el.setAttribute("inert", "");
-      this.#inertByModal.add(el);
-    }
+    this.#startInertObserver();
+    for (const el of this.#el.frame.children) this.#makeBackgroundInert(el);
+    for (const el of this.children) this.#makeBackgroundInert(el);
+  }
+
+  /** 背景の 1 要素に inert を付けて覚える（モーダル・トースト・前から inert の要素は除く）。 */
+  #makeBackgroundInert(el: Element) {
+    if (el.classList.contains("modal") || el === this.#el.toast) return;
+    if (el.hasAttribute("inert")) return;
+    el.setAttribute("inert", "");
+    this.#inertByModal.add(el);
+  }
+
+  #startInertObserver() {
+    if (this.#inertObserver || typeof MutationObserver === "undefined") return;
+    this.#inertObserver = new MutationObserver(records =>
+      this.#onLightDomMutations(records)
+    );
+    // subtree: 子への inert の変更も見る。外へ移された子に同じ拍で起きた変更も、DOM の transient registered
+    // observer で知らせに含まれる（移した直後のページの付け直しを見分ける）
+    this.#inertObserver.observe(this, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["inert"],
+      attributeOldValue: true
+    });
+  }
+
+  /** 見張りを止める。止める前に届いていない知らせは処理する（外へ移された子の扱いを取りこぼさない）。 */
+  #stopInertObserver() {
+    const observer = this.#inertObserver;
+    if (!observer) return;
+    this.#inertObserver = null;
+    const pending = observer.takeRecords();
+    observer.disconnect();
+    this.#onLightDomMutations(pending);
+  }
+
+  /**
+   * light DOM の出し入れと inert の変更を背景の規則に合わせる。
+   * - 足された子: モーダルが開いていれば、ほかの背景と同じ規則で inert を付ける
+   * - 外へ移された子: もう背景ではないので、自分が付けた inert をその時点で外して忘れる
+   *   （同じ拍でページが inert を付け直していれば、それはページのものなので外さない）
+   * - 自分が付けた inert をページが付け直した・外した: ページのものとして扱い、閉じても触らない
+   */
+  #onLightDomMutations(records: MutationRecord[]) {
+    records.forEach((record, i) => {
+      if (record.type === "attributes") {
+        // 自分は inert の無い要素にしか付けないので、前の値がある変更はページによるもの
+        if (record.oldValue !== null)
+          this.#inertByModal.delete(record.target as Element);
+        return;
+      }
+      for (const node of record.removedNodes) {
+        if (!(node instanceof Element) || !this.#inertByModal.has(node))
+          continue;
+        // 外して同じ拍で戻された子は背景のまま
+        if (node.parentNode === this) continue;
+        this.#inertByModal.delete(node);
+        const touchedByPage = records
+          .slice(i + 1)
+          .some(r => r.type === "attributes" && r.target === node);
+        if (!touchedByPage) node.removeAttribute("inert");
+      }
+      if (this.#modalInvokers.size === 0) return;
+      for (const node of record.addedNodes)
+        if (node instanceof Element && node.parentNode === this)
+          this.#makeBackgroundInert(node);
+    });
   }
 
   // ---- 部品 ----
