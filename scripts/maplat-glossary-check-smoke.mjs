@@ -162,6 +162,62 @@ try {
     const r = run(dir);
     check('例外: omission は全文一致の必須形だけを抑える', r.status === 1 && !findings(r, (v) => v.key === 'control.marker_list' && v.kind === 'required').length && findings(r, (v) => v.key === 'control.marker_list' && v.kind === 'representative').length === 1, summarize(r));
   }
+  // 禁止形と例外の全文一致は、根拠キー（代表語の検査）を避けて新しいキーで確かめる
+  const FIXTURE_KEY = 'html.fixture_marker';
+  const FIXTURE_VALUES = { de: 'Marker anzeigen', en: 'Show marker', es: 'Mostrar marcador', fr: 'Afficher le marqueur', id: 'Tampilkan penanda', ja: 'マーカー表示', ko: '마커 표시', th: 'แสดงหมุด', vi: 'Hiển thị điểm đánh dấu', zh: '显示标记', 'zh-TW': '顯示標記' };
+  const addFixtureKey = (dir, overrides = {}) => {
+    for (const l of LANGS) setValue(dir, l, FIXTURE_KEY, overrides[l] ?? FIXTURE_VALUES[l]);
+  };
+  {
+    const dir = makeRepo('fixture-key');
+    addFixtureKey(dir);
+    run(dir, ['--write']);
+    const r = run(dir);
+    check('前提: 新しいキーの訳がそろっていれば緑', r.status === 0 && r.report?.violations?.length === 0, summarize(r));
+  }
+  {
+    const dir = makeRepo('forbidden');
+    editGlossary(dir, (g) => { g.concepts.find((c) => c.id === 'marker').locales.ja.forbidden = [{ ruleId: 'marker.ja.fixture', literal: 'ピン', scope: 'bindings', reason: 'fixture' }]; });
+    addFixtureKey(dir, { ja: 'マーカーのピン表示' });
+    run(dir, ['--write']);
+    const r = run(dir);
+    check('禁止形: 結び付いたキーの ja に禁止形があると赤（ruleId と当たった形を出す）',
+      r.status === 1 && findings(r, (v) => v.lang === 'ja' && v.key === FIXTURE_KEY && v.kind === 'forbidden' && v.ruleId === 'marker.ja.fixture' && v.hit === 'ピン').length === 1, summarize(r));
+  }
+  {
+    const dir = makeRepo('untranslated');
+    editExceptions(dir, (e) => e.exceptions.push({ type: 'untranslated', concept: 'marker', locale: 'ko', key: FIXTURE_KEY, value: 'Show marker', reason: 'fixture' }));
+    addFixtureKey(dir, { ko: 'Show marker' });
+    run(dir, ['--write']);
+    const green = run(dir);
+    check('例外: untranslated は値が en と同じで全文一致なら必須形を抑える', green.status === 0 && (green.report?.counts?.suppressedByType?.untranslated ?? 0) === 1, summarize(green));
+    setValue(dir, 'en', FIXTURE_KEY, 'Display marker');
+    run(dir, ['--write']);
+    const red = run(dir);
+    check('例外: untranslated は値が en と違えば（記録した文と一致していても）抑えず赤',
+      red.status === 1 && findings(red, (v) => v.lang === 'ko' && v.key === FIXTURE_KEY && v.kind === 'required').length === 1
+        && (red.report?.warnings ?? []).some((w) => w.kind === 'unused-exception' && w.key === FIXTURE_KEY), summarize(red));
+  }
+  {
+    const dir = makeRepo('omission-fulltext');
+    editExceptions(dir, (e) => e.exceptions.push({ type: 'omission', concept: 'marker', locale: 'de', key: FIXTURE_KEY, value: 'Anzeigen', reason: 'fixture' }));
+    addFixtureKey(dir, { de: 'Anzeigen!' });
+    run(dir, ['--write']);
+    const r = run(dir);
+    check('例外: omission は記録した文と全文一致しなければ抑えず赤（失効する）',
+      r.status === 1 && findings(r, (v) => v.lang === 'de' && v.key === FIXTURE_KEY && v.kind === 'required').length === 1
+        && (r.report?.warnings ?? []).some((w) => w.kind === 'unused-exception' && w.key === FIXTURE_KEY), summarize(r));
+  }
+  {
+    const dir = makeRepo('untranslated-fulltext');
+    editExceptions(dir, (e) => e.exceptions.push({ type: 'untranslated', concept: 'marker', locale: 'ko', key: FIXTURE_KEY, value: 'Show markers', reason: 'fixture' }));
+    addFixtureKey(dir, { ko: 'Show marker' });
+    run(dir, ['--write']);
+    const r = run(dir);
+    check('例外: untranslated は値が en と同じでも記録した文と全文一致しなければ抑えず赤（失効する）',
+      r.status === 1 && findings(r, (v) => v.lang === 'ko' && v.key === FIXTURE_KEY && v.kind === 'required').length === 1
+        && (r.report?.warnings ?? []).some((w) => w.kind === 'unused-exception' && w.key === FIXTURE_KEY), summarize(r));
+  }
   {
     const dir = makeRepo('gate-glossary-only');
     const base = git(dir, 'rev-parse', 'HEAD');
