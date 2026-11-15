@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "maplat-glossary.schema.json",
+  "title": "Maplat UI glossary and its exceptions",
+  "description": "正本 maplat-glossary.json は $defs/glossary、例外の表 maplat-glossary.exceptions.json は $defs/exceptions に従う。検査は scripts/maplat-glossary-check.mjs が行う（この schema で書けない整合も検査する）。任意の正規表現は書かない。",
+  "$defs": {
+    "lang": { "type": "string", "enum": ["de", "en", "es", "fr", "id", "ja", "ko", "th", "vi", "zh", "zh-TW"] },
+    "nonEmpty": { "type": "string", "minLength": 1 },
+    "forms": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/nonEmpty" } },
+    "matchMode": { "type": "string", "enum": ["substring", "word", "compound", "affix"] },
+    "phrase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text"],
+      "properties": {
+        "text": { "$ref": "#/$defs/nonEmpty" },
+        "caseSensitive": { "type": "boolean" }
+      }
+    },
+    "forbidden": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ruleId", "literal", "scope", "reason"],
+      "properties": {
+        "ruleId": { "$ref": "#/$defs/nonEmpty" },
+        "literal": { "$ref": "#/$defs/nonEmpty" },
+        "scope": { "type": "string", "enum": ["allKeys", "bindings"] },
+        "reason": { "$ref": "#/$defs/nonEmpty" },
+        "alternative": { "$ref": "#/$defs/nonEmpty" }
+      }
+    },
+    "localeEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["preferred", "acceptedForms"],
+      "properties": {
+        "preferred": { "$ref": "#/$defs/nonEmpty" },
+        "rootKey": { "$ref": "#/$defs/nonEmpty" },
+        "acceptedForms": { "$ref": "#/$defs/forms" },
+        "formerForms": { "$ref": "#/$defs/forms" },
+        "forbidden": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/forbidden" } }
+      }
+    },
+    "role": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["strict"],
+      "properties": {
+        "strict": { "type": "boolean" },
+        "jaPhrases": { "$ref": "#/$defs/forms" },
+        "jaLabel": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["suffix", "maxLength"],
+          "properties": {
+            "suffix": { "$ref": "#/$defs/nonEmpty" },
+            "maxLength": { "type": "integer" },
+            "unless": { "$ref": "#/$defs/forms" }
+          }
+        }
+      }
+    },
+    "concept": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "description", "rootKey", "requiredLocales", "locales", "additionalBindings"],
+      "properties": {
+        "id": { "$ref": "#/$defs/nonEmpty" },
+        "description": { "$ref": "#/$defs/nonEmpty" },
+        "rootKey": { "$ref": "#/$defs/nonEmpty" },
+        "requiredLocales": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/lang" } },
+        "roles": { "type": "object", "additionalProperties": { "$ref": "#/$defs/role" } },
+        "anchors": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "notAnchor": {
+              "type": "object",
+              "propertyNames": { "type": "string", "enum": ["ja", "en"] },
+              "additionalProperties": { "$ref": "#/$defs/forms" }
+            },
+            "disabled": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "enum": ["ja", "en"] } }
+          }
+        },
+        "excludePhrases": {
+          "type": "object",
+          "propertyNames": { "type": "string", "enum": ["*", "de", "en", "es", "fr", "id", "ja", "ko", "th", "vi", "zh", "zh-TW"] },
+          "additionalProperties": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/phrase" } }
+        },
+        "additionalBindings": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/nonEmpty" } },
+        "locales": {
+          "type": "object",
+          "propertyNames": { "$ref": "#/$defs/lang" },
+          "additionalProperties": { "$ref": "#/$defs/localeEntry" }
+        }
+      }
+    },
+    "sharedForm": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["locale", "forms", "concepts", "decideBy"],
+      "properties": {
+        "locale": { "$ref": "#/$defs/lang" },
+        "forms": { "$ref": "#/$defs/forms" },
+        "concepts": { "type": "array", "minItems": 2, "uniqueItems": true, "items": { "$ref": "#/$defs/nonEmpty" } },
+        "decideBy": { "$ref": "#/$defs/lang" }
+      }
+    },
+    "glossary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "locales", "matchModes", "concepts"],
+      "properties": {
+        "$schema": { "type": "string" },
+        "version": { "const": 1 },
+        "locales": { "type": "array", "minItems": 11, "uniqueItems": true, "items": { "$ref": "#/$defs/lang" } },
+        "matchModes": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["de", "en", "es", "fr", "id", "ja", "ko", "th", "vi", "zh", "zh-TW"],
+          "properties": {
+            "de": { "$ref": "#/$defs/matchMode" },
+            "en": { "$ref": "#/$defs/matchMode" },
+            "es": { "$ref": "#/$defs/matchMode" },
+            "fr": { "$ref": "#/$defs/matchMode" },
+            "id": { "$ref": "#/$defs/matchMode" },
+            "ja": { "$ref": "#/$defs/matchMode" },
+            "ko": { "$ref": "#/$defs/matchMode" },
+            "th": { "$ref": "#/$defs/matchMode" },
+            "vi": { "$ref": "#/$defs/matchMode" },
+            "zh": { "$ref": "#/$defs/matchMode" },
+            "zh-TW": { "$ref": "#/$defs/matchMode" }
+          }
+        },
+        "sharedForms": { "type": "array", "items": { "$ref": "#/$defs/sharedForm" } },
+        "concepts": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/concept" } }
+      }
+    },
+    "exception": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "concept", "key", "reason"],
+      "properties": {
+        "type": { "type": "string", "enum": ["untranslated", "omission", "anchorExclusion"] },
+        "concept": { "$ref": "#/$defs/nonEmpty" },
+        "locale": { "$ref": "#/$defs/lang" },
+        "key": { "$ref": "#/$defs/nonEmpty" },
+        "value": { "type": "string" },
+        "ja": { "type": "string" },
+        "en": { "type": "string" },
+        "reason": { "$ref": "#/$defs/nonEmpty" }
+      }
+    },
+    "exceptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "exceptions"],
+      "properties": {
+        "$schema": { "type": "string" },
+        "version": { "const": 1 },
+        "exceptions": { "type": "array", "items": { "$ref": "#/$defs/exception" } }
+      }
+    }
+  }
+}

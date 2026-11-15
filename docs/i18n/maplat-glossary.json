@@ -1,0 +1,1036 @@
+{
+  "$schema": "./maplat-glossary.schema.json",
+  "version": 1,
+  "locales": [
+    "de",
+    "en",
+    "es",
+    "fr",
+    "id",
+    "ja",
+    "ko",
+    "th",
+    "vi",
+    "zh",
+    "zh-TW"
+  ],
+  "matchModes": {
+    "de": "compound",
+    "en": "word",
+    "es": "word",
+    "fr": "word",
+    "id": "affix",
+    "ja": "substring",
+    "ko": "substring",
+    "th": "substring",
+    "vi": "word",
+    "zh": "substring",
+    "zh-TW": "substring"
+  },
+  "concepts": [
+    {
+      "id": "map",
+      "description": "表示・操作する地図。ベースマップは別概念",
+      "rootKey": "control.info",
+      "requiredLocales": [
+        "de",
+        "en",
+        "es",
+        "fr",
+        "id",
+        "ja",
+        "ko",
+        "th",
+        "vi",
+        "zh",
+        "zh-TW"
+      ],
+      "excludePhrases": {
+        "*": [
+          {
+            "text": "Google Maps"
+          },
+          {
+            "text": "Google マップ"
+          },
+          {
+            "text": "import map",
+            "caseSensitive": true
+          }
+        ],
+        "ja": [
+          {
+            "text": "背景地図"
+          },
+          {
+            "text": "Google マップ"
+          }
+        ],
+        "en": [
+          {
+            "text": "base map"
+          },
+          {
+            "text": "base maps"
+          },
+          {
+            "text": "background map"
+          },
+          {
+            "text": "background maps"
+          },
+          {
+            "text": "basemap"
+          },
+          {
+            "text": "basemaps"
+          },
+          {
+            "text": "Google Maps"
+          }
+        ],
+        "de": [
+          {
+            "text": "basiskarte"
+          },
+          {
+            "text": "Hintergrundkarte"
+          }
+        ],
+        "es": [
+          {
+            "text": "mapa base"
+          },
+          {
+            "text": "mapas base"
+          },
+          {
+            "text": "mapa de fondo"
+          }
+        ],
+        "fr": [
+          {
+            "text": "fond de carte"
+          },
+          {
+            "text": "fonds de carte"
+          },
+          {
+            "text": "carte de fond"
+          },
+          {
+            "text": "carte de base"
+          }
+        ],
+        "id": [
+          {
+            "text": "peta dasar"
+          },
+          {
+            "text": "peta latar"
+          }
+        ],
+        "ko": [
+          {
+            "text": "배경 지도"
+          }
+        ],
+        "th": [
+          {
+            "text": "แผนที่พื้นฐาน"
+          },
+          {
+            "text": "แผนที่พื้นหลัง"
+          },
+          {
+            "text": "แผนที่ฐาน"
+          }
+        ],
+        "vi": [
+          {
+            "text": "bản đồ nền"
+          }
+        ],
+        "zh": [
+          {
+            "text": "底图"
+          },
+          {
+            "text": "背景地图"
+          }
+        ],
+        "zh-TW": [
+          {
+            "text": "底圖"
+          },
+          {
+            "text": "背景地圖"
+          }
+        ]
+      },
+      "locales": {
+        "de": {
+          "preferred": "karte",
+          "acceptedForms": [
+            "karte"
+          ]
+        },
+        "en": {
+          "preferred": "map",
+          "acceptedForms": [
+            "map",
+            "maps"
+          ]
+        },
+        "es": {
+          "preferred": "mapa",
+          "acceptedForms": [
+            "mapa",
+            "mapas"
+          ]
+        },
+        "fr": {
+          "preferred": "carte",
+          "acceptedForms": [
+            "carte",
+            "cartes",
+            "cartographique",
+            "cartographiques"
+          ]
+        },
+        "id": {
+          "preferred": "peta",
+          "acceptedForms": [
+            "peta"
+          ]
+        },
+        "ja": {
+          "preferred": "地図",
+          "acceptedForms": [
+            "地図"
+          ]
+        },
+        "ko": {
+          "preferred": "지도",
+          "acceptedForms": [
+            "지도"
+          ]
+        },
+        "th": {
+          "preferred": "แผนที่",
+          "acceptedForms": [
+            "แผนที่"
+          ]
+        },
+        "vi": {
+          "preferred": "bản đồ",
+          "acceptedForms": [
+            "bản đồ"
+          ]
+        },
+        "zh": {
+          "preferred": "地图",
+          "acceptedForms": [
+            "地图"
+          ]
+        },
+        "zh-TW": {
+          "preferred": "地圖",
+          "acceptedForms": [
+            "地圖"
+          ]
+        }
+      },
+      "additionalBindings": []
+    },
+    {
+      "id": "basemap",
+      "description": "古地図の下に敷く地図（ベースマップ）",
+      "rootKey": "html.help_selection_content",
+      "requiredLocales": [
+        "de",
+        "en",
+        "es",
+        "fr",
+        "id",
+        "ja",
+        "th",
+        "zh-TW"
+      ],
+      "locales": {
+        "de": {
+          "preferred": "basiskarte",
+          "acceptedForms": [
+            "basiskarte"
+          ]
+        },
+        "en": {
+          "preferred": "base map",
+          "acceptedForms": [
+            "base map",
+            "base maps",
+            "basemap",
+            "basemaps"
+          ]
+        },
+        "es": {
+          "preferred": "mapa base",
+          "acceptedForms": [
+            "mapa base",
+            "mapas base"
+          ]
+        },
+        "fr": {
+          "preferred": "fond de carte",
+          "acceptedForms": [
+            "fond de carte",
+            "fonds de carte"
+          ],
+          "formerForms": [
+            "carte de fond",
+            "carte de base",
+            "cartes de fond"
+          ]
+        },
+        "id": {
+          "preferred": "peta dasar",
+          "acceptedForms": [
+            "peta dasar"
+          ]
+        },
+        "ja": {
+          "preferred": "ベースマップ",
+          "acceptedForms": [
+            "ベースマップ"
+          ],
+          "formerForms": [
+            "背景地図"
+          ]
+        },
+        "ko": {
+          "preferred": "베이스맵",
+          "acceptedForms": [
+            "베이스맵"
+          ],
+          "formerForms": [
+            "배경 지도"
+          ]
+        },
+        "th": {
+          "preferred": "แผนที่พื้นฐาน",
+          "acceptedForms": [
+            "แผนที่พื้นฐาน"
+          ],
+          "formerForms": [
+            "แผนที่ฐาน"
+          ]
+        },
+        "vi": {
+          "preferred": "bản đồ nền",
+          "acceptedForms": [
+            "bản đồ nền"
+          ]
+        },
+        "zh": {
+          "preferred": "底图",
+          "acceptedForms": [
+            "底图"
+          ],
+          "formerForms": [
+            "背景地图"
+          ]
+        },
+        "zh-TW": {
+          "preferred": "底圖",
+          "acceptedForms": [
+            "底圖"
+          ]
+        }
+      },
+      "additionalBindings": []
+    },
+    {
+      "id": "attribution",
+      "description": "地図画像・データの帰属（著作権表示）",
+      "rootKey": "html.attr",
+      "requiredLocales": [
+        "en",
+        "es",
+        "fr",
+        "id",
+        "ja",
+        "ko",
+        "th",
+        "vi",
+        "zh",
+        "zh-TW"
+      ],
+      "excludePhrases": {
+        "ja": [
+          {
+            "text": "Creative Commons Attribution"
+          },
+          {
+            "text": "クリエイティブ・コモンズ 表示"
+          }
+        ],
+        "en": [
+          {
+            "text": "Creative Commons Attribution"
+          },
+          {
+            "text": "クリエイティブ・コモンズ 表示"
+          }
+        ],
+        "th": [
+          {
+            "text": "Creative Commons Attribution"
+          },
+          {
+            "text": "クリエイティブ・コモンズ 表示"
+          }
+        ]
+      },
+      "locales": {
+        "de": {
+          "preferred": "quellenangabe",
+          "acceptedForms": [
+            "quellenangabe"
+          ],
+          "formerForms": [
+            "attribution"
+          ]
+        },
+        "en": {
+          "preferred": "attribution",
+          "acceptedForms": [
+            "attribution",
+            "attributions"
+          ]
+        },
+        "es": {
+          "preferred": "atribución",
+          "acceptedForms": [
+            "atribución",
+            "atribuciones"
+          ]
+        },
+        "fr": {
+          "preferred": "attribution",
+          "acceptedForms": [
+            "attribution",
+            "attributions"
+          ]
+        },
+        "id": {
+          "preferred": "atribusi",
+          "acceptedForms": [
+            "atribusi"
+          ]
+        },
+        "ja": {
+          "preferred": "帰属表記",
+          "acceptedForms": [
+            "帰属表記",
+            "地図画像帰属",
+            "データ帰属"
+          ],
+          "formerForms": [
+            "帰属表示"
+          ]
+        },
+        "ko": {
+          "preferred": "저작자 표시",
+          "acceptedForms": [
+            "저작자 표시",
+            "출처 표시"
+          ]
+        },
+        "th": {
+          "preferred": "การระบุที่มา",
+          "acceptedForms": [
+            "การระบุที่มา",
+            "ระบุที่มา"
+          ],
+          "formerForms": [
+            "การระบุแหล่งที่มา"
+          ]
+        },
+        "vi": {
+          "preferred": "ghi công",
+          "acceptedForms": [
+            "ghi công",
+            "ghi nguồn"
+          ]
+        },
+        "zh": {
+          "preferred": "署名",
+          "acceptedForms": [
+            "署名",
+            "归属"
+          ],
+          "formerForms": [
+            "版权信息"
+          ]
+        },
+        "zh-TW": {
+          "preferred": "署名",
+          "acceptedForms": [
+            "署名",
+            "歸屬"
+          ],
+          "formerForms": [
+            "版權標示"
+          ]
+        }
+      },
+      "additionalBindings": []
+    },
+    {
+      "id": "citation",
+      "description": "地図・ベースマップの出所（書誌的な典拠）",
+      "rootKey": "html.reference",
+      "requiredLocales": [
+        "de",
+        "ja",
+        "ko",
+        "th",
+        "zh",
+        "zh-TW"
+      ],
+      "anchors": {
+        "disabled": [
+          "en"
+        ]
+      },
+      "locales": {
+        "de": {
+          "preferred": "quelle",
+          "acceptedForms": [
+            "quelle"
+          ]
+        },
+        "en": {
+          "preferred": "source",
+          "acceptedForms": [
+            "source"
+          ]
+        },
+        "es": {
+          "preferred": "fuente",
+          "acceptedForms": [
+            "fuente"
+          ]
+        },
+        "fr": {
+          "preferred": "source",
+          "acceptedForms": [
+            "source"
+          ]
+        },
+        "id": {
+          "preferred": "sumber",
+          "acceptedForms": [
+            "sumber"
+          ]
+        },
+        "ja": {
+          "preferred": "典拠",
+          "acceptedForms": [
+            "典拠"
+          ],
+          "formerForms": [
+            "出典"
+          ]
+        },
+        "ko": {
+          "preferred": "출처",
+          "acceptedForms": [
+            "출처"
+          ]
+        },
+        "th": {
+          "preferred": "แหล่งอ้างอิง",
+          "acceptedForms": [
+            "แหล่งอ้างอิง"
+          ],
+          "formerForms": [
+            "แหล่งที่มา"
+          ]
+        },
+        "vi": {
+          "preferred": "nguồn",
+          "acceptedForms": [
+            "nguồn"
+          ]
+        },
+        "zh": {
+          "preferred": "来源",
+          "acceptedForms": [
+            "来源",
+            "出处"
+          ]
+        },
+        "zh-TW": {
+          "preferred": "來源",
+          "acceptedForms": [
+            "來源",
+            "出處"
+          ]
+        }
+      },
+      "additionalBindings": []
+    },
+    {
+      "id": "app",
+      "description": "地図と POI をまとめて公開するアプリ",
+      "rootKey": "html.share_app_title",
+      "requiredLocales": [
+        "es",
+        "fr",
+        "id",
+        "ja",
+        "th",
+        "vi",
+        "zh"
+      ],
+      "excludePhrases": {
+        "ja": [
+          {
+            "text": "Web App Manifest"
+          }
+        ],
+        "en": [
+          {
+            "text": "Web App Manifest"
+          }
+        ],
+        "de": [
+          {
+            "text": "Web App Manifest"
+          }
+        ],
+        "es": [
+          {
+            "text": "Web App Manifest"
+          }
+        ],
+        "fr": [
+          {
+            "text": "Web App Manifest"
+          }
+        ],
+        "id": [
+          {
+            "text": "Web App Manifest"
+          }
+        ],
+        "ko": [
+          {
+            "text": "Web App Manifest"
+          }
+        ],
+        "th": [
+          {
+            "text": "Web App Manifest"
+          }
+        ],
+        "vi": [
+          {
+            "text": "Web App Manifest"
+          }
+        ],
+        "zh": [
+          {
+            "text": "Web App Manifest"
+          }
+        ],
+        "zh-TW": [
+          {
+            "text": "Web App Manifest"
+          }
+        ]
+      },
+      "locales": {
+        "de": {
+          "preferred": "app",
+          "acceptedForms": [
+            "app"
+          ]
+        },
+        "en": {
+          "preferred": "app",
+          "acceptedForms": [
+            "app",
+            "apps"
+          ]
+        },
+        "es": {
+          "preferred": "aplicación",
+          "acceptedForms": [
+            "aplicación",
+            "aplicaciones",
+            "app",
+            "apps"
+          ]
+        },
+        "fr": {
+          "preferred": "application",
+          "acceptedForms": [
+            "application",
+            "applications",
+            "app",
+            "apps"
+          ]
+        },
+        "id": {
+          "preferred": "aplikasi",
+          "acceptedForms": [
+            "aplikasi",
+            "app"
+          ]
+        },
+        "ja": {
+          "preferred": "アプリ",
+          "acceptedForms": [
+            "アプリ"
+          ]
+        },
+        "ko": {
+          "preferred": "앱",
+          "acceptedForms": [
+            "앱"
+          ]
+        },
+        "th": {
+          "preferred": "แอปพลิเคชัน",
+          "acceptedForms": [
+            "แอปพลิเคชัน"
+          ],
+          "formerForms": [
+            "แอป"
+          ]
+        },
+        "vi": {
+          "preferred": "ứng dụng",
+          "acceptedForms": [
+            "ứng dụng"
+          ]
+        },
+        "zh": {
+          "preferred": "应用",
+          "acceptedForms": [
+            "应用"
+          ]
+        },
+        "zh-TW": {
+          "preferred": "應用程式",
+          "acceptedForms": [
+            "應用程式"
+          ],
+          "formerForms": [
+            "應用"
+          ]
+        }
+      },
+      "additionalBindings": []
+    },
+    {
+      "id": "layer",
+      "description": "地図のレイヤー・POI のレイヤー",
+      "rootKey": "html.help_etc_marker_list",
+      "requiredLocales": [
+        "de",
+        "en",
+        "es",
+        "fr",
+        "id",
+        "ja",
+        "ko",
+        "vi",
+        "zh-TW"
+      ],
+      "excludePhrases": {
+        "en": [
+          {
+            "text": "line-layer-opacity"
+          }
+        ],
+        "ja": [
+          {
+            "text": "line-layer-opacity"
+          }
+        ],
+        "de": [
+          {
+            "text": "angegeben"
+          }
+        ]
+      },
+      "locales": {
+        "de": {
+          "preferred": "ebene",
+          "acceptedForms": [
+            "ebene"
+          ],
+          "formerForms": [
+            "layer"
+          ]
+        },
+        "en": {
+          "preferred": "layer",
+          "acceptedForms": [
+            "layer",
+            "layers",
+            "sublayer"
+          ]
+        },
+        "es": {
+          "preferred": "capa",
+          "acceptedForms": [
+            "capa",
+            "capas",
+            "subcapa"
+          ]
+        },
+        "fr": {
+          "preferred": "calque",
+          "acceptedForms": [
+            "calque",
+            "calques",
+            "couche",
+            "couches"
+          ]
+        },
+        "id": {
+          "preferred": "lapisan",
+          "acceptedForms": [
+            "lapisan",
+            "sublapisan"
+          ],
+          "formerForms": [
+            "layer"
+          ]
+        },
+        "ja": {
+          "preferred": "レイヤ",
+          "acceptedForms": [
+            "レイヤ"
+          ]
+        },
+        "ko": {
+          "preferred": "레이어",
+          "acceptedForms": [
+            "레이어"
+          ]
+        },
+        "th": {
+          "preferred": "เลเยอร์",
+          "acceptedForms": [
+            "เลเยอร์"
+          ]
+        },
+        "vi": {
+          "preferred": "lớp",
+          "acceptedForms": [
+            "lớp"
+          ]
+        },
+        "zh": {
+          "preferred": "图层",
+          "acceptedForms": [
+            "图层"
+          ]
+        },
+        "zh-TW": {
+          "preferred": "圖層",
+          "acceptedForms": [
+            "圖層"
+          ]
+        }
+      },
+      "additionalBindings": []
+    },
+    {
+      "id": "viewer",
+      "description": "Maplat の地図を表示する部分（Maplat UI そのもの）",
+      "rootKey": "html.help_using_maplat",
+      "requiredLocales": [
+        "en",
+        "es",
+        "id",
+        "ja",
+        "ko",
+        "vi",
+        "zh-TW"
+      ],
+      "locales": {
+        "de": {
+          "preferred": "viewer",
+          "acceptedForms": [
+            "viewer"
+          ]
+        },
+        "en": {
+          "preferred": "viewer",
+          "acceptedForms": [
+            "viewer"
+          ]
+        },
+        "es": {
+          "preferred": "visor",
+          "acceptedForms": [
+            "visor"
+          ]
+        },
+        "fr": {
+          "preferred": "visionneuse",
+          "acceptedForms": [
+            "visionneuse"
+          ]
+        },
+        "id": {
+          "preferred": "penampil",
+          "acceptedForms": [
+            "penampil"
+          ],
+          "formerForms": [
+            "viewer"
+          ]
+        },
+        "ja": {
+          "preferred": "ビューア",
+          "acceptedForms": [
+            "ビューア"
+          ]
+        },
+        "ko": {
+          "preferred": "뷰어",
+          "acceptedForms": [
+            "뷰어"
+          ]
+        },
+        "th": {
+          "preferred": "โปรแกรมดู",
+          "acceptedForms": [
+            "โปรแกรมดู"
+          ],
+          "formerForms": [
+            "ตัวแสดงผล",
+            "วิวเวอร์"
+          ]
+        },
+        "vi": {
+          "preferred": "trình xem",
+          "acceptedForms": [
+            "trình xem"
+          ]
+        },
+        "zh": {
+          "preferred": "查看器",
+          "acceptedForms": [
+            "查看器"
+          ]
+        },
+        "zh-TW": {
+          "preferred": "檢視器",
+          "acceptedForms": [
+            "檢視器"
+          ]
+        }
+      },
+      "additionalBindings": []
+    },
+    {
+      "id": "marker",
+      "description": "地図上の地点を示す UI マーカー。POI データそのものではない",
+      "rootKey": "control.marker_list",
+      "requiredLocales": [
+        "de",
+        "en",
+        "es",
+        "fr",
+        "id",
+        "ja",
+        "ko",
+        "th",
+        "vi",
+        "zh",
+        "zh-TW"
+      ],
+      "locales": {
+        "de": {
+          "preferred": "Marker",
+          "acceptedForms": [
+            "Marker"
+          ]
+        },
+        "en": {
+          "preferred": "marker",
+          "acceptedForms": [
+            "marker",
+            "markers"
+          ]
+        },
+        "es": {
+          "preferred": "marcador",
+          "acceptedForms": [
+            "marcador",
+            "marcadores"
+          ]
+        },
+        "fr": {
+          "preferred": "marqueur",
+          "acceptedForms": [
+            "marqueur",
+            "marqueurs"
+          ]
+        },
+        "id": {
+          "preferred": "penanda",
+          "acceptedForms": [
+            "penanda"
+          ]
+        },
+        "ja": {
+          "preferred": "マーカー",
+          "acceptedForms": [
+            "マーカー"
+          ]
+        },
+        "ko": {
+          "preferred": "마커",
+          "acceptedForms": [
+            "마커"
+          ]
+        },
+        "th": {
+          "preferred": "หมุด",
+          "acceptedForms": [
+            "หมุด"
+          ]
+        },
+        "vi": {
+          "preferred": "điểm đánh dấu",
+          "acceptedForms": [
+            "điểm đánh dấu",
+            "đánh dấu"
+          ]
+        },
+        "zh": {
+          "preferred": "标记",
+          "acceptedForms": [
+            "标记"
+          ]
+        },
+        "zh-TW": {
+          "preferred": "標記",
+          "acceptedForms": [
+            "標記"
+          ]
+        }
+      },
+      "additionalBindings": []
+    }
+  ]
+}

@@ -1,0 +1,236 @@
+{
+  "map": {
+    "app.out_of_map": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    },
+    "app.out_of_map_area": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    },
+    "app.out_of_map_desc": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    },
+    "control.border": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    },
+    "control.info": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    },
+    "control.trans": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    },
+    "control.zoom": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    },
+    "html.attr": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    },
+    "html.cache_handle": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    },
+    "html.help_etc_attr": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    },
+    "html.help_etc_border": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    },
+    "html.help_etc_slider": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    },
+    "html.help_gps_content": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    },
+    "html.help_gps_title": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    },
+    "html.help_operation_content": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    },
+    "html.help_operation_title": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    },
+    "html.help_poi_content": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    },
+    "html.help_selection_content": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    },
+    "html.help_selection_title": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    },
+    "html.help_using_maplat": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    },
+    "html.license": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    }
+  },
+  "basemap": {
+    "html.help_etc_slider": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    },
+    "html.help_selection_content": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    }
+  },
+  "attribution": {
+    "html.attr": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    },
+    "html.dataAttr": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    }
+  },
+  "citation": {
+    "html.reference": {
+      "by": [
+        "ja"
+      ]
+    }
+  },
+  "app": {
+    "html.app_loading_body": {
+      "by": [
+        "ja"
+      ]
+    },
+    "html.help_share_help": {
+      "by": [
+        "ja"
+      ]
+    },
+    "html.share_app_title": {
+      "by": [
+        "ja"
+      ]
+    }
+  },
+  "layer": {
+    "html.help_etc_marker_list": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    }
+  },
+  "viewer": {
+    "html.help_using_maplat": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    }
+  },
+  "marker": {
+    "control.hide_marker": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    },
+    "control.marker_list": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    },
+    "html.help_etc_hide_marker": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    },
+    "html.help_etc_marker_list": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    },
+    "html.help_poi_content": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    },
+    "html.marker_list_title": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    }
+  }
+}
