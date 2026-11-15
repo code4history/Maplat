@@ -165,16 +165,19 @@
   "app": {
     "html.app_loading_body": {
       "by": [
+        "en",
         "ja"
       ]
     },
     "html.help_share_help": {
       "by": [
+        "en",
         "ja"
       ]
     },
     "html.share_app_title": {
       "by": [
+        "en",
         "ja"
       ]
     }

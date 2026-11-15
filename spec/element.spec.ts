@@ -1389,7 +1389,7 @@ describe("言語（translateText・t・currentLang）", () => {
     ui.appOption = { lang: "ja" };
     await tick();
     expect(ui.currentLang).toBe("en");
-    expect(ui.t("control.home")).toBe("Go Home Position");
+    expect(ui.t("control.home")).toBe("Return to Home Position");
     expect(ui.appOption).toBeUndefined();
     expect(
       warn.mock.calls.some(c =>
@@ -1417,7 +1417,7 @@ describe("言語（translateText・t・currentLang）", () => {
     ui.setAttribute("lang", "en");
     await vi.waitFor(() =>
       expect(part(ui, "home").querySelector("button")!.title).toBe(
-        "Go Home Position"
+        "Return to Home Position"
       )
     );
     expect(ui.t("no.such.key")).toBe("no.such.key");

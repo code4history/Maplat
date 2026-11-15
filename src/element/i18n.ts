@@ -30,7 +30,7 @@ const STRINGS: Record<string, Dict> = {
     "control.compass_north": "北を上にする",
     "control.gps": "GPS位置取得",
     "control.trans": "地図透明度変更",
-    "slider.base": "背景の地図",
+    "slider.base": "ベースマップ",
     "slider.overlay": "重ねる地図",
     "slider.prev": "前の地図",
     "slider.next": "次の地図",
@@ -69,7 +69,7 @@ const STRINGS: Record<string, Dict> = {
     "html.mapper": "マッパー",
     "html.iiif": "IIIF の書誌",
     "html.iiif_manifest": "Manifest の書誌",
-    "html.iiif_canvas": "canvas の書誌",
+    "html.iiif_canvas": "コマの書誌",
     "html.iiif_copied_at": "写した日時",
     "html.iiif_manifest_link": "Manifest を開く",
     "html.license": "地図画像ライセンス",
@@ -85,7 +85,7 @@ const STRINGS: Record<string, Dict> = {
     "html.cache_processing": "計算中...",
     // ヘルプ（旧 assets/locales/ja/translation.json の control.help・html.help_* と同じ文言）
     "control.help": "ヘルプ表示",
-    "html.app_loading_body": "アプリロード中です...",
+    "html.app_loading_body": "アプリを読み込み中です...",
     "html.help_title": "Maplat ヘルプ",
     "html.help_using_maplat":
       "このサイトはオープンソース絵地図・古地図ビューア<a href='https://www.maplat.jp/' target='_blank'>Maplat</a>を使って構築されています。",
@@ -112,12 +112,12 @@ const STRINGS: Record<string, Dict> = {
     "html.help_etc_marker_list":
       "${marker_list.png}ボタン: マーカーのレイヤー毎に表示/非表示を切り替える画面が表示されます。",
     "html.help_etc_slider":
-      "${slider.png}スライダ: 表示中の地図の透明度を切り替えて、背景の地図が透けて見えるようにします。<br>絵地図、古地図の表示中にのみ動作し、ベースマップ表示時は動作しません。"
+      "${slider.png}スライダ: 表示中の地図の透明度を変更して、ベースマップが透けて見えるようにします。<br>絵地図、古地図の表示中にのみ動作し、ベースマップ表示時は動作しません。"
   },
   en: {
     "control.zoom_in": "Zoom in",
     "control.zoom_out": "Zoom out",
-    "control.home": "Go Home Position",
+    "control.home": "Return to Home Position",
     "control.compass": "Reset Rotation",
     "control.compass_north": "Turn North Up",
     "control.gps": "Acquire GPS Position",
@@ -132,25 +132,26 @@ const STRINGS: Record<string, Dict> = {
     "html.close": "Close",
     "control.share": "Share",
     "html.share_title": "Share",
-    "html.share_app_title": "Share this application",
+    "html.share_app_title": "Share this app",
     "html.share_state_title": "Share current viewpoint",
     "html.share_copy": "Copy",
     "html.share_qr": "QR code",
     "app.copy_toast": "Copied to clipboard",
     // Out of map / GPS errors (same wording as the legacy assets/locales/en/translation.json app.*)
     "app.out_of_map": "Out of map",
-    "app.out_of_map_desc": "GPS result is out of map. GPS function turns off.",
+    "app.out_of_map_desc":
+      "The GPS position is outside the map. GPS turns off.",
     "app.out_of_map_area":
-      "Showing area is out of map. The area moves to default position.",
+      "The displayed area is outside the map. Returning to the default position.",
     // A POI link was not opened because its URL is unsafe (same wording as assets/locales/en/translation.json app.*)
     "app.cannot_open_link": "This link cannot be opened",
     "app.gps_error": "Location information is not available",
     "app.user_gps_deny":
       'To display the current location, please enable "Use Location" in your web browser and read the QR code or URL again.',
     "app.gps_miss":
-      "System failed to acquire location. Please try again at a place where you can receive GPS satellite signals easily.",
+      "The system could not acquire your location. Try again where GPS satellite signals are easier to receive.",
     "app.gps_timeout":
-      "Position acquisition process timed out. Please try again at a place where you can receive GPS satellite signals easily.",
+      "Acquiring the position timed out. Try again where GPS satellite signals are easier to receive.",
     "control.border": "Show Map Border",
     "control.hide_marker": "Hide Markers",
     "control.info": "Show Map Information",
@@ -159,7 +160,7 @@ const STRINGS: Record<string, Dict> = {
     "html.era": "Era",
     "html.contributor": "Contributor",
     "html.mapper": "Mapper",
-    "html.iiif": "IIIF bibliography",
+    "html.iiif": "IIIF bibliographic data",
     "html.iiif_manifest": "Manifest",
     "html.iiif_canvas": "Canvas",
     "html.iiif_copied_at": "Copied at",
@@ -168,7 +169,7 @@ const STRINGS: Record<string, Dict> = {
     "html.dataLicense": "Data license",
     "html.attr": "Map image attribution",
     "html.dataAttr": "Data attribution",
-    "html.reference": "Reference",
+    "html.reference": "Source",
     "html.description": "Description",
     "html.cache_handle": "Size of map cache",
     "html.cache_fetch": "Bulk download",
@@ -177,36 +178,36 @@ const STRINGS: Record<string, Dict> = {
     "html.cache_processing": "Processing...",
     // Help（same wording as the legacy assets/locales/en/translation.json control.help / html.help_*）
     "control.help": "Show Help",
-    "html.app_loading_body": "Now loading application...",
+    "html.app_loading_body": "Loading app...",
     "html.help_title": "Maplat Help",
     "html.help_using_maplat":
       "This site is built with open-source pictorial and historical map viewer <a href='https://www.maplat.jp/' target='_blank'>Maplat</a>.",
     "html.help_operation_title": "How to operate the map",
     "html.help_operation_content":
-      "Move the map by dragging the mouse in case of PC, swiping action with finger in case of smartphone.<br>Scaling the map can be done with the upper left ${plus.png} ${minus.png} buttons in case of PC, with pinch in/out actions with two fingers in case of smartphone.<br>On smartphone, you can rotate the map by twisting with two fingers.<br>By Using the ${home.png} button at the upper left, you can move to the home position of the map being displayed.<br>The compass displayed on ${compass.png} button indicates the current north direction, and by pressing this button, the rotation state of the map can be returned to the normal position.<br>While moving the map, buttons disappear to display the entire map, but to bring back the hidden buttons, please wait a moment or click/tap the screen once.",
+      "Move the map by dragging with a mouse on a PC or swiping with a finger on a smartphone.<br>Zoom the map with the upper-left ${plus.png} ${minus.png} buttons on a PC, or by pinching in and out with two fingers on a smartphone.<br>On a smartphone, rotate the map by twisting two fingers.<br>Use the upper-left ${home.png} button to return to the home position of the displayed map.<br>The compass on the ${compass.png} button points north; press it to reset the map rotation.<br>While the map is moving, the buttons disappear to show the entire map. To bring them back, wait a moment or click or tap the screen once.",
     "html.help_selection_title": "How to change the map",
     "html.help_selection_content":
-      "The two sliders with thumbnail like ${overlay.png} are displayed in the lower left and the lower right of the screen, you can select the map to display with them.<br> Slide the slider to select the map you want, and click the thumbnail, then the map changed.<br>The lower left map slider is to choose base maps (accurate maps), the lower right map slider is to choose historical/illustrated maps.",
+      "Two sliders with thumbnails like ${overlay.png} appear at the lower left and lower right of the screen. Use them to select a map to display.<br>Slide to choose a map, then click its thumbnail to switch to it.<br>The lower-left slider selects base maps (accurate maps); the lower-right slider selects historical or illustrated maps.",
     "html.help_gps_title": "Showing current position on the map",
     "html.help_gps_content":
       "When you press the ${gps.png} button, the GPS function turns on and the user's current location is displayed on the map as ${bluedot.png}. <br>If you press the button again, the GPS function turns off. <br>If the user's current location is not on the map being displayed, a message will be displayed and the GPS function will be turned off automatically.",
     "html.help_poi_title": "Showing spot information",
     "html.help_poi_content":
-      "Markers such as ${defaultpin.png} may be displayed on the map, these are where the spot information is provided. <br>Click or tap the marker to display spot information.",
+      "Markers such as ${defaultpin.png} may appear on the map where spot information is available.<br>Click or tap a marker to display the spot information.",
     "html.help_etc_title": "Others",
     "html.help_etc_attr":
-      "${attr.png} Button: Various information (such as creator, contributor or license, etc.) of the currently displayed map are displayed.",
-    "html.help_etc_help": "${help.png} Button: Showing this help.",
+      "${attr.png} Button: Shows information about the currently displayed map, such as its creator, contributor, and license.",
+    "html.help_etc_help": "${help.png} Button: Shows this help.",
     "html.help_share_help":
-      "${share.png} Button: You can share this application to SNS etc.",
+      "${share.png} Button: Opens a screen for sharing this app on social networks and elsewhere.",
     "html.help_etc_border":
-      "${border.png} Button: Showing map border lines.<br> On a PC, select a map with a mouse over and switch the map with a click, on a smartphone, select a map with a click and switch the map with one more click.",
+      "${border.png} Button: Shows map borders.<br>On a PC, hover over a map to select it and click to switch; on a smartphone, tap once to select a map and tap again to switch.",
     "html.help_etc_hide_marker":
-      "${hide_marker.png} Button: Toggles the display / hide of markers.",
+      "${hide_marker.png} Button: Toggles marker visibility.",
     "html.help_etc_marker_list":
-      "${marker_list.png} Button: A screen to display / hide for each marker layer is displayed.",
+      "${marker_list.png} Button: Opens a screen for showing or hiding each marker layer.",
     "html.help_etc_slider":
-      "${slider.png} Slider: Switch the transparency of the displayed map so that the background map can be seen through. <br>It operates only while displaying the historical/illustrated maps, it does not work when displaying the base maps."
+      "${slider.png} Slider: Adjusts the transparency of the displayed map so that the base map can be seen through it.<br>This works only while historical or illustrated maps are displayed; it does not work with base maps."
   }
 };
 
@@ -227,7 +228,7 @@ const OVERRIDES: Record<string, Dict> = {
   },
   en: {
     "html.help_etc_border":
-      "<img src='${border.png}'> Button: Showing map border lines.<br> On a PC, select a map with a mouse over and switch the map with a click, on a smartphone, select a map with a click and switch the map with one more click."
+      "<img src='${border.png}'> Button: Shows map borders.<br>On a PC, hover over a map to select it and click to switch; on a smartphone, tap once to select a map and tap again to switch."
   },
   de: {
     "control.zoom_in": "Vergrößern",
@@ -285,14 +286,14 @@ const OVERRIDES: Record<string, Dict> = {
     "control.zoom_in": "확대",
     "control.zoom_out": "축소",
     "control.compass_north": "북쪽을 위로",
-    "slider.base": "베이스 맵",
+    "slider.base": "베이스맵",
     "slider.overlay": "고지도 / 중첩 지도",
     "slider.prev": "이전 지도",
     "slider.next": "다음 지도",
     "menu.poi_candidates": "스팟 선택",
     "html.share_qr": "QR 코드",
     "html.help_etc_border":
-      "<img src='${border.png}'>버튼: 지도의 경계를 표시합니다. <br>PC의 경우는마우스 오버로 지도를 선택합니다. 스마트폰의 경우는 원클릭으로 지도를 선택해, 다시 한번 클릭하면 지도를 변경합니다."
+      "<img src='${border.png}'>버튼: 지도의 경계를 표시합니다.<br>PC에서는 마우스를 올려 지도를 선택하고 클릭하여 전환합니다. 스마트폰에서는 한 번 탭하여 지도를 선택하고, 다시 탭하여 전환합니다."
   },
   th: {
     "control.zoom_in": "ซูมเข้า",
@@ -311,7 +312,7 @@ const OVERRIDES: Record<string, Dict> = {
     "control.zoom_in": "Phóng to",
     "control.zoom_out": "Thu nhỏ",
     "control.compass_north": "Hướng bắc lên trên",
-    "slider.base": "Bản đồ cơ bản",
+    "slider.base": "Bản đồ nền",
     "slider.overlay": "Bản đồ cũ / lớp phủ",
     "slider.prev": "Bản đồ trước",
     "slider.next": "Bản đồ tiếp theo",
@@ -324,14 +325,14 @@ const OVERRIDES: Record<string, Dict> = {
     "control.zoom_in": "放大",
     "control.zoom_out": "缩小",
     "control.compass_north": "正北朝上",
-    "slider.base": "基础地图",
+    "slider.base": "底图",
     "slider.overlay": "历史地图 / 叠加地图",
     "slider.prev": "上一张地图",
     "slider.next": "下一张地图",
     "menu.poi_candidates": "选择场所",
     "html.share_qr": "二维码",
     "html.help_etc_border":
-      "<img src='${border.png}'>按钮: 地图的边界显示。<br>在电脑上操作可以用鼠标在地图上上移动选择后点击进行地图切换显示，手机上在选中地图后，再一次点击后进行地图切换显示。"
+      "<img src='${border.png}'>按钮：显示地图边界。<br>在电脑上用鼠标移到想看的地图上并点击切换；在手机上先点击选择地图，再次点击即可切换。"
   },
   "zh-TW": {
     "control.zoom_in": "放大",

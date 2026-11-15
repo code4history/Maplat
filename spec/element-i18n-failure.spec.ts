@@ -50,13 +50,13 @@ describe("言語ファイルの読み込みの失敗", () => {
       expect.stringContaining('falling back to English translations for "th".')
     );
     // 言語ファイルの en（内蔵の en ではなく旧 UI の en が正）
-    expect(ui.t("control.home")).toBe("Go Home Position");
+    expect(ui.t("control.home")).toBe("Return to Home Position");
     expect(ui.t("html.help_operation_content")).toContain(
       "<img src='${plus.png}'> <img src='${minus.png}'>"
     );
     // 落ちた先の en の言語ファイルは、旧 UI のスライダーの説明（地図の切り替えがスライダーになって上書きをやめた）
     expect(ui.t("html.help_selection_content")).toContain(
-      "two sliders with thumbnail"
+      "Two sliders with thumbnails"
     );
     // 言語ファイルに無いキーは内蔵の en
     expect(ui.t("control.zoom_in")).toBe("Zoom in");
