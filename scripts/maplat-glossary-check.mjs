@@ -1,18 +1,18 @@
 #!/usr/bin/env node
-// MaplatEditor の scripts/maplat-glossary-check.mjs（commit 19a563970230179f9c28bcbe41470c01d1f9c982）からの写し。直すときは手本と見比べる。
+// MaplatEditor の scripts/editor-glossary-check.mjs（commit 19a563970230179f9c28bcbe41470c01d1f9c982）からの写し。直すときは手本と見比べる。
 // 論理は手本のまま。Maplat に合わせて変えたのは、ファイルの置き場所・名前・環境変数・正本側の一覧（下の定数のまとまり）と、
-// 文言の「エディタ UI」→「Maplat UI」・parity の担当だけ。コメントの §番号は手本の設計書
-// 「MaplatEditor 全言語用語集・CI検査 タスク設計書」v1.2 の節を指す。
+// 文言の「エディタ UI」→「Maplat UI」・parity の担当だけ。規則の説明は AGENTS.md の「UI Wording & Glossary」と
+// 手本 MaplatEditor の検査（同じ規則）にある。
 // Maplat UI の全言語用語集（docs/i18n/maplat-glossary.json）による locale の検査。Node の標準ライブラリだけで動く。
 //
 // 使い方:
 //   node scripts/maplat-glossary-check.mjs                 検査だけ（何も書かない）
 //   node scripts/maplat-glossary-check.mjs --write         生成物（bindings.json・md）だけを書き直してから検査する
 //   node scripts/maplat-glossary-check.mjs --report <path> 結果を JSON で書き出す
-//   node scripts/maplat-glossary-check.mjs --base <sha>    関門 1・2（§5.6）。環境変数 MAPLAT_GLOSSARY_BASE でも渡せる
+//   node scripts/maplat-glossary-check.mjs --base <sha>    関門 1・2（正本側と locale の分離・正本の差分の要約）。環境変数 MAPLAT_GLOSSARY_BASE でも渡せる
 //   --root <dir> で対象のリポジトリ直下を替えられる（既定はこの script の 1 つ上）
 //
-// 順序（§5）: (0) 関門 (1) 構造・11 言語 (2) parity は spec/locales.spec.ts に任せる (3) 結び付けと錨
+// 順序（手本 MaplatEditor の検査と同じ）: (0) 関門 (1) 構造・11 言語 (2) parity は spec/locales.spec.ts に任せる (3) 結び付けと錨
 //             (4) 禁止形 (5) 必須形 (6) 例外の使用状況 (7) 生成物の一致 (8) 代表語 (9) 正本の差分の要約
 // locale と正本は書き換えない（自動修正はしない）。違反があれば exit 1。
 import { execFileSync } from 'node:child_process';
@@ -27,7 +27,7 @@ export const BINDINGS = 'docs/i18n/maplat-glossary.bindings.json';
 export const MARKDOWN = 'docs/i18n/maplat-glossary.md';
 export const SELF = 'scripts/maplat-glossary-check.mjs';
 /**
- * 関門 1 の「正本側」（§5.6）。生成物は入れない。検査を外せるファイル（検査を動かす workflow）も同じ扱いにする。
+ * 関門 1 の「正本側」（AGENTS.md の guarded side）。生成物は入れない。検査を外せるファイル（検査を動かす workflow）も同じ扱いにする。
  * package.json は検査の script（GATED_SCRIPTS）を変えたときだけ正本側に数える。
  * Maplat には手本の実行器・判定器・除外表（scripts/ci/*・ci/test-exclusions.json）が無く、CI が直接この script を呼ぶ
  */
@@ -185,7 +185,7 @@ export function validateSchema(schema, value, rootSchema = schema, at = '$') {
   return errors;
 }
 
-// ───────────────────────────── 照合（§5.2） ─────────────────────────────
+// ───────────────────────────── 照合 ─────────────────────────────
 const WORD = '[\\p{L}\\p{M}\\p{N}_]';
 const ID_PREFIX = ['', 'di', 'me', 'mem', 'men', 'meng', 'meny', 'pe', 'pem', 'pen', 'peng', 'peny', 'ber', 'ter', 'ke', 'se'];
 const ID_SUFFIX = ['', 'kan', 'an', 'i', 'nya', 'lah', 'annya', 'kannya'];
@@ -215,7 +215,7 @@ export function matchForm(mode, value, form) {
   throw new Error(`未知の照合モード: ${mode}`);
 }
 
-/** 禁止形・統一前の形の照合モード。de・id でも compound・affix にせず word で照合する（r2 m3） */
+/** 禁止形・統一前の形の照合モード。de・id でも compound・affix にせず word で照合する */
 const strictMode = (mode) => (mode === 'compound' || mode === 'affix' ? 'word' : mode);
 
 const stripNoise = (v) => v.replace(/\{\{[^}]*\}\}/g, ' ').replace(/https?:\/\/\S+/g, ' ');
@@ -266,8 +266,8 @@ export function loadCanonical(root) {
 }
 
 /**
- * 正本の意味の整合（§2.2・§5.3）。schema で書けないものだけ。
- * 例外・additionalBindings のキーがまだ locale に無いのは不備にせず、pending（警告）に積む（§5.6: 正本だけの PR で
+ * 正本の意味の整合。schema で書けないものだけ。
+ * 例外・additionalBindings のキーがまだ locale に無いのは不備にせず、pending（警告）に積む（AGENTS.md の 2 段の手順: 正本だけの PR で
  * 新しいキーの例外を先に足し、後の locale の PR でキーを足す）
  */
 export function validateSemantics(glossary, exceptions, keys, pending = []) {
@@ -355,7 +355,7 @@ export function loadLocales(root, langs) {
   return { values, errors };
 }
 
-// ───────────────────────────── 結び付けと判定（§5.1・§5.3・§5.4） ─────────────────────────────
+// ───────────────────────────── 結び付けと判定 ─────────────────────────────
 function conceptIndex(glossary) {
   const byId = new Map(glossary.concepts.map((c) => [c.id, c]));
   const excl = (c, l) => [...(c.excludePhrases?.['*'] ?? []), ...(c.excludePhrases?.[l] ?? [])];
@@ -380,7 +380,7 @@ function screenRole(role, ja) {
   return [...ja].length <= lab.maxLength && ja.endsWith(lab.suffix) && !(lab.unless ?? []).some((u) => ja.includes(u));
 }
 
-/** 役割（§3.3）。strict な役割に当たればその名前、当たらなければ strict でない役割 */
+/** 役割（正本の roles）。strict な役割に当たればその名前、当たらなければ strict でない役割 */
 function roleOf(c, ja) {
   if (!c.roles) return null;
   const entries = Object.entries(c.roles);
@@ -415,7 +415,7 @@ export function evaluateKey(glossary, values, key, exceptions = [], exIndex = in
     }
     if ((c.additionalBindings ?? []).includes(key)) add(c.id, 'manual');
   }
-  // 共有形（§3.3）: 指定した言語の値で振り分ける
+  // 共有形（正本の sharedForms）: 指定した言語の値で振り分ける
   for (const s of glossary.sharedForms ?? []) {
     const cs = s.concepts.map((id) => ix.byId.get(id));
     const v = applyExclusions(stripNoise(values[s.locale] ?? ''), cs.flatMap((c) => ix.excl(c, s.locale)));
@@ -494,7 +494,7 @@ export function evaluateKey(glossary, values, key, exceptions = [], exIndex = in
 
 /**
  * 1 つの値を 1 概念・1 言語で照合する。bound=false なら全キー範囲（allKeys）の禁止形だけを見る。
- * 許容形が禁止形・統一前の形を含む場合は、長い許容形を先に伏せてから探す（§5.2）
+ * 許容形が禁止形・統一前の形を含む場合は、長い許容形を先に伏せてから探す
  */
 function judgeValue(e, mode, v, bound) {
   const forb = e?.forbidden ?? [];
@@ -520,7 +520,7 @@ export function indexExceptions(exceptions) {
   return { anchor, lang };
 }
 
-/** 代表語の検査（§7）: 根拠キーの値がその概念の許容形を満たす */
+/** 代表語の検査: 根拠キーの値がその概念の許容形を満たす */
 function checkRepresentatives(glossary, values) {
   const ix = conceptIndex(glossary);
   const out = [];
@@ -538,7 +538,7 @@ function checkRepresentatives(glossary, values) {
   return out;
 }
 
-// ───────────────────────────── 生成物（§2.1） ─────────────────────────────
+// ───────────────────────────── 生成物 ─────────────────────────────
 function sortObject(o) {
   return Object.fromEntries(Object.keys(o).sort().map((k) => [k, o[k]]));
 }
@@ -592,7 +592,7 @@ export function renderMarkdown(glossary, exceptions, all) {
   return `${lines.join('\n')}\n`;
 }
 
-// ───────────────────────────── 関門と差分の要約（§5.6） ─────────────────────────────
+// ───────────────────────────── 関門と差分の要約 ─────────────────────────────
 function gitOut(root, args) {
   return execFileSync('git', ['-C', root, ...args], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
 }
