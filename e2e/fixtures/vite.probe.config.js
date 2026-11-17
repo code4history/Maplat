@@ -15,7 +15,7 @@ export default defineConfig({
     emptyOutDir: true,
     lib: {
       entry: path.resolve(import.meta.dirname, "sanitize-probe.ts"),
-      name: "__t4probe",
+      name: "__sanitizeProbeBundle",
       formats: ["iife"],
       fileName: () => "sanitize-probe.js"
     },

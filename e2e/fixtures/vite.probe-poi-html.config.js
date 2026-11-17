@@ -15,7 +15,7 @@ export default defineConfig({
     emptyOutDir: false,
     lib: {
       entry: path.resolve(import.meta.dirname, "poi-html-probe.ts"),
-      name: "__t5probe",
+      name: "__poiHtmlProbeBundle",
       formats: ["iife"],
       fileName: () => "poi-html-probe.js"
     },
