@@ -20,7 +20,7 @@ import path from 'node:path';
  * - S12 補助: 保留中の再配置があってもカードのクリック後に中央のカードと地図が揃う
  * - S13: 状態復元（URL の #! 経由の changeMap）の後にスワイパーの active が目的の地図に合う
  *
- * 環境変数 M9_RECORD_DIR を与えると、各テストの観測記録（JSON）をそのディレクトリへ書く（証跡用。CI では不要）。
+ * 環境変数 SWIPER_LOOP_RECORD_DIR を与えると、各テストの観測記録（JSON）をそのディレクトリへ書く（証跡用。CI では不要）。
  *
  * ── 一本化での移植──────────────────────────────
  * 旧 API の `MaplatUi` は `<maplat-ui>` の上の互換層になり、スワイパーは Swiper ではなく
@@ -81,7 +81,7 @@ const idsOf = (k: Kind, n: number) => (k === 'base' ? BASE_IDS : OVERLAY_IDS).sl
 const sliderSel = (k: Kind) => `[part="map-slider"][data-kind="${k}"]`;
 
 function record(name: string, data: unknown) {
-  const dir = process.env.M9_RECORD_DIR;
+  const dir = process.env.SWIPER_LOOP_RECORD_DIR;
   if (!dir) return;
   fs.mkdirSync(dir, { recursive: true });
   const info = test.info();
