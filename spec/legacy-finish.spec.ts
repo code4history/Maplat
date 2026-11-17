@@ -4,8 +4,8 @@
 //     （`e2e/fixtures/legacy-api.html` 等は `#map_div` の高さが 0 で、旧は子の絶対配置で埋めていた）
 //  2. 層 A のイベントの再送出: `ui.addEventListener("clickMarker", fn)` に
 //     `{ type, detail }` が届く。`uiReady` は出さない。`remove()` の後は出さない
-//  3. 旧 `pwaWorker: false / null` は Service Worker を登録しない（`disablePwaWorker`。e2e nov26-m5-t3）
-//  4. 旧 UI と同じく、起動時にメディアの表示部品を先に読む（Quyuan。同梱の Chuci の cc-swiper も登録される。`preloadMediaViewer`。e2e oct26-m9-t1-chuci-arrow）
+//  3. 旧 `pwaWorker: false / null` は Service Worker を登録しない（`disablePwaWorker`。e2e の pwa-worker）
+//  4. 旧 UI と同じく、起動時にメディアの表示部品を先に読む（Quyuan。同梱の Chuci の cc-swiper も登録される。`preloadMediaViewer`。e2e chuci-swiper-arrow）
 //  5. 汎用メニュー（旧 showContextMenu）は地図の切り替え（mapChanged）では閉じない（e2e legacy-api で確認する）
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
@@ -112,7 +112,7 @@ describe("旧 pwaWorker: false / null（Service Worker を登録しない）", (
     }
   }, 120000);
 
-  // 旧 `spec/nov26-m5-t3-pwa-worker.spec.ts` の表のうち、互換層の経路の分（旧 UI の実装の削除の仕上げ・レビュー m7）:
+  // 旧 `spec/pwa-worker.spec.ts` の表のうち、互換層の経路の分（旧 UI の実装の削除の仕上げ）:
   // 空文字・true・数値・オブジェクトは「登録しない」ではなく、旧と同じく既定の ./service-worker.js で登録する
   it.each([
     ["空文字", ""],

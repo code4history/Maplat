@@ -1,9 +1,9 @@
 import { test, expect, type Page } from '@playwright/test';
 
 /**
- * m18-t6: Maplat レイヤ ON/OFF の namespaceID 対応 — 実 UI E2E
+ * Maplat レイヤ ON/OFF の namespaceID 対応 — 実 UI E2E
  *
- * 設計書 §6.3 の E-1〜E-4 を検証する。
+ * E-1〜E-4 を検証する。
  * fixture: e2e/fixtures/marker-list.html（mode=nocollision / collision）
  *
  * 一本化（旧 API は `<maplat-ui>` の上の互換層）での移植: 旧 UI の `.ol-marker-list button`・
@@ -66,7 +66,7 @@ async function toggleLayerByIndex(page: Page, layerIndex: number) {
   await page.waitForTimeout(300);
 }
 
-test.describe('m18-t6: Marker list layer toggle (namespaceID)', () => {
+test.describe('Marker list layer toggle (namespaceID)', () => {
   test.describe.configure({ mode: 'serial' });
 
   test('E-1: Marker list shows app-level and map-derived layers (no collision)', async ({ page }) => {

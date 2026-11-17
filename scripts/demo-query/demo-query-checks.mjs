@@ -1,7 +1,7 @@
 /**
  * demo-query-checks.mjs — 開発用デモのクエリ許可リストの検査の共通部
  *
- * e2e（e2e/nov26-m5-t2-demo-query.spec.ts）と配備後検査（verify-demo-query-allowlist.mjs）が
+ * e2e（e2e/demo-query.spec.ts）と配備後検査（verify-demo-query-allowlist.mjs）が
  * 同じ判定を使うために、検査の定義と 1 本ごとの実行関数をここだけに置く。
  *
  * - URL は文字列の連結で作る（baseUrl + "?" + query）。クエリ組み立ての API を使うと payload の

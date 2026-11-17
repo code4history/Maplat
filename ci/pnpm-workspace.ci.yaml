@@ -1,10 +1,10 @@
-# CI 専用の pnpm 設定（m1-t2）
+# CI 専用の pnpm 設定
 #
 # なぜリポジトリ直下の pnpm-workspace.yaml ではなくここに置くか:
 #   pnpm 11 は allowBuilds を pnpm-workspace.yaml からしか読まない（package.json の
 #   pnpm フィールドも .npmrc も効かないことを実測）。しかし pnpm-workspace.yaml が
 #   リポジトリ直下に存在すると、pnpm はそのディレクトリを workspace ルートと判定する
-#   （packages: の有無は無関係。実測）。ローカル開発では superproject（Maplats）が
+#   （packages: の有無は無関係。実測）。ローカル開発では親の作業場所が
 #   workspace ルートであり、リポジトリ内で pnpm run を1回実行しただけで単独 install が
 #   走って内部パッケージの symlink が壊れる。
 #
@@ -37,7 +37,7 @@ overrides:
   # postcss > nanoid。<3.3.18 の high（CVE-2026-67213）。3系の最新へ留める。
   # 開発用の親リポジトリの overrides の一覧の部分集合である
   nanoid: "^3.3.18"
-# ---- 恒久 override（m1-t3）----
+# ---- 恒久 override ----
 # 第三者依存の脆弱性。上流の更新を待つしかないため恒久。
 # audit の下限（>=X）ではなく系列を留める spec を書くこと（>=X だと未検証の上位メジャーを引く）。
 #   例: path-to-regexp は page@1.11.6 が 1.x API 前提のため ~1.9.0 に留める（>=1.9.0 だと 8.4.2 へ解決して壊れる）。
@@ -65,8 +65,8 @@ overrides:
 
 # 自組織パッケージは publisher が我々自身のため、pnpm 11 既定の 24h 隔離
 # （minimumReleaseAge=1440・サプライチェーン保護）の対象外とする。第三者依存への
-# 保護は既定のまま維持する。リリーストレインの publish 直後に CI が自パッケージを
-# 解決できるようにする恒久設定（m9-t0。rc1 publish 直後の全 CI が
+# 保護は既定のまま維持する。リリースの publish 直後に CI が自パッケージを
+# 解決できるようにする恒久設定（rc1 publish 直後の全 CI が
 # ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION で停止した実測に基づく）
 minimumReleaseAgeExclude:
   - "@maplat/*"

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// m1-t5-hotfix-1 L2: dist 再ビルド一致検査（厳密・ビルド実行を伴う）
+// L2: dist 再ビルド一致検査（厳密・ビルド実行を伴う）
 //
-// なぜ L1 だけでは足りないか（設計書 §5 D2）:
+// なぜ L1 だけでは足りないか:
 //   L1（verify-dist-freshness.mjs）は git 系譜だけを見るため、
 //   「dist を手で編集した」「別の依存解決でビルドした dist をコミットした」は
 //   通ってしまう。dist は npm publish される実体そのものであり、
@@ -33,7 +33,7 @@
 //   dist-demo/ は BUILD_MODE=package では生成されず .gitignore 済みのため対象外。
 //
 // 実行後の作業ツリーについて:
-//   本検査は自動復元しない（設計書 §5 D2）。失敗時に証跡を消さないためである。
+//   本検査は自動復元しない。失敗時に証跡を消さないためである。
 //   SW_VERSION の分が変わっていれば成功時でも service-worker.js に差分が残る。
 //   L1 は clean を要求するため、両方を回す場合は **L2 を後に置く** か、
 //   L2 実行後に案内される復元コマンドを実行すること。
@@ -43,7 +43,7 @@ import { execFileSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 // pnpm build が書く追跡パス。git status のスコープにも比較にも同じ集合を使う
 const BUILD_OUTPUT_PATHS = ["dist", "public/service-worker.js"];
@@ -74,7 +74,7 @@ const statusEntries = () => {
 };
 
 const die = () => {
-  console.error(`✗ m1-t5-hotfix-1 L2 dist 再ビルド一致検査 FAILED（${failures.length} 件）`);
+  console.error(`✗ L2 dist 再ビルド一致検査 FAILED（${failures.length} 件）`);
   for (const f of failures) console.error(`  ${f}`);
   process.exit(1);
 };
@@ -188,7 +188,7 @@ if (failures.length) {
 }
 
 console.log(
-  `✓ m1-t5-hotfix-1 L2 dist 再ビルド一致検査 PASSED` +
+  `✓ L2 dist 再ビルド一致検査 PASSED` +
     `（コミット済み dist は pnpm build から再現できる` +
     `${tolerated.length ? `／SW_VERSION のみ差分: ${tolerated.join(", ")}` : ""}）`
 );

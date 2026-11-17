@@ -1,7 +1,7 @@
-// M1-T5 AC5 / AC6 / AC10: ブラウザ検証用プローブ。製品には含めない。
+// POI html の隔離のブラウザ検証用プローブ。製品には含めない。
 //
-// m1-t4 と同じく**事前バンドル**して読む。dev サーバの依存最適化と競合すると
-// 504 (Outdated Optimize Dep) で不安定になるため（m1-t4 の finding5）。
+// サニタイズの E2E と同じく**事前バンドル**して読む。dev サーバの依存最適化と競合すると
+// 504 (Outdated Optimize Dep) で不安定になるため。
 //
 // 旧の実装（`src/ui_marker.ts` の `poiWebControl`）を消したので、`<maplat-ui>` が実際に使う
 // 組み立て（`src/element/poi-html.ts`）をそのまま呼ぶ。テスト内でロジックを再現してはならない。

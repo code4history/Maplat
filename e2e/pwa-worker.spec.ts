@@ -13,7 +13,7 @@ declare global {
   }
 }
 
-const FIXTURE = "/e2e/fixtures/nov26-m5-t3-pwa.html";
+const FIXTURE = "/e2e/fixtures/pwa.html";
 
 const wrapRegister = () => {
   window.__swRegisterCalls = [];

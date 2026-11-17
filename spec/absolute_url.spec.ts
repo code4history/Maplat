@@ -1,4 +1,4 @@
-// m19-t9: src/absolute_url.ts の未カバー中核ロジックを単体テストする。
+// src/absolute_url.ts の未カバー中核ロジックを単体テストする。
 // base をパス分解し、relative の各セグメントを "."(無視) / ".."(pop) / それ以外(push) で
 // 畳み込んで相対パスを絶対パス風に解決する純関数。
 import { describe, it, expect } from "vitest";

@@ -77,7 +77,7 @@ dist-demo/
 .git.keep
 .git.open
 
-# m1-t4: E2E プローブの生成物
+# サニタイズの E2E: E2E プローブの生成物
 e2e/fixtures/dist-probe/
 e2e/fixtures/dist-probe-t5/
 

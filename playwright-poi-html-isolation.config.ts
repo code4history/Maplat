@@ -1,10 +1,10 @@
 import { defineConfig, devices } from "@playwright/test";
 
-// M1-T5 専用の Playwright 設定。
+// POI html の隔離の E2E 専用の Playwright 設定。
 //
 // なぜ既定の playwright.config.ts を使わないか（実装レビュー Phase 1 の根本原因）:
 //   既定は baseURL/webServer とも 5176 で reuseExistingServer: !CI である。
-//   worktree を並行運用していると、**別 worktree（m1-t4）が起動した 5176 の Vite**を
+//   worktree を並行運用していると、**別 worktree（サニタイズの E2E）が起動した 5176 の Vite**を
 //   同一プロジェクトのサーバーとみなして再利用してしまう。
 //   その結果 t5 の probe asset を要求しても t4 側の index.html が返り、
 //   `<script src>` として評価されて "Unexpected token '<'" になっていた。
@@ -18,7 +18,7 @@ const REUSE = process.env.PLAYWRIGHT_USE_EXISTING_SERVER === "1";
 
 export default defineConfig({
   testDir: "./e2e",
-  testMatch: ["**/m1-t5-poi-html-isolation.spec.ts"],
+  testMatch: ["**/poi-html-isolation.spec.ts"],
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: 0,

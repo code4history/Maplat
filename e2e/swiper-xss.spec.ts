@@ -5,12 +5,12 @@ import { test, expect, type Page } from '@playwright/test';
 /**
  * 地図の切り替えのスワイパーと重なったマーカーのメニュー — 実ブラウザ（Chromium）での無害化の確認
  *
- * fixture: e2e/fixtures/nov26-m5-t1-swiper-xss.html
+ * fixture: e2e/fixtures/swiper-xss.html
  *
- * - AC2（label）: label の HTML がタグにならず文字のまま表示され、onerror が発火しない
- * - AC3（mapID）: mapID の属性注入が起きず、data 属性は元の文字列で、クリックで core.changeMap に元の mapID が渡る
- * - AC4（thumbnail）: javascript: は「画像なし」の絵になり、属性注入は起きない
- * - AC1 (c)（Maplat#274）: 重なったマーカーのメニュー項目の icon が他の CSS プロパティへはみ出さない
+ * - (2)（label）: label の HTML がタグにならず文字のまま表示され、onerror が発火しない
+ * - (3)（mapID）: mapID の属性注入が起きず、data 属性は元の文字列で、クリックで core.changeMap に元の mapID が渡る
+ * - (4)（thumbnail）: javascript: は「画像なし」の絵になり、属性注入は起きない
+ * - (1) (c)（Maplat#274）: 重なったマーカーのメニュー項目の icon が他の CSS プロパティへはみ出さない
  *
  * 陽性対照（是正の前後とも緑）: ページが READY になる・base のスライドが並ぶ。
  *
@@ -19,7 +19,7 @@ import { test, expect, type Page } from '@playwright/test';
  *   shadow root の `[part="map-slider"][data-kind="base"] [part~="map-slide"][data-map-id=…]` へ移した。
  *   中央のカードは `host.slider('base').slots` の offset 0（`@internal`）。
  *   確かめる中身（タグにならない・属性注入が起きない・javascript: は画像にしない・項目がはみ出さない）は変えない。
- *   言い換えた期待値は各テストのコメントに書いた（AC4 の「画像なし」の表し方・属性の数、AC1 (c) の描き方）。
+ *   言い換えた期待値は各テストのコメントに書いた（(4) の「画像なし」の表し方・属性の数、(1) (c) の描き方）。
  */
 
 /** `<maplat-ui>` の shadow root の中の base のスライダー（文書の DOM には無い） */
@@ -27,7 +27,7 @@ const BASE_SLIDES = '[part="map-slider"][data-kind="base"] [part~="map-slide"]';
 
 async function openFixture(page: Page) {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.goto('/e2e/fixtures/nov26-m5-t1-swiper-xss.html');
+  await page.goto('/e2e/fixtures/swiper-xss.html');
   await page.waitForFunction(() => document.getElementById('status')?.textContent === 'READY', null, {
     timeout: 90000
   });
@@ -52,7 +52,7 @@ test.describe('地図切り替えスワイパーの無害化', () => {
     expect(n).toBeGreaterThanOrEqual(5);
   });
 
-  test('AC2: label の HTML はタグにならず文字のまま表示される', async ({ page }) => {
+  test('label の HTML はタグにならず文字のまま表示される', async ({ page }) => {
     const { P } = await openFixture(page);
     // Playwright の CSS locator は shadow root を貫く（旧の .swiper-wrapper → 新のスライダーの帯）
     expect(await page.locator('.map-slider-track img[onerror]').count()).toBe(0);
@@ -61,7 +61,7 @@ test.describe('地図切り替えスワイパーの無害化', () => {
     // 名前の div は初期化の後に ui_utils.ts の ellips() が innerText を 1 文字ずつ <span> に包み直し、
     // 末尾に「…」の span（.omit-mark）を足す（innerText なので先頭の空白は落ちる）。
     // ∴ .omit-mark を除いた span の文字を連結したものが P と一致することで「文字のまま表示」を判定する。
-    // （ellips を通る前の DOM が ` ${P}` であることは単体 spec/nov26-m5-t1-safe-image-url.spec.ts で確かめる）
+    // （ellips を通る前の DOM が ` ${P}` であることは単体 spec/safe-image-url.spec.ts で確かめる）
     // 新しい見出しは `src/shared/text.ts` の ellipsize（旧 ellips と同じ「1 文字ずつ span＋.omit-mark」）
     const texts = await page.evaluate(sel =>
       [
@@ -75,7 +75,7 @@ test.describe('地図切り替えスワイパーの無害化', () => {
     for (const t of texts) expect(t).toBe(P);
   });
 
-  test('AC3: mapID の属性注入が起きず、クリックで元の mapID に切り替わる', async ({ page }) => {
+  test('mapID の属性注入が起きず、クリックで元の mapID に切り替わる', async ({ page }) => {
     const { M } = await openFixture(page);
     expect(await page.locator('.map-slider-track [onmouseover]').count()).toBe(0);
     // 旧の `data` 属性 → 新の `data-map-id`（dataset に入れるので元の文字列のまま）
@@ -134,7 +134,7 @@ test.describe('地図切り替えスワイパーの無害化', () => {
     expect(await page.evaluate(() => (window as any).__maplatUi.core.from.mapID)).toBe(M);
   });
 
-  test('AC4: thumbnail の javascript: は「画像なし」になり、属性注入は起きない', async ({ page }) => {
+  test('thumbnail の javascript: は「画像なし」になり、属性注入は起きない', async ({ page }) => {
     // 引用符を含む thumbnail は相対 URL として要求される。新しいスライダーは読めなかった画像を頭文字の
     // プレースホルダに替える（壊れた画像を出さない）ので、要求に PNG を返して <img> のまま残し、src の値を読む
     await page.route(
@@ -196,7 +196,7 @@ test.describe('地図切り替えスワイパーの無害化', () => {
 });
 
 test.describe('重なったマーカーのメニューの icon（Maplat#274）', () => {
-  test('AC1 (c): icon の注入値で項目が position: fixed にならず、宣言が 1 つ以下', async ({ page }) => {
+  test('icon の注入値で項目が position: fixed にならず、宣言が 1 つ以下', async ({ page }) => {
     await openFixture(page);
     const INJ = 'x);position:fixed;inset:0;z-index:99999;background:url(y';
     // 言い換え: 旧 contextmenu は extend の時点で文書の container に li を描き、icon を li の

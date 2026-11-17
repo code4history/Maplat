@@ -159,7 +159,7 @@ describe("<maplat-ui> の形（B-形）", () => {
   });
 });
 
-// m3（文書のレビュー 2026-10-24）: 実行時にあるのに `interface MaplatUiElement` に無いキーがあった
+// 文書のレビュー（2026-10-24）: 実行時にあるのに `interface MaplatUiElement` に無いキーがあった
 // （`presentationMode`・`appEnvelope`）。層 B の属性のプロパティは全部 interface に載せる。
 // `tsc --noEmit` は spec/ を対象にしない（tsconfig.json の include は src・test・parts）ので、
 // interface に載っているかはソースの interface の本文を読んで確かめる（値の側は実行時にも確かめる）。
@@ -179,7 +179,7 @@ describe("型（interface MaplatUiElement）", () => {
     Array.from(interfaceBody.matchAll(/^ {2}(\w+)\??:/gm), m => m[1])
   );
 
-  it("層 B の属性のプロパティが全部載っている（m3 の presentationMode・appEnvelope の抜け）", () => {
+  it("層 B の属性のプロパティが全部載っている（presentationMode・appEnvelope の抜け）", () => {
     // lang は HTMLElement のものを上書きしない（要素は自分の属性だけを見る）ので interface には無い
     const layerB = MAPLAT_UI_ATTRIBUTES.map(def => def.prop).filter(
       prop => prop !== "lang"
@@ -187,7 +187,7 @@ describe("型（interface MaplatUiElement）", () => {
     expect(layerB.length).toBeGreaterThan(0);
     expect(declared.size).toBeGreaterThan(0);
     for (const prop of layerB) expect(declared.has(prop), prop).toBe(true);
-    // m3 で名指しされた 2 つ（値の側は型が付いていても実行時に読めることを確かめる）
+    // レビューで名指しされた 2 つ（値の側は型が付いていても実行時に読めることを確かめる）
     for (const prop of ["presentationMode", "appEnvelope"])
       expect(declared.has(prop), prop).toBe(true);
   });
@@ -661,8 +661,8 @@ describe("POI の吹き出し（clickMarkers / clickMarker）", () => {
 
   // ---- 旧 ui_marker.ts を消したので、その回帰をここへ移した（旧 spec の名前を行頭に書く） ----
 
-  // 旧 ui_marker_poi_html.spec.ts（m1-t5 AC1/AC10）: html と url の両方なら html を優先する
-  it("html と url が両方あるときは html を優先し、iframe を作らない（m1-t5 AC1/AC10）", async () => {
+  // 旧 ui_marker_poi_html.spec.ts: html と url の両方なら html を優先する
+  it("html と url が両方あるときは html を優先し、iframe を作らない", async () => {
     const ui = await mountUi();
     getMockLayerAController(ui.app!)!.fire("clickMarkers", [
       {
@@ -676,9 +676,9 @@ describe("POI の吹き出し（clickMarkers / clickMarker）", () => {
     expect(part(ui, "poi-html")).not.toBeNull();
   });
 
-  // 旧 ui_marker_poi_html.spec.ts（m1-t5 AC1/AC10）: url の経路は sanitize の経路（Shadow DOM の html
+  // 旧 ui_marker_poi_html.spec.ts: url の経路は sanitize の経路（Shadow DOM の html
   // host）を作らない。iframe にインラインの onload 属性も付けない（message の受け口を置かない）
-  it("url だけなら iframe を作り、html host と onload 属性を作らない（m1-t5 AC1/AC10）", async () => {
+  it("url だけなら iframe を作り、html host と onload 属性を作らない", async () => {
     const ui = await mountUi();
     getMockLayerAController(ui.app!)!.fire("clickMarkers", [
       { namespaceID: "u", name: "U", url: "https://example.com/" }

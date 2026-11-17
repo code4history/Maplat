@@ -1,11 +1,11 @@
-// M1-T4 AC5b: サニタイズが**ブラウザでも**同じ結果になることの検証。
+// サニタイズが**ブラウザでも**同じ結果になることの検証。
 //
-// なぜ必要か（設計書 §3.5(d)）:
+// なぜ必要か:
 //   jsdom（Vitest）での成功は、ブラウザでの安全性を証明しない。DOM の実装差
 //   （エンティティ復号・パーサの挙動・属性の正規化）で結果が変わりうるためである。
 //   **同じ fixture を両環境へ通す**ことでこの差を潰す。
 //
-// 実行: pnpm run test:e2e:m1-t4
+// 実行: pnpm run test:e2e:sanitize-browser
 import { expect, test } from "@playwright/test";
 import {
   MUST_BE_NEUTRALIZED, MUST_BE_PRESERVED, TARGET_BLANK,
@@ -37,7 +37,7 @@ async function setup(page: import("@playwright/test").Page) {
   throw new Error("sanitize-probe が読み込めませんでした（Vite の依存最適化が収束しない）");
 }
 
-test.describe("M1-T4: ブラウザでのサニタイズ（AC5b）", () => {
+test.describe("ブラウザでのサニタイズ", () => {
   test("攻撃ペイロードが無害化される（jsdom と同じ fixture）", async ({ page }) => {
     await setup(page);
     for (const { name, input, mustNotContain } of MUST_BE_NEUTRALIZED) {
@@ -55,7 +55,7 @@ test.describe("M1-T4: ブラウザでのサニタイズ（AC5b）", () => {
     }
   });
 
-  test("実データ相当の HTML が保持される（AC4 / AC5c 正系）", async ({ page }) => {
+  test("実データ相当の HTML が保持される（正系）", async ({ page }) => {
     await setup(page);
     for (const { name, input, mustContain } of MUST_BE_PRESERVED) {
       const out = await page.evaluate((s) => window.__t4!.sanitizeHtml(s), input);
@@ -65,13 +65,13 @@ test.describe("M1-T4: ブラウザでのサニタイズ（AC5b）", () => {
     }
   });
 
-  test("target=_blank に rel が付く（AC6）", async ({ page }) => {
+  test("target=_blank に rel が付く", async ({ page }) => {
     await setup(page);
     const out = await page.evaluate((s) => window.__t4!.sanitizeHtml(s), TARGET_BLANK.input);
     for (const needle of TARGET_BLANK.mustContain) expect(String(out)).toContain(needle);
   });
 
-  test("属性名 allowlist がブラウザでも効く（AC2）", async ({ page }) => {
+  test("属性名 allowlist がブラウザでも効く", async ({ page }) => {
     await setup(page);
     for (const { name, media } of MEDIA_ATTR_ATTACKS) {
       const names = await page.evaluate((m) => {

@@ -8,7 +8,7 @@ import {
   SETTLE_MS,
   XSS_PAYLOAD,
   XSS_PAYLOAD_NUNJUCKS
-} from "../scripts/nov26-m5/demo-query-checks.mjs";
+} from "../scripts/demo-query/demo-query-checks.mjs";
 
 // 開発用デモのクエリ許可リストと、配備後検査の終了コードの判定。
 
@@ -18,7 +18,7 @@ const expectEmpty = (r: object) => {
   expect(({} as Record<string, unknown>).x).toBeUndefined();
 };
 
-describe("parseDemoQuery（AC1）", () => {
+describe("parseDemoQuery", () => {
   it("appid・lang の正しい値を採る", () => {
     expect(parseDemoQuery("?appid=sample_old&lang=en")).toEqual({
       appid: "sample_old",
@@ -155,7 +155,7 @@ describe("demo-query-checks の定義", () => {
   });
 });
 
-describe("decideExit（AC4 (a)）", () => {
+describe("decideExit", () => {
   const r = (id: string, verdict: string) => ({ id, verdict });
   it("全 pass 4 件 → 0", () => {
     expect(

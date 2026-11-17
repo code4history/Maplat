@@ -4,16 +4,16 @@
 <head>
   <meta charset="UTF-8" />
   <base href="/" />
-  <title>Maplat E2E — poiTemplate 陽性対照 Nunjucks</title>
+  <title>Maplat E2E — poiTemplate 陽性対照</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.6.1/mapbox-gl.css" rel="stylesheet" />
 </head>
 
 <body>
   <!--
-    開発用デモのクエリの許可リストの e2e の陽性対照（C3-control）の Nunjucks 側。
-    payload は Nunjucks の記法で、Nunjucks の Core（@maplat/core 1.3 から）で発火する側。
-    lodash の Core で発火する側は nov26-m5-t2-poitemplate-control.html。
+    開発用デモのクエリの許可リストの e2e の陽性対照（C3-control）の lodash 側。
+    payload は lodash.template の記法で、lodash の Core（@maplat/core 1.2 まで）で発火する側。
+    Nunjucks の Core で発火する側は poitemplate-control-nunjucks.html。
     クエリを通さず、createObject のオプションに直接 poiTemplate を入れる。是正の前でも後でも、
     観測窓（SETTLE_MS）の中で window.__nov26m5t2 === 1 になることを e2e で確かめ、C3 の緑が
     「マーカーが描かれなかっただけ」の空振りでないことを担保する。
@@ -49,8 +49,8 @@
         'pk.eyJ1IjoicmVraXNoaWtva3VkbyIsImEiOiJjazRoMmF3dncwODU2M2ttdzI2aDVqYXVwIn0.8Hb9sekgjfck6Setxk5uVg',
       lang: 'ja',
       appid: 'sample',
-      // demo-query-checks.mjs の XSS_PAYLOAD_NUNJUCKS と同一（e2e がファイル本文で照合する）
-      poiTemplate: '{{range.constructor("Reflect.set(window,/__nov26m5t2/.source,1)")()}}'
+      // demo-query-checks.mjs の XSS_PAYLOAD と同一（e2e が page.content() で照合する）
+      poiTemplate: '${Reflect.set(window,/__nov26m5t2/.source,1)}'
     };
     MaplatUi.createObject(option).then(() => {
       statusEl.textContent = 'READY appid=sample lang=ja';

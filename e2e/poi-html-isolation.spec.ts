@@ -3,27 +3,27 @@ import { existsSync, readFileSync, statSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-// m1-t5 AC5 / AC6 / AC10: POI html の隔離を**実ブラウザ**で検証する。
+// POI html の隔離を**実ブラウザ**で検証する。
 //
 // jsdom では Shadow DOM のスタイル適用・実スクロール・スクリプト実行の有無を
 // 再現できないため、ここは実ブラウザでしか確認できない。
 //
-// 検証は m1-t4 と同じく事前バンドルした probe を使う。dev server の依存最適化と
+// 検証はサニタイズの E2E と同じく事前バンドルした probe を使う。dev server の依存最適化と
 // ページ読み込みが競合すると 504 (Outdated Optimize Dep) で不安定になるため
-// （m1-t4 の finding5）、モジュールを動的 import しない構成にしている。
+// モジュールを動的 import しない構成にしている。
 
 const PROBE = "/e2e/fixtures/poi-html-probe.html";
 const PROBE_JS = "/e2e/fixtures/dist-probe/poi-html-probe.js";
 
 // ---- probe の事前バンドルが古くないか（旧 UI の実装の削除の仕上げ）----
-// probe は `pretest:e2e`（`vite build --config e2e/fixtures/vite.probe-t5.config.js`）で作るが、
+// probe は `pretest:e2e`（`vite build --config e2e/fixtures/vite.probe-poi-html.config.js`）で作るが、
 // `playwright test` を直接流すとその手順が走らず、**消した旧の実装を焼き込んだままの古い束**を読んで落ちた
 // （旧の class 名 `poi_html_host` が出た。2026-10-24 の実測）。probe が読むリポジトリの中のファイル
 // （相対 import を辿ったもの）と設定のどれかが束より新しければ、ここで作り直す（作るのは probe の束だけ。
 // `emptyOutDir: false` なので dist-probe の他のファイルには触れない）。
 const FIXTURES = resolve(dirname(fileURLToPath(import.meta.url)), "fixtures");
 const PROBE_ENTRY = resolve(FIXTURES, "poi-html-probe.ts");
-const PROBE_CONFIG = resolve(FIXTURES, "vite.probe-t5.config.js");
+const PROBE_CONFIG = resolve(FIXTURES, "vite.probe-poi-html.config.js");
 const PROBE_BUNDLE = resolve(FIXTURES, "dist-probe/poi-html-probe.js");
 
 /** 入口から相対 import（`./`・`../`）を辿り、probe に焼き込まれるリポジトリの中のファイルを集める */
@@ -78,8 +78,8 @@ test("前提: probe asset が この worktree から JavaScript として配信�
   expect(body.length).toBeGreaterThan(100000);
 });
 
-test.describe("M1-T5: POI html の隔離（実ブラウザ）", () => {
-  test("AC6: 悪性 HTML が親 DOM・親 localStorage へ到達できない", async ({
+test.describe("POI html の隔離（実ブラウザ）", () => {
+  test("悪性 HTML が親 DOM・親 localStorage へ到達できない", async ({
     page
   }) => {
     await page.goto(PROBE);
@@ -112,7 +112,7 @@ test.describe("M1-T5: POI html の隔離（実ブラウザ）", () => {
     expect(result.ls).toBe("untouched");
   });
 
-  test("AC6: 実データ相当の html は保持される", async ({ page }) => {
+  test("実データ相当の html は保持される", async ({ page }) => {
     await page.goto(PROBE);
     await page.waitForFunction(() => !!(window as any).__t5);
     const html = await page.evaluate(() => {
@@ -126,7 +126,7 @@ test.describe("M1-T5: POI html の隔離（実ブラウザ）", () => {
     expect(html).toContain("郡山城");
   });
 
-  test("AC5: noScroll=false のとき host 自身がスクロールする", async ({
+  test("noScroll=false のとき host 自身がスクロールする", async ({
     page
   }) => {
     await page.goto(PROBE);
@@ -149,7 +149,7 @@ test.describe("M1-T5: POI html の隔離（実ブラウザ）", () => {
     expect(m.scrollable).toBe(true);
   });
 
-  test("AC5: noScroll=true のとき host は内容の高さに伸びる", async ({
+  test("noScroll=true のとき host は内容の高さに伸びる", async ({
     page
   }) => {
     await page.goto(PROBE);
@@ -170,7 +170,7 @@ test.describe("M1-T5: POI html の隔離（実ブラウザ）", () => {
     expect(m.scrollable).toBe(false);
   });
 
-  test("AC10: url のみなら iframe が生成され、message リスナは登録されない", async ({
+  test("url のみなら iframe が生成され、message リスナは登録されない", async ({
     page
   }) => {
     await page.goto(PROBE);
@@ -191,7 +191,7 @@ test.describe("M1-T5: POI html の隔離（実ブラウザ）", () => {
     expect(m.hasHost).toBe(false);
   });
 
-  test("AC10: html と url の両方があれば html を優先する", async ({ page }) => {
+  test("html と url の両方があれば html を優先する", async ({ page }) => {
     await page.goto(PROBE);
     await page.waitForFunction(() => !!(window as any).__t5);
     const m = await page.evaluate(() => {

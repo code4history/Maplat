@@ -20,7 +20,7 @@
     }
 
     /* H-1（人間検証）の手順メモ。スワイパー（画面下部）に重ならない左上寄りに、閉じた状態で置く */
-    #m9-howto {
+    #swiper-howto {
       position: fixed;
       top: 64px;
       left: 8px;
@@ -33,12 +33,12 @@
       padding: 2px 8px;
     }
 
-    #m9-howto summary {
+    #swiper-howto summary {
       cursor: pointer;
       font-weight: bold;
     }
 
-    #m9-howto ol {
+    #swiper-howto ol {
       margin: 4px 0;
       padding-left: 18px;
     }
@@ -50,13 +50,13 @@
     <div id="map_div"></div>
   </div>
   <div id="status">Initializing</div>
-  <details id="m9-howto">
+  <details id="swiper-howto">
     <summary>操作確認の手順（H-1）</summary>
     <ol>
       <li>画面下部の 2 段のスワイパー（上段 = 古地図 overlay・下段 = ベース地図 base）を、ドラッグ（スマートフォン幅ではスワイプ）と左右の矢印で、左右それぞれ 10 回以上回す。1 回ごとに隣の地図へ進み、途切れず回ること。中央のカードの左右には別の地図が覗くこと。</li>
       <li>中央のカードの左右に覗いているカードを、右・左それぞれ 5 回以上クリック（タップ）する。右左を交互にする回と、同じ側を続ける回の両方を含める。クリックしたカードがクリックした側から中央へ 1 枚分滑ってきて、地図と画面上部の地図タイトルがそのカードの地図に切り替わること。</li>
       <li><strong>覗いているカードは、矢印ボタンの上か下の部分を押す。</strong>矢印に当たると 1 枚滑るだけで、地図は切り替わらない（従来どおりの動作）。</li>
-      <li><strong>動きが止まってから次を押す。</strong>動いている途中に押すと、地図とタイトルは正しく切り替わるが、中央に来るのが同じ地図の別の複製になることがある（既知の限界・設計 §5.6 / §9.3）。</li>
+      <li><strong>動きが止まってから次を押す。</strong>動いている途中に押すと、地図とタイトルは正しく切り替わるが、中央に来るのが同じ地図の別の複製になることがある（既知の限界）。</li>
       <li>URL の <code>?base=2&amp;overlay=2</code> を <code>3</code> に変えて同じことをする。</li>
     </ol>
   </details>
@@ -114,7 +114,7 @@
       setting,
       pwaManifest: false,
       restoreSession: false,
-      // stateUrl=1: URL の #! で状態を復元する経路（index.ts の page.js ハンドラ → core.changeMap）を有効にする（AC-13）
+      // stateUrl=1: URL の #! で状態を復元する経路（index.ts の page.js ハンドラ → core.changeMap）を有効にする
       stateUrl: params.get('stateUrl') === '1',
       enableCache: false
     })

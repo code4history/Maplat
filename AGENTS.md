@@ -71,7 +71,7 @@ Each violation is printed as `<lang> <key> <concept> <ruleId> <hit> → <preferr
 
 ## Commit & Pull Request Guidelines
 
-Recent `git log` shows a mix of Conventional Commits (`fix:`, `chore:`, `docs:`) and task-ID-prefixed messages (e.g. `m15-t1:`, `c2-m3-t1:`) tied to this project's internal task tracking. Keep commits scoped to one concern; when a message is not part of a tracked task, prefer a Conventional Commits prefix. Pull requests should describe the change, note any affected viewer behavior, and confirm lint, typecheck, and tests pass locally before requesting review.
+Recent `git log` shows a mix of Conventional Commits (`fix:`, `chore:`, `docs:`) and messages prefixed with internal task identifiers. Keep commits scoped to one concern; when a message is not part of a tracked task, prefer a Conventional Commits prefix.
 
 ## Release & Configuration Tips
 

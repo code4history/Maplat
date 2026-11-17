@@ -9,20 +9,20 @@ import path from 'node:path';
  *
  * fixture: e2e/fixtures/swiper-loop.html?base=<n>&overlay=<n>
  *
- * - AC-1（主判定）: 矢印の実クリックで active mapID が正順 / 逆順の巡回と完全一致（幅 1280・375）
- * - AC-2: スワイパー中央（上端寄りの高さ）からの実ドラッグ（1 枚分の 0.75 倍の距離）で同上
- * - AC-3: 1 枚は巡回しない・single-map・矢印は非表示・ドラッグで不変
- * - AC-4: 全ページで Swiper Loop Warning が 0 件
- * - AC-5: 右のカードの実クリック・setSlideMapID・core.changeMap 後の active mapID と .selected（(c) は既知の遷移を含め常に判定）
- * - AC-6: 初期配置で隣り合うカードが同じ地図にならない・枚数（perView）・左右に別の地図が覗く
- * - AC-12: 覗いているカードの実クリックで、クリックした側へ 1 枚分アニメーションし、クリックした要素が中央に来る
+ * - S1（主判定）: 矢印の実クリックで active mapID が正順 / 逆順の巡回と完全一致（幅 1280・375）
+ * - S2: スワイパー中央（上端寄りの高さ）からの実ドラッグ（1 枚分の 0.75 倍の距離）で同上
+ * - S3: 1 枚は巡回しない・single-map・矢印は非表示・ドラッグで不変
+ * - S4: 全ページで Swiper Loop Warning が 0 件
+ * - S5: 右のカードの実クリック・setSlideMapID・core.changeMap 後の active mapID と .selected（(c) は既知の遷移を含め常に判定）
+ * - S6: 初期配置で隣り合うカードが同じ地図にならない・枚数（perView）・左右に別の地図が覗く
+ * - S12: 覗いているカードの実クリックで、クリックした側へ 1 枚分アニメーションし、クリックした要素が中央に来る
  * - 破壊試験（R2 MIN-R2-2）: 遷移中の連打・ドラッグ直後・矢印直後のクリックで、地図・選択表示・タイトルが正しい
- * - AC-12 補助（IR1 MAJ-1）: 保留中の再配置があってもカードのクリック後に中央のカードと地図が揃う
- * - AC-13（人間の指示による範囲追加・OF-1）: 状態復元（URL の #! 経由の changeMap）の後にスワイパーの active が目的の地図に合う
+ * - S12 補助: 保留中の再配置があってもカードのクリック後に中央のカードと地図が揃う
+ * - S13: 状態復元（URL の #! 経由の changeMap）の後にスワイパーの active が目的の地図に合う
  *
  * 環境変数 M9_RECORD_DIR を与えると、各テストの観測記録（JSON）をそのディレクトリへ書く（証跡用。CI では不要）。
  *
- * ── 一本化での移植（M4(d)・M7）──────────────────────────────
+ * ── 一本化での移植──────────────────────────────
  * 旧 API の `MaplatUi` は `<maplat-ui>` の上の互換層になり、スワイパーは Swiper ではなく
  * `<maplat-ui>` の shadow root の中の自前のスライダー（`src/element/slider.ts`。5 スロットの循環）になった。
  *   旧 `.base-swiper .swiper-slide[data]`   → `[part="map-slider"][data-kind="base"] [part~="map-slide"][data-map-id]`
@@ -38,15 +38,15 @@ import path from 'node:path';
  * 期待値の言い換え（Swiper の複製の数に依るもの。各所のコメントにも書いた）:
  *   - `.selected` の数: 旧 `repeatCount(n)`（Swiper の複製の数）→ `selectedCount(n)`（offset -2..+2 のうち
  *     `offset mod n == 0` の数。N=1 は 1・N=2 は 3・N>=3 は 1）
- *   - AC-6 の総スライド数: 旧 `n * repeatCount(n)` → スロットの数（N=1 は 1・N>=2 は 5）。
+ *   - S6 の総スライド数: 旧 `n * repeatCount(n)` → スロットの数（N=1 は 1・N>=2 は 5）。
  *     「巡回で隣り合う同じ地図が 0」は「見えている 3 スロット（offset -1・0・+1）が N>=3 で全部異なる・
  *     N=2 で中央と両隣が異なる」へ
- *   - AC-6 の枚数: 旧 `width >= 480 ? 1.4 : 2`（Swiper v6 以後の設定）→ `width <= 480 ? 1.4 : 2`
+ *   - S6 の枚数: 旧 `width >= 480 ? 1.4 : 2`（Swiper v6 以後の設定）→ `width <= 480 ? 1.4 : 2`
  *     （幅 480px 以下で 1.4 枚・gap 10／481px 以上で 2 枚・gap 15。`spec/fixtures/legacy-e2e-classification.md` の「意図した差分」。
  *     旧の式はそのまま写さず、`slider.ts` の `perViewFor` に従った）
- *   - AC-3: 旧 `params.loop === false`・`swiper-button-lock` → `single-map` class・矢印の `hidden`
+ *   - S3: 旧 `params.loop === false`・`swiper-button-lock` → `single-map` class・矢印の `hidden`
  *     （display: none）・`step()` が何もしない・ドラッグで不変
- *   - AC-12 補助・AC-13 の「競合の順序を作る」注入: 旧は Swiper の `observerUpdate`（onResize の保留）を
+ *   - S12 補助・S13 の「競合の順序を作る」注入: 旧は Swiper の `observerUpdate`（onResize の保留）を
  *     発火していた。新は同じ時点でスライダーの再配置（`refresh()`。ResizeObserver が呼ぶもの）を割り込ませる
  */
 
@@ -66,12 +66,12 @@ const WIDTHS = [1280, 375];
 const CLICK_ORDER: Side[] = ['next', 'next', 'prev', 'prev', 'next', 'prev', 'next', 'next', 'prev', 'prev'];
 
 /**
- * AC-5 (c)（外部からの core.changeMap 後に active mapID が合う）: 旧の Swiper 版では既知の不具合（M9T1-OF-1）を
+ * S5 (c)（外部からの core.changeMap 後に active mapID が合う）: 旧の Swiper 版では既知の不具合を
  * 直したあと、既知の遷移（tatebayashi_kaei_jokamachi → zendoji_garan）を含めて常に判定する。
  */
 
 /**
- * 言い換え（AC-12・M4(d)）: 選択中の地図が中央にあるとき、`.selected` が付くスロットの数。
+ * 言い換え（S12）: 選択中の地図が中央にあるとき、`.selected` が付くスロットの数。
  * 5 スロット（offset -2..+2）のうち `offset mod n == 0` のもの（N=1 は 1 スロットだけ）。
  * 旧は Swiper の複製の数 `repeatCount(n) = n < 2 ? 1 : ceil(5 / n)` だった。
  */
@@ -91,7 +91,7 @@ function record(name: string, data: unknown) {
 
 async function openFixture(page: Page, width: number, base: number, overlay: number) {
   const warns: string[] = [];
-  // AC-4: listener は goto の前に付ける
+  // S4: listener は goto の前に付ける
   page.on('console', m => {
     if (/Swiper Loop Warning/i.test(m.text())) warns.push(m.text().slice(0, 120));
   });
@@ -144,7 +144,7 @@ const activeData = (page: Page, k: Kind) =>
 const waitNotAnimating = (page: Page, k: Kind) =>
   page.waitForFunction(k => !(document.querySelector('maplat-ui') as any).slider(k).animating, k, { timeout: 5000 });
 
-/** 期待値を期限付きで待ち、settle ms 置いても同値かを返す（§8.1・R1 MIN-1） */
+/** 期待値を期限付きで待ち、settle ms 置いても同値かを返す */
 async function waitActive(page: Page, k: Kind, id: string, timeout: number, settle: number) {
   let reached = true;
   try {
@@ -190,7 +190,7 @@ const titleState = (page: Page, id: string) =>
 
 /**
  * 覗いているカード（offset +1 / -1）の「見えていてカードに当たる点」を求め、印を付ける。
- * locator.click() は矩形の中心を押し、覗いているカードの中心は容器の外（地図の canvas の上）なので使えない（設計 §8.1）。
+ * locator.click() は矩形の中心を押し、覗いているカードの中心は容器の外（地図の canvas の上）なので使えない。
  * 走査: まずカードの縦の中央の行を、容器の内側の端から横に 1px ずつ。見つからなければ交わりの矩形全体を上の行から
  * 走査する。shadow root の `elementFromPoint(x, y).closest('[part~=map-slide]')` がそのカード自身の点だけを採る
  * （矢印ボタンなど他の要素に覆われた点は採らない）。
@@ -202,12 +202,12 @@ const markPeek = (page: Page, k: Kind, side: Side) =>
       const sr = host.shadowRoot as ShadowRoot;
       const slider = host.slider(k);
       const root = sr.querySelector(sel) as HTMLElement;
-      root.querySelectorAll('[part~="map-slide"]').forEach((e: Element) => e.removeAttribute('data-m9-mark'));
+      root.querySelectorAll('[part~="map-slide"]').forEach((e: Element) => e.removeAttribute('data-peek-mark'));
       const at = (o: number) => (slider.slots.find((s: any) => s.offset === o)?.element as HTMLElement) ?? null;
       const peek = at(side === 'next' ? 1 : -1);
       const act = at(0);
       if (!peek || !act) return null;
-      peek.setAttribute('data-m9-mark', '1');
+      peek.setAttribute('data-peek-mark', '1');
       const cr = root.getBoundingClientRect();
       const pr = peek.getBoundingClientRect();
       const ar = act.getBoundingClientRect();
@@ -244,14 +244,14 @@ const markEdgeCard = (page: Page, k: Kind, side: Side) =>
     ({ side, sel }) => {
       const sr = document.querySelector('maplat-ui')!.shadowRoot!;
       const root = sr.querySelector(sel) as HTMLElement;
-      root.querySelectorAll('[part~="map-slide"]').forEach((e: Element) => e.removeAttribute('data-m9-mark'));
+      root.querySelectorAll('[part~="map-slide"]').forEach((e: Element) => e.removeAttribute('data-peek-mark'));
       const cr = root.getBoundingClientRect();
       for (let y = Math.ceil(cr.top) + 1; y < cr.bottom - 1; y += 2) {
         for (let i = 1; i < 60; i++) {
           const x = side === 'next' ? cr.right - i : cr.left + i;
           const slide = sr.elementFromPoint(x, y)?.closest('[part~="map-slide"]') as HTMLElement | null;
           if (slide && root.contains(slide)) {
-            slide.setAttribute('data-m9-mark', '1');
+            slide.setAttribute('data-peek-mark', '1');
             return { id: slide.dataset.mapId ?? null, point: { x, y } };
           }
         }
@@ -293,7 +293,7 @@ const hookTransitions = (page: Page, k: Kind) =>
     { k, sel: sliderSel(k) }
   );
 
-/** AC-12 の 1 クリック分の観測と判定 */
+/** S12 の 1 クリック分の観測と判定 */
 async function clickPeekAndJudge(page: Page, k: Kind, side: Side, n: number) {
   const pre = await markPeek(page, k, side);
   if (!pre || !pre.point) return { k, side, ok: false, reason: pre ? 'no clickable point' : 'no peek slide', pre };
@@ -309,7 +309,7 @@ async function clickPeekAndJudge(page: Page, k: Kind, side: Side, n: number) {
         w.__m9stop = false;
         const out: { t: number; x: number; anim: number }[] = [];
         const tick = () => {
-          const m = root.querySelector('[data-m9-mark="1"]') as HTMLElement;
+          const m = root.querySelector('[data-peek-mark="1"]') as HTMLElement;
           const r = m.getBoundingClientRect();
           out.push({ t: Math.round(performance.now() - t0), x: r.left + r.width / 2, anim: track.getAnimations().length });
           // クリック後の待ち（期待値の到達 → 1.2 秒）が終わるまで採る（上限 15 秒）
@@ -330,7 +330,7 @@ async function clickPeekAndJudge(page: Page, k: Kind, side: Side, n: number) {
       const sr = host.shadowRoot as ShadowRoot;
       const root = sr.querySelector(sel) as HTMLElement;
       const cr = root.getBoundingClientRect();
-      const mark = root.querySelector('[data-m9-mark="1"]') as HTMLElement;
+      const mark = root.querySelector('[data-peek-mark="1"]') as HTMLElement;
       const r = mark.getBoundingClientRect();
       const hit = sr.elementFromPoint(cr.left + cr.width / 2, cr.top + cr.height / 2)?.closest('[part~="map-slide"]');
       const act = host.slider(k).slots.find((s: any) => s.offset === 0)?.element;
@@ -351,7 +351,7 @@ async function clickPeekAndJudge(page: Page, k: Kind, side: Side, n: number) {
   const amountOk = Math.abs(animSum - sign * pre.step) <= 3;
   const visualOk = Math.abs(markMove - animSum) <= 3;
   const centerOk = post.centerIsMark && post.activeIsMark;
-  // 言い換え: 期待数は旧の repeatCount(n) ではなく selectedCount(n)（AC-12）
+  // 言い換え: 期待数は旧の repeatCount(n) ではなく selectedCount(n)
   const selectedOk = post.selected.length === selectedCount(n) && post.selected.every(s => s === pre.id);
   // transitionrun 軸（(i) 向き・(ii) 量・(iii) 見た目の移動）
   const transitionOk = dirOk && amountOk && visualOk;
@@ -404,7 +404,7 @@ const cyclic = (ids: string[], start: string, dir: 1 | -1, count: number) => {
   return Array.from({ length: count }, (_, i) => ids[(((s + dir * (i + 1)) % ids.length) + ids.length) % ids.length]);
 };
 
-/** AC-6: 初期配置・perView・覗き */
+/** S6: 初期配置・perView・覗き */
 const initialLayout = (page: Page, k: Kind) =>
   page.evaluate(
     ({ k, sel }) => {
@@ -437,7 +437,7 @@ const initialLayout = (page: Page, k: Kind) =>
   );
 
 /**
- * 言い換え（AC-6）: 旧の「巡回で隣り合う同じ地図の数 = 0」（Swiper の複製の並び）を、
+ * 言い換え: 旧の「巡回で隣り合う同じ地図の数 = 0」（Swiper の複製の並び）を、
  * 「見えている 3 スロット（offset -1・0・+1）が N>=3 で全部異なる・N=2 で中央と両隣が異なる」にする。
  * 返り値は「満たさない組の数」（0 で合格）。
  */
@@ -449,34 +449,34 @@ const visibleSameCount = (lay: { prev: string | null; active: string | null; nex
   return bad;
 };
 /**
- * 言い換え（AC-6）: 総スライド数は旧 `n * repeatCount(n)`（Swiper の複製を含む数）→ スロットの数
+ * 言い換え: 総スライド数は旧 `n * repeatCount(n)`（Swiper の複製を含む数）→ スロットの数
  * （N=1 は 1・N>=2 は 5。同じ行の式 `min(5, n)` はこの数と食い違う書き誤りで、
  * `slider.ts` の `#slotCount()` も N>=2 で 5）
  */
 const slotTotal = (n: number) => (n < 2 ? 1 : 5);
-/** 言い換え（AC-6・P1）: 旧 `width >= 480 ? 1.4 : 2` → `width <= 480 ? 1.4 : 2` */
+/** 言い換え（S6・P1）: 旧 `width >= 480 ? 1.4 : 2` → `width <= 480 ? 1.4 : 2` */
 const perViewOf = (width: number) => (width <= 480 ? 1.4 : 2);
 
 for (const width of WIDTHS) {
   for (const n of [2, 3, 4, 5]) {
-    test(`AC-1 AC-2 AC-4 AC-6 w=${width} n=${n}: 矢印とドラッグで左右とも巡回し、初期配置で隣が同じ地図にならない`, async ({ page }) => {
+    test(`S1 S2 S4 S6 w=${width} n=${n}: 矢印とドラッグで左右とも巡回し、初期配置で隣が同じ地図にならない`, async ({ page }) => {
       test.setTimeout(240000);
       const warns = await openFixture(page, width, n, n);
       const rec: any = { width, n };
       for (const k of KINDS) {
         const ids = idsOf(k, n);
-        // AC-6
+        // S6
         const lay = await initialLayout(page, k);
         rec[`${k}Layout`] = lay;
-        expect.soft(lay.order.length, `AC-6 ${k} 総スライド数`).toBe(slotTotal(n));
-        expect.soft(visibleSameCount(lay, n), `AC-6 ${k} 見えている 3 枚で隣り合う同じ地図の数 order=${lay.order.join(',')}`).toBe(0);
-        expect.soft(lay.perView, `AC-6 ${k} perView`).toBe(perViewOf(width));
-        expect.soft(lay.prevOverlap, `AC-6 ${k} 左のカードが容器内に覗く`).toBeGreaterThanOrEqual(1);
-        expect.soft(lay.nextOverlap, `AC-6 ${k} 右のカードが容器内に覗く`).toBeGreaterThanOrEqual(1);
-        expect.soft(lay.prev !== null && lay.prev !== lay.active, `AC-6 ${k} 左は active と別の地図 (${lay.prev}/${lay.active})`).toBe(true);
-        expect.soft(lay.next !== null && lay.next !== lay.active, `AC-6 ${k} 右は active と別の地図 (${lay.next}/${lay.active})`).toBe(true);
+        expect.soft(lay.order.length, `S6 ${k} 総スライド数`).toBe(slotTotal(n));
+        expect.soft(visibleSameCount(lay, n), `S6 ${k} 見えている 3 枚で隣り合う同じ地図の数 order=${lay.order.join(',')}`).toBe(0);
+        expect.soft(lay.perView, `S6 ${k} perView`).toBe(perViewOf(width));
+        expect.soft(lay.prevOverlap, `S6 ${k} 左のカードが容器内に覗く`).toBeGreaterThanOrEqual(1);
+        expect.soft(lay.nextOverlap, `S6 ${k} 右のカードが容器内に覗く`).toBeGreaterThanOrEqual(1);
+        expect.soft(lay.prev !== null && lay.prev !== lay.active, `S6 ${k} 左は active と別の地図 (${lay.prev}/${lay.active})`).toBe(true);
+        expect.soft(lay.next !== null && lay.next !== lay.active, `S6 ${k} 右は active と別の地図 (${lay.next}/${lay.active})`).toBe(true);
 
-        // AC-1（主判定）: 矢印の実クリック
+        // S1（主判定）: 矢印の実クリック
         for (const [dir, sign] of [['next', 1], ['prev', -1]] as const) {
           const start = (await activeData(page, k))!;
           const seq: (string | null)[] = [];
@@ -486,10 +486,10 @@ for (const width of WIDTHS) {
             seq.push(await activeData(page, k));
           }
           rec[`${k}Arrow_${dir}`] = { start, seq };
-          expect.soft(seq, `AC-1 ${k} ${dir} 矢印 ${2 * n + 1} 回の active mapID 列`).toEqual(cyclic(ids, start, sign, 2 * n + 1));
+          expect.soft(seq, `S1 ${k} ${dir} 矢印 ${2 * n + 1} 回の active mapID 列`).toEqual(cyclic(ids, start, sign, 2 * n + 1));
         }
 
-        // AC-2: 実ドラッグ（左へ = 次へ、右へ = 前へ）
+        // S2: 実ドラッグ（左へ = 次へ、右へ = 前へ）
         // 距離は 1 枚分（中央のカードの幅 + 間隔）の 0.75 倍、縦位置は上端から 8px（旧と同じ。旧の理由は Swiper の
         // long swipe と矢印ボタンの上で離したときの分岐。新しいスライダーでも同じ点で離す）。
         const dist = await page.evaluate(k => {
@@ -508,17 +508,17 @@ for (const width of WIDTHS) {
             seq.push(await activeData(page, k));
           }
           rec[`${k}Drag_${label}`] = { start, seq };
-          expect.soft(seq, `AC-2 ${k} ${label} ドラッグ ${n + 1} 回の active mapID 列`).toEqual(cyclic(ids, start, sign, n + 1));
+          expect.soft(seq, `S2 ${k} ${label} ドラッグ ${n + 1} 回の active mapID 列`).toEqual(cyclic(ids, start, sign, n + 1));
         }
       }
       rec.warns = warns;
       record(test.info().title, rec);
-      expect(warns, 'AC-4 Swiper Loop Warning').toEqual([]);
+      expect(warns, 'S4 Swiper Loop Warning').toEqual([]);
     });
   }
 }
 
-test('AC-4 AC-6 n=6: base 5 枚・overlay 6 枚でも警告が無く隣が同じ地図にならない', async ({ page }) => {
+test('S4 S6 n=6: base 5 枚・overlay 6 枚でも警告が無く隣が同じ地図にならない', async ({ page }) => {
   test.setTimeout(120000);
   const warns = await openFixture(page, 1280, 5, 6);
   const rec: any = {};
@@ -526,23 +526,23 @@ test('AC-4 AC-6 n=6: base 5 枚・overlay 6 枚でも警告が無く隣が同じ
     const lay = await initialLayout(page, k);
     rec[k] = lay;
     const n = k === 'base' ? 5 : 6;
-    expect.soft(lay.order.length, `AC-6 ${k} 総スライド数`).toBe(slotTotal(n));
-    expect.soft(visibleSameCount(lay, n), `AC-6 ${k} 見えている 3 枚で隣り合う同じ地図の数`).toBe(0);
+    expect.soft(lay.order.length, `S6 ${k} 総スライド数`).toBe(slotTotal(n));
+    expect.soft(visibleSameCount(lay, n), `S6 ${k} 見えている 3 枚で隣り合う同じ地図の数`).toBe(0);
     // 5 スロットに出ている地図はどれも異なる（n >= 5 なので offset -2..+2 は全部別の地図）
-    expect.soft(new Set(lay.order).size, `AC-6 ${k} 5 スロットの地図が全部異なる order=${lay.order.join(',')}`).toBe(5);
+    expect.soft(new Set(lay.order).size, `S6 ${k} 5 スロットの地図が全部異なる order=${lay.order.join(',')}`).toBe(5);
   }
   rec.warns = warns;
   record(test.info().title, rec);
-  expect(warns, 'AC-4 Swiper Loop Warning').toEqual([]);
+  expect(warns, 'S4 Swiper Loop Warning').toEqual([]);
 });
 
 for (const width of WIDTHS) {
-  test(`AC-3 AC-4 w=${width} n=1: 1 枚は巡回しない・矢印は非表示・ドラッグで不変`, async ({ page }) => {
+  test(`S3 S4 w=${width} n=1: 1 枚は巡回しない・矢印は非表示・ドラッグで不変`, async ({ page }) => {
     test.setTimeout(120000);
     const warns = await openFixture(page, width, 1, 1);
     const rec: any = {};
     for (const k of KINDS) {
-      // 言い換え（AC-3）: 旧の params.loop === false と swiper-button-lock は存在しない。
+      // 言い換え: 旧の params.loop === false と swiper-button-lock は存在しない。
       // single-map class・矢印の hidden（display: none）・step() が何もしない、で判定する
       const info = await page.evaluate(
         sel => {
@@ -561,11 +561,11 @@ for (const width of WIDTHS) {
         },
         sliderSel(k)
       );
-      expect.soft(info.single, `AC-3 ${k} single-map`).toBe(true);
-      expect.soft(info.slides, `AC-3 ${k} スライド数`).toBe(1);
+      expect.soft(info.single, `S3 ${k} single-map`).toBe(true);
+      expect.soft(info.slides, `S3 ${k} スライド数`).toBe(1);
       for (const s of ['next', 'prev'] as const) {
-        expect.soft(info[s].hidden, `AC-3 ${k}-${s} hidden（旧 swiper-button-lock）`).toBe(true);
-        expect.soft(info[s].display, `AC-3 ${k}-${s} display`).toBe('none');
+        expect.soft(info[s].hidden, `S3 ${k}-${s} hidden（旧 swiper-button-lock）`).toBe(true);
+        expect.soft(info[s].display, `S3 ${k}-${s} display`).toBe('none');
       }
       const before = await activeData(page, k);
       // step() は何もしない（旧 params.loop === false の言い換え。1 枚は動かない）
@@ -575,7 +575,7 @@ for (const width of WIDTHS) {
         await slider.step(-1);
         return { animating: slider.animating, active: slider.activeMapID };
       }, k);
-      expect.soft(stepped, `AC-3 ${k} step() の後も動かない`).toEqual({ animating: false, active: before });
+      expect.soft(stepped, `S3 ${k} step() の後も動かない`).toEqual({ animating: false, active: before });
       await drag(page, k, -80);
       await page.waitForTimeout(800);
       const afterLeft = await activeData(page, k);
@@ -583,11 +583,11 @@ for (const width of WIDTHS) {
       await page.waitForTimeout(800);
       const afterRight = await activeData(page, k);
       rec[k] = { info, before, stepped, afterLeft, afterRight };
-      expect.soft([afterLeft, afterRight], `AC-3 ${k} ドラッグ後の active`).toEqual([before, before]);
+      expect.soft([afterLeft, afterRight], `S3 ${k} ドラッグ後の active`).toEqual([before, before]);
     }
     rec.warns = warns;
     record(test.info().title, rec);
-    expect(warns, 'AC-4 Swiper Loop Warning').toEqual([]);
+    expect(warns, 'S4 Swiper Loop Warning').toEqual([]);
   });
 }
 
@@ -602,7 +602,7 @@ const trackTranslate = (page: Page, k: Kind) =>
   );
 
 for (const n of [2, 3, 4, 5]) {
-  test(`AC-4 AC-5 w=1280 n=${n}: カードのクリック・setSlideMapID・changeMap 後の active と選択表示`, async ({ page }) => {
+  test(`S4 S5 w=1280 n=${n}: カードのクリック・setSlideMapID・changeMap 後の active と選択表示`, async ({ page }) => {
     test.setTimeout(240000);
     const warns = await openFixture(page, 1280, n, n);
     const rec: any = { n };
@@ -611,17 +611,17 @@ for (const n of [2, 3, 4, 5]) {
       const r: any = {};
       // (a) 右のカードの実クリック
       const pre = await markPeek(page, k, 'next');
-      expect.soft(pre?.point, `AC-5 (a) ${k} 右のカードの押せる点`).toBeTruthy();
+      expect.soft(pre?.point, `S5 (a) ${k} 右のカードの押せる点`).toBeTruthy();
       if (pre?.point) {
         await page.mouse.click(pre.point.x, pre.point.y);
         const wait = await waitActive(page, k, pre.id!, 8000, 700);
         const sel = await selectedData(page, k);
         const title = await titleState(page, pre.id!);
         r.a = { clicked: pre.id, from: pre.from, wait, sel, title };
-        expect.soft(pre.id !== pre.from, `AC-5 (a) ${k} クリック対象は操作前の active と異なる`).toBe(true);
-        expect.soft(wait, `AC-5 (a) ${k} active = クリックした mapID`).toEqual({ reached: true, stable: true });
-        expect.soft(sel, `AC-5 (a) ${k} .selected`).toEqual(Array(selectedCount(n)).fill(pre.id));
-        expect.soft(title.actual, `AC-5 (a) ${k} 地図タイトル`).toBe(title.expected);
+        expect.soft(pre.id !== pre.from, `S5 (a) ${k} クリック対象は操作前の active と異なる`).toBe(true);
+        expect.soft(wait, `S5 (a) ${k} active = クリックした mapID`).toEqual({ reached: true, stable: true });
+        expect.soft(sel, `S5 (a) ${k} .selected`).toEqual(Array(selectedCount(n)).fill(pre.id));
+        expect.soft(title.actual, `S5 (a) ${k} 地図タイトル`).toBe(title.expected);
       }
       // (a') 中央のカードのクリックでは動かない（R2 Info 2）
       {
@@ -640,13 +640,13 @@ for (const n of [2, 3, 4, 5]) {
           { k, sel: sliderSel(k) }
         );
         const translate0 = await trackTranslate(page, k);
-        expect.soft(center.hit, `AC-5 (a') ${k} 中央のカードの押せる点`).toBe(true);
+        expect.soft(center.hit, `S5 (a') ${k} 中央のカードの押せる点`).toBe(true);
         await page.mouse.click(center.x, center.y);
         await page.waitForTimeout(1200);
         const after = { translate: await trackTranslate(page, k), active: await activeData(page, k) };
         r.center = { center, translate0, after };
-        expect.soft(after, `AC-5 (a') ${k} 中央のカードのクリック後に translate と active が変わらない`).toEqual({ translate: translate0, active: center.id });
-        expect.soft(await selectedData(page, k), `AC-5 (a') ${k} .selected`).toEqual(Array(selectedCount(n)).fill(center.id));
+        expect.soft(after, `S5 (a') ${k} 中央のカードのクリック後に translate と active が変わらない`).toEqual({ translate: translate0, active: center.id });
+        expect.soft(await selectedData(page, k), `S5 (a') ${k} .selected`).toEqual(Array(selectedCount(n)).fill(center.id));
       }
       // (b) setSlideMapID（旧 API の baseSwiper / overlaySwiper facade。互換層が新しいスライダーへ委譲する）
       r.b = [];
@@ -657,10 +657,10 @@ for (const n of [2, 3, 4, 5]) {
         const wait = await waitActive(page, k, id, 5000, 700);
         const sel = await selectedData(page, k);
         r.b.push({ id, from: cur, wait, sel });
-        expect.soft(wait, `AC-5 (b) ${k} setSlideMapID(${id})`).toEqual({ reached: true, stable: true });
-        expect.soft(sel, `AC-5 (b) ${k} setSlideMapID(${id}) の .selected`).toEqual(Array(selectedCount(n)).fill(id));
+        expect.soft(wait, `S5 (b) ${k} setSlideMapID(${id})`).toEqual({ reached: true, stable: true });
+        expect.soft(sel, `S5 (b) ${k} setSlideMapID(${id}) の .selected`).toEqual(Array(selectedCount(n)).fill(id));
       }
-      expect.soft(r.b.length, `AC-5 (b) ${k} 判定した id の数`).toBeGreaterThanOrEqual(n - 1);
+      expect.soft(r.b.length, `S5 (b) ${k} 判定した id の数`).toBeGreaterThanOrEqual(n - 1);
       // (c) core.changeMap
       r.c = [];
       for (const id of [...ids.slice(1), ids[0]]) {
@@ -682,21 +682,21 @@ for (const n of [2, 3, 4, 5]) {
         const wait = await waitActive(page, k, id, 8000, 700);
         const events = await page.evaluate(() => (window as any).__m9cev.slice());
         r.c.push({ id, from: cur, wait, events });
-        expect.soft(events.some((e: string) => e.startsWith(`mapChanged:${id}@`)), `AC-5 (c) ${k} changeMap(${id}) の mapChanged`).toBe(true);
-        expect.soft(wait, `AC-5 (c) ${k} changeMap(${id}) from ${cur}`).toEqual({ reached: true, stable: true });
+        expect.soft(events.some((e: string) => e.startsWith(`mapChanged:${id}@`)), `S5 (c) ${k} changeMap(${id}) の mapChanged`).toBe(true);
+        expect.soft(wait, `S5 (c) ${k} changeMap(${id}) from ${cur}`).toEqual({ reached: true, stable: true });
       }
-      expect.soft(r.c.length, `AC-5 (c) ${k} 判定した id の数`).toBeGreaterThanOrEqual(n - 1);
+      expect.soft(r.c.length, `S5 (c) ${k} 判定した id の数`).toBeGreaterThanOrEqual(n - 1);
       rec[k] = r;
     }
     rec.warns = warns;
     record(test.info().title, rec);
-    expect(warns, 'AC-4 Swiper Loop Warning').toEqual([]);
+    expect(warns, 'S4 Swiper Loop Warning').toEqual([]);
   });
 }
 
 for (const width of WIDTHS) {
   for (const n of [2, 3, 4, 5]) {
-    test(`AC-4 AC-12 w=${width} n=${n}: 覗いているカードのクリックで、その側へ 1 枚分動いてクリックした要素が中央に来る`, async ({ page }) => {
+    test(`S4 S12 w=${width} n=${n}: 覗いているカードのクリックで、その側へ 1 枚分動いてクリックした要素が中央に来る`, async ({ page }) => {
       test.setTimeout(300000);
       const warns = await openFixture(page, width, n, n);
       const rec: any[] = [];
@@ -708,14 +708,14 @@ for (const width of WIDTHS) {
       }
       record(test.info().title, { width, n, warns, rec });
       const failed = rec.filter(r => !r.ok).map(r => `${r.k}:${r.side}:${r.clicked ?? r.reason}`);
-      expect.soft(failed, `AC-12 満たさなかったクリック（${rec.filter(r => r.ok).length}/${rec.length} が満たした）`).toEqual([]);
-      expect(warns, 'AC-4 Swiper Loop Warning').toEqual([]);
+      expect.soft(failed, `S12 満たさなかったクリック（${rec.filter(r => r.ok).length}/${rec.length} が満たした）`).toEqual([]);
+      expect(warns, 'S4 Swiper Loop Warning').toEqual([]);
     });
   }
 }
 
 /**
- * 破壊試験（R2 MIN-R2-2・設計 §4.1-3 の 4 点目・§9.3）
+ * 破壊試験
  * 遷移中の連打・ドラッグ直後・矢印直後のカードのクリックで、最後に選ばれた地図（changeMap の最後の引数）に
  * active mapID・.selected・地図タイトルが揃うことを固定する。
  * 「中央に来るのがクリックした要素か」は記録だけする（旧と同じ。旧は複製の別ノードになりうる既知の限界だった）。
@@ -738,7 +738,7 @@ for (const n of [2, 3]) {
         const root = sr.querySelector(sel) as HTMLElement;
         const cr = root.getBoundingClientRect();
         const hit = sr.elementFromPoint(cr.left + cr.width / 2, cr.top + cr.height / 2)?.closest('[part~="map-slide"]');
-        return hit ? hit.getAttribute('data-m9-mark') === '1' : null;
+        return hit ? hit.getAttribute('data-peek-mark') === '1' : null;
       }, sliderSel(k));
       rec.push({ k, scenario, calls, last, wait, sel, title, centerIsClickedElement: centerIsMark, ...extra });
       if (!extra.sameAsCurrent)
@@ -808,12 +808,12 @@ for (const n of [2, 3]) {
       }
     }
     record(test.info().title, { n, warns, rec });
-    expect(warns, 'AC-4 Swiper Loop Warning').toEqual([]);
+    expect(warns, 'S4 Swiper Loop Warning').toEqual([]);
   });
 }
 
 /**
- * AC-12 補助（実装レビュー IR1 MAJ-1）: 保留中の再配置とカードのクリックの競合
+ * S12 補助: 保留中の再配置とカードのクリックの競合
  *
  * 旧は Swiper の observeParents が拾った親要素の変化（onResize → slideToLoop の rAF の保留）とカードのクリックが
  * 競合して、中央のカードと地図が食い違っていた。新しいスライダーでは同じ役割を ResizeObserver → `refresh()`
@@ -825,14 +825,14 @@ for (const n of [2, 3]) {
  * 判定（変えない）: 毎回、active mapID がクリックした地図に到達し 1 秒後も同値・.selected・地図タイトルが揃う。
  */
 for (const n of [2, 5]) {
-  test(`AC-12 補助 w=375 n=${n}: 保留中の再配置があってもカードのクリック後に中央のカードと地図が揃う（IR1 MAJ-1）`, async ({ page }) => {
+  test(`S12 補助 w=375 n=${n}: 保留中の再配置があってもカードのクリック後に中央のカードと地図が揃う`, async ({ page }) => {
     test.setTimeout(300000);
     const warns = await openFixture(page, 375, n, n);
     const rec: any[] = [];
     for (const k of KINDS) {
       for (const side of CLICK_ORDER) {
         const pre = await markPeek(page, k, side);
-        expect.soft(pre?.point, `MAJ-1 ${k} ${side}: 押せる点`).toBeTruthy();
+        expect.soft(pre?.point, `${k} ${side}: 押せる点`).toBeTruthy();
         if (!pre?.point) continue;
         await page.evaluate(k => {
           const slider = (document.querySelector('maplat-ui') as any).slider(k);
@@ -864,16 +864,16 @@ for (const n of [2, 5]) {
     }
     record(test.info().title, { n, warns, rec });
     const failed = rec.filter(r => !r.ok).map(r => `${r.k}:${r.side}:${r.clicked}(now ${r.now})`);
-    expect.soft(failed, `MAJ-1 満たさなかったクリック（${rec.filter(r => r.ok).length}/${rec.length} が満たした）`).toEqual([]);
-    expect(warns, 'AC-4 Swiper Loop Warning').toEqual([]);
+    expect.soft(failed, `満たさなかったクリック（${rec.filter(r => r.ok).length}/${rec.length} が満たした）`).toEqual([]);
+    expect(warns, 'S4 Swiper Loop Warning').toEqual([]);
   });
 }
 
 /**
- * AC-13（人間の指示による範囲追加・OF-1）: 状態復元（URL の #! 経由の core.changeMap）の後に、スワイパーの active が目的の地図に合う
+ * S13: 状態復元（URL の #! 経由の core.changeMap）の後に、スワイパーの active が目的の地図に合う
  *
  * 経路: `<maplat-ui>` の状態 URL（state-url）→ 子の changeMap(restore.mapID) → mapChanged → スライダーの setSelectedMapID。
- * 旧の OF-1 の競合は「位置合わせの直後に、地図の切り替えで親要素が変わって onResize が後から積まれる」ことで起きた。
+ * 旧の競合は「位置合わせの直後に、地図の切り替えで親要素が変わって onResize が後から積まれる」ことで起きた。
  * 言い換え: 旧は Maplat の slideToMapID が呼んだ slideToLoop の直後に Swiper の observerUpdate を発火していた。新は
  * スライダーの setSelectedMapID（位置合わせ）が呼ばれた同じタスクの中で、スライダー自身の `refresh()`（再配置）を
  * 1 回だけ割り込ませる。setSelectedMapID の包みは観測用で、元の関数をそのまま呼ぶ。
@@ -881,7 +881,7 @@ for (const n of [2, 5]) {
  * 加えて、#! 付きの URL を新しく開いた（初期化時の復元）場合も active が目的の地図になることを確かめる。
  */
 for (const n of [4, 5]) {
-  test(`AC-13 w=1280 n=${n}: URL の #! による状態復元の後にスワイパーの active が目的の地図に合う（OF-1）`, async ({ page }) => {
+  test(`S13 w=1280 n=${n}: URL の #! による状態復元の後にスワイパーの active が目的の地図に合う`, async ({ page }) => {
     test.setTimeout(300000);
     const warns: string[] = [];
     page.on('console', m => {
@@ -896,7 +896,7 @@ for (const n of [4, 5]) {
       await page.waitForFunction(() => document.getElementById('status')?.textContent === 'READY', null, { timeout: 90000 });
       const wait = await waitActive(page, 'overlay', target, 15000, 1000);
       rec.initial = { target, wait };
-      expect.soft(wait, `AC-13 (1) 初期化時の復元 #!s:${target} の overlay active`).toEqual({ reached: true, stable: true });
+      expect.soft(wait, `S13 (1) 初期化時の復元 #!s:${target} の overlay active`).toEqual({ reached: true, stable: true });
     }
     await page.waitForTimeout(3000);
     await page.evaluate(() => {
@@ -950,13 +950,13 @@ for (const n of [4, 5]) {
       }, { k });
       const title = await titleState(page, id);
       rec.hash.push({ k, id, from: cur, wait, ...info, title });
-      expect.soft(info.calls, `AC-13 (2) #!s:${id} が changeMap(${id}) を呼ぶ`).toContain(id);
-      expect.soft(info.inject, `AC-13 (2) #!s:${id} で競合の順序を作れた`).toBe(1);
-      expect.soft(wait, `AC-13 (2) ${k} #!s:${id} from ${cur} の active`).toEqual({ reached: true, stable: true });
-      expect.soft(title.actual, `AC-13 (2) #!s:${id} の地図タイトル`).toBe(title.expected);
+      expect.soft(info.calls, `S13 (2) #!s:${id} が changeMap(${id}) を呼ぶ`).toContain(id);
+      expect.soft(info.inject, `S13 (2) #!s:${id} で競合の順序を作れた`).toBe(1);
+      expect.soft(wait, `S13 (2) ${k} #!s:${id} from ${cur} の active`).toEqual({ reached: true, stable: true });
+      expect.soft(title.actual, `S13 (2) #!s:${id} の地図タイトル`).toBe(title.expected);
       await page.waitForTimeout(300);
     }
     record(test.info().title, rec);
-    expect(warns, 'AC-4 Swiper Loop Warning').toEqual([]);
+    expect(warns, 'S4 Swiper Loop Warning').toEqual([]);
   });
 }

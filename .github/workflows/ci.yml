@@ -32,9 +32,9 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
         with:
-          # ローカル開発と同じ pnpm 11 系にメジャー固定（m1-t1）。
+          # ローカル開発と同じ pnpm 11 系にメジャー固定。
           # pnpm 11 は package.json の pnpm フィールドを読まないため、
-          # overrides は m1-t2 で不要と実測し撤去。allowBuilds は必要なため ci/pnpm-workspace.ci.yaml へ分離した
+          # overrides は不要と実測し撤去。allowBuilds は必要なため ci/pnpm-workspace.ci.yaml へ分離した
           version: 11
 
       - name: Setup Node.js ${{ matrix.node-version }}
@@ -44,7 +44,7 @@ jobs:
           cache: 'pnpm'
 
       # pnpm 11 は allowBuilds を pnpm-workspace.yaml からしか読まない。ローカルでは同ファイルが
-      # workspace ルート誤認を起こすためリポジトリ直下には置かず、CI でのみ展開する（m1-t2）
+      # workspace ルート誤認を起こすためリポジトリ直下には置かず、CI でのみ展開する
       - name: Apply CI-only pnpm config
         run: cp ci/pnpm-workspace.ci.yaml pnpm-workspace.yaml
 
@@ -92,9 +92,9 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
         with:
-          # ローカル開発と同じ pnpm 11 系にメジャー固定（m1-t1）。
+          # ローカル開発と同じ pnpm 11 系にメジャー固定。
           # pnpm 11 は package.json の pnpm フィールドを読まないため、
-          # overrides は m1-t2 で不要と実測し撤去。allowBuilds は必要なため ci/pnpm-workspace.ci.yaml へ分離した
+          # overrides は不要と実測し撤去。allowBuilds は必要なため ci/pnpm-workspace.ci.yaml へ分離した
           version: 11
 
       - name: Setup Node.js
@@ -104,7 +104,7 @@ jobs:
           cache: 'pnpm'
 
       # pnpm 11 は allowBuilds を pnpm-workspace.yaml からしか読まない。ローカルでは同ファイルが
-      # workspace ルート誤認を起こすためリポジトリ直下には置かず、CI でのみ展開する（m1-t2）
+      # workspace ルート誤認を起こすためリポジトリ直下には置かず、CI でのみ展開する
       - name: Apply CI-only pnpm config
         run: cp ci/pnpm-workspace.ci.yaml pnpm-workspace.yaml
 
@@ -114,11 +114,11 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm exec playwright install chromium --with-deps
 
-      # m1-t5 のブラウザ E2E は事前バンドルした probe を使うため、
-      # spec の実行前に probe を build する必要がある（m1-t4 と同方式）。
+      # POI html の隔離のブラウザ E2E は事前バンドルした probe を使うため、
+      # spec の実行前に probe を build する必要がある（サニタイズの E2E と同方式）。
       # これが無いと probe asset が 404 になり、前提テストが落ちる。
-      - name: Build m1-t5 E2E probe
-        run: pnpm run pretest:e2e:m1-t5
+      - name: Build POI html isolation E2E probe
+        run: pnpm run pretest:e2e:poi-html-isolation
 
       - name: Run E2E tests
         run: pnpm run test:e2e:ci

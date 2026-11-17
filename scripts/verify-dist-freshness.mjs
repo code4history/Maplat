@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-// m1-t5-hotfix-1 L1: dist/src 鮮度検査（git 系譜・ビルド不要）
+// L1: dist/src 鮮度検査（git 系譜・ビルド不要）
 //
-// なぜ必要か（設計書 §2.2 / §5 D2）:
+// なぜ必要か:
 //   このリポジトリは dist/ を git 追跡し、package.json の files/main が dist/ を指す。
 //   つまり **npm publish される実体そのものが dist** である。
 //   にもかかわらず「src を直したが dist を再ビルドしていない」ことを検出する仕組みが
-//   一切なかった。実際 m1-t5 が ui_marker.ts の脆弱な iframe 経路を廃止した後も
-//   dist は m1-t4 時点のままで、廃止したはずの経路が配布物に残り続けた。
+//   一切なかった。実際 POI html の隔離で ui_marker.ts の脆弱な iframe 経路を廃止した後も
+//   dist はサニタイズの修正の時点のままで、廃止したはずの経路が配布物に残り続けた。
 //
 // 何を見るか:
 //   「src/ を最後に触ったコミット」が「dist/ を最後に触ったコミット」の
@@ -23,14 +23,14 @@
 //   git 履歴と実ファイルが乖離し、検査結果はどちらの向きにも意味を失う。
 //   「判定できなかった」を pass として報告すると素通しの穴になるため fail とする。
 //   未追跡ファイルを見るのは、内容ハッシュ付き chunk の改名時に
-//   **新 chunk の git add 漏れ**が起きうるからでもある（設計書 AC6）。
+//   **新 chunk の git add 漏れ**が起きうるからでもある。
 
 import { readFileSync, existsSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 const failures = [];
 const fail = (id, msg) => failures.push(`[${id}] ${msg}`);
@@ -108,10 +108,10 @@ if (srcC && distC) {
   }
 }
 
-// --- 検査3: 本欠陥の具体マーカー（m1-t4 / m1-t5 の是正が dist に到達していること）---
+// --- 検査3: 本欠陥の具体マーカー（サニタイズと POI html の隔離の是正が dist に到達していること）---
 //
 // 検査2 は系譜だけを見るため、「dist を再ビルドしないまま dist 配下の別ファイルを
-// 触った」ような操作では通ってしまう。実際に配布される umd に、m1 の viewer 側
+// 触った」ような操作では通ってしまう。実際に配布される umd に、viewer 側の
 // セキュリティ是正が入っていることを内容で直接 assert する。
 // 文字列は t4/t5 の diff から取った具体マーカーであり、退行すれば必ず落ちる。
 {
@@ -122,22 +122,22 @@ if (srcC && distC) {
     const umd = readFileSync(UMD, "utf8");
     const count = (needle) => umd.split(needle).length - 1;
 
-    // m1-t5: iframe + srcdoc 経路（heightGetter）を Shadow DOM へ置換して廃止した
+    // POI html の隔離: iframe + srcdoc 経路（heightGetter）を Shadow DOM へ置換して廃止した
     const heightGetter = count("heightGetter");
     if (heightGetter !== 0) {
       fail(
         "L1-3",
         `dist/maplat_ui.umd.js に 'heightGetter' が ${heightGetter} 件ある。` +
-          `m1-t5 が廃止した iframe/srcdoc 経路（POI html を無サニタイズで流し込む）が配布物に残っている`
+          `POI html の隔離で廃止した iframe/srcdoc 経路（POI html を無サニタイズで流し込む）が配布物に残っている`
       );
     }
-    // m1-t4/t5: サニタイズ経路が入っていること
+    // サニタイズ経路が入っていること
     for (const needle of ["sanitizeHtml", "DOMPurify"]) {
       if (count(needle) === 0) {
         fail(
           "L1-3",
           `dist/maplat_ui.umd.js に '${needle}' が無い。` +
-            `m1-t4/t5 の HTML サニタイズ経路が配布物に到達していない`
+            `HTML サニタイズ経路が配布物に到達していない`
         );
       }
     }
@@ -145,11 +145,11 @@ if (srcC && distC) {
 }
 
 if (failures.length) {
-  console.error(`✗ m1-t5-hotfix-1 L1 dist 鮮度検査 FAILED（${failures.length} 件）`);
+  console.error(`✗ L1 dist 鮮度検査 FAILED（${failures.length} 件）`);
   for (const f of failures) console.error(`  ${f}`);
   process.exit(1);
 }
 console.log(
-  `✓ m1-t5-hotfix-1 L1 dist 鮮度検査 PASSED` +
+  `✓ L1 dist 鮮度検査 PASSED` +
     `（dist ${distC.sha.slice(0, 8)} は src ${srcC.sha.slice(0, 8)} 以降・サニタイズ経路が配布物に到達）`
 );
