@@ -504,8 +504,8 @@ describe("地図情報・ライセンス・タイルキャッシュ（操作ボ�
     );
   });
 
-  // 旧 `spec/m6-t2-license-cell.spec.ts` の AC14b・AC14c の移植（旧 UI の実装の削除の仕上げ。旧の renderLicenseCell は消した）
-  it("AC14b: ライセンスが Custom ならアイコンを出さず、注意書きの文章だけを出す", async () => {
+  // 旧 UI のライセンス欄の単体試験からの移植（旧 UI の実装の削除の仕上げ。旧の renderLicenseCell は消した）
+  it("ライセンスが Custom ならアイコンを出さず、注意書きの文章だけを出す", async () => {
     const setting = structuredClone(SETTING) as typeof SETTING;
     (setting.sources[1] as any).meta = {
       ...(setting.sources[1] as any).meta,
@@ -522,7 +522,7 @@ describe("地図情報・ライセンス・タイルキャッシュ（操作ボ�
     expect(note!.textContent).toBe("ODbL 1.0");
   });
 
-  it("AC14c: 注意書きは textContent で入る（悪意ある HTML も文字のまま・要素にならない）", async () => {
+  it("注意書きは textContent で入る（悪意ある HTML も文字のまま・要素にならない）", async () => {
     const malicious = '<img src=x onerror="alert(1)"> 出典';
     const setting = structuredClone(SETTING) as typeof SETTING;
     (setting.sources[1] as any).meta = {
