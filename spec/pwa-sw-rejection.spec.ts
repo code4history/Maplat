@@ -93,7 +93,7 @@ describe("initPwa: Service Worker 登録拒否の捕捉", () => {
       icons: [{ src: "icons/icon-192.png", sizes: "192x192" }]
     });
 
-    initPwa({ manifest: "./pwa/oct26m3t1_manifest.json" });
+    initPwa({ manifest: "./pwa/sw-rejection_manifest.json" });
     await flush();
     await flush();
 
@@ -108,17 +108,17 @@ describe("initPwa: Service Worker 登録拒否の捕捉", () => {
     ) as HTMLLinkElement | null;
     expect(manifestLink).not.toBeNull();
     expect(manifestLink!.getAttribute("href")).toBe(
-      "./pwa/oct26m3t1_manifest.json"
+      "./pwa/sw-rejection_manifest.json"
     );
     // manifest は1回 fetch され、apple-touch-icon が挿入される
     expect(fetchMock).toHaveBeenCalledTimes(1);
-    expect(fetchMock).toHaveBeenCalledWith("./pwa/oct26m3t1_manifest.json");
+    expect(fetchMock).toHaveBeenCalledWith("./pwa/sw-rejection_manifest.json");
     const iconLink = document.head.querySelector(
       'link[rel="apple-touch-icon"]'
     ) as HTMLLinkElement | null;
     expect(iconLink).not.toBeNull();
     expect(iconLink!.getAttribute("sizes")).toBe("192x192");
-    // absoluteUrl("./pwa/oct26m3t1_manifest.json", "icons/icon-192.png")
+    // absoluteUrl("./pwa/sw-rejection_manifest.json", "icons/icon-192.png")
     expect(iconLink!.getAttribute("href")).toBe("./pwa/icons/icon-192.png");
     // 成功経路では error 観測先を呼ばない
     expect(console.error).not.toHaveBeenCalled();

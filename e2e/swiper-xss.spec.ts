@@ -38,7 +38,7 @@ async function openFixture(page: Page) {
   );
   // 初期化の遷移が落ち着くのを待つ（スワイパーのループの e2e と同じ扱い）
   await page.waitForTimeout(3000);
-  return page.evaluate(() => (window as any).__nov26m5t1Payload as { P: string; M: string });
+  return page.evaluate(() => (window as any).__swiperXssPayload as { P: string; M: string });
 }
 
 test.describe('地図切り替えスワイパーの無害化', () => {
@@ -57,7 +57,7 @@ test.describe('地図切り替えスワイパーの無害化', () => {
     // Playwright の CSS locator は shadow root を貫く（旧の .swiper-wrapper → 新のスライダーの帯）
     expect(await page.locator('.map-slider-track img[onerror]').count()).toBe(0);
     await page.waitForTimeout(2000);
-    expect(await page.evaluate(() => (window as any).__nov26m5t1)).toBeUndefined();
+    expect(await page.evaluate(() => (window as any).__swiperXss)).toBeUndefined();
     // 名前の div は初期化の後に ui_utils.ts の ellips() が innerText を 1 文字ずつ <span> に包み直し、
     // 末尾に「…」の span（.omit-mark）を足す（innerText なので先頭の空白は落ちる）。
     // ∴ .omit-mark を除いた span の文字を連結したものが P と一致することで「文字のまま表示」を判定する。
@@ -67,7 +67,7 @@ test.describe('地図切り替えスワイパーの無害化', () => {
       [
         ...document
           .querySelector('maplat-ui')!
-          .shadowRoot!.querySelectorAll(`${sel}[data-map-id="m5t1_label"] [part="map-slide-label"]`)
+          .shadowRoot!.querySelectorAll(`${sel}[data-map-id="swxss_label"] [part="map-slide-label"]`)
       ].map(d => [...d.querySelectorAll('span:not(.omit-mark)')].map(s => s.textContent).join('')),
       BASE_SLIDES
     );
@@ -127,7 +127,7 @@ test.describe('地図切り替えスワイパーの無害化', () => {
       { M, sel: BASE_SLIDES }
     );
     await page.waitForTimeout(300);
-    expect(await page.evaluate(() => (window as any).__nov26m5t1m)).toBeUndefined();
+    expect(await page.evaluate(() => (window as any).__swiperXssM)).toBeUndefined();
 
     await page.mouse.click(center.x, center.y);
     await page.waitForFunction(M => (window as any).__maplatUi.core.from?.mapID === M, M, { timeout: 15000 });
@@ -152,7 +152,7 @@ test.describe('地図切り替えスワイパーの無害化', () => {
       const cards = [
         ...document
           .querySelector('maplat-ui')!
-          .shadowRoot!.querySelectorAll<HTMLElement>(`${sel}[data-map-id="m5t1_thumb_js"]`)
+          .shadowRoot!.querySelectorAll<HTMLElement>(`${sel}[data-map-id="swxss_thumb_js"]`)
       ];
       return cards.map(card => ({
         srcs: [...card.querySelectorAll('img')].map(i => i.getAttribute('src')),
@@ -171,14 +171,14 @@ test.describe('地図切り替えスワイパーの無害化', () => {
     }
     // 引用符を含む thumbnail は相対 URL として通り、src の値そのものになる（属性は増えない）。
     // 言い換え: 旧の `attrs: 2` は旧のスライドの <img> の属性の数。新の <img> は class・part・alt・src を持つので、
-    // 「普通のサムネイル（m5t1_plain）の <img> と同じ属性の名前の組」で「注入で属性が増えない」を判定する
+    // 「普通のサムネイル（swxss_plain）の <img> と同じ属性の名前の組」で「注入で属性が増えない」を判定する
     const attrImgs = await page.evaluate(sel => {
       const sr = document.querySelector('maplat-ui')!.shadowRoot!;
       const names = (i: Element) => [...i.attributes].map(a => a.name).sort();
-      const plain = sr.querySelector(`${sel}[data-map-id="m5t1_plain"] img`);
+      const plain = sr.querySelector(`${sel}[data-map-id="swxss_plain"] img`);
       return {
         plain: plain ? names(plain) : null,
-        imgs: [...sr.querySelectorAll(`${sel}[data-map-id="m5t1_thumb_attr"] img`)].map(i => ({
+        imgs: [...sr.querySelectorAll(`${sel}[data-map-id="swxss_thumb_attr"] img`)].map(i => ({
           src: i.getAttribute('src'),
           names: names(i)
         }))
@@ -187,11 +187,11 @@ test.describe('地図切り替えスワイパーの無害化', () => {
     expect(attrImgs.plain).toBeTruthy();
     expect(attrImgs.imgs.length).toBeGreaterThan(0);
     for (const a of attrImgs.imgs)
-      expect(a).toEqual({ src: 'x" onerror="window.__nov26m5t1t=1', names: attrImgs.plain });
+      expect(a).toEqual({ src: 'x" onerror="window.__swiperXssT=1', names: attrImgs.plain });
     expect(await page.locator('.map-slider-track img[onerror]').count()).toBe(0);
     await page.waitForTimeout(2000);
-    expect(await page.evaluate(() => (window as any).__nov26m5t1t)).toBeUndefined();
-    expect(await page.evaluate(() => (window as any).__nov26m5t1j)).toBeUndefined();
+    expect(await page.evaluate(() => (window as any).__swiperXssT)).toBeUndefined();
+    expect(await page.evaluate(() => (window as any).__swiperXssJ)).toBeUndefined();
   });
 });
 

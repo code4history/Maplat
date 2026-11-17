@@ -58,7 +58,7 @@ const run = async (
   };
 };
 
-const MANIFEST = "./pwa/nov26m5t3_manifest.json";
+const MANIFEST = "./pwa/pwa-worker_manifest.json";
 
 beforeEach(() => {
   document.head.innerHTML = "";
@@ -154,7 +154,7 @@ describe("要素を作るのに HTML 文字列を使わない（静的な検査�
 });
 
 describe("注入値は属性の値として入り、要素にならない", () => {
-  const PAYLOAD = 'x"><img src=y onerror=window.__nov26m5t3=1>';
+  const PAYLOAD = 'x"><img src=y onerror=window.__pwaWorkerXss=1>';
 
   it("pwaManifest に注入値 → manifest link の href がその文字列そのもの・head は link だけ", async () => {
     await run({ manifest: PAYLOAD, worker: null }, {});
