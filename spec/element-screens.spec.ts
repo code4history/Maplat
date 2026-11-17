@@ -868,7 +868,21 @@ describe("地図情報・ライセンス・タイルキャッシュ（操作ボ�
     }
   });
 
-  it("統計が 6 回続けて同じ値になったら読み直しをやめる（0 のままなら 0 のまま）", async () => {
+  /** 統計の偽物: 呼ばれるたびに seq の次の値を返す（最後の値はそのまま繰り返す）。 */
+  function statsSeq(
+    seq: number[],
+    total?: number
+  ): () => Promise<{ size: number; count: number; total?: number }> {
+    let calls = 0;
+    return async () => {
+      const count = seq[Math.min(calls++, seq.length - 1)];
+      return total === undefined
+        ? { size: count * 1000, count }
+        : { size: count * 1000, count, total };
+    };
+  }
+
+  it("値が変わらない間は間隔を広げながら読み続け、2 分でやめる（空のキャッシュの要求は合わせて 62 回）", async () => {
     vi.useFakeTimers();
     try {
       const ui = await mountUi(u => u.setAttribute("enable-cache", ""));
@@ -881,14 +895,20 @@ describe("地図情報・ライセンス・タイルキャッシュ（操作ボ�
       await vi.advanceTimersByTimeAsync(0);
       expect(part(ui, "cache-size").textContent).toBe("0 Bytes (0 tiles)");
       expect(statsAsync).toHaveBeenCalledTimes(1);
-      // 500ms ごとに読み直す（最初の 1 回と、同じ値の 6 回）
+      // 間隔は 500ms から 1.5 倍ずつ広がる（500・750・1125ms …）
       await vi.advanceTimersByTimeAsync(500);
       expect(statsAsync).toHaveBeenCalledTimes(2);
-      await vi.advanceTimersByTimeAsync(2500);
-      expect(statsAsync).toHaveBeenCalledTimes(7);
-      // 落ち着いたので、これ以上は読み直さない（待っても 0 のまま・削除は押せない）
-      await vi.advanceTimersByTimeAsync(5000);
-      expect(statsAsync).toHaveBeenCalledTimes(7);
+      await vi.advanceTimersByTimeAsync(749);
+      expect(statsAsync).toHaveBeenCalledTimes(2);
+      await vi.advanceTimersByTimeAsync(1);
+      expect(statsAsync).toHaveBeenCalledTimes(3);
+      await vi.advanceTimersByTimeAsync(1125);
+      expect(statsAsync).toHaveBeenCalledTimes(4);
+      // 4 回目の後は上限の 2 秒ごと。待った時間の合計が 2 分を超える前でやめる
+      await vi.advanceTimersByTimeAsync(120000);
+      expect(statsAsync).toHaveBeenCalledTimes(62);
+      await vi.advanceTimersByTimeAsync(60000);
+      expect(statsAsync).toHaveBeenCalledTimes(62);
       expect(part(ui, "cache-size").textContent).toBe("0 Bytes (0 tiles)");
       expect((part(ui, "cache-delete") as HTMLButtonElement).disabled).toBe(
         true
@@ -898,20 +918,17 @@ describe("地図情報・ライセンス・タイルキャッシュ（操作ボ�
     }
   });
 
-  it("移行で統計が 0 から増えていく間は読み直しを続け、全体に届いて削除が押せる", async () => {
+  it("移行で統計が 0 から増えていく間は読み続け、全部そろったらやめる", async () => {
     vi.useFakeTimers();
     try {
       const ui = await mountUi(u => u.setAttribute("enable-cache", ""));
       const app = ui.app!;
       // Weiwudi の移行中の stats（新 DB の分だけ。1 回の要求で 200 件ずつ進む。途中で同じ値が続くこともある）
-      const seq = [0, 0, 200, 200, 400, 400, 400, 553];
-      let calls = 0;
       const statsAsync = vi
         .spyOn(app, "getMapTileCacheStatsAsync")
-        .mockImplementation(async () => {
-          const count = seq[Math.min(calls++, seq.length - 1)];
-          return { size: count * 1000, count, total: 553 };
-        });
+        .mockImplementation(
+          statsSeq([0, 0, 200, 200, 400, 400, 400, 553], 553)
+        );
       await app.changeMap("osm");
       open(ui);
       await vi.advanceTimersByTimeAsync(0);
@@ -921,28 +938,81 @@ describe("地図情報・ライセンス・タイルキャッシュ（操作ボ�
       expect((part(ui, "cache-delete") as HTMLButtonElement).disabled).toBe(
         true
       );
-      // 閉じずに待つだけで、途中の値を経て全体に届く
-      await vi.advanceTimersByTimeAsync(1000);
+      // 0（500ms）→ 200（+750ms）。値が変わったので間隔は 500ms に戻る
+      await vi.advanceTimersByTimeAsync(1250);
       expect(part(ui, "cache-size").textContent).toContain("(200 / 553 tiles");
       expect((part(ui, "cache-delete") as HTMLButtonElement).disabled).toBe(
         false
       );
-      await vi.advanceTimersByTimeAsync(2500);
+      // 200（+500）→ 400（+750）→ 400（+500）→ 400（+750）→ 553（+1125）
+      await vi.advanceTimersByTimeAsync(3625);
+      expect(part(ui, "cache-size").textContent).toContain(
+        "(553 / 553 tiles [100%])"
+      );
+      expect(statsAsync).toHaveBeenCalledTimes(8);
+      // 全部そろったので、これ以上は読まない
+      await vi.advanceTimersByTimeAsync(60000);
+      expect(statsAsync).toHaveBeenCalledTimes(8);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("前の地図を移している間 0 が長く続いても読み続け、番が来たら全体に届く", async () => {
+    vi.useFakeTimers();
+    try {
+      const ui = await mountUi(u => u.setAttribute("enable-cache", ""));
+      const app = ui.app!;
+      // 開いた地図の番が来るまで 0 が 25 回続く（間隔を広げて約 44 秒）
+      const seq = [...Array(25).fill(0), 200, 553];
+      const statsAsync = vi
+        .spyOn(app, "getMapTileCacheStatsAsync")
+        .mockImplementation(statsSeq(seq, 553));
+      await app.changeMap("osm");
+      open(ui);
+      await vi.advanceTimersByTimeAsync(0);
+      await vi.advanceTimersByTimeAsync(44000);
+      expect(part(ui, "cache-size").textContent).toBe(
+        "0 Bytes (0 / 553 tiles [0%])"
+      );
+      await vi.advanceTimersByTimeAsync(6000);
       expect(part(ui, "cache-size").textContent).toContain(
         "(553 / 553 tiles [100%])"
       );
       expect((part(ui, "cache-delete") as HTMLButtonElement).disabled).toBe(
         false
       );
-      // 553 が 6 回続いたらやめる（8 回目で 553・その後 6 回読んで 14 回）
-      await vi.advanceTimersByTimeAsync(10000);
-      expect(statsAsync).toHaveBeenCalledTimes(14);
+      expect(statsAsync).toHaveBeenCalledTimes(27);
     } finally {
       vi.useRealTimers();
     }
   });
 
-  it("統計が変わり続けても、読み直しは上限（240 回）でやめる", async () => {
+  it("0 でない値が長く続いても止めない（1 バッチが遅い端末・表示で読み通した分だけの間）", async () => {
+    vi.useFakeTimers();
+    try {
+      const ui = await mountUi(u => u.setAttribute("enable-cache", ""));
+      const app = ui.app!;
+      // 表示で読み通した 18 件のまま 15 回（約 26 秒）続いてから、残りが届く
+      vi.spyOn(app, "getMapTileCacheStatsAsync").mockImplementation(
+        statsSeq([...Array(15).fill(18), 553], 553)
+      );
+      await app.changeMap("osm");
+      open(ui);
+      await vi.advanceTimersByTimeAsync(0);
+      expect(part(ui, "cache-size").textContent).toContain("(18 / 553 tiles");
+      await vi.advanceTimersByTimeAsync(20000);
+      expect(part(ui, "cache-size").textContent).toContain("(18 / 553 tiles");
+      await vi.advanceTimersByTimeAsync(20000);
+      expect(part(ui, "cache-size").textContent).toContain(
+        "(553 / 553 tiles [100%])"
+      );
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("統計が変わり続けても、2 分でやめる", async () => {
     vi.useFakeTimers();
     try {
       const ui = await mountUi(u => u.setAttribute("enable-cache", ""));
@@ -957,10 +1027,29 @@ describe("地図情報・ライセンス・タイルキャッシュ（操作ボ�
       await app.changeMap("osm");
       open(ui);
       await vi.advanceTimersByTimeAsync(0);
-      await vi.advanceTimersByTimeAsync(500 * 240);
+      // 毎回変わるので間隔は 500ms のまま。2 分で 240 回読み直す
+      await vi.advanceTimersByTimeAsync(120000);
       expect(statsAsync).toHaveBeenCalledTimes(241);
       await vi.advanceTimersByTimeAsync(5000);
       expect(statsAsync).toHaveBeenCalledTimes(241);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("全部そろっている統計なら読み直さない", async () => {
+    vi.useFakeTimers();
+    try {
+      const ui = await mountUi(u => u.setAttribute("enable-cache", ""));
+      const app = ui.app!;
+      const statsAsync = vi
+        .spyOn(app, "getMapTileCacheStatsAsync")
+        .mockResolvedValue({ size: 5000, count: 10, total: 10 });
+      await app.changeMap("osm");
+      open(ui);
+      await vi.advanceTimersByTimeAsync(0);
+      await vi.advanceTimersByTimeAsync(10000);
+      expect(statsAsync).toHaveBeenCalledTimes(1);
     } finally {
       vi.useRealTimers();
     }
@@ -998,18 +1087,70 @@ describe("地図情報・ライセンス・タイルキャッシュ（操作ボ�
     }
   });
 
+  it("UI を外したら読み直しをやめる", async () => {
+    vi.useFakeTimers();
+    try {
+      const ui = await mountUi(u => u.setAttribute("enable-cache", ""));
+      const app = ui.app!;
+      const statsAsync = vi
+        .spyOn(app, "getMapTileCacheStatsAsync")
+        .mockResolvedValue({ size: 0, count: 0 });
+      await app.changeMap("osm");
+      open(ui);
+      await vi.advanceTimersByTimeAsync(0);
+      await vi.advanceTimersByTimeAsync(500);
+      expect(statsAsync).toHaveBeenCalledTimes(2);
+      ui.remove();
+      await vi.advanceTimersByTimeAsync(130000);
+      expect(statsAsync).toHaveBeenCalledTimes(2);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("地図を替えたら前の地図の読み直しをやめ、替えた先の地図を読み直す", async () => {
+    vi.useFakeTimers();
+    try {
+      const ui = await mountUi(
+        u => u.setAttribute("enable-cache", ""),
+        withOld1Cache()
+      );
+      const app = ui.app!;
+      const byMap: Record<string, number> = {};
+      vi.spyOn(app, "getMapTileCacheStatsAsync").mockImplementation(
+        async mapID => {
+          const id = String(mapID);
+          byMap[id] = (byMap[id] ?? 0) + 1;
+          return { size: byMap[id], count: byMap[id] };
+        }
+      );
+      await app.changeMap("osm");
+      open(ui);
+      await vi.advanceTimersByTimeAsync(0);
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(byMap.osm).toBe(3);
+      await app.changeMap("old1");
+      await vi.advanceTimersByTimeAsync(0);
+      expect(byMap.old1).toBe(1);
+      await vi.advanceTimersByTimeAsync(5000);
+      // 前の地図（osm）は読まない。替えた先（old1）は 500ms ごとに読み直す
+      expect(byMap.osm).toBe(3);
+      expect(byMap.old1).toBe(11);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("一括取得を始めたら読み直しをやめる（進み具合の表示を統計で書き換えない）", async () => {
     vi.useFakeTimers();
     try {
       const ui = await mountUi(u => u.setAttribute("enable-cache", ""));
       const app = ui.app!;
-      let calls = 0;
+      // 1 回目は 0。読み直しがあれば 2 回目以降の 5 で「取得中」の欄が書き換わる
       const statsAsync = vi
         .spyOn(app, "getMapTileCacheStatsAsync")
-        .mockImplementation(async () => {
-          calls++;
-          return { size: calls, count: calls, total: 1000 };
-        });
+        .mockResolvedValueOnce({ size: 0, count: 0, total: 1000 })
+        .mockResolvedValue({ size: 5, count: 5, total: 1000 });
       vi.spyOn(app, "fetchAllMapTileCacheAsync").mockImplementation(
         async (_mapID, callback) => {
           callback("proceed", { processed: 900, total: 1000, size: 900 });
@@ -1019,15 +1160,15 @@ describe("地図情報・ライセンス・タイルキャッシュ（操作ボ�
       await app.changeMap("osm");
       open(ui);
       await vi.advanceTimersByTimeAsync(0);
-      await vi.advanceTimersByTimeAsync(500);
-      expect(statsAsync).toHaveBeenCalledTimes(2);
+      expect(statsAsync).toHaveBeenCalledTimes(1);
+      // 最初の読み直し（500ms）の前に取得を始める
       (part(ui, "cache-fetch") as HTMLButtonElement).click();
       // 進み具合の描画は次の描画の枠でまとめて行う
       await vi.advanceTimersByTimeAsync(100);
       expect(part(ui, "cache-size").textContent).toContain("(900 / 1000 tiles");
       await vi.advanceTimersByTimeAsync(5000);
       // 取得中は読み直さず、進み具合の表示のまま
-      expect(statsAsync).toHaveBeenCalledTimes(2);
+      expect(statsAsync).toHaveBeenCalledTimes(1);
       expect(part(ui, "cache-size").textContent).toContain("(900 / 1000 tiles");
     } finally {
       vi.useRealTimers();

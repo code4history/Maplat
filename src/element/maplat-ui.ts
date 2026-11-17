@@ -474,20 +474,37 @@ const OUT_OF_MAP_TOAST_BOTTOM_PX = 30;
 const OUT_OF_MAP_TOAST_SIDE_PX = 8;
 
 /**
- * タイルキャッシュの統計を読み直す間隔。
- * Weiwudi は 1.1.x のキャッシュを、要求を受けるたびに少しずつ新しい DB へ移す。移している間の統計は移し終えた分
- * だけを数えるので、0 や途中の値で返る。移行中かどうかを知る口は無いので、地図情報を開いている間は、統計が
- * 落ち着くまでこの間隔で読み直す（読み直しの要求が移行を進める契機にもなる）。
+ * タイルキャッシュの統計の読み直し（地図情報を開いている間）。
+ * Weiwudi は 1.1.x のキャッシュを、SW が要求を受けるたびに 1 バッチずつ新しい DB へ移す。地図は旧設定の
+ * mapID の順に 1 つずつ移すので、開いている地図の番が来るまで、統計は 0（または表示して読み通した分だけ）の
+ * まま変わらない。移行中かどうかを知る口は無いので、変わらない間も読み続け、間隔だけを広げる。
+ * 読み直しの要求そのものが移行を進める契機にもなる。
  */
+/** 読み直しの最初の間隔。値が変わったらこの間隔に戻す。 */
 const CACHE_STATS_RETRY_MS = 500;
-/** 統計がこの回数続けて同じ値なら、落ち着いたとみなして読み直しをやめる（間隔と掛けて 3 秒）。 */
-const CACHE_STATS_STABLE_READS = 6;
-/** 読み直しの上限の回数（間隔と掛けて 2 分）。統計が変わり続けても、これを超えたら読み直さない。 */
-const CACHE_STATS_MAX_READS = 240;
+/** 値が変わらなかったときに間隔へ掛ける倍率。 */
+const CACHE_STATS_BACKOFF = 1.5;
+/**
+ * 読み直しの間隔の上限。1 回の要求で移行は 1 バッチ（200 件）しか進まないので、広げすぎると前の地図の移行が
+ * 遅れる（2 秒なら 2 分で約 1.1 万件ぶん進む。空のキャッシュでも要求は 2 分で 62 回）。
+ */
+const CACHE_STATS_RETRY_MAX_MS = 2000;
+/** 読み直しを続ける長さの上限（待った時間の合計。開いてから 2 分）。 */
+const CACHE_STATS_TOTAL_MS = 120000;
 
 /** 統計の読み直しで「前と同じ値か」を比べるための鍵（大きさ・枚数・全体の枚数）。 */
 function cacheStatsKey(stats: TileCacheStats): string {
   return `${stats.size ?? ""}/${stats.count ?? ""}/${stats.total ?? ""}`;
+}
+
+/** 範囲の全部がそろっているか（count が total に届いた。これ以上は増えない）。 */
+function cacheStatsComplete(stats: TileCacheStats): boolean {
+  return (
+    typeof stats.total === "number" &&
+    stats.total > 0 &&
+    typeof stats.count === "number" &&
+    stats.count >= stats.total
+  );
 }
 
 /** GPS のエラーの種類 → 文言のキー（旧 initGpsHandlers の errorMap）。 */
@@ -3722,10 +3739,13 @@ export class MaplatUiElement extends BaseElement {
   /**
    * キャッシュの欄の出し入れと統計の読み直し（地図情報を開いたとき・地図を切り替えたとき）。
    * 統計の読み取りだけを `#cacheGeneration` で捨てる（一括取得の印 `#cacheFetchToken` とは別）。
-   * 読んだ後も、地図情報を開いている間は `CACHE_STATS_RETRY_MS` ごとに読み直し、統計が
-   * `CACHE_STATS_STABLE_READS` 回続けて同じ値になったらやめる（Weiwudi の移行中は 0 や途中の値で返り、
-   * 1 回の読み直しでは 0 のまま削除ボタンが押せないことがある）。閉じた・地図を替えた・一括取得を始めた
-   * ときもやめる。上限は `CACHE_STATS_MAX_READS` 回。
+   * 読んだ後も、地図情報を開いている間は読み直す（Weiwudi の移行中は 0 や途中の値で返る。移行の順番が
+   * 後ろの地図は、前の地図を移している間ずっと同じ値のまま）。
+   * - 間隔は `CACHE_STATS_RETRY_MS` から始め、値が変わらなければ `CACHE_STATS_BACKOFF` 倍に広げる
+   *   （上限 `CACHE_STATS_RETRY_MAX_MS`）。値が変わったら最初の間隔に戻す。
+   * - 全部そろった（count が total に届いた）とき、待った時間の合計が `CACHE_STATS_TOTAL_MS` に届いたとき、
+   *   閉じた・地図を替えた・UI を外した・一括取得を始めたときにやめる。
+   * 同じ値が続いても止めない: 前の地図を移す 1 バッチが長い端末でも、開いている地図の番が来るまで読み続ける。
    */
   async #refreshCache() {
     const app = this.#app;
@@ -3758,11 +3778,12 @@ export class MaplatUiElement extends BaseElement {
     this.#cacheStats = stats;
     this.#renderCache();
     let key = cacheStatsKey(stats);
-    let same = 0;
-    for (let reads = 0; reads < CACHE_STATS_MAX_READS; reads++) {
-      await new Promise<void>(resolve =>
-        setTimeout(resolve, CACHE_STATS_RETRY_MS)
-      );
+    let delay = CACHE_STATS_RETRY_MS;
+    let waited = 0;
+    while (!cacheStatsComplete(stats)) {
+      if (waited + delay > CACHE_STATS_TOTAL_MS) return;
+      await new Promise<void>(resolve => setTimeout(resolve, delay));
+      waited += delay;
       // 閉じた・地図を替えた・一括取得の進み具合を出しているときは読み直さない（その結果で画面を書き換えない）
       if (!this.#cacheRetryAlive(token)) return;
       stats = await read();
@@ -3770,9 +3791,11 @@ export class MaplatUiElement extends BaseElement {
       this.#cacheStats = stats;
       this.#renderCache();
       const next = cacheStatsKey(stats);
-      same = next === key ? same + 1 : 0;
+      delay =
+        next === key
+          ? Math.min(delay * CACHE_STATS_BACKOFF, CACHE_STATS_RETRY_MAX_MS)
+          : CACHE_STATS_RETRY_MS;
       key = next;
-      if (same >= CACHE_STATS_STABLE_READS) return;
     }
   }
 
