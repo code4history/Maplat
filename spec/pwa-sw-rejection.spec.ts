@@ -6,13 +6,13 @@
 // `navigator.serviceWorker.register(...).then(reg => reg, err => console.error)` で自分で受ける。
 //
 // ここで固定するのは、その**観測できる性質**:
-//   AC1: 登録が拒否されても未捕捉 rejection にならず、`console.error` がちょうど 1 回呼ばれる
-//   AC2: 登録が解決したら、manifest の link・既定値の解決・apple-touch-icon の生成という後続処理が残る
+//   (1): 登録が拒否されても未捕捉 rejection にならず、`console.error` がちょうど 1 回呼ばれる
+//   (2): 登録が解決したら、manifest の link・既定値の解決・apple-touch-icon の生成という後続処理が残る
 // 属性レベルの「pwa-manifest が無ければ何もしない」は `spec/element-share.spec.ts`（PWA の describe）が見る。
 //
-// AC1 で vi.fn の拒否を使わない理由（旧 spec から引き継ぐ）: vitest のモック結果追跡が拒否へ
+// (1) で vi.fn の拒否を使わない理由（旧 spec から引き継ぐ）: vitest のモック結果追跡が拒否へ
 // ハンドラを付けるため、未捕捉 rejection として process の unhandledRejection に届かなくなる
-// （記録: spec/oct26-m3-t1-vitest-mock-rejection-semantics.spec.ts）。∴ AC1 は素の関数で差し替える。
+// （記録: spec/vitest-mock-rejection-semantics.spec.ts）。∴ (1) は素の関数で差し替える。
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { initPwa, resetPwaRegistryForTest } from "../src/element/pwa";
 
@@ -20,7 +20,7 @@ import { initPwa, resetPwaRegistryForTest } from "../src/element/pwa";
 // イベントループを1回（setTimeout 0）回す
 const flush = () => new Promise<void>(resolve => setTimeout(resolve, 0));
 
-// manifest fetch の stub（AC1 では中身を使わない。jsdom の fetch 有無という
+// manifest fetch の stub（(1) では中身を使わない。jsdom の fetch 有無という
 // 環境差を排すため、fetch を呼ぶ試験ではすべて明示的に差し替える）
 const stubFetch = (manifestJson: unknown) => {
   const fetchMock = vi.fn().mockResolvedValue({
@@ -59,7 +59,7 @@ describe("initPwa: Service Worker 登録拒否の捕捉", () => {
     vi.restoreAllMocks();
   });
 
-  it("AC1: 登録が拒否したら未捕捉 rejection にならず console.error が1回呼ばれる", async () => {
+  it("登録が拒否したら未捕捉 rejection にならず console.error が1回呼ばれる", async () => {
     const calls: Array<[string, unknown]> = [];
     const error = new Error("A bad HTTP response code (404) was received");
     stubServiceWorker((sw: string, swOptions?: unknown) => {
@@ -84,7 +84,7 @@ describe("initPwa: Service Worker 登録拒否の捕捉", () => {
     await expect(registration).resolves.toBeUndefined();
   });
 
-  it("AC2: 登録が解決したら既存の manifest link 挿入・既定値解決・apple-touch-icon 生成が維持される", async () => {
+  it("登録が解決したら既存の manifest link 挿入・既定値解決・apple-touch-icon 生成が維持される", async () => {
     const register = vi.fn(() =>
       Promise.resolve({} as ServiceWorkerRegistration)
     );
@@ -93,7 +93,7 @@ describe("initPwa: Service Worker 登録拒否の捕捉", () => {
       icons: [{ src: "icons/icon-192.png", sizes: "192x192" }]
     });
 
-    initPwa({ manifest: "./pwa/oct26m3t1_manifest.json" });
+    initPwa({ manifest: "./pwa/sw-rejection_manifest.json" });
     await flush();
     await flush();
 
@@ -108,23 +108,23 @@ describe("initPwa: Service Worker 登録拒否の捕捉", () => {
     ) as HTMLLinkElement | null;
     expect(manifestLink).not.toBeNull();
     expect(manifestLink!.getAttribute("href")).toBe(
-      "./pwa/oct26m3t1_manifest.json"
+      "./pwa/sw-rejection_manifest.json"
     );
     // manifest は1回 fetch され、apple-touch-icon が挿入される
     expect(fetchMock).toHaveBeenCalledTimes(1);
-    expect(fetchMock).toHaveBeenCalledWith("./pwa/oct26m3t1_manifest.json");
+    expect(fetchMock).toHaveBeenCalledWith("./pwa/sw-rejection_manifest.json");
     const iconLink = document.head.querySelector(
       'link[rel="apple-touch-icon"]'
     ) as HTMLLinkElement | null;
     expect(iconLink).not.toBeNull();
     expect(iconLink!.getAttribute("sizes")).toBe("192x192");
-    // absoluteUrl("./pwa/oct26m3t1_manifest.json", "icons/icon-192.png")
+    // absoluteUrl("./pwa/sw-rejection_manifest.json", "icons/icon-192.png")
     expect(iconLink!.getAttribute("href")).toBe("./pwa/icons/icon-192.png");
     // 成功経路では error 観測先を呼ばない
     expect(console.error).not.toHaveBeenCalled();
   });
 
-  it("AC2: manifest が http(s)/相対 URL でなければ登録も link 挿入もせず、警告する（既存ガードの維持）", async () => {
+  it("manifest が http(s)/相対 URL でなければ登録も link 挿入もせず、警告する（既存ガードの維持）", async () => {
     const register = vi.fn(() => Promise.resolve({}));
     stubServiceWorker(register);
     const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);

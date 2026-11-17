@@ -3,7 +3,7 @@
  * verify-demo-query-allowlist.mjs — 開発用デモのクエリ許可リストの配備後検査
  *
  *
- * 使い方: node scripts/nov26-m5/verify-demo-query-allowlist.mjs [baseUrl]
+ * 使い方: node scripts/demo-query/verify-demo-query-allowlist.mjs [baseUrl]
  *   baseUrl の既定は https://code4history.dev/Maplat/（"/" で終わり "?"・"#" を含まないこと）
  *
  * 公開デモ（または手元のデモ）に demo-query-checks.mjs の CHECKS（C1〜C3n）を当て、
@@ -19,7 +19,7 @@
  *
  * 最終行の calibration は観測窓の較正（C3 が発火した場合の firedAfterReadyMs が
  * SETTLE_MS / 2 以下か）を示す。是正前の記録で ok: false なら観測窓が足りる根拠が無い
- * （設計 §6 の 4・5、タスク設計レビュー MIN-3）。終了コードには影響しない。
+ * （終了コードには影響しない）。
  */
 import { existsSync } from "node:fs";
 import { chromium } from "@playwright/test";

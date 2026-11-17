@@ -17,7 +17,7 @@
 //     回帰は `spec/element.spec.ts` の「マーカー一覧」describe が見る（名前は textContent・
 //     アイコンは safeImageUrl）。ここにあった `ui_init.ts` のソーステキスト検査は対象が消えたので外した。
 //   - url と directgo の挙動（url の iframe・directgo）は `spec/element.spec.ts` の POI の describe が見る
-//     （旧 `oct26-m16-t1-ui-marker-url.spec.ts` の URL の一覧をそのまま移した）。
+//     （旧 `ui-marker-url.spec.ts` の URL の一覧をそのまま移した）。
 //   - 旧 UI の実装の削除の仕上げ: 旧の一覧の HTML を組み立てる `escapeHtml`・`layerListItemHtml`・`poiListItemHtml` は
 //     呼び手が無くなったので `poi_safe.ts` から消し、その単体（POI 一覧の部分）もここから消した。
 //     残るのは `safeWebUrl` の許可リストの単体（url と directgo）。

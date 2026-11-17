@@ -1,7 +1,7 @@
 /**
  * demo-query-checks.mjs — 開発用デモのクエリ許可リストの検査の共通部
  *
- * e2e（e2e/nov26-m5-t2-demo-query.spec.ts）と配備後検査（verify-demo-query-allowlist.mjs）が
+ * e2e（e2e/demo-query.spec.ts）と配備後検査（verify-demo-query-allowlist.mjs）が
  * 同じ判定を使うために、検査の定義と 1 本ごとの実行関数をここだけに置く。
  *
  * - URL は文字列の連結で作る（baseUrl + "?" + query）。クエリ組み立ての API を使うと payload の
@@ -11,13 +11,13 @@
  */
 
 /** lodash.template の記法の payload（lodash の Core で評価されると発火する） */
-export const XSS_PAYLOAD = "${Reflect.set(window,/__nov26m5t2/.source,1)}";
+export const XSS_PAYLOAD = "${Reflect.set(window,/__poiTemplateXssFired/.source,1)}";
 /**
  * Nunjucks の記法の payload（Nunjucks の Core で評価されると発火する。lodash の Core では発火しない）。
  * クエリに入れたときの "+"・"%20" の揺れを避けるため空白を含めない
  */
 export const XSS_PAYLOAD_NUNJUCKS =
-  '{{range.constructor("Reflect.set(window,/__nov26m5t2/.source,1)")()}}';
+  '{{range.constructor("Reflect.set(window,/__poiTemplateXssFired/.source,1)")()}}';
 /**
  * Core がテンプレートの評価の例外を握りつぶすときの警告（MaplatCore の src/template_works.ts の文言）のうち、
  * Nunjucks の payload が評価まで届いて拒まれたことを示すもの。警告の本体と、警告の末尾に付く
@@ -105,13 +105,13 @@ export async function waitTerminalStatus(page, timeout = READY_TIMEOUT_MS) {
 }
 
 /**
- * 終端状態の後、SETTLE_MS の間 window.__nov26m5t2 === 1 を待つ。
+ * 終端状態の後、SETTLE_MS の間 window.__poiTemplateXssFired === 1 を待つ。
  * → { fired, firedAfterReadyMs }（終端状態の時点で既に 1 なら 0）
  */
 export async function observeFire(page, settleMs = SETTLE_MS) {
   const t0 = Date.now();
   for (let first = true; ; first = false) {
-    const v = await page.evaluate(() => window.__nov26m5t2);
+    const v = await page.evaluate(() => window.__poiTemplateXssFired);
     if (v === 1) {
       return { fired: true, firedAfterReadyMs: first ? 0 : Date.now() - t0 };
     }

@@ -12,7 +12,7 @@ export default defineConfig({
     environment: "jsdom",
     include: ["spec/**/*.test.ts", "spec/**/*.spec.ts"],
     exclude: ["**/node_modules/**", "**/dist/**", "e2e/**"],
-    // m19-t9 実装レビュー MNR-t9-1: vitest は vite.config.js より vitest.config.ts を
+    // vitest は vite.config.js より vitest.config.ts を
     // 優先して読むため、本ファイルの新設により vite.config.js:109-114 の既存 test ブロック
     // （globals: true 込み）がプロジェクト全体のテスト設定として暗黙に上書きされていた。
     // 既存7 spec はいずれも "vitest" から describe/it/expect を明示 import しており

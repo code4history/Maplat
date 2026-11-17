@@ -4,7 +4,7 @@
 //      （今の地図は入らない。地図の外の点は空）。結果は層 B の `mapsAt` と同じ
 //  地図の箱が画面の左上に無いページ（左 120px・上 80px の余白）でも、`showContextMenu` が
 //      押した位置（`lastClickPixel`）に出る
-//  m1: 透過度のスライダーを利用者が動かすと、`sliderNew.get("slidervalue")` と `propertychange` に映る
+//  1: 透過度のスライダーを利用者が動かすと、`sliderNew.get("slidervalue")` と `propertychange` に映る
 //
 // fixture は凍結の `e2e/fixtures/legacy-api.html`（中身は変えない。開いた後にページの余白を足す）。
 // 実行: PLAYWRIGHT_SKIP_BROWSER_GC=1 node_modules/.bin/playwright test --workers=1 e2e/legacy-review-fixes.spec.ts
@@ -96,7 +96,7 @@ test("地図の箱が左上に無いページでも、showContextMenu は押し�
   expect(errors).toEqual([]);
 });
 
-test("m1: 透過度のスライダーを動かすと sliderNew.get と propertychange に映る", async ({ page }) => {
+test("透過度のスライダーを動かすと sliderNew.get と propertychange に映る", async ({ page }) => {
   test.setTimeout(180_000);
   const errors = await open(page);
   await page.evaluate(() => {

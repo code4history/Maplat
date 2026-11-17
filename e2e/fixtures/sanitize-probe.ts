@@ -1,6 +1,6 @@
-// M1-T4 AC5b 用のブラウザ側プローブ（テスト専用エントリ）。
+// ブラウザ側サニタイズ検証用のプローブ（テスト専用エントリ）。
 //
-// なぜ専用エントリが要るか（実装レビュー v1 Major-1）:
+// なぜ専用エントリが要るか:
 //   当初は page.addScriptTag で /@fs のソースを動的 import していたが、
 //   その import が dompurify を**初めて** Vite の依存最適化へ導入するため、
 //   ページの実行コンテキストが破棄・再読込され、代入前に waitForFunction が
@@ -11,7 +11,7 @@ import { sanitizeHtml, escapeAttr, toPlainText, buildSlideAttrs } from "@maplat/
 
 declare global {
   interface Window {
-    __t4?: {
+    __sanitizeProbe?: {
       sanitizeHtml: typeof sanitizeHtml;
       escapeAttr: typeof escapeAttr;
       toPlainText: typeof toPlainText;
@@ -20,5 +20,5 @@ declare global {
   }
 }
 
-window.__t4 = { sanitizeHtml, escapeAttr, toPlainText, buildSlideAttrs };
+window.__sanitizeProbe = { sanitizeHtml, escapeAttr, toPlainText, buildSlideAttrs };
 export {};

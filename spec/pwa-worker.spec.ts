@@ -58,7 +58,7 @@ const run = async (
   };
 };
 
-const MANIFEST = "./pwa/nov26m5t3_manifest.json";
+const MANIFEST = "./pwa/pwa-worker_manifest.json";
 
 beforeEach(() => {
   document.head.innerHTML = "";
@@ -79,7 +79,7 @@ afterEach(() => {
 //   undefined・"" → 互換層は何も渡さない（空文字は属性へ流さない）。∴ `initPwa` には undefined が渡り、
 //                  既定の ./service-worker.js になる（旧 `resolvePwaWorker` の表と同じ結果）
 // ここでは `initPwa` が受ける値の表を固定する。
-describe("AC2 (a)+(b): worker の値と Service Worker の登録", () => {
+describe("worker の値と Service Worker の登録", () => {
   it("worker: null（旧 pwaWorker: false / null）→ 登録しない。manifest link 1 件・fetch 1 回・apple-touch-icon は icons の数", async () => {
     const r = await run({ manifest: MANIFEST, worker: null }, { icons: ICONS });
     expect(r.register).not.toHaveBeenCalled();
@@ -140,7 +140,7 @@ describe("AC2 (a)+(b): worker の値と Service Worker の登録", () => {
   });
 });
 
-describe("AC3 (a): 要素を作るのに HTML 文字列を使わない（静的な検査）", () => {
+describe("要素を作るのに HTML 文字列を使わない（静的な検査）", () => {
   it("src/element/pwa.ts に innerHTML・insertAdjacentHTML・outerHTML が無い", () => {
     const source = readFileSync(
       resolve(__dirname, "../src/element/pwa.ts"),
@@ -153,8 +153,8 @@ describe("AC3 (a): 要素を作るのに HTML 文字列を使わない（静的�
   });
 });
 
-describe("AC3 (b): 注入値は属性の値として入り、要素にならない", () => {
-  const PAYLOAD = 'x"><img src=y onerror=window.__nov26m5t3=1>';
+describe("注入値は属性の値として入り、要素にならない", () => {
+  const PAYLOAD = 'x"><img src=y onerror=window.__pwaWorkerXss=1>';
 
   it("pwaManifest に注入値 → manifest link の href がその文字列そのもの・head は link だけ", async () => {
     await run({ manifest: PAYLOAD, worker: null }, {});

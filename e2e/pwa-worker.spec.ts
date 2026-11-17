@@ -3,7 +3,7 @@
 // 観測: page.addInitScript で navigator.serviceWorker.register を包み、呼ばれた URL を
 // window.__swRegisterCalls に積んでから元の関数を呼ぶ。陽性対照（worker=default）で
 // 呼び出しが記録されることを毎回確かめる（これが赤なら (i) の 0 件は根拠にならない）。
-// 陽性対照は登録の成否・getRegistrations に依存しない（R-T3-4: dev サーバで workbox の
+// 陽性対照は登録の成否・getRegistrations に依存しない（dev サーバで workbox の
 // install が失敗しうる）。
 import { test, expect, type Page } from "@playwright/test";
 
@@ -13,7 +13,7 @@ declare global {
   }
 }
 
-const FIXTURE = "/e2e/fixtures/nov26-m5-t3-pwa.html";
+const FIXTURE = "/e2e/fixtures/pwa.html";
 
 const wrapRegister = () => {
   window.__swRegisterCalls = [];

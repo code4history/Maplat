@@ -11,7 +11,7 @@ import { test, expect } from '@playwright/test';
  * 検査を兼ねる。lock は修正済みの Chuci を同梱する Quyuan を解決するので、単独 clone の CI でも走る。
  */
 for (const tag of ['cc-swiper', 'qy-swiper'] as const) {
-  test(`AC-10: ${tag} の左右の矢印は ::after の chevron だけが描かれ、swiper 12 の SVG アイコンは非表示`, async ({ page }) => {
+  test(`${tag} の左右の矢印は ::after の chevron だけが描かれ、swiper 12 の SVG アイコンは非表示`, async ({ page }) => {
     test.setTimeout(120000);
     await page.setViewportSize({ width: 1280, height: 800 });
     // 旧 API の互換層が起動時に <maplat-ui> の preloadMediaViewer() で @c4h/quyuan を読み、qy-swiper と（同梱の Chuci の）cc-swiper を登録する
@@ -24,7 +24,7 @@ for (const tag of ['cc-swiper', 'qy-swiper'] as const) {
     );
     await page.evaluate(t => {
       const d = document.createElement('div');
-      d.id = 'm9-cc-probe';
+      d.id = 'cc-arrow-probe';
       d.style.cssText = 'position:fixed;top:0;left:0;width:400px;height:300px;z-index:99999;background:#fff';
       d.innerHTML =
         `<${t} style="height:300px">` +
@@ -36,7 +36,7 @@ for (const tag of ['cc-swiper', 'qy-swiper'] as const) {
     // スライダーの Swiper 初期化（Navigation が SVG を挿入する）を待つ
     await page.waitForFunction(
       t => {
-        const root = (document.querySelector(`#m9-cc-probe ${t}`) as any)?.shadowRoot;
+        const root = (document.querySelector(`#cc-arrow-probe ${t}`) as any)?.shadowRoot;
         return !!root && ['#divPrevious', '#divNext'].every(sel => root.querySelector(`${sel} svg.swiper-navigation-icon`));
       },
       tag,
@@ -44,7 +44,7 @@ for (const tag of ['cc-swiper', 'qy-swiper'] as const) {
     );
     await page.waitForTimeout(500);
     const buttons = await page.evaluate(t => {
-      const root = (document.querySelector(`#m9-cc-probe ${t}`) as any).shadowRoot as ShadowRoot;
+      const root = (document.querySelector(`#cc-arrow-probe ${t}`) as any).shadowRoot as ShadowRoot;
       return ['#divPrevious', '#divNext'].map(sel => {
         const b = root.querySelector(sel) as HTMLElement;
         const svg = b.querySelector('svg.swiper-navigation-icon') as SVGElement | null;
@@ -59,7 +59,7 @@ for (const tag of ['cc-swiper', 'qy-swiper'] as const) {
         };
       });
     }, tag);
-    test.info().annotations.push({ type: 'm9-arrow', description: JSON.stringify(buttons) });
+    test.info().annotations.push({ type: 'cc-arrow', description: JSON.stringify(buttons) });
     console.log(`[chuci-arrow ${tag}] ${JSON.stringify(buttons)}`);
     for (const b of buttons) {
       expect.soft(b.svgDisplay, `${b.sel} の swiper 12 の SVG アイコン`).toBe('none');

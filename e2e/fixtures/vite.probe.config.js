@@ -1,6 +1,6 @@
-// M1-T4 AC5b: ブラウザ検証用プローブを**完全にバンドル**するための専用設定。
+// ブラウザ側サニタイズ検証用プローブを**完全にバンドル**するための専用設定。
 //
-// なぜ事前バンドルするか（実装レビュー Major-1）:
+// なぜ事前バンドルするか:
 //   dev サーバ経由だと、dompurify の依存最適化とページ読み込みが競合し
 //   504 (Outdated Optimize Dep) でモジュールが評価されないことがある。
 //   warm cache では偶然通るため「動いた」と誤認しやすい。
@@ -15,7 +15,7 @@ export default defineConfig({
     emptyOutDir: true,
     lib: {
       entry: path.resolve(import.meta.dirname, "sanitize-probe.ts"),
-      name: "__t4probe",
+      name: "__sanitizeProbeBundle",
       formats: ["iife"],
       fileName: () => "sanitize-probe.js"
     },

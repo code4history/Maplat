@@ -11,7 +11,7 @@ import {
   observeFire,
   runCheck,
   waitTerminalStatus
-} from '../scripts/nov26-m5/demo-query-checks.mjs';
+} from '../scripts/demo-query/demo-query-checks.mjs';
 
 /**
  * 開発用デモが URL のクエリから受け付けるキーの許可リスト — 実 UI E2E
@@ -62,8 +62,8 @@ for (const check of CHECKS) {
 }
 
 const CONTROLS = [
-  { engine: 'lodash', file: 'nov26-m5-t2-poitemplate-control.html', payload: XSS_PAYLOAD },
-  { engine: 'nunjucks', file: 'nov26-m5-t2-poitemplate-control-nunjucks.html', payload: XSS_PAYLOAD_NUNJUCKS }
+  { engine: 'lodash', file: 'poitemplate-control.html', payload: XSS_PAYLOAD },
+  { engine: 'nunjucks', file: 'poitemplate-control-nunjucks.html', payload: XSS_PAYLOAD_NUNJUCKS }
 ] as const;
 
 test('poiTemplate の陽性対照: 直接入れると lodash 用・Nunjucks 用のちょうど 1 本が発火するか、Nunjucks 用で評価の失敗の警告が出る', async ({

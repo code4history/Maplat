@@ -2,16 +2,16 @@
 //
 // 画像の URL の許可リスト（safeImageUrl。Maplat#274 の受け口でも使う）の単体テスト。
 //
-// - AC6 (a): safeImageUrl の通す／通さない
+// - (6) (a): safeImageUrl の通す／通さない
 //
 // 旧 UI の実装の削除の仕上げ: 旧 UI のスワイパーの HTML を組み立てる `swiperThumbUrl`・`swiperSlideHtml` を消したので、
-// その単体（AC3・AC4・AC5 (a)）も消した。地図の切り替えのカードの無害化（mapID の属性注入・label のタグ化・
+// その単体（(3)・(4)・(5) (a)）も消した。地図の切り替えのカードの無害化（mapID の属性注入・label のタグ化・
 // thumbnail の不正スキーム）は `<maplat-ui>` のスライダーの側（`spec/slider.spec.ts` と
-// `e2e/nov26-m5-t1-swiper-xss.spec.ts`）が確かめる。
+// `e2e/swiper-xss.spec.ts`）が確かめる。
 import { describe, it, expect } from "vitest";
 import { safeImageUrl } from "../src/poi_safe";
 
-describe("safeImageUrl（AC6 (a)）", () => {
+describe("safeImageUrl", () => {
   const PASS = [
     "x.png",
     "./x.png",

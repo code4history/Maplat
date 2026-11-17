@@ -3,10 +3,10 @@
 //  `xyToMapIDs`: 層 A の `sysCoord2MercAsync`（`Promise<[x, y]>`）を待ってから経緯度に直し、
 //     層 B の `mapsAt` に渡す（直す前は `Promise.all(Promise)` で必ず reject していた）。`areaIndex` は `shared/geo.ts`
 //  `showContextMenu` の位置: `at` は枠の中の座標。ホストが画面の左上に無いページでも二重に引かない
-//  m1 `sliderNew`: 利用者の操作（子の `transparency` 属性の書き戻し）を `get`・`propertychange` に映す。`setEnable` は委譲
-//  m2 `lang`・`_t`・`i18n` は代入しても例外にならない（`lang` は属性へ、`_t`・`i18n` は警告して無視）
-//  m3 起動前の `translate` は `pickLocalized` と同じ（全言語が空なら ""。旧 #251）
-//  m4 `resolveRelativeLink` は 1 本（`null` は "."）
+//  1 `sliderNew`: 利用者の操作（子の `transparency` 属性の書き戻し）を `get`・`propertychange` に映す。`setEnable` は委譲
+//  2 `lang`・`_t`・`i18n` は代入しても例外にならない（`lang` は属性へ、`_t`・`i18n` は警告して無視）
+//  3 起動前の `translate` は `pickLocalized` と同じ（全言語が空なら ""。旧 #251）
+//  4 `resolveRelativeLink` は 1 本（`null` は "."）
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { MaplatUi } from "../src/index";
@@ -172,7 +172,7 @@ describe("showContextMenu の位置（ホストが画面の左上に無いペー
   }, 120000);
 });
 
-describe("m1 sliderNew（利用者の操作を映す・setEnable は委譲）", () => {
+describe("sliderNew（利用者の操作を映す・setEnable は委譲）", () => {
   it("子の transparency 属性（層 A の書き戻し）を get と propertychange に映す", async () => {
     const ui = new MaplatUi({
       appid: "review-slider",
@@ -218,7 +218,7 @@ describe("m1 sliderNew（利用者の操作を映す・setEnable は委譲）", 
   }, 120000);
 });
 
-describe("m2 lang・_t・i18n への代入（strict でも例外にしない）", () => {
+describe("lang・_t・i18n への代入（strict でも例外にしない）", () => {
   it("lang は属性へ流し、_t・i18n は警告して無視する", async () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
     const ui = await MaplatUi.createObject({
@@ -262,7 +262,7 @@ describe("m2 lang・_t・i18n への代入（strict でも例外にしない）"
   });
 });
 
-describe("m3 起動前の translate（要素の pickLocalized と同じ。旧 #251）", () => {
+describe("起動前の translate（要素の pickLocalized と同じ。旧 #251）", () => {
   it("全言語が空なら空文字、今の言語が空なら en、無ければ最初の非空", () => {
     const ui = new MaplatUi({ lang: "ja", setting: { ...SETTING } } as any);
     expect(ui.translate({ ja: "", en: "" })).toBe("");
@@ -273,7 +273,7 @@ describe("m3 起動前の translate（要素の pickLocalized と同じ。旧 #2
   });
 });
 
-describe("m4 resolveRelativeLink（shared/text.ts の 1 本）", () => {
+describe("resolveRelativeLink（shared/text.ts の 1 本）", () => {
   it("/ を含めばそのまま、含まなければ fallbackPath の下（null・空は .）", () => {
     expect(resolveRelativeLink("a/b.png", "img")).toBe("a/b.png");
     expect(resolveRelativeLink("b.png", "img")).toBe("img/b.png");

@@ -136,11 +136,11 @@ describe("汎用メニュー（part 名は poi-menu / poi-menu-item のまま）
 
 // ---- 旧の実装（contextmenu/html.ts）を消したので、その XSS の回帰をここへ移した ----
 //
-// 旧 nov26-m5-t1-contextmenu-icon.spec.ts: 重なったマーカーのメニューの icon（信頼できない POI
+// 旧 contextmenu-icon.spec.ts: 重なったマーカーのメニューの icon（信頼できない POI
 // データ）が CSS の文字列へ生で入り、他のプロパティを足せた（Maplat#274）。旧は受け口で URL を
 // 検査して CSSOM の 1 プロパティへ入れていたが、いまは **`<img src>` の属性**として置くので
 // CSS の文字列は作らない。ここでは「画像の URL として通る値だけを画像にする」ことを固定する。
-describe("アイコンの URL は許可リストを通す（旧 nov26-m5-t1-contextmenu-icon の移植）", () => {
+describe("アイコンの URL は許可リストを通す（旧 contextmenu-icon の移植）", () => {
   const addIcon = (icon: unknown) => {
     const host = mount();
     host.showMenu({ items: [{ text: "p", icon: icon as string }] });
@@ -183,11 +183,11 @@ describe("アイコンの URL は許可リストを通す（旧 nov26-m5-t1-cont
   });
 });
 
-// 旧 oct26-m16-t1-contextmenu-name.spec.ts: 重なったマーカーのメニューが POI の name を生のまま
+// 旧 contextmenu-name.spec.ts: 重なったマーカーのメニューが POI の name を生のまま
 // 入れていた（経路は ui_init.ts の clickMarkers リスナ → contextmenu/html.ts の innerHTML）。
 // いまは要素が `html: false` で文字として入れる（旧 ui_init はもう無い。`spec/element.spec.ts` の
 // 「重なった POI の選択メニュー」も同じことを確かめる）。
-describe("名前は要素にならない（旧 oct26-m16-t1-contextmenu-name の移植）", () => {
+describe("名前は要素にならない（旧 contextmenu-name の移植）", () => {
   const XSS_NAMES = [
     "<img src=x onerror=alert(1)>",
     "<script>alert(1)</script>",

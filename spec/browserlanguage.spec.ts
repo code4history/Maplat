@@ -1,8 +1,8 @@
-// m19-t9: src/browserlanguage.ts の未カバー中核ロジックを単体テストする。
+// src/browserlanguage.ts の未カバー中核ロジックを単体テストする。
 // navigator.userAgent の内容で Chrome/非Chrome を分岐し、各種フォールバック
 // プロパティから言語を検出、";" 区切りの先頭要素のみ返す。例外時は "" を返す。
 //
-// 設計レビュー MNR-t9-1: 設計 §4.3 のケース2（languages が空/undefined で
+// 設計レビューの指摘: ケース2（languages が空/undefined で
 // language にフォールバックし "en-US" を返す）は、実装
 // （navigator.languages[0] を無条件評価）の都合上 languages:[] でしか
 // 成立しない。languages:undefined は navigator.languages[0] が TypeError を
@@ -83,7 +83,7 @@ describe("browserLanguage", () => {
     expect(browserLanguage()).toBe("th");
   });
 
-  it("(INF-t9-4) userAgent自体が取得できない場合はtryの外なのでcatchされず例外が漏れる", () => {
+  it("userAgent自体が取得できない場合はtryの外なのでcatchされず例外が漏れる", () => {
     setNavigator({ userAgent: undefined });
     expect(() => browserLanguage()).toThrow();
   });

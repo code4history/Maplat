@@ -8,7 +8,7 @@ import {
   SETTLE_MS,
   XSS_PAYLOAD,
   XSS_PAYLOAD_NUNJUCKS
-} from "../scripts/nov26-m5/demo-query-checks.mjs";
+} from "../scripts/demo-query/demo-query-checks.mjs";
 
 // 開発用デモのクエリ許可リストと、配備後検査の終了コードの判定。
 
@@ -18,7 +18,7 @@ const expectEmpty = (r: object) => {
   expect(({} as Record<string, unknown>).x).toBeUndefined();
 };
 
-describe("parseDemoQuery（AC1）", () => {
+describe("parseDemoQuery", () => {
   it("appid・lang の正しい値を採る", () => {
     expect(parseDemoQuery("?appid=sample_old&lang=en")).toEqual({
       appid: "sample_old",
@@ -134,12 +134,14 @@ describe("demo-query-checks の定義", () => {
   });
 
   it("lodash 用の payload は符号化しない生の形（是正前のデモで発火する形）", () => {
-    expect(XSS_PAYLOAD).toBe("${Reflect.set(window,/__nov26m5t2/.source,1)}");
+    expect(XSS_PAYLOAD).toBe(
+      "${Reflect.set(window,/__poiTemplateXssFired/.source,1)}"
+    );
   });
 
-  it("Nunjucks 用の payload は空白を含まず、同じ印（window.__nov26m5t2）を立てる", () => {
+  it("Nunjucks 用の payload は空白を含まず、同じ印（window.__poiTemplateXssFired）を立てる", () => {
     expect(XSS_PAYLOAD_NUNJUCKS).toBe(
-      '{{range.constructor("Reflect.set(window,/__nov26m5t2/.source,1)")()}}'
+      '{{range.constructor("Reflect.set(window,/__poiTemplateXssFired/.source,1)")()}}'
     );
     expect(XSS_PAYLOAD_NUNJUCKS).not.toMatch(/\s/);
     // lodash の記法（${ … }・<% … %>）を含まない ∴ lodash の Core では発火しない
@@ -164,7 +166,7 @@ describe("demo-query-checks の定義", () => {
   });
 });
 
-describe("decideExit（AC4 (a)）", () => {
+describe("decideExit", () => {
   const r = (id: string, verdict: string) => ({ id, verdict });
   it("全 pass 4 件 → 0", () => {
     expect(
