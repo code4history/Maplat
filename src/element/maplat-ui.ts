@@ -474,10 +474,38 @@ const OUT_OF_MAP_TOAST_BOTTOM_PX = 30;
 const OUT_OF_MAP_TOAST_SIDE_PX = 8;
 
 /**
- * タイルキャッシュの統計が 0 のとき、読み直しまで待つ長さ。
- * Weiwudi の移行中は統計が 0 で返ることがあるので、0 のときは少し待って 1 回だけ読み直す。
+ * タイルキャッシュの統計の読み直し（地図情報を開いている間）。
+ * Weiwudi は 1.1.x のキャッシュを、SW が要求を受けるたびに 1 バッチずつ新しい DB へ移す。地図は旧設定の
+ * mapID の順に 1 つずつ移すので、開いている地図の番が来るまで、統計は 0（または表示して読み通した分だけ）の
+ * まま変わらない。移行中かどうかを知る口は無いので、変わらない間も読み続け、間隔だけを広げる。
+ * 読み直しの要求そのものが移行を進める契機にもなる。
  */
+/** 読み直しの最初の間隔。値が変わったらこの間隔に戻す。 */
 const CACHE_STATS_RETRY_MS = 500;
+/** 値が変わらなかったときに間隔へ掛ける倍率。 */
+const CACHE_STATS_BACKOFF = 1.5;
+/**
+ * 読み直しの間隔の上限。1 回の要求で移行は 1 バッチ（200 件）しか進まないので、広げすぎると前の地図の移行が
+ * 遅れる（2 秒なら 2 分で約 1.1 万件ぶん進む。空のキャッシュでも要求は 2 分で 62 回）。
+ */
+const CACHE_STATS_RETRY_MAX_MS = 2000;
+/** 読み直しを続ける長さの上限（待った時間の合計。開いてから 2 分）。 */
+const CACHE_STATS_TOTAL_MS = 120000;
+
+/** 統計の読み直しで「前と同じ値か」を比べるための鍵（大きさ・枚数・全体の枚数）。 */
+function cacheStatsKey(stats: TileCacheStats): string {
+  return `${stats.size ?? ""}/${stats.count ?? ""}/${stats.total ?? ""}`;
+}
+
+/** 範囲の全部がそろっているか（count が total に届いた。これ以上は増えない）。 */
+function cacheStatsComplete(stats: TileCacheStats): boolean {
+  return (
+    typeof stats.total === "number" &&
+    stats.total > 0 &&
+    typeof stats.count === "number" &&
+    stats.count >= stats.total
+  );
+}
 
 /** GPS のエラーの種類 → 文言のキー（旧 initGpsHandlers の errorMap）。 */
 const GPS_ERROR_KEYS: Record<string, string> = {
@@ -3711,8 +3739,13 @@ export class MaplatUiElement extends BaseElement {
   /**
    * キャッシュの欄の出し入れと統計の読み直し（地図情報を開いたとき・地図を切り替えたとき）。
    * 統計の読み取りだけを `#cacheGeneration` で捨てる（一括取得の印 `#cacheFetchToken` とは別）。
-   * 統計が 0（キャッシュが空）のときは `CACHE_STATS_RETRY_MS` 待って 1 回だけ読み直す
-   * （Weiwudi の移行中は 0 で返ることがあり、そのままでは削除ボタンが押せないままになる）。
+   * 読んだ後も、地図情報を開いている間は読み直す（Weiwudi の移行中は 0 や途中の値で返る。移行の順番が
+   * 後ろの地図は、前の地図を移している間ずっと同じ値のまま）。
+   * - 間隔は `CACHE_STATS_RETRY_MS` から始め、値が変わらなければ `CACHE_STATS_BACKOFF` 倍に広げる
+   *   （上限 `CACHE_STATS_RETRY_MAX_MS`）。値が変わったら最初の間隔に戻す。
+   * - 全部そろった（count が total に届いた）とき、待った時間の合計が `CACHE_STATS_TOTAL_MS` に届いたとき、
+   *   閉じた・地図を替えた・UI を外した・一括取得を始めたときにやめる。
+   * 同じ値が続いても止めない: 前の地図を移す 1 バッチが長い端末でも、開いている地図の番が来るまで読み続ける。
    */
   async #refreshCache() {
     const app = this.#app;
@@ -3725,35 +3758,54 @@ export class MaplatUiElement extends BaseElement {
     }
     section.hidden = false;
     this.#el.cacheHeading.textContent = this.t("html.cache_handle");
-    let stats: TileCacheStats = {};
-    try {
-      stats =
-        (await app.getMapTileCacheStatsAsync(app.currentMapId ?? undefined)) ??
-        {};
-    } catch (err) {
-      console.warn(`<${MAPLAT_UI_TAG}>: getMapTileCacheStatsAsync failed`, err);
-    }
+    const read = async (): Promise<TileCacheStats> => {
+      try {
+        return (
+          (await app.getMapTileCacheStatsAsync(
+            app.currentMapId ?? undefined
+          )) ?? {}
+        );
+      } catch (err) {
+        console.warn(
+          `<${MAPLAT_UI_TAG}>: getMapTileCacheStatsAsync failed`,
+          err
+        );
+        return {};
+      }
+    };
+    let stats = await read();
     if (token !== this.#cacheGeneration) return;
     this.#cacheStats = stats;
     this.#renderCache();
-    const size = typeof stats.size === "number" ? stats.size : 0;
-    const count = typeof stats.count === "number" ? stats.count : 0;
-    if (size > 0 || count > 0) return;
-    await new Promise<void>(resolve =>
-      setTimeout(resolve, CACHE_STATS_RETRY_MS)
-    );
-    // 読み直しの前に地図情報が閉じていたら、結果では画面を書き換えない
-    if (token !== this.#cacheGeneration || this.#el.info.hidden) return;
-    try {
-      stats =
-        (await app.getMapTileCacheStatsAsync(app.currentMapId ?? undefined)) ??
-        {};
-    } catch (err) {
-      console.warn(`<${MAPLAT_UI_TAG}>: getMapTileCacheStatsAsync failed`, err);
+    let key = cacheStatsKey(stats);
+    let delay = CACHE_STATS_RETRY_MS;
+    let waited = 0;
+    while (!cacheStatsComplete(stats)) {
+      if (waited + delay > CACHE_STATS_TOTAL_MS) return;
+      await new Promise<void>(resolve => setTimeout(resolve, delay));
+      waited += delay;
+      // 閉じた・地図を替えた・一括取得の進み具合を出しているときは読み直さない（その結果で画面を書き換えない）
+      if (!this.#cacheRetryAlive(token)) return;
+      stats = await read();
+      if (!this.#cacheRetryAlive(token)) return;
+      this.#cacheStats = stats;
+      this.#renderCache();
+      const next = cacheStatsKey(stats);
+      delay =
+        next === key
+          ? Math.min(delay * CACHE_STATS_BACKOFF, CACHE_STATS_RETRY_MAX_MS)
+          : CACHE_STATS_RETRY_MS;
+      key = next;
     }
-    if (token !== this.#cacheGeneration || this.#el.info.hidden) return;
-    this.#cacheStats = stats;
-    this.#renderCache();
+  }
+
+  /** 統計の読み直しを続けてよいか（同じ読み取りの回で、地図情報が開いていて、一括取得の表示中でない）。 */
+  #cacheRetryAlive(token: number): boolean {
+    return (
+      token === this.#cacheGeneration &&
+      !this.#el.info.hidden &&
+      !this.#isCacheFetchingCurrent()
+    );
   }
 
   /** キャッシュの大きさと 2 つのボタンの状態（旧 showStats・updateButtons と同じ規則）。 */
