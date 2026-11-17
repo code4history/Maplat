@@ -474,10 +474,21 @@ const OUT_OF_MAP_TOAST_BOTTOM_PX = 30;
 const OUT_OF_MAP_TOAST_SIDE_PX = 8;
 
 /**
- * タイルキャッシュの統計が 0 のとき、読み直しまで待つ長さ。
- * Weiwudi の移行中は統計が 0 で返ることがあるので、0 のときは少し待って 1 回だけ読み直す。
+ * タイルキャッシュの統計を読み直す間隔。
+ * Weiwudi は 1.1.x のキャッシュを、要求を受けるたびに少しずつ新しい DB へ移す。移している間の統計は移し終えた分
+ * だけを数えるので、0 や途中の値で返る。移行中かどうかを知る口は無いので、地図情報を開いている間は、統計が
+ * 落ち着くまでこの間隔で読み直す（読み直しの要求が移行を進める契機にもなる）。
  */
 const CACHE_STATS_RETRY_MS = 500;
+/** 統計がこの回数続けて同じ値なら、落ち着いたとみなして読み直しをやめる（間隔と掛けて 3 秒）。 */
+const CACHE_STATS_STABLE_READS = 6;
+/** 読み直しの上限の回数（間隔と掛けて 2 分）。統計が変わり続けても、これを超えたら読み直さない。 */
+const CACHE_STATS_MAX_READS = 240;
+
+/** 統計の読み直しで「前と同じ値か」を比べるための鍵（大きさ・枚数・全体の枚数）。 */
+function cacheStatsKey(stats: TileCacheStats): string {
+  return `${stats.size ?? ""}/${stats.count ?? ""}/${stats.total ?? ""}`;
+}
 
 /** GPS のエラーの種類 → 文言のキー（旧 initGpsHandlers の errorMap）。 */
 const GPS_ERROR_KEYS: Record<string, string> = {
@@ -3711,8 +3722,10 @@ export class MaplatUiElement extends BaseElement {
   /**
    * キャッシュの欄の出し入れと統計の読み直し（地図情報を開いたとき・地図を切り替えたとき）。
    * 統計の読み取りだけを `#cacheGeneration` で捨てる（一括取得の印 `#cacheFetchToken` とは別）。
-   * 統計が 0（キャッシュが空）のときは `CACHE_STATS_RETRY_MS` 待って 1 回だけ読み直す
-   * （Weiwudi の移行中は 0 で返ることがあり、そのままでは削除ボタンが押せないままになる）。
+   * 読んだ後も、地図情報を開いている間は `CACHE_STATS_RETRY_MS` ごとに読み直し、統計が
+   * `CACHE_STATS_STABLE_READS` 回続けて同じ値になったらやめる（Weiwudi の移行中は 0 や途中の値で返り、
+   * 1 回の読み直しでは 0 のまま削除ボタンが押せないことがある）。閉じた・地図を替えた・一括取得を始めた
+   * ときもやめる。上限は `CACHE_STATS_MAX_READS` 回。
    */
   async #refreshCache() {
     const app = this.#app;
@@ -3725,35 +3738,51 @@ export class MaplatUiElement extends BaseElement {
     }
     section.hidden = false;
     this.#el.cacheHeading.textContent = this.t("html.cache_handle");
-    let stats: TileCacheStats = {};
-    try {
-      stats =
-        (await app.getMapTileCacheStatsAsync(app.currentMapId ?? undefined)) ??
-        {};
-    } catch (err) {
-      console.warn(`<${MAPLAT_UI_TAG}>: getMapTileCacheStatsAsync failed`, err);
-    }
+    const read = async (): Promise<TileCacheStats> => {
+      try {
+        return (
+          (await app.getMapTileCacheStatsAsync(
+            app.currentMapId ?? undefined
+          )) ?? {}
+        );
+      } catch (err) {
+        console.warn(
+          `<${MAPLAT_UI_TAG}>: getMapTileCacheStatsAsync failed`,
+          err
+        );
+        return {};
+      }
+    };
+    let stats = await read();
     if (token !== this.#cacheGeneration) return;
     this.#cacheStats = stats;
     this.#renderCache();
-    const size = typeof stats.size === "number" ? stats.size : 0;
-    const count = typeof stats.count === "number" ? stats.count : 0;
-    if (size > 0 || count > 0) return;
-    await new Promise<void>(resolve =>
-      setTimeout(resolve, CACHE_STATS_RETRY_MS)
-    );
-    // 読み直しの前に地図情報が閉じていたら、結果では画面を書き換えない
-    if (token !== this.#cacheGeneration || this.#el.info.hidden) return;
-    try {
-      stats =
-        (await app.getMapTileCacheStatsAsync(app.currentMapId ?? undefined)) ??
-        {};
-    } catch (err) {
-      console.warn(`<${MAPLAT_UI_TAG}>: getMapTileCacheStatsAsync failed`, err);
+    let key = cacheStatsKey(stats);
+    let same = 0;
+    for (let reads = 0; reads < CACHE_STATS_MAX_READS; reads++) {
+      await new Promise<void>(resolve =>
+        setTimeout(resolve, CACHE_STATS_RETRY_MS)
+      );
+      // 閉じた・地図を替えた・一括取得の進み具合を出しているときは読み直さない（その結果で画面を書き換えない）
+      if (!this.#cacheRetryAlive(token)) return;
+      stats = await read();
+      if (!this.#cacheRetryAlive(token)) return;
+      this.#cacheStats = stats;
+      this.#renderCache();
+      const next = cacheStatsKey(stats);
+      same = next === key ? same + 1 : 0;
+      key = next;
+      if (same >= CACHE_STATS_STABLE_READS) return;
     }
-    if (token !== this.#cacheGeneration || this.#el.info.hidden) return;
-    this.#cacheStats = stats;
-    this.#renderCache();
+  }
+
+  /** 統計の読み直しを続けてよいか（同じ読み取りの回で、地図情報が開いていて、一括取得の表示中でない）。 */
+  #cacheRetryAlive(token: number): boolean {
+    return (
+      token === this.#cacheGeneration &&
+      !this.#el.info.hidden &&
+      !this.#isCacheFetchingCurrent()
+    );
   }
 
   /** キャッシュの大きさと 2 つのボタンの状態（旧 showStats・updateButtons と同じ規則）。 */
