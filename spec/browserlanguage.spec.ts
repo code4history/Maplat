@@ -83,7 +83,7 @@ describe("browserLanguage", () => {
     expect(browserLanguage()).toBe("th");
   });
 
-  it("(INF-t9-4) userAgent自体が取得できない場合はtryの外なのでcatchされず例外が漏れる", () => {
+  it("userAgent自体が取得できない場合はtryの外なのでcatchされず例外が漏れる", () => {
     setNavigator({ userAgent: undefined });
     expect(() => browserLanguage()).toThrow();
   });

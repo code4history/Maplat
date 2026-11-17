@@ -58,8 +58,8 @@ test.beforeAll(async () => {
 
 // 最初に**配信元そのもの**を検証する。
 // 別 worktree の Vite に繋がっていると probe asset の代わりに index.html が返り、
-// 以降のテストが「window.__t5 が未定義」という分かりにくい timeout で落ちる
-// （実装レビュー Phase 1 で判明した根本原因）。ここで先に落として原因を明示する。
+// 以降のテストが「window.__poiHtmlProbe が未定義」という分かりにくい timeout で落ちる
+// （実際に起きた失敗の根本原因）。ここで先に落として原因を明示する。
 test("前提: probe asset が この worktree から JavaScript として配信される", async ({
   request
 }) => {
@@ -83,20 +83,20 @@ test.describe("POI html の隔離（実ブラウザ）", () => {
     page
   }) => {
     await page.goto(PROBE);
-    await page.waitForFunction(() => !!(window as any).__t5);
+    await page.waitForFunction(() => !!(window as any).__poiHtmlProbe);
 
     const result = await page.evaluate(() => {
       const w = window as any;
-      w.__t5.marker = "untouched";
-      localStorage.setItem("__t5_ls", "untouched");
-      const host = w.__t5.renderHtml(
-        `<script>window.__t5.marker="pwned";localStorage.setItem("__t5_ls","pwned")<\/script>` +
-          `<img src=x onerror="window.__t5.marker='pwned2'">` +
-          `<iframe src="javascript:parent.__t5.marker='pwned3'"></iframe>`
+      w.__poiHtmlProbe.marker = "untouched";
+      localStorage.setItem("__poiHtmlProbe_ls", "untouched");
+      const host = w.__poiHtmlProbe.renderHtml(
+        `<script>window.__poiHtmlProbe.marker="pwned";localStorage.setItem("__poiHtmlProbe_ls","pwned")<\/script>` +
+          `<img src=x onerror="window.__poiHtmlProbe.marker='pwned2'">` +
+          `<iframe src="javascript:parent.__poiHtmlProbe.marker='pwned3'"></iframe>`
       );
       return {
-        marker: w.__t5.marker,
-        ls: localStorage.getItem("__t5_ls"),
+        marker: w.__poiHtmlProbe.marker,
+        ls: localStorage.getItem("__poiHtmlProbe_ls"),
         shadowHtml: host.shadowRoot ? host.shadowRoot.innerHTML : null,
         hasIframe: !!host.shadowRoot?.querySelector("iframe"),
         hasScript: !!host.shadowRoot?.querySelector("script")
@@ -114,9 +114,9 @@ test.describe("POI html の隔離（実ブラウザ）", () => {
 
   test("実データ相当の html は保持される", async ({ page }) => {
     await page.goto(PROBE);
-    await page.waitForFunction(() => !!(window as any).__t5);
+    await page.waitForFunction(() => !!(window as any).__poiHtmlProbe);
     const html = await page.evaluate(() => {
-      const host = (window as any).__t5.renderHtml(
+      const host = (window as any).__poiHtmlProbe.renderHtml(
         '<img src="img/ishiwari_zakura.jpg"><br>郡山城の天守閣は<br><br>'
       );
       return host.shadowRoot.innerHTML;
@@ -130,9 +130,9 @@ test.describe("POI html の隔離（実ブラウザ）", () => {
     page
   }) => {
     await page.goto(PROBE);
-    await page.waitForFunction(() => !!(window as any).__t5);
+    await page.waitForFunction(() => !!(window as any).__poiHtmlProbe);
     const m = await page.evaluate(() => {
-      const host = (window as any).__t5.renderHtml(
+      const host = (window as any).__poiHtmlProbe.renderHtml(
         "<p>" + "あ<br>".repeat(400) + "</p>",
         false
       );
@@ -153,9 +153,9 @@ test.describe("POI html の隔離（実ブラウザ）", () => {
     page
   }) => {
     await page.goto(PROBE);
-    await page.waitForFunction(() => !!(window as any).__t5);
+    await page.waitForFunction(() => !!(window as any).__poiHtmlProbe);
     const m = await page.evaluate(() => {
-      const host = (window as any).__t5.renderHtml(
+      const host = (window as any).__poiHtmlProbe.renderHtml(
         "<p>" + "あ<br>".repeat(400) + "</p>",
         true
       );
@@ -174,9 +174,9 @@ test.describe("POI html の隔離（実ブラウザ）", () => {
     page
   }) => {
     await page.goto(PROBE);
-    await page.waitForFunction(() => !!(window as any).__t5);
+    await page.waitForFunction(() => !!(window as any).__poiHtmlProbe);
     const m = await page.evaluate(() => {
-      const div = (window as any).__t5.renderUrl("https://example.com/");
+      const div = (window as any).__poiHtmlProbe.renderUrl("https://example.com/");
       const iframe = div.querySelector("iframe") as HTMLIFrameElement;
       return {
         hasIframe: !!iframe,
@@ -193,9 +193,9 @@ test.describe("POI html の隔離（実ブラウザ）", () => {
 
   test("html と url の両方があれば html を優先する", async ({ page }) => {
     await page.goto(PROBE);
-    await page.waitForFunction(() => !!(window as any).__t5);
+    await page.waitForFunction(() => !!(window as any).__poiHtmlProbe);
     const m = await page.evaluate(() => {
-      const div = (window as any).__t5.renderBoth(
+      const div = (window as any).__poiHtmlProbe.renderBoth(
         "<b>html</b>",
         "https://example.com/"
       );

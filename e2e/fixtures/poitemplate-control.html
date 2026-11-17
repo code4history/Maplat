@@ -15,7 +15,7 @@
     payload は lodash.template の記法で、lodash の Core（@maplat/core 1.2 まで）で発火する側。
     Nunjucks の Core で発火する側は poitemplate-control-nunjucks.html。
     クエリを通さず、createObject のオプションに直接 poiTemplate を入れる。是正の前でも後でも、
-    観測窓（SETTLE_MS）の中で window.__nov26m5t2 === 1 になることを e2e で確かめ、C3 の緑が
+    観測窓（SETTLE_MS）の中で window.__poiTemplateXssFired === 1 になることを e2e で確かめ、C3 の緑が
     「マーカーが描かれなかっただけ」の空振りでないことを担保する。
     オプションは demo/dev.ts の option と同じ値に appid・lang・poiTemplate を足したもの。
     index.html・デモの build の入力からは参照しない（e2e 専用）。
@@ -50,7 +50,7 @@
       lang: 'ja',
       appid: 'sample',
       // demo-query-checks.mjs の XSS_PAYLOAD と同一（e2e が page.content() で照合する）
-      poiTemplate: '${Reflect.set(window,/__nov26m5t2/.source,1)}'
+      poiTemplate: '${Reflect.set(window,/__poiTemplateXssFired/.source,1)}'
     };
     MaplatUi.createObject(option).then(() => {
       statusEl.textContent = 'READY appid=sample lang=ja';

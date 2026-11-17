@@ -30,7 +30,7 @@ function mount(): HTMLElement {
   return div;
 }
 
-(window as unknown as Record<string, unknown>).__t5 = {
+(window as unknown as Record<string, unknown>).__poiHtmlProbe = {
   renderHtml(html: string, noScroll = true) {
     const host = buildPoiHtml(html, noScroll);
     mount().appendChild(host);

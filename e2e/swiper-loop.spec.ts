@@ -16,7 +16,7 @@ import path from 'node:path';
  * - S5: 右のカードの実クリック・setSlideMapID・core.changeMap 後の active mapID と .selected（(c) は既知の遷移を含め常に判定）
  * - S6: 初期配置で隣り合うカードが同じ地図にならない・枚数（perView）・左右に別の地図が覗く
  * - S12: 覗いているカードの実クリックで、クリックした側へ 1 枚分アニメーションし、クリックした要素が中央に来る
- * - 破壊試験（R2 MIN-R2-2）: 遷移中の連打・ドラッグ直後・矢印直後のクリックで、地図・選択表示・タイトルが正しい
+ * - 破壊試験: 遷移中の連打・ドラッグ直後・矢印直後のクリックで、地図・選択表示・タイトルが正しい
  * - S12 補助: 保留中の再配置があってもカードのクリック後に中央のカードと地図が揃う
  * - S13: 状態復元（URL の #! 経由の changeMap）の後にスワイパーの active が目的の地図に合う
  *
@@ -116,16 +116,16 @@ async function openFixture(page: Page, width: number, base: number, overlay: num
   await page.evaluate(() => {
     const ui = (window as any).__maplatUi;
     const w = window as any;
-    w.__m9changeMap = [];
+    w.__swiperLoopChangeMap = [];
     // 地図タイトルの期待値は mapChanged の detail から旧 ui_init.ts applyMapChanged と同じ式で求める
-    w.__m9titles = {};
+    w.__swiperLoopTitles = {};
     ui.core.addEventListener('mapChanged', (evt: any) => {
       const map = evt.detail;
-      w.__m9titles[map.mapID] = ui.translate(map.officialTitle || map.title || map.label) || '';
+      w.__swiperLoopTitles[map.mapID] = ui.translate(map.officialTitle || map.title || map.label) || '';
     });
     const orig = ui.core.changeMap.bind(ui.core);
     ui.core.changeMap = (...args: any[]) => {
-      w.__m9changeMap.push(args[0]);
+      w.__swiperLoopChangeMap.push(args[0]);
       return orig(...args);
     };
   });
@@ -177,7 +177,7 @@ const selectedData = (page: Page, k: Kind) =>
 /** 地図タイトルの期待値（mapChanged の detail から旧 ui_init.ts applyMapChanged と同じ式で求めたもの）と実際の表示 */
 const titleState = (page: Page, id: string) =>
   page.evaluate(id => {
-    const expected = (window as any).__m9titles?.[id];
+    const expected = (window as any).__swiperLoopTitles?.[id];
     const el = document.querySelector('maplat-ui')?.shadowRoot?.querySelector('[part="map-title"] .text') as
       | HTMLElement
       | null
@@ -270,11 +270,11 @@ const hookTransitions = (page: Page, k: Kind) =>
     ({ k, sel }) => {
       const track = document.querySelector('maplat-ui')!.shadowRoot!.querySelector(`${sel} .map-slider-track`) as HTMLElement;
       const w = window as any;
-      w.__m9runs = w.__m9runs || {};
-      w.__m9runs[k] = [];
-      w.__m9hooked = w.__m9hooked || {};
-      if (w.__m9hooked[k] === track) return;
-      w.__m9hooked[k] = track;
+      w.__swiperLoopRuns = w.__swiperLoopRuns || {};
+      w.__swiperLoopRuns[k] = [];
+      w.__swiperLoopHooked = w.__swiperLoopHooked || {};
+      if (w.__swiperLoopHooked[k] === track) return;
+      w.__swiperLoopHooked[k] = track;
       const px = (v: string) => {
         const m = /translate3d\(\s*(-?[\d.e+-]+)px/.exec(v || '');
         if (m) return Number(m[1]);
@@ -286,7 +286,7 @@ const hookTransitions = (page: Page, k: Kind) =>
         for (const a of track.getAnimations()) {
           if ((a as any).transitionProperty !== 'transform') continue;
           const kf = (a.effect as KeyframeEffect).getKeyframes();
-          w.__m9runs[k].push(Math.round(px(kf[kf.length - 1].transform as string) - px(kf[0].transform as string)));
+          w.__swiperLoopRuns[k].push(Math.round(px(kf[kf.length - 1].transform as string) - px(kf[0].transform as string)));
         }
       });
     },
@@ -306,14 +306,14 @@ async function clickPeekAndJudge(page: Page, k: Kind, side: Side, n: number) {
         const track = root.querySelector('.map-slider-track') as HTMLElement;
         const t0 = performance.now();
         const w = window as any;
-        w.__m9stop = false;
+        w.__swiperLoopStop = false;
         const out: { t: number; x: number; anim: number }[] = [];
         const tick = () => {
           const m = root.querySelector('[data-peek-mark="1"]') as HTMLElement;
           const r = m.getBoundingClientRect();
           out.push({ t: Math.round(performance.now() - t0), x: r.left + r.width / 2, anim: track.getAnimations().length });
           // クリック後の待ち（期待値の到達 → 1.2 秒）が終わるまで採る（上限 15 秒）
-          if (!w.__m9stop && performance.now() - t0 < 15000) requestAnimationFrame(tick);
+          if (!w.__swiperLoopStop && performance.now() - t0 < 15000) requestAnimationFrame(tick);
           else resolve(out);
         };
         requestAnimationFrame(tick);
@@ -322,7 +322,7 @@ async function clickPeekAndJudge(page: Page, k: Kind, side: Side, n: number) {
   );
   await page.mouse.click(pre.point.x, pre.point.y);
   const wait = await waitActive(page, k, pre.id!, 8000, 1200);
-  await page.evaluate(() => { (window as any).__m9stop = true; });
+  await page.evaluate(() => { (window as any).__swiperLoopStop = true; });
   const frames = await sampling;
   const post = await page.evaluate(
     ({ k, sel }) => {
@@ -335,7 +335,7 @@ async function clickPeekAndJudge(page: Page, k: Kind, side: Side, n: number) {
       const hit = sr.elementFromPoint(cr.left + cr.width / 2, cr.top + cr.height / 2)?.closest('[part~="map-slide"]');
       const act = host.slider(k).slots.find((s: any) => s.offset === 0)?.element;
       return {
-        runs: ((window as any).__m9runs[k] as number[]).slice(),
+        runs: ((window as any).__swiperLoopRuns[k] as number[]).slice(),
         markCx: r.left + r.width / 2,
         centerIsMark: hit === mark,
         activeIsMark: act === mark,
@@ -454,7 +454,7 @@ const visibleSameCount = (lay: { prev: string | null; active: string | null; nex
  * `slider.ts` の `#slotCount()` も N>=2 で 5）
  */
 const slotTotal = (n: number) => (n < 2 ? 1 : 5);
-/** 言い換え（S6・P1）: 旧 `width >= 480 ? 1.4 : 2` → `width <= 480 ? 1.4 : 2` */
+/** 言い換え（S6）: 旧 `width >= 480 ? 1.4 : 2` → `width <= 480 ? 1.4 : 2` */
 const perViewOf = (width: number) => (width <= 480 ? 1.4 : 2);
 
 for (const width of WIDTHS) {
@@ -623,7 +623,7 @@ for (const n of [2, 3, 4, 5]) {
         expect.soft(sel, `S5 (a) ${k} .selected`).toEqual(Array(selectedCount(n)).fill(pre.id));
         expect.soft(title.actual, `S5 (a) ${k} 地図タイトル`).toBe(title.expected);
       }
-      // (a') 中央のカードのクリックでは動かない（R2 Info 2）
+      // (a') 中央のカードのクリックでは動かない
       {
         const center = await page.evaluate(
           ({ k, sel }) => {
@@ -670,7 +670,7 @@ for (const n of [2, 3, 4, 5]) {
           const ui = (window as any).__maplatUi;
           const w = window as any;
           const t0 = performance.now();
-          const ev: string[] = (w.__m9cev = []);
+          const ev: string[] = (w.__swiperLoopCev = []);
           const h = (e: any) => ev.push(`mapChanged:${e.detail.mapID}@${Math.round(performance.now() - t0)}`);
           ui.core.addEventListener('mapChanged', h);
           setTimeout(() => ui.core.removeEventListener('mapChanged', h), 9000);
@@ -680,7 +680,7 @@ for (const n of [2, 3, 4, 5]) {
           );
         }, id);
         const wait = await waitActive(page, k, id, 8000, 700);
-        const events = await page.evaluate(() => (window as any).__m9cev.slice());
+        const events = await page.evaluate(() => (window as any).__swiperLoopCev.slice());
         r.c.push({ id, from: cur, wait, events });
         expect.soft(events.some((e: string) => e.startsWith(`mapChanged:${id}@`)), `S5 (c) ${k} changeMap(${id}) の mapChanged`).toBe(true);
         expect.soft(wait, `S5 (c) ${k} changeMap(${id}) from ${cur}`).toEqual({ reached: true, stable: true });
@@ -726,7 +726,7 @@ for (const n of [2, 3]) {
     const warns = await openFixture(page, 1280, n, n);
     const rec: any[] = [];
     const settleAndJudge = async (k: Kind, scenario: string, extra: any) => {
-      const calls: string[] = await page.evaluate(() => (window as any).__m9changeMap.slice());
+      const calls: string[] = await page.evaluate(() => (window as any).__swiperLoopChangeMap.slice());
       // 押したカードが押す前の地図と同じなら changeMap は呼ばれない（同じ地図へは切り替えない）。
       // そのときは押したカードを「最後に選ばれた地図」として判定する
       const last = calls[calls.length - 1] ?? (extra.sameAsCurrent ? extra.clicked : undefined);
@@ -746,7 +746,7 @@ for (const n of [2, 3]) {
       expect.soft(wait, `${scenario} ${k}: active mapID = 最後に選ばれた地図 ${last}`).toEqual({ reached: true, stable: true });
       expect.soft(sel, `${scenario} ${k}: .selected`).toEqual(Array(selectedCount(n)).fill(last));
       expect.soft(title.actual, `${scenario} ${k}: 地図タイトル`).toBe(title.expected);
-      await page.evaluate(() => { (window as any).__m9changeMap.length = 0; });
+      await page.evaluate(() => { (window as any).__swiperLoopChangeMap.length = 0; });
       await page.waitForTimeout(300);
     };
     for (const k of KINDS) {
@@ -837,17 +837,17 @@ for (const n of [2, 5]) {
         await page.evaluate(k => {
           const slider = (document.querySelector('maplat-ui') as any).slider(k);
           const w = window as any;
-          w.__m9resize = 0;
+          w.__swiperLoopResize = 0;
           const once = () => {
             window.removeEventListener('pointerup', once, true);
             // ResizeObserver が大きさの変化を拾ったときと同じ再配置（旧 swiper の observerUpdate の言い換え）
             slider.refresh();
-            w.__m9resize++;
+            w.__swiperLoopResize++;
           };
           window.addEventListener('pointerup', once, true);
         }, k);
         await page.mouse.click(pre.point.x, pre.point.y);
-        const injected = await page.evaluate(() => (window as any).__m9resize);
+        const injected = await page.evaluate(() => (window as any).__swiperLoopResize);
         const wait = await waitActive(page, k, pre.id!, 8000, 1000);
         const sel = await selectedData(page, k);
         const title = await titleState(page, pre.id!);
@@ -902,15 +902,15 @@ for (const n of [4, 5]) {
     await page.evaluate(() => {
       const ui = (window as any).__maplatUi;
       const w = window as any;
-      w.__m9changeMap = [];
-      w.__m9titles = {};
+      w.__swiperLoopChangeMap = [];
+      w.__swiperLoopTitles = {};
       ui.core.addEventListener('mapChanged', (evt: any) => {
         const map = evt.detail;
-        w.__m9titles[map.mapID] = ui.translate(map.officialTitle || map.title || map.label) || '';
+        w.__swiperLoopTitles[map.mapID] = ui.translate(map.officialTitle || map.title || map.label) || '';
       });
       const orig = ui.core.changeMap.bind(ui.core);
       ui.core.changeMap = (...args: any[]) => {
-        w.__m9changeMap.push(args[0]);
+        w.__swiperLoopChangeMap.push(args[0]);
         return orig(...args);
       };
     });
@@ -925,16 +925,16 @@ for (const n of [4, 5]) {
       await page.evaluate(({ k, id }) => {
         const w = window as any;
         const slider = (document.querySelector('maplat-ui') as any).slider(k);
-        w.__m9inject = 0;
-        if (!slider.__m9origSetSelected) slider.__m9origSetSelected = slider.setSelectedMapID;
-        const orig = slider.__m9origSetSelected;
+        w.__swiperLoopInject = 0;
+        if (!slider.__swiperLoopOrigSetSelected) slider.__swiperLoopOrigSetSelected = slider.setSelectedMapID;
+        const orig = slider.__swiperLoopOrigSetSelected;
         let armed = true;
         slider.setSelectedMapID = function (...args: any[]) {
           const r = orig.apply(this, args);
           // 最初の位置合わせの直後に 1 回だけ再配置を割り込ませる（旧 observerUpdate の言い換え）
           if (armed && args[0] === id) {
             armed = false;
-            w.__m9inject++;
+            w.__swiperLoopInject++;
             slider.refresh();
           }
           return r;
@@ -945,8 +945,8 @@ for (const n of [4, 5]) {
       const info = await page.evaluate(({ k }) => {
         const w = window as any;
         const slider = (document.querySelector('maplat-ui') as any).slider(k);
-        slider.setSelectedMapID = slider.__m9origSetSelected;
-        return { calls: w.__m9changeMap.splice(0), inject: w.__m9inject };
+        slider.setSelectedMapID = slider.__swiperLoopOrigSetSelected;
+        return { calls: w.__swiperLoopChangeMap.splice(0), inject: w.__swiperLoopInject };
       }, { k });
       const title = await titleState(page, id);
       rec.hash.push({ k, id, from: cur, wait, ...info, title });

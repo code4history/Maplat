@@ -15,7 +15,7 @@ import {
 // テスト専用のプローブページ経由で @maplat/core を**通常の読み込み経路**で import する。
 // page.addScriptTag + /@fs の動的 import 方式は、dompurify が初回発見されるタイミングで
 // Vite が依存最適化を走らせページを再読込するため、実行コンテキストが破棄されて落ちた
-// （warm cache では偶然通っていた。実装レビュー Major-1）。
+// （warm cache では偶然通っていた）。
 const PROBE = "/e2e/fixtures/sanitize-probe.html";
 
 async function setup(page: import("@playwright/test").Page) {
@@ -28,7 +28,7 @@ async function setup(page: import("@playwright/test").Page) {
   for (let attempt = 0; attempt < 5; attempt++) {
     await page.goto(PROBE, { waitUntil: "load" });
     try {
-      await page.waitForFunction(() => !!window.__t4?.sanitizeHtml, undefined, { timeout: 8000 });
+      await page.waitForFunction(() => !!window.__sanitizeProbe?.sanitizeHtml, undefined, { timeout: 8000 });
       return;
     } catch {
       await page.waitForTimeout(1000); // 最適化の完了を待って再試行
@@ -41,7 +41,7 @@ test.describe("ブラウザでのサニタイズ", () => {
   test("攻撃ペイロードが無害化される（jsdom と同じ fixture）", async ({ page }) => {
     await setup(page);
     for (const { name, input, mustNotContain } of MUST_BE_NEUTRALIZED) {
-      const out = await page.evaluate((s) => window.__t4!.sanitizeHtml(s), input);
+      const out = await page.evaluate((s) => window.__sanitizeProbe!.sanitizeHtml(s), input);
       for (const needle of mustNotContain) {
         expect(String(out).toLowerCase(), `${name}: ${needle} が残っている`).not.toContain(needle.toLowerCase());
       }
@@ -58,7 +58,7 @@ test.describe("ブラウザでのサニタイズ", () => {
   test("実データ相当の HTML が保持される（正系）", async ({ page }) => {
     await setup(page);
     for (const { name, input, mustContain } of MUST_BE_PRESERVED) {
-      const out = await page.evaluate((s) => window.__t4!.sanitizeHtml(s), input);
+      const out = await page.evaluate((s) => window.__sanitizeProbe!.sanitizeHtml(s), input);
       for (const needle of mustContain) {
         expect(String(out), `${name}: ${needle} が失われた`).toContain(needle);
       }
@@ -67,7 +67,7 @@ test.describe("ブラウザでのサニタイズ", () => {
 
   test("target=_blank に rel が付く", async ({ page }) => {
     await setup(page);
-    const out = await page.evaluate((s) => window.__t4!.sanitizeHtml(s), TARGET_BLANK.input);
+    const out = await page.evaluate((s) => window.__sanitizeProbe!.sanitizeHtml(s), TARGET_BLANK.input);
     for (const needle of TARGET_BLANK.mustContain) expect(String(out)).toContain(needle);
   });
 
@@ -76,7 +76,7 @@ test.describe("ブラウザでのサニタイズ", () => {
     for (const { name, media } of MEDIA_ATTR_ATTACKS) {
       const names = await page.evaluate((m) => {
         const el = document.createElement("div");
-        el.innerHTML = `<cc-swiper-slide ${window.__t4!.buildSlideAttrs(m)}></cc-swiper-slide>`;
+        el.innerHTML = `<cc-swiper-slide ${window.__sanitizeProbe!.buildSlideAttrs(m)}></cc-swiper-slide>`;
         return el.firstElementChild!.getAttributeNames().map((n) => n.toLowerCase());
       }, media);
       expect(names.filter((n: string) => n.startsWith("on")), `${name}: on* が生えた`).toHaveLength(0);
@@ -85,12 +85,12 @@ test.describe("ブラウザでのサニタイズ", () => {
     }
   });
 
-  test("属性の往復でも HTML に戻らない（§3.4・ブラウザの getAttribute で検証）", async ({ page }) => {
+  test("属性の往復でも HTML に戻らない（ブラウザの getAttribute で検証）", async ({ page }) => {
     await setup(page);
     for (const { name, media } of ATTR_ROUNDTRIP_ATTACKS) {
       const activeCount = await page.evaluate((m) => {
         const host = document.createElement("div");
-        host.innerHTML = `<cc-swiper-slide ${window.__t4!.buildSlideAttrs(m)}></cc-swiper-slide>`;
+        host.innerHTML = `<cc-swiper-slide ${window.__sanitizeProbe!.buildSlideAttrs(m)}></cc-swiper-slide>`;
         const slide = host.firstElementChild!;
         let n = 0;
         for (const attr of ["caption", "thumbnail-url", "image-url"]) {

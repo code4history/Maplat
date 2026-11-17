@@ -125,12 +125,14 @@ describe("demo-query-checks の定義", () => {
   });
 
   it("lodash 用の payload は符号化しない生の形（是正前のデモで発火する形）", () => {
-    expect(XSS_PAYLOAD).toBe("${Reflect.set(window,/__nov26m5t2/.source,1)}");
+    expect(XSS_PAYLOAD).toBe(
+      "${Reflect.set(window,/__poiTemplateXssFired/.source,1)}"
+    );
   });
 
-  it("Nunjucks 用の payload は空白を含まず、同じ印（window.__nov26m5t2）を立てる", () => {
+  it("Nunjucks 用の payload は空白を含まず、同じ印（window.__poiTemplateXssFired）を立てる", () => {
     expect(XSS_PAYLOAD_NUNJUCKS).toBe(
-      '{{range.constructor("Reflect.set(window,/__nov26m5t2/.source,1)")()}}'
+      '{{range.constructor("Reflect.set(window,/__poiTemplateXssFired/.source,1)")()}}'
     );
     expect(XSS_PAYLOAD_NUNJUCKS).not.toMatch(/\s/);
     // lodash の記法（${ … }・<% … %>）を含まない ∴ lodash の Core では発火しない

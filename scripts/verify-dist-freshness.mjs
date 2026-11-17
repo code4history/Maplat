@@ -113,7 +113,7 @@ if (srcC && distC) {
 // 検査2 は系譜だけを見るため、「dist を再ビルドしないまま dist 配下の別ファイルを
 // 触った」ような操作では通ってしまう。実際に配布される umd に、viewer 側の
 // セキュリティ是正が入っていることを内容で直接 assert する。
-// 文字列は t4/t5 の diff から取った具体マーカーであり、退行すれば必ず落ちる。
+// 文字列はサニタイズと POI html の隔離の是正の diff から取った具体マーカーであり、退行すれば必ず落ちる。
 {
   const UMD = path.join(ROOT, "dist", "maplat_ui.umd.js");
   if (!existsSync(UMD)) {

@@ -553,7 +553,7 @@ for (const width of WIDTHS) {
         for (const kind of ["base", "overlay"] as const) {
           const expected = baselineElement(baseline, `${kind}-card-3`);
           const actual = measured.sliders[kind].center!;
-          const label = `${kind}-card-3(P1)`;
+          const label = `${kind}-card-3(width-independent)`;
           expect.soft(actual.mapID, `${label}.mapID`).toBe(expected.mapID);
           for (const key of ["y", "height"])
             expect
