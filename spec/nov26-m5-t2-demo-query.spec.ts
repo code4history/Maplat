@@ -73,6 +73,15 @@ describe("parseDemoQuery（AC1）", () => {
     expect(parseDemoQuery(`?appid=${a}`)).toEqual({ appid: a });
   });
 
+  it("ハイフンを含む appid（iiif-bibliography-sample・outside-pois-sample）も採る", () => {
+    expect(parseDemoQuery("?appid=iiif-bibliography-sample")).toEqual({
+      appid: "iiif-bibliography-sample"
+    });
+    expect(parseDemoQuery("?appid=outside-pois-sample")).toEqual({
+      appid: "outside-pois-sample"
+    });
+  });
+
   it("同じキーが複数あれば最初の 1 つ", () => {
     expect(parseDemoQuery("?appid=a&appid=b")).toEqual({ appid: "a" });
   });
