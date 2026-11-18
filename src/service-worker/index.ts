@@ -40,6 +40,11 @@ type CachedResource = {
   cacheDate?: number;
 };
 
+type LegacyCopy = {
+  request: Request;
+  entry: CachedResource;
+};
+
 function responseDate(response: Response): number | undefined {
   const dateHeader = response.headers.get("date");
   if (!dateHeader) return undefined;
@@ -64,8 +69,8 @@ function legacyCacheDate(cacheName: string): number | undefined {
   ).getTime();
 }
 
-function isResourceFresh(response: Response): boolean {
-  const date = responseDate(response);
+function isResourceFresh(response: Response, cacheDate?: number): boolean {
+  const date = responseDate(response) ?? cacheDate;
   return (
     date === undefined || date >= Date.now() - RESOURCE_MAX_AGE_SECONDS * 1000
   );
@@ -100,46 +105,69 @@ function isNewerCandidate(
 }
 
 const legacyCacheFallbackPlugin: WorkboxPlugin = {
-  async cachedResponseWillBeUsed({ request, cachedResponse }) {
-    let selected: CachedResource | undefined;
+  async cachedResponseWillBeUsed({ request, cachedResponse, state }) {
     if (cachedResponse && isResourceFresh(cachedResponse)) {
-      selected = {
-        cacheName: RESOURCES_CACHE,
-        response: cachedResponse,
-        responseDate: responseDate(cachedResponse)
-      };
+      return cachedResponse;
     }
 
-    const cacheNames = await caches.keys();
-    const legacyCacheNames = cacheNames
+    const legacyCacheNames = (await caches.keys())
       .filter(cacheName => LEGACY_RESOURCES_CACHE_PATTERN.test(cacheName))
-      .sort();
-    for (const cacheName of legacyCacheNames) {
-      const cache = await caches.open(cacheName);
-      const response = await cache.match(request);
-      if (!response || !isResourceFresh(response)) continue;
+      .sort()
+      .reverse();
+    const found = await Promise.all(
+      legacyCacheNames.map(async cacheName => {
+        const cacheDate = legacyCacheDate(cacheName);
+        const cache = await caches.open(cacheName);
+        const response = await cache.match(request);
+        return response && isResourceFresh(response, cacheDate)
+          ? {
+              cacheName,
+              response,
+              responseDate: responseDate(response),
+              cacheDate
+            }
+          : undefined;
+      })
+    );
 
-      const candidate: CachedResource = {
-        cacheName,
-        response,
-        responseDate: responseDate(response),
-        cacheDate: legacyCacheDate(cacheName)
-      };
-      if (!selected || isNewerCandidate(candidate, selected)) {
+    let selected: CachedResource | undefined;
+    for (const candidate of found) {
+      if (candidate && (!selected || isNewerCandidate(candidate, selected))) {
         selected = candidate;
       }
     }
 
     if (!selected) return null;
     if (selected.cacheName !== RESOURCES_CACHE) {
-      try {
-        const resourcesCache = await caches.open(RESOURCES_CACHE);
-        await resourcesCache.put(request, selected.response.clone());
-      } catch {
-        // Keep serving the old response if the origin has no room for a copy.
-      }
+      const legacyCopy: LegacyCopy = {
+        request,
+        entry: { ...selected, response: selected.response.clone() }
+      };
+      (state as { legacyCopy?: LegacyCopy }).legacyCopy = legacyCopy;
     }
     return selected.response;
+  },
+
+  async handlerDidComplete({ state }) {
+    const legacyCopy = (state as { legacyCopy?: LegacyCopy }).legacyCopy;
+    if (!legacyCopy) return;
+
+    try {
+      const resourcesCache = await caches.open(RESOURCES_CACHE);
+      const existing = await resourcesCache.match(legacyCopy.request);
+      const current = existing
+        ? {
+            cacheName: RESOURCES_CACHE,
+            response: existing,
+            responseDate: responseDate(existing)
+          }
+        : undefined;
+      if (!current || isNewerCandidate(legacyCopy.entry, current)) {
+        await resourcesCache.put(legacyCopy.request, legacyCopy.entry.response);
+      }
+    } catch {
+      // Keep serving the old response if the origin has no room for a copy.
+    }
   }
 };
 
