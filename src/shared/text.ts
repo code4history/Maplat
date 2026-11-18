@@ -138,7 +138,7 @@ export function ellipsize(
 }
 
 /**
- * 相対リンクの解決（旧 `ui_utils.ts` の `resolveRelativeLink` と同じ規則。レビュー m4 で 1 か所にした）。
+ * 相対リンクの解決（旧 `ui_utils.ts` の `resolveRelativeLink` と同じ規則）。
  * `/` を含む名前はそのまま、含まない名前は `fallbackPath` の下（`null`・空は `.`）。
  * 層 B（`<maplat-ui>`）と旧 API の互換層（`MaplatUi.resolveRelativeLink`）の両方が使う。
  */

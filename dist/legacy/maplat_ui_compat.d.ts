@@ -117,10 +117,10 @@ export declare class MaplatUi extends EventTarget {
     /** 旧 `ui.lang`（今の言語）。 */
     get lang(): string;
     /**
-     * 旧 `ui.lang = …`（旧は書き換えられるフィールド。レビュー m2）。ホストの `lang` 属性へ流す
+     * 旧 `ui.lang = …`（旧は書き換えられるフィールド）。ホストの `lang` 属性へ流す
      * （起動前は、起動するまでの `lang` の読み値として覚える）。文字列でなければ警告して無視する。
      *
-     * **起動前の代入は起動後の言語にならない**（積み残しの Info）。`#createHost` は `option.lang`
+     * **起動前の代入は起動後の言語にならない**。`#createHost` は `option.lang`
      * しか流さないので、起動後は要素が言語を決める（`lang` 属性 → 設定ファイル → ブラウザ）。
      * 旧も `ui_init` が起動時に言語を上書きしていたので、振る舞いは旧と同じ。
      */
@@ -131,13 +131,13 @@ export declare class MaplatUi extends EventTarget {
     get transparency(): number | undefined;
     /** 旧 `ui._t`（訳の関数。i18n が入るまでは undefined）。 */
     get _t(): ((x: string, option?: Record<string, unknown>) => string) | undefined;
-    /** 旧 `ui._t = …` は受けない（訳は `<maplat-ui>` が持つ）。strict でも例外にせず、警告して無視する（m2）。 */
+    /** 旧 `ui._t = …` は受けない（訳は `<maplat-ui>` が持つ）。strict でも例外にせず、警告して無視する。 */
     set _t(_value: unknown);
     /** 旧 `ui.i18n`（限定 facade。`docs/api/migration-ui-shadow-dom.ja.md` の「型の変化」を参照）。 */
     get i18n(): LegacyI18n | undefined;
     /**
      * 旧 `ui.i18n = …` は受けない（翻訳ライブラリのインスタンスはもう無い。限定 facade だけを返す）。
-     * strict でも例外にせず、警告して無視する（m2）。
+     * strict でも例外にせず、警告して無視する。
      */
     set i18n(_value: unknown);
 }

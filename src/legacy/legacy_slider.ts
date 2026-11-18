@@ -4,7 +4,7 @@
 // `get("slidervalue")` / `set("slidervalue", 0..1)` と `propertychange` を持っていた。
 // 互換層では層 B の `<maplat-ui>` の `transparency` 属性（0..100。**0 が不透明・100 が透明**。
 // 旧 `slidervalue` × 100 ＝ 透過度。旧 `ui_init.ts:1451`）へ書き、値は子の `<maplat-app>` が書き戻す
-// `transparency` 属性（利用者がスライダーを動かしても層 A が書き戻す）から読む（レビュー m1）。
+// `transparency` 属性（利用者がスライダーを動かしても層 A が書き戻す）から読む。
 //
 // **旧 UI のファイル（`maplat_control.ts`）は import しない**（`spec/legacy-deps.spec.ts`）。
 
@@ -57,7 +57,7 @@ export function createLegacySlider(
 
   /**
    * 今の透過度（0..1）。子が書き戻した属性 ＞ 層 A の `getTransparency()` ＞ ホストの属性 ＞ 0。
-   * 利用者のスライダー操作は層 B が層 A の `setTransparency` を呼ぶので、ホストの属性は変わらない（m1）。
+   * 利用者のスライダー操作は層 B が層 A の `setTransparency` を呼ぶので、ホストの属性は変わらない。
    */
   const valueOf = (): number => {
     const el = current();

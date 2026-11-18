@@ -238,7 +238,7 @@ class H extends T {
 }
 let b = null;
 function $() {
-  return typeof customElements > "u" || customElements.get(k) ? Promise.resolve() : b || (b = import("./maplat_core_element-lMyzTzKM.js").then(
+  return typeof customElements > "u" || customElements.get(k) ? Promise.resolve() : b || (b = import("./maplat_core_element-CEyk8UT2.js").then(
     () => {
     },
     (i) => {
@@ -749,10 +749,10 @@ class D extends H {
     return this.#e ? this.#e.currentLang : this.#r;
   }
   /**
-   * 旧 `ui.lang = …`（旧は書き換えられるフィールド。レビュー m2）。ホストの `lang` 属性へ流す
+   * 旧 `ui.lang = …`（旧は書き換えられるフィールド）。ホストの `lang` 属性へ流す
    * （起動前は、起動するまでの `lang` の読み値として覚える）。文字列でなければ警告して無視する。
    *
-   * **起動前の代入は起動後の言語にならない**（積み残しの Info）。`#createHost` は `option.lang`
+   * **起動前の代入は起動後の言語にならない**。`#createHost` は `option.lang`
    * しか流さないので、起動後は要素が言語を決める（`lang` 属性 → 設定ファイル → ブラウザ）。
    * 旧も `ui_init` が起動時に言語を上書きしていたので、振る舞いは旧と同じ。
    */
@@ -795,7 +795,7 @@ class D extends H {
     if (e)
       return (t, n) => e.t(t, n);
   }
-  /** 旧 `ui._t = …` は受けない（訳は `<maplat-ui>` が持つ）。strict でも例外にせず、警告して無視する（m2）。 */
+  /** 旧 `ui._t = …` は受けない（訳は `<maplat-ui>` が持つ）。strict でも例外にせず、警告して無視する。 */
   set _t(e) {
     this.#n(
       "set:_t",
@@ -809,7 +809,7 @@ class D extends H {
   }
   /**
    * 旧 `ui.i18n = …` は受けない（翻訳ライブラリのインスタンスはもう無い。限定 facade だけを返す）。
-   * strict でも例外にせず、警告して無視する（m2）。
+   * strict でも例外にせず、警告して無視する。
    */
   set i18n(e) {
     this.#n(
@@ -879,7 +879,7 @@ class D extends H {
    * 層 A のイベント（子の `<maplat-app>` が出し、ホストまで泡立つ）を `MaplatUi` 自身へ出し直す。
    * 旧 `app.addEventListener("clickMarker", fn)`（`demo/dev.ts`）が意味を持つ。
    * `ol/events/Target` の `dispatchEvent` は `target` を代入するので、DOM の Event ではなく
-   * `{ type, detail }` のプレーンなオブジェクトで出す（m4）。`uiReady` は要素だけのイベントなので出さない。
+   * `{ type, detail }` のプレーンなオブジェクトで出す。`uiReady` は要素だけのイベントなので出さない。
    * 子を繋ぐ前に張る（起動の lifecycle も届くように）。
    */
   #d(e) {
