@@ -1,4 +1,4 @@
-import { t as D, m as L, b as v, p as A, a as U, r as C, E as R, V as N } from "./index-ChnFAt_V.js";
+import { t as D, m as L, b as v, p as A, a as U, r as C, E as R, V as N } from "./index-D2ghmjRM.js";
 class T {
   constructor() {
     this.disposed = !1;
@@ -238,7 +238,7 @@ class H extends T {
 }
 let b = null;
 function $() {
-  return typeof customElements > "u" || customElements.get(D) ? Promise.resolve() : b || (b = import("./maplat_core_element-z6miSW2H.js").then(
+  return typeof customElements > "u" || customElements.get(D) ? Promise.resolve() : b || (b = import("./maplat_core_element-DCWKUK-7.js").then(
     () => {
     },
     (i) => {
@@ -655,8 +655,8 @@ class k extends H {
    * @deprecated 旧 UI API です（中で `new MaplatUi(...)` するので、同じく非推奨）。1.x の間は
    *   この口を変えずに残し、**次のメジャー版（2.0）で閉じます**。代わりに `<maplat-ui>` 要素
    *   （`@maplat/ui/element`）と `<maplat-app>` 要素（`@maplat/core/element`）を組み合わせて
-   *   使ってください。移行の案内は `docs/api/maplat-ui-element.md` と
-   *   `docs/api/migration-ui-shadow-dom.md` にあります。
+   *   使ってください。移行の案内は `docs/api/maplat-ui-element.ja.md` と
+   *   `docs/api/migration-ui-shadow-dom.ja.md` にあります。
    */
   static async createObject(e) {
     return new k(e).waitReady();
@@ -802,7 +802,7 @@ class k extends H {
       `<${v}>: MaplatUi._t is read-only now (translations live in <maplat-ui>); the assignment was ignored.`
     );
   }
-  /** 旧 `ui.i18n`（限定 facade。`docs/api/migration-ui-shadow-dom.md` の「型の変化」を参照）。 */
+  /** 旧 `ui.i18n`（限定 facade。`docs/api/migration-ui-shadow-dom.ja.md` の「型の変化」を参照）。 */
   get i18n() {
     if (this.#e)
       return this.#l ??= G(() => this.#e ?? null), this.#l;

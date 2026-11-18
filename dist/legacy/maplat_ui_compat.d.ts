@@ -17,8 +17,8 @@ export declare function resetMaplatUiDeprecationWarning(): void;
  *   公開フィールド・`uiHooks`・`ui.core`）を変えずに残し、**次のメジャー版（2.0）で閉じます**。
  *   代わりに `<maplat-ui>` 要素（`@maplat/ui/element`）と `<maplat-app>` 要素
  *   （`@maplat/core/element`）を組み合わせて使ってください（要素が地図の上にビューアを重ねます）。
- *   移行の案内は `docs/api/maplat-ui-element.md`（要素の属性・プロパティ・メソッド・イベントと
- *   このクラスとの対応）と `docs/api/migration-ui-shadow-dom.md`（旧 UI の DOM からの移行）に
+ *   移行の案内は `docs/api/maplat-ui-element.ja.md`（要素の属性・プロパティ・メソッド・イベントと
+ *   このクラスとの対応）と `docs/api/migration-ui-shadow-dom.ja.md`（旧 UI の DOM からの移行）に
  *   あります。
  *   `new MaplatUi(...)`（`createObject` も同じ）は、同一プロセスで 1 回だけこの旨を
  *   `console.warn` で警告します。
@@ -72,8 +72,8 @@ export declare class MaplatUi extends EventTarget {
      * @deprecated 旧 UI API です（中で `new MaplatUi(...)` するので、同じく非推奨）。1.x の間は
      *   この口を変えずに残し、**次のメジャー版（2.0）で閉じます**。代わりに `<maplat-ui>` 要素
      *   （`@maplat/ui/element`）と `<maplat-app>` 要素（`@maplat/core/element`）を組み合わせて
-     *   使ってください。移行の案内は `docs/api/maplat-ui-element.md` と
-     *   `docs/api/migration-ui-shadow-dom.md` にあります。
+     *   使ってください。移行の案内は `docs/api/maplat-ui-element.ja.md` と
+     *   `docs/api/migration-ui-shadow-dom.ja.md` にあります。
      */
     static createObject(option: MaplatAppOption): Promise<MaplatUi>;
     /** 旧 `initializer`（UI の初期化。互換層では起動を 1 回だけ始める）。 */
@@ -133,7 +133,7 @@ export declare class MaplatUi extends EventTarget {
     get _t(): ((x: string, option?: Record<string, unknown>) => string) | undefined;
     /** 旧 `ui._t = …` は受けない（訳は `<maplat-ui>` が持つ）。strict でも例外にせず、警告して無視する（m2）。 */
     set _t(_value: unknown);
-    /** 旧 `ui.i18n`（限定 facade。`docs/api/migration-ui-shadow-dom.md` の「型の変化」を参照）。 */
+    /** 旧 `ui.i18n`（限定 facade。`docs/api/migration-ui-shadow-dom.ja.md` の「型の変化」を参照）。 */
     get i18n(): LegacyI18n | undefined;
     /**
      * 旧 `ui.i18n = …` は受けない（翻訳ライブラリのインスタンスはもう無い。限定 facade だけを返す）。
