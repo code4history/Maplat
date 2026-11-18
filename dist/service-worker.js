@@ -3389,34 +3389,86 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
   clientsClaim();
   precacheAndRoute(define_self_WB_MANIFEST_default, {});
   var RESOURCES_CACHE = "resourcesCache";
-  var LEGACY_RESOURCES_CACHE_PATTERN = /^resourcesCache-\d{4}-\d{2}-\d{2}-\d{2}-\d{2}$/;
-  self.addEventListener("activate", (event) => {
-    event.waitUntil(
-      migrateLegacyResourcesCaches()
-    );
-  });
-  async function migrateLegacyResourcesCaches() {
-    const cacheNames3 = await caches.keys();
-    const legacyCacheNames = cacheNames3.filter((cacheName) => LEGACY_RESOURCES_CACHE_PATTERN.test(cacheName)).sort();
-    if (legacyCacheNames.length === 0) return;
-    const resourcesCache = await caches.open(RESOURCES_CACHE);
-    for (const cacheName of legacyCacheNames) {
-      const legacyCache = await caches.open(cacheName);
-      for (const request of await legacyCache.keys()) {
-        if (await resourcesCache.match(request)) continue;
-        const response = await legacyCache.match(request);
-        if (response) await resourcesCache.put(request, response);
-      }
-      await caches.delete(cacheName);
-    }
+  var LEGACY_RESOURCES_CACHE_PATTERN = /^resourcesCache-(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})$/;
+  var RESOURCE_MAX_AGE_SECONDS = 86400;
+  function responseDate(response) {
+    const dateHeader = response.headers.get("date");
+    if (!dateHeader) return void 0;
+    const timestamp = Date.parse(dateHeader);
+    return Number.isNaN(timestamp) ? void 0 : timestamp;
   }
+  function legacyCacheDate(cacheName) {
+    const match = LEGACY_RESOURCES_CACHE_PATTERN.exec(cacheName);
+    if (!match) return void 0;
+    const [, year, month, day, hour, minute] = match;
+    if (!year || !month || !day || !hour || !minute) return void 0;
+    return new Date(
+      Number(year),
+      Number(month) - 1,
+      Number(day),
+      Number(hour),
+      Number(minute)
+    ).getTime();
+  }
+  function isResourceFresh(response) {
+    const date = responseDate(response);
+    return date === void 0 || date >= Date.now() - RESOURCE_MAX_AGE_SECONDS * 1e3;
+  }
+  function isNewerCandidate(candidate, current) {
+    if (current.cacheName === RESOURCES_CACHE && current.responseDate === void 0) {
+      return false;
+    }
+    const candidateDate = candidate.responseDate ?? candidate.cacheDate;
+    const currentDate = current.responseDate ?? current.cacheDate;
+    if (candidateDate === void 0) return false;
+    if (currentDate === void 0 || candidateDate > currentDate) return true;
+    return candidateDate === currentDate && candidate.cacheName !== RESOURCES_CACHE && current.cacheName !== RESOURCES_CACHE && candidate.cacheDate !== void 0 && current.cacheDate !== void 0 && candidate.cacheDate > current.cacheDate;
+  }
+  var legacyCacheFallbackPlugin = {
+    async cachedResponseWillBeUsed({ request, cachedResponse }) {
+      let selected;
+      if (cachedResponse && isResourceFresh(cachedResponse)) {
+        selected = {
+          cacheName: RESOURCES_CACHE,
+          response: cachedResponse,
+          responseDate: responseDate(cachedResponse)
+        };
+      }
+      const cacheNames3 = await caches.keys();
+      const legacyCacheNames = cacheNames3.filter((cacheName) => LEGACY_RESOURCES_CACHE_PATTERN.test(cacheName)).sort();
+      for (const cacheName of legacyCacheNames) {
+        const cache = await caches.open(cacheName);
+        const response = await cache.match(request);
+        if (!response || !isResourceFresh(response)) continue;
+        const candidate = {
+          cacheName,
+          response,
+          responseDate: responseDate(response),
+          cacheDate: legacyCacheDate(cacheName)
+        };
+        if (!selected || isNewerCandidate(candidate, selected)) {
+          selected = candidate;
+        }
+      }
+      if (!selected) return null;
+      if (selected.cacheName !== RESOURCES_CACHE) {
+        try {
+          const resourcesCache = await caches.open(RESOURCES_CACHE);
+          await resourcesCache.put(request, selected.response.clone());
+        } catch {
+        }
+      }
+      return selected.response;
+    }
+  };
   registerRoute(
     /(?:maps\/.+\.json|pwa\/.+|pois\/.+\.json|apps\/.+\.json|tmbs\/.+\.jpg|images\/.+\.(?:png|jpg))$/,
     new StaleWhileRevalidate({
       cacheName: RESOURCES_CACHE,
       plugins: [
+        legacyCacheFallbackPlugin,
         new ExpirationPlugin({
-          maxAgeSeconds: 86400,
+          maxAgeSeconds: RESOURCE_MAX_AGE_SECONDS,
           purgeOnQuotaError: false
         })
       ]
