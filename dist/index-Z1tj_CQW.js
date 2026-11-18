@@ -238,7 +238,7 @@ class H extends T {
 }
 let b = null;
 function $() {
-  return typeof customElements > "u" || customElements.get(k) ? Promise.resolve() : b || (b = import("./maplat_core_element-Bc1st627.js").then(
+  return typeof customElements > "u" || customElements.get(k) ? Promise.resolve() : b || (b = import("./maplat_core_element-CEyk8UT2.js").then(
     () => {
     },
     (i) => {
@@ -752,7 +752,7 @@ class D extends H {
    * 旧 `ui.lang = …`（旧は書き換えられるフィールド）。ホストの `lang` 属性へ流す
    * （起動前は、起動するまでの `lang` の読み値として覚える）。文字列でなければ警告して無視する。
    *
-   * **起動前の代入は起動後の言語にならない**（積み残しの Info）。`#createHost` は `option.lang`
+   * **起動前の代入は起動後の言語にならない**。`#createHost` は `option.lang`
    * しか流さないので、起動後は要素が言語を決める（`lang` 属性 → 設定ファイル → ブラウザ）。
    * 旧も `ui_init` が起動時に言語を上書きしていたので、振る舞いは旧と同じ。
    */
