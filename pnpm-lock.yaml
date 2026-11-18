@@ -66,9 +66,6 @@ importers:
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.5
-      '@types/ol':
-        specifier: ^7.0.0
-        version: 7.0.0
       '@types/qrcode':
         specifier: ^1.5.6
         version: 1.5.6
@@ -1678,10 +1675,6 @@ packages:
 
   '@types/node@26.6.5':
     resolution: {integrity: sha512-uMzsv9stDdofIZBx4UGh4Z9ZgXnGC9seRDscilBcTHAeOFk67MZg/k9bWVfO+bk4qZmG+l52hRnLwUiH2LnJTg==}
-
-  '@types/ol@7.0.0':
-    resolution: {integrity: sha512-JKNA4FYdgBz1GidTsrHu4PPPbCCpddXRG0qDpX8Cz08n2RxJ5PZIQaiAGQKO0y2pNuy7qBQqgOu/rQwttj+L3w==}
-    deprecated: This is a stub types definition. ol provides its own type definitions, so you do not need this installed.
 
   '@types/qrcode@1.5.6':
     resolution: {integrity: sha512-te7NQcV2BOvdj2b1hCAHzAoMNuj65kNBMz0KBaxM6c3VGBOhU0dURQKOtH8CFNI/dsKkwlv32p26qYQTWoB5bw==}
@@ -5848,10 +5841,6 @@ snapshots:
   '@types/node@26.6.5':
     dependencies:
       undici-types: 8.9.0
-
-  '@types/ol@7.0.0':
-    dependencies:
-      ol: 10.11.0
 
   '@types/qrcode@1.5.6':
     dependencies:

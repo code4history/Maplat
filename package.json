@@ -95,7 +95,6 @@
     "@maplat/transform": "^1.0.0",
     "@playwright/test": "^1.62.1",
     "@types/node": "^26.6.5",
-    "@types/ol": "^7.0.0",
     "@types/qrcode": "^1.5.6",
     "bootstrap-sass": "^3.4.3",
     "concurrently": "^10.0.6",
