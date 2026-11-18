@@ -3410,8 +3410,8 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
       Number(minute)
     ).getTime();
   }
-  function isResourceFresh(response) {
-    const date = responseDate(response);
+  function isResourceFresh(response, cacheDate) {
+    const date = responseDate(response) ?? cacheDate;
     return date === void 0 || date >= Date.now() - RESOURCE_MAX_AGE_SECONDS * 1e3;
   }
   function isNewerCandidate(candidate, current) {
@@ -3425,40 +3425,56 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
     return candidateDate === currentDate && candidate.cacheName !== RESOURCES_CACHE && current.cacheName !== RESOURCES_CACHE && candidate.cacheDate !== void 0 && current.cacheDate !== void 0 && candidate.cacheDate > current.cacheDate;
   }
   var legacyCacheFallbackPlugin = {
-    async cachedResponseWillBeUsed({ request, cachedResponse }) {
-      let selected;
+    async cachedResponseWillBeUsed({ request, cachedResponse, state }) {
       if (cachedResponse && isResourceFresh(cachedResponse)) {
-        selected = {
-          cacheName: RESOURCES_CACHE,
-          response: cachedResponse,
-          responseDate: responseDate(cachedResponse)
-        };
+        return cachedResponse;
       }
-      const cacheNames3 = await caches.keys();
-      const legacyCacheNames = cacheNames3.filter((cacheName) => LEGACY_RESOURCES_CACHE_PATTERN.test(cacheName)).sort();
-      for (const cacheName of legacyCacheNames) {
-        const cache = await caches.open(cacheName);
-        const response = await cache.match(request);
-        if (!response || !isResourceFresh(response)) continue;
-        const candidate = {
-          cacheName,
-          response,
-          responseDate: responseDate(response),
-          cacheDate: legacyCacheDate(cacheName)
-        };
-        if (!selected || isNewerCandidate(candidate, selected)) {
+      const legacyCacheNames = (await caches.keys()).filter((cacheName) => LEGACY_RESOURCES_CACHE_PATTERN.test(cacheName)).sort().reverse();
+      const found = await Promise.all(
+        legacyCacheNames.map(async (cacheName) => {
+          const cacheDate = legacyCacheDate(cacheName);
+          const cache = await caches.open(cacheName);
+          const response = await cache.match(request);
+          return response && isResourceFresh(response, cacheDate) ? {
+            cacheName,
+            response,
+            responseDate: responseDate(response),
+            cacheDate
+          } : void 0;
+        })
+      );
+      let selected;
+      for (const candidate of found) {
+        if (candidate && (!selected || isNewerCandidate(candidate, selected))) {
           selected = candidate;
         }
       }
       if (!selected) return null;
       if (selected.cacheName !== RESOURCES_CACHE) {
-        try {
-          const resourcesCache = await caches.open(RESOURCES_CACHE);
-          await resourcesCache.put(request, selected.response.clone());
-        } catch {
-        }
+        const legacyCopy = {
+          request,
+          entry: { ...selected, response: selected.response.clone() }
+        };
+        state.legacyCopy = legacyCopy;
       }
       return selected.response;
+    },
+    async handlerDidComplete({ state }) {
+      const legacyCopy = state.legacyCopy;
+      if (!legacyCopy) return;
+      try {
+        const resourcesCache = await caches.open(RESOURCES_CACHE);
+        const existing = await resourcesCache.match(legacyCopy.request);
+        const current = existing ? {
+          cacheName: RESOURCES_CACHE,
+          response: existing,
+          responseDate: responseDate(existing)
+        } : void 0;
+        if (!current || isNewerCandidate(legacyCopy.entry, current)) {
+          await resourcesCache.put(legacyCopy.request, legacyCopy.entry.response);
+        }
+      } catch {
+      }
     }
   };
   registerRoute(
