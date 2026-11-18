@@ -28,13 +28,46 @@ clientsClaim();
  */
 precacheAndRoute((self as any).__WB_MANIFEST as (string | PrecacheEntry)[], {});
 
-declare const SW_VERSION: string;
+const RESOURCES_CACHE = "resourcesCache";
+const LEGACY_RESOURCES_CACHE_PATTERN =
+  /^resourcesCache-\d{4}-\d{2}-\d{2}-\d{2}-\d{2}$/;
+
+interface ServiceWorkerLifecycleEvent extends Event {
+  waitUntil(promise: Promise<unknown>): void;
+}
+
+self.addEventListener("activate", event => {
+  (event as ServiceWorkerLifecycleEvent).waitUntil(
+    migrateLegacyResourcesCaches()
+  );
+});
+
+async function migrateLegacyResourcesCaches(): Promise<void> {
+  const cacheNames = await caches.keys();
+  const legacyCacheNames = cacheNames
+    .filter(cacheName => LEGACY_RESOURCES_CACHE_PATTERN.test(cacheName))
+    .sort();
+
+  if (legacyCacheNames.length === 0) return;
+
+  const resourcesCache = await caches.open(RESOURCES_CACHE);
+  for (const cacheName of legacyCacheNames) {
+    const legacyCache = await caches.open(cacheName);
+    for (const request of await legacyCache.keys()) {
+      if (await resourcesCache.match(request)) continue;
+
+      const response = await legacyCache.match(request);
+      if (response) await resourcesCache.put(request, response);
+    }
+    await caches.delete(cacheName);
+  }
+}
 
 registerRoute(
   /(?:maps\/.+\.json|pwa\/.+|pois\/.+\.json|apps\/.+\.json|tmbs\/.+\.jpg|images\/.+\.(?:png|jpg))$/,
 
   new StaleWhileRevalidate({
-    cacheName: `resourcesCache-${SW_VERSION}`,
+    cacheName: RESOURCES_CACHE,
     plugins: [
       new ExpirationPlugin({
         maxAgeSeconds: 86400,

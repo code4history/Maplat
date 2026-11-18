@@ -17,13 +17,7 @@
 //   また「dist に未コミット変更がある」こと自体、コミット済み配布物と実体の乖離であり、
 //   検査以前の異常である。skip せず fail として報告する。
 //
-// 正規化について:
-//   scripts/build-sw.js:9-26 は new Date() から "YYYY-MM-DD-HH-MM" 形式の SW_VERSION を
-//   生成し service-worker.js へ **1箇所** 埋め込む。分をまたぐとここだけ差が出る。
-//   したがって service-worker.js の SW_VERSION 1箇所のみを正規化して比較する。
-//   **それ以外は一切正規化しない。** 正規化を広げると検査は空洞化する。
-//   1箇所という前提が崩れた（0箇所 / 2箇所以上）場合も fail とする。前提が崩れたまま
-//   置換すると、意味のある差分まで消してしまうためである。
+// service-worker.js はビルド時刻を埋め込まないため、正規化せずに比較する。
 //
 // 検査対象パス（pnpm build が実際に書くファイルを実測して決めた・2026-08-01）:
 //   - dist/                    … vite.config.js:73 outDir = 'dist'（BUILD_MODE=package）
@@ -34,9 +28,7 @@
 //
 // 実行後の作業ツリーについて:
 //   本検査は自動復元しない。失敗時に証跡を消さないためである。
-//   SW_VERSION の分が変わっていれば成功時でも service-worker.js に差分が残る。
-//   L1 は clean を要求するため、両方を回す場合は **L2 を後に置く** か、
-//   L2 実行後に案内される復元コマンドを実行すること。
+//   L1 は clean を要求するため、両方を回す場合は **L2 を後に置く**。
 
 import { readFileSync, existsSync } from "node:fs";
 import { execFileSync } from "node:child_process";
@@ -47,11 +39,6 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 // pnpm build が書く追跡パス。git status のスコープにも比較にも同じ集合を使う
 const BUILD_OUTPUT_PATHS = ["dist", "public/service-worker.js"];
-// 非決定的な SW_VERSION を含むため正規化対象とするファイル
-const SW_FILES = new Set(["dist/service-worker.js", "public/service-worker.js"]);
-// "YYYY-MM-DD-HH-MM" 形式。define 経由で文字列リテラルとして埋め込まれる
-const SW_VERSION_RE = /"\d{4}-\d{2}-\d{2}-\d{2}-\d{2}"/g;
-const SW_VERSION_PLACEHOLDER = '"<SW_VERSION>"';
 
 const failures = [];
 const fail = (id, msg) => failures.push(`[${id}] ${msg}`);
@@ -121,19 +108,10 @@ try {
   die();
 }
 
-// SW_VERSION 1箇所のみを固定文字列へ置換する。1箇所でなければ前提が崩れているので null を返す
-const normalizeSw = (text) => {
-  const hits = text.match(SW_VERSION_RE);
-  if (!hits || hits.length !== 1) return { ok: false, count: hits ? hits.length : 0 };
-  return { ok: true, text: text.replace(SW_VERSION_RE, SW_VERSION_PLACEHOLDER) };
-};
-
-const tolerated = [];
 for (const entry of after) {
   const { code, file } = entry;
 
-  if (!SW_FILES.has(file) || code !== " M") {
-    // SW_VERSION 以外の差分・追加・削除はすべて再現性の破れである
+  if (code !== " M") {
     const kind =
       code.includes("?") ? "未追跡（コミット漏れ、または依存差でファイル名が変わった）"
         : code.includes("D") ? "削除（コミット済み dist に不要ファイルが残っている）"
@@ -146,7 +124,6 @@ for (const entry of after) {
     continue;
   }
 
-  // service-worker.js は SW_VERSION の1箇所だけ正規化して比べる
   const full = path.join(ROOT, file);
   if (!existsSync(full)) {
     fail("L2-3", `${file} が再ビルド後に存在しない`);
@@ -159,27 +136,14 @@ for (const entry of after) {
     fail("L2-3", `${file} の HEAD 版を取得できない: ${e.message?.split("\n")[0] ?? e}`);
     continue;
   }
-  const built = normalizeSw(readFileSync(full, "utf8"));
-  const head = normalizeSw(headText);
-  if (!built.ok || !head.ok) {
+  if (readFileSync(full, "utf8") !== headText) {
     fail(
       "L2-3",
-      `${file} の SW_VERSION 相当パターンがちょうど1箇所でない` +
-        `（再ビルド後 ${built.count ?? 1} 箇所 / HEAD ${head.count ?? 1} 箇所）。` +
-        `正規化の前提（build-sw.js が1箇所だけ埋め込む）が崩れている。` +
-        `前提が崩れたまま置換すると意味のある差分まで消えるため fail とする`
-    );
-    continue;
-  }
-  if (built.text !== head.text) {
-    fail(
-      "L2-3",
-      `${file} が SW_VERSION を正規化してもなお HEAD と一致しない。` +
+      `${file} が HEAD と一致しない。` +
         `service-worker のソースまたは依存が変わっているのに dist をコミットしていない`
     );
     continue;
   }
-  tolerated.push(file);
 }
 
 if (failures.length) {
@@ -189,12 +153,5 @@ if (failures.length) {
 
 console.log(
   `✓ L2 dist 再ビルド一致検査 PASSED` +
-    `（コミット済み dist は pnpm build から再現できる` +
-    `${tolerated.length ? `／SW_VERSION のみ差分: ${tolerated.join(", ")}` : ""}）`
+    `（コミット済み dist は pnpm build から再現できる）`
 );
-if (tolerated.length) {
-  console.log(
-    `  作業ツリーには SW_VERSION の差分が残っています。復元するには:\n` +
-      `    git checkout -- ${tolerated.join(" ")}`
-  );
-}
