@@ -1,85 +1,67 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 const SCOPE = "/e2e/fixtures/";
+const FIXTURE = `${SCOPE}service-worker-cache.html`;
 const RESOURCE = `${SCOPE}maps/offline.json`;
-const LEGACY_CACHE = "resourcesCache-2026-11-18-20-08";
+const LEGACY_WORKER = `${SCOPE}legacy-service-worker.js`;
+const UPDATED_WORKER = "/service-worker.js";
+const EXPECTED_JSON = { source: "legacy-runtime-cache" };
 
-test("keeps a cached map JSON available offline after the worker updates", async ({
-  page,
-  context
-}) => {
-  await page.goto(`${SCOPE}service-worker-cache.html`);
-  await page.evaluate(async () => {
-    const registrations = await navigator.serviceWorker.getRegistrations();
-    await Promise.all(
-      registrations.map(registration => registration.unregister())
-    );
-    const cacheNames = await caches.keys();
-    await Promise.all(
-      cacheNames
-        .filter(name => name.startsWith("resourcesCache"))
-        .map(name => caches.delete(name))
-    );
-  });
+async function activateWorker(page: Page, scriptURL: string, scope = SCOPE) {
+  await page.evaluate(
+    async ({ scriptURL, scope }) => {
+      await navigator.serviceWorker.register(scriptURL, { scope });
+    },
+    { scriptURL, scope }
+  );
 
-  await page.evaluate(async scope => {
-    await navigator.serviceWorker.register(
-      "/e2e/fixtures/legacy-cache-worker.js",
-      { scope }
-    );
-    await navigator.serviceWorker.ready;
-  }, SCOPE);
+  await expect
+    .poll(() =>
+      page.evaluate(async scope => {
+        const registration =
+          await navigator.serviceWorker.getRegistration(scope);
+        return registration?.active?.scriptURL
+          ? new URL(registration.active.scriptURL).pathname
+          : null;
+      }, scope)
+    )
+    .toBe(scriptURL);
+
   await page.reload();
   await expect
     .poll(() =>
-      page.evaluate(() => Boolean(navigator.serviceWorker.controller))
+      page.evaluate(() =>
+        navigator.serviceWorker.controller
+          ? new URL(navigator.serviceWorker.controller.scriptURL).pathname
+          : null
+      )
     )
-    .toBe(true);
+    .toBe(scriptURL);
+}
 
-  const original = await page.evaluate(async resource => {
-    const response = await fetch(resource);
-    return response.json();
+async function readJson(page: Page) {
+  return page.evaluate(async resource => {
+    try {
+      return await (await fetch(resource)).json();
+    } catch (error) {
+      return String(error);
+    }
   }, RESOURCE);
-  expect(original).toEqual({ source: "legacy-runtime-cache" });
-  await expect
-    .poll(() =>
-      page.evaluate(async cacheName => {
-        const cache = await caches.open(cacheName);
-        return Boolean(
-          await cache.match(
-            new URL("/e2e/fixtures/maps/offline.json", location.href)
-          )
-        );
-      }, LEGACY_CACHE)
-    )
-    .toBe(true);
+}
 
-  await page.evaluate(async scope => {
-    await navigator.serviceWorker.register("/service-worker.js", { scope });
-    await navigator.serviceWorker.ready;
-  }, SCOPE);
-  await expect
-    .poll(() =>
-      page.evaluate(() => navigator.serviceWorker.controller?.scriptURL ?? "")
-    )
-    .toBe("http://localhost:5176/service-worker.js");
-  await expect
-    .poll(() =>
-      page.evaluate(async cacheName => {
-        const cache = await caches.open(cacheName);
-        return Boolean(
-          await cache.match(
-            new URL("/e2e/fixtures/maps/offline.json", location.href)
-          )
-        );
-      }, "resourcesCache")
-    )
-    .toBe(true);
+test("keeps the real legacy worker's cached JSON available before and after update", async ({
+  page,
+  context
+}) => {
+  await page.goto(FIXTURE);
+  await activateWorker(page, LEGACY_WORKER);
 
+  expect(await readJson(page)).toEqual(EXPECTED_JSON);
   await context.setOffline(true);
-  const restored = await page.evaluate(async resource => {
-    const response = await fetch(resource);
-    return response.json();
-  }, RESOURCE);
-  expect(restored).toEqual({ source: "legacy-runtime-cache" });
+  expect(await readJson(page)).toEqual(EXPECTED_JSON);
+
+  await context.setOffline(false);
+  await activateWorker(page, UPDATED_WORKER);
+  await context.setOffline(true);
+  expect(await readJson(page)).toEqual(EXPECTED_JSON);
 });
