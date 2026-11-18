@@ -3388,10 +3388,32 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
   skipWaiting();
   clientsClaim();
   precacheAndRoute(define_self_WB_MANIFEST_default, {});
+  var RESOURCES_CACHE = "resourcesCache";
+  var LEGACY_RESOURCES_CACHE_PATTERN = /^resourcesCache-\d{4}-\d{2}-\d{2}-\d{2}-\d{2}$/;
+  self.addEventListener("activate", (event) => {
+    event.waitUntil(
+      migrateLegacyResourcesCaches()
+    );
+  });
+  async function migrateLegacyResourcesCaches() {
+    const cacheNames3 = await caches.keys();
+    const legacyCacheNames = cacheNames3.filter((cacheName) => LEGACY_RESOURCES_CACHE_PATTERN.test(cacheName)).sort();
+    if (legacyCacheNames.length === 0) return;
+    const resourcesCache = await caches.open(RESOURCES_CACHE);
+    for (const cacheName of legacyCacheNames) {
+      const legacyCache = await caches.open(cacheName);
+      for (const request of await legacyCache.keys()) {
+        if (await resourcesCache.match(request)) continue;
+        const response = await legacyCache.match(request);
+        if (response) await resourcesCache.put(request, response);
+      }
+      await caches.delete(cacheName);
+    }
+  }
   registerRoute(
     /(?:maps\/.+\.json|pwa\/.+|pois\/.+\.json|apps\/.+\.json|tmbs\/.+\.jpg|images\/.+\.(?:png|jpg))$/,
     new StaleWhileRevalidate({
-      cacheName: `resourcesCache-${"2026-11-18-20-08"}`,
+      cacheName: RESOURCES_CACHE,
       plugins: [
         new ExpirationPlugin({
           maxAgeSeconds: 86400,
