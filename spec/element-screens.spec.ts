@@ -744,6 +744,170 @@ describe("地図情報・ライセンス・タイルキャッシュ（操作ボ�
       );
       expect(labels(ui)).toContain("表示中の地図の帰属表記");
     });
+
+    it("同じ文で href の違う出典は落とさず、リンクの無い同文だけ 1 回に出す", async () => {
+      const setting = withOverlay();
+      delete (setting.sources[0] as any).meta.attr;
+      const ui = await mountUi(u => u.setAttribute("lang", "en"), setting);
+      await ui.app!.changeMap("osm");
+      provide(ui, [
+        {
+          mapID: "osm",
+          attributions: [
+            '<a href="https://example.org/a">Same words</a>',
+            '<a href="https://example.org/b">Same words</a>',
+            // 1 件目と同じ URL（重複に落ちる）
+            '<a href="https://example.org/a">Same words</a>',
+            "Same words",
+            "Plain once",
+            "Plain once"
+          ]
+        }
+      ]);
+      open(ui);
+      expect(sections(ui)).toEqual([
+        {
+          mapID: "osm",
+          heading: "OSM",
+          items: ["Same words", "Same words", "Same words", "Plain once"]
+        }
+      ]);
+      // 3 つ目の "Same words" はリンクの無い方（同じ URL の 3 件目は重複に落ちる）
+      const items = Array.from(
+        cell(ui, "attributions").querySelectorAll(
+          'section[data-map-id="osm"] .attribution-item'
+        )
+      );
+      expect(
+        items.map(item => item.querySelector("a")?.getAttribute("href") ?? null)
+      ).toEqual(["https://example.org/a", "https://example.org/b", null, null]);
+    });
+
+    it("attributionChanged でも中身が変わらなければ DOM を差し替えず、フォーカスを保つ", async () => {
+      const ui = await mountUi(
+        u => u.setAttribute("lang", "en"),
+        withOverlay()
+      );
+      await ui.app!.changeMap("osm");
+      provide(ui, [
+        {
+          mapID: "osm",
+          attributions: ['<a href="https://example.org/credits">Credits</a>']
+        }
+      ]);
+      open(ui);
+      const link = cell(ui, "attributions").querySelector(
+        'section[data-map-id="osm"] .attribution-item a'
+      ) as HTMLElement;
+      link.focus();
+      expect(shadow(ui).activeElement).toBe(link);
+      ui.app!.dispatchEvent(new Event("attributionChanged", { bubbles: true }));
+      // 中身が同じので差し替えない（同じ要素のまま）
+      expect(
+        cell(ui, "attributions").querySelector(
+          'section[data-map-id="osm"] .attribution-item a'
+        )
+      ).toBe(link);
+      expect(shadow(ui).activeElement).toBe(link);
+    });
+
+    it("差し替えたときはフォーカスのあったリンク（同じ URL）に相当する所へ戻す", async () => {
+      const ui = await mountUi(
+        u => u.setAttribute("lang", "en"),
+        withOverlay()
+      );
+      await ui.app!.changeMap("osm");
+      const credits = (extra: string[] = []) => [
+        {
+          mapID: "osm",
+          attributions: [
+            '<a href="https://example.org/a">First</a>',
+            '<a href="https://example.org/b">Second</a>',
+            ...extra
+          ]
+        }
+      ];
+      provide(ui, credits());
+      open(ui);
+      const second = cell(ui, "attributions").querySelector(
+        'a[href="https://example.org/b"]'
+      ) as HTMLElement;
+      second.focus();
+      // 申告が 1 件増えて、セルの中身が変わる
+      provide(ui, credits(["Newly declared"]));
+      ui.app!.dispatchEvent(new Event("attributionChanged", { bubbles: true }));
+      const after = cell(ui, "attributions").querySelector(
+        'a[href="https://example.org/b"]'
+      ) as HTMLElement;
+      expect(after).not.toBe(second);
+      expect(shadow(ui).activeElement).toBe(after);
+    });
+
+    it("相当するリンクが無くなったらモーダルの中に留める（閉じるボタンへ）", async () => {
+      const setting = withOverlay();
+      delete (setting.sources[0] as any).meta.attr;
+      const ui = await mountUi(u => u.setAttribute("lang", "en"), setting);
+      await ui.app!.changeMap("osm");
+      provide(ui, [
+        {
+          mapID: "osm",
+          attributions: ['<a href="https://example.org/credits">Credits</a>']
+        }
+      ]);
+      open(ui);
+      const link = cell(ui, "attributions").querySelector(
+        'a[href="https://example.org/credits"]'
+      ) as HTMLElement;
+      link.focus();
+      provide(ui, [
+        { mapID: "osm", attributions: ["Replaced without a link"] }
+      ]);
+      ui.app!.dispatchEvent(new Event("attributionChanged", { bubbles: true }));
+      expect(shadow(ui).activeElement).toBe(part(ui, "map-info-close"));
+    });
+
+    it("申告が届いたら行は IIIF の書誌の前に作られ、消えたら行ごと外す", async () => {
+      const setting = structuredClone(withOverlay()) as typeof SETTING;
+      (setting.sources[0] as any).meta.iiif = {
+        display: "all",
+        metadata: [{ from: "manifest", label: "Label", value: "Value" }]
+      };
+      delete (setting.sources[0] as any).meta.attr;
+      const ui = await mountUi(u => u.setAttribute("lang", "en"), setting);
+      await ui.app!.changeMap("osm");
+      open(ui);
+      // attr も申告も無いので、書誌の表だけが出る
+      expect(cell(ui, "attributions")).toBeNull();
+      expect(labels(ui)).toEqual([
+        "Map image license",
+        "Data license",
+        "IIIF bibliographic data"
+      ]);
+      // 申告が届くと、書誌の表の前の行に作られる
+      provide(ui, [
+        {
+          mapID: "osm",
+          attributions: ['<a href="https://example.org/credits">Credits</a>']
+        }
+      ]);
+      ui.app!.dispatchEvent(new Event("attributionChanged", { bubbles: true }));
+      expect(cell(ui, "attributions")).toBeTruthy();
+      expect(labels(ui)).toEqual([
+        "Map image license",
+        "Data license",
+        "Attributions of the displayed maps",
+        "IIIF bibliographic data"
+      ]);
+      // 申告が消えたら行ごと外す
+      provide(ui, []);
+      ui.app!.dispatchEvent(new Event("attributionChanged", { bubbles: true }));
+      expect(cell(ui, "attributions")).toBeNull();
+      expect(labels(ui)).toEqual([
+        "Map image license",
+        "Data license",
+        "IIIF bibliographic data"
+      ]);
+    });
   });
 
   it("閉じる（×・背景・Escape）と、地図の切り替えでの中身の作り直し", async () => {

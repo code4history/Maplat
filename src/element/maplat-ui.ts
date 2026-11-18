@@ -339,6 +339,18 @@ function licenseFallback(
   return isWmts ? "All right reserved" : "CC BY-SA";
 }
 
+/** 帰属表記などの本文を比べる用の文字（連続する空白を 1 つにし、前後を落とす）。 */
+function normalizedText(text: string | null | undefined): string {
+  return (text ?? "").replace(/\s+/g, " ").trim();
+}
+
+/** ノードの中身の HTML（比べるだけの写し。ノード自身は動かさない）。 */
+function nodeHtml(node: Node): string {
+  const div = document.createElement("div");
+  div.appendChild(node.cloneNode(true));
+  return div.innerHTML;
+}
+
 /** 旧 ui_marker.detectMediaType と同じ判定。 */
 function detectMediaType(src: string): string {
   if (src.includes("youtube.com") || src.includes("youtu.be")) return "youtube";
@@ -1664,11 +1676,12 @@ export class MaplatUiElement extends BaseElement {
       }
     };
     app.addEventListener("pointerdown", onPointerDown, true);
-    // 提供元の申告（Google の著作権・TileJSON など）が届いた・変わったら、開いている地図情報を描き直す。
-    // Core の出典の箱から上がる DOM の事象（層 A の契約の外。出さない実装では何も起きない）
+    // 提供元の申告（Google の著作権・TileJSON など）が届いた・変わったら、開いている地図情報の
+    // 帰属表記のセルだけを更新する（他の行やフォーカスを壊さない。Core の出典の箱から上がる DOM の事象。
+    // 出さない実装では何も起きない）
     const onAttributionChanged = () => {
       if (generation !== this.#generation) return;
-      if (!this.#el.info.hidden) this.#renderMapInfo(false);
+      if (!this.#el.info.hidden) this.#updateAttributionsCell();
     };
     app.addEventListener(ATTRIBUTION_CHANGED_EVENT, onAttributionChanged);
     // ---- 操作ボタンの自動非表示（旧 src/index.ts:1070-1123 の setMapOnOff）----
@@ -3566,10 +3579,11 @@ export class MaplatUiElement extends BaseElement {
    * 地図情報の中身（題名・メタデータ・ライセンス・キャッシュ）を作り直す（旧 ui_init.ts の copyright の処理）。
    * 値は設定ファイル由来の信頼できないもの: HTML は sanitizeHtml を通し、ライセンスの注意書きは textContent。
    * 題名は旧と同じく多言語から今の言語を選ぶ。
-   * 表示中の現代の地図（ベースマップ・重ね地図）の帰属表記は、地図ごとに見出しを付けて 1 行にまとめる
-   * （#appendDisplayedAttributions）。refreshCache が偽なら、キャッシュの欄は読み直さない（出典の更新だけのとき）。
+   * 表示中の現代の地図（ベースマップ・重ね地図・背面の地図）の帰属表記は、地図ごとに見出しを付けて 1 行に
+   * まとめる（#appendDisplayedAttributions）。提供元の申告だけが変わったときはこの作り直しをせず、
+   * 帰属表記のセルだけを更新する（#updateAttributionsCell。フォーカスと他の行を保つ）。
    */
-  #renderMapInfo(refreshCache = true) {
+  #renderMapInfo() {
     const app = this.#app;
     if (!app || !this.#appReady) return;
     const el = this.#el;
@@ -3625,7 +3639,7 @@ export class MaplatUiElement extends BaseElement {
     }
     this.#appendDisplayedAttributions(app, displayed);
     this.#appendIiifMetadata(current?.iiif);
-    if (refreshCache) void this.#refreshCache();
+    void this.#refreshCache();
   }
 
   /**
@@ -3692,12 +3706,22 @@ export class MaplatUiElement extends BaseElement {
   /**
    * 表示中の現代の地図の帰属表記の行（項目名 html.attributions）。地図ごとに見出し（地図の題名）と本文を並べる。
    * 本文に出すのは、地図の定義の attr（今までの「地図画像帰属」と同じく sanitizeHtml）と、提供元の申告
-   * （狭い許可表 sanitizeIiifHtml で洗い直す）の 2 つだけ。表示される文字が同じものは 1 回だけ出す。
-   * どちらも無い地図は見出しごと出さず、出す地図が無ければ行ごと出さない（値の無い項目の行を出さない、
-   * 地図情報の他の行と同じ規則。「記載なし」のような文言で補わない）。
+   * （狭い許可表 sanitizeIiifHtml で洗い直す）の 2 つだけ。表示される文字とリンク（a[href]）の URL の並びが
+   * 同じものは 1 回だけ出す（同じ文でも href が違えば別の出典なので落とさない。リンクの無いものは今までどおり
+   * 文字だけで比べる）。どちらも無い地図は見出しごと出さず、出す地図が無ければ行ごと出さない
+   * （値の無い項目の行を出さない、地図情報の他の行と同じ規則。「記載なし」のような文言で補わない）。
    */
   #appendDisplayedAttributions(app: MaplatAppElement, mapIds: string[]) {
-    if (mapIds.length === 0) return;
+    const content = this.#buildAttributionsContent(app, mapIds);
+    if (content) this.#appendMetaRow("attributions", content);
+  }
+
+  /** 帰属表記の行の中身（地図ごとの組の並び）。出す物が無ければ null。 */
+  #buildAttributionsContent(
+    app: MaplatAppElement,
+    mapIds: string[]
+  ): DocumentFragment | null {
+    if (mapIds.length === 0) return null;
     const provided = this.#providerAttributions(app);
     const content = document.createDocumentFragment();
     for (const mapID of mapIds) {
@@ -3718,8 +3742,13 @@ export class MaplatUiElement extends BaseElement {
         const item = document.createElement("div");
         item.className = "attribution-item";
         item.innerHTML = html;
+        const hrefs = Array.from(
+          item.querySelectorAll("a[href]"),
+          a => a.getAttribute("href") ?? ""
+        );
+        const text = normalizedText(item.textContent) || html.trim();
         const key =
-          (item.textContent ?? "").replace(/\s+/g, " ").trim() || html.trim();
+          hrefs.length > 0 ? `${text}\u0000${hrefs.join("\u0000")}` : text;
         if (!key || seen.has(key)) continue;
         seen.add(key);
         items.push(item);
@@ -3737,18 +3766,125 @@ export class MaplatUiElement extends BaseElement {
       section.append(heading, ...items);
       content.appendChild(section);
     }
-    if (!content.hasChildNodes()) return;
-    this.#appendMetaRow("attributions", content);
+    return content.hasChildNodes() ? content : null;
   }
 
-  /** メタデータの 1 行（dt が項目名・dd が値。項目名は旧と同じく html.<キー> の文言）。 */
-  #appendMetaRow(key: string, content: Node) {
+  /**
+   * 提供元の申告の更新（attributionChanged）だけを、開いている地図情報の帰属表記のセルに反映する。
+   * 行ごとの作り直し（#renderMapInfo）をしないので、他の行とフォーカスが壊れない。中身が変わらなければ
+   * DOM を差し替えない。差し替えたときは、フォーカスのあったリンクに相当する所へ戻し、相当する所が
+   * 無ければモーダルの中に留める（フォーカスを外に出さない）。
+   */
+  #updateAttributionsCell() {
+    const app = this.#app;
+    if (!app || !this.#appReady || this.#el.info.hidden) return;
+    const mapID = app.currentMapId ?? this.#currentMapId ?? undefined;
+    const displayed = this.#displayedModernMapIds(app, mapID);
+    const content = this.#buildAttributionsContent(app, displayed);
+    const cell = this.#el.infoMeta.querySelector<HTMLElement>(
+      'dd[part~="map-meta-attributions"]'
+    );
+    if (!content) {
+      // 出す物が無くなったら行（dt と dd）ごと外す（元から無ければ何もしない）
+      if (!cell) return;
+      const focus = this.#captureAttributionFocus(cell);
+      const dt = cell.previousElementSibling;
+      if (dt?.tagName === "DT") dt.remove();
+      cell.remove();
+      this.#restoreAttributionFocus(focus, null);
+      return;
+    }
+    if (cell) {
+      // 中身が変わらなければ DOM を差し替えない（フォーカスもそのまま保つ）
+      if (cell.innerHTML === nodeHtml(content)) return;
+      const focus = this.#captureAttributionFocus(cell);
+      cell.replaceChildren(content);
+      this.#restoreAttributionFocus(focus, cell);
+      return;
+    }
+    // 行が無いときは、メタデータの行の後（IIIF の書誌の行の前）に作る
+    const iiif = this.#el.infoMeta.querySelector('dd[part~="map-meta-iiif"]');
+    this.#appendMetaRow(
+      "attributions",
+      content,
+      iiif?.previousElementSibling ?? null
+    );
+  }
+
+  /**
+   * 帰属表記のセルの中でフォーカスのある要素の、差し替え後の当たり（地図の mapID・リンクの URL・本文の文字）。
+   * フォーカスがセルの外にあれば null（触らなくてよい）。
+   */
+  #captureAttributionFocus(
+    cell: HTMLElement
+  ): { mapID?: string; href: string | null; text: string } | null {
+    const active = (this.#root.activeElement ??
+      document.activeElement) as HTMLElement | null;
+    if (!active || !cell.contains(active)) return null;
+    const section = active.closest(
+      "section.attribution-map"
+    ) as HTMLElement | null;
+    const item = active.closest(".attribution-item") as HTMLElement | null;
+    const anchor = active.closest("a[href]") as HTMLAnchorElement | null;
+    return {
+      mapID: section?.dataset.mapId,
+      href: anchor?.getAttribute("href") ?? null,
+      text: normalizedText(item?.textContent ?? active.textContent)
+    };
+  }
+
+  /**
+   * 差し替えの後のフォーカスの戻し先: まず同じ URL のリンク、次に同じ本文のリンクを、同じ地図の組の中で探す。
+   * どちらも無ければモーダルの中に留める（閉じるボタンへ）。セルごと外したときは cell に null を渡す。
+   */
+  #restoreAttributionFocus(
+    focus: { mapID?: string; href: string | null; text: string } | null,
+    cell: HTMLElement | null
+  ) {
+    if (!focus) return;
+    let target: HTMLAnchorElement | null = null;
+    if (cell) {
+      const scope = focus.mapID
+        ? (Array.from(cell.querySelectorAll("section.attribution-map")).find(
+            section => (section as HTMLElement).dataset.mapId === focus.mapID
+          ) as HTMLElement | undefined)
+        : undefined;
+      const links = Array.from(
+        (scope ?? cell).querySelectorAll<HTMLAnchorElement>("a[href]")
+      );
+      target =
+        (focus.href !== null
+          ? links.find(link => link.getAttribute("href") === focus.href)
+          : undefined) ??
+        links.find(
+          link =>
+            normalizedText(
+              link.closest(".attribution-item")?.textContent ?? link.textContent
+            ) === focus.text
+        ) ??
+        null;
+    }
+    if (target) {
+      target.focus({ preventScroll: true });
+      return;
+    }
+    // 相当する所が無ければモーダルの中に留める（フォーカスを外に出さない）
+    this.#focusDialogClose(this.#el.infoClose);
+  }
+
+  /** メタデータの 1 行（dt が項目名・dd が値。項目名は旧と同じく html.<キー> の文言）。before を渡すとその行の前に作る。 */
+  #appendMetaRow(key: string, content: Node, before?: Node | null) {
     const dt = document.createElement("dt");
     dt.textContent = this.t(`html.${key}`);
     const dd = document.createElement("dd");
     dd.setAttribute("part", `map-meta-${key}`);
     dd.appendChild(content);
-    this.#el.infoMeta.append(dt, dd);
+    if (before) {
+      this.#el.infoMeta.insertBefore(dt, before);
+      this.#el.infoMeta.insertBefore(dd, before);
+    } else {
+      this.#el.infoMeta.append(dt, dd);
+    }
   }
 
   /**

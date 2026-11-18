@@ -248,7 +248,7 @@ parentheses); the main parts are in the
 | Compass (`compass`) | always | `resetDirection()` or `resetRotation()` per `compass-action`; the needle shows the real-world direction; dimmed when pressing would change nothing |
 | GPS (`gps`) | always | `handleGPS()` (toggle; with `always-gps-on` always on). Dimmed while GPS is off |
 | Transparency slider (`slider`) | after `ready`, unless the child's `overlay` is `false`; enabled only while a non-basemap is shown | `setTransparency()` (slider value 100 = opaque) |
-| Map info (`info`) + dialog (`map-info-modal`) | button after `ready` | Metadata (`map-meta`), licence, the IIIF bibliography table (`map-meta-iiif`, see [IIIF bibliography](#iiif-bibliography)), and the tile-cache section (`map-cache`) when all three hold: the child `supports("tile-cache")`, the child's `enable-cache` is true, and `getMapCacheEnable()` is true for the current map (it is false for a map whose image is delivered by an IIIF Image API service, so the section stays hidden there) |
+| Map info (`info`) + dialog (`map-info-modal`) | button after `ready` | Metadata (`map-meta`), licence, the attributions of the displayed maps (`map-meta-attributions`, see [Attributions of the displayed maps](#attributions-of-the-displayed-maps)), the IIIF bibliography table (`map-meta-iiif`, see [IIIF bibliography](#iiif-bibliography)), and the tile-cache section (`map-cache`) when all three hold: the child `supports("tile-cache")`, the child's `enable-cache` is true, and `getMapCacheEnable()` is true for the current map (it is false for a map whose image is delivered by an IIIF Image API service, so the section stays hidden there) |
 | Border (`border`) | after `ready`, with `enable-border` and `supports("envelopes")` | `setShowBorder()`; draws the extent of the maps with `setEnvelopes()` (25 colours in `listMaps()` order) |
 | Hide marker (`hide-marker`) | after `ready`, with `enable-hide-marker` | `setHideMarker()` |
 | Marker list (`marker-list`) + dialog (`marker-list-modal`) | `enable-marker-list` and the map has POIs | Lists the POI layers (`marker-list-layer`) and POIs (`marker-list-poi`); a layer switch toggles `showPoiLayer` / `hidePoiLayer`, a POI row opens the balloon |
@@ -321,6 +321,29 @@ of them set the same field of the child:
 | Property | `ui.hideOutsidePois = true` |
 | `appOption` property | `ui.appOption = { hideOutsidePois: true }` before the element starts (startup only) |
 | `MaplatUi` class | `MaplatUi.createObject({ appid: "…", hideOutsidePois: true })` (startup only; the option is passed to the child as part of `appOption`. To change it later, set `hideOutsidePois` on the element) |
+
+### Attributions of the displayed maps
+
+The map information dialog shows the **full attribution text** of every map it
+displays at that moment: the background map (basemap), an overlay map in front
+of it, and the map behind when the front map is a historical map. Nothing is
+clamped to two lines the way the attribution box at the bottom right of the map
+is. Each map gets its own heading (its title in the current language) and its
+entries, in the same top-to-bottom order as that box. The row is
+`::part(map-meta-attributions)` (the cell `part="map-meta-attributions"` of the
+metadata table).
+
+Each entry comes from one of two places: the map's `attr` in its map data (the
+same text as the "Map image attribution" row of a historical map), and the
+credits the provider declares at runtime. The provider-declared credits are
+read from the child `<maplat-app>` element — `app.providerAttributions`, one
+group per map (the Google Map Tiles API copyright, a TileJSON `attribution`,
+and so on) — and the element's `attributionChanged` event updates just that
+cell while the dialog is open. Text that did not change is not redrawn, and
+focus on a credit link stays on the matching link of the new text (or stays
+inside the dialog when there is no match). A map with neither source gets no
+heading, and when no displayed map has any text, the row is left out entirely
+(no "none" placeholder).
 
 ### IIIF bibliography
 

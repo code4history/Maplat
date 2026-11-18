@@ -343,4 +343,115 @@ test.describe("map information shows the full attributions of the displayed maps
     await shoot(page, "mapinfo-no-attribution.png");
     expect(blocked).toEqual([]);
   });
+
+  test("attributionChanged keeps the focus on the credit the user is on", async ({
+    page
+  }) => {
+    // 出典のリンクのフォーカスを確かめるため、OSM の attr にリンクを 2 つ入れる
+    const linked = {
+      ...SETTING,
+      sources: SETTING.sources.map(source =>
+        source.mapID === "osm"
+          ? {
+              ...source,
+              attr: '<a href="https://example.org/credits">Map data credits</a> and <a href="https://example.org/terms">Terms of use</a>'
+            }
+          : source
+      )
+    };
+    const blocked = await openPage(page, "en", linked);
+    await changeMap(page, "osm");
+    await openMapInfo(page);
+    // 「Terms of use」のリンクにフォーカスし、その要素に印（属性でなく JS の持ち物）を付けて覚える
+    expect(
+      await page.evaluate(() => {
+        const root = (window as any).__maplatUi.shadowRoot as ShadowRoot;
+        const link = root.querySelector(
+          '[part="map-meta-attributions"] a[href="https://example.org/terms"]'
+        ) as any;
+        link.probe = "keep";
+        link.focus();
+        return root.activeElement?.getAttribute("href");
+      })
+    ).toBe("https://example.org/terms");
+
+    // 中身が変わらない attributionChanged: DOM を差し替えず、フォーカスも動かさない
+    await page.evaluate(() => {
+      const app = (window as any).__maplatUi.app as HTMLElement;
+      app.dispatchEvent(new Event("attributionChanged"));
+    });
+    expect(
+      await page.evaluate(() => {
+        const root = (window as any).__maplatUi.shadowRoot as ShadowRoot;
+        const link = root.querySelector(
+          '[part="map-meta-attributions"] a[href="https://example.org/terms"]'
+        ) as any;
+        return {
+          probe: link.probe ?? null,
+          focus: root.activeElement?.getAttribute("href") ?? null
+        };
+      })
+    ).toEqual({ probe: "keep", focus: "https://example.org/terms" });
+
+    // 提供元の申告が届いて中身が変わる: 差し替えても同じ URL のリンクにフォーカスが戻る
+    await page.evaluate(() => {
+      const app = (window as any).__maplatUi.app as HTMLElement;
+      Object.defineProperty(app, "providerAttributions", {
+        configurable: true,
+        get: () => [
+          {
+            mapID: "osm",
+            attributions: [
+              '<a href="https://example.org/extra">Extra credit</a>'
+            ]
+          }
+        ]
+      });
+      app.dispatchEvent(new Event("attributionChanged"));
+    });
+    expect(
+      await page.evaluate(() => {
+        const root = (window as any).__maplatUi.shadowRoot as ShadowRoot;
+        const link = root.querySelector(
+          '[part="map-meta-attributions"] a[href="https://example.org/terms"]'
+        ) as any;
+        return {
+          probe: link.probe ?? null,
+          focus: root.activeElement?.getAttribute("href") ?? null,
+          extra: !!root.querySelector(
+            '[part="map-meta-attributions"] a[href="https://example.org/extra"]'
+          )
+        };
+      })
+    ).toEqual({
+      probe: null,
+      focus: "https://example.org/terms",
+      extra: true
+    });
+
+    // フォーカスのあった申告が消えたときは、モーダルの中に留める（閉じるボタンへ）
+    await page.evaluate(() => {
+      const root = (window as any).__maplatUi.shadowRoot as ShadowRoot;
+      (
+        root.querySelector(
+          '[part="map-meta-attributions"] a[href="https://example.org/extra"]'
+        ) as HTMLElement
+      ).focus();
+      const app = (window as any).__maplatUi.app as HTMLElement;
+      Object.defineProperty(app, "providerAttributions", {
+        configurable: true,
+        get: () => [
+          { mapID: "osm", attributions: ["Plain credit without a link"] }
+        ]
+      });
+      app.dispatchEvent(new Event("attributionChanged"));
+    });
+    expect(
+      await page.evaluate(() => {
+        const root = (window as any).__maplatUi.shadowRoot as ShadowRoot;
+        return root.activeElement?.getAttribute("part") ?? null;
+      })
+    ).toBe("map-info-close");
+    expect(blocked).toEqual([]);
+  });
 });

@@ -42,6 +42,7 @@
 | POI の `html` / `url` の本文 | `::part(poi-html)` / `::part(poi-iframe)` | `html` の本文は `poi-html`、`url` の本文は iframe の `poi-iframe` |
 | `.custom-toast` | `::part(toast)` | |
 | 地図情報のメタデータ | `::part(map-meta)` | 行は `part="map-meta-<キー>"` |
+| 地図情報の帰属表記（新規） | `::part(map-meta-attributions)` | 表示中の地図（背景の地図・重ね地図・古地図の背面の地図）の帰属表記の全文。地図ごとに見出しを付ける。出どころは地図のデータの `attr` と、子の `<maplat-app>` の `providerAttributions`（画面を開いたままでも `attributionChanged` で更新） |
 | IIIF の書誌の表（新規） | `::part(map-meta-iiif)` | 地図情報の最後の行。中の表は `::part(iiif-manifest)`・`::part(iiif-canvas)`、写した日時は `::part(iiif-copied-at)`、Manifest へのリンクは `::part(iiif-manifest-link)` |
 | キャッシュの欄 | `::part(map-cache)`・`::part(cache-heading)`・`::part(cache-size)`・`::part(cache-fetch)`・`::part(cache-delete)` | |
 
