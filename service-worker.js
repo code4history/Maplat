@@ -3388,13 +3388,103 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`;
   skipWaiting();
   clientsClaim();
   precacheAndRoute(define_self_WB_MANIFEST_default, {});
+  var RESOURCES_CACHE = "resourcesCache";
+  var LEGACY_RESOURCES_CACHE_PATTERN = /^resourcesCache-(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})$/;
+  var RESOURCE_MAX_AGE_SECONDS = 86400;
+  function responseDate(response) {
+    const dateHeader = response.headers.get("date");
+    if (!dateHeader) return void 0;
+    const timestamp = Date.parse(dateHeader);
+    return Number.isNaN(timestamp) ? void 0 : timestamp;
+  }
+  function legacyCacheDate(cacheName) {
+    const match = LEGACY_RESOURCES_CACHE_PATTERN.exec(cacheName);
+    if (!match) return void 0;
+    const [, year, month, day, hour, minute] = match;
+    if (!year || !month || !day || !hour || !minute) return void 0;
+    return new Date(
+      Number(year),
+      Number(month) - 1,
+      Number(day),
+      Number(hour),
+      Number(minute)
+    ).getTime();
+  }
+  function isResourceFresh(response, cacheDate) {
+    const date = responseDate(response) ?? cacheDate;
+    return date === void 0 || date >= Date.now() - RESOURCE_MAX_AGE_SECONDS * 1e3;
+  }
+  function isNewerCandidate(candidate, current) {
+    if (current.cacheName === RESOURCES_CACHE && current.responseDate === void 0) {
+      return false;
+    }
+    const candidateDate = candidate.responseDate ?? candidate.cacheDate;
+    const currentDate = current.responseDate ?? current.cacheDate;
+    if (candidateDate === void 0) return false;
+    if (currentDate === void 0 || candidateDate > currentDate) return true;
+    return candidateDate === currentDate && candidate.cacheName !== RESOURCES_CACHE && current.cacheName !== RESOURCES_CACHE && candidate.cacheDate !== void 0 && current.cacheDate !== void 0 && candidate.cacheDate > current.cacheDate;
+  }
+  var legacyCacheFallbackPlugin = {
+    async cachedResponseWillBeUsed({ request, cachedResponse, state }) {
+      if (cachedResponse && isResourceFresh(cachedResponse)) {
+        return cachedResponse;
+      }
+      const legacyCacheNames = (await caches.keys()).filter((cacheName) => LEGACY_RESOURCES_CACHE_PATTERN.test(cacheName)).sort().reverse();
+      const found = await Promise.all(
+        legacyCacheNames.map(async (cacheName) => {
+          const cacheDate = legacyCacheDate(cacheName);
+          const cache = await caches.open(cacheName);
+          const response = await cache.match(request);
+          return response && isResourceFresh(response, cacheDate) ? {
+            cacheName,
+            response,
+            responseDate: responseDate(response),
+            cacheDate
+          } : void 0;
+        })
+      );
+      let selected;
+      for (const candidate of found) {
+        if (candidate && (!selected || isNewerCandidate(candidate, selected))) {
+          selected = candidate;
+        }
+      }
+      if (!selected) return null;
+      if (selected.cacheName !== RESOURCES_CACHE) {
+        const legacyCopy = {
+          request,
+          entry: { ...selected, response: selected.response.clone() }
+        };
+        state.legacyCopy = legacyCopy;
+      }
+      return selected.response;
+    },
+    async handlerDidComplete({ state }) {
+      const legacyCopy = state.legacyCopy;
+      if (!legacyCopy) return;
+      try {
+        const resourcesCache = await caches.open(RESOURCES_CACHE);
+        const existing = await resourcesCache.match(legacyCopy.request);
+        const current = existing ? {
+          cacheName: RESOURCES_CACHE,
+          response: existing,
+          responseDate: responseDate(existing)
+        } : void 0;
+        if (!current || isNewerCandidate(legacyCopy.entry, current)) {
+          await resourcesCache.put(legacyCopy.request, legacyCopy.entry.response);
+        }
+      } catch {
+      }
+    }
+  };
   registerRoute(
     /(?:maps\/.+\.json|pwa\/.+|pois\/.+\.json|apps\/.+\.json|tmbs\/.+\.jpg|images\/.+\.(?:png|jpg))$/,
     new StaleWhileRevalidate({
-      cacheName: `resourcesCache-${"2026-11-18-15-07"}`,
+      cacheName: RESOURCES_CACHE,
       plugins: [
+        legacyCacheFallbackPlugin,
         new ExpirationPlugin({
-          maxAgeSeconds: 86400,
+          maxAgeSeconds: RESOURCE_MAX_AGE_SECONDS,
           purgeOnQuotaError: false
         })
       ]
