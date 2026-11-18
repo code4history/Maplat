@@ -219,7 +219,7 @@ Pro 専用の `display-mode`。プロパティのみのキー（12 個）:
 | コンパス（`compass`） | 常時 | `compass-action` に従い `resetDirection()` か `resetRotation()`。針は実世界の方位を指す。押しても変わらない状態では薄く出す |
 | GPS（`gps`） | 常時 | `handleGPS()`（切り替え。`always-gps-on` なら常に開始）。GPS が切れている間は薄く出す |
 | 透過度のスライダー（`slider`） | `ready` の後、子の `overlay` が `false` のとき以外。背景の地図の表示中は使えない | `setTransparency()`（スライダーの値 100 が不透明） |
-| 地図情報（`info`）＋画面（`map-info-modal`） | ボタンは `ready` の後 | メタデータ（`map-meta`）・ライセンス・IIIF の書誌の表（`map-meta-iiif`。[IIIF の書誌](#iiif-の書誌)）と、3 つがそろったときのタイルキャッシュの欄（`map-cache`）: 子が `supports("tile-cache")`・子の `enable-cache` が真・今の地図で `getMapCacheEnable()` が真（IIIF Image API のサービスから画像を配信する地図では偽なので、欄は出ない） |
+| 地図情報（`info`）＋画面（`map-info-modal`） | ボタンは `ready` の後 | メタデータ（`map-meta`）・ライセンス・表示中の地図の帰属表記（`map-meta-attributions`。[表示中の地図の帰属表記](#表示中の地図の帰属表記)）・IIIF の書誌の表（`map-meta-iiif`。[IIIF の書誌](#iiif-の書誌)）と、3 つがそろったときのタイルキャッシュの欄（`map-cache`）: 子が `supports("tile-cache")`・子の `enable-cache` が真・今の地図で `getMapCacheEnable()` が真（IIIF Image API のサービスから画像を配信する地図では偽なので、欄は出ない） |
 | 枠線（`border`） | `ready` の後、`enable-border` かつ `supports("envelopes")` | `setShowBorder()`。`setEnvelopes()` で各地図の範囲を描く（`listMaps()` の順に 25 色） |
 | マーカー非表示（`hide-marker`） | `ready` の後、`enable-hide-marker` | `setHideMarker()` |
 | マーカー一覧（`marker-list`）＋画面（`marker-list-modal`） | `enable-marker-list` かつ地図に POI がある | POI のレイヤー（`marker-list-layer`）と POI（`marker-list-poi`）を並べる。レイヤーの切り替えは `showPoiLayer`・`hidePoiLayer`、POI の行は吹き出しを開く |
@@ -282,6 +282,21 @@ POI のテンプレート（`poiTemplate`。Nunjucks の記法）でも同じス
 | プロパティ | `ui.hideOutsidePois = true` |
 | `appOption` プロパティ | 要素が起動する前に `ui.appOption = { hideOutsidePois: true }`（起動時だけ効く） |
 | `MaplatUi` クラス | `MaplatUi.createObject({ appid: "…", hideOutsidePois: true })`（起動時だけ効く。option は `appOption` の一部として子へ渡る。起動後に変えるときは要素の `hideOutsidePois` を使う） |
+
+### 表示中の地図の帰属表記
+
+地図情報の画面には、そのとき表示している地図（背景の地図〔ベースマップ〕・その上の重ね地図・前面が
+古地図のときの背面の地図）の帰属表記を、**切らずに全文**で出します。地図の右下の出典の箱のように 2 行で
+切ることはしません。地図ごとに見出し（今の言語の題名）と本文を並べ、並びもあの箱の上から下と同じです。
+この行は `::part(map-meta-attributions)`（メタデータの表のセルの `part="map-meta-attributions"`）です。
+
+本文の出どころは 2 つ: 地図のデータに書かれた `attr`（古地図の「地図画像帰属」の行と同じ文）と、提供元が
+実行時に申告する表示義務のある帰属表記です。提供元の申告は子の `<maplat-app>` 要素から取ります
+（`app.providerAttributions`。地図ごとの組で、Google Map Tiles API の著作権表示や TileJSON の
+`attribution` など）。値が変わると要素の `attributionChanged` イベントが出て、画面を開いたままでも帰属表記の
+セルだけを更新します。変わっていない文を描き直すことはなく、出典のリンクのフォーカスは差し替えの後も
+同じリンクに戻ります（同じリンクが無ければ画面の中に留まります）。どちらも無い地図は見出しごと出さず、
+表示中の地図に帰属表記が一つも無ければ行ごと出しません（「記載なし」のような文言で埋めません）。
 
 ### IIIF の書誌
 

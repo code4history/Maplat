@@ -46,6 +46,7 @@ The UI of `@maplat/ui` is now a single `<maplat-ui>` element (**Shadow DOM open*
 | POI `html` / `url` body | `::part(poi-html)` / `::part(poi-iframe)` | The `html` body is `poi-html`; the `url` body is the iframe `poi-iframe` |
 | `.custom-toast` | `::part(toast)` | |
 | Map information metadata | `::part(map-meta)` | Each row is `part="map-meta-<key>"` |
+| Map information attributions (new) | `::part(map-meta-attributions)` | The full attribution text of every displayed map (background map, overlay map, the map behind a historical map), one heading per map: the map data's `attr` and the child `<maplat-app>`'s `providerAttributions` (updated by its `attributionChanged` event while the dialog is open) |
 | IIIF bibliographic table (new) | `::part(map-meta-iiif)` | The last row of the map information. The inner tables are `::part(iiif-manifest)` and `::part(iiif-canvas)`, the copy date is `::part(iiif-copied-at)`, and the link to the Manifest is `::part(iiif-manifest-link)` |
 | Cache section | `::part(map-cache)`, `::part(cache-heading)`, `::part(cache-size)`, `::part(cache-fetch)`, `::part(cache-delete)` | |
 
