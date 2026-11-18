@@ -25,6 +25,7 @@
     "dataLicense": "データライセンス",
     "attr": "地図画像帰属",
     "dataAttr": "データ帰属",
+    "attributions": "表示中の地図の帰属表記",
     "reference": "典拠",
     "description": "説明",
     "cache_handle": "地図キャッシュサイズ",

@@ -25,6 +25,7 @@
     "dataLicense": "資料授權",
     "attr": "地圖影像署名",
     "dataAttr": "資料署名",
+    "attributions": "目前顯示地圖的署名",
     "reference": "出處",
     "description": "說明",
     "cache_handle": "地圖快取大小",

@@ -25,6 +25,7 @@
     "dataLicense": "Data license",
     "attr": "Map image attribution",
     "dataAttr": "Data attribution",
+    "attributions": "Attributions of the displayed maps",
     "reference": "Source",
     "description": "Description",
     "cache_handle": "Size of map cache",

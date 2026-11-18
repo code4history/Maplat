@@ -48,6 +48,12 @@
         "ja"
       ]
     },
+    "html.attributions": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    },
     "html.cache_handle": {
       "by": [
         "en",
@@ -143,6 +149,12 @@
   },
   "attribution": {
     "html.attr": {
+      "by": [
+        "en",
+        "ja"
+      ]
+    },
+    "html.attributions": {
       "by": [
         "en",
         "ja"

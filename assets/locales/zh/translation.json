@@ -25,6 +25,7 @@
     "dataLicense": "数据许可证",
     "attr": "地图图像署名",
     "dataAttr": "数据署名",
+    "attributions": "当前显示地图的署名",
     "reference": "来源参考",
     "description": "说明",
     "cache_handle": "地图缓存大小",

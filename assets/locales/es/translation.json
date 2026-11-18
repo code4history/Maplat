@@ -25,6 +25,7 @@
     "dataLicense": "Licencia de datos",
     "attr": "Atribución de la imagen del mapa",
     "dataAttr": "Atribución de datos",
+    "attributions": "Atribuciones de los mapas mostrados",
     "reference": "Fuente",
     "description": "Descripción",
     "cache_handle": "Tamaño de la caché de mapas",
