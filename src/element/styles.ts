@@ -541,6 +541,12 @@ export const MAPLAT_UI_CSS = `
 [part="map-meta-iiif"] th { white-space: nowrap; font-weight: normal; color: #555; }
 [part="map-meta-iiif"] td { overflow-wrap: anywhere; }
 [part="map-meta-iiif"] h4 { margin: .6em 0 .2em; font-size: .9em; }
+/* 表示中の地図の帰属表記（地図ごとに題名の見出しと全文。長い値も切らずに折り返す） */
+[part="map-meta-attributions"] .attribution-map + .attribution-map { margin-top: .5em; }
+[part="map-meta-attributions"] h4 { margin: 0 0 .15em; font-size: .9em; }
+[part="map-meta-attributions"] .attribution-item { overflow-wrap: anywhere; }
+[part="map-meta-attributions"] .attribution-item p { margin: 0; }
+[part="map-meta-attributions"] .attribution-item img { max-width: 100%; }
 .map-info-modal .cache-heading { margin: 0 0 .4em; font-size: .95em; font-weight: bold; color: #555; }
 .map-info-modal .cache-size { margin: 0 0 .6em; overflow-wrap: anywhere; }
 .map-info-modal .cache-buttons { margin: 0; text-align: right; }

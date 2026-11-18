@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <!-- 設定ファイル（apps/<id>.json）と地図の設定はページ起点の相対パスで読まれるので、公開ルートにそろえる -->
+    <base href="/" />
+    <title>map information attributions</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        font: 14px/1.5 sans-serif;
+      }
+      maplat-ui {
+        display: block;
+        position: absolute;
+        inset: 0;
+        width: auto;
+        height: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- e2e/element/maplat-ui-mapinfo-attribution.pw.ts が開く。設定ファイルは試験が route で返す。
+         Google の API キーは偽の値（Map Tiles API の応答も試験が返す） -->
+    <maplat-ui id="ui" app-id="mapinfo-attribution" lang="en">
+      <maplat-app slot="map"></maplat-app>
+    </maplat-ui>
+    <span id="status" data-testid="status" data-state="loading"></span>
+    <script type="module">
+      const ui = document.getElementById("ui");
+      const status = document.getElementById("status");
+      window.__maplatUi = ui;
+      // 起動時のみのプロパティ（属性は無い）。要素の登録の前に書く
+      ui.googleApiKey = "example-key";
+      const lang = new URLSearchParams(location.search).get("lang");
+      if (lang && /^[\w-]+$/.test(lang)) ui.setAttribute("lang", lang);
+      customElements
+        .whenDefined("maplat-ui")
+        .then(() => ui.ready)
+        .then(
+          () => {
+            status.dataset.state = "ready";
+          },
+          err => {
+            console.error(err);
+            status.dataset.state = "error";
+          }
+        );
+    </script>
+    <script type="module" src="/demo/element.ts"></script>
+  </body>
+</html>

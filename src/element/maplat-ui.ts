@@ -255,6 +255,12 @@ function envelopeFill(color: string): string {
 /** アイコンを持たないライセンスの語彙（旧 ui_utils の LICENSE_WITHOUT_ICON と同じ文字列）。 */
 const LICENSE_WITHOUT_ICON = "Custom";
 
+/**
+ * 提供元の申告の出典が変わったときに Core の出典の箱から上がる DOM の事象（Core の `<maplat-app>` の
+ * providerAttributions と対。層 A の契約の外なので、名前はここに持つ）。
+ */
+const ATTRIBUTION_CHANGED_EVENT = "attributionChanged";
+
 /** 層 A のイベントのうち <maplat-ui> が聞くもの。 */
 const SUBSCRIBED_EVENTS = [
   "lifecycle:appdata-ready",
@@ -1658,6 +1664,13 @@ export class MaplatUiElement extends BaseElement {
       }
     };
     app.addEventListener("pointerdown", onPointerDown, true);
+    // 提供元の申告（Google の著作権・TileJSON など）が届いた・変わったら、開いている地図情報を描き直す。
+    // Core の出典の箱から上がる DOM の事象（層 A の契約の外。出さない実装では何も起きない）
+    const onAttributionChanged = () => {
+      if (generation !== this.#generation) return;
+      if (!this.#el.info.hidden) this.#renderMapInfo(false);
+    };
+    app.addEventListener(ATTRIBUTION_CHANGED_EVENT, onAttributionChanged);
     // ---- 操作ボタンの自動非表示（旧 src/index.ts:1070-1123 の setMapOnOff）----
     // 旧は OL の click / pointerdrag / moveend を見ていた。層 B は地図（子の要素）の DOM の click と
     // pointerdown/pointermove（ドラッグ）と、層 A の moveEnd で知る。
@@ -1716,6 +1729,7 @@ export class MaplatUiElement extends BaseElement {
       for (const [type, handler] of handlers)
         app.removeEventListener(type, handler);
       app.removeEventListener("pointerdown", onPointerDown, true);
+      app.removeEventListener(ATTRIBUTION_CHANGED_EVENT, onAttributionChanged);
       app.removeEventListener("pointerdown", onMapPointerDown, true);
       app.removeEventListener("pointermove", onMapPointerMove, true);
       app.removeEventListener("pointerup", onMapPointerUp, true);
@@ -3552,8 +3566,10 @@ export class MaplatUiElement extends BaseElement {
    * 地図情報の中身（題名・メタデータ・ライセンス・キャッシュ）を作り直す（旧 ui_init.ts の copyright の処理）。
    * 値は設定ファイル由来の信頼できないもの: HTML は sanitizeHtml を通し、ライセンスの注意書きは textContent。
    * 題名は旧と同じく多言語から今の言語を選ぶ。
+   * 表示中の現代の地図（ベースマップ・重ね地図）の帰属表記は、地図ごとに見出しを付けて 1 行にまとめる
+   * （#appendDisplayedAttributions）。refreshCache が偽なら、キャッシュの欄は読み直さない（出典の更新だけのとき）。
    */
-  #renderMapInfo() {
+  #renderMapInfo(refreshCache = true) {
     const app = this.#app;
     if (!app || !this.#appReady) return;
     const el = this.#el;
@@ -3579,8 +3595,12 @@ export class MaplatUiElement extends BaseElement {
           Localized | undefined
       ) || (typeof current?.mapID === "string" ? current.mapID : "");
     el.infoMeta.replaceChildren();
+    // 表示中の現代の地図。前面の地図がこの中にあれば、その attr は帰属表記の行に出す（同じ文字を二度出さない）
+    const displayed = this.#displayedModernMapIds(app, mapID);
+    const frontInDisplayed = !!mapID && displayed.includes(mapID);
     for (const key of META_KEYS) {
       if (key === "title" || key === "officialTitle") continue;
+      if (key === "attr" && frontInDisplayed) continue;
       // 注意書きはライセンスのセルの中で出す（独立の行にはしない）
       if (key === "licenseNote" || key === "dataLicenseNote") continue;
       const raw = values?.[key];
@@ -3603,8 +3623,122 @@ export class MaplatUiElement extends BaseElement {
       dd.innerHTML = sanitizeHtml(text);
       this.#appendMetaRow(key, dd);
     }
+    this.#appendDisplayedAttributions(app, displayed);
     this.#appendIiifMetadata(current?.iiif);
-    void this.#refreshCache();
+    if (refreshCache) void this.#refreshCache();
+  }
+
+  /**
+   * 表示中の現代の地図の mapID（重ね地図 → ベースマップの順。地図の右下の出典の箱の上から下と同じ）。
+   *   - 前面が古地図: 背面のベースマップ（層 A の状態の backgroundID。背面が無ければ無し）。
+   *   - 前面が重ね地図: その地図と、下のベースマップ（backgroundID）。
+   *   - 前面がベースマップ: その地図。
+   * 地図の一覧に無い mapID は外す。
+   */
+  #displayedModernMapIds(
+    app: MaplatAppElement,
+    frontId: string | undefined
+  ): string[] {
+    const front = frontId
+      ? this.#maps.find(m => m.mapID === frontId)
+      : undefined;
+    if (!front) return [];
+    let backgroundId: unknown;
+    try {
+      backgroundId = (app.state as { backgroundID?: unknown } | undefined)
+        ?.backgroundID;
+    } catch {
+      backgroundId = undefined;
+    }
+    const background =
+      typeof backgroundId === "string" && backgroundId !== front.mapID
+        ? this.#maps.find(m => m.mapID === backgroundId && !m.isOldMap)
+        : undefined;
+    if (front.isOldMap) return background ? [background.mapID] : [];
+    if (front.isOverlay)
+      return background ? [front.mapID, background.mapID] : [front.mapID];
+    return [front.mapID];
+  }
+
+  /**
+   * 層 A の実装が出す、地図ごとの提供元の申告（Core の `<maplat-app>` の providerAttributions。
+   * Google の Map Tiles API の著作権・TileJSON の attribution など）。口の無い実装・形の違う値は空。
+   */
+  #providerAttributions(app: MaplatAppElement): Map<string, string[]> {
+    const result = new Map<string, string[]>();
+    let raw: unknown;
+    try {
+      raw = (app as unknown as { providerAttributions?: unknown })
+        .providerAttributions;
+    } catch {
+      raw = undefined;
+    }
+    if (!Array.isArray(raw)) return result;
+    for (const entry of raw as unknown[]) {
+      if (!entry || typeof entry !== "object") continue;
+      const { mapID, attributions } = entry as {
+        mapID?: unknown;
+        attributions?: unknown;
+      };
+      if (typeof mapID !== "string" || !Array.isArray(attributions)) continue;
+      const texts = attributions.filter(
+        (text): text is string => typeof text === "string"
+      );
+      result.set(mapID, [...(result.get(mapID) ?? []), ...texts]);
+    }
+    return result;
+  }
+
+  /**
+   * 表示中の現代の地図の帰属表記の行（項目名 html.attributions）。地図ごとに見出し（地図の題名）と本文を並べる。
+   * 本文に出すのは、地図の定義の attr（今までの「地図画像帰属」と同じく sanitizeHtml）と、提供元の申告
+   * （狭い許可表 sanitizeIiifHtml で洗い直す）の 2 つだけ。表示される文字が同じものは 1 回だけ出す。
+   * どちらも無い地図は見出しごと出さず、出す地図が無ければ行ごと出さない（値の無い項目の行を出さない、
+   * 地図情報の他の行と同じ規則。「記載なし」のような文言で補わない）。
+   */
+  #appendDisplayedAttributions(app: MaplatAppElement, mapIds: string[]) {
+    if (mapIds.length === 0) return;
+    const provided = this.#providerAttributions(app);
+    const content = document.createDocumentFragment();
+    for (const mapID of mapIds) {
+      let meta: MapMeta | undefined;
+      try {
+        meta = app.getMapMeta(mapID) ?? undefined;
+      } catch {
+        meta = undefined;
+      }
+      const htmls: string[] = [];
+      const configured = this.translateText(meta?.attr);
+      if (configured && configured.trim()) htmls.push(sanitizeHtml(configured));
+      for (const text of provided.get(mapID) ?? [])
+        htmls.push(sanitizeIiifHtml(text));
+      const items: HTMLElement[] = [];
+      const seen = new Set<string>();
+      for (const html of htmls) {
+        const item = document.createElement("div");
+        item.className = "attribution-item";
+        item.innerHTML = html;
+        const key =
+          (item.textContent ?? "").replace(/\s+/g, " ").trim() || html.trim();
+        if (!key || seen.has(key)) continue;
+        seen.add(key);
+        items.push(item);
+      }
+      if (items.length === 0) continue;
+      const section = document.createElement("section");
+      section.className = "attribution-map";
+      section.dataset.mapId = mapID;
+      const heading = document.createElement("h4");
+      heading.textContent =
+        this.translateText(
+          (meta?.title || meta?.officialTitle || meta?.label) as
+            Localized | undefined
+        ) || mapID;
+      section.append(heading, ...items);
+      content.appendChild(section);
+    }
+    if (!content.hasChildNodes()) return;
+    this.#appendMetaRow("attributions", content);
   }
 
   /** メタデータの 1 行（dt が項目名・dd が値。項目名は旧と同じく html.<キー> の文言）。 */

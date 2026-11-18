@@ -25,6 +25,7 @@
     "dataLicense": "Giấy phép dữ liệu",
     "attr": "Ghi công ảnh bản đồ",
     "dataAttr": "Ghi công dữ liệu",
+    "attributions": "Ghi công của các bản đồ đang hiển thị",
     "reference": "Nguồn",
     "description": "Mô tả",
     "cache_handle": "Kích thước bộ nhớ đệm bản đồ",

@@ -25,6 +25,7 @@
     "dataLicense": "데이터 라이선스",
     "attr": "지도 이미지 출처 표시",
     "dataAttr": "데이터 출처 표시",
+    "attributions": "표시 중인 지도의 저작자 표시",
     "reference": "출처",
     "description": "설명",
     "cache_handle": "지도 캐시 크기",

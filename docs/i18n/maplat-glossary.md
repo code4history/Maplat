@@ -7,13 +7,13 @@
 正本と locale は同じ PR で変えられない（初版を除く）。新しい語・例外は、先に正本だけの PR を合流させてから locale の PR を出す。
 まだ無いキーへの例外は、正本だけの PR の時点では警告（pending-key）になり、後の locale の PR でキーを足すと働く。手順は AGENTS.md の「UI Wording & Glossary」。
 
-概念 8・結び付いたキー 31・例外 0（）
+概念 8・結び付いたキー 32・例外 0（）
 
 | 概念 | 説明 | 根拠キー | 結び付け |
 |---|---|---|---:|
-| [map](#map) | 表示・操作する地図。ベースマップは別概念 | `control.info` | 21 |
+| [map](#map) | 表示・操作する地図。ベースマップは別概念 | `control.info` | 22 |
 | [basemap](#basemap) | 古地図の下に敷く地図（ベースマップ） | `html.help_selection_content` | 2 |
-| [attribution](#attribution) | 地図画像・データの帰属（著作権表示） | `html.attr` | 2 |
+| [attribution](#attribution) | 地図画像・データの帰属（著作権表示） | `html.attr` | 3 |
 | [citation](#citation) | 地図・ベースマップの出所（書誌的な典拠） | `html.reference` | 1 |
 | [app](#app) | 地図と POI をまとめて公開するアプリ | `html.share_app_title` | 3 |
 | [layer](#layer) | 地図のレイヤー・POI のレイヤー | `html.help_etc_marker_list` | 1 |

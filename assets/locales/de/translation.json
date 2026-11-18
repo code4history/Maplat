@@ -25,6 +25,7 @@
     "dataLicense": "Datenlizenz",
     "attr": "Quellenangabe des Kartenbilds",
     "dataAttr": "Quellenangabe der Daten",
+    "attributions": "Quellenangabe der angezeigten Karten",
     "reference": "Quelle",
     "description": "Beschreibung",
     "cache_handle": "Kartencache-Größe",

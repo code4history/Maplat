@@ -544,10 +544,206 @@ describe("地図情報・ライセンス・タイルキャッシュ（操作ボ�
     const ui = await mountUi(u => u.setAttribute("lang", "en"));
     await ui.app!.changeMap("osm");
     open(ui);
-    const attr = cell(ui, "attr");
+    // 前面がベースマップのときは、その attr を表示中の地図の帰属表記の行に出す
+    const attr = cell(ui, "attributions");
     expect(attr.querySelector("b")!.textContent).toBe("OSM");
     expect(attr.innerHTML).not.toContain("onerror");
     expect(attr.querySelector("img")!.hasAttribute("onerror")).toBe(false);
+  });
+
+  describe("表示中の地図の帰属表記（ベースマップ・重ね地図・提供元の申告）", () => {
+    /** 古地図に attr を持たせ、重ね地図（isOverlay）を足した設定。 */
+    function withOverlay() {
+      const setting = structuredClone(SETTING) as typeof SETTING;
+      (setting.sources[1] as any).meta.attr = {
+        ja: "古地図の帰属",
+        en: "Old map attribution"
+      };
+      (setting.sources as any[]).push({
+        mapID: "tms",
+        label: "Overlay",
+        isOverlay: true,
+        meta: {
+          title: { ja: "重ねる地図", en: "Overlay map" },
+          attr: "Overlay owner"
+        }
+      });
+      return setting;
+    }
+    /** 地図ごとの組（見出しと本文の文字）。 */
+    const sections = (ui: Ui) =>
+      Array.from(
+        cell(ui, "attributions")?.querySelectorAll("section.attribution-map") ??
+          []
+      ).map(section => ({
+        mapID: (section as HTMLElement).dataset.mapId,
+        heading: section.querySelector("h4")!.textContent,
+        items: Array.from(section.querySelectorAll(".attribution-item")).map(
+          item => item.textContent
+        )
+      }));
+    const labels = (ui: Ui) =>
+      Array.from(part(ui, "map-meta").querySelectorAll("dt")).map(
+        dt => dt.textContent
+      );
+    /** 層 A の要素に、Core の providerAttributions と同じ形の読み取りを生やす。 */
+    function provide(ui: Ui, list: unknown) {
+      Object.defineProperty(ui.app!, "providerAttributions", {
+        configurable: true,
+        get: () => list
+      });
+    }
+
+    it("前面がベースマップ: その地図の題名の見出しと attr を出し、「地図画像帰属」の行は出さない", async () => {
+      const ui = await mountUi(
+        u => u.setAttribute("lang", "ja"),
+        withOverlay()
+      );
+      await ui.app!.changeMap("osm");
+      open(ui);
+      expect(labels(ui)).toContain("表示中の地図の帰属表記");
+      expect(labels(ui)).not.toContain("地図画像帰属");
+      expect(sections(ui)).toEqual([
+        { mapID: "osm", heading: "OSM", items: ["OSM contributors"] }
+      ]);
+    });
+
+    it("前面が古地図: 古地図の attr は今までどおりの行、背面のベースマップは見出しを付けて別の行", async () => {
+      const ui = await mountUi(
+        u => u.setAttribute("lang", "ja"),
+        withOverlay()
+      );
+      // 背面のベースマップは層 A の状態の backgroundID（Core は背面に地図を出すと書く）
+      ui.app!.requestUpdateState({ backgroundID: "osm" });
+      open(ui);
+      expect(cell(ui, "attr").textContent).toBe("古地図の帰属");
+      expect(sections(ui)).toEqual([
+        { mapID: "osm", heading: "OSM", items: ["OSM contributors"] }
+      ]);
+      // 項目名の並び: 帰属表記の行はメタデータの行の後
+      expect(labels(ui).slice(-2)).toEqual([
+        "地図画像帰属",
+        "表示中の地図の帰属表記"
+      ]);
+    });
+
+    it("前面が重ね地図: 重ね地図 → 下のベースマップの順に出す（地図の右下の箱の上から下と同じ）", async () => {
+      const ui = await mountUi(
+        u => u.setAttribute("lang", "en"),
+        withOverlay()
+      );
+      await ui.app!.changeMap("tms");
+      ui.app!.requestUpdateState({ backgroundID: "osm" });
+      open(ui);
+      expect(sections(ui)).toEqual([
+        { mapID: "tms", heading: "Overlay map", items: ["Overlay owner"] },
+        { mapID: "osm", heading: "OSM", items: ["OSM contributors"] }
+      ]);
+      expect(cell(ui, "attr")).toBeNull();
+    });
+
+    it("提供元の申告は狭い許可表で洗い直して添え、表示される文字が同じものは 1 回だけ出す", async () => {
+      const ui = await mountUi(
+        u => u.setAttribute("lang", "en"),
+        withOverlay()
+      );
+      await ui.app!.changeMap("tms");
+      ui.app!.requestUpdateState({ backgroundID: "osm" });
+      provide(ui, [
+        {
+          mapID: "osm",
+          attributions: [
+            // 狭い許可表: img・style は落ち、リンクは別のタブで開く
+            '<a href="https://example.org/" style="font-size:90px">Provider</a><img src="https://example.org/x.png">',
+            // attr と同じ表示の文字（重複）
+            "<i>OSM</i> contributors"
+          ]
+        },
+        { mapID: "old2", attributions: ["表示していない地図"] },
+        { mapID: 3, attributions: ["形の違う値"] },
+        "garbage"
+      ]);
+      open(ui);
+      expect(sections(ui)).toEqual([
+        { mapID: "tms", heading: "Overlay map", items: ["Overlay owner"] },
+        {
+          mapID: "osm",
+          heading: "OSM",
+          items: ["OSM contributors", "Provider"]
+        }
+      ]);
+      const link = cell(ui, "attributions").querySelector(
+        'section[data-map-id="osm"] a'
+      )!;
+      expect(link.getAttribute("href")).toBe("https://example.org/");
+      expect(link.hasAttribute("style")).toBe(false);
+      expect(link.getAttribute("rel")).toBe("noopener noreferrer");
+      expect(
+        cell(ui, "attributions").querySelector(
+          'section[data-map-id="osm"] img[src^="https"]'
+        )
+      ).toBeNull();
+    });
+
+    it("attr の無い地図は、提供元の申告だけを出す（Google の著作権など）。申告が届いたら開いたまま描き直す", async () => {
+      const setting = withOverlay();
+      delete (setting.sources[0] as any).meta.attr;
+      const ui = await mountUi(u => u.setAttribute("lang", "en"), setting);
+      await ui.app!.changeMap("osm");
+      open(ui);
+      // まだ申告が無い: 行ごと出さない
+      expect(cell(ui, "attributions")).toBeNull();
+      provide(ui, [
+        { mapID: "osm", attributions: ["Map data ©2026 Google, ZENRIN"] }
+      ]);
+      ui.app!.dispatchEvent(new Event("attributionChanged", { bubbles: true }));
+      expect(sections(ui)).toEqual([
+        {
+          mapID: "osm",
+          heading: "OSM",
+          items: ["Map data ©2026 Google, ZENRIN"]
+        }
+      ]);
+    });
+
+    it("attr も提供元の申告も無ければ何も出さない（行も見出しも「記載なし」の文言も出さない）", async () => {
+      const setting = withOverlay();
+      delete (setting.sources[0] as any).meta.attr;
+      delete (setting.sources[1] as any).meta.attr;
+      const ui = await mountUi(u => u.setAttribute("lang", "ja"), setting);
+      ui.app!.requestUpdateState({ backgroundID: "osm" });
+      provide(ui, []);
+      open(ui);
+      expect(cell(ui, "attributions")).toBeNull();
+      expect(cell(ui, "attr")).toBeNull();
+      expect(labels(ui)).not.toContain("表示中の地図の帰属表記");
+    });
+
+    it("背面の地図が無い古地図（backgroundID が無い）では、ベースマップの組を出さない", async () => {
+      const ui = await mountUi(
+        u => u.setAttribute("lang", "en"),
+        withOverlay()
+      );
+      open(ui);
+      expect(cell(ui, "attr").textContent).toBe("Old map attribution");
+      expect(cell(ui, "attributions")).toBeNull();
+    });
+
+    it("言語を変えると見出しと attr の言語も変わる", async () => {
+      const ui = await mountUi(
+        u => u.setAttribute("lang", "en"),
+        withOverlay()
+      );
+      await ui.app!.changeMap("tms");
+      ui.app!.requestUpdateState({ backgroundID: "osm" });
+      open(ui);
+      expect(sections(ui)[0].heading).toBe("Overlay map");
+      ui.setAttribute("lang", "ja");
+      await vi.waitFor(() =>
+        expect(sections(ui)[0].heading).toBe("重ねる地図")
+      );
+      expect(labels(ui)).toContain("表示中の地図の帰属表記");
+    });
   });
 
   it("閉じる（×・背景・Escape）と、地図の切り替えでの中身の作り直し", async () => {
