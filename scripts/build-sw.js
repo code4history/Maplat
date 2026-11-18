@@ -6,15 +6,7 @@ import path from 'path';
 // Node.js globals like process are available, but require is not.
 const isWatch = process.argv.includes('--watch');
 
-const now = new Date();
-// Format: YYYY-MM-DD-HH-mm
-const version = now.getFullYear() + '-' +
-    String(now.getMonth() + 1).padStart(2, '0') + '-' +
-    String(now.getDate()).padStart(2, '0') + '-' +
-    String(now.getHours()).padStart(2, '0') + '-' +
-    String(now.getMinutes()).padStart(2, '0');
-
-console.log(`Building Service Worker with version: ${version}`);
+console.log('Building Service Worker');
 
 const buildOptions = {
     entryPoints: ['src/service-worker/index.ts'],
@@ -22,8 +14,7 @@ const buildOptions = {
     outfile: isWatch ? 'public/service-worker.js' : 'dist/service-worker.js',
     format: 'iife',
     define: {
-        'self.__WB_MANIFEST': '[]',
-        'SW_VERSION': `"${version}"`
+        'self.__WB_MANIFEST': '[]'
     },
 };
 
