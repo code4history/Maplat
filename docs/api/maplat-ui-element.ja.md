@@ -260,6 +260,14 @@ POI のテンプレート（`poiTemplate`。Nunjucks の記法）でも同じス
 
 テンプレートは POI を開くときにも当たるので、マーカーのクリック・`openMarker()`・マーカー一覧・状態 URL のどれから開いても同じ本文になります（`@maplat/core` 1.3 以降）。
 
+### 地図の作り手が書いた HTML
+
+POI の `desc`・地図のメタ情報・帰属表記（`attr`）・メニューの項目の `text` は、サニタイズを通してから、
+`<maplat-ui>` の部品と同じ Shadow DOM に入ります。この HTML の `class` 属性からは、`<maplat-ui>` 自身の
+CSS が使う class 名（`modal`・`splash` など。大文字・小文字は区別しません）を外します（部品の見た目が
+作り手の HTML に当たらないようにするためです）。それ以外の class 名・要素・リンク・文字は書いたとおりに
+残ります。POI の `html` は専用の Shadow DOM（part `poi-html`）に描くので、対象外です。
+
 ### 地図の範囲外の POI
 
 古地図の範囲の外にある POI は、子が背景の地図の上に、範囲内の POI と同じアイコンで描きます

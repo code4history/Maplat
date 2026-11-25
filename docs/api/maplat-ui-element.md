@@ -296,6 +296,17 @@ The template is also applied when the POI is opened, so the same body appears
 whether it is opened from the marker, `openMarker()`, the marker list, or the
 state URL (`@maplat/core` 1.3 or later).
 
+### HTML written by the map author
+
+The POI `desc`, the map metadata, the attribution (`attr`) and the `text` of a
+menu item are sanitized and inserted into the same Shadow DOM as the parts of
+`<maplat-ui>`. Class names that the element's own CSS uses (`modal`, `splash`
+and so on, compared case-insensitively) are removed from the `class` attributes
+in this HTML, so the styles of the element's parts do not apply to it. Other
+class names, the elements, the links and the text are kept as written. The
+POI's `html` is drawn in its own Shadow DOM (part `poi-html`) and is not
+affected.
+
 ### POIs outside the map
 
 The child draws a POI that lies outside the historical map on the background

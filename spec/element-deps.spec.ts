@@ -181,6 +181,7 @@ describe("<maplat-ui> は <maplat-app> の公開面と @maplat/core/common だ�
       "assets/parts/pd.png",
       "src/absolute_url.ts",
       "src/browserlanguage.ts",
+      "src/element/author-html.ts",
       "src/element/i18n.ts",
       "src/element/index.ts",
       "src/element/license_images.ts",
