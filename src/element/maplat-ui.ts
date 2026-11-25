@@ -78,6 +78,13 @@ import { MapSlider, type MapSliderItem } from "./slider";
 import { pointInPolygon, polygonArea } from "../shared/geo";
 import { resolveRelativeLink } from "../shared/text";
 import { MAPLAT_UI_CSS } from "./styles";
+import {
+  newlinesToBr,
+  sanitizeAuthorHtml,
+  sanitizeProviderHtml,
+  setSanitizedHtml,
+  type SanitizedHtml
+} from "./author-html";
 
 // @maplat/ui の版。ビルド時に vite の define で package.json の version を埋め込む（vite.config.js・
 // vitest.config.ts。@maplat/core と同じ）。決め打ちにすると、RC の commit が package.json の版だけを上げたときに
@@ -3634,7 +3641,7 @@ export class MaplatUiElement extends BaseElement {
       const text = this.translateText(raw as Localized | undefined);
       if (!text) continue;
       const dd = document.createElement("dd");
-      dd.innerHTML = sanitizeHtml(text);
+      setSanitizedHtml(dd, sanitizeAuthorHtml(text));
       this.#appendMetaRow(key, dd);
     }
     this.#appendDisplayedAttributions(app, displayed);
@@ -3731,17 +3738,19 @@ export class MaplatUiElement extends BaseElement {
       } catch {
         meta = undefined;
       }
-      const htmls: string[] = [];
+      // 入るのはサニタイザを通った値だけ（型で縛る。素の文字列は push できない）
+      const htmls: SanitizedHtml[] = [];
       const configured = this.translateText(meta?.attr);
-      if (configured && configured.trim()) htmls.push(sanitizeHtml(configured));
+      if (configured && configured.trim())
+        htmls.push(sanitizeAuthorHtml(configured));
       for (const text of provided.get(mapID) ?? [])
-        htmls.push(sanitizeIiifHtml(text));
+        htmls.push(sanitizeProviderHtml(text));
       const items: HTMLElement[] = [];
       const seen = new Set<string>();
       for (const html of htmls) {
         const item = document.createElement("div");
         item.className = "attribution-item";
-        item.innerHTML = html;
+        setSanitizedHtml(item, html);
         const hrefs = Array.from(
           item.querySelectorAll("a[href]"),
           a => a.getAttribute("href") ?? ""
@@ -4491,7 +4500,7 @@ export class MaplatUiElement extends BaseElement {
       text.className = "name";
       if (item.html === false) text.textContent = item.text;
       // 旧 showContextMenu の text は HTML（旧 contextmenu/html.ts:94）。サニタイザを通す
-      else text.innerHTML = sanitizeHtml(item.text);
+      else setSanitizedHtml(text, sanitizeAuthorHtml(item.text));
       button.appendChild(text);
       li.appendChild(button);
       ul.appendChild(li);
@@ -4616,7 +4625,7 @@ export class MaplatUiElement extends BaseElement {
       const p = document.createElement("p");
       p.className = "poi-desc";
       // 改行の置換はサニタイズの後（前だと <br> が入力扱いになる）
-      p.innerHTML = sanitizeHtml(desc).replace(/\n/g, "<br>");
+      setSanitizedHtml(p, newlinesToBr(sanitizeAuthorHtml(desc)));
       el.poiBody.appendChild(p);
     }
   }

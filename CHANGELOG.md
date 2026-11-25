@@ -32,6 +32,7 @@
   - スライダーの見た目の CSS 変数（`--maplat-poi-media-theme-color`・`--maplat-poi-media-navigation-color`）は変わらない
 - POI のテンプレート（`poiTemplate`）で `<qy-swiper>`・`<qy-swiper-slide>` を書くと、情報窓の中にスライダーを出せる（`@maplat/core` 1.3 の `sanitizeHtml` が残す要素と属性に限る）
 - `poiTemplate`・`iconTemplate` の記法は `@maplat/core` 1.3 で Nunjucks に変わった（lodash.template の記法は評価されない）。書き換え方は `@maplat/core` の CHANGELOG の「Removed」
+- POI の `desc`・地図のメタ情報・帰属表記（`attr`）・`ui.showContextMenu` の `text` の HTML では、`<maplat-ui>` 自身の CSS が使う class 名（`modal`・`splash` など）を `class` 属性から外すようにした（大文字・小文字は区別しない）。これらの HTML は `<maplat-ui>` の部品と同じ Shadow DOM に入るので、部品の見た目がそのまま当たっていた。作り手が付けたそれ以外の class・要素・リンク・文字は変えない。POI の `html`（テンプレート）は専用の Shadow DOM に描くので対象外（SR-DEC26-B2-1）
 
 ### Added
 - POI の吹き出しの本文（html・url）の組み立てを `src/element/poi-html.ts` に集約した。`<maplat-ui>` と、実ブラウザで隔離を確かめる probe（`e2e/fixtures/poi-html-probe.ts`）が同じ関数を読む
