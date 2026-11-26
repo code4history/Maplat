@@ -1,5 +1,5 @@
-import { p as k, m as L, _ as v, a as A, b as U, r as C, D as R, h as N } from "./index-ByY22QnF.js";
-class T {
+import { p as D, m as L, t as v, a as A, b as U, r as C, P as R, B as N } from "./index-DiyLw3fO.js";
+class P {
   constructor() {
     this.disposed = !1;
   }
@@ -77,7 +77,7 @@ function ie(i, e) {
   for (let s = 0; s < n; s++)
     i[i.length] = t[s];
 }
-function O(i, e) {
+function T(i, e) {
   const t = i.length;
   if (t !== e.length)
     return !1;
@@ -104,10 +104,10 @@ function oe(i) {
   let e, t, n;
   return function() {
     const s = Array.prototype.slice.call(arguments);
-    return (!t || this !== n || !O(s, t)) && (n = this, t = s, e = i.apply(this, s)), e;
+    return (!t || this !== n || !T(s, t)) && (n = this, t = s, e = i.apply(this, s)), e;
   };
 }
-function P(i) {
+function O(i) {
   for (const e in i)
     delete i[e];
 }
@@ -140,7 +140,7 @@ class B {
     this.propagationStopped = !0;
   }
 }
-class H extends T {
+class H extends P {
   /**
    * @param {*} [target] Default event target for dispatched events.
    */
@@ -202,7 +202,7 @@ class H extends T {
    * @override
    */
   disposeInternal() {
-    this.listeners_ && P(this.listeners_);
+    this.listeners_ && O(this.listeners_);
   }
   /**
    * Get the listeners for a specified event type. Listeners are returned in the
@@ -238,7 +238,7 @@ class H extends T {
 }
 let b = null;
 function $() {
-  return typeof customElements > "u" || customElements.get(k) ? Promise.resolve() : b || (b = import("./maplat_core_element-CQZS0dx_.js").then(
+  return typeof customElements > "u" || customElements.get(D) ? Promise.resolve() : b || (b = import("./maplat_core_element-ClkVv548.js").then(
     () => {
     },
     (i) => {
@@ -584,7 +584,7 @@ const W = "MaplatUi: the MaplatUi class is deprecated and will be removed in 2.0
 function Y() {
   x || (x = !0, console.warn(W));
 }
-class D extends H {
+class k extends H {
   /** Core の `MaplatApp`（`lifecycle:setting-loaded` で入る。それまでは undefined）。 */
   core;
   appOption;
@@ -659,7 +659,7 @@ class D extends H {
    *   `docs/api/migration-ui-shadow-dom.ja.md` にあります。
    */
   static async createObject(e) {
-    return new D(e).waitReady();
+    return new k(e).waitReady();
   }
   // ---- 公開メソッド 19 本（旧と同じ名前・同じ並び。増やさない）----
   /** 旧 `initializer`（UI の初期化。互換層では起動を 1 回だけ始める）。 */
@@ -985,15 +985,15 @@ function Q(i, e) {
 }
 export {
   B,
-  T as D,
-  D as M,
+  P as D,
+  k as M,
   H as T,
   S as V,
   E as a,
   ee as b,
-  P as c,
+  O as c,
   ie as d,
-  O as e,
+  T as e,
   ae as f,
   te as g,
   re as h,

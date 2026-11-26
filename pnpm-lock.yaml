@@ -23,11 +23,11 @@ importers:
   .:
     dependencies:
       '@c4h/quyuan':
-        specifier: ^1.1.1
-        version: 1.1.1
+        specifier: ^1.1.2-rc.1
+        version: 1.1.2-rc.1
       '@c4h/weiwudi':
-        specifier: ^1.1.1
-        version: 1.1.1(workbox-routing@7.4.1)
+        specifier: ^1.2.0-rc.1
+        version: 1.2.0-rc.1(workbox-routing@7.4.1)
       '@maplat/core':
         specifier: ^1.3.0-rc.1
         version: 1.3.0-rc.1(mapbox-gl@3.32.0)(maplibre-gl@6.9.0)(ol@10.11.0)(workbox-routing@7.4.1)
@@ -647,15 +647,6 @@ packages:
     resolution: {integrity: sha512-0GEz8qJWokkUVYQYRukmkSHIFNoBH8QTreeHrAFbvz1XFYc3Y+puhMs8PQ5x8GNugiC2l5jvDBXKLbBIByeSBw==}
     hasBin: true
 
-  '@c4h/quyuan@1.1.1':
-    resolution: {integrity: sha512-CwAzx5rQ6W819KHPXP31SDLZ2OkFcU+0KqOd7qN/jtAOIIaTf3NYrsV+kb95N4wqDTh6sve0n9dw3yuOZbkjIg==}
-    engines: {node: '>=20.0.0', pnpm: '>=9.0.0'}
-    peerDependencies:
-      '@c4h/chuci': ^1.0.2
-    peerDependenciesMeta:
-      '@c4h/chuci':
-        optional: true
-
   '@c4h/quyuan@1.1.2-rc.1':
     resolution: {integrity: sha512-kpdXmndMt6gh4VulAwM/xZJjThRCt+UeX3+4JE7H8ke80y0jW4k0edbX0kRMlDL7sEYTe/PS6Rki6+v008zLDw==}
     engines: {node: '>=20.0.0', pnpm: '>=9.0.0'}
@@ -664,12 +655,6 @@ packages:
     peerDependenciesMeta:
       '@c4h/chuci':
         optional: true
-
-  '@c4h/weiwudi@1.1.1':
-    resolution: {integrity: sha512-hgk0fpXUohUAmfLBXzAct5GsfNndQTsORGqbvM2Qa4S6NvasrGVZNa63SUhA7FldCwKjngflgVt5S6Un1B3OMg==}
-    engines: {node: '>=20.0.0', pnpm: '>=9.0.0'}
-    peerDependencies:
-      workbox-routing: ^7.4.0
 
   '@c4h/weiwudi@1.2.0-rc.1':
     resolution: {integrity: sha512-o6/1VyFM3l1uz+9cNyuIlmbJHaeBpC7nzwLCqqpwrfQs0r/EuyVJJS2xOHC5B3KNnvVxmBHwvhE8MqfqMei8Ow==}
@@ -4240,21 +4225,11 @@ snapshots:
     dependencies:
       css-tree: 3.2.1
 
-  '@c4h/quyuan@1.1.1':
-    dependencies:
-      nunjucks: 3.2.4
-    transitivePeerDependencies:
-      - chokidar
-
   '@c4h/quyuan@1.1.2-rc.1':
     dependencies:
       nunjucks: 3.2.4
     transitivePeerDependencies:
       - chokidar
-
-  '@c4h/weiwudi@1.1.1(workbox-routing@7.4.1)':
-    dependencies:
-      workbox-routing: 7.4.1
 
   '@c4h/weiwudi@1.2.0-rc.1(workbox-routing@7.4.1)':
     dependencies:

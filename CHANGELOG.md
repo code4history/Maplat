@@ -2,7 +2,7 @@
 
 このプロジェクトの主な変更を記録します。版数は [Semantic Versioning](https://semver.org/) に従います。
 
-## [Unreleased]
+## [1.3.0-rc.1] - 2026-11-26
 
 ### Changed
 - POI の `directgo` が安全でない URL（`javascript:` など）で開かなかったとき、黙って何もしないのをやめ、範囲外の知らせと同じトースト（`::part(toast)`）で「このリンクは開けません」と知らせる（文言のキーは `app.cannot_open_link`。11 言語）。遷移も吹き出しも出さないのは今までどおり。`http`・`https`・相対 URL の `directgo` は今までどおり開き、知らせは出ない
