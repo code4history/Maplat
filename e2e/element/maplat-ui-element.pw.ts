@@ -773,7 +773,9 @@ test("POI のテンプレートが書いた qy-swiper: 最初に開いても描�
   await ui.locator('[part="poi-close"]').click();
   await expect(poiModal).toBeHidden();
 
-  // ---- caption に実体参照で書いたタグは、受け手（スライダーの説明）で文字のまま出る ----
+  // ---- caption に実体参照で書いたタグは、要素にならない ----
+  // Core は caption を結果が変わらなくなるまでテキスト化する。実体参照を戻すとタグの形になり、
+  // 次の回でタグとして落ちるので、説明は空になる（文字としても出ない）
   const capId = await page.evaluate(() =>
     (window as any).__maplatUi.app.addMarker(
       {
@@ -792,9 +794,13 @@ test("POI のテンプレートが書いた qy-swiper: 最初に開いても描�
   await expect(poiModal).toBeVisible();
   const capSwiper = ui.locator('[part="poi-html"] qy-swiper');
   const caption = capSwiper.locator(".slider-caption");
-  await expect(caption).toContainText("img src=x onerror=alert(1)", {
-    timeout: 20_000
-  });
+  await expect(capSwiper).toBeVisible({ timeout: 20_000 });
+  await expect
+    .poll(() => capSwiper.evaluate((el: any) => !!el.shadowRoot), {
+      timeout: 20_000
+    })
+    .toBe(true);
+  expect((await caption.allTextContents()).join("")).toBe("");
   // 説明の中も、スライダーの Shadow DOM の中も、onerror を持つ要素が無い（文字として出ている）
   expect(
     await capSwiper.evaluate(
