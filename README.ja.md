@@ -217,6 +217,12 @@ pnpm test         # テストの実行 (Vitest)
 pnpm typecheck    # 型チェック (TypeScript)
 pnpm lint         # リントとフォーマット (ESLint/Prettier)
 ```
+
+ブラウザの e2e 試験（Playwright・headless）は `e2e/` にあります。たとえば、変換の形 A（CRS＋world file だけ）・B（CRS＋三角網、四辺形の外は world file の大域外挿）・C（CRS＋三角網、四辺形の外は扇形外挿）の地図を、従来型の V2 と比べる試験は次のとおりです。
+
+```bash
+PLAYWRIGHT_SKIP_BROWSER_GC=1 node_modules/.bin/playwright test e2e/abc-maps.spec.ts
+```
 <!-- release-pinned:end -->
 
 <!-- SECTION 6: Prerequisites -->

@@ -229,6 +229,12 @@ pnpm test         # Run tests (Vitest)
 pnpm typecheck    # Run type checks (TypeScript)
 pnpm lint         # Run linter and formatter (ESLint/Prettier)
 ```
+
+Browser end-to-end tests (Playwright, headless) live in `e2e/`. For example, the transformation-shape maps (A: CRS + world file only / B: CRS + TIN with a global world-file extrapolation / C: CRS + TIN with a fan extrapolation, compared against a legacy V2 map) are covered by:
+
+```bash
+PLAYWRIGHT_SKIP_BROWSER_GC=1 node_modules/.bin/playwright test e2e/abc-maps.spec.ts
+```
 <!-- release-pinned:end -->
 
 <!-- SECTION 6: Prerequisites -->
