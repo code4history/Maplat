@@ -233,8 +233,14 @@ pnpm lint         # Run linter and formatter (ESLint/Prettier)
 Browser end-to-end tests (Playwright, headless) live in `e2e/`. For example, the transformation-shape maps (A: CRS + world file only / B: CRS + TIN with a global world-file extrapolation / C: CRS + TIN with a fan extrapolation, compared against a legacy V2 map) are covered by:
 
 ```bash
-PLAYWRIGHT_SKIP_BROWSER_GC=1 node_modules/.bin/playwright test e2e/abc-maps.spec.ts
+# First time only: install Chromium (PLAYWRIGHT_SKIP_BROWSER_GC=1 keeps other versions in the shared browser cache)
+PLAYWRIGHT_SKIP_BROWSER_GC=1 node_modules/.bin/playwright install chromium
+
+# Run headless (CI=1). The dev server is started by the Playwright config.
+CI=1 PLAYWRIGHT_SKIP_BROWSER_GC=1 node_modules/.bin/playwright test e2e/abc-maps.spec.ts
 ```
+
+Without `CI=1`, Playwright opens a visible browser window in an environment that has a `DISPLAY` (it runs headless only when `DISPLAY` is unset), which takes the keyboard focus. Add `CI=1` when you do not want that.
 <!-- release-pinned:end -->
 
 <!-- SECTION 6: Prerequisites -->

@@ -221,8 +221,14 @@ pnpm lint         # リントとフォーマット (ESLint/Prettier)
 ブラウザの e2e 試験（Playwright・headless）は `e2e/` にあります。たとえば、変換の形 A（CRS＋world file だけ）・B（CRS＋三角網、四辺形の外は world file の大域外挿）・C（CRS＋三角網、四辺形の外は扇形外挿）の地図を、従来型の V2 と比べる試験は次のとおりです。
 
 ```bash
-PLAYWRIGHT_SKIP_BROWSER_GC=1 node_modules/.bin/playwright test e2e/abc-maps.spec.ts
+# 初回だけ: Chromium を入れる（PLAYWRIGHT_SKIP_BROWSER_GC=1 で、共有のキャッシュにある他の版を消さない）
+PLAYWRIGHT_SKIP_BROWSER_GC=1 node_modules/.bin/playwright install chromium
+
+# headless で走らせる（CI=1）。dev サーバーは Playwright の設定が立てる
+CI=1 PLAYWRIGHT_SKIP_BROWSER_GC=1 node_modules/.bin/playwright test e2e/abc-maps.spec.ts
 ```
+
+`CI=1` を付けないと、`DISPLAY` のある環境ではブラウザの画面が開き（`DISPLAY` が無いときだけ headless になります）、手元のフォーカスを奪います。奪われたくないときは `CI=1` を付けてください。
 <!-- release-pinned:end -->
 
 <!-- SECTION 6: Prerequisites -->

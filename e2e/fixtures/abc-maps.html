@@ -158,9 +158,12 @@
       alwaysGpsOn: false
     };
 
-    MaplatUi.createObject(option).then(function (ui) {
+    // `createObject` は設定の読み込み（setting-loaded）で解決する。地図の組み立て・GPS の用意まで済んだことは
+    // `core.waitReady` で待ち、それから READY にする。読み込みに失敗したら、すぐ ERROR にする。
+    MaplatUi.createObject(option).then(async function (ui) {
       window.__maplatUi = ui;
       window.__maplatApp = ui.core;
+      await ui.core.waitReady;
       document.getElementById('status').textContent = 'READY';
     }).catch(function (err) {
       console.error('MaplatUi init error:', err);

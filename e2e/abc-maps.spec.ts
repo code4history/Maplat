@@ -14,20 +14,31 @@
 //     すべて fixture の地図 JSON の GCP・頂点・紙の寸法から作る（fixture 側の `window.__abc`）。
 //   - 地図データ・タイルは e2e/fixtures/ の小さな写しで、CDN には取りに行かない（オフライン前提）。
 //
-// 実行（dev サーバーは playwright.config.ts の webServer が立てる。headless なので手元のフォーカスを奪わない）:
-//   PLAYWRIGHT_SKIP_BROWSER_GC=1 node_modules/.bin/playwright test e2e/abc-maps.spec.ts
+// 実行（dev サーバーは playwright.config.ts の webServer が立てる。`CI=1` で headless になり、手元のフォーカスを奪わない。
+// `CI` が無いと、`DISPLAY` のある環境ではブラウザの画面が開く）:
+//   PLAYWRIGHT_SKIP_BROWSER_GC=1 node_modules/.bin/playwright install chromium   # 初回だけ
+//   CI=1 PLAYWRIGHT_SKIP_BROWSER_GC=1 node_modules/.bin/playwright test e2e/abc-maps.spec.ts
 //
 // 注意: 変換の形 A・B・C は Core の未公開版（MaplatCore#201）が要る。それより前の Core では
 //   abc_a・abc_b・abc_c の読み込みで失敗する。
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { readFileSync } from "node:fs";
 import { test, expect, type Page } from "@playwright/test";
 
 const FIXTURE = "/e2e/fixtures/abc-maps.html";
 const MAP_IDS = ["abc_a", "abc_b", "abc_c", "abc_v2"] as const;
 type MapId = (typeof MAP_IDS)[number];
 
-/** 擬似の現在地（fixture の POI 1 と同じ点）。 */
-const GEO_START = { longitude: 136.792, latitude: 35.998, accuracy: 50 };
+/** GPS を点けたまま切り替える先（a→b・b→c・c→a・v2→a）。 */
+const GPS_NEXT: Record<MapId, MapId> = {
+  abc_a: "abc_b",
+  abc_b: "abc_c",
+  abc_c: "abc_a",
+  abc_v2: "abc_a"
+};
+
+/** GPS の精度（m）。位置は fixture の `window.__abc.gpsLngLat`（地図 JSON の GCP の経緯度）から取る。 */
+const GEO_ACCURACY = 50;
 
 /** メルカトルの m 単位の許容（実測は 1 mm 未満でも通る。数値の丸めだけを見込んだ幅）。 */
 const MERC_TOLERANCE_M = 0.01;
@@ -41,9 +52,9 @@ const ROUNDTRIP_PX = 0.01;
  * Playwright の `context.setGeolocation` は、起動後に位置を動かすと Chromium が位置取得エラー（code 2）を
  * 返して追従しないため使わない（V2 でも同じで、変換の形とは無関係）。
  */
-function installFakeGeolocation(start: { longitude: number; latitude: number; accuracy: number }): string {
+function installFakeGeolocation(): string {
   return `(() => {
-    let cur = ${JSON.stringify(start)};
+    let cur = { longitude: 0, latitude: 0, accuracy: 0 };
     let seq = 0;
     const watchers = new Map();
     const make = () => ({
@@ -70,29 +81,51 @@ function installFakeGeolocation(start: { longitude: number; latitude: number; ac
   })();`;
 }
 
-type Opened = { errors: string[] };
+type Opened = { errors: string[]; blocked: string[] };
+
+const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1"]);
 
 /** fixture を開き、`createObject` が解決する（`#status` が READY）まで待つ。 */
 async function open(page: Page): Promise<Opened> {
-  await page.addInitScript(installFakeGeolocation(GEO_START));
+  await page.addInitScript(installFakeGeolocation());
   const errors: string[] = [];
+  const blocked: string[] = [];
   page.on("pageerror", e => errors.push(String(e.message ?? e)));
+  // オフラインで動くことを固定する: localhost・127.0.0.1 以外へのリクエストは落とし、落ちた先を控える
+  await page.route(
+    url => !LOCAL_HOSTS.has(url.hostname),
+    route => {
+      blocked.push(route.request().url());
+      return route.abort("internetdisconnected");
+    }
+  );
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto(FIXTURE);
+  // fixture は `core.waitReady`（設定の読み込み・地図の組み立て・GPS の用意）まで待って READY にする。
+  // 読み込みに失敗したときは、すぐ `ERROR: ...` になる（長くは待たない）。
   await page.waitForFunction(
     () => {
       const status = document.getElementById("status")?.textContent || "";
       return status === "READY" || status.startsWith("ERROR");
     },
     null,
-    { timeout: 120000 }
+    { timeout: 30000 }
   );
-  expect(await page.textContent("#status"), "createObject が解決して READY になる").toBe("READY");
-  // 起動直後の地図（startFrom の abc_a）が前面に付くのを待つ（READY の直後は `app.from` が未設定のことがある）
-  await page.waitForFunction(() => (window as any).__maplatApp?.from?.mapID === "abc_a", null, {
-    timeout: 60000
-  });
-  return { errors };
+  expect(await page.textContent("#status"), "起動が済んで READY になる").toBe("READY");
+  // 起動が済んだ時点で、startFrom の abc_a が前面に付いている（待たずに確かめる）
+  expect(
+    await page.evaluate(() => (window as any).__maplatApp?.from?.mapID),
+    "起動直後の前面の地図は abc_a"
+  ).toBe("abc_a");
+  // 擬似の現在地の初期位置を、地図 JSON の GCP の経緯度（fixture の gpsLngLat）にする
+  await page.evaluate(
+    acc => {
+      const [lon, lat] = (window as any).__abc.gpsLngLat as number[];
+      (window as any).__fakeGeo.set(lon, lat, acc);
+    },
+    GEO_ACCURACY
+  );
+  return { errors, blocked };
 }
 
 /** 地図を切り替え、切り替えが済んだ（`app.from` が差し替わった）ことを確かめて返す。 */
@@ -110,6 +143,37 @@ async function changeMap(page: Page, id: MapId): Promise<void> {
 type Pt = [number, number];
 const dist = (a: number[], b: number[]) => Math.hypot(a[0]! - b[0]!, a[1]! - b[1]!);
 
+type Tri = [Pt, Pt, Pt];
+
+/** fixture の地図 JSON の compiled から、順変換側の三角網の三角形を紙の画素で取り出す。 */
+function tinTriangles(id: "abc_b" | "abc_c"): Tri[] {
+  const compiled = JSON.parse(readFileSync(`e2e/fixtures/maps/${id}.json`, "utf8")).compiled;
+  // 頂点の指し方: 数 → points（GCP）・"cN" → centroid_point・"bN" → vertices_points・"eN" → edgeNodes
+  const pixelOf = (key: number | string): Pt => {
+    if (typeof key === "number") return compiled.points[key][0];
+    if (key === "c") return compiled.centroid_point[0];
+    const n = Number(key.slice(1));
+    if (key[0] === "b") return compiled.vertices_points[n][0];
+    if (key[0] === "e") return compiled.edgeNodes[n][0];
+    throw new Error(`三角網の頂点の指し方が読めない: ${key}`);
+  };
+  return (compiled.tins_points[0] as (number | string)[][]).map(
+    idx => idx.map(pixelOf) as Tri
+  );
+}
+
+/** 点が三角形の中（辺・頂点の上を含む）にあるか。 */
+function inTriangle(p: Pt, [a, b, c]: Tri): boolean {
+  const side = (q: Pt, r: Pt) => (p[0] - r[0]) * (q[1] - r[1]) - (q[0] - r[0]) * (p[1] - r[1]);
+  const d1 = side(a, b);
+  const d2 = side(b, c);
+  const d3 = side(c, a);
+  const hasNeg = d1 < 0 || d2 < 0 || d3 < 0;
+  const hasPos = d1 > 0 || d2 > 0 || d3 > 0;
+  return !(hasNeg && hasPos);
+}
+
+
 test.describe("変換の形 A・B・C と V2", () => {
   test("fixture の地図が、それぞれの形で書かれている（試験が形を踏んでいる前提）", async ({ page }) => {
     await open(page);
@@ -126,7 +190,7 @@ test.describe("変換の形 A・B・C と V2", () => {
   });
 
   test("A・B・C・V2 を続けて切り替えられる（往復も）", async ({ page }) => {
-    const { errors } = await open(page);
+    const { errors, blocked } = await open(page);
     const order: MapId[] = ["abc_a", "abc_b", "abc_c", "abc_v2", "abc_a", "abc_c", "abc_b", "abc_v2"];
     for (const id of order) {
       await changeMap(page, id);
@@ -144,12 +208,13 @@ test.describe("変換の形 A・B・C と V2", () => {
       expect(state.center.every((v: number) => Number.isFinite(v)), "視点の中心が有限").toBe(true);
     }
     expect(errors, "切り替え中に pageerror が出ない").toEqual([]);
+    expect(blocked, "外部へのリクエストが出ていない（オフラインで動く）").toEqual([]);
   });
 
   for (const id of MAP_IDS) {
     test.describe(id, () => {
       test("視点の同期: 古地図の中心を動かすと、背景の地図の中心が Core の変換の位置に来る", async ({ page }) => {
-        const { errors } = await open(page);
+        const { errors, blocked } = await open(page);
         await changeMap(page, id);
 
         const result = await page.evaluate(
@@ -207,8 +272,12 @@ test.describe("変換の形 A・B・C と V2", () => {
           expect(dist(row.evMerc, row.expectedMerc), `${label}: イベントの 3857`).toBeLessThan(MERC_TOLERANCE_M);
         }
         expect(errors).toEqual([]);
+        expect(blocked, "外部へのリクエストが出ていない（オフラインで動く）").toEqual([]);
       });
 
+      // 注意: この試験は Core の変換（xy2MercAsync・merc2XyAsync）を直接呼ぶ、Core の往復の確かめであって、
+      // UI の経路（setViewpoint・changeViewpoint・GPS・POI）は通らない。外挿（三角網の外の四隅）が
+      // 逆変換と整合していることを、UI の試験とは別に固定する。
       test("往復: 紙の画素 → 3857 → 紙の画素が戻る（紙の外側の四隅を含む）", async ({ page }) => {
         await open(page);
         await changeMap(page, id);
@@ -238,7 +307,7 @@ test.describe("変換の形 A・B・C と V2", () => {
       test("GPS: 擬似の現在地を入れると、古地図の上の位置が Core の変換どおりになり、現在地を変えると追従する", async ({
         page
       }) => {
-        const { errors } = await open(page);
+        const { errors, blocked } = await open(page);
         await changeMap(page, id);
 
         const gpsPoint = async () =>
@@ -264,10 +333,15 @@ test.describe("変換の形 A・B・C と V2", () => {
             { ll: lngLat }
           );
 
-        // 現在地 1（fixture の POI 1 と同じ点）
+        // 現在地 1（fixture の gpsLngLat）。起動（waitReady）が済んでいれば GPS の用意（initGeolocation）も済んでいる
+        expect(
+          await page.evaluate(() => !!(window as any).__maplatApp.geolocation),
+          `${id}: initGeolocation が済んでいる`
+        ).toBe(true);
         await page.evaluate(() => (window as any).__maplatApp.handleGPS(true));
         await expect.poll(gpsPoint, { timeout: 15000 }).not.toBeNull();
-        const first = await expectedFor([GEO_START.longitude, GEO_START.latitude]);
+        const gpsLngLat = await page.evaluate(() => (window as any).__abc.gpsLngLat as number[]);
+        const first = await expectedFor(gpsLngLat);
         const got1 = (await gpsPoint())!;
         expect(dist(got1, first.sys), `${id}: GPS 現在地 1 の前面座標`).toBeLessThan(SYS_TOLERANCE_M);
         // 重心に近い点なので、紙の内側に来る
@@ -288,7 +362,8 @@ test.describe("変換の形 A・B・C と V2", () => {
           .toBeLessThan(SYS_TOLERANCE_M);
 
         // GPS を入れたまま別の地図へ切り替えても、その地図の変換で位置が決まる
-        const other: MapId = id === "abc_a" ? "abc_b" : "abc_a";
+        // 切り替え先は a→b・b→c・c→a・v2→a と回す（A・B・C のどれも切り替え先になる）
+        const other = GPS_NEXT[id];
         await changeMap(page, other);
         const third = await expectedFor(poi2);
         await expect
@@ -298,10 +373,11 @@ test.describe("変換の形 A・B・C と V2", () => {
           }, { timeout: 15000, message: `${id} → ${other}: 切り替え後の GPS の印` })
           .toBeLessThan(SYS_TOLERANCE_M);
         expect(errors).toEqual([]);
+        expect(blocked, "外部へのリクエストが出ていない（オフラインで動く）").toEqual([]);
       });
 
       test("POI: 地図の上の位置が Core の変換どおり。ほかの地図から切り替えても同じ", async ({ page }) => {
-        const { errors } = await open(page);
+        const { errors, blocked } = await open(page);
 
         const markers = () =>
           page.evaluate(() => {
@@ -356,13 +432,43 @@ test.describe("変換の形 A・B・C と V2", () => {
           expect(e.xy[1]).toBeLessThan(e.wh[1]);
         }
         expect(errors).toEqual([]);
+        expect(blocked, "外部へのリクエストが出ていない（オフラインで動く）").toEqual([]);
       });
     });
   }
 
-  test("B と C は紙の内側（三角網の中）で同じ位置になり、外側（四隅）は外挿の違いが出る", async ({ page }) => {
+  test("B と C は三角網の内側で同じ位置になり、三角網の外の四隅ではどれも外挿の違いが出る", async ({ page }) => {
     // B と C は同じ三角網で、外挿だけが違う。fixture が両方の外挿を実際に踏んでいる（取り違えていない）ことの確認。
-    await open(page);
+    // 先に、地図 JSON の compiled（tins_points・points・vertices_points・edgeNodes）から、
+    // 内側の点が三角網の中・四隅 4 点がすべて三角網の外にあることを確かめる（前提が崩れたら比べない）。
+    const abcPoints = await (async () => {
+      await open(page);
+      return page.evaluate(() => {
+        const abc = (window as any).__abc;
+        return {
+          samplePx: abc.samplePx as Record<string, Pt[]>,
+          cornerPx: abc.cornerPx as Record<string, Pt[]>
+        };
+      });
+    })();
+    for (const id of ["abc_b", "abc_c"] as const) {
+      const tris = tinTriangles(id);
+      expect(tris.length, `${id}: 三角網が読めた`).toBeGreaterThan(0);
+      abcPoints.samplePx[id]!.forEach((px, i) => {
+        expect(
+          tris.some(t => inTriangle(px, t)),
+          `${id}: 内側の点 ${i} ${JSON.stringify(px)} は三角網の中`
+        ).toBe(true);
+      });
+      expect(abcPoints.cornerPx[id]!.length).toBe(4);
+      abcPoints.cornerPx[id]!.forEach((px, i) => {
+        expect(
+          tris.some(t => inTriangle(px, t)),
+          `${id}: 四隅 ${i} ${JSON.stringify(px)} は三角網の外`
+        ).toBe(false);
+      });
+    }
+
     const res = await page.evaluate(async () => {
       const app = (window as any).__maplatApp;
       const abc = (window as any).__abc;
@@ -383,7 +489,10 @@ test.describe("変換の形 A・B・C と V2", () => {
     insideB!.forEach((m, i) => {
       expect(dist(m, insideC![i]!), `内側の点 ${i}`).toBeLessThan(MERC_TOLERANCE_M);
     });
-    const maxCornerGap = Math.max(...cornersB!.map((m, i) => dist(m, cornersC![i]!)));
-    expect(maxCornerGap, "四隅のどれかで B（大域外挿）と C（扇形外挿）が違う").toBeGreaterThan(MERC_TOLERANCE_M);
+    // 四隅のすべてで、B（大域外挿）と C（扇形外挿）が違う
+    const gaps = cornersB!.map((m, i) => dist(m, cornersC![i]!));
+    expect(Math.min(...gaps), `四隅すべてで B と C の外挿が違う（差 ${JSON.stringify(gaps)} m）`).toBeGreaterThan(
+      MERC_TOLERANCE_M
+    );
   });
 });
