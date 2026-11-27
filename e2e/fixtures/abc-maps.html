@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <base href="/" />
+  <title>Maplat E2E — 変換の形 A・B・C（jan27 J5 / issue #339）</title>
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+  <style>
+    .mainview {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="mainview">
+    <div id="map_div"></div>
+  </div>
+  <div id="status">Initializing</div>
+  <script type="module">
+    // 変換の形 A・B・C（と比較の相手の V2）の e2e fixture（issue #339 / J5）。
+    //
+    // - 地図データは MaplatCore の layered-map デモの地図（public/maps/layered_demo_*.json）の
+    //   小さな写し（url / thumbnail の指す場所だけ e2e 用に書き換えた）。
+    // - 背景の地図のタイルは e2e/fixtures/tiles/bg/ で、無いタイルは 404 のままでよい（中心の
+    //   同期を見る試験なので画像は要らない）。CDN には一切取りに行かない（オフライン前提）。
+    // - 期待値に使う座標は、すべて地図 JSON の GCP・頂点から作る。手で書いた数値は置かない。
+    import { MaplatUi } from '/src/index.ts';
+    import { transform as olTransform } from 'ol/proj';
+
+    const MAP_IDS = ['abc_a', 'abc_b', 'abc_c', 'abc_v2'];
+    const MAP_FILES = {
+      abc_a: 'e2e/fixtures/maps/abc_a.json',
+      abc_b: 'e2e/fixtures/maps/abc_b.json',
+      abc_c: 'e2e/fixtures/maps/abc_c.json',
+      abc_v2: 'e2e/fixtures/maps/abc_v2.json'
+    };
+
+    const jsons = {};
+    for (const [id, file] of Object.entries(MAP_FILES)) {
+      const resp = await fetch(file);
+      if (!resp.ok) throw new Error(`fixture map fetch failed: ${file}`);
+      jsons[id] = await resp.json();
+    }
+
+    const pairsOf = (j) => j.gcps || (j.compiled && j.compiled.points) || [];
+    const whOf = (j) => (j.compiled && j.compiled.wh) || [j.width, j.height];
+    const pxOf = (pair) => pair[0];
+
+    // サンプル画素: その地図の JSON の GCP（A）・頂点（B/C/V2）の画素＋紙の中心
+    const samplePx = {};
+    for (const id of MAP_IDS) {
+      const wh = whOf(jsons[id]);
+      const pxs = pairsOf(jsons[id]).map(pxOf).filter(p => Array.isArray(p) && p.length >= 2);
+      const picked = [pxs[0], pxs[Math.floor(pxs.length / 2)]].filter(Boolean);
+      samplePx[id] = [[wh[0] / 2, wh[1] / 2], ...picked];
+    }
+
+    // 紙の四隅の画素。B は大域外挿（world file）・C は扇形外挿が効く、三角網の外側の点
+    const cornerPx = {};
+    const paperWh = {};
+    for (const id of MAP_IDS) {
+      const wh = whOf(jsons[id]);
+      paperWh[id] = wh;
+      cornerPx[id] = [[0, 0], [wh[0], 0], [0, wh[1]], [wh[0], wh[1]]];
+    }
+
+    // POI・GPS の経緯度: abc_a.json の GCP の経緯度（gcps[i][1]）から作る。
+    // 4 地図のどれでも紙の内側に来る、重心に近い 3 点を選ぶ。
+    const gcpsA = jsons.abc_a.gcps || [];
+    const lonlats = gcpsA.map(g => g[1]).filter(ll => Array.isArray(ll) && ll.length >= 2);
+    if (lonlats.length < 3) throw new Error('fixture: abc_a.json に GCP の経緯度が足りない');
+    const mean = lonlats.reduce((a, ll) => [a[0] + ll[0] / lonlats.length, a[1] + ll[1] / lonlats.length], [0, 0]);
+    const byDist = [...lonlats].sort((a, b) =>
+      (a[0] - mean[0]) ** 2 + (a[1] - mean[1]) ** 2 - ((b[0] - mean[0]) ** 2 + (b[1] - mean[1]) ** 2));
+    const poiLngLats = byDist.slice(0, 3);
+    const gpsLngLat = poiLngLats[0];
+
+    const mercOf = (lngLat) => olTransform(lngLat, 'EPSG:4326', 'EPSG:3857');
+
+    window.__abc = {
+      mapIds: MAP_IDS,
+      mapFiles: MAP_FILES,
+      samplePx,
+      cornerPx,
+      paperWh,
+      poiLngLats,
+      gpsLngLat,
+      mercOf,
+      forms: {
+        abc_a: {
+          tinEnabledFalse: jsons.abc_a.tinEnabled === false,
+          worldFile: !!jsons.abc_a.worldFile,
+          noCompiled: !jsons.abc_a.compiled
+        },
+        abc_b: {
+          outerTransform: jsons.abc_b.compiled && jsons.abc_b.compiled.outerTransform,
+          worldFileInCompiled: !!(jsons.abc_b.compiled && jsons.abc_b.compiled.worldFile),
+          noVerticesParams: !(jsons.abc_b.compiled && jsons.abc_b.compiled.vertices_params)
+        },
+        abc_c: {
+          outerTransform: (jsons.abc_c.compiled && jsons.abc_c.compiled.outerTransform) || null,
+          verticesParams: !!(jsons.abc_c.compiled && jsons.abc_c.compiled.vertices_params)
+        },
+        abc_v2: {
+          noCrs: !('crs' in jsons.abc_v2),
+          hasCompiled: !!jsons.abc_v2.compiled
+        }
+      }
+    };
+
+    const setting = {
+      appName: 'Jan27 J5 A/B/C E2E',
+      lang: 'ja',
+      homePosition: mean,
+      defaultZoom: 6,
+      minZoom: 3,
+      maxZoom: 15,
+      startFrom: 'abc_a',
+      pois: {
+        type: 'FeatureCollection',
+        properties: { id: 'abc_pois' },
+        features: poiLngLats.map((ll, i) => ({
+          type: 'Feature',
+          properties: { id: `abc_poi_${i + 1}`, name: `ABC POI ${i + 1}` },
+          geometry: { type: 'Point', coordinates: ll }
+        }))
+      },
+      sources: [
+        { mapID: 'abc_a', settingFile: MAP_FILES.abc_a, label: 'A (CRS+WF)' },
+        { mapID: 'abc_b', settingFile: MAP_FILES.abc_b, label: 'B (TIN+global)' },
+        { mapID: 'abc_c', settingFile: MAP_FILES.abc_c, label: 'C (TIN+fan)' },
+        { mapID: 'abc_v2', settingFile: MAP_FILES.abc_v2, label: 'V2 (legacy)' },
+        {
+          mapID: 'bg',
+          title: { ja: '背景', en: 'Background' },
+          label: 'BG',
+          maptype: 'base',
+          url: 'e2e/fixtures/tiles/bg/{z}/{x}/{y}.png',
+          maxZoom: 19
+        }
+      ]
+    };
+
+    const option = {
+      setting,
+      pwaManifest: false,
+      pwaWorker: false,
+      enableCache: false,
+      restoreSession: false,
+      stateUrl: false,
+      alwaysGpsOn: false
+    };
+
+    // `createObject` は設定の読み込み（setting-loaded）で解決する。地図の組み立て・GPS の用意まで済んだことは
+    // `core.waitReady` で待ち、それから READY にする。読み込みに失敗したら、すぐ ERROR にする。
+    MaplatUi.createObject(option).then(async function (ui) {
+      window.__maplatUi = ui;
+      window.__maplatApp = ui.core;
+      await ui.core.waitReady;
+      document.getElementById('status').textContent = 'READY';
+    }).catch(function (err) {
+      console.error('MaplatUi init error:', err);
+      document.getElementById('status').textContent = 'ERROR: ' + err.message;
+    });
+  </script>
+</body>
+
+</html>
